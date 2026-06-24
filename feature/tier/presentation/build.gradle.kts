@@ -23,6 +23,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.feature.tier.domain)
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
