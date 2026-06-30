@@ -1,5 +1,5 @@
 plugins {
-    id("tieryourlife.android.library")
+    alias(libs.plugins.tieryourlife.android.library)
 }
 
 android {

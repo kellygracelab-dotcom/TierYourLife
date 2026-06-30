@@ -10,7 +10,6 @@ kotlin = "2.4.0"
 composeBom = "2026.06.00"
 
 [libraries]
-# Gradle-плагины как артефакты — нужны convention-плагинам, чтобы настраивать android/kotlin
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,4 +32,5 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+tieryourlife-android-library = { id = "tieryourlife.android.library" }
 
