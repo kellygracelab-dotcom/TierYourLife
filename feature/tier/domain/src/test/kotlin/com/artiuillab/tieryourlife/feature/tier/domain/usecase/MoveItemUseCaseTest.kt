@@ -14,7 +14,6 @@ class MoveItemUseCaseTest {
     private lateinit var item: TierItem
     private lateinit var list: TierList
 
-
     @Before
     fun setup() {
         item = TierItem(id = 10, title = "Inception", imageUrl = "url")
