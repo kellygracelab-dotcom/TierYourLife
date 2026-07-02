@@ -38,4 +38,15 @@ class MoveItemUseCaseTest {
 
         assertEquals(1, timesFound)
     }
+
+    @Test(expected = NoSuchElementException::class)
+    fun `moving non-existent item throws`() {
+
+        val item = TierItem(id = 10, title = "Inception", imageUrl = "url")
+        val source = Tier(id = 1, label = "Best", color = "#FF0000", items = listOf(item))
+        val target = Tier(id = 2, label = "Worst", color = "#0000FF", items = emptyList())
+        val list = TierList(id = 1, title = "Movies", tiers = listOf(source, target))
+
+        MoveItemUseCase()(list, itemId = 999, toTierId = 2)
+    }
 }

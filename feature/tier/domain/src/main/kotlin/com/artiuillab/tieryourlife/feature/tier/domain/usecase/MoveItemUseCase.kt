@@ -8,7 +8,7 @@ class MoveItemUseCase {
         val tiers = list.tiers.map { tier ->
             if (tier.id == toTierId) {
                 if (tier.items.contains(item)) {
-                    tier.copy(items = tier.items)
+                    tier
                 } else {
                     tier.copy(items = tier.items + item)
                 }
