@@ -13,5 +13,9 @@ gradlePlugin {
             id = "tieryourlife.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
         }
+        register("androidLibraryCompose") {
+            id = "tieryourlife.android.library.compose"
+            implementationClass = "AndroidComposeConventionPlugin"
+        }
     }
 }
