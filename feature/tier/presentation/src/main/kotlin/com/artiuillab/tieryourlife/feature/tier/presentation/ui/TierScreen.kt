@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -67,20 +68,26 @@ private val previewTierList = TierList(
     ),
 )
 
-@Preview(name = "Loading")
+@Preview(name = "Loading", device = "id:pixel_9", showBackground = true, showSystemUi = true)
 @Composable
 fun TierScreenLoadingPreview() {
-    TierScreenContent(state = TierListUiState.Loading)
+    TierYourLifeTheme {
+        TierScreenContent(state = TierListUiState.Loading)
+    }
 }
 
-@Preview(name = "Success")
+@Preview(name = "Success", device = "id:pixel_9", showBackground = true, showSystemUi = true)
 @Composable
 fun TierScreenSuccessPreview() {
-    TierScreenContent(state = TierListUiState.Success(list = previewTierList))
+    TierYourLifeTheme {
+        TierScreenContent(state = TierListUiState.Success(list = previewTierList))
+    }
 }
 
-@Preview(name = "Error")
+@Preview(name = "Error", device = "id:pixel_9", showBackground = true, showSystemUi = true)
 @Composable
 fun TierScreenErrorPreview() {
-    TierScreenContent(state = TierListUiState.Error(message = "No connection to server"))
+    TierYourLifeTheme {
+        TierScreenContent(state = TierListUiState.Error(message = "No connection to server"))
+    }
 }
