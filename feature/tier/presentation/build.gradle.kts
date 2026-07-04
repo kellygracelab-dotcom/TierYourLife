@@ -8,6 +8,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.theme)
     implementation(projects.feature.tier.domain)
     implementation(projects.feature.tier.data)
     implementation(libs.androidx.core.ktx)
