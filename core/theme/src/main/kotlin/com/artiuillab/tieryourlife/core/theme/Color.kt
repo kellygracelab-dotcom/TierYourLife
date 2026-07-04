@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.ui.theme
+package com.artiuillab.tieryourlife.core.theme
 
 import androidx.compose.ui.graphics.Color
 
