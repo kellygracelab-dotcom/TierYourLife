@@ -6,9 +6,7 @@ plugins {
 android {
     namespace = "com.artiuillab.tieryourlife"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
@@ -38,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.feature.tier.presentation)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
