@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.theme)
     implementation(projects.feature.tier.presentation)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
