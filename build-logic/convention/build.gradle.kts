@@ -5,6 +5,7 @@ plugins {
 dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.ksp.gradlePlugin)
 }
 
 gradlePlugin {
@@ -16,6 +17,10 @@ gradlePlugin {
         register("androidLibraryCompose") {
             id = "tieryourlife.android.library.compose"
             implementationClass = "AndroidComposeConventionPlugin"
+        }
+        register("roomLibrary") {
+            id = "tieryourlife.room.library"
+            implementationClass = "RoomConventionPlugin"
         }
     }
 }
