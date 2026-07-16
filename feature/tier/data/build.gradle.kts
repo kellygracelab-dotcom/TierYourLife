@@ -1,5 +1,7 @@
 plugins {
+    alias(libs.plugins.ksp)
     alias(libs.plugins.tieryourlife.android.library)
+    alias(libs.plugins.tieryourlife.room.library)
 }
 
 android {
