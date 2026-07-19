@@ -26,7 +26,11 @@ class TierViewModel(
         viewModelScope.launch {
             delay(1000)
             repository.getTierListById(1).let {
-                _state.value = TierListUiState.Success(it)
+                if (it != null) {
+                    _state.value = TierListUiState.Success(it)
+                } else {
+                    _state.value = TierListUiState.Error("Tier list not found")
+                }
             }
         }
     }
