@@ -11,11 +11,13 @@ composeBom = "2026.06.00"
 coroutines = "1.10.2"
 ksp = "2.3.9"
 room = "2.8.4"
+hilt = "2.60.1"
 
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+hilt-gradlePlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -33,12 +35,11 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-#noinspection UnusedVersionCatalogEntry
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-#noinspection UnusedVersionCatalogEntry
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
-#noinspection UnusedVersionCatalogEntry
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -48,5 +49,7 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 tieryourlife-android-library = { id = "tieryourlife.android.library" }
 tieryourlife-android-library-compose = { id = "tieryourlife.android.library.compose" }
 tieryourlife-room-library = { id = "tieryourlife.room.library" }
+tieryourlife-hilt = { id = "tieryourlife.hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 

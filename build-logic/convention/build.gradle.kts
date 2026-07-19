@@ -6,6 +6,7 @@ dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
+    compileOnly(libs.hilt.gradlePlugin)
 }
 
 gradlePlugin {
@@ -21,6 +22,10 @@ gradlePlugin {
         register("roomLibrary") {
             id = "tieryourlife.room.library"
             implementationClass = "RoomConventionPlugin"
+        }
+        register("hilt") {
+            id = "tieryourlife.hilt"
+            implementationClass = "HiltConventionPlugin"
         }
     }
 }
