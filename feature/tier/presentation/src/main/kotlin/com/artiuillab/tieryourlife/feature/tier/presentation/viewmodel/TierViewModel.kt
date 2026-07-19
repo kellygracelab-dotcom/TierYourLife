@@ -2,16 +2,18 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.artiuillab.tieryourlife.feature.tier.data.repository.FakeTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.state.TierListUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TierViewModel(
-    private val repository: TierRepository = FakeTierRepository()
+@HiltViewModel
+class TierViewModel @Inject constructor(
+    private val repository: TierRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<TierListUiState>(TierListUiState.Loading)
