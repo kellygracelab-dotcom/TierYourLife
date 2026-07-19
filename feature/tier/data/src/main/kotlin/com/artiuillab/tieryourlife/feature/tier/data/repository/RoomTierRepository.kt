@@ -4,8 +4,9 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import javax.inject.Inject
 
-class RoomTierRepository(
+class RoomTierRepository @Inject constructor(
     private val dao: TierDao,
 ) : TierRepository {
 
