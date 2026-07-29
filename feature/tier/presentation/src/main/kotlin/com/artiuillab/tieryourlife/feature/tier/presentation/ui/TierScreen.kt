@@ -53,8 +53,8 @@ private val previewTierList = TierList(
             label = "Masterpiece",
             color = "#FFD700",
             items = listOf(
-                TierItem(id = 1, title = "The Godfather", imageUrl = ""),
-                TierItem(id = 2, title = "Inception", imageUrl = ""),
+                TierItem(id = 1, title = "The Godfather", imageUrl = null),
+                TierItem(id = 2, title = "Inception", imageUrl = null),
             ),
         ),
         Tier(
@@ -62,7 +62,7 @@ private val previewTierList = TierList(
             label = "Mid",
             color = "#9E9E9E",
             items = listOf(
-                TierItem(id = 3, title = "Cats (2019)", imageUrl = ""),
+                TierItem(id = 3, title = "Cats (2019)", imageUrl = null),
             ),
         ),
     ),

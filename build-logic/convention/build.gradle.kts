@@ -27,5 +27,9 @@ gradlePlugin {
             id = "tieryourlife.hilt"
             implementationClass = "HiltConventionPlugin"
         }
+        register("network") {
+            id = "tieryourlife.network"
+            implementationClass = "NetworkConventionPlugin"
+        }
     }
 }
