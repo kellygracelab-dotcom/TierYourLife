@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.feature.tier.presentation.ui.MovieSearchScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.ui.TierScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -14,7 +15,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TierYourLifeTheme { TierScreen() }
+            TierYourLifeTheme { MovieSearchScreen() }
         }
     }
 }
