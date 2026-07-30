@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.tieryourlife.hilt)
+    alias(libs.plugins.tieryourlife.navigation)
 }
 
 android {

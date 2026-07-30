@@ -20,7 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -28,7 +28,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.state.MovieSearchUi
 import com.artiuillab.tieryourlife.feature.tier.presentation.viewmodel.MovieSearchViewModel
 
 @Composable
-fun MovieSearchScreen(viewModel: MovieSearchViewModel = viewModel()) {
+fun MovieSearchScreen(viewModel: MovieSearchViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsState()
     var query by remember { mutableStateOf("") }
 

@@ -31,5 +31,9 @@ gradlePlugin {
             id = "tieryourlife.network"
             implementationClass = "NetworkConventionPlugin"
         }
+        register("navigation") {
+            id = "tieryourlife.navigation"
+            implementationClass = "NavigationConventionPlugin"
+        }
     }
 }
