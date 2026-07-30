@@ -5,4 +5,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 interface TierRepository {
 
     suspend fun getTierListById(id: Long): TierList?
+
+    suspend fun getAllTierLists(): List<TierList>
+
+    suspend fun createTierList(title: String): Long
 }

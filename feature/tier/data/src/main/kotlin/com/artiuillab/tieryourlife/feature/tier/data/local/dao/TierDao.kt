@@ -12,11 +12,38 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWith
 @Dao
 interface TierDao {
 
+    @Transaction
+    suspend fun createTierListWithDefaultTier(title: String): Long {
+        val tierListId = insertTierList(TierListEntity(title = title))
+
+        val defaultTiers = listOf(
+            TierEntity(tierListId = tierListId, position = 0, label = "S", color = "#FF7F7F"),
+            TierEntity(tierListId = tierListId, position = 1, label = "A", color = "#FFBF7F"),
+            TierEntity(tierListId = tierListId, position = 2, label = "B", color = "#FFDF7F"),
+            TierEntity(tierListId = tierListId, position = 3, label = "C", color = "#FFFF7F"),
+            TierEntity(tierListId = tierListId, position = 4, label = "D", color = "#BFFF7F"),
+            TierEntity(
+                tierListId = tierListId,
+                position = 5,
+                label = "Unranked",
+                color = "",
+                isPool = true
+            ),
+        )
+
+        defaultTiers.forEach { insertTier(it) }
+
+        return tierListId
+    }
+
     @Insert
     suspend fun insertTierList(tierList: TierListEntity): Long
 
     @Query("SELECT * FROM tier_lists WHERE id = :id")
     suspend fun getTierListById(id: Long): TierListEntity?
+
+    @Query("SELECT * FROM tier_lists ORDER BY id ASC")
+    suspend fun getAllTierLists(): List<TierListEntity>
 
     @Transaction
     @Query("SELECT * FROM tier_lists WHERE id = :id")

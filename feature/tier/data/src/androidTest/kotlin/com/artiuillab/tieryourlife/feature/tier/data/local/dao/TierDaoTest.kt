@@ -129,6 +129,39 @@ class TierDaoTest {
     }
 
     @Test
+    fun create_tier_list_with_default_tier_inserts_list_and_six_tiers() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+
+        val savedList = dao.getTierListById(listId)
+        val tiers = dao.getAllTiersByTierListId(listId)
+
+        assertTrue(listId > 0)
+        assertEquals("Films", savedList?.title)
+        assertEquals(6, tiers.size)
+        assertTrue(tiers.all { it.tierListId == listId })
+    }
+
+    @Test
+    fun create_tier_list_with_default_tier_orders_tiers_s_to_d_then_pool() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+
+        val tiers = dao.getAllTiersByTierListId(listId)
+
+        assertEquals(listOf("S", "A", "B", "C", "D", "Unranked"), tiers.map { it.label })
+    }
+
+    @Test
+    fun create_tier_list_with_default_tier_marks_exactly_one_pool_tier() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+
+        val tiers = dao.getAllTiersByTierListId(listId)
+        val poolTiers = tiers.filter { it.isPool }
+
+        assertEquals(1, poolTiers.size)
+        assertEquals("Unranked", poolTiers.single().label)
+    }
+
+    @Test
     fun get_tier_list_with_tiers_and_items_returns_full_graph() = runBlocking {
         val films = tierList()
         val filmsId = dao.insertTierList(films)
