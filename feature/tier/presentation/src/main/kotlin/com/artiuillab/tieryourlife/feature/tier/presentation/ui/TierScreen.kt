@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -16,7 +16,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.state.TierListUiSta
 import com.artiuillab.tieryourlife.feature.tier.presentation.viewmodel.TierViewModel
 
 @Composable
-fun TierScreen(viewModel: TierViewModel = viewModel()) {
+fun TierScreen(viewModel: TierViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsState()
     TierScreenContent(state = state)
 }
