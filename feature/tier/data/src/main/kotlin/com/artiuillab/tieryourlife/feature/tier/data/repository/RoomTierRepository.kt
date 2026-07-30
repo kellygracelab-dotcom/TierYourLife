@@ -13,4 +13,12 @@ class RoomTierRepository @Inject constructor(
     override suspend fun getTierListById(id: Long): TierList? {
         return dao.getTierListWithTiers(id)?.toDomain()
     }
+
+    override suspend fun getAllTierLists(): List<TierList> {
+        return dao.getAllTierLists().map { it.toDomain() }
+    }
+
+    override suspend fun createTierList(title: String): Long {
+        return dao.createTierListWithDefaultTier(title = title)
+    }
 }

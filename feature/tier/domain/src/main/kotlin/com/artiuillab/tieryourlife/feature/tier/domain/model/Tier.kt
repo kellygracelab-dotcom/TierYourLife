@@ -4,5 +4,6 @@ data class Tier(
     val id: Long,
     val label: String,
     val color: String,
-    val items: List<TierItem>
+    val items: List<TierItem>,
+    val isPool: Boolean = false,
 )
