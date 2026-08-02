@@ -8,7 +8,4 @@ sealed interface Route {
 
     @Serializable
     data class TierDetail(val tierListId: Long) : Route
-
-    @Serializable
-    data object MovieSearch : Route
 }

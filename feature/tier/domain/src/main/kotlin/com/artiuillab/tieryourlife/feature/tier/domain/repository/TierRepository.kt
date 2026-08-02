@@ -9,4 +9,6 @@ interface TierRepository {
     suspend fun getAllTierLists(): List<TierList>
 
     suspend fun createTierList(title: String): Long
+
+    suspend fun addMovieToPool(tierListId: Long, title: String, imageUrl: String?): Long
 }
