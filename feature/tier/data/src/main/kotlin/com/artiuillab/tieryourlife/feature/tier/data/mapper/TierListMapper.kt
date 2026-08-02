@@ -27,7 +27,8 @@ internal fun TierListWithTiers.toDomain(): TierList = TierList(
 private fun TierWithItems.toDomain(): Tier = Tier(
     id = tier.id,
     label = tier.label,
-    color = tier.color,
+    colorLight = tier.colorLight,
+    colorDark = tier.colorDark,
     items = items
         .sortedBy { it.position }
         .map { it.toDomain() },

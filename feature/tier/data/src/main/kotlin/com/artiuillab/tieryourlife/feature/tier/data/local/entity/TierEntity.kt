@@ -26,6 +26,7 @@ data class TierEntity(
     val tierListId: Long,
     val position: Int,
     val label: String,
-    val color: String,
+    val colorLight: String,
+    val colorDark: String,
     val isPool: Boolean = false,
 )

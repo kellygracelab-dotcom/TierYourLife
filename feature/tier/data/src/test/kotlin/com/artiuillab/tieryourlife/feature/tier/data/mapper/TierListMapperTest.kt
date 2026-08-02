@@ -22,14 +22,16 @@ class TierListMapperTest {
             tierListId = tierList.id,
             position = 1,
             label = "S",
-            color = "GOLD",
+            colorLight = "#B03A32",
+            colorDark = "#F1948C",
         )
         val tierA = TierEntity(
             id = 2,
             tierListId = tierList.id,
             position = 2,
             label = "A",
-            color = "GREEN",
+            colorLight = "#C06A25",
+            colorDark = "#E9A867",
         )
 
         val firstItem = TierItemEntity(
