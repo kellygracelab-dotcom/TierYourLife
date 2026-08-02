@@ -17,8 +17,8 @@ class MoveItemUseCaseTest {
     @Before
     fun setup() {
         item = TierItem(id = 10, title = "Inception", imageUrl = "url")
-        val source = Tier(id = 1, label = "Best", color = "#FF0000", items = listOf(item))
-        val target = Tier(id = 2, label = "Worst", color = "#0000FF", items = emptyList())
+        val source = Tier(id = 1, label = "Best", colorLight = "#B03A32", colorDark = "#F1948C", items = listOf(item))
+        val target = Tier(id = 2, label = "Worst", colorLight = "#3C6E99", colorDark = "#86B8DE", items = emptyList())
         list = TierList(id = 1, title = "Movies", tiers = listOf(source, target))
     }
 

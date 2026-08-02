@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import com.artiuillab.tieryourlife.feature.tier.data.local.DefaultTierColors
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
@@ -13,21 +14,54 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWith
 interface TierDao {
 
     @Transaction
+    suspend fun addMovieToPool(tierListId: Long, title: String, imageUrl: String?): Long {
+        val poolTier = getAllTiersByTierListId(tierListId).first { it.isPool }
+
+        val lastPosition = getAllTierItemsByTierId(poolTier.id).maxOfOrNull { it.position }
+        val nextPosition = (lastPosition ?: -1) + 1
+
+        return insertTierItem(
+            tierItem = TierItemEntity(
+                tierId = poolTier.id,
+                position = nextPosition,
+                title = title,
+                imageUrl = imageUrl,
+            ),
+        )
+    }
+
+    @Transaction
     suspend fun createTierListWithDefaultTier(title: String): Long {
         val tierListId = insertTierList(TierListEntity(title = title))
 
         val defaultTiers = listOf(
-            TierEntity(tierListId = tierListId, position = 0, label = "S", color = "#FF7F7F"),
-            TierEntity(tierListId = tierListId, position = 1, label = "A", color = "#FFBF7F"),
-            TierEntity(tierListId = tierListId, position = 2, label = "B", color = "#FFDF7F"),
-            TierEntity(tierListId = tierListId, position = 3, label = "C", color = "#FFFF7F"),
-            TierEntity(tierListId = tierListId, position = 4, label = "D", color = "#BFFF7F"),
+            TierEntity(
+                tierListId = tierListId, position = 0, label = "S",
+                colorLight = DefaultTierColors.S_LIGHT, colorDark = DefaultTierColors.S_DARK,
+            ),
+            TierEntity(
+                tierListId = tierListId, position = 1, label = "A",
+                colorLight = DefaultTierColors.A_LIGHT, colorDark = DefaultTierColors.A_DARK,
+            ),
+            TierEntity(
+                tierListId = tierListId, position = 2, label = "B",
+                colorLight = DefaultTierColors.B_LIGHT, colorDark = DefaultTierColors.B_DARK,
+            ),
+            TierEntity(
+                tierListId = tierListId, position = 3, label = "C",
+                colorLight = DefaultTierColors.C_LIGHT, colorDark = DefaultTierColors.C_DARK,
+            ),
+            TierEntity(
+                tierListId = tierListId, position = 4, label = "D",
+                colorLight = DefaultTierColors.D_LIGHT, colorDark = DefaultTierColors.D_DARK,
+            ),
             TierEntity(
                 tierListId = tierListId,
                 position = 5,
                 label = "Unranked",
-                color = "",
-                isPool = true
+                colorLight = DefaultTierColors.POOL_LIGHT,
+                colorDark = DefaultTierColors.POOL_DARK,
+                isPool = true,
             ),
         )
 
