@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.state.TierListUiSta
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,15 +21,15 @@ class TierViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val tierListId = savedStateHandle.toRoute<Route.TierDetail>().tierListId
-    private val _state = MutableStateFlow<TierListUiState>(TierListUiState.Loading)
 
-    val state: StateFlow<TierListUiState> = _state
+    private val _state = MutableStateFlow<TierListUiState>(TierListUiState.Loading)
+    val state: StateFlow<TierListUiState> = _state.asStateFlow()
 
     init {
-        getTierList()
+        loadTierList()
     }
 
-    fun getTierList() {
+    fun loadTierList() {
         viewModelScope.launch {
             repository.getTierListById(tierListId).let {
                 if (it != null) {
@@ -37,6 +38,13 @@ class TierViewModel @Inject constructor(
                     _state.value = TierListUiState.Error("Tier list not found")
                 }
             }
+        }
+    }
+
+    fun addMovieToPool(title: String, imageUrl: String?) {
+        viewModelScope.launch {
+            repository.addMovieToPool(tierListId, title, imageUrl)
+            loadTierList()
         }
     }
 }

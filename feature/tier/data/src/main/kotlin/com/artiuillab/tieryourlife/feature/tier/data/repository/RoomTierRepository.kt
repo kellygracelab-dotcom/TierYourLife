@@ -21,4 +21,12 @@ class RoomTierRepository @Inject constructor(
     override suspend fun createTierList(title: String): Long {
         return dao.createTierListWithDefaultTier(title = title)
     }
+
+    override suspend fun addMovieToPool(
+        tierListId: Long,
+        title: String,
+        imageUrl: String?
+    ): Long {
+        return dao.addMovieToPool(tierListId, title, imageUrl)
+    }
 }
