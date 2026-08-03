@@ -32,4 +32,18 @@
     <string name="tier_lists_content_description_navigation">Open navigation menu</string>
     <string name="tier_lists_content_description_search">Search lists</string>
     <string name="tier_lists_content_description_toggle_theme">Toggle light and dark theme</string>
+
+    <string name="tier_detail_add">Add</string>
+    <string name="tier_detail_content_description_back">Navigate back</string>
+    <string name="tier_detail_content_description_manual_add">Add item manually</string>
+    <string name="tier_detail_content_description_more">More options</string>
+    <plurals name="tier_detail_pool_unranked_count">
+        <item quantity="one">Pool · %d unranked</item>
+        <item quantity="other">Pool · %d unranked</item>
+    </plurals>
+    <string name="tier_detail_caption_s">Masterpiece</string>
+    <string name="tier_detail_caption_a">Great</string>
+    <string name="tier_detail_caption_b">Good</string>
+    <string name="tier_detail_caption_c">Watchable</string>
+    <string name="tier_detail_caption_d">No</string>
 </resources>

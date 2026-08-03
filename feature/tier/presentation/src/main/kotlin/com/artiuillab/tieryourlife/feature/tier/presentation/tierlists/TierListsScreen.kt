@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.ui.tierlists
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -45,8 +45,13 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.state.TierListsUiState
-import com.artiuillab.tieryourlife.feature.tier.presentation.viewmodel.TierListsViewModel
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.MenuIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.TierListCard
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.UpIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.previewTierLists
 
 @Composable
 fun TierListsScreen(

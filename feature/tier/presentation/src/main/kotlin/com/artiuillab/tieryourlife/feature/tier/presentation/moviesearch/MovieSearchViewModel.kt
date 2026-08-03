@@ -1,9 +1,8 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.viewmodel
+package com.artiuillab.tieryourlife.feature.tier.presentation.moviesearch
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.MovieSearchRepository
-import com.artiuillab.tieryourlife.feature.tier.presentation.state.MovieSearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

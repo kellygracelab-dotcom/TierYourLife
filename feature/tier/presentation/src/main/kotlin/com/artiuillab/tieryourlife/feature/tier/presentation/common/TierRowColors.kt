@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.ui.color
+package com.artiuillab.tieryourlife.feature.tier.presentation.common
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable

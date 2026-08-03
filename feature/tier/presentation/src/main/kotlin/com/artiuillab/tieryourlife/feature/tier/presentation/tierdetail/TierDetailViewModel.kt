@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.viewmodel
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
-import com.artiuillab.tieryourlife.feature.tier.presentation.state.TierListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,15 +14,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TierViewModel @Inject constructor(
+class TierDetailViewModel @Inject constructor(
     private val repository: TierRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val tierListId = savedStateHandle.toRoute<Route.TierDetail>().tierListId
 
-    private val _state = MutableStateFlow<TierListUiState>(TierListUiState.Loading)
-    val state: StateFlow<TierListUiState> = _state.asStateFlow()
+    private val _state = MutableStateFlow<TierDetailUiState>(TierDetailUiState.Loading)
+    val state: StateFlow<TierDetailUiState> = _state.asStateFlow()
 
     init {
         loadTierList()
@@ -33,9 +32,9 @@ class TierViewModel @Inject constructor(
         viewModelScope.launch {
             repository.getTierListById(tierListId).let {
                 if (it != null) {
-                    _state.value = TierListUiState.Success(it)
+                    _state.value = TierDetailUiState.Success(it)
                 } else {
-                    _state.value = TierListUiState.Error("Tier list not found")
+                    _state.value = TierDetailUiState.Error("Tier list not found")
                 }
             }
         }

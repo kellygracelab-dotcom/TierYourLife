@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.state
+package com.artiuillab.tieryourlife.feature.tier.presentation.moviesearch
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 

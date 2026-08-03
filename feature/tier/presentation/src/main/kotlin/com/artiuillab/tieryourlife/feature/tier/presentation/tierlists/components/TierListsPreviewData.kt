@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.ui.tierlists
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
