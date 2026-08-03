@@ -14,8 +14,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
-import com.artiuillab.tieryourlife.feature.tier.presentation.ui.tierlists.TierListsScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.ui.TierScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable<Route.TierDetail> {
-                        TierScreen()
+                        TierDetailScreen(onBack = { navController.popBackStack() })
                     }
                 }
             }

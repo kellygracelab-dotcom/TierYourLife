@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.ui.tierlists
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -14,7 +14,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.state.TierListsUiState
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

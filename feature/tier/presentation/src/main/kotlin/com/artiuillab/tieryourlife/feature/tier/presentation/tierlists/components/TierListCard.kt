@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.ui.tierlists
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,7 +29,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.ui.color.tierRowColors
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 
 @Composable
 internal fun TierListCard(list: TierList, onTierListClick: (Long) -> Unit) {

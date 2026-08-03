@@ -1,26 +1,15 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.ui.tierlists
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.size
-
-@Composable
-private fun VectorIcon(
-    iconSize: Dp,
-    draw: DrawScope.(Float) -> Unit,
-) = Canvas(Modifier.size(iconSize)) {
-    draw(size.minDimension / 24f)
-}
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.VectorIcon
 
 @Composable
 internal fun MenuIcon() = LineMenuIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
@@ -54,14 +43,6 @@ private fun SearchVectorIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) 
 }
 
 @Composable
-internal fun MoreIcon() = MoreVectorIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
-
-@Composable
-private fun MoreVectorIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
-    repeat(3) { drawCircle(color, 1.5f * scale, Offset(12f * scale, (7f + it * 5f) * scale)) }
-}
-
-@Composable
 internal fun ChevronIcon() = ChevronVectorIcon(20.dp, MaterialTheme.colorScheme.outline)
 
 @Composable
@@ -78,24 +59,6 @@ private fun ChevronVectorIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize)
         Offset(15f * scale, 12f * scale),
         Offset(9f * scale, 17f * scale),
         1.7f * scale,
-        StrokeCap.Round,
-    )
-}
-
-@Composable
-internal fun PlusIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
-    drawLine(
-        color,
-        Offset(12f * scale, 7f * scale),
-        Offset(12f * scale, 17f * scale),
-        1.8f * scale,
-        StrokeCap.Round,
-    )
-    drawLine(
-        color,
-        Offset(7f * scale, 12f * scale),
-        Offset(17f * scale, 12f * scale),
-        1.8f * scale,
         StrokeCap.Round,
     )
 }

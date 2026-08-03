@@ -1,5 +1,6 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.ui
+package com.artiuillab.tieryourlife.feature.tier.presentation.moviesearch
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
-import com.artiuillab.tieryourlife.feature.tier.presentation.state.MovieSearchUiState
 
 @Composable
 fun MovieSearchScreenContent(
@@ -26,6 +26,7 @@ fun MovieSearchScreenContent(
     query: String,
     onQueryChange: (String) -> Unit,
     onSearchClick: () -> Unit,
+    onItemClick: (TierItem) -> Unit = {},
 ) {
     Column(modifier = Modifier.padding(16.dp)) {
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -57,7 +58,7 @@ fun MovieSearchScreenContent(
             }
 
             is MovieSearchUiState.Success -> {
-                MovieResultsList(items = state.items)
+                MovieResultsList(items = state.items, onItemClick = onItemClick)
             }
 
             is MovieSearchUiState.Error -> {
@@ -68,12 +69,13 @@ fun MovieSearchScreenContent(
 }
 
 @Composable
-private fun MovieResultsList(items: List<TierItem>) {
+private fun MovieResultsList(items: List<TierItem>, onItemClick: (TierItem) -> Unit) {
     LazyColumn {
         items(items) { item ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable { onItemClick(item) }
                     .padding(vertical = 8.dp),
             ) {
                 AsyncImage(
