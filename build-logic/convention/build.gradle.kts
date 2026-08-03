@@ -27,5 +27,13 @@ gradlePlugin {
             id = "tieryourlife.hilt"
             implementationClass = "HiltConventionPlugin"
         }
+        register("network") {
+            id = "tieryourlife.network"
+            implementationClass = "NetworkConventionPlugin"
+        }
+        register("navigation") {
+            id = "tieryourlife.navigation"
+            implementationClass = "NavigationConventionPlugin"
+        }
     }
 }

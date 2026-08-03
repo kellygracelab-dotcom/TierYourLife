@@ -55,7 +55,8 @@ class RoomTierRepositoryTest {
             tierListId = tierListId,
             position = 1,
             label = "S",
-            color = "GOLD",
+            colorLight = "#B03A32",
+            colorDark = "#F1948C",
         )
         val tierId = dao.insertTier(tier)
         val item = TierItemEntity(
