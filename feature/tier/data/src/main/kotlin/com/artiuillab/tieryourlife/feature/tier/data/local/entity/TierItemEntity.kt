@@ -26,5 +26,5 @@ data class TierItemEntity(
     val tierId: Long,
     val position: Int,
     val title: String,
-    val imageUrl: String
+    val imageUrl: String?,
 )

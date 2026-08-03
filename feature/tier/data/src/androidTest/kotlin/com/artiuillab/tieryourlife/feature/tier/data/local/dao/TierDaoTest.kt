@@ -53,9 +53,9 @@ class TierDaoTest {
     fun get_tiers_by_list_id_returns_tiers_ordered_by_position() = runBlocking {
         val filmsId = dao.insertTierList(tierList())
         val gamesId = dao.insertTierList(tierList(title = "Games"))
-        val sTier = tier(tierListId = filmsId, position = 1, label = "S", color = "GOLD")
-        val aTier = tier(tierListId = filmsId, position = 2, label = "A", color = "GREEN")
-        val bTier = tier(tierListId = gamesId, position = 1, label = "B", color = "RED")
+        val sTier = tier(tierListId = filmsId, position = 1, label = "S", colorLight = "#B03A32", colorDark = "#F1948C")
+        val aTier = tier(tierListId = filmsId, position = 2, label = "A", colorLight = "#C06A25", colorDark = "#E9A867")
+        val bTier = tier(tierListId = gamesId, position = 1, label = "B", colorLight = "#A98B1F", colorDark = "#D8C05A")
 
         dao.insertTier(aTier)
         dao.insertTier(sTier)
@@ -78,7 +78,8 @@ class TierDaoTest {
                     tierListId = Long.MAX_VALUE,
                     position = 1,
                     label = "S",
-                    color = "GOLD",
+                    colorLight = "#B03A32",
+                    colorDark = "#F1948C",
                 ),
             )
         }
@@ -92,7 +93,8 @@ class TierDaoTest {
                 tierListId = filmsId,
                 position = 1,
                 label = "S",
-                color = "GOLD",
+                colorLight = "#B03A32",
+                colorDark = "#F1948C",
             ),
         )
 
@@ -107,10 +109,10 @@ class TierDaoTest {
     fun delete_tier_cascade_deletes_only_its_items() = runBlocking {
         val filmsId = dao.insertTierList(tierList())
         val sTierId = dao.insertTier(
-            tier(tierListId = filmsId, position = 1, label = "S", color = "GOLD"),
+            tier(tierListId = filmsId, position = 1, label = "S", colorLight = "#B03A32", colorDark = "#F1948C"),
         )
         val aTierId = dao.insertTier(
-            tier(tierListId = filmsId, position = 2, label = "A", color = "GREEN"),
+            tier(tierListId = filmsId, position = 2, label = "A", colorLight = "#C06A25", colorDark = "#E9A867"),
         )
         val sItem = tierItem(tierId = sTierId, title = "The Shawshank Redemption")
         val aItem = tierItem(tierId = aTierId, title = "The Matrix")
@@ -129,14 +131,87 @@ class TierDaoTest {
     }
 
     @Test
+    fun create_tier_list_with_default_tier_inserts_list_and_six_tiers() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+
+        val savedList = dao.getTierListById(listId)
+        val tiers = dao.getAllTiersByTierListId(listId)
+
+        assertTrue(listId > 0)
+        assertEquals("Films", savedList?.title)
+        assertEquals(6, tiers.size)
+        assertTrue(tiers.all { it.tierListId == listId })
+    }
+
+    @Test
+    fun create_tier_list_with_default_tier_orders_tiers_s_to_d_then_pool() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+
+        val tiers = dao.getAllTiersByTierListId(listId)
+
+        assertEquals(listOf("S", "A", "B", "C", "D", "Unranked"), tiers.map { it.label })
+    }
+
+    @Test
+    fun create_tier_list_with_default_tier_marks_exactly_one_pool_tier() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+
+        val tiers = dao.getAllTiersByTierListId(listId)
+        val poolTiers = tiers.filter { it.isPool }
+
+        assertEquals(1, poolTiers.size)
+        assertEquals("Unranked", poolTiers.single().label)
+    }
+
+    @Test
+    fun add_movie_to_pool_puts_first_item_at_position_zero() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val poolTierId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
+
+        dao.addMovieToPool(
+            tierListId = listId,
+            title = "Interstellar",
+            imageUrl = "https://example.com/interstellar.jpg",
+        )
+
+        val poolItem = dao.getAllTierItemsByTierId(poolTierId).single()
+        assertEquals("Interstellar", poolItem.title)
+        assertEquals("https://example.com/interstellar.jpg", poolItem.imageUrl)
+        assertEquals(0, poolItem.position)
+    }
+
+    @Test
+    fun add_movie_to_pool_appends_items_with_increasing_positions() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val poolTierId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
+
+        dao.addMovieToPool(tierListId = listId, title = "Interstellar", imageUrl = null)
+        dao.addMovieToPool(tierListId = listId, title = "Arrival", imageUrl = null)
+
+        val poolItems = dao.getAllTierItemsByTierId(poolTierId)
+        assertEquals(listOf("Interstellar", "Arrival"), poolItems.map { it.title })
+        assertEquals(listOf(0, 1), poolItems.map { it.position })
+    }
+
+    @Test
+    fun add_movie_to_pool_leaves_ranked_tiers_empty() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+
+        dao.addMovieToPool(tierListId = listId, title = "Interstellar", imageUrl = null)
+
+        val rankedTiers = dao.getAllTiersByTierListId(listId).filterNot { it.isPool }
+        assertTrue(rankedTiers.all { dao.getAllTierItemsByTierId(it.id).isEmpty() })
+    }
+
+    @Test
     fun get_tier_list_with_tiers_and_items_returns_full_graph() = runBlocking {
         val films = tierList()
         val filmsId = dao.insertTierList(films)
         val sTierId = dao.insertTier(
-            tier(tierListId = filmsId, position = 1, label = "S", color = "GOLD"),
+            tier(tierListId = filmsId, position = 1, label = "S", colorLight = "#B03A32", colorDark = "#F1948C"),
         )
         val aTierId = dao.insertTier(
-            tier(tierListId = filmsId, position = 2, label = "A", color = "GREEN"),
+            tier(tierListId = filmsId, position = 2, label = "A", colorLight = "#C06A25", colorDark = "#E9A867"),
         )
         val sItem = tierItem(tierId = sTierId, title = "The Shawshank Redemption")
         val aItem = tierItem(tierId = aTierId, title = "The Matrix")
@@ -163,12 +238,14 @@ class TierDaoTest {
         tierListId: Long,
         position: Int,
         label: String,
-        color: String,
+        colorLight: String,
+        colorDark: String,
     ): TierEntity = TierEntity(
         tierListId = tierListId,
         position = position,
         label = label,
-        color = color,
+        colorLight = colorLight,
+        colorDark = colorDark,
     )
 
     private fun tierItem(

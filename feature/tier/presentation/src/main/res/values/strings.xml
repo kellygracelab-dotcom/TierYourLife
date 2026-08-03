@@ -1,0 +1,49 @@
+<resources>
+    <string name="tier_lists_title">Your lists</string>
+    <string name="tier_lists_private">private</string>
+    <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <plurals name="tier_lists_count">
+        <item quantity="one">%d list</item>
+        <item quantity="other">%d lists</item>
+    </plurals>
+    <plurals name="tier_lists_rankings_count">
+        <item quantity="one">%d ranking</item>
+        <item quantity="other">%d rankings</item>
+    </plurals>
+    <plurals name="tier_lists_ranked_count">
+        <item quantity="one">%d ranked</item>
+        <item quantity="other">%d ranked</item>
+    </plurals>
+    <plurals name="tier_lists_in_pool_count">
+        <item quantity="one">%d in pool</item>
+        <item quantity="other">%d in pool</item>
+    </plurals>
+    <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · nothing ranked yet</string>
+    <string name="tier_lists_recent_changes">Recent changes</string>
+    <string name="tier_lists_status_sci_fi">3 changes this month · updated 2 days ago</string>
+    <string name="tier_lists_status_a24">Updated last week</string>
+    <string name="tier_lists_status_start_dragging">Start dragging to rank</string>
+    <string name="tier_lists_status_updated_recently">Updated recently</string>
+    <string name="tier_lists_change_blade_runner">Blade Runner 2049 moved A → S</string>
+    <string name="tier_lists_change_first_man">First Man placed in D</string>
+    <string name="tier_lists_change_sci_fi_june_12">Sci-fi films · 12 Jun</string>
+    <string name="tier_lists_change_sci_fi_june_9">Sci-fi films · 9 Jun</string>
+    <string name="tier_lists_content_description_navigation">Open navigation menu</string>
+    <string name="tier_lists_content_description_search">Search lists</string>
+    <string name="tier_lists_content_description_toggle_theme">Toggle light and dark theme</string>
+
+    <string name="tier_detail_add">Add</string>
+    <string name="tier_detail_content_description_back">Navigate back</string>
+    <string name="tier_detail_content_description_manual_add">Add item manually</string>
+    <string name="tier_detail_content_description_more">More options</string>
+    <plurals name="tier_detail_pool_unranked_count">
+        <item quantity="one">Pool · %d unranked</item>
+        <item quantity="other">Pool · %d unranked</item>
+    </plurals>
+    <string name="tier_detail_caption_s">Masterpiece</string>
+    <string name="tier_detail_caption_a">Great</string>
+    <string name="tier_detail_caption_b">Good</string>
+    <string name="tier_detail_caption_c">Watchable</string>
+    <string name="tier_detail_caption_d">No</string>
+</resources>
