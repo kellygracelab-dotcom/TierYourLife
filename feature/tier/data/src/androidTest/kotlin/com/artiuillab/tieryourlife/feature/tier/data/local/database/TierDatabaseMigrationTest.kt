@@ -118,4 +118,49 @@ class TierDatabaseMigrationTest {
             assertEquals("Masterpiece", it.getString(it.getColumnIndexOrThrow("caption")))
         }
     }
+
+    @Test
+    fun migrate3To4_preservesExistingRowsAndSetsWrapDisplayModeOnEveryList() {
+        helper.createDatabase(TEST_DB, 3).apply {
+            execSQL("INSERT INTO tier_lists (id, title) VALUES (1, 'Films'), (2, 'Games')")
+            execSQL(
+                "INSERT INTO tiers (id, tierListId, position, label, caption, colorLight, colorDark, isPool) VALUES " +
+                    "(1, 1, 0, 'S', 'Masterpiece', '#B03A32', '#F1948C', 0)," +
+                    "(2, 1, 1, 'Unranked', NULL, '#DAD7E0', '#46464F', 1)",
+            )
+            execSQL(
+                "INSERT INTO tier_items (id, tierId, position, title, imageUrl) VALUES " +
+                    "(1, 1, 0, 'Interstellar', NULL)",
+            )
+            close()
+        }
+
+        val migrated = helper.runMigrationsAndValidate(TEST_DB, 4, true, MIGRATION_3_4)
+
+        val listCursor = migrated.query("SELECT title, displayMode FROM active_tier_lists ORDER BY id ASC")
+        listCursor.use {
+            assertEquals(2, it.count)
+            val rows = generateSequence { if (it.moveToNext()) it else null }
+                .map { row ->
+                    row.getString(row.getColumnIndexOrThrow("title")) to
+                        row.getString(row.getColumnIndexOrThrow("displayMode"))
+                }
+                .toList()
+            assertEquals(listOf("Films" to "WRAP", "Games" to "WRAP"), rows)
+        }
+
+        val itemCursor = migrated.query("SELECT title FROM active_tier_items WHERE id = 1")
+        itemCursor.use {
+            assertEquals(1, it.count)
+            it.moveToFirst()
+            assertEquals("Interstellar", it.getString(it.getColumnIndexOrThrow("title")))
+        }
+
+        val tierCursor = migrated.query("SELECT caption FROM tiers WHERE id = 1")
+        tierCursor.use {
+            assertEquals(1, it.count)
+            it.moveToFirst()
+            assertEquals("Masterpiece", it.getString(it.getColumnIndexOrThrow("caption")))
+        }
+    }
 }

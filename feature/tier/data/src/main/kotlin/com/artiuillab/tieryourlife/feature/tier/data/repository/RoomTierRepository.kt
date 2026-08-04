@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.repository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import javax.inject.Inject
@@ -24,6 +25,10 @@ class RoomTierRepository internal constructor(
 
     override suspend fun createTierList(title: String): Long {
         return dao.createTierListWithDefaultTier(title = title)
+    }
+
+    override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) {
+        dao.updateTierListDisplayMode(id, displayMode.name)
     }
 
     override suspend fun addMovieToPool(

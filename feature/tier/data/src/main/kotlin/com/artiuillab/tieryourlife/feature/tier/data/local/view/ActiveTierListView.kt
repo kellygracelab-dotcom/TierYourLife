@@ -12,4 +12,5 @@ data class ActiveTierListView(
     val id: Long,
     val title: String,
     val deletedAt: Long?,
+    val displayMode: String,
 )

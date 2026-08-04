@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.repository
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 
 interface TierRepository {
@@ -10,6 +11,8 @@ interface TierRepository {
     suspend fun getAllTierLists(): List<TierList>
 
     suspend fun createTierList(title: String): Long
+
+    suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode)
 
     suspend fun addMovieToPool(tierListId: Long, title: String, imageUrl: String?): Long
 

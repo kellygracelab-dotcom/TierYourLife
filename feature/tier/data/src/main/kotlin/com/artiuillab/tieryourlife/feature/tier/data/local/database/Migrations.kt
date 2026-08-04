@@ -26,3 +26,14 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         db.execSQL("CREATE VIEW `active_tier_items` AS SELECT * FROM tier_items WHERE deletedAt IS NULL")
     }
 }
+
+// Every existing list keeps rendering exactly as it does today: WRAP is both the new
+// column's default and the value already-live lists get backfilled to. active_tier_lists
+// is defined as `SELECT * FROM tier_lists`, and SQLite re-resolves that `*` against the
+// table's current columns on every read, so the view exposes displayMode automatically —
+// its own CREATE VIEW text does not need to change.
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN displayMode TEXT NOT NULL DEFAULT 'WRAP'")
+    }
+}
