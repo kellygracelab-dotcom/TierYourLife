@@ -44,6 +44,7 @@ internal fun PoolPanel(
     onAddClick: () -> Unit,
     dragController: TierDragController,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
+    onDeleteItem: (itemId: Long) -> Unit,
     onDoubleTap: (itemId: Long) -> Unit = {},
 ) {
     val listState = rememberLazyListState()
@@ -120,6 +121,7 @@ internal fun PoolPanel(
                     height = 76.dp,
                     dragController = dragController,
                     onMoveItem = onMoveItem,
+                    onDeleteItem = onDeleteItem,
                     onDoubleTap = onDoubleTap,
                 )
             }

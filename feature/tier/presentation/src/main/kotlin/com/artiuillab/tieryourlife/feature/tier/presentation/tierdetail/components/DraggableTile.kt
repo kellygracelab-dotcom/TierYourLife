@@ -49,6 +49,7 @@ internal fun DraggableTile(
     height: Dp,
     dragController: TierDragController,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
+    onDeleteItem: (itemId: Long) -> Unit,
     modifier: Modifier = Modifier,
     onPositioned: (Rect) -> Unit = {},
     onDoubleTap: (itemId: Long) -> Unit = {},
@@ -88,8 +89,10 @@ internal fun DraggableTile(
                             dragController.updateDrag(dragAmount)
                         },
                         onDragEnd = {
-                            dragController.endDrag()?.let { drop ->
-                                onMoveItem(drop.itemId, drop.toTierId, drop.toPosition)
+                            when (val outcome = dragController.endDrag()) {
+                                is DropOutcome.MoveTo -> onMoveItem(outcome.itemId, outcome.toTierId, outcome.toPosition)
+                                is DropOutcome.Delete -> onDeleteItem(outcome.itemId)
+                                null -> Unit
                             }
                         },
                         onDragCancel = { dragController.cancelDrag() },

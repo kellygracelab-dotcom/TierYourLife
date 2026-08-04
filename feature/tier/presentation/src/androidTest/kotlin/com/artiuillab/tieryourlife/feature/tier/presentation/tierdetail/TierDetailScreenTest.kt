@@ -357,6 +357,304 @@ class TierDetailScreenTest {
         composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET).assertDoesNotExist()
     }
 
+    @Test
+    fun trashTarget_atRest_isNotOnScreen() {
+        setScreen(TierDetailUiState.Success(defaultList()))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.TRASH_TARGET).assertDoesNotExist()
+    }
+
+    @Test
+    fun trashTarget_whileDraggingFromRankedTier_appears() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        beginDrag(TierDetailTestTags.tile(100))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.TRASH_TARGET).assertIsDisplayed()
+
+        cancelDrag(TierDetailTestTags.tile(100))
+    }
+
+    @Test
+    fun trashTarget_whileDraggingFromPool_appears() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 6, label = "Pool", items = listOf(item(100, "Interstellar")), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        beginDrag(TierDetailTestTags.tile(100))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.TRASH_TARGET).assertIsDisplayed()
+
+        cancelDrag(TierDetailTestTags.tile(100))
+    }
+
+    @Test
+    fun dropInTrash_fromRankedTier_deletesItemExactlyOnce() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        val deleted = mutableListOf<Long>()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(
+            TierDetailUiState.Success(list),
+            onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) },
+            onDeleteItem = { deleted += it },
+        )
+
+        dragTileIntoTrash(TierDetailTestTags.tile(100))
+
+        composeRule.runOnIdle {
+            assertEquals(listOf(100L), deleted)
+            assertNull(moved)
+        }
+    }
+
+    @Test
+    fun dropInTrash_fromPool_deletesItemExactlyOnce() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 6, label = "Pool", items = listOf(item(100, "Interstellar")), isPool = true),
+        ).asTierList()
+        val deleted = mutableListOf<Long>()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(
+            TierDetailUiState.Success(list),
+            onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) },
+            onDeleteItem = { deleted += it },
+        )
+
+        dragTileIntoTrash(TierDetailTestTags.tile(100))
+
+        composeRule.runOnIdle {
+            assertEquals(listOf(100L), deleted)
+            assertNull(moved)
+        }
+    }
+
+    @Test
+    fun dropInRow_stillMovesNotDeletes() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 6, label = "Pool", items = listOf(item(100, "Interstellar")), isPool = true),
+        ).asTierList()
+        val deleted = mutableListOf<Long>()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(
+            TierDetailUiState.Success(list),
+            onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) },
+            onDeleteItem = { deleted += it },
+        )
+
+        dragTile(sourceTag = TierDetailTestTags.tile(100), targetTag = TierDetailTestTags.tierRow(1), horizontalBias = 0.1f)
+
+        composeRule.runOnIdle {
+            assertEquals(Triple(100L, 1L, 0), moved)
+            assertTrue(deleted.isEmpty())
+        }
+    }
+
+    @Test
+    fun dropOutsideAllTargets_invokesNeitherMoveNorDelete() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(500, "Enemy"))),
+        ).asTierList()
+        val deleted = mutableListOf<Long>()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(
+            TierDetailUiState.Success(list),
+            onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) },
+            onDeleteItem = { deleted += it },
+        )
+
+        // The top bar sits above every tier row, the pool panel, and the trash, so it's never a valid drop target.
+        dragTileToRoot(sourceTag = TierDetailTestTags.tile(500), rootTarget = Offset(20f, 20f))
+
+        composeRule.runOnIdle {
+            assertNull(moved)
+            assertTrue(deleted.isEmpty())
+        }
+    }
+
+    @Test
+    fun dragCancelled_trashDisappears() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        beginDrag(TierDetailTestTags.tile(100))
+        composeRule.onNodeWithTag(TierDetailTestTags.TRASH_TARGET).assertIsDisplayed()
+
+        cancelDrag(TierDetailTestTags.tile(100))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.TRASH_TARGET).assertDoesNotExist()
+    }
+
+    @Test
+    fun dropInTrash_showsDeletedMessage() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        dragTileIntoTrash(TierDetailTestTags.tile(100))
+
+        composeRule.onNodeWithText("Interstellar moved to the trash").assertIsDisplayed()
+    }
+
+    @Test
+    fun deletedItemSnackbar_doesNotOverlapPoolPanel() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        dragTileIntoTrash(TierDetailTestTags.tile(100))
+
+        val snackbarBounds = composeRule.onNodeWithTag(TierDetailTestTags.DELETED_ITEM_SNACKBAR).fetchSemanticsNode().boundsInRoot
+        val poolBounds = composeRule.onNodeWithTag(TierDetailTestTags.POOL_PANEL).fetchSemanticsNode().boundsInRoot
+        val overlapsVertically = snackbarBounds.top < poolBounds.bottom && snackbarBounds.bottom > poolBounds.top
+        val overlapsHorizontally = snackbarBounds.left < poolBounds.right && snackbarBounds.right > poolBounds.left
+
+        assertTrue(
+            "snackbar $snackbarBounds must not overlap pool $poolBounds",
+            !(overlapsVertically && overlapsHorizontally),
+        )
+    }
+
+    @Test
+    fun dragWhileSnackbarVisible_stillCompletesTheMove() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 6, label = "Pool", items = listOf(item(100, "Interstellar"), item(200, "Arrival")), isPool = true),
+        ).asTierList()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
+
+        // Trigger the snackbar, then drag a different tile out of the pool — right where
+        // the message now floats — while it's still up.
+        dragTileIntoTrash(TierDetailTestTags.tile(100))
+        composeRule.onNodeWithTag(TierDetailTestTags.DELETED_ITEM_SNACKBAR).assertIsDisplayed()
+
+        dragTile(sourceTag = TierDetailTestTags.tile(200), targetTag = TierDetailTestTags.tierRow(1), horizontalBias = 0.1f)
+
+        composeRule.runOnIdle { assertEquals(Triple(200L, 1L, 0), moved) }
+    }
+
+    @Test
+    fun doubleTapWhileSnackbarVisible_stillOpensChooser() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 6, label = "Pool", items = listOf(item(100, "Interstellar"), item(200, "Arrival")), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        dragTileIntoTrash(TierDetailTestTags.tile(100))
+        composeRule.onNodeWithTag(TierDetailTestTags.DELETED_ITEM_SNACKBAR).assertIsDisplayed()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(200)).performTouchInput { doubleClick() }
+
+        composeRule.onNodeWithText("Move to a tier").assertIsDisplayed()
+    }
+
+    @Test
+    fun rapidSuccessiveDeletions_showOnlyLatestMessage_notQueued() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"), item(101, "Arrival"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        dragTileIntoTrash(TierDetailTestTags.tile(100))
+        composeRule.onNodeWithText("Interstellar moved to the trash").assertIsDisplayed()
+
+        dragTileIntoTrash(TierDetailTestTags.tile(101))
+
+        composeRule.onNodeWithText("Arrival moved to the trash").assertIsDisplayed()
+        composeRule.onNodeWithText("Interstellar moved to the trash").assertDoesNotExist()
+    }
+
+    @Test
+    fun undoAction_afterDropInTrash_restoresSameItem() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        val restored = mutableListOf<Long>()
+        setScreen(TierDetailUiState.Success(list), onRestoreItem = { restored += it })
+
+        dragTileIntoTrash(TierDetailTestTags.tile(100))
+        composeRule.onNodeWithText("Undo").performClick()
+
+        composeRule.runOnIdle { assertEquals(listOf(100L), restored) }
+    }
+
+    @Test
+    fun removeFromMoveSheet_showsSameMessageAndIsUndoable() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        val restored = mutableListOf<Long>()
+        setScreen(TierDetailUiState.Success(list), onRestoreItem = { restored += it })
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
+        composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET_REMOVE).performClick()
+
+        // Same message, same action, regardless of which of the two delete paths fired it.
+        composeRule.onNodeWithText("Interstellar moved to the trash").assertIsDisplayed()
+        composeRule.onNodeWithText("Undo").performClick()
+
+        composeRule.runOnIdle { assertEquals(listOf(100L), restored) }
+    }
+
+    @Test
+    fun deletedItem_withoutPressingUndo_staysDeleted() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        val restored = mutableListOf<Long>()
+        setScreen(TierDetailUiState.Success(list), onRestoreItem = { restored += it })
+
+        dragTileIntoTrash(TierDetailTestTags.tile(100))
+
+        composeRule.runOnIdle { assertTrue(restored.isEmpty()) }
+    }
+
+    @Test
+    fun trashTarget_doesNotOverlapPoolPanel() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        beginDrag(TierDetailTestTags.tile(100))
+
+        val trashBounds = composeRule.onNodeWithTag(TierDetailTestTags.TRASH_TARGET).fetchSemanticsNode().boundsInRoot
+        val poolBounds = composeRule.onNodeWithTag(TierDetailTestTags.POOL_PANEL).fetchSemanticsNode().boundsInRoot
+        val overlapsVertically = trashBounds.top < poolBounds.bottom && trashBounds.bottom > poolBounds.top
+        val overlapsHorizontally = trashBounds.left < poolBounds.right && trashBounds.right > poolBounds.left
+
+        assertTrue(
+            "trash $trashBounds must not overlap pool $poolBounds",
+            !(overlapsVertically && overlapsHorizontally),
+        )
+
+        cancelDrag(TierDetailTestTags.tile(100))
+    }
+
     // Line capacity depends on the test device's actual screen width, so this reads
     // the real rendered geometry instead of assuming how many items fit per line.
     private fun secondLineFirstItemId(items: List<TierItem>): Long {
@@ -402,6 +700,43 @@ class TierDetailScreenTest {
         composeRule.waitForIdle()
     }
 
+    // Starts a drag and leaves the pointer down, without picking a drop target yet. The
+    // trash only enters the tree once dragging starts, so its own bounds aren't known
+    // until after this — and after a recomposition, hence the separate performTouchInput
+    // call below rather than folding the nudge into a single block like dragTileToRoot.
+    private fun beginDrag(sourceTag: String) {
+        val sourceBounds = composeRule.onNodeWithTag(sourceTag).fetchSemanticsNode().boundsInRoot
+        val start = Offset(sourceBounds.width / 2f, sourceBounds.height / 2f)
+        composeRule.onNodeWithTag(sourceTag).performTouchInput {
+            down(start)
+            advanceEventTime(600)
+            moveTo(start + Offset(2f, 0f))
+            advanceEventTime(20)
+        }
+        composeRule.waitForIdle()
+    }
+
+    private fun cancelDrag(sourceTag: String) {
+        composeRule.onNodeWithTag(sourceTag).performTouchInput { cancel() }
+        composeRule.waitForIdle()
+    }
+
+    private fun dragTileIntoTrash(sourceTag: String) {
+        beginDrag(sourceTag)
+
+        val sourceBounds = composeRule.onNodeWithTag(sourceTag).fetchSemanticsNode().boundsInRoot
+        val trashBounds = composeRule.onNodeWithTag(TierDetailTestTags.TRASH_TARGET).fetchSemanticsNode().boundsInRoot
+        val trashCenterInRoot = Offset(trashBounds.left + trashBounds.width / 2f, trashBounds.top + trashBounds.height / 2f)
+        val end = trashCenterInRoot - sourceBounds.topLeft
+
+        composeRule.onNodeWithTag(sourceTag).performTouchInput {
+            moveTo(end)
+            advanceEventTime(20)
+            up()
+        }
+        composeRule.waitForIdle()
+    }
+
     private fun item(id: Long, title: String): TierItem = TierItem(id = id, title = title, imageUrl = null)
 
     private fun List<Tier>.asTierList(): TierList = TierList(id = 1, title = "Sci-fi films", tiers = this)
@@ -412,6 +747,7 @@ class TierDetailScreenTest {
         onAddClick: () -> Unit = {},
         onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
         onDeleteItem: (itemId: Long) -> Unit = {},
+        onRestoreItem: (itemId: Long) -> Unit = {},
     ) {
         composeRule.setContent {
             TierYourLifeTheme {
@@ -421,6 +757,7 @@ class TierDetailScreenTest {
                     onAddClick = onAddClick,
                     onMoveItem = onMoveItem,
                     onDeleteItem = onDeleteItem,
+                    onRestoreItem = onRestoreItem,
                 )
             }
         }

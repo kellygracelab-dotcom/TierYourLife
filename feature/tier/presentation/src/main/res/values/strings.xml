@@ -48,4 +48,9 @@
     <string name="tier_detail_move_sheet_remove_subtitle">Goes to the trash</string>
     <string name="tier_detail_move_sheet_pool_title">Back to the pool</string>
     <string name="tier_detail_move_sheet_pool_subtitle">Unranked, stays in the list</string>
+
+    <string name="tier_detail_trash_target_label">Remove</string>
+
+    <string name="tier_detail_item_moved_to_trash">%1$s moved to the trash</string>
+    <string name="tier_detail_snackbar_undo">Undo</string>
 </resources>

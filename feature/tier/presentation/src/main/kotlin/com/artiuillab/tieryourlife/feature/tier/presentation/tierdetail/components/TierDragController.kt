@@ -19,7 +19,17 @@ internal data class DragPayload(
     val height: Dp,
 )
 
-internal data class DropTarget(val itemId: Long, val toTierId: Long, val toPosition: Int)
+// What a tile can be dropped onto. A tier (ranked row or pool, both addressed by
+// their tier id) or the trash — one registry, one hover computation, for every kind.
+internal sealed interface DragTarget {
+    data class Tier(val tierId: Long) : DragTarget
+    data object Trash : DragTarget
+}
+
+internal sealed interface DropOutcome {
+    data class MoveTo(val itemId: Long, val toTierId: Long, val toPosition: Int) : DropOutcome
+    data class Delete(val itemId: Long) : DropOutcome
+}
 
 private data class ItemsRowInfo(
     val bounds: Rect? = null,
@@ -37,12 +47,14 @@ internal class TierDragController {
         private set
     var pointerPositionInRoot by mutableStateOf(Offset.Zero)
         private set
-    var hoveredTierId by mutableStateOf<Long?>(null)
+    var hoveredTarget by mutableStateOf<DragTarget?>(null)
         private set
 
     val isDragging: Boolean get() = draggedPayload != null
+    val hoveredTierId: Long? get() = (hoveredTarget as? DragTarget.Tier)?.tierId
+    val isHoveringTrash: Boolean get() = hoveredTarget is DragTarget.Trash
 
-    private val rowBounds = mutableStateMapOf<Long, Rect>()
+    private val rowBounds = mutableStateMapOf<DragTarget, Rect>()
 
     // Pool only — it stays a single scrolling LazyRow, so its own layout state answers "what's here".
     private val itemsRowInfo = mutableStateMapOf<Long, ItemsRowInfo>()
@@ -51,8 +63,16 @@ internal class TierDragController {
     private val tileBounds = mutableStateMapOf<Long, TileRecord>()
 
     fun registerRowBounds(tierId: Long, bounds: Rect) {
-        rowBounds[tierId] = bounds
+        rowBounds[DragTarget.Tier(tierId)] = bounds
     }
+
+    fun registerTrashBounds(bounds: Rect) {
+        rowBounds[DragTarget.Trash] = bounds
+    }
+
+    // So the trash can anchor itself above a tier's actual measured position
+    // (already inset-aware, since that tier registered it) instead of a guess.
+    fun tierBounds(tierId: Long): Rect? = rowBounds[DragTarget.Tier(tierId)]
 
     fun registerItemsRowBounds(tierId: Long, bounds: Rect) {
         itemsRowInfo[tierId] = (itemsRowInfo[tierId] ?: ItemsRowInfo()).copy(bounds = bounds)
@@ -78,8 +98,8 @@ internal class TierDragController {
         recomputeHover()
     }
 
-    // null means the pointer was released outside any row.
-    fun endDrag(): DropTarget? {
+    // null means the pointer was released outside every target.
+    fun endDrag(): DropOutcome? {
         val drop = computeDrop()
         clear()
         return drop
@@ -91,18 +111,30 @@ internal class TierDragController {
 
     private fun clear() {
         draggedPayload = null
-        hoveredTierId = null
+        hoveredTarget = null
     }
 
     private fun recomputeHover() {
         val position = pointerPositionInRoot
-        hoveredTierId = rowBounds.entries.firstOrNull { (_, rect) -> rect.contains(position) }?.key
+        // The trash floats above the pool, so their rects can overlap; it must win
+        // outright rather than being picked by map iteration order — one target, not two.
+        hoveredTarget = if (rowBounds[DragTarget.Trash]?.contains(position) == true) {
+            DragTarget.Trash
+        } else {
+            rowBounds.entries.firstOrNull { (target, rect) -> target is DragTarget.Tier && rect.contains(position) }?.key
+        }
     }
 
-    private fun computeDrop(): DropTarget? {
+    private fun computeDrop(): DropOutcome? {
         val payload = draggedPayload ?: return null
-        val tierId = hoveredTierId ?: return null
+        return when (val target = hoveredTarget) {
+            is DragTarget.Trash -> DropOutcome.Delete(payload.itemId)
+            is DragTarget.Tier -> computeMove(payload, target.tierId)
+            null -> null
+        }
+    }
 
+    private fun computeMove(payload: DragPayload, tierId: Long): DropOutcome.MoveTo? {
         val pool = itemsRowInfo[tierId]
         val index = if (pool != null) {
             val bounds = pool.bounds ?: return null
@@ -114,7 +146,7 @@ internal class TierDragController {
             val excludedIndex = tileBounds[payload.itemId]?.takeIf { it.tierId == tierId }?.index
             insertionIndexInGrid(tiles, pointerPositionInRoot, excludedIndex)
         }
-        return DropTarget(payload.itemId, tierId, index)
+        return DropOutcome.MoveTo(payload.itemId, tierId, index)
     }
 }
 

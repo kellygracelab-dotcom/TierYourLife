@@ -49,6 +49,7 @@ internal fun TierRow(
     tier: Tier,
     dragController: TierDragController,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
+    onDeleteItem: (itemId: Long) -> Unit,
     onDoubleTap: (itemId: Long) -> Unit = {},
 ) {
     val colors = tierRowColors(tier.colorLight, tier.colorDark)
@@ -115,6 +116,7 @@ internal fun TierRow(
                     height = 64.dp,
                     dragController = dragController,
                     onMoveItem = onMoveItem,
+                    onDeleteItem = onDeleteItem,
                     onPositioned = { bounds -> dragController.registerTileBounds(tier.id, item.id, index, bounds) },
                     onDoubleTap = onDoubleTap,
                 )
