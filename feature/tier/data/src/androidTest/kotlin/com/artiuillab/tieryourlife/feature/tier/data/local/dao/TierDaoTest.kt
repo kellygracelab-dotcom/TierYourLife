@@ -566,6 +566,15 @@ class TierDaoTest {
     }
 
     @Test
+    fun update_tier_list_title_persists_and_is_read_back() = runBlocking {
+        val id = dao.insertTierList(tierList(title = "Films"))
+
+        dao.updateTierListTitle(id, "Sci-fi films")
+
+        assertEquals("Sci-fi films", requireNotNull(dao.getTierListById(id)).title)
+    }
+
+    @Test
     fun tier_list_with_tiers_carries_the_lists_own_display_mode() = runBlocking {
         val filmsId = dao.insertTierList(tierList(title = "Films"))
         dao.updateTierListDisplayMode(filmsId, "FLAT_RANKED")

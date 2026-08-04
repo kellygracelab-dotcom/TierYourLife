@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +36,7 @@ import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ROW_HOVER_TINT_ALPHA
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.dashedBorder
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.rowTintFor
@@ -47,6 +50,7 @@ private val MIN_TIER_ROW_HEIGHT = 84.dp
 @Composable
 internal fun TierRow(
     tier: Tier,
+    displayMode: TierListDisplayMode,
     dragController: TierDragController,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
     onDeleteItem: (itemId: Long) -> Unit,
@@ -57,10 +61,20 @@ internal fun TierRow(
     val surface = MaterialTheme.colorScheme.surface
     val rowBackground = if (isHovered) rowTintFor(colors.band, surface, ROW_HOVER_TINT_ALPHA) else colors.rowTint
 
+    // A horizontally-scrolling child has unbounded intrinsic width, which IntrinsicSize.Min
+    // can't resolve cleanly — its height is already fixed, so it doesn't need an intrinsic
+    // pass at all; only the wrapping FlowRow (whose height depends on how much it wraps)
+    // still needs one to let the label column stretch to match it.
+    val rowHeightModifier = if (displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
+        Modifier.height(MIN_TIER_ROW_HEIGHT)
+    } else {
+        Modifier.height(IntrinsicSize.Min)
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(IntrinsicSize.Min)
+            .then(rowHeightModifier)
             .clip(RoundedCornerShape(12.dp))
             .onGloballyPositioned { coordinates -> dragController.registerRowBounds(tier.id, coordinates.boundsInRoot()) }
             .testTag(TierDetailTestTags.tierRow(tier.id))
@@ -99,27 +113,58 @@ internal fun TierRow(
             }
         }
 
-        FlowRow(
-            modifier = Modifier
-                .weight(1f)
-                .heightIn(min = MIN_TIER_ROW_HEIGHT)
-                .padding(10.dp)
-                .testTag(TierDetailTestTags.tierItems(tier.id)),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            tier.items.forEachIndexed { index, item ->
-                DraggableTile(
-                    item = item,
-                    sourceTierId = tier.id,
-                    width = 44.dp,
-                    height = 64.dp,
-                    dragController = dragController,
-                    onMoveItem = onMoveItem,
-                    onDeleteItem = onDeleteItem,
-                    onPositioned = { bounds -> dragController.registerTileBounds(tier.id, item.id, index, bounds) },
-                    onDoubleTap = onDoubleTap,
-                )
+        // HORIZONTAL_SCROLL is the only mode that changes this row: everything else about
+        // it (label column, tile size, spacing, padding, drag/double-tap wiring) is the
+        // same regardless of mode, only the items container differs — a single
+        // non-wrapping, horizontally scrollable line instead of one that wraps and grows
+        // taller. FLAT_RANKED isn't drawn yet, so it falls back to the wrap behaviour too.
+        if (displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(MIN_TIER_ROW_HEIGHT)
+                    .horizontalScroll(rememberScrollState())
+                    .padding(10.dp)
+                    .testTag(TierDetailTestTags.tierItems(tier.id)),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                tier.items.forEachIndexed { index, item ->
+                    DraggableTile(
+                        item = item,
+                        sourceTierId = tier.id,
+                        width = 44.dp,
+                        height = 64.dp,
+                        dragController = dragController,
+                        onMoveItem = onMoveItem,
+                        onDeleteItem = onDeleteItem,
+                        onPositioned = { bounds -> dragController.registerTileBounds(tier.id, item.id, index, bounds) },
+                        onDoubleTap = onDoubleTap,
+                    )
+                }
+            }
+        } else {
+            FlowRow(
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = MIN_TIER_ROW_HEIGHT)
+                    .padding(10.dp)
+                    .testTag(TierDetailTestTags.tierItems(tier.id)),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                tier.items.forEachIndexed { index, item ->
+                    DraggableTile(
+                        item = item,
+                        sourceTierId = tier.id,
+                        width = 44.dp,
+                        height = 64.dp,
+                        dragController = dragController,
+                        onMoveItem = onMoveItem,
+                        onDeleteItem = onDeleteItem,
+                        onPositioned = { bounds -> dragController.registerTileBounds(tier.id, item.id, index, bounds) },
+                        onDoubleTap = onDoubleTap,
+                    )
+                }
             }
         }
     }
