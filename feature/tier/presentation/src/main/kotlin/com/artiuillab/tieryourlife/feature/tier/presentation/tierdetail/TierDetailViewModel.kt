@@ -67,4 +67,11 @@ class TierDetailViewModel @Inject constructor(
             loadTierList()
         }
     }
+
+    fun addTier(label: String, caption: String?, colorLight: String, colorDark: String) {
+        viewModelScope.launch {
+            repository.addTier(tierListId, label, caption, colorLight, colorDark)
+            loadTierList()
+        }
+    }
 }

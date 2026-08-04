@@ -53,4 +53,27 @@
 
     <string name="tier_detail_item_moved_to_trash">%1$s moved to the trash</string>
     <string name="tier_detail_snackbar_undo">Undo</string>
+
+    <string name="tier_list_settings_title">List settings</string>
+    <string name="tier_list_settings_new_tier_title">New tier</string>
+    <plurals name="tier_list_settings_tier_count">
+        <item quantity="one">%d tier</item>
+        <item quantity="other">%d tiers</item>
+    </plurals>
+
+    <string name="tier_editor_title">Edit tier</string>
+    <string name="tier_editor_label_field">Label</string>
+    <string name="tier_editor_caption_field">Caption</string>
+    <string name="tier_editor_color_section_title">Colour</string>
+    <string name="tier_editor_color_section_caption">Custom · set the light and dark colour separately</string>
+    <string name="tier_editor_theme_light">Light</string>
+    <string name="tier_editor_theme_dark">Dark</string>
+    <string name="tier_editor_hue_label">Hue</string>
+    <string name="tier_editor_saturation_label">Saturation</string>
+    <string name="tier_editor_lightness_label">Lightness</string>
+    <string name="tier_editor_hex_label">Hex</string>
+    <string name="tier_editor_cancel">Cancel</string>
+    <string name="tier_editor_save">Save</string>
+    <string name="tier_editor_preset_color_description">Preset color %1$d</string>
+    <string name="tier_editor_custom_color_description">Custom color</string>
 </resources>
