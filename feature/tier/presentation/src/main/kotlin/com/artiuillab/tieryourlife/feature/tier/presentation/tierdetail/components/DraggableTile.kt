@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.compone
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -37,7 +38,7 @@ import kotlin.math.roundToInt
 
 // Shorter than the system long-press timeout (~500ms, tuned for context menus).
 // A scroll swipe still wins over this via touch-slop consumption, not by racing it.
-private const val DRAG_LONG_PRESS_TIMEOUT_MILLIS = 200L
+private const val DRAG_LONG_PRESS_TIMEOUT_MILLIS = 150L
 
 // Shared by pool and ranked-tier tiles so their drag behaviour can't drift apart.
 @Composable
@@ -50,6 +51,7 @@ internal fun DraggableTile(
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
     modifier: Modifier = Modifier,
     onPositioned: (Rect) -> Unit = {},
+    onDoubleTap: (itemId: Long) -> Unit = {},
 ) {
     var rootPosition by remember { mutableStateOf(Offset.Zero) }
     val isDragging = dragController.draggedPayload?.itemId == item.id
@@ -92,6 +94,15 @@ internal fun DraggableTile(
                         },
                         onDragCancel = { dragController.cancelDrag() },
                     )
+                }
+                // Independent recognizer, not merged into the gesture above: a plain tap
+                // that's released quickly never reaches onDragStart (awaitLongPressOrCancellation
+                // resolves to null without consuming anything), so this never races the drag for
+                // a real double-tap. A genuine long-press instead gets claimed by the drag
+                // detector, whose consumed move events fall outside detectTapGestures' own
+                // up-without-movement check, so the two can't both fire for the same gesture.
+                .pointerInput(item.id) {
+                    detectTapGestures(onDoubleTap = { onDoubleTap(item.id) })
                 },
         ) {
             if (isDragging) {

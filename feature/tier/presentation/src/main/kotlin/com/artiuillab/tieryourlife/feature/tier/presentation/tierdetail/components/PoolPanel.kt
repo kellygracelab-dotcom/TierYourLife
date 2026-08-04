@@ -44,6 +44,7 @@ internal fun PoolPanel(
     onAddClick: () -> Unit,
     dragController: TierDragController,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
+    onDoubleTap: (itemId: Long) -> Unit = {},
 ) {
     val listState = rememberLazyListState()
     val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
@@ -119,6 +120,7 @@ internal fun PoolPanel(
                     height = 76.dp,
                     dragController = dragController,
                     onMoveItem = onMoveItem,
+                    onDoubleTap = onDoubleTap,
                 )
             }
         }

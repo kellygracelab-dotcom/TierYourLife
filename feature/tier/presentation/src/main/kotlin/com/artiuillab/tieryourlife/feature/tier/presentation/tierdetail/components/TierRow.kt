@@ -49,6 +49,7 @@ internal fun TierRow(
     tier: Tier,
     dragController: TierDragController,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
+    onDoubleTap: (itemId: Long) -> Unit = {},
 ) {
     val colors = tierRowColors(tier.colorLight, tier.colorDark)
     val isHovered = dragController.isDragging && dragController.hoveredTierId == tier.id
@@ -115,6 +116,7 @@ internal fun TierRow(
                     dragController = dragController,
                     onMoveItem = onMoveItem,
                     onPositioned = { bounds -> dragController.registerTileBounds(tier.id, item.id, index, bounds) },
+                    onDoubleTap = onDoubleTap,
                 )
             }
         }

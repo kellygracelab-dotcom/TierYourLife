@@ -41,4 +41,11 @@
         <item quantity="one">Pool · %d unranked</item>
         <item quantity="other">Pool · %d unranked</item>
     </plurals>
+
+    <string name="tier_detail_move_sheet_subtitle">Move to a tier</string>
+    <string name="tier_detail_move_sheet_current_tier">Currently here</string>
+    <string name="tier_detail_move_sheet_remove_title">Remove from list</string>
+    <string name="tier_detail_move_sheet_remove_subtitle">Goes to the trash</string>
+    <string name="tier_detail_move_sheet_pool_title">Back to the pool</string>
+    <string name="tier_detail_move_sheet_pool_subtitle">Unranked, stays in the list</string>
 </resources>
