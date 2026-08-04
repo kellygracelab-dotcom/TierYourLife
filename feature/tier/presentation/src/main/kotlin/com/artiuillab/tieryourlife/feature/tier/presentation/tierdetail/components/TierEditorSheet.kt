@@ -37,19 +37,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
+// One sheet, two modes: passing initialTier is the only difference between adding a
+// new tier and editing an existing one — the fields it opens with, not a second sheet
+// or a branch on what the title says. The title reads "Edit tier" either way (that's
+// the mock's own text for this sheet, from before this task, and it already fits
+// editing a tier better than it ever fit adding one — no separate string needed since
+// the two modes don't actually need different words here).
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TierEditorSheet(
+    initialTier: Tier? = null,
     onDismiss: () -> Unit,
     onSave: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
 ) {
-    var label by rememberSaveable { mutableStateOf("") }
-    var caption by rememberSaveable { mutableStateOf("") }
-    var colorSelection by remember { mutableStateOf(defaultTierColorSelection()) }
+    var label by rememberSaveable { mutableStateOf(initialTier?.label ?: "") }
+    var caption by rememberSaveable { mutableStateOf(initialTier?.caption ?: "") }
+    var colorSelection by remember {
+        mutableStateOf(
+            initialTier?.let { tierColorSelectionFor(it.colorLight, it.colorDark) } ?: defaultTierColorSelection(),
+        )
+    }
     val isLabelValid = label.isNotBlank()
 
     ModalBottomSheet(

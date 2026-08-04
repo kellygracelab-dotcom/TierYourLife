@@ -76,6 +76,18 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
+    // Renaming and recoloring are two separate repository calls — there's no combined
+    // one, and adding one would mean changing the domain layer, out of scope here — but
+    // one user action ("save this tier's edits") should still mean one reload, not two,
+    // so both run before loadTierList() rather than each triggering its own.
+    fun editTier(id: Long, label: String, caption: String?, colorLight: String, colorDark: String) {
+        viewModelScope.launch {
+            repository.renameTier(id, label, caption)
+            repository.updateTierColors(id, colorLight, colorDark)
+            loadTierList()
+        }
+    }
+
     fun setDisplayMode(displayMode: TierListDisplayMode) {
         viewModelScope.launch {
             repository.setTierListDisplayMode(tierListId, displayMode)
