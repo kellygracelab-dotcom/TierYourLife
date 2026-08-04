@@ -539,6 +539,46 @@ class TierDaoTest {
     }
 
     @Test
+    fun insert_tier_list_defaults_to_wrap_display_mode() = runBlocking {
+        val id = dao.insertTierList(tierList())
+
+        val saved = requireNotNull(dao.getTierListById(id))
+
+        assertEquals("WRAP", saved.displayMode)
+    }
+
+    @Test
+    fun create_tier_list_with_default_tier_defaults_to_wrap_display_mode() = runBlocking {
+        val id = dao.createTierListWithDefaultTier(title = "Films")
+
+        val saved = requireNotNull(dao.getTierListById(id))
+
+        assertEquals("WRAP", saved.displayMode)
+    }
+
+    @Test
+    fun update_tier_list_display_mode_persists_and_is_read_back() = runBlocking {
+        val id = dao.insertTierList(tierList())
+
+        dao.updateTierListDisplayMode(id, "HORIZONTAL_SCROLL")
+
+        assertEquals("HORIZONTAL_SCROLL", requireNotNull(dao.getTierListById(id)).displayMode)
+    }
+
+    @Test
+    fun tier_list_with_tiers_carries_the_lists_own_display_mode() = runBlocking {
+        val filmsId = dao.insertTierList(tierList(title = "Films"))
+        dao.updateTierListDisplayMode(filmsId, "FLAT_RANKED")
+        val gamesId = dao.insertTierList(tierList(title = "Games"))
+
+        val filmsGraph = requireNotNull(dao.getTierListWithTiers(filmsId))
+        val gamesGraph = requireNotNull(dao.getTierListWithTiers(gamesId))
+
+        assertEquals("FLAT_RANKED", filmsGraph.tierList.displayMode)
+        assertEquals("WRAP", gamesGraph.tierList.displayMode)
+    }
+
+    @Test
     fun marked_list_is_absent_from_overview_and_from_full_graph() = runBlocking {
         val filmsId = dao.insertTierList(tierList(title = "Films"))
         val gamesId = dao.insertTierList(tierList(title = "Games"))

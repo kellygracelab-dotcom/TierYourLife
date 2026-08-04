@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.database.TierDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -73,6 +74,50 @@ class RoomTierRepositoryTest {
         assertEquals(tierList.title, actual.title)
         assertEquals(tier.label, actual.tiers.single().label)
         assertEquals(item.title, actual.tiers.single().items.single().title)
+    }
+
+    @Test
+    fun create_tier_list_defaults_to_wrap_display_mode() = runBlocking {
+        val id = repository.createTierList("Films")
+
+        val actual = requireNotNull(repository.getTierListById(id))
+
+        assertEquals(TierListDisplayMode.WRAP, actual.displayMode)
+    }
+
+    @Test
+    fun set_tier_list_display_mode_persists_and_is_read_back_by_id_and_by_overview() = runBlocking {
+        val id = dao.insertTierList(TierListEntity(title = "Films"))
+
+        repository.setTierListDisplayMode(id, TierListDisplayMode.HORIZONTAL_SCROLL)
+
+        val byId = requireNotNull(repository.getTierListById(id))
+        val overview = repository.getAllTierLists().single { it.id == id }
+        assertEquals(TierListDisplayMode.HORIZONTAL_SCROLL, byId.displayMode)
+        assertEquals(TierListDisplayMode.HORIZONTAL_SCROLL, overview.displayMode)
+    }
+
+    @Test
+    fun get_all_tier_lists_carries_each_lists_own_display_mode() = runBlocking {
+        val filmsId = dao.insertTierList(TierListEntity(title = "Films"))
+        val gamesId = dao.insertTierList(TierListEntity(title = "Games"))
+        repository.setTierListDisplayMode(filmsId, TierListDisplayMode.FLAT_RANKED)
+
+        val lists = repository.getAllTierLists()
+
+        assertEquals(TierListDisplayMode.FLAT_RANKED, lists.single { it.id == filmsId }.displayMode)
+        assertEquals(TierListDisplayMode.WRAP, lists.single { it.id == gamesId }.displayMode)
+    }
+
+    @Test
+    fun unrecognized_stored_display_mode_reads_back_as_wrap_by_id_and_in_overview() = runBlocking {
+        val id = dao.insertTierList(TierListEntity(title = "Films", displayMode = "SOME_FUTURE_MODE"))
+
+        val byId = requireNotNull(repository.getTierListById(id))
+        val overview = repository.getAllTierLists().single { it.id == id }
+
+        assertEquals(TierListDisplayMode.WRAP, byId.displayMode)
+        assertEquals(TierListDisplayMode.WRAP, overview.displayMode)
     }
 
     @Test

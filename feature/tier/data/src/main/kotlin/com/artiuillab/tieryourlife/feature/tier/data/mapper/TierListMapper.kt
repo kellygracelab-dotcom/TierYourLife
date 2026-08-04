@@ -7,6 +7,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierWithItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 
 // Overview-only mapping — tiers are intentionally not loaded here (list screens
 // only need id/title; full tier/item graph is fetched by id via getTierListById).
@@ -14,6 +15,7 @@ internal fun TierListEntity.toDomain(): TierList = TierList(
     id = id,
     title = title,
     tiers = emptyList(),
+    displayMode = displayMode.toDisplayMode(),
 )
 
 internal fun TierListWithTiers.toDomain(): TierList = TierList(
@@ -22,7 +24,13 @@ internal fun TierListWithTiers.toDomain(): TierList = TierList(
     tiers = tiers
         .sortedBy { it.tier.position }
         .map { it.toDomain() },
+    displayMode = tierList.displayMode.toDisplayMode(),
 )
+
+// A value written by a future app version (a mode this build doesn't know about yet) or
+// any other corruption falls back to WRAP rather than failing the read.
+private fun String.toDisplayMode(): TierListDisplayMode =
+    TierListDisplayMode.entries.firstOrNull { it.name == this } ?: TierListDisplayMode.WRAP
 
 private fun TierWithItems.toDomain(): Tier = Tier(
     id = tier.id,
