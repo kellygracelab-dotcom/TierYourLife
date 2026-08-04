@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolMovieDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
@@ -44,6 +45,13 @@ class TierDetailViewModel @Inject constructor(
     fun addMovieToPool(title: String, imageUrl: String?) {
         viewModelScope.launch {
             repository.addMovieToPool(tierListId, title, imageUrl)
+            loadTierList()
+        }
+    }
+
+    fun addMoviesToPool(movies: List<PoolMovieDraft>) {
+        viewModelScope.launch {
+            repository.addMoviesToPool(tierListId, movies)
             loadTierList()
         }
     }

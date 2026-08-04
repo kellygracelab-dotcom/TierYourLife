@@ -25,7 +25,9 @@ either literally present in `.dc.html`, or literally written in the current
 repository code with an explicit source note.
 
 The full list of what's no longer in the design file is in section
-[9. Missing / evicted](#9-missing--evicted) at the end of this document.
+[9. Missing / evicted](#9-missing--evicted). A later addition, section
+[10. Search sheet](#10-search-sheet-turn-11--read-live-2026-08-05), is not
+part of the original turns-8–9 extraction — see its own note on that.
 
 ---
 
@@ -45,6 +47,9 @@ The full list of what's no longer in the design file is in section
 - Section 8 — open questions left for a decision.
 - Section 9 — what's evicted, and the list to use when re-requesting it from
   the design if it's ever needed.
+- Section 10 — the search sheet, read live from the design tool in a later
+  session, after this document's own turns-8–9 snapshot had already gone
+  stale on that exact point.
 
 ---
 
@@ -530,7 +535,9 @@ not guessed at:
 - **Turn 5 entirely** — editing the list title in the screen header
   (rest/edit states, cursor position, empty-name behaviour). This is
   exactly what derailed this session's original task and is why this
-  document exists.
+  document exists. **Stale as of 2026-08-05 — see the note at the top of
+  section 10.** Turn 5 was evicted on 2026-08-04; it wasn't gone a session
+  later. The window's contents move in both directions, not just forward.
 - **Turn 1** — judging by a line in 9a: «If the tier row is currently
   backed by an unordered set — and turn 1 never said either way» — turn 1
   apparently set the original schema/basic rules of the tier-list screen.
@@ -567,6 +574,159 @@ not guessed at:
 - **Official type-role names** (`headlineSmall`, `bodyLarge`, and so on —
   if the design ever had them under those names at all) — section 2 is
   assembled from actual usage, not from an official role registry.
+
+---
+
+## 10. Search sheet (turn 11 — read live, 2026-08-05)
+
+The task that produced the rest of this document assumed sections 11a and
+11d already existed in *this* file. They didn't — the rest of this document
+is a static snapshot of turns 8–9 taken on 2026-08-04; turn 11 didn't exist
+yet at that time. Turn 11 exists only in the live, continuously-evicting
+design file itself (`TierYourLife.dc.html`, same project). This section was
+read from there directly, live, via the `DesignSync` tool, on **2026-08-05**
+— not extracted into the turns-8–9 sweep above.
+
+While there, one claim in section 9 above turned out to be stale: it says
+*"Turn 5 entirely"* was evicted as of 2026-08-04. It wasn't, as of
+2026-08-05 — turn 5 (options 5a, 5g, 5i, 5k, 5m, 5n, 5o) was present, sitting
+alongside turns 9, 10 and 11 (turns 6–8 were the ones evicted by then). The
+window's contents change in both directions between sessions — new turns
+evict old ones, but which old ones, and whether a turn "gone" today is really
+gone, isn't something one extraction can answer for a later one. Re-check
+live rather than trusting a prior session's "missing" list at face value.
+
+Read live via `DesignSync` (`get_file`) from project `TierYourLife app UI
+designs` (`50b81681-3405-4a68-8015-cf5817e72484`), file
+`TierYourLife.dc.html` — 260,778 characters at read time. The tool's own
+response is capped at 256 KiB; the file exceeds that, so its content arrives
+as a saved local file rather than inline — read in full from there, not
+truncated. Options read: **11a** ("The sheet, field, rows and action bar —
+implementable from this text alone"), **11b** ("Searching, nothing found,
+and a failed request"), **11c** ("The copy change — 'films' to items, and
+which strings move"), **11d** ("Every value, measured off the mock — the
+numbers to build against"). All four describe the same screen from different
+angles — 11a is prose and rationale, 11d is the same content as hard numbers
+("nothing is redesigned... where 11a was vague, this is the value"), 11b
+covers the three states 5i's mockup never drew, 11c is the string diff. The
+drawn mockup itself is **5i**, confirmed present and unchanged; 11d is this
+document's transcription of its measurements, not a redrawing.
+
+### 10.1 Sheet container
+
+| Part | Light | Dark |
+|---|---|---|
+| Top edge | 76dp below the screen top; fills to the bottom | Same |
+| Corners | 28dp top corners only, 0 at the bottom | Same |
+| Fill | `#F5F2FA` (= `surfaceContainerHigh`) | `#2A2A31` (= `surfaceContainerHigh`) |
+| Elevation | `0 −8px 32px rgba(0,0,0,.28)` | Same |
+| Scrim | `rgba(0,0,0,.32)` | Same |
+| Own padding | **0.** The sheet has no horizontal padding of its own — every child sets its own inset, which is why the selected-row tint can reach the edge | Same |
+| Drag handle | 32×4dp, 2dp radius, centred, 6dp from the top, 8dp gap below. `#C7C5D0` | `#46464F` |
+
+### 10.2 Search field
+
+A filled, fully-rounded field — **not outlined**.
+
+| Part | Light | Dark |
+|---|---|---|
+| Height | 56dp | Same |
+| Corner radius | 28dp — fully rounded | Same |
+| Container fill | `#EFEDF4` (no single matching M3 role — light half matches `surfaceContainer`, dark half matches `surfaceContainerHigh`'s dark; treat as a mock-literal pair, same as the move-chooser's current-tier tint) | `#2A2A31` |
+| Margin around it | 12dp left/right, 0 above (the drag handle's 8dp gap serves), 8dp below | Same |
+| Leading control | 48×48dp icon button, 24dp `close` glyph, 4dp from the field's left edge. On-surface-variant `#46464F`. CD "Close search". Dismisses the whole sheet | `#C7C5D0` |
+| Query text | bodyLarge 16/24, on-surface `#1B1B21`, 12dp from the leading button. Caret primary `#4A5BAA` | `#E4E1E9`; caret `#BAC3FF` |
+| Placeholder | "Search TMDB" (`"Search %1$s"`, source name parameterised), outline colour `#77767F` | `#91909A` |
+| Trailing control | 48×48dp icon button, 24dp `cancel` glyph, **present only when the query is non-empty**. Same on-surface-variant colour. CD "Clear search". Clears the text and returns to the empty state — it does not close the sheet | `#C7C5D0` |
+| Triggering a search | **Debounced, 300ms after the last keystroke, minimum 2 characters. No submit button.** The keyboard's enter key is not required — pressing it just re-runs the current query immediately, bypassing the debounce. Each new query replaces the result list; **selections already made are kept** — search "villeneuve", pick two, search "kubrick", pick two more, confirm all four at once. This is why the selected count lives outside the list, not inside it. | — |
+
+### 10.3 Caption line
+
+Always present — including in the loading, empty and error states — because it states what the sheet is doing, not what it currently shows.
+
+- Copy: `"Results from %1$s · adding to %2$s pool"` → "Results from TMDB · adding to Sci-fi films pool". Both the source name and the list name are parameters.
+- Type: labelMedium 12/16, `#46464F` / `#C7C5D0`, with the **list name run in primary** (`#4A5BAA` / `#BAC3FF`) — the only coloured run in the sheet.
+- Spacing: 4dp under the field (12dp of clear space total, counting the field's own 8dp bottom margin), 8dp to the first result row, 20dp side padding — 4dp wider than a result row's 16dp, deliberately, so it reads as a caption and not as a row.
+
+### 10.4 Result row
+
+| Part | Value |
+|---|---|
+| Total height | **84dp = 10dp top + 64dp poster + 10dp bottom** |
+| Horizontal padding | 16dp both sides |
+| Poster | **44×64dp**, 6dp radius, `flex: none`. Missing artwork falls back to the title, centred, ellipsised, up to 2 lines |
+| Gap poster → text | 16dp |
+| Title | bodyLarge 16/22, on-surface. 1 line, ellipsis |
+| Secondary line | bodySmall 13/18, on-surface-variant, directly under the title. Holds **the release year, and the original title when it differs from the displayed one** — "2024" or "2010 · Des hommes et des dieux". Omitted entirely when there's no year and no differing original title (title then centres against the poster) |
+| Divider between rows | **None** — poster edges carry the rhythm |
+
+**Director dropped, corrected in 11a/11c:** the mockup (5i) shows "2024 · Denis Villeneuve", but a TMDB *search* response carries no crew — the director needs a `/credits` request per result, which means N extra calls on a screen whose entire premise is results appearing 300ms after the user stops typing. The secondary line now holds only what one search response already contains: year, and `original_title` when it disambiguates a remake or a same-year same-title collision. This matches the decision already made earlier in this session, from the other direction (found by reading the mapper, not the mock) — the mock and the code now agree for the same reason.
+
+### 10.5 Selection control
+
+| State | Light | Dark |
+|---|---|---|
+| What it is | An M3 checkbox — a **square**, not a radio, not a bare trailing check glyph | |
+| Size | **24×24dp, 4dp corner radius** | Same |
+| Position | 16dp from the row's trailing edge — the row's own padding, not a further inset | Same |
+| Unselected | 2dp border, outline colour, no fill | `#77767F` / `#91909A` |
+| Selected | Filled primary, no border, 18dp `check` glyph in on-primary | `#4A5BAA`/`#FFFFFF` · `#BAC3FF`/`#201F26` |
+| Hit target | The whole 84dp row toggles. The checkbox is not separately tappable | |
+
+### 10.6 A selected row, as a whole
+
+- Fill: **`#EDEBFA` light / `#2E2F45` dark** — the same tint already used for the current tier in the move-to-tier chooser (`MoveItemSheet.kt`) and for Home's selection mode.
+- Shape: **full width, edge to edge, no inset, no corner radius.** It is the row container's own background, spanning the sheet's whole width — it runs *under* the row's 16dp padding and touches both edges. Not a rounded pill or card sitting inside the row.
+- Why: a rounded inset shape would read as a card in a list of non-cards, and would fight the poster's own 6dp radius 16dp away.
+- Everything else in the row (title, secondary line, poster) keeps its colour — only the background and the checkbox differ. Both signals matter: the tint alone would read as "highlighted"; the *empty* checkbox on every other row is what makes the list read as a set of checkboxes rather than one oddly-tinted row.
+
+### 10.7 Bottom action bar
+
+| Part | Light | Dark |
+|---|---|---|
+| Height | **64dp = 12dp + 40dp button + 12dp** | Same |
+| Background | `#EFEDF4` — same fill as the search field, so field and bar bracket the list | `#2A2A31` |
+| Divider vs. elevation | **A 1dp top divider, no elevation, no shadow.** `#E4E1E9` (= `outlineVariant`) | `#46464F` (= `outlineVariant`) |
+| Padding | 12dp vertical, 16dp horizontal | Same |
+| Left: count | bodyMedium 14/20, on-surface-variant. "3 selected"; **"Nothing selected"** (not "0 selected") when empty | |
+| Right: button | Filled, 40dp tall, 100dp radius, 24dp horizontal padding, primary fill, labelLarge 14/20 on-primary | |
+| Button label, with a selection | Plural-aware: "Add 1 item" / "Add %1$d items" | |
+| Button label, empty selection | Plain **"Add"**, and the button is **disabled** — on-surface at 12% fill, on-surface at 38% label (M3's standard disabled treatment). Same geometry, same position — not hidden, so the target stays where the thumb expects it | |
+| Presence | **Always**, from the moment the sheet opens — loading, empty and failed states included. It does not slide in with the first selection, which would change the list's height under a finger that just tapped something | |
+
+**Pinned above the keyboard, and why the button was disappearing:** the bar sits directly on top of the IME and moves with it; it is opaque and does **not** overlay the list — the scrollable region ends exactly where the bar begins, so the last row is never covered and needs no bottom clearance. **This is the one screen in the app that does not use the standard 88dp snackbar-clearance pattern for its bottom content padding — the padding here is 0**, because the bar is real layout, not floating chrome sitting on top of the list.
+
+### 10.8 Confirming and dismissing
+
+- Confirming closes the sheet immediately; every selected item is created in the list's pool, unranked, in selection order. A snackbar on the tier-list screen underneath reports the count ("3 items added to the pool", plural-aware, standard 88dp placement) with **no Undo** — the items are visibly in the pool and removing one is a double-tap away.
+- `close`, the scrim, a downward drag, or system back all dismiss without adding anything; **selections are discarded**, there is no draft to return to.
+
+### 10.9 Loading, empty and error (11b — never drawn in 5i, new)
+
+The field, caption and action bar are present and unchanged in all three; only the list area between them swaps.
+
+- **While searching:** a 4dp indeterminate linear progress indicator, full sheet width, pinned directly under the field, above the caption line. Primary track on a primary-container trace.
+- **Nothing found:** title `"Nothing found for "%1$s""`, body `"Check the spelling, or add it by hand instead."`.
+- **Request failed:** title `"Couldn't reach %1$s"`, body `"Check your connection and try again."`.
+- Below 2 characters: `"Type at least two letters to search."`.
+
+### 10.10 Copy — "films" become "items" (11c)
+
+The app isn't a films app; TMDB is one source of several planned. Every user-facing string drops "film"; the word survives only as the source's own proper noun.
+
+| String | Was | Now |
+|---|---|---|
+| Add button | "Add 1 film" / "Add %1$d films" | "Add 1 item" / "Add %1$d items" |
+| Added snackbar | "1 film added to the pool" / "%1$d films added to the pool" | "1 item added to the pool" / "%1$d items added to the pool" |
+| Caption | "Results from TMDB · adding to %1$s pool" | "Results from %1$s · adding to %2$s pool" — source becomes a parameter |
+| Field hint | *(never specified)* | "Search TMDB" → "Search %1$s" |
+| Empty title | *(sheet had no empty state)* | "Nothing found for "%1$s"" |
+| Error title | *(sheet had no error state)* | "Couldn't reach %1$s" |
+| Result secondary line | "%1$s · %2$s" — year and director | "%1$s" — year alone, or "%1$s · %2$s" with the original title when it differs. No crew. |
+
+Unchanged, and why: `"%1$d selected"` / `"Nothing selected"` never named a type; `"Add"` (disabled label), `"Try again"`, `"Add by hand"`, `"Type at least two letters to search."`, `"Check the spelling, or add it by hand instead."`, `"Check your connection and try again."`, and the two selection content descriptions (`"%1$s, selected. Tap to remove."` / `"%1$s, not selected. Tap to add."`) are all already generic.
+
+**Status:** implemented in this session — sheet layout, search field, caption line, result row, selection control, selected-row tint, bottom bar and its keyboard pinning, and the "films" → "items" copy pass. **Not implemented:** the "Add by hand" action in the empty state (opens a manual-entry flow that does not exist yet — out of scope, same reason it was excluded from the multi-select task) and the two result-selection content descriptions (`cd_result_selected`/`cd_result_unselected`) — the row's selection semantics come from a plain toggle, not from per-row content-description text, and adding one without the other would be half a fix; noted as open rather than done partially. The "Try again" action **was** wired, since it costs nothing beyond calling the search that already exists.
 
 ---
 

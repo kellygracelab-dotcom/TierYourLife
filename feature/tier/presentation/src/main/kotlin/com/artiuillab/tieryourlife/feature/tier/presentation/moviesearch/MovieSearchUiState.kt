@@ -1,6 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.moviesearch
 
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.MovieSearchResult
 
 sealed interface MovieSearchUiState {
 
@@ -13,7 +13,7 @@ sealed interface MovieSearchUiState {
     ) : MovieSearchUiState
 
     data class Success(
-        val items: List<TierItem>,
+        val items: List<MovieSearchResult>,
     ) : MovieSearchUiState
 
     data class Error(

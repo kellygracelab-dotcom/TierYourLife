@@ -115,6 +115,15 @@ internal object TierDetailTestTags {
     const val TIER_EDITOR_CONTRAST_READOUT = "tier_detail_tier_editor_contrast_readout"
     const val TIER_EDITOR_PREVIEW_LIGHT = "tier_detail_tier_editor_preview_light"
     const val TIER_EDITOR_PREVIEW_DARK = "tier_detail_tier_editor_preview_dark"
+    const val MOVIE_SEARCH_FIELD = "tier_detail_movie_search_field"
+    const val MOVIE_SEARCH_CLOSE = "tier_detail_movie_search_close"
+    const val MOVIE_SEARCH_CLEAR = "tier_detail_movie_search_clear"
+    const val MOVIE_SEARCH_SELECTED_COUNT = "tier_detail_movie_search_selected_count"
+    const val MOVIE_SEARCH_CONFIRM = "tier_detail_movie_search_confirm"
+    const val MOVIE_SEARCH_TRY_AGAIN = "tier_detail_movie_search_try_again"
+    const val MOVIE_SEARCH_RESULTS_LIST = "tier_detail_movie_search_results_list"
+    const val MOVIE_SEARCH_BOTTOM_BAR = "tier_detail_movie_search_bottom_bar"
+    fun movieSearchResult(tmdbId: Long): String = "tier_detail_movie_search_result_$tmdbId"
     fun tierRow(tierId: Long): String = "tier_detail_row_$tierId"
     fun tierBand(tierId: Long): String = "tier_detail_band_$tierId"
     fun rankedRow(itemId: Long): String = "tier_detail_ranked_row_$itemId"
@@ -150,9 +159,10 @@ fun TierDetailScreen(
 
     if (addSheetVisible) {
         AddMovieSheet(
+            listTitle = (state as? TierDetailUiState.Success)?.list?.title.orEmpty(),
             onDismiss = { addSheetVisible = false },
-            onMovieSelected = { title, imageUrl ->
-                viewModel.addMovieToPool(title, imageUrl)
+            onMoviesConfirmed = { movies ->
+                viewModel.addMoviesToPool(movies)
                 addSheetVisible = false
             },
         )
