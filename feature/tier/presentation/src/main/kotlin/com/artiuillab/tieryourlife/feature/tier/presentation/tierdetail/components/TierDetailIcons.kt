@@ -89,3 +89,35 @@ internal fun DeleteFilledIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize)
     drawRoundRect(color, Offset(4f * scale, 6f * scale), Size(16f * scale, 2f * scale), CornerRadius(1f * scale))
     drawRoundRect(color, Offset(6f * scale, 8f * scale), Size(12f * scale, 12f * scale), CornerRadius(2f * scale))
 }
+
+@Composable
+internal fun ChevronRightIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.7f * scale
+    drawLine(color, Offset(9f * scale, 6f * scale), Offset(15f * scale, 12f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(15f * scale, 12f * scale), Offset(9f * scale, 18f * scale), stroke, StrokeCap.Round)
+}
+
+@Composable
+internal fun TuneIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val trackStroke = 1.3f * scale
+    val knobStroke = 1.8f * scale
+    drawLine(color, Offset(4f * scale, 6f * scale), Offset(20f * scale, 6f * scale), trackStroke, StrokeCap.Round)
+    drawLine(color, Offset(8f * scale, 3.5f * scale), Offset(8f * scale, 8.5f * scale), knobStroke, StrokeCap.Round)
+    drawLine(color, Offset(4f * scale, 12f * scale), Offset(20f * scale, 12f * scale), trackStroke, StrokeCap.Round)
+    drawLine(color, Offset(16f * scale, 9.5f * scale), Offset(16f * scale, 14.5f * scale), knobStroke, StrokeCap.Round)
+    drawLine(color, Offset(4f * scale, 18f * scale), Offset(20f * scale, 18f * scale), trackStroke, StrokeCap.Round)
+    drawLine(color, Offset(11f * scale, 15.5f * scale), Offset(11f * scale, 20.5f * scale), knobStroke, StrokeCap.Round)
+}
+
+@Composable
+internal fun ContrastIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    drawArc(
+        color,
+        startAngle = -90f,
+        sweepAngle = 180f,
+        useCenter = true,
+        topLeft = Offset(3f * scale, 3f * scale),
+        size = Size(18f * scale, 18f * scale),
+    )
+    drawCircle(color, radius = 9f * scale, center = Offset(12f * scale, 12f * scale), style = Stroke(1.5f * scale))
+}

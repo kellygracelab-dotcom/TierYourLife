@@ -55,6 +55,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.NoteAddIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PoolPanel
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierDragController
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierListSettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TrashTarget
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
@@ -72,10 +73,30 @@ internal object TierDetailTestTags {
     const val MOVE_SHEET_POOL = "tier_detail_move_sheet_pool"
     const val TRASH_TARGET = "tier_detail_trash_target"
     const val DELETED_ITEM_SNACKBAR = "tier_detail_deleted_item_snackbar"
+    const val LIST_SETTINGS_SCREEN = "tier_detail_list_settings_screen"
+    const val NEW_TIER_ROW = "tier_detail_new_tier_row"
+    const val TIER_EDITOR_SHEET = "tier_detail_tier_editor_sheet"
+    const val TIER_EDITOR_LABEL_FIELD = "tier_detail_tier_editor_label_field"
+    const val TIER_EDITOR_CAPTION_FIELD = "tier_detail_tier_editor_caption_field"
+    const val TIER_EDITOR_CANCEL = "tier_detail_tier_editor_cancel"
+    const val TIER_EDITOR_SAVE = "tier_detail_tier_editor_save"
+    const val TIER_EDITOR_CUSTOM_SWATCH = "tier_detail_tier_editor_custom_swatch"
+    const val TIER_EDITOR_CUSTOM_TAB_LIGHT = "tier_detail_tier_editor_custom_tab_light"
+    const val TIER_EDITOR_CUSTOM_TAB_DARK = "tier_detail_tier_editor_custom_tab_dark"
+    const val TIER_EDITOR_HUE_SLIDER = "tier_detail_tier_editor_hue_slider"
+    const val TIER_EDITOR_SATURATION_SLIDER = "tier_detail_tier_editor_saturation_slider"
+    const val TIER_EDITOR_LIGHTNESS_SLIDER = "tier_detail_tier_editor_lightness_slider"
+    const val TIER_EDITOR_HEX_FIELD = "tier_detail_tier_editor_hex_field"
+    const val TIER_EDITOR_CONTRAST_READOUT = "tier_detail_tier_editor_contrast_readout"
+    const val TIER_EDITOR_PREVIEW_LIGHT = "tier_detail_tier_editor_preview_light"
+    const val TIER_EDITOR_PREVIEW_DARK = "tier_detail_tier_editor_preview_dark"
     fun tierRow(tierId: Long): String = "tier_detail_row_$tierId"
     fun tierItems(tierId: Long): String = "tier_detail_items_$tierId"
     fun tile(itemId: Long): String = "tier_detail_tile_$itemId"
     fun moveSheetTierOption(tierId: Long): String = "tier_detail_move_sheet_tier_$tierId"
+    fun tierEditorPresetSwatch(index: Int): String = "tier_detail_tier_editor_preset_swatch_$index"
+    fun sliderTrack(sliderTag: String): String = "${sliderTag}_track"
+    fun sliderThumb(sliderTag: String): String = "${sliderTag}_thumb"
 }
 
 @Composable
@@ -93,6 +114,7 @@ fun TierDetailScreen(
         onMoveItem = viewModel::moveItem,
         onDeleteItem = viewModel::deleteItem,
         onRestoreItem = viewModel::restoreItem,
+        onAddTier = viewModel::addTier,
     )
 
     if (addSheetVisible) {
@@ -114,6 +136,7 @@ fun TierDetailScreenContent(
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
     onDeleteItem: (itemId: Long) -> Unit = {},
     onRestoreItem: (itemId: Long) -> Unit = {},
+    onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit = { _, _, _, _ -> },
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -139,6 +162,7 @@ fun TierDetailScreenContent(
                     onMoveItem = onMoveItem,
                     onDeleteItem = onDeleteItem,
                     onRestoreItem = onRestoreItem,
+                    onAddTier = onAddTier,
                 )
             }
 
@@ -164,7 +188,19 @@ private fun TierScreenBody(
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
     onDeleteItem: (itemId: Long) -> Unit,
     onRestoreItem: (itemId: Long) -> Unit,
+    onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
 ) {
+    var listSettingsVisible by remember { mutableStateOf(false) }
+
+    if (listSettingsVisible) {
+        TierListSettingsScreenContent(
+            list = list,
+            onBack = { listSettingsVisible = false },
+            onAddTier = onAddTier,
+        )
+        return
+    }
+
     val rankedTiers = list.tiers.filterNot { it.isPool }
     val pool = list.tiers.firstOrNull { it.isPool }
     val dragController = remember { TierDragController() }
@@ -204,7 +240,12 @@ private fun TierScreenBody(
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            TierScreenTopBar(title = list.title, onBack = onBack, onManualAdd = onAddClick)
+            TierScreenTopBar(
+                title = list.title,
+                onBack = onBack,
+                onManualAdd = onAddClick,
+                onMoreClick = { listSettingsVisible = true },
+            )
 
             LazyColumn(
                 modifier = Modifier
@@ -287,7 +328,12 @@ private fun TierScreenBody(
 }
 
 @Composable
-private fun TierScreenTopBar(title: String, onBack: () -> Unit, onManualAdd: () -> Unit) {
+private fun TierScreenTopBar(
+    title: String,
+    onBack: () -> Unit,
+    onManualAdd: () -> Unit,
+    onMoreClick: () -> Unit = {},
+) {
     val backDescription = stringResource(R.string.tier_detail_content_description_back)
     val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
     val moreDescription = stringResource(R.string.tier_detail_content_description_more)
@@ -324,7 +370,7 @@ private fun TierScreenTopBar(title: String, onBack: () -> Unit, onManualAdd: () 
                 .semantics { contentDescription = manualAddDescription },
         ) { NoteAddIcon() }
         IconButton(
-            onClick = {},
+            onClick = onMoreClick,
             modifier = Modifier
                 .size(48.dp)
                 .semantics { contentDescription = moreDescription },

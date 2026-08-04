@@ -5,11 +5,16 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.doubleClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
@@ -21,6 +26,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -655,6 +661,215 @@ class TierDetailScreenTest {
         cancelDrag(TierDetailTestTags.tile(100))
     }
 
+    @Test
+    fun listSettings_opensFromMoreButton() {
+        setScreen(TierDetailUiState.Success(defaultList()))
+
+        openListSettings()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_SCREEN).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).assertIsDisplayed()
+    }
+
+    @Test
+    fun tierEditor_opensFromListSettings() {
+        setScreen(TierDetailUiState.Success(defaultList()))
+
+        openTierEditor()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SHEET).assertIsDisplayed()
+    }
+
+    @Test
+    fun addTier_withLabelAndCaption_returnsBothValuesAndBothColorHexValues() {
+        var addedLabel: String? = null
+        var addedCaption: String? = null
+        var addedColorLight: String? = null
+        var addedColorDark: String? = null
+        setScreen(
+            TierDetailUiState.Success(defaultList()),
+            onAddTier = { label, caption, colorLight, colorDark ->
+                addedLabel = label
+                addedCaption = caption
+                addedColorLight = colorLight
+                addedColorDark = colorDark
+            },
+        )
+
+        openTierEditor()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("Z")
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CAPTION_FIELD).performTextInput("Zenith")
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).performClick()
+
+        // The first preset is selected by default, so its literal hex pair is expected.
+        composeRule.runOnIdle {
+            assertEquals("Z", addedLabel)
+            assertEquals("Zenith", addedCaption)
+            assertEquals("#B03A32", addedColorLight)
+            assertEquals("#F1948C", addedColorDark)
+        }
+    }
+
+    @Test
+    fun addTier_withEmptyCaption_returnsNullNotEmptyString() {
+        var addedCaption: String? = "not yet called"
+        setScreen(
+            TierDetailUiState.Success(defaultList()),
+            onAddTier = { _, caption, _, _ -> addedCaption = caption },
+        )
+
+        openTierEditor()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("Z")
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).performClick()
+
+        composeRule.runOnIdle { assertNull(addedCaption) }
+    }
+
+    @Test
+    fun selectingPreset_marksItSelectedAndItsColorsReachTheResult() {
+        var addedColorLight: String? = null
+        var addedColorDark: String? = null
+        setScreen(
+            TierDetailUiState.Success(defaultList()),
+            onAddTier = { _, _, colorLight, colorDark ->
+                addedColorLight = colorLight
+                addedColorDark = colorDark
+            },
+        )
+
+        openTierEditor()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("Z")
+        // Preset index 3 is the green preset (3F7F55 / 8FD3A3).
+        composeRule.onNodeWithTag(TierDetailTestTags.tierEditorPresetSwatch(3)).performClick()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tierEditorPresetSwatch(3)).assertIsSelected()
+        composeRule.onNodeWithTag(TierDetailTestTags.tierEditorPresetSwatch(0)).assertIsNotSelected()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).performClick()
+
+        composeRule.runOnIdle {
+            assertEquals("#3F7F55", addedColorLight)
+            assertEquals("#8FD3A3", addedColorDark)
+        }
+    }
+
+    @Test
+    fun customColor_appliesToItsOwnThemeOnly_withoutOverwritingTheOther() {
+        var addedColorLight: String? = null
+        var addedColorDark: String? = null
+        setScreen(
+            TierDetailUiState.Success(defaultList()),
+            onAddTier = { _, _, colorLight, colorDark ->
+                addedColorLight = colorLight
+                addedColorDark = colorDark
+            },
+        )
+
+        openTierEditor()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("Z")
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).performClick()
+
+        // Only touch the Dark tab's hex value; the Light tab's default must survive untouched.
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_TAB_DARK).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HEX_FIELD).performTextClearance()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HEX_FIELD).performTextInput("336699")
+
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).performClick()
+
+        composeRule.runOnIdle {
+            // Default custom light value from the mock's own example, untouched.
+            assertEquals("#7A3F8C", addedColorLight)
+            assertEquals("#336699", addedColorDark)
+            assertNotEquals(addedColorLight, addedColorDark)
+        }
+    }
+
+    @Test
+    fun contrastWarning_doesNotBlockSavingALowContrastTier() {
+        var saved = false
+        setScreen(
+            TierDetailUiState.Success(defaultList()),
+            onAddTier = { _, _, _, _ -> saved = true },
+        )
+
+        openTierEditor()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("Z")
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).performClick()
+        // Near-white on the Light tab: the label ("onTierBand") is white there too, so
+        // this is a deliberately low-contrast combination — the readout should show it,
+        // but it must not stop Save from working.
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HEX_FIELD).performTextClearance()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HEX_FIELD).performTextInput("F5F0FA")
+
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CONTRAST_READOUT).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).assertIsDisplayed().performClick()
+
+        composeRule.runOnIdle { assertTrue("low contrast must not block saving", saved) }
+    }
+
+    @Test
+    fun draggingHueSlider_changesTheCustomColor() {
+        var addedColorLight: String? = null
+        setScreen(
+            TierDetailUiState.Success(defaultList()),
+            onAddTier = { _, _, colorLight, _ -> addedColorLight = colorLight },
+        )
+
+        openTierEditor()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("Z")
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).performClick()
+
+        // Revealing the custom panel pushes the sliders below the fold of the sheet's
+        // scrolling content (TierEditorSheet.kt), so scroll the Hue slider into view first
+        // — performTouchInput acts on a node's on-screen bounds and silently no-ops outside
+        // them. The gesture also has to stay off the track's extreme edge: a touch at the
+        // very first/last pixel falls just outside Slider's own hit-tested range and never
+        // reaches onValueChange, confirmed by probing values from the track's edge inward.
+        val hueSlider = composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HUE_SLIDER)
+        hueSlider.performScrollTo()
+        hueSlider.performTouchInput {
+            down(Offset(width * 0.1f, center.y))
+            advanceEventTime(20)
+            moveTo(Offset(width * 0.9f, center.y))
+            advanceEventTime(20)
+            up()
+        }
+
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).performClick()
+
+        composeRule.runOnIdle {
+            // Default custom light colour is a violet (#7A3F8C); dragging the Hue slider to
+            // the opposite end of the track must move it to a visibly different hue.
+            assertNotEquals("#7A3F8C", addedColorLight)
+        }
+    }
+
+    @Test
+    fun hueSliderThumb_isVerticallyCenteredOnItsTrack() {
+        setScreen(TierDetailUiState.Success(defaultList()))
+
+        openTierEditor()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).performClick()
+
+        // Slider merges its descendants' semantics into its own node, so the track/thumb
+        // sub-tags are only visible via the unmerged tree.
+        val trackTag = TierDetailTestTags.sliderTrack(TierDetailTestTags.TIER_EDITOR_HUE_SLIDER)
+        val thumbTag = TierDetailTestTags.sliderThumb(TierDetailTestTags.TIER_EDITOR_HUE_SLIDER)
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HUE_SLIDER).performScrollTo()
+
+        val trackBounds = composeRule.onNodeWithTag(trackTag, useUnmergedTree = true).fetchSemanticsNode().boundsInRoot
+        val thumbBounds = composeRule.onNodeWithTag(thumbTag, useUnmergedTree = true).fetchSemanticsNode().boundsInRoot
+        val trackCenterY = (trackBounds.top + trackBounds.bottom) / 2f
+        val thumbCenterY = (thumbBounds.top + thumbBounds.bottom) / 2f
+
+        assertEquals(
+            "the thumb's vertical center must land on the track's vertical center",
+            trackCenterY,
+            thumbCenterY,
+            0.5f,
+        )
+    }
+
     // Line capacity depends on the test device's actual screen width, so this reads
     // the real rendered geometry instead of assuming how many items fit per line.
     private fun secondLineFirstItemId(items: List<TierItem>): Long {
@@ -748,6 +963,7 @@ class TierDetailScreenTest {
         onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
         onDeleteItem: (itemId: Long) -> Unit = {},
         onRestoreItem: (itemId: Long) -> Unit = {},
+        onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit = { _, _, _, _ -> },
     ) {
         composeRule.setContent {
             TierYourLifeTheme {
@@ -758,9 +974,21 @@ class TierDetailScreenTest {
                     onMoveItem = onMoveItem,
                     onDeleteItem = onDeleteItem,
                     onRestoreItem = onRestoreItem,
+                    onAddTier = onAddTier,
                 )
             }
         }
+    }
+
+    private fun openListSettings() {
+        composeRule.onNodeWithContentDescription(
+            string(R.string.tier_detail_content_description_more),
+        ).performClick()
+    }
+
+    private fun openTierEditor() {
+        openListSettings()
+        composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).performClick()
     }
 
     private fun string(resourceId: Int, vararg formatArgs: Any): String =
