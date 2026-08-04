@@ -57,6 +57,7 @@ internal object TierDetailTestTags {
     const val ADD_CHIP = "tier_detail_add_chip"
     const val POOL_ITEMS = "tier_detail_pool_items"
     const val POOL_PANEL = "tier_detail_pool_panel"
+    fun tierRow(tierId: Long): String = "tier_detail_row_$tierId"
     fun tierItems(tierId: Long): String = "tier_detail_items_$tierId"
     fun tile(itemId: Long): String = "tier_detail_tile_$itemId"
 }

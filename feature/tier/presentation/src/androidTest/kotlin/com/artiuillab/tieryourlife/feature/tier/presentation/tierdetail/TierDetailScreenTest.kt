@@ -1,14 +1,17 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.test.assertHeightIsAtLeast
+import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollToKey
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
@@ -18,6 +21,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,32 +46,32 @@ class TierDetailScreenTest {
     }
 
     @Test
-    fun successState_tierWithManyItems_rendersWithoutCrashing() {
-        // Regression: TierRow used to wrap a LazyRow in Modifier.height(IntrinsicSize.Min),
-        // which throws "Asking for intrinsic measurements of SubcomposeLayout layouts is
-        // not supported" as soon as a tier holds enough items to need lazy layout.
+    fun successState_tierWithManyItems_wrapsToNewLinesAndGrowsTaller() {
         // Titles are short so the tile's fallback label (title.take(6).uppercase())
         // stays unique and predictable instead of being truncated into "MOVIE ".
         val manyItems = List(24) { index ->
             TierItem(id = index.toLong(), title = "M$index", imageUrl = null)
         }
-        val list = TierList(
-            id = 1,
-            title = "Big list",
-            tiers = listOf(
-                tier(id = 1, label = "S", items = manyItems),
-                tier(id = 2, label = "A", items = emptyList()),
-                tier(id = 3, label = "B", items = emptyList()),
-                tier(id = 4, label = "C", items = emptyList()),
-                tier(id = 5, label = "D", items = emptyList()),
-                tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
-            ),
-        )
+        val list = listOf(
+            tier(id = 1, label = "S", items = manyItems),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
 
         setScreen(TierDetailUiState.Success(list))
 
-        composeRule.onNodeWithTag(TierDetailTestTags.tierItems(1L)).performScrollToKey(23L)
         composeRule.onNodeWithText("M23").assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1L)).assertHeightIsAtLeast(156.dp)
+    }
+
+    @Test
+    fun successState_tierWithThreeItems_occupiesOneLineAtOriginalHeight() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = List(3) { movie(it) }),
+        ).asTierList()
+
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1L)).assertHeightIsEqualTo(84.dp)
     }
 
     @Test
@@ -118,7 +122,10 @@ class TierDetailScreenTest {
         var moved: Triple<Long, Long, Int>? = null
         setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
 
-        dragTile(sourceTag = TierDetailTestTags.tile(100), targetTag = TierDetailTestTags.tierItems(1), horizontalBias = 0.1f)
+        // Target the whole row, not the (empty, degenerate-bounds) items area directly —
+        // same reason as the empty-pool case below: an empty FlowRow reports a zero-size
+        // rect from fetchSemanticsNode, which isn't a reliable point to aim a test at.
+        dragTile(sourceTag = TierDetailTestTags.tile(100), targetTag = TierDetailTestTags.tierRow(1), horizontalBias = 0.1f)
 
         composeRule.runOnIdle { assertEquals(Triple(100L, 1L, 0), moved) }
     }
@@ -149,7 +156,9 @@ class TierDetailScreenTest {
         var moved: Triple<Long, Long, Int>? = null
         setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
 
-        dragTile(sourceTag = TierDetailTestTags.tile(300), targetTag = TierDetailTestTags.tierItems(2), horizontalBias = 0.1f)
+        // Target the whole row; see the pool-item-into-ranked-tier test above for why an
+        // empty items area isn't a reliable point to aim at.
+        dragTile(sourceTag = TierDetailTestTags.tile(300), targetTag = TierDetailTestTags.tierRow(2), horizontalBias = 0.1f)
 
         composeRule.runOnIdle { assertEquals(Triple(300L, 2L, 0), moved) }
     }
@@ -184,6 +193,47 @@ class TierDetailScreenTest {
     }
 
     @Test
+    fun dragItem_ontoTileInSecondLine_landsOnReadingOrderIndexNotWithinLineIndex() {
+        val rankedItems = List(20) { index -> item((1000 + index).toLong(), "M$index") }
+        val list = listOf(
+            tier(id = 1, label = "S", items = rankedItems),
+            tier(id = 6, label = "Pool", items = listOf(item(2000, "NewItem")), isPool = true),
+        ).asTierList()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
+
+        val secondLineAnchor = secondLineFirstItemId(rankedItems)
+        val expectedIndex = rankedItems.indexOfFirst { it.id == secondLineAnchor }
+
+        // Dropped from the pool, so nothing in the S tier is excluded from indexing:
+        // the expected position is exactly the anchor tile's own reading-order index.
+        dragTile(sourceTag = TierDetailTestTags.tile(2000), targetTag = TierDetailTestTags.tile(secondLineAnchor), horizontalBias = 0.1f)
+
+        composeRule.runOnIdle { assertEquals(Triple(2000L, 1L, expectedIndex), moved) }
+    }
+
+    @Test
+    fun dragItem_withinSameTier_leftToRight_acrossLineWrap_landsOnReadingOrderIndex() {
+        val items = List(20) { index -> item((3000 + index).toLong(), "M$index") }
+        val list = listOf(
+            tier(id = 1, label = "S", items = items),
+        ).asTierList()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
+
+        val draggedItemId = items.first().id
+        val secondLineAnchor = secondLineFirstItemId(items)
+        val anchorIndex = items.indexOfFirst { it.id == secondLineAnchor }
+        // The dragged item (index 0) is excluded from the target list, so every raw
+        // index past it shifts back by one.
+        val expectedIndex = anchorIndex - 1
+
+        dragTile(sourceTag = TierDetailTestTags.tile(draggedItemId), targetTag = TierDetailTestTags.tile(secondLineAnchor), horizontalBias = 0.1f)
+
+        composeRule.runOnIdle { assertEquals(Triple(draggedItemId, 1L, expectedIndex), moved) }
+    }
+
+    @Test
     fun dragItem_droppedOutsideAllRows_doesNotInvokeOnMoveItem() {
         val list = listOf(
             tier(id = 1, label = "S", items = listOf(item(500, "Enemy"))),
@@ -197,13 +247,27 @@ class TierDetailScreenTest {
         composeRule.runOnIdle { assertNull(moved) }
     }
 
+    // Line capacity depends on the test device's actual screen width, so this reads
+    // the real rendered geometry instead of assuming how many items fit per line.
+    private fun secondLineFirstItemId(items: List<TierItem>): Long {
+        val boundsById = items.associate { it.id to tileBounds(it.id) }
+        val lines = boundsById.entries.groupBy { it.value.top }.toSortedMap().values.toList()
+        assertTrue("expected the tier to wrap to at least two lines", lines.size >= 2)
+        return lines[1].minBy { it.value.left }.key
+    }
+
+    private fun tileBounds(itemId: Long): Rect =
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(itemId)).fetchSemanticsNode().boundsInRoot
+
     private fun dragTile(sourceTag: String, targetTag: String, horizontalBias: Float) {
         val targetBounds = composeRule.onNodeWithTag(targetTag).fetchSemanticsNode().boundsInRoot
         // An empty items row (e.g. an empty pool) has zero height, unlike a tier row whose
         // outer height is fixed regardless of content. Fall back to a small offset from the
         // top so the drop point still lands unambiguously inside it instead of exactly on its
-        // degenerate (zero-height) edge.
-        val verticalOffset = if (targetBounds.height > 0f) targetBounds.height / 2f else 8f
+        // degenerate (zero-height) edge. When targeting a tile, biasing above its exact
+        // vertical centre (rather than sitting exactly on it) keeps the point strictly inside
+        // that tile's own line instead of exactly on the line-vs-line boundary.
+        val verticalOffset = if (targetBounds.height > 0f) targetBounds.height * 0.3f else 8f
         val target = Offset(
             x = targetBounds.left + targetBounds.width * horizontalBias,
             y = targetBounds.top + verticalOffset,
