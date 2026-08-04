@@ -25,7 +25,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -35,16 +34,14 @@ import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
-import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ROW_HOVER_TINT_ALPHA
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.dashedBorder
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.rowTintFor
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
-// FlowRow is a plain Layout (unlike the old LazyRow, a SubcomposeLayout), so it
-// supports intrinsic measurement: Row(Modifier.height(IntrinsicSize.Min)) lets the
-// band stretch to match the FlowRow's own wrapped height instead of a fixed one.
+// FlowRow (unlike the old LazyRow) supports intrinsic measurement, so
+// IntrinsicSize.Min below can stretch the band to match its wrapped height.
 private val MIN_TIER_ROW_HEIGHT = 84.dp
 
 @Composable
@@ -90,7 +87,7 @@ internal fun TierRow(
                 fontWeight = FontWeight.Medium,
                 color = colors.onBand,
             )
-            tierCaption(tier.label)?.let { caption ->
+            tier.caption?.let { caption ->
                 Text(
                     text = caption,
                     fontSize = 10.sp,
@@ -122,16 +119,6 @@ internal fun TierRow(
             }
         }
     }
-}
-
-@Composable
-private fun tierCaption(label: String): String? = when (label) {
-    "S" -> stringResource(R.string.tier_detail_caption_s)
-    "A" -> stringResource(R.string.tier_detail_caption_a)
-    "B" -> stringResource(R.string.tier_detail_caption_b)
-    "C" -> stringResource(R.string.tier_detail_caption_c)
-    "D" -> stringResource(R.string.tier_detail_caption_d)
-    else -> null
 }
 
 @Composable

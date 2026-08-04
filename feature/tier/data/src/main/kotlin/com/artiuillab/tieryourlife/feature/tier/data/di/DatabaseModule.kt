@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.di
 import android.content.Context
 import androidx.room.Room
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_1_2
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.TierDatabase
 import dagger.Module
 import dagger.Provides
@@ -23,7 +24,7 @@ object DatabaseModule {
         context,
         TierDatabase::class.java,
         DATABASE_NAME,
-    ).build()
+    ).addMigrations(MIGRATION_1_2).build()
 
     @Provides
     @Singleton

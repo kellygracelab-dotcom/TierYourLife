@@ -29,4 +29,5 @@ data class TierEntity(
     val colorLight: String,
     val colorDark: String,
     val isPool: Boolean = false,
+    val caption: String? = null,
 )

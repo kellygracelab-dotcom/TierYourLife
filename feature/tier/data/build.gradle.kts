@@ -28,6 +28,11 @@ android {
             "\"${localProperties.getProperty("TMDB_READ_ACCESS_TOKEN", "")}\"",
         )
     }
+
+    // MigrationTestHelper reads exported schemas from androidTest assets.
+    sourceSets {
+        getByName("androidTest").assets.srcDirs("$projectDir/schemas")
+    }
 }
 
 

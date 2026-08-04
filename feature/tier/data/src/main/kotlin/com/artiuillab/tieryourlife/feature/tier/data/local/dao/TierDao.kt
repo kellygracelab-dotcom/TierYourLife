@@ -36,23 +36,23 @@ interface TierDao {
 
         val defaultTiers = listOf(
             TierEntity(
-                tierListId = tierListId, position = 0, label = "S",
+                tierListId = tierListId, position = 0, label = "S", caption = "Masterpiece",
                 colorLight = DefaultTierColors.S_LIGHT, colorDark = DefaultTierColors.S_DARK,
             ),
             TierEntity(
-                tierListId = tierListId, position = 1, label = "A",
+                tierListId = tierListId, position = 1, label = "A", caption = "Great",
                 colorLight = DefaultTierColors.A_LIGHT, colorDark = DefaultTierColors.A_DARK,
             ),
             TierEntity(
-                tierListId = tierListId, position = 2, label = "B",
+                tierListId = tierListId, position = 2, label = "B", caption = "Good",
                 colorLight = DefaultTierColors.B_LIGHT, colorDark = DefaultTierColors.B_DARK,
             ),
             TierEntity(
-                tierListId = tierListId, position = 3, label = "C",
+                tierListId = tierListId, position = 3, label = "C", caption = "Watchable",
                 colorLight = DefaultTierColors.C_LIGHT, colorDark = DefaultTierColors.C_DARK,
             ),
             TierEntity(
-                tierListId = tierListId, position = 4, label = "D",
+                tierListId = tierListId, position = 4, label = "D", caption = "No",
                 colorLight = DefaultTierColors.D_LIGHT, colorDark = DefaultTierColors.D_DARK,
             ),
             TierEntity(
@@ -95,6 +95,34 @@ interface TierDao {
     @Query("DELETE FROM tiers WHERE id = :id")
     suspend fun deleteTierById(id: Long): Int
 
+    @Query("UPDATE tiers SET position = position + 1 WHERE tierListId = :tierListId AND position >= :fromPosition")
+    suspend fun shiftTiersFrom(tierListId: Long, fromPosition: Int)
+
+    // rankedCount is also the pool's current position (it always sits last), so
+    // shifting from there makes room without disturbing the ranked tiers before it.
+    @Transaction
+    suspend fun addTier(
+        tierListId: Long,
+        label: String,
+        caption: String?,
+        colorLight: String,
+        colorDark: String,
+    ): Long {
+        val rankedCount = getAllTiersByTierListId(tierListId).count { !it.isPool }
+        shiftTiersFrom(tierListId, rankedCount)
+
+        return insertTier(
+            TierEntity(
+                tierListId = tierListId,
+                position = rankedCount,
+                label = label,
+                caption = caption,
+                colorLight = colorLight,
+                colorDark = colorDark,
+            ),
+        )
+    }
+
     @Insert
     suspend fun insertTierItem(tierItem: TierItemEntity): Long
 
@@ -116,10 +144,8 @@ interface TierDao {
     @Query("UPDATE tier_items SET position = position + 1 WHERE tierId = :tierId AND position >= :fromPosition")
     suspend fun shiftTierPositionsFrom(tierId: Long, fromPosition: Int)
 
-    // The shift below runs as one UPDATE that touches every affected row, so mid-statement two
-    // items in the same tier briefly share a position before the later rows settle one higher.
-    // That's only safe because (tierId, position) has no unique index. Adding one would make
-    // every non-append insert fail, since SQLite enforces UNIQUE per row, not at transaction end.
+    // Relies on (tierId, position) having no unique index: the UPDATE below briefly gives two
+    // rows the same position mid-statement. Adding that index would break every non-append insert.
     @Transaction
     suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
         val item = getTierItemById(itemId) ?: return

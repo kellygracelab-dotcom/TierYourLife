@@ -13,8 +13,8 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
         TierEntity::class,
         TierItemEntity::class,
     ],
-    version = 1,
-    exportSchema = false,
+    version = 2,
+    exportSchema = true,
 )
 abstract class TierDatabase : RoomDatabase() {
 

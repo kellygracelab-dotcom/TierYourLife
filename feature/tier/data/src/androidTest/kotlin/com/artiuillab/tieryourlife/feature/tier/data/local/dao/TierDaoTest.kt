@@ -164,6 +164,89 @@ class TierDaoTest {
     }
 
     @Test
+    fun create_tier_list_with_default_tier_sets_the_five_ranked_captions() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+
+        val tiers = dao.getAllTiersByTierListId(listId)
+
+        assertEquals(
+            listOf("Masterpiece", "Great", "Good", "Watchable", "No"),
+            tiers.filterNot { it.isPool }.map { it.caption },
+        )
+        assertEquals(null, tiers.single { it.isPool }.caption)
+    }
+
+    @Test
+    fun insert_tier_with_caption_persists_and_reads_it_back() = runBlocking {
+        val filmsId = dao.insertTierList(tierList())
+        val tierId = dao.insertTier(
+            tier(tierListId = filmsId, position = 1, label = "S", colorLight = "#B03A32", colorDark = "#F1948C")
+                .copy(caption = "Masterpiece"),
+        )
+
+        val saved = dao.getAllTiersByTierListId(filmsId).single { it.id == tierId }
+
+        assertEquals("Masterpiece", saved.caption)
+    }
+
+    @Test
+    fun insert_tier_with_empty_caption_persists_empty_string_not_null() = runBlocking {
+        val filmsId = dao.insertTierList(tierList())
+        val tierId = dao.insertTier(
+            tier(tierListId = filmsId, position = 1, label = "S", colorLight = "#B03A32", colorDark = "#F1948C")
+                .copy(caption = ""),
+        )
+
+        val saved = dao.getAllTiersByTierListId(filmsId).single { it.id == tierId }
+
+        assertEquals("", saved.caption)
+    }
+
+    @Test
+    fun insert_tier_without_caption_persists_null() = runBlocking {
+        val filmsId = dao.insertTierList(tierList())
+        val tierId = dao.insertTier(
+            tier(tierListId = filmsId, position = 1, label = "S", colorLight = "#B03A32", colorDark = "#F1948C"),
+        )
+
+        val saved = dao.getAllTiersByTierListId(filmsId).single { it.id == tierId }
+
+        assertEquals(null, saved.caption)
+    }
+
+    @Test
+    fun add_tier_appends_after_existing_ranked_tiers_and_keeps_positions_contiguous() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+
+        val newTierId = dao.addTier(
+            tierListId = listId,
+            label = "E",
+            caption = "Trash",
+            colorLight = "#111111",
+            colorDark = "#222222",
+        )
+
+        val tiers = dao.getAllTiersByTierListId(listId)
+        assertEquals(listOf("S", "A", "B", "C", "D", "E", "Unranked"), tiers.map { it.label })
+        assertEquals(listOf(0, 1, 2, 3, 4, 5, 6), tiers.map { it.position })
+        val newTier = tiers.single { it.id == newTierId }
+        assertEquals("E", newTier.label)
+        assertEquals("Trash", newTier.caption)
+        assertEquals(false, newTier.isPool)
+    }
+
+    @Test
+    fun add_tier_does_not_create_a_second_pool() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+
+        dao.addTier(tierListId = listId, label = "E", caption = null, colorLight = "#111111", colorDark = "#222222")
+
+        val poolTiers = dao.getAllTiersByTierListId(listId).filter { it.isPool }
+        assertEquals(1, poolTiers.size)
+        assertEquals("Unranked", poolTiers.single().label)
+    }
+
+    @Test
     fun add_movie_to_pool_puts_first_item_at_position_zero() = runBlocking {
         val listId = dao.createTierListWithDefaultTier(title = "Films")
         val poolTierId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
