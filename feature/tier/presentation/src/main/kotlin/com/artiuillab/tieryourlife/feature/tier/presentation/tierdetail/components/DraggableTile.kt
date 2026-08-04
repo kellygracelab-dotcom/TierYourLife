@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +22,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalViewConfiguration
+import androidx.compose.ui.platform.ViewConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -30,9 +33,11 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import kotlin.math.roundToInt
 
-// Shared by every tile in the pool and every tile in a ranked tier so the two
-// physically cannot drift apart: same gesture, same lift/hover/drop behaviour.
-// Only the size differs, passed in by the caller.
+// Shorter than the system long-press timeout (~500ms, tuned for context menus).
+// A scroll swipe still wins over this via touch-slop consumption, not by racing it.
+private const val DRAG_LONG_PRESS_TIMEOUT_MILLIS = 200L
+
+// Shared by pool and ranked-tier tiles so their drag behaviour can't drift apart.
 @Composable
 internal fun DraggableTile(
     item: TierItem,
@@ -45,49 +50,59 @@ internal fun DraggableTile(
 ) {
     var rootPosition by remember { mutableStateOf(Offset.Zero) }
     val isDragging = dragController.draggedPayload?.itemId == item.id
+    val baseViewConfiguration = LocalViewConfiguration.current
+    val dragViewConfiguration = remember(baseViewConfiguration) {
+        ShortLongPressViewConfiguration(baseViewConfiguration, DRAG_LONG_PRESS_TIMEOUT_MILLIS)
+    }
 
-    Box(
-        modifier = modifier
-            .testTag(TierDetailTestTags.tile(item.id))
-            .onGloballyPositioned { coordinates -> rootPosition = coordinates.positionInRoot() }
-            .pointerInput(item.id, sourceTierId) {
-                detectDragGesturesAfterLongPress(
-                    onDragStart = { offsetInTile ->
-                        dragController.beginDrag(
-                            DragPayload(
-                                itemId = item.id,
-                                title = item.title,
-                                imageUrl = item.imageUrl,
-                                sourceTierId = sourceTierId,
-                                width = width,
-                                height = height,
-                            ),
-                            rootPosition = rootPosition + offsetInTile,
-                        )
-                    },
-                    onDrag = { change, dragAmount ->
-                        change.consume()
-                        dragController.updateDrag(dragAmount)
-                    },
-                    onDragEnd = {
-                        dragController.endDrag()?.let { drop ->
-                            onMoveItem(drop.itemId, drop.toTierId, drop.toPosition)
-                        }
-                    },
-                    onDragCancel = { dragController.cancelDrag() },
-                )
-            },
-    ) {
-        if (isDragging) {
-            // The tile stays composed (so the gesture above keeps running) but is
-            // drawn empty while lifted: its floating copy is what the user sees,
-            // painted separately at the screen root so it isn't clipped by this row.
-            Box(Modifier.size(width, height))
-        } else {
-            ItemTile(item = item, width = width, height = height)
+    CompositionLocalProvider(LocalViewConfiguration provides dragViewConfiguration) {
+        Box(
+            modifier = modifier
+                .testTag(TierDetailTestTags.tile(item.id))
+                .onGloballyPositioned { coordinates -> rootPosition = coordinates.positionInRoot() }
+                .pointerInput(item.id, sourceTierId) {
+                    detectDragGesturesAfterLongPress(
+                        onDragStart = { offsetInTile ->
+                            dragController.beginDrag(
+                                DragPayload(
+                                    itemId = item.id,
+                                    title = item.title,
+                                    imageUrl = item.imageUrl,
+                                    sourceTierId = sourceTierId,
+                                    width = width,
+                                    height = height,
+                                ),
+                                rootPosition = rootPosition + offsetInTile,
+                            )
+                        },
+                        onDrag = { change, dragAmount ->
+                            change.consume()
+                            dragController.updateDrag(dragAmount)
+                        },
+                        onDragEnd = {
+                            dragController.endDrag()?.let { drop ->
+                                onMoveItem(drop.itemId, drop.toTierId, drop.toPosition)
+                            }
+                        },
+                        onDragCancel = { dragController.cancelDrag() },
+                    )
+                },
+        ) {
+            if (isDragging) {
+                // Kept in place, empty, so the pointerInput above keeps running;
+                // FloatingDragTile draws the visible copy.
+                Box(Modifier.size(width, height))
+            } else {
+                ItemTile(item = item, width = width, height = height)
+            }
         }
     }
 }
+
+private class ShortLongPressViewConfiguration(
+    base: ViewConfiguration,
+    override val longPressTimeoutMillis: Long,
+) : ViewConfiguration by base
 
 @Composable
 internal fun FloatingDragTile(dragController: TierDragController) {

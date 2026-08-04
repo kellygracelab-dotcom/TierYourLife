@@ -27,11 +27,8 @@ private data class ItemsRowInfo(
     val itemIds: List<Long> = emptyList(),
 )
 
-// Owns everything a drag gesture needs across tile, row and screen: the payload
-// being carried, where the pointer is in root coordinates, which row it is
-// currently over, and enough per-row layout info to turn that position into a
-// repository-shaped (tierId, position) drop target. One instance is shared by
-// every row and the pool panel for a single tier list screen.
+// Shared by every row and the pool panel so they agree on one drag state instead
+// of each tracking their own.
 @Stable
 internal class TierDragController {
     var draggedPayload by mutableStateOf<DragPayload?>(null)
@@ -43,10 +40,7 @@ internal class TierDragController {
 
     val isDragging: Boolean get() = draggedPayload != null
 
-    // Whole-row bounds (band + items), used to decide which row the pointer is over.
     private val rowBounds = mutableStateMapOf<Long, Rect>()
-
-    // Items-row bounds/state/ids, used to turn a pointer position into an insertion index.
     private val itemsRowInfo = mutableStateMapOf<Long, ItemsRowInfo>()
 
     fun registerRowBounds(tierId: Long, bounds: Rect) {
@@ -73,8 +67,7 @@ internal class TierDragController {
         recomputeHover()
     }
 
-    // Returns the drop target if the pointer was released over an eligible row,
-    // null if it was released over empty space (the caller should treat that as a cancel).
+    // null means the pointer was released outside any row.
     fun endDrag(): DropTarget? {
         val drop = computeDrop()
         clear()
@@ -102,11 +95,8 @@ internal class TierDragController {
         val bounds = row.bounds ?: return null
         val state = row.state ?: return null
         val localX = pointerPositionInRoot.x - bounds.left
-        // The dragged tile stays composed (so its own gesture keeps running) but
-        // renders empty-handed while lifted; exclude it here so the index we hand
-        // to the repository is always "position within the list without it" —
-        // moving it forward vs. backward inside the same row must land on the
-        // exact index requested, not one off depending on direction.
+        // DraggableTile keeps the dragged item's slot in the list (rendered empty);
+        // exclude it so the index is always "within the list without it".
         val excludedIndex = row.itemIds.indexOf(payload.itemId).takeIf { it >= 0 }
         val index = insertionIndex(state, localX, excludedIndex)
         return DropTarget(payload.itemId, tierId, index)
