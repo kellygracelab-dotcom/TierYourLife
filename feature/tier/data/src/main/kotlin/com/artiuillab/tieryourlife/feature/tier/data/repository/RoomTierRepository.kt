@@ -33,4 +33,14 @@ class RoomTierRepository @Inject constructor(
     override suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
         dao.moveItem(itemId, toTierId, toPosition)
     }
+
+    override suspend fun addTier(
+        tierListId: Long,
+        label: String,
+        caption: String?,
+        colorLight: String,
+        colorDark: String,
+    ): Long {
+        return dao.addTier(tierListId, label, caption, colorLight, colorDark)
+    }
 }

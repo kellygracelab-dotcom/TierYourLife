@@ -41,9 +41,4 @@
         <item quantity="one">Pool · %d unranked</item>
         <item quantity="other">Pool · %d unranked</item>
     </plurals>
-    <string name="tier_detail_caption_s">Masterpiece</string>
-    <string name="tier_detail_caption_a">Great</string>
-    <string name="tier_detail_caption_b">Good</string>
-    <string name="tier_detail_caption_c">Watchable</string>
-    <string name="tier_detail_caption_d">No</string>
 </resources>

@@ -7,4 +7,5 @@ data class Tier(
     val colorDark: String,
     val items: List<TierItem>,
     val isPool: Boolean = false,
+    val caption: String? = null,
 )

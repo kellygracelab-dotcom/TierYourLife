@@ -33,6 +33,7 @@ private fun TierWithItems.toDomain(): Tier = Tier(
         .sortedBy { it.position }
         .map { it.toDomain() },
     isPool = tier.isPool,
+    caption = tier.caption,
 )
 
 private fun TierItemEntity.toDomain(): TierItem = TierItem(
