@@ -5,6 +5,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.doubleClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -247,6 +248,115 @@ class TierDetailScreenTest {
         composeRule.runOnIdle { assertNull(moved) }
     }
 
+    @Test
+    fun doubleTapTile_inRankedTier_opensChooser() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
+
+        composeRule.onNodeWithText("Move to a tier").assertIsDisplayed()
+    }
+
+    @Test
+    fun doubleTapTile_inPool_opensSameChooser() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 6, label = "Pool", items = listOf(item(100, "Interstellar")), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
+
+        composeRule.onNodeWithText("Move to a tier").assertIsDisplayed()
+    }
+
+    @Test
+    fun moveSheet_currentTier_isMarkedAndNotSelectableAsDestination() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 2, label = "A", items = emptyList()),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
+
+        composeRule.onNodeWithText("Currently here").assertIsDisplayed()
+
+        // The current tier's own row isn't a destination: tapping it must not trigger a move.
+        composeRule.onNodeWithTag(TierDetailTestTags.moveSheetTierOption(1)).performClick()
+
+        composeRule.runOnIdle { assertNull(moved) }
+    }
+
+    @Test
+    fun moveSheet_selectingAnotherTier_invokesMoveWithCorrectIdAndTier() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 2, label = "A", items = listOf(item(201, "Dune"), item(202, "Arrival"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
+        composeRule.onNodeWithTag(TierDetailTestTags.moveSheetTierOption(2)).performClick()
+
+        // Tier A already has two items, so the poster is appended at index 2 (the end).
+        composeRule.runOnIdle { assertEquals(Triple(100L, 2L, 2), moved) }
+    }
+
+    @Test
+    fun moveSheet_backToPool_invokesMoveIntoThisListsPool() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = listOf(item(900, "Existing")), isPool = true),
+        ).asTierList()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
+        composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET_POOL).performClick()
+
+        // This list's pool already holds one item, so the poster lands at index 1.
+        composeRule.runOnIdle { assertEquals(Triple(100L, 6L, 1), moved) }
+    }
+
+    @Test
+    fun moveSheet_remove_invokesDeleteExactlyOnce() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        val deleted = mutableListOf<Long>()
+        setScreen(TierDetailUiState.Success(list), onDeleteItem = { deleted += it })
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
+        composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET_REMOVE).performClick()
+
+        composeRule.runOnIdle { assertEquals(listOf(100L), deleted) }
+    }
+
+    @Test
+    fun longPress_onTile_stillStartsDraggingNotChooser() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 6, label = "Pool", items = listOf(item(100, "Interstellar")), isPool = true),
+        ).asTierList()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
+
+        dragTile(sourceTag = TierDetailTestTags.tile(100), targetTag = TierDetailTestTags.tierRow(1), horizontalBias = 0.1f)
+
+        composeRule.runOnIdle { assertEquals(Triple(100L, 1L, 0), moved) }
+        composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET).assertDoesNotExist()
+    }
+
     // Line capacity depends on the test device's actual screen width, so this reads
     // the real rendered geometry instead of assuming how many items fit per line.
     private fun secondLineFirstItemId(items: List<TierItem>): Long {
@@ -301,6 +411,7 @@ class TierDetailScreenTest {
         onBack: () -> Unit = {},
         onAddClick: () -> Unit = {},
         onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
+        onDeleteItem: (itemId: Long) -> Unit = {},
     ) {
         composeRule.setContent {
             TierYourLifeTheme {
@@ -309,6 +420,7 @@ class TierDetailScreenTest {
                     onBack = onBack,
                     onAddClick = onAddClick,
                     onMoveItem = onMoveItem,
+                    onDeleteItem = onDeleteItem,
                 )
             }
         }

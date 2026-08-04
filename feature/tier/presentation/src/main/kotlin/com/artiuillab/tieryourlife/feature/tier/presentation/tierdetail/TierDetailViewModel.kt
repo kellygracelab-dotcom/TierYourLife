@@ -53,4 +53,11 @@ class TierDetailViewModel @Inject constructor(
             loadTierList()
         }
     }
+
+    fun deleteItem(itemId: Long) {
+        viewModelScope.launch {
+            repository.deleteTierItem(itemId)
+            loadTierList()
+        }
+    }
 }

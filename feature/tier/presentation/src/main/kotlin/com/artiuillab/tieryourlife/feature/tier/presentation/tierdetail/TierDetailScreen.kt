@@ -44,6 +44,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddMovieSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.FloatingDragTile
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.MoveItemSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.NoteAddIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PoolPanel
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierDragController
@@ -57,9 +58,13 @@ internal object TierDetailTestTags {
     const val ADD_CHIP = "tier_detail_add_chip"
     const val POOL_ITEMS = "tier_detail_pool_items"
     const val POOL_PANEL = "tier_detail_pool_panel"
+    const val MOVE_SHEET = "tier_detail_move_sheet"
+    const val MOVE_SHEET_REMOVE = "tier_detail_move_sheet_remove"
+    const val MOVE_SHEET_POOL = "tier_detail_move_sheet_pool"
     fun tierRow(tierId: Long): String = "tier_detail_row_$tierId"
     fun tierItems(tierId: Long): String = "tier_detail_items_$tierId"
     fun tile(itemId: Long): String = "tier_detail_tile_$itemId"
+    fun moveSheetTierOption(tierId: Long): String = "tier_detail_move_sheet_tier_$tierId"
 }
 
 @Composable
@@ -75,6 +80,7 @@ fun TierDetailScreen(
         onBack = onBack,
         onAddClick = { addSheetVisible = true },
         onMoveItem = viewModel::moveItem,
+        onDeleteItem = viewModel::deleteItem,
     )
 
     if (addSheetVisible) {
@@ -94,6 +100,7 @@ fun TierDetailScreenContent(
     onBack: () -> Unit,
     onAddClick: () -> Unit,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
+    onDeleteItem: (itemId: Long) -> Unit = {},
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -112,7 +119,13 @@ fun TierDetailScreenContent(
             }
 
             is TierDetailUiState.Success -> {
-                TierScreenBody(list = state.list, onBack = onBack, onAddClick = onAddClick, onMoveItem = onMoveItem)
+                TierScreenBody(
+                    list = state.list,
+                    onBack = onBack,
+                    onAddClick = onAddClick,
+                    onMoveItem = onMoveItem,
+                    onDeleteItem = onDeleteItem,
+                )
             }
 
             is TierDetailUiState.Error -> {
@@ -135,10 +148,12 @@ private fun TierScreenBody(
     onBack: () -> Unit,
     onAddClick: () -> Unit,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
+    onDeleteItem: (itemId: Long) -> Unit,
 ) {
     val rankedTiers = list.tiers.filterNot { it.isPool }
     val pool = list.tiers.firstOrNull { it.isPool }
     val dragController = remember { TierDragController() }
+    var chooserItemId by remember { mutableStateOf<Long?>(null) }
 
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
@@ -152,18 +167,50 @@ private fun TierScreenBody(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(rankedTiers, key = { it.id }) { tier ->
-                    TierRow(tier = tier, dragController = dragController, onMoveItem = onMoveItem)
+                    TierRow(
+                        tier = tier,
+                        dragController = dragController,
+                        onMoveItem = onMoveItem,
+                        onDoubleTap = { itemId -> chooserItemId = itemId },
+                    )
                 }
             }
 
             if (pool != null) {
-                PoolPanel(pool = pool, onAddClick = onAddClick, dragController = dragController, onMoveItem = onMoveItem)
+                PoolPanel(
+                    pool = pool,
+                    onAddClick = onAddClick,
+                    dragController = dragController,
+                    onMoveItem = onMoveItem,
+                    onDoubleTap = { itemId -> chooserItemId = itemId },
+                )
             }
         }
 
         if (dragController.isDragging) {
             FloatingDragTile(dragController)
         }
+    }
+
+    val chosenId = chooserItemId
+    val currentTier = chosenId?.let { id -> list.tiers.firstOrNull { tier -> tier.items.any { it.id == id } } }
+    val chosenItem = currentTier?.items?.firstOrNull { it.id == chosenId }
+    if (chosenId != null && currentTier != null && chosenItem != null) {
+        MoveItemSheet(
+            item = chosenItem,
+            currentTierId = currentTier.id,
+            rankedTiers = rankedTiers,
+            pool = pool,
+            onMoveToTier = { toTierId, toPosition ->
+                onMoveItem(chosenId, toTierId, toPosition)
+                chooserItemId = null
+            },
+            onRemove = {
+                onDeleteItem(chosenId)
+                chooserItemId = null
+            },
+            onDismiss = { chooserItemId = null },
+        )
     }
 }
 

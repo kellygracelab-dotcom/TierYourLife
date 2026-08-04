@@ -12,7 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.VectorIcon
 
 @Composable
 internal fun BackIcon() {
@@ -48,4 +50,35 @@ private fun DrawScope.drawNoteAdd(color: Color, scale: Float) {
     )
     drawLine(color, Offset(8f * scale, 12f * scale), Offset(16f * scale, 12f * scale), 1.6f * scale, StrokeCap.Round)
     drawLine(color, Offset(12f * scale, 8f * scale), Offset(12f * scale, 16f * scale), 1.6f * scale, StrokeCap.Round)
+}
+
+@Composable
+internal fun CheckIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.8f * scale
+    drawLine(color, Offset(4f * scale, 12.5f * scale), Offset(9f * scale, 17.5f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(9f * scale, 17.5f * scale), Offset(20f * scale, 6f * scale), stroke, StrokeCap.Round)
+}
+
+@Composable
+internal fun DeleteOutlineIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.6f * scale
+    drawLine(color, Offset(4f * scale, 7f * scale), Offset(20f * scale, 7f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(9f * scale, 4f * scale), Offset(15f * scale, 4f * scale), stroke, StrokeCap.Round)
+    drawRoundRect(
+        color,
+        Offset(6f * scale, 7f * scale),
+        Size(12f * scale, 13f * scale),
+        CornerRadius(2f * scale),
+        style = Stroke(stroke),
+    )
+    drawLine(color, Offset(10f * scale, 10f * scale), Offset(10f * scale, 17f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(14f * scale, 10f * scale), Offset(14f * scale, 17f * scale), stroke, StrokeCap.Round)
+}
+
+@Composable
+internal fun SouthIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.7f * scale
+    drawLine(color, Offset(12f * scale, 4f * scale), Offset(12f * scale, 20f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(12f * scale, 20f * scale), Offset(6f * scale, 14f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(12f * scale, 20f * scale), Offset(18f * scale, 14f * scale), stroke, StrokeCap.Round)
 }
