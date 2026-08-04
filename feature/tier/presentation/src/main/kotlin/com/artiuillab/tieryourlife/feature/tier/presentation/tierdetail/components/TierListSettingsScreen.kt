@@ -14,13 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,16 +53,18 @@ private val DisplayModeSelectedTintDark = Color(0xFF2E2F45)
 // Reached from the tier detail screen's more_vert button, as one screen-shaped state
 // swap rather than a nav destination — same pattern as the sheets it hosts, and it
 // keeps this directly testable the way the rest of tierdetail already is.
+//
+// Renaming used to live here (a row that opened a dialog); it's now done in place in
+// the tier detail screen's own header, so this screen no longer offers a second path
+// to the same action.
 @Composable
 internal fun TierListSettingsScreenContent(
     list: TierList,
     onBack: () -> Unit,
     onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
     onSetDisplayMode: (displayMode: TierListDisplayMode) -> Unit,
-    onRenameList: (title: String) -> Unit,
 ) {
     var tierEditorVisible by remember { mutableStateOf(false) }
-    var renameDialogVisible by remember { mutableStateOf(false) }
     val rankedTierCount = list.tiers.count { !it.isPool }
 
     Column(Modifier.fillMaxSize().testTag(TierDetailTestTags.LIST_SETTINGS_SCREEN)) {
@@ -77,8 +76,6 @@ internal fun TierListSettingsScreenContent(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             color = MaterialTheme.colorScheme.outlineVariant,
         )
-
-        RenameListRow(currentTitle = list.title, onClick = { renameDialogVisible = true })
 
         NewTierRow(
             tierCount = rankedTierCount,
@@ -92,17 +89,6 @@ internal fun TierListSettingsScreenContent(
             onSave = { label, caption, colorLight, colorDark ->
                 onAddTier(label, caption, colorLight, colorDark)
                 tierEditorVisible = false
-            },
-        )
-    }
-
-    if (renameDialogVisible) {
-        RenameListDialog(
-            currentTitle = list.title,
-            onDismiss = { renameDialogVisible = false },
-            onConfirm = { newTitle ->
-                onRenameList(newTitle)
-                renameDialogVisible = false
             },
         )
     }
@@ -277,17 +263,6 @@ private fun SettingsActionRow(
 }
 
 @Composable
-private fun RenameListRow(currentTitle: String, onClick: () -> Unit) {
-    SettingsActionRow(
-        icon = { EditIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
-        title = stringResource(R.string.tier_list_settings_rename_title),
-        subtitle = currentTitle,
-        onClick = onClick,
-        testTag = TierDetailTestTags.LIST_SETTINGS_RENAME_ROW,
-    )
-}
-
-@Composable
 private fun NewTierRow(tierCount: Int, onClick: () -> Unit) {
     SettingsActionRow(
         icon = { PlusIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
@@ -298,44 +273,3 @@ private fun NewTierRow(tierCount: Int, onClick: () -> Unit) {
     )
 }
 
-// The mock only specifies the settings row that opens this — not the rename UI itself —
-// so the dialog shape is our own call. Blank input disabling Save (rather than, say,
-// silently keeping the old title, or showing an error) mirrors the only precedent this
-// app already has for a required text field: the tier editor's Label field.
-@Composable
-private fun RenameListDialog(
-    currentTitle: String,
-    onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit,
-) {
-    var title by remember { mutableStateOf(currentTitle) }
-    val isTitleValid = title.isNotBlank()
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.tier_list_settings_rename_title)) },
-        text = {
-            OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag(TierDetailTestTags.RENAME_DIALOG_FIELD),
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = { onConfirm(title.trim()) },
-                enabled = isTitleValid,
-                modifier = Modifier.testTag(TierDetailTestTags.RENAME_DIALOG_SAVE),
-            ) { Text(stringResource(R.string.tier_editor_save)) }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss,
-                modifier = Modifier.testTag(TierDetailTestTags.RENAME_DIALOG_CANCEL),
-            ) { Text(stringResource(R.string.tier_editor_cancel)) }
-        },
-    )
-}

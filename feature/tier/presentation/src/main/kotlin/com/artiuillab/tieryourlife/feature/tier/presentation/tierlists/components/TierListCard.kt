@@ -43,7 +43,7 @@ internal fun TierListCard(list: TierList, onTierListClick: (Long) -> Unit) {
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .testTag("tier_list_card_${list.id}")
-            .clickable { if (list.id > 0) onTierListClick(list.id) }
+            .clickable { onTierListClick(list.id) }
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {

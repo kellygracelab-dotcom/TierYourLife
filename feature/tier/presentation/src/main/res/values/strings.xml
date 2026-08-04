@@ -37,6 +37,7 @@
     <string name="tier_detail_content_description_back">Navigate back</string>
     <string name="tier_detail_content_description_manual_add">Add item manually</string>
     <string name="tier_detail_content_description_more">More options</string>
+    <string name="tier_detail_content_description_edit_title">Edit list name</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Pool · %d unranked</item>
         <item quantity="other">Pool · %d unranked</item>
@@ -78,7 +79,6 @@
     <string name="tier_list_settings_mode_strip_sub">One line per tier, scrolls sideways</string>
     <string name="tier_list_settings_mode_ranked">Ranked list</string>
     <string name="tier_list_settings_mode_ranked_sub">One column, best to worst, no tiers</string>
-    <string name="tier_list_settings_rename_title">Rename list</string>
     <string name="tier_list_settings_new_tier_title">New tier</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="one">%d tier</item>

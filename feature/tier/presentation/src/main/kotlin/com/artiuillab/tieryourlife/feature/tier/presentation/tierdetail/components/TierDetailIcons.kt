@@ -150,15 +150,6 @@ internal fun FormatListNumberedIcon(iconSize: Dp, color: Color) = VectorIcon(ico
 }
 
 @Composable
-internal fun EditIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
-    val stroke = 1.7f * scale
-    drawLine(color, Offset(5f * scale, 19f * scale), Offset(15f * scale, 9f * scale), stroke, StrokeCap.Round)
-    drawLine(color, Offset(15f * scale, 9f * scale), Offset(19f * scale, 5f * scale), stroke, StrokeCap.Round)
-    drawLine(color, Offset(19f * scale, 5f * scale), Offset(21f * scale, 7f * scale), stroke, StrokeCap.Round)
-    drawLine(color, Offset(21f * scale, 7f * scale), Offset(17f * scale, 11f * scale), stroke, StrokeCap.Round)
-}
-
-@Composable
 internal fun ExpandLessIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     val stroke = 1.7f * scale
     drawLine(color, Offset(6f * scale, 15f * scale), Offset(12f * scale, 9f * scale), stroke, StrokeCap.Round)

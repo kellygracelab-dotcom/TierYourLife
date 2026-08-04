@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -14,6 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +27,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,11 +37,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,6 +81,7 @@ import kotlinx.coroutines.launch
 // the two never drift out of sync.
 internal object TierDetailTestTags {
     const val LOADING = "tier_detail_loading"
+    const val HEADER_TITLE = "tier_detail_header_title"
     const val ADD_CHIP = "tier_detail_add_chip"
     const val POOL_ITEMS = "tier_detail_pool_items"
     const val POOL_PANEL = "tier_detail_pool_panel"
@@ -84,10 +98,6 @@ internal object TierDetailTestTags {
     const val LIST_SETTINGS_MODE_WRAP = "tier_detail_list_settings_mode_wrap"
     const val LIST_SETTINGS_MODE_STRIP = "tier_detail_list_settings_mode_strip"
     const val LIST_SETTINGS_MODE_RANKED = "tier_detail_list_settings_mode_ranked"
-    const val LIST_SETTINGS_RENAME_ROW = "tier_detail_list_settings_rename_row"
-    const val RENAME_DIALOG_FIELD = "tier_detail_rename_dialog_field"
-    const val RENAME_DIALOG_SAVE = "tier_detail_rename_dialog_save"
-    const val RENAME_DIALOG_CANCEL = "tier_detail_rename_dialog_cancel"
     const val NEW_TIER_ROW = "tier_detail_new_tier_row"
     const val TIER_EDITOR_SHEET = "tier_detail_tier_editor_sheet"
     const val TIER_EDITOR_LABEL_FIELD = "tier_detail_tier_editor_label_field"
@@ -222,7 +232,6 @@ private fun TierScreenBody(
             onBack = { listSettingsVisible = false },
             onAddTier = onAddTier,
             onSetDisplayMode = onSetDisplayMode,
-            onRenameList = onRenameList,
         )
         return
     }
@@ -271,6 +280,8 @@ private fun TierScreenBody(
                 onBack = onBack,
                 onManualAdd = onAddClick,
                 onMoreClick = { listSettingsVisible = true },
+                onRenameList = onRenameList,
+                titleEditable = true,
             )
 
             if (list.displayMode == TierListDisplayMode.FLAT_RANKED) {
@@ -376,6 +387,8 @@ private fun TierScreenTopBar(
     onBack: () -> Unit,
     onManualAdd: () -> Unit,
     onMoreClick: () -> Unit = {},
+    onRenameList: (String) -> Unit = {},
+    titleEditable: Boolean = false,
 ) {
     val backDescription = stringResource(R.string.tier_detail_content_description_back)
     val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
@@ -395,17 +408,27 @@ private fun TierScreenTopBar(
                 .size(48.dp)
                 .semantics { contentDescription = backDescription },
         ) { BackIcon() }
-        Text(
-            text = title,
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 4.dp),
-            fontSize = 20.sp,
-            lineHeight = 28.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
+        if (titleEditable) {
+            EditableListTitle(
+                title = title,
+                onRename = onRenameList,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 4.dp),
+            )
+        } else {
+            Text(
+                text = title,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 4.dp),
+                fontSize = 20.sp,
+                lineHeight = 28.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
         IconButton(
             onClick = onManualAdd,
             modifier = Modifier
@@ -418,6 +441,99 @@ private fun TierScreenTopBar(
                 .size(48.dp)
                 .semantics { contentDescription = moreDescription },
         ) { MoreIcon() }
+    }
+}
+
+// One path to one action: the list's title is edited in place here, and the
+// settings screen's old "Rename list" row is gone. At rest this is exactly the
+// same Text the header always had (same size, same padding, same position) so
+// entering and leaving edit mode never shifts anything else in the bar — only
+// whether the space is typable and whether a cursor sits in it.
+//
+// A plain OutlinedTextField was ruled out: its own box padding and min height
+// would make the bar taller the moment editing starts, which is exactly the
+// "jump" this is required not to do. BasicTextField has no such chrome, so it
+// can share the read state's own text style pixel-for-pixel.
+@Composable
+private fun EditableListTitle(
+    title: String,
+    onRename: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var isEditing by remember { mutableStateOf(false) }
+
+    if (isEditing) {
+        var fieldValue by remember {
+            // Cursor starts at the end rather than selecting everything: the mock for
+            // this state is gone (see docs/design-spec-turns-8-9.md, section 9), and an
+            // append-friendly default is the least destructive guess — the user can
+            // still select all themselves to replace the title outright.
+            mutableStateOf(TextFieldValue(text = title, selection = TextRange(title.length)))
+        }
+        // Distinguishes "never focused yet" from "focused, then lost it": onFocusChanged
+        // fires once immediately on composition with isFocused = false, before the
+        // LaunchedEffect below has a chance to actually request focus. Without this,
+        // that first callback would read as the user tapping away and close edit mode
+        // before it ever visibly opened.
+        var hasFocused by remember { mutableStateOf(false) }
+        val focusRequester = remember { FocusRequester() }
+
+        // Guarded by isEditing so the IME "Done" action and a subsequent focus-loss
+        // callback (the field's own node is torn down once isEditing flips to false)
+        // can't both fire onRename — this is what makes saving happen exactly once.
+        fun commit() {
+            if (!isEditing) return
+            val trimmed = fieldValue.text.trim()
+            // Same rule the tier editor's Label field already enforces on a blank
+            // value: nothing is saved. There is no separate Save button to disable
+            // here, so a blank title just closes edit mode without calling onRename —
+            // the header falls back to showing `title`, which is still whatever it
+            // was before, because nothing changed it.
+            if (trimmed.isNotEmpty()) {
+                onRename(trimmed)
+            }
+            isEditing = false
+        }
+
+        BasicTextField(
+            value = fieldValue,
+            onValueChange = { fieldValue = it },
+            modifier = modifier
+                .focusRequester(focusRequester)
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        hasFocused = true
+                    } else if (hasFocused) {
+                        commit()
+                    }
+                }
+                .testTag(TierDetailTestTags.HEADER_TITLE),
+            textStyle = TextStyle(
+                fontSize = 20.sp,
+                lineHeight = 28.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+            ),
+            singleLine = true,
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { commit() }),
+        )
+
+        LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    } else {
+        val editDescription = stringResource(R.string.tier_detail_content_description_edit_title)
+        Text(
+            text = title,
+            modifier = modifier
+                .clickable { isEditing = true }
+                .semantics { contentDescription = editDescription }
+                .testTag(TierDetailTestTags.HEADER_TITLE),
+            fontSize = 20.sp,
+            lineHeight = 28.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
     }
 }
 
