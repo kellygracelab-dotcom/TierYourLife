@@ -54,6 +54,21 @@
     <string name="tier_detail_item_moved_to_trash">%1$s moved to the trash</string>
     <string name="tier_detail_snackbar_undo">Undo</string>
 
+    <plurals name="tier_detail_ranked_header">
+        <item quantity="one">%1$d ranked · best to worst</item>
+        <item quantity="other">%1$d ranked · best to worst</item>
+    </plurals>
+    <string name="tier_detail_ranked_header_empty">Nothing ranked yet</string>
+    <string name="tier_detail_ranked_row_description">Rank %1$d, %2$s, tier %3$s.</string>
+    <plurals name="tier_detail_ranked_pool_collapsed_description">
+        <item quantity="one">Pool, %1$d unranked. Expand.</item>
+        <item quantity="other">Pool, %1$d unranked. Expand.</item>
+    </plurals>
+    <plurals name="tier_detail_ranked_pool_expanded_description">
+        <item quantity="one">Pool, %1$d unranked. Collapse.</item>
+        <item quantity="other">Pool, %1$d unranked. Collapse.</item>
+    </plurals>
+
     <string name="tier_list_settings_title">List settings</string>
     <string name="tier_list_settings_display_section">Display</string>
     <string name="tier_list_settings_display_section_caption">How tiers are shown in this list. Other lists are unaffected.</string>

@@ -55,6 +55,8 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.MoveItemSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.NoteAddIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PoolPanel
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.RankedList
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.RankedPoolSection
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierListSettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierRow
@@ -74,6 +76,10 @@ internal object TierDetailTestTags {
     const val MOVE_SHEET_POOL = "tier_detail_move_sheet_pool"
     const val TRASH_TARGET = "tier_detail_trash_target"
     const val DELETED_ITEM_SNACKBAR = "tier_detail_deleted_item_snackbar"
+    const val RANKED_LIST = "tier_detail_ranked_list"
+    const val RANKED_HEADER = "tier_detail_ranked_header"
+    const val RANKED_POOL_COLLAPSED = "tier_detail_ranked_pool_collapsed"
+    const val RANKED_POOL_ITEMS = "tier_detail_ranked_pool_items"
     const val LIST_SETTINGS_SCREEN = "tier_detail_list_settings_screen"
     const val LIST_SETTINGS_MODE_WRAP = "tier_detail_list_settings_mode_wrap"
     const val LIST_SETTINGS_MODE_STRIP = "tier_detail_list_settings_mode_strip"
@@ -99,6 +105,8 @@ internal object TierDetailTestTags {
     const val TIER_EDITOR_PREVIEW_LIGHT = "tier_detail_tier_editor_preview_light"
     const val TIER_EDITOR_PREVIEW_DARK = "tier_detail_tier_editor_preview_dark"
     fun tierRow(tierId: Long): String = "tier_detail_row_$tierId"
+    fun rankedRow(itemId: Long): String = "tier_detail_ranked_row_$itemId"
+    fun rankedPoolItem(itemId: Long): String = "tier_detail_ranked_pool_item_$itemId"
     fun tierItems(tierId: Long): String = "tier_detail_items_$tierId"
     fun tile(itemId: Long): String = "tier_detail_tile_$itemId"
     fun moveSheetTierOption(tierId: Long): String = "tier_detail_move_sheet_tier_$tierId"
@@ -265,34 +273,50 @@ private fun TierScreenBody(
                 onMoreClick = { listSettingsVisible = true },
             )
 
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(rankedTiers, key = { it.id }) { tier ->
-                    TierRow(
-                        tier = tier,
-                        displayMode = list.displayMode,
+            if (list.displayMode == TierListDisplayMode.FLAT_RANKED) {
+                RankedList(
+                    rankedTiers = rankedTiers,
+                    onSelect = { itemId -> chooserItemId = itemId },
+                    modifier = Modifier.weight(1f),
+                )
+
+                if (pool != null) {
+                    RankedPoolSection(
+                        pool = pool,
+                        onAddClick = onAddClick,
+                        onSelect = { itemId -> chooserItemId = itemId },
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(rankedTiers, key = { it.id }) { tier ->
+                        TierRow(
+                            tier = tier,
+                            displayMode = list.displayMode,
+                            dragController = dragController,
+                            onMoveItem = onMoveItem,
+                            onDeleteItem = deleteAndAnnounce,
+                            onDoubleTap = { itemId -> chooserItemId = itemId },
+                        )
+                    }
+                }
+
+                if (pool != null) {
+                    PoolPanel(
+                        pool = pool,
+                        onAddClick = onAddClick,
                         dragController = dragController,
                         onMoveItem = onMoveItem,
                         onDeleteItem = deleteAndAnnounce,
                         onDoubleTap = { itemId -> chooserItemId = itemId },
                     )
                 }
-            }
-
-            if (pool != null) {
-                PoolPanel(
-                    pool = pool,
-                    onAddClick = onAddClick,
-                    dragController = dragController,
-                    onMoveItem = onMoveItem,
-                    onDeleteItem = deleteAndAnnounce,
-                    onDoubleTap = { itemId -> chooserItemId = itemId },
-                )
             }
         }
 

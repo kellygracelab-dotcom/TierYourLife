@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.test.assertHeightIsAtLeast
@@ -787,6 +789,215 @@ class TierDetailScreenTest {
     }
 
     @Test
+    fun flatRankedMode_showsNoTierRowsOnlyOneColumnOfItemRows() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 2, label = "A", items = listOf(item(101, "Arrival"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList(displayMode = TierListDisplayMode.FLAT_RANKED)
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.tierRow(2)).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.RANKED_LIST).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedRow(100)).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedRow(101)).assertIsDisplayed()
+    }
+
+    @Test
+    fun flatRankedMode_ordersRowsByTierPositionThenItemPositionWithinTier() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "First"), item(101, "Second"))),
+            tier(id = 2, label = "A", items = listOf(item(102, "Third"))),
+        ).asTierList(displayMode = TierListDisplayMode.FLAT_RANKED)
+        setScreen(TierDetailUiState.Success(list))
+
+        val tops = listOf(100L, 101L, 102L).map { rankedRowBounds(it).top }
+        assertTrue("expected rows top-to-bottom in S,S,A item order", tops[0] < tops[1] && tops[1] < tops[2])
+    }
+
+    @Test
+    fun flatRankedMode_numbersRowsSequentiallyStartingAtOne() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "First"), item(101, "Second"))),
+            tier(id = 2, label = "A", items = listOf(item(102, "Third"))),
+        ).asTierList(displayMode = TierListDisplayMode.FLAT_RANKED)
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithContentDescription("Rank 1, First, tier S.").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription("Rank 2, Second, tier S.").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription("Rank 3, Third, tier A.").assertIsDisplayed()
+    }
+
+    @Test
+    fun flatRankedMode_tierBadgeMatchesTheItemsOwnTier() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "First"))),
+            tier(id = 2, label = "A", items = listOf(item(101, "Second"))),
+        ).asTierList(displayMode = TierListDisplayMode.FLAT_RANKED)
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithContentDescription("Rank 1, First, tier S.").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription("Rank 2, Second, tier A.").assertIsDisplayed()
+    }
+
+    @Test
+    fun flatRankedMode_showsPoolCollapsedAtTheEnd() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "First"))),
+            tier(id = 6, label = "Pool", items = listOf(item(200, "Unranked")), isPool = true),
+        ).asTierList(displayMode = TierListDisplayMode.FLAT_RANKED)
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.RANKED_POOL_COLLAPSED).assertIsDisplayed()
+        // Collapsed: the pooled item isn't rendered as its own tile, ranked row, or expanded pool row anywhere.
+        composeRule.onNodeWithTag(TierDetailTestTags.RANKED_POOL_ITEMS).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(200)).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedRow(200)).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedPoolItem(200)).assertDoesNotExist()
+    }
+
+    @Test
+    fun flatRankedPool_tapExpandsAndTapAgainCollapses() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "First"))),
+            tier(id = 6, label = "Pool", items = listOf(item(200, "Unranked"), item(201, "AlsoUnranked")), isPool = true),
+        ).asTierList(displayMode = TierListDisplayMode.FLAT_RANKED)
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.RANKED_POOL_COLLAPSED).performClick()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.RANKED_POOL_ITEMS).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedPoolItem(200)).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedPoolItem(201)).assertIsDisplayed()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.RANKED_POOL_COLLAPSED).performClick()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.RANKED_POOL_ITEMS).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedPoolItem(200)).assertDoesNotExist()
+    }
+
+    @Test
+    fun flatRankedPool_collapsedCounterMatchesExpandedItemCount() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(
+                id = 6,
+                label = "Pool",
+                items = listOf(item(200, "One"), item(201, "Two"), item(202, "Three")),
+                isPool = true,
+            ),
+        ).asTierList(displayMode = TierListDisplayMode.FLAT_RANKED)
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithText("Pool · 3 unranked").assertIsDisplayed()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.RANKED_POOL_COLLAPSED).performClick()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedPoolItem(200)).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedPoolItem(201)).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedPoolItem(202)).assertIsDisplayed()
+    }
+
+    @Test
+    fun tapRankedRow_opensChooser() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList(displayMode = TierListDisplayMode.FLAT_RANKED)
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedRow(100)).performClick()
+
+        composeRule.onNodeWithText("Move to a tier").assertIsDisplayed()
+    }
+
+    @Test
+    fun tapExpandedPoolItem_opensSameChooser() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 6, label = "Pool", items = listOf(item(200, "Unranked")), isPool = true),
+        ).asTierList(displayMode = TierListDisplayMode.FLAT_RANKED)
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.RANKED_POOL_COLLAPSED).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedPoolItem(200)).performClick()
+
+        composeRule.onNodeWithText("Move to a tier").assertIsDisplayed()
+    }
+
+    @Test
+    fun wrapMode_singleTapOnTile_doesNotOpenChooser() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList(displayMode = TierListDisplayMode.WRAP)
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performClick()
+
+        composeRule.onNodeWithText("Move to a tier").assertDoesNotExist()
+    }
+
+    @Test
+    fun horizontalScrollMode_singleTapOnTile_doesNotOpenChooser() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList(displayMode = TierListDisplayMode.HORIZONTAL_SCROLL)
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performClick()
+
+        composeRule.onNodeWithText("Move to a tier").assertDoesNotExist()
+    }
+
+    @Test
+    fun horizontalScrollMode_doubleTapOnTile_stillOpensChooser() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList(displayMode = TierListDisplayMode.HORIZONTAL_SCROLL)
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
+
+        composeRule.onNodeWithText("Move to a tier").assertIsDisplayed()
+    }
+
+    @Test
+    fun switchingToFlatRankedModeFromSettings_redrawsTheScreen() {
+        val initialList = listOf(
+            tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList(displayMode = TierListDisplayMode.WRAP)
+
+        composeRule.setContent {
+            val listState = remember { mutableStateOf(initialList) }
+            TierYourLifeTheme {
+                TierDetailScreenContent(
+                    state = TierDetailUiState.Success(listState.value),
+                    onBack = {},
+                    onAddClick = {},
+                    onSetDisplayMode = { mode -> listState.value = listState.value.copy(displayMode = mode) },
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).assertIsDisplayed()
+
+        openListSettings()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_RANKED).performClick()
+        composeRule.onNodeWithContentDescription(
+            string(R.string.tier_detail_content_description_back),
+        ).performClick()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.RANKED_LIST).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedRow(100)).assertIsDisplayed()
+    }
+
+    @Test
     fun addTier_withLabelAndCaption_returnsBothValuesAndBothColorHexValues() {
         var addedLabel: String? = null
         var addedCaption: String? = null
@@ -987,6 +1198,9 @@ class TierDetailScreenTest {
 
     private fun tileBounds(itemId: Long): Rect =
         composeRule.onNodeWithTag(TierDetailTestTags.tile(itemId)).fetchSemanticsNode().boundsInRoot
+
+    private fun rankedRowBounds(itemId: Long): Rect =
+        composeRule.onNodeWithTag(TierDetailTestTags.rankedRow(itemId)).fetchSemanticsNode().boundsInRoot
 
     private fun dragTile(sourceTag: String, targetTag: String, horizontalBias: Float) {
         val targetBounds = composeRule.onNodeWithTag(targetTag).fetchSemanticsNode().boundsInRoot
