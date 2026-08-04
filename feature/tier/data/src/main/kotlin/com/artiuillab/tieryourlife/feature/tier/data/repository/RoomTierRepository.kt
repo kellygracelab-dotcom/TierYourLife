@@ -1,7 +1,10 @@
 package com.artiuillab.tieryourlife.feature.tier.data.repository
 
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewPoolMovie
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolMovieDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
@@ -10,10 +13,12 @@ import javax.inject.Inject
 
 class RoomTierRepository internal constructor(
     private val dao: TierDao,
+    private val imageStore: TierImageStore,
     private val nowMillis: () -> Long,
 ) : TierRepository {
 
-    @Inject constructor(dao: TierDao) : this(dao, System::currentTimeMillis)
+    @Inject constructor(dao: TierDao, imageStore: TierImageStore) :
+        this(dao, imageStore, System::currentTimeMillis)
 
     override suspend fun getTierListById(id: Long): TierList? {
         return dao.getTierListWithTiers(id)?.toDomain()
@@ -43,6 +48,22 @@ class RoomTierRepository internal constructor(
         return dao.addMovieToPool(tierListId, title, imageUrl)
     }
 
+    override suspend fun addMoviesToPool(tierListId: Long, movies: List<PoolMovieDraft>) {
+        dao.addMoviesToPool(
+            tierListId,
+            movies.map { NewPoolMovie(title = it.title, imageUrl = it.imageUrl) },
+        )
+    }
+
+    override suspend fun attachImageToItem(itemId: Long, sourceUri: String) {
+        val copyPath = imageStore.copyToInternalStorage(sourceUri)
+        val previousImage = dao.getTierItemImageById(itemId)
+        dao.updateTierItemImage(itemId, copyPath)
+        if (previousImage != null) {
+            imageStore.deleteCopy(previousImage)
+        }
+    }
+
     override suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
         dao.moveItem(itemId, toTierId, toPosition)
     }
@@ -55,6 +76,27 @@ class RoomTierRepository internal constructor(
         colorDark: String,
     ): Long {
         return dao.addTier(tierListId, label, caption, colorLight, colorDark)
+    }
+
+    override suspend fun renameTier(id: Long, label: String, caption: String?) {
+        dao.renameTier(id, label, caption)
+    }
+
+    override suspend fun updateTierColors(id: Long, colorLight: String, colorDark: String) {
+        dao.updateTierColors(id, colorLight, colorDark)
+    }
+
+    override suspend fun deleteTier(id: Long) {
+        val tier = dao.getTierById(id) ?: return
+        // The list must always keep exactly one pool; the pool tier can't be deleted.
+        if (tier.isPool) return
+        dao.deleteTierById(id)
+        // The cascade removed item rows silently; sweep their image copies.
+        imageStore.deleteOrphans(dao.getAllImageRefs())
+    }
+
+    override suspend fun reorderTiers(orderedTierIds: List<Long>) {
+        dao.reorderTiers(orderedTierIds)
     }
 
     override suspend fun deleteTierLists(ids: List<Long>) {
@@ -77,14 +119,21 @@ class RoomTierRepository internal constructor(
     // nothing expires on its own.
     override suspend fun deleteTierListPermanently(id: Long) {
         dao.deleteTierListById(id)
+        // The cascade removed item rows (and their images) silently; sweep the copies.
+        imageStore.deleteOrphans(dao.getAllImageRefs())
     }
 
     override suspend fun deleteTierItemPermanently(id: Long) {
+        val imagePath = dao.getTierItemImageById(id)
         dao.deleteTierItemById(id)
+        if (imagePath != null) {
+            imageStore.deleteCopy(imagePath)
+        }
     }
 
     override suspend fun emptyTrash() {
         dao.emptyTrash()
+        imageStore.deleteOrphans(dao.getAllImageRefs())
     }
 
     override suspend fun getTrashEntries(): List<TrashEntry> {

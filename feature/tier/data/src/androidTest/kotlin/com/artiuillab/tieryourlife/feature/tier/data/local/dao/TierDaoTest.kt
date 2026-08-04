@@ -289,6 +289,194 @@ class TierDaoTest {
     }
 
     @Test
+    fun rename_tier_updates_label_and_caption_together() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTier = dao.getAllTiersByTierListId(listId).first()
+
+        dao.renameTier(sTier.id, label = "S+", caption = "Beyond words")
+
+        val renamed = requireNotNull(dao.getTierById(sTier.id))
+        assertEquals("S+", renamed.label)
+        assertEquals("Beyond words", renamed.caption)
+        // The rest of the tier is untouched.
+        assertEquals(sTier.position, renamed.position)
+        assertEquals(sTier.colorLight, renamed.colorLight)
+        assertEquals(sTier.colorDark, renamed.colorDark)
+    }
+
+    @Test
+    fun rename_tier_with_empty_caption_persists_empty_string_not_null() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTier = dao.getAllTiersByTierListId(listId).first()
+
+        dao.renameTier(sTier.id, label = "S+", caption = "")
+
+        assertEquals("", requireNotNull(dao.getTierById(sTier.id)).caption)
+    }
+
+    @Test
+    fun rename_tier_with_null_caption_clears_a_previously_set_one() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        // The default S tier is seeded with a caption ("Masterpiece"); renaming to
+        // null must actually clear it, not silently keep the old value.
+        val sTier = dao.getAllTiersByTierListId(listId).first()
+
+        dao.renameTier(sTier.id, label = "S+", caption = null)
+
+        assertNull(requireNotNull(dao.getTierById(sTier.id)).caption)
+    }
+
+    @Test
+    fun update_tier_colors_changes_both_theme_variants_without_touching_the_other_fields() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTier = dao.getAllTiersByTierListId(listId).first()
+
+        dao.updateTierColors(sTier.id, colorLight = "#ABCDEF", colorDark = "#FEDCBA")
+
+        val updated = requireNotNull(dao.getTierById(sTier.id))
+        assertEquals("#ABCDEF", updated.colorLight)
+        assertEquals("#FEDCBA", updated.colorDark)
+        assertEquals(sTier.label, updated.label)
+        assertEquals(sTier.caption, updated.caption)
+    }
+
+    @Test
+    fun reorder_tiers_gives_contiguous_positions_and_leaves_the_pool_where_it_was() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val allTiers = dao.getAllTiersByTierListId(listId)
+        val poolPosition = allTiers.single { it.isPool }.position
+        val rankedIds = allTiers.filterNot { it.isPool }.map { it.id }
+
+        // Only the ranked tier ids are sent, mirroring how the pool always sits last
+        // and is never part of a reorder call.
+        dao.reorderTiers(rankedIds.reversed())
+
+        val tiers = dao.getAllTiersByTierListId(listId)
+        val rankedTiers = tiers.filterNot { it.isPool }
+        assertEquals(rankedIds.reversed(), rankedTiers.map { it.id })
+        assertEquals((0 until rankedTiers.size).toList(), rankedTiers.map { it.position })
+        // Invariant: no repeated positions among the reordered tiers.
+        assertEquals(rankedTiers.size, rankedTiers.map { it.position }.toSet().size)
+        // The pool wasn't in the call, so its own position — and its place at the
+        // end of the ordered list — is untouched.
+        assertEquals(poolPosition, tiers.single { it.isPool }.position)
+        assertEquals("Unranked", tiers.last().label)
+    }
+
+    @Test
+    fun reorder_tiers_ignores_a_stale_id_for_an_already_deleted_tier() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val rankedTiers = dao.getAllTiersByTierListId(listId).filterNot { it.isPool }
+        val doomed = rankedTiers.first()
+        val survivorIds = rankedTiers.drop(1).map { it.id }
+        dao.deleteTierById(doomed.id)
+
+        // A caller working off stale state might still send the deleted tier's id; it
+        // must be dropped rather than crash or steal an index slot from a real tier.
+        dao.reorderTiers(listOf(doomed.id) + survivorIds.reversed())
+
+        val remaining = dao.getAllTiersByTierListId(listId).filterNot { it.isPool }
+        assertEquals(survivorIds.reversed(), remaining.map { it.id })
+        // If the stale id had consumed an index, these would start at 1, not 0.
+        assertEquals((0 until remaining.size).toList(), remaining.map { it.position })
+    }
+
+    @Test
+    fun bulk_add_movies_to_pool_appends_all_with_contiguous_positions_in_one_call() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val poolId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
+        dao.insertTierItem(tierItem(tierId = poolId, title = "Existing", position = 0))
+
+        dao.addMoviesToPool(
+            listId,
+            listOf(
+                NewPoolMovie(title = "Interstellar", imageUrl = "https://example.com/1.jpg"),
+                NewPoolMovie(title = "Arrival", imageUrl = null),
+                NewPoolMovie(title = "Moon", imageUrl = null),
+            ),
+        )
+
+        val poolItems = dao.getAllTierItemsByTierId(poolId)
+        assertEquals(listOf("Existing", "Interstellar", "Arrival", "Moon"), poolItems.map { it.title })
+        assertEquals(listOf(0, 1, 2, 3), poolItems.map { it.position })
+        assertEquals("https://example.com/1.jpg", poolItems[1].imageUrl)
+    }
+
+    @Test
+    fun bulk_add_movies_does_not_reuse_or_collide_with_a_trashed_items_old_position() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val poolId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
+        dao.insertTierItem(tierItem(tierId = poolId, title = "Active", position = 0))
+        val trashedId = dao.insertTierItem(tierItem(tierId = poolId, title = "Trashed", position = 1))
+        dao.markTierItemDeleted(trashedId, deletedAt = 1_000L)
+
+        dao.addMoviesToPool(listId, listOf(NewPoolMovie(title = "New", imageUrl = null)))
+
+        val poolItems = dao.getAllTierItemsByTierId(poolId)
+        // The trashed item is invisible to the active-items read the position count is
+        // based on, so the new item lands right after the one active item — not after
+        // the trashed item's old slot.
+        assertEquals(listOf("Active", "New"), poolItems.map { it.title })
+        assertEquals(listOf(0, 1), poolItems.map { it.position })
+    }
+
+    @Test
+    fun bulk_add_movies_to_the_pool_of_a_trashed_list_is_a_no_op() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val poolId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
+        dao.markTierListsDeleted(listOf(listId), deletedAt = 1_000L)
+
+        dao.addMoviesToPool(listId, listOf(NewPoolMovie(title = "New", imageUrl = null)))
+
+        assertTrue(dao.getAllTierItemsByTierId(poolId).isEmpty())
+    }
+
+    @Test
+    fun update_tier_item_image_persists_and_is_read_back() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val itemId = dao.insertTierItem(
+            tierItem(tierId = sTierId, title = "Interstellar", position = 0).copy(imageUrl = null),
+        )
+
+        dao.updateTierItemImage(itemId, "/data/user/0/app/files/tier_images/abc")
+
+        assertEquals("/data/user/0/app/files/tier_images/abc", dao.getTierItemImageById(itemId))
+    }
+
+    @Test
+    fun get_tier_item_image_by_id_finds_it_even_when_the_item_is_trashed() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val itemId = dao.insertTierItem(
+            tierItem(tierId = sTierId, title = "Interstellar", position = 0).copy(imageUrl = "/path/1"),
+        )
+        dao.markTierItemDeleted(itemId, deletedAt = 1_000L)
+
+        // Raw table read: the copy must still be found while an item sits in the trash,
+        // so permanently deleting it later can still clean up its file.
+        assertEquals("/path/1", dao.getTierItemImageById(itemId))
+    }
+
+    @Test
+    fun get_all_image_refs_includes_trashed_items_and_excludes_items_without_an_image() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        dao.insertTierItem(tierItem(tierId = sTierId, title = "A", position = 0).copy(imageUrl = "/path/1"))
+        dao.insertTierItem(tierItem(tierId = sTierId, title = "B", position = 1).copy(imageUrl = null))
+        val trashedWithImage = dao.insertTierItem(
+            tierItem(tierId = sTierId, title = "C", position = 2).copy(imageUrl = "/path/2"),
+        )
+        dao.markTierItemDeleted(trashedWithImage, deletedAt = 1_000L)
+
+        val refs = dao.getAllImageRefs()
+
+        // A trashed item's file copy is still referenced (it might be restored) and
+        // must not be reported as orphaned; an item with no image contributes nothing.
+        assertEquals(setOf("/path/1", "/path/2"), refs.toSet())
+    }
+
+    @Test
     fun get_tier_list_with_tiers_and_items_returns_full_graph() = runBlocking {
         val films = tierList()
         val filmsId = dao.insertTierList(films)

@@ -9,7 +9,11 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.database.TierDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
+import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolMovieDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import java.io.ByteArrayInputStream
+import java.io.File
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -23,6 +27,7 @@ class RoomTierRepositoryTest {
 
     private lateinit var database: TierDatabase
     private lateinit var dao: TierDao
+    private lateinit var imagesDir: File
     private lateinit var repository: RoomTierRepository
 
     @Before
@@ -33,12 +38,15 @@ class RoomTierRepositoryTest {
             TierDatabase::class.java,
         ).build()
         dao = database.tierDao()
-        repository = RoomTierRepository(dao)
+        imagesDir = File(context.cacheDir, "test_tier_images_${System.nanoTime()}")
+        val imageStore = TierImageStore(imagesDir) { uri -> ByteArrayInputStream("bytes of $uri".toByteArray()) }
+        repository = RoomTierRepository(dao, imageStore)
     }
 
     @After
     fun tearDown() {
         database.close()
+        imagesDir.deleteRecursively()
     }
 
     @Test
@@ -157,5 +165,64 @@ class RoomTierRepositoryTest {
         val targetTier = movedList.tiers.single { it.id == targetTierId }
         assertEquals(emptyList<String>(), sourceTier.items.map { it.title })
         assertEquals(listOf("Interstellar"), targetTier.items.map { it.title })
+    }
+
+    @Test
+    fun delete_tier_removes_it_and_cascades_its_items() = runBlocking {
+        val listId = repository.createTierList("Films")
+        val sTierId = requireNotNull(repository.getTierListById(listId)).tiers.single { it.label == "S" }.id
+        dao.insertTierItem(TierItemEntity(tierId = sTierId, position = 0, title = "Doomed", imageUrl = null))
+
+        repository.deleteTier(sTierId)
+
+        val list = requireNotNull(repository.getTierListById(listId))
+        assertNull(list.tiers.find { it.id == sTierId })
+    }
+
+    @Test
+    fun delete_tier_on_the_pool_is_a_no_op_and_exactly_one_pool_remains() = runBlocking {
+        val listId = repository.createTierList("Films")
+        val poolTierId = requireNotNull(repository.getTierListById(listId)).tiers.single { it.isPool }.id
+
+        repository.deleteTier(poolTierId)
+
+        val list = requireNotNull(repository.getTierListById(listId))
+        assertEquals(1, list.tiers.count { it.isPool })
+        assertEquals(poolTierId, list.tiers.single { it.isPool }.id)
+    }
+
+    @Test
+    fun rename_recolor_and_reorder_tiers_through_the_repository() = runBlocking {
+        val listId = repository.createTierList("Films")
+        val ranked = requireNotNull(repository.getTierListById(listId)).tiers.filterNot { it.isPool }
+        val sTierId = ranked.first { it.label == "S" }.id
+
+        repository.renameTier(sTierId, label = "S+", caption = "Legendary")
+        repository.updateTierColors(sTierId, colorLight = "#111111", colorDark = "#222222")
+        repository.reorderTiers(ranked.map { it.id }.reversed())
+
+        val updated = requireNotNull(repository.getTierListById(listId))
+        val sTier = updated.tiers.single { it.id == sTierId }
+        assertEquals("S+", sTier.label)
+        assertEquals("Legendary", sTier.caption)
+        assertEquals("#111111", sTier.colorLight)
+        assertEquals("#222222", sTier.colorDark)
+        assertEquals(ranked.map { it.id }.reversed(), updated.tiers.filterNot { it.isPool }.map { it.id })
+    }
+
+    @Test
+    fun bulk_add_movies_through_the_repository_appends_all_of_them_to_the_pool() = runBlocking {
+        val listId = repository.createTierList("Films")
+
+        repository.addMoviesToPool(
+            listId,
+            listOf(
+                PoolMovieDraft(title = "Interstellar", imageUrl = "https://example.com/1.jpg"),
+                PoolMovieDraft(title = "Arrival", imageUrl = null),
+            ),
+        )
+
+        val pool = requireNotNull(repository.getTierListById(listId)).tiers.single { it.isPool }
+        assertEquals(listOf("Interstellar", "Arrival"), pool.items.map { it.title })
     }
 }

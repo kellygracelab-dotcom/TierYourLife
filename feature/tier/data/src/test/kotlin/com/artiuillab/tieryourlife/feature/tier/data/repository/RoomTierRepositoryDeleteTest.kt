@@ -6,7 +6,10 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
+import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWithTiers
+import java.io.ByteArrayInputStream
+import java.nio.file.Files
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -17,7 +20,7 @@ class RoomTierRepositoryDeleteTest {
     fun `delete marks rows with the injected current time`() = runBlocking {
         val dao = RecordingTierDao()
         val fixedNow = 1_700_000_000_000L
-        val repository = RoomTierRepository(dao) { fixedNow }
+        val repository = RoomTierRepository(dao, testImageStore()) { fixedNow }
 
         repository.deleteTierLists(listOf(1L, 2L))
         repository.deleteTierItem(7L)
@@ -29,13 +32,18 @@ class RoomTierRepositoryDeleteTest {
     @Test
     fun `permanent delete removes single entries by id`() = runBlocking {
         val dao = RecordingTierDao()
-        val repository = RoomTierRepository(dao) { 0L }
+        val repository = RoomTierRepository(dao, testImageStore()) { 0L }
 
         repository.deleteTierListPermanently(3L)
         repository.deleteTierItemPermanently(9L)
 
         assertEquals(listOf(3L), dao.permanentlyDeletedListIds)
         assertEquals(listOf(9L), dao.permanentlyDeletedItemIds)
+    }
+
+    private fun testImageStore(): TierImageStore {
+        val directory = Files.createTempDirectory("tier_images_test").toFile()
+        return TierImageStore(directory) { uri -> ByteArrayInputStream("bytes of $uri".toByteArray()) }
     }
 }
 
@@ -76,6 +84,9 @@ private class RecordingTierDao : TierDao {
     override suspend fun deleteAllTrashedTierLists() = Unit
     override suspend fun deleteAllTrashedTierItems() = Unit
     override suspend fun insertTier(tier: TierEntity): Long = 0L
+    override suspend fun renameTier(id: Long, label: String, caption: String?) = Unit
+    override suspend fun updateTierColors(id: Long, colorLight: String, colorDark: String) = Unit
+    override suspend fun updateTierPosition(id: Long, position: Int) = Unit
     override suspend fun getTierById(id: Long): TierEntity? = null
     override suspend fun getAllTiersByTierListId(tierListId: Long): List<TierEntity> = emptyList()
     override suspend fun deleteTierById(id: Long): Int = 0
@@ -87,4 +98,7 @@ private class RecordingTierDao : TierDao {
     override suspend fun updateTierItemTierAndPosition(id: Long, tierId: Long, position: Int) = Unit
     override suspend fun compactTierPositionsAfter(tierId: Long, afterPosition: Int) = Unit
     override suspend fun shiftTierPositionsFrom(tierId: Long, fromPosition: Int) = Unit
+    override suspend fun updateTierItemImage(id: Long, imageUrl: String?) = Unit
+    override suspend fun getTierItemImageById(id: Long): String? = null
+    override suspend fun getAllImageRefs(): List<String> = emptyList()
 }
