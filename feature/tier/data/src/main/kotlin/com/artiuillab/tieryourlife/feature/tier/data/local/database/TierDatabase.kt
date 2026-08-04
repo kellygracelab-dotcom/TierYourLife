@@ -6,6 +6,8 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
+import com.artiuillab.tieryourlife.feature.tier.data.local.view.ActiveTierItemView
+import com.artiuillab.tieryourlife.feature.tier.data.local.view.ActiveTierListView
 
 @Database(
     entities = [
@@ -13,7 +15,11 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
         TierEntity::class,
         TierItemEntity::class,
     ],
-    version = 2,
+    views = [
+        ActiveTierListView::class,
+        ActiveTierItemView::class,
+    ],
+    version = 3,
     exportSchema = true,
 )
 abstract class TierDatabase : RoomDatabase() {
