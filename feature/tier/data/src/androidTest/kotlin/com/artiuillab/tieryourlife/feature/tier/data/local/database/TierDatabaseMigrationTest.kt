@@ -76,4 +76,46 @@ class TierDatabaseMigrationTest {
             )
         }
     }
+
+    @Test
+    fun migrate2To3_preservesExistingRowsAndLeavesThemAllAlive() {
+        helper.createDatabase(TEST_DB, 2).apply {
+            execSQL("INSERT INTO tier_lists (id, title) VALUES (1, 'Films')")
+            execSQL(
+                "INSERT INTO tiers (id, tierListId, position, label, caption, colorLight, colorDark, isPool) VALUES " +
+                    "(1, 1, 0, 'S', 'Masterpiece', '#B03A32', '#F1948C', 0)," +
+                    "(2, 1, 1, 'Unranked', NULL, '#DAD7E0', '#46464F', 1)",
+            )
+            execSQL(
+                "INSERT INTO tier_items (id, tierId, position, title, imageUrl) VALUES " +
+                    "(1, 1, 0, 'Interstellar', NULL)",
+            )
+            close()
+        }
+
+        val migrated = helper.runMigrationsAndValidate(TEST_DB, 3, true, MIGRATION_2_3)
+
+        val listCursor = migrated.query("SELECT title, deletedAt FROM active_tier_lists WHERE id = 1")
+        listCursor.use {
+            assertEquals(1, it.count)
+            it.moveToFirst()
+            assertEquals("Films", it.getString(it.getColumnIndexOrThrow("title")))
+            assertEquals(true, it.isNull(it.getColumnIndexOrThrow("deletedAt")))
+        }
+
+        val itemCursor = migrated.query("SELECT title, deletedAt FROM active_tier_items WHERE id = 1")
+        itemCursor.use {
+            assertEquals(1, it.count)
+            it.moveToFirst()
+            assertEquals("Interstellar", it.getString(it.getColumnIndexOrThrow("title")))
+            assertEquals(true, it.isNull(it.getColumnIndexOrThrow("deletedAt")))
+        }
+
+        val tierCursor = migrated.query("SELECT caption FROM tiers WHERE id = 1")
+        tierCursor.use {
+            assertEquals(1, it.count)
+            it.moveToFirst()
+            assertEquals("Masterpiece", it.getString(it.getColumnIndexOrThrow("caption")))
+        }
+    }
 }

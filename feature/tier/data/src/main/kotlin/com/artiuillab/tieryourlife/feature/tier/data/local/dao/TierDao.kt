@@ -73,21 +73,56 @@ interface TierDao {
     @Insert
     suspend fun insertTierList(tierList: TierListEntity): Long
 
-    @Query("SELECT * FROM tier_lists WHERE id = :id")
+    @Query("SELECT * FROM active_tier_lists WHERE id = :id")
     suspend fun getTierListById(id: Long): TierListEntity?
 
-    @Query("SELECT * FROM tier_lists ORDER BY id ASC")
+    @Query("SELECT * FROM active_tier_lists ORDER BY id ASC")
     suspend fun getAllTierLists(): List<TierListEntity>
 
     @Transaction
-    @Query("SELECT * FROM tier_lists WHERE id = :id")
+    @Query("SELECT * FROM active_tier_lists WHERE id = :id")
     suspend fun getTierListWithTiers(id: Long): TierListWithTiers?
 
     @Query("DELETE FROM tier_lists WHERE id = :id")
     suspend fun deleteTierListById(id: Long): Int
 
+    @Query("UPDATE tier_lists SET deletedAt = :deletedAt WHERE id IN (:ids)")
+    suspend fun markTierListsDeleted(ids: List<Long>, deletedAt: Long)
+
+    @Query("UPDATE tier_lists SET deletedAt = NULL WHERE id IN (:ids)")
+    suspend fun restoreTierLists(ids: List<Long>)
+
+    @Query(
+        """
+        SELECT l.id AS id, l.title AS title, l.deletedAt AS deletedAt,
+            (SELECT COUNT(*) FROM tier_items i
+                JOIN tiers t ON i.tierId = t.id
+                WHERE t.tierListId = l.id AND i.deletedAt IS NULL) AS itemCount
+        FROM tier_lists l
+        WHERE l.deletedAt IS NOT NULL
+        ORDER BY l.deletedAt DESC
+        """,
+    )
+    suspend fun getDeletedTierLists(): List<DeletedTierListRow>
+
+    // One transaction: either the whole trash is gone or none of it.
+    @Transaction
+    suspend fun emptyTrash() {
+        deleteAllTrashedTierLists()
+        deleteAllTrashedTierItems()
+    }
+
+    @Query("DELETE FROM tier_lists WHERE deletedAt IS NOT NULL")
+    suspend fun deleteAllTrashedTierLists()
+
+    @Query("DELETE FROM tier_items WHERE deletedAt IS NOT NULL")
+    suspend fun deleteAllTrashedTierItems()
+
     @Insert
     suspend fun insertTier(tier: TierEntity): Long
+
+    @Query("SELECT * FROM tiers WHERE id = :id")
+    suspend fun getTierById(id: Long): TierEntity?
 
     @Query("SELECT * FROM tiers WHERE tierListId = :tierListId ORDER BY position ASC")
     suspend fun getAllTiersByTierListId(tierListId: Long): List<TierEntity>
@@ -126,11 +161,34 @@ interface TierDao {
     @Insert
     suspend fun insertTierItem(tierItem: TierItemEntity): Long
 
-    @Query("SELECT * FROM tier_items WHERE tierId = :tierId ORDER BY position ASC")
+    @Query("SELECT * FROM active_tier_items WHERE tierId = :tierId ORDER BY position ASC")
     suspend fun getAllTierItemsByTierId(tierId: Long): List<TierItemEntity>
 
-    @Query("SELECT * FROM tier_items WHERE id = :id")
+    @Query("SELECT * FROM active_tier_items WHERE id = :id")
     suspend fun getTierItemById(id: Long): TierItemEntity?
+
+    @Query("DELETE FROM tier_items WHERE id = :id")
+    suspend fun deleteTierItemById(id: Long): Int
+
+    @Query("UPDATE tier_items SET deletedAt = :deletedAt WHERE id = :id")
+    suspend fun markTierItemDeleted(id: Long, deletedAt: Long)
+
+    @Query("UPDATE tier_items SET deletedAt = NULL WHERE id = :id")
+    suspend fun restoreTierItem(id: Long)
+
+    // Items whose list is also trashed are represented by the list row, not listed twice.
+    @Query(
+        """
+        SELECT i.id AS id, i.title AS title, i.deletedAt AS deletedAt,
+            t.isPool AS wasInPool, l.title AS listTitle
+        FROM tier_items i
+        JOIN tiers t ON i.tierId = t.id
+        JOIN tier_lists l ON t.tierListId = l.id
+        WHERE i.deletedAt IS NOT NULL AND l.deletedAt IS NULL
+        ORDER BY i.deletedAt DESC
+        """,
+    )
+    suspend fun getDeletedTierItems(): List<DeletedTierItemRow>
 
     @Query("UPDATE tier_items SET position = :position WHERE id = :id")
     suspend fun updateTierItemPosition(id: Long, position: Int)
@@ -148,7 +206,12 @@ interface TierDao {
     // rows the same position mid-statement. Adding that index would break every non-append insert.
     @Transaction
     suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
+        // Both reads go through the active views, so a deleted item or a tier whose
+        // list is trashed cancels the move here instead of relocating it.
         val item = getTierItemById(itemId) ?: return
+        val targetTier = getTierById(toTierId) ?: return
+        if (getTierListById(targetTier.tierListId) == null) return
+
         val fromTierId = item.tierId
 
         if (fromTierId == toTierId) {

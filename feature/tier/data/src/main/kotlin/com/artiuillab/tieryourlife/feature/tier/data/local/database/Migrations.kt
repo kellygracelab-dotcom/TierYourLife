@@ -15,3 +15,14 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
         db.execSQL("UPDATE tiers SET caption = 'No' WHERE label = 'D'")
     }
 }
+
+// New columns default to NULL, so every existing row is "alive" without a backfill.
+// View SQL must match Room's generated schema exactly or migration validation fails.
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN deletedAt INTEGER")
+        db.execSQL("ALTER TABLE tier_items ADD COLUMN deletedAt INTEGER")
+        db.execSQL("CREATE VIEW `active_tier_lists` AS SELECT * FROM tier_lists WHERE deletedAt IS NULL")
+        db.execSQL("CREATE VIEW `active_tier_items` AS SELECT * FROM tier_items WHERE deletedAt IS NULL")
+    }
+}

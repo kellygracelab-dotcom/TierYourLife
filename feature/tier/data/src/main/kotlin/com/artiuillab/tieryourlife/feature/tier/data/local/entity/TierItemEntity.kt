@@ -27,4 +27,6 @@ data class TierItemEntity(
     val position: Int,
     val title: String,
     val imageUrl: String?,
+    // Soft delete: epoch millis when the item was moved to trash, null = alive.
+    val deletedAt: Long? = null,
 )
