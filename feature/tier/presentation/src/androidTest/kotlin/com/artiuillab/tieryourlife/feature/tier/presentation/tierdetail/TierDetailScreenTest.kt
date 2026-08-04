@@ -691,6 +691,28 @@ class TierDetailScreenTest {
     }
 
     @Test
+    fun tierEditorTitle_inAddMode_readsAddTier() {
+        setScreen(TierDetailUiState.Success(defaultList()))
+
+        openTierEditor()
+
+        composeRule.onNodeWithText("Add tier").assertIsDisplayed()
+    }
+
+    @Test
+    fun tierEditorTitle_inEditMode_readsEditTier() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).performTouchInput { doubleClick() }
+
+        composeRule.onNodeWithText("Edit tier").assertIsDisplayed()
+    }
+
+    @Test
     fun listSettings_marksTheListsCurrentDisplayModeSelected() {
         val list = listOf(tier(id = 1, label = "S", items = List(1) { movie(it) }))
             .asTierList(displayMode = TierListDisplayMode.HORIZONTAL_SCROLL)

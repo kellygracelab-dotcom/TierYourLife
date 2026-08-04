@@ -47,3 +47,10 @@ internal fun PlusIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale
         StrokeCap.Round,
     )
 }
+
+@Composable
+internal fun ClearIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.7f * scale
+    drawLine(color, Offset(7f * scale, 7f * scale), Offset(17f * scale, 17f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(17f * scale, 7f * scale), Offset(7f * scale, 17f * scale), stroke, StrokeCap.Round)
+}

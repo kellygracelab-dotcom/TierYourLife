@@ -2,7 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.repository
 
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbApi
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.MovieSearchResult
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.MovieSearchRepository
 import retrofit2.HttpException
 import java.io.IOException
@@ -14,7 +14,7 @@ class MovieSearchRepositoryTmdbImpl @Inject constructor(
 
     override suspend fun searchMovies(
         query: String,
-    ): Result<List<TierItem>> {
+    ): Result<List<MovieSearchResult>> {
         val normalizedQuery = query.trim()
 
         if (normalizedQuery.isEmpty()) {

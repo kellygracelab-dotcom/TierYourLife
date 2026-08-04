@@ -43,11 +43,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColor
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
 // One sheet, two modes: passing initialTier is the only difference between adding a
-// new tier and editing an existing one — the fields it opens with, not a second sheet
-// or a branch on what the title says. The title reads "Edit tier" either way (that's
-// the mock's own text for this sheet, from before this task, and it already fits
-// editing a tier better than it ever fit adding one — no separate string needed since
-// the two modes don't actually need different words here).
+// new tier and editing an existing one — the fields it opens with, not a second sheet.
+// The title does branch on it, though: "Edit tier" is the mock's own text and stays
+// exactly as-is for edit mode, but showing that same text while adding a tier would
+// mislabel the action, so add mode gets its own string.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TierEditorSheet(
@@ -71,7 +70,9 @@ internal fun TierEditorSheet(
     ) {
         Column(Modifier.testTag(TierDetailTestTags.TIER_EDITOR_SHEET)) {
             Text(
-                text = stringResource(R.string.tier_editor_title),
+                text = stringResource(
+                    if (initialTier == null) R.string.tier_editor_add_title else R.string.tier_editor_title,
+                ),
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 2.dp),
                 fontSize = 24.sp,
                 lineHeight = 32.sp,
