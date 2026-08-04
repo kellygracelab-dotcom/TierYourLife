@@ -29,4 +29,8 @@ class RoomTierRepository @Inject constructor(
     ): Long {
         return dao.addMovieToPool(tierListId, title, imageUrl)
     }
+
+    override suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
+        dao.moveItem(itemId, toTierId, toPosition)
+    }
 }

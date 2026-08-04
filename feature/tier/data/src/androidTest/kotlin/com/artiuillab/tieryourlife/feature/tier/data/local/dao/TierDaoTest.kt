@@ -230,6 +230,229 @@ class TierDaoTest {
         assertEquals(aItem.title, actualATier.items.single().title)
     }
 
+    @Test
+    fun move_item_from_pool_to_ranked_tier_relocates_item() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val poolTierId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val itemId = dao.addMovieToPool(tierListId = listId, title = "Interstellar", imageUrl = null)
+
+        dao.moveItem(itemId = itemId, toTierId = sTierId, toPosition = 0)
+
+        assertTrue(dao.getAllTierItemsByTierId(poolTierId).isEmpty())
+        val sItems = dao.getAllTierItemsByTierId(sTierId)
+        assertEquals(listOf(itemId), sItems.map { it.id })
+        assertEquals(listOf(0), sItems.map { it.position })
+    }
+
+    @Test
+    fun move_item_from_ranked_tier_to_pool_relocates_item() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val poolTierId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val itemId = dao.insertTierItem(tierItem(tierId = sTierId, title = "Interstellar", position = 0))
+
+        dao.moveItem(itemId = itemId, toTierId = poolTierId, toPosition = 0)
+
+        assertTrue(dao.getAllTierItemsByTierId(sTierId).isEmpty())
+        val poolItems = dao.getAllTierItemsByTierId(poolTierId)
+        assertEquals(listOf(itemId), poolItems.map { it.id })
+        assertEquals(listOf(0), poolItems.map { it.position })
+    }
+
+    @Test
+    fun move_item_between_two_ranked_tiers_relocates_item() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
+        val itemId = dao.insertTierItem(tierItem(tierId = sTierId, title = "Interstellar", position = 0))
+
+        dao.moveItem(itemId = itemId, toTierId = aTierId, toPosition = 0)
+
+        assertTrue(dao.getAllTierItemsByTierId(sTierId).isEmpty())
+        assertEquals(listOf(itemId), dao.getAllTierItemsByTierId(aTierId).map { it.id })
+    }
+
+    @Test
+    fun move_item_into_tier_at_start_shifts_existing_items() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
+        val first = dao.insertTierItem(tierItem(tierId = aTierId, title = "First", position = 0))
+        val second = dao.insertTierItem(tierItem(tierId = aTierId, title = "Second", position = 1))
+        val moved = dao.insertTierItem(tierItem(tierId = sTierId, title = "Moved", position = 0))
+
+        dao.moveItem(itemId = moved, toTierId = aTierId, toPosition = 0)
+
+        val items = dao.getAllTierItemsByTierId(aTierId)
+        assertEquals(listOf(moved, first, second), items.map { it.id })
+        assertEquals(listOf(0, 1, 2), items.map { it.position })
+    }
+
+    @Test
+    fun move_item_into_tier_in_the_middle_shifts_later_items() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
+        val first = dao.insertTierItem(tierItem(tierId = aTierId, title = "First", position = 0))
+        val second = dao.insertTierItem(tierItem(tierId = aTierId, title = "Second", position = 1))
+        val moved = dao.insertTierItem(tierItem(tierId = sTierId, title = "Moved", position = 0))
+
+        dao.moveItem(itemId = moved, toTierId = aTierId, toPosition = 1)
+
+        val items = dao.getAllTierItemsByTierId(aTierId)
+        assertEquals(listOf(first, moved, second), items.map { it.id })
+        assertEquals(listOf(0, 1, 2), items.map { it.position })
+    }
+
+    @Test
+    fun move_item_into_tier_at_end_appends_after_existing_items() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
+        val first = dao.insertTierItem(tierItem(tierId = aTierId, title = "First", position = 0))
+        val second = dao.insertTierItem(tierItem(tierId = aTierId, title = "Second", position = 1))
+        val moved = dao.insertTierItem(tierItem(tierId = sTierId, title = "Moved", position = 0))
+
+        dao.moveItem(itemId = moved, toTierId = aTierId, toPosition = 2)
+
+        val items = dao.getAllTierItemsByTierId(aTierId)
+        assertEquals(listOf(first, second, moved), items.map { it.id })
+        assertEquals(listOf(0, 1, 2), items.map { it.position })
+    }
+
+    @Test
+    fun move_item_with_out_of_range_position_appends_to_end() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
+        val first = dao.insertTierItem(tierItem(tierId = aTierId, title = "First", position = 0))
+        val moved = dao.insertTierItem(tierItem(tierId = sTierId, title = "Moved", position = 0))
+
+        dao.moveItem(itemId = moved, toTierId = aTierId, toPosition = 999)
+
+        val items = dao.getAllTierItemsByTierId(aTierId)
+        assertEquals(listOf(first, moved), items.map { it.id })
+        assertEquals(listOf(0, 1), items.map { it.position })
+    }
+
+    @Test
+    fun move_last_item_out_of_tier_leaves_source_tier_empty() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
+        val moved = dao.insertTierItem(tierItem(tierId = sTierId, title = "Moved", position = 0))
+
+        dao.moveItem(itemId = moved, toTierId = aTierId, toPosition = 0)
+
+        assertTrue(dao.getAllTierItemsByTierId(sTierId).isEmpty())
+        val items = dao.getAllTierItemsByTierId(aTierId)
+        assertEquals(listOf(moved), items.map { it.id })
+        assertEquals(listOf(0), items.map { it.position })
+    }
+
+    @Test
+    fun move_item_within_same_tier_reorders_without_losing_items() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val first = dao.insertTierItem(tierItem(tierId = sTierId, title = "First", position = 0))
+        val second = dao.insertTierItem(tierItem(tierId = sTierId, title = "Second", position = 1))
+        val third = dao.insertTierItem(tierItem(tierId = sTierId, title = "Third", position = 2))
+
+        dao.moveItem(itemId = third, toTierId = sTierId, toPosition = 0)
+
+        val items = dao.getAllTierItemsByTierId(sTierId)
+        assertEquals(listOf(third, first, second), items.map { it.id })
+        assertEquals(listOf(0, 1, 2), items.map { it.position })
+    }
+
+    @Test
+    fun move_item_within_same_tier_to_start_reorders_and_stays_contiguous() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val first = dao.insertTierItem(tierItem(tierId = sTierId, title = "First", position = 0))
+        val second = dao.insertTierItem(tierItem(tierId = sTierId, title = "Second", position = 1))
+        val third = dao.insertTierItem(tierItem(tierId = sTierId, title = "Third", position = 2))
+        val fourth = dao.insertTierItem(tierItem(tierId = sTierId, title = "Fourth", position = 3))
+
+        dao.moveItem(itemId = fourth, toTierId = sTierId, toPosition = 0)
+
+        val items = dao.getAllTierItemsByTierId(sTierId)
+        assertEquals(listOf(fourth, first, second, third), items.map { it.id })
+        assertEquals(listOf(0, 1, 2, 3), items.map { it.position })
+    }
+
+    @Test
+    fun move_item_within_same_tier_to_middle_reorders_and_stays_contiguous() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val first = dao.insertTierItem(tierItem(tierId = sTierId, title = "First", position = 0))
+        val second = dao.insertTierItem(tierItem(tierId = sTierId, title = "Second", position = 1))
+        val third = dao.insertTierItem(tierItem(tierId = sTierId, title = "Third", position = 2))
+        val fourth = dao.insertTierItem(tierItem(tierId = sTierId, title = "Fourth", position = 3))
+
+        dao.moveItem(itemId = fourth, toTierId = sTierId, toPosition = 1)
+
+        val items = dao.getAllTierItemsByTierId(sTierId)
+        assertEquals(listOf(first, fourth, second, third), items.map { it.id })
+        assertEquals(listOf(0, 1, 2, 3), items.map { it.position })
+    }
+
+    @Test
+    fun move_item_within_same_tier_to_end_reorders_and_stays_contiguous() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val first = dao.insertTierItem(tierItem(tierId = sTierId, title = "First", position = 0))
+        val second = dao.insertTierItem(tierItem(tierId = sTierId, title = "Second", position = 1))
+        val third = dao.insertTierItem(tierItem(tierId = sTierId, title = "Third", position = 2))
+        val fourth = dao.insertTierItem(tierItem(tierId = sTierId, title = "Fourth", position = 3))
+
+        dao.moveItem(itemId = first, toTierId = sTierId, toPosition = 3)
+
+        val items = dao.getAllTierItemsByTierId(sTierId)
+        assertEquals(listOf(second, third, fourth, first), items.map { it.id })
+        assertEquals(listOf(0, 1, 2, 3), items.map { it.position })
+    }
+
+    @Test
+    fun move_item_within_same_tier_forward_past_later_items_lands_on_requested_index() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val first = dao.insertTierItem(tierItem(tierId = sTierId, title = "First", position = 0))
+        val second = dao.insertTierItem(tierItem(tierId = sTierId, title = "Second", position = 1))
+        val third = dao.insertTierItem(tierItem(tierId = sTierId, title = "Third", position = 2))
+        val fourth = dao.insertTierItem(tierItem(tierId = sTierId, title = "Fourth", position = 3))
+
+        // toPosition is an index into the sibling list with `first` already removed:
+        // [second, third, fourth]. Index 2 lands `first` right before `fourth`.
+        dao.moveItem(itemId = first, toTierId = sTierId, toPosition = 2)
+
+        val items = dao.getAllTierItemsByTierId(sTierId)
+        assertEquals(listOf(second, third, first, fourth), items.map { it.id })
+        assertEquals(listOf(0, 1, 2, 3), items.map { it.position })
+    }
+
+    @Test
+    fun move_item_leaves_source_and_target_positions_contiguous_without_duplicates() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
+        dao.insertTierItem(tierItem(tierId = sTierId, title = "S1", position = 0))
+        val moved = dao.insertTierItem(tierItem(tierId = sTierId, title = "S2", position = 1))
+        dao.insertTierItem(tierItem(tierId = sTierId, title = "S3", position = 2))
+        dao.insertTierItem(tierItem(tierId = aTierId, title = "A1", position = 0))
+        dao.insertTierItem(tierItem(tierId = aTierId, title = "A2", position = 1))
+
+        dao.moveItem(itemId = moved, toTierId = aTierId, toPosition = 1)
+
+        val sourcePositions = dao.getAllTierItemsByTierId(sTierId).map { it.position }
+        val targetPositions = dao.getAllTierItemsByTierId(aTierId).map { it.position }
+        assertEquals(listOf(0, 1), sourcePositions)
+        assertEquals(setOf(0, 1), sourcePositions.toSet())
+        assertEquals(listOf(0, 1, 2), targetPositions)
+        assertEquals(setOf(0, 1, 2), targetPositions.toSet())
+    }
+
     private fun tierList(title: String = "Films"): TierListEntity = TierListEntity(
         title = title,
     )
