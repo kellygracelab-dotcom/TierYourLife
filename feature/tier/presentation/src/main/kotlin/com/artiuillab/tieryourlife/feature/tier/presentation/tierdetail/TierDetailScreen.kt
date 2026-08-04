@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,10 +27,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -43,13 +49,16 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddMovieSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.FloatingDragTile
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.MoveItemSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.NoteAddIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PoolPanel
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierRow
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TrashTarget
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
+import kotlinx.coroutines.launch
 
 // testTag constants shared between production UI and instrumentation tests, so
 // the two never drift out of sync.
@@ -61,6 +70,8 @@ internal object TierDetailTestTags {
     const val MOVE_SHEET = "tier_detail_move_sheet"
     const val MOVE_SHEET_REMOVE = "tier_detail_move_sheet_remove"
     const val MOVE_SHEET_POOL = "tier_detail_move_sheet_pool"
+    const val TRASH_TARGET = "tier_detail_trash_target"
+    const val DELETED_ITEM_SNACKBAR = "tier_detail_deleted_item_snackbar"
     fun tierRow(tierId: Long): String = "tier_detail_row_$tierId"
     fun tierItems(tierId: Long): String = "tier_detail_items_$tierId"
     fun tile(itemId: Long): String = "tier_detail_tile_$itemId"
@@ -81,6 +92,7 @@ fun TierDetailScreen(
         onAddClick = { addSheetVisible = true },
         onMoveItem = viewModel::moveItem,
         onDeleteItem = viewModel::deleteItem,
+        onRestoreItem = viewModel::restoreItem,
     )
 
     if (addSheetVisible) {
@@ -101,6 +113,7 @@ fun TierDetailScreenContent(
     onAddClick: () -> Unit,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
     onDeleteItem: (itemId: Long) -> Unit = {},
+    onRestoreItem: (itemId: Long) -> Unit = {},
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -125,6 +138,7 @@ fun TierDetailScreenContent(
                     onAddClick = onAddClick,
                     onMoveItem = onMoveItem,
                     onDeleteItem = onDeleteItem,
+                    onRestoreItem = onRestoreItem,
                 )
             }
 
@@ -149,13 +163,46 @@ private fun TierScreenBody(
     onAddClick: () -> Unit,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
     onDeleteItem: (itemId: Long) -> Unit,
+    onRestoreItem: (itemId: Long) -> Unit,
 ) {
     val rankedTiers = list.tiers.filterNot { it.isPool }
     val pool = list.tiers.firstOrNull { it.isPool }
     val dragController = remember { TierDragController() }
     var chooserItemId by remember { mutableStateOf<Long?>(null) }
 
-    Box(Modifier.fillMaxSize()) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val deletedMessageTemplate = stringResource(R.string.tier_detail_item_moved_to_trash)
+    val undoLabel = stringResource(R.string.tier_detail_snackbar_undo)
+
+    // The one place both delete paths (drag to trash, remove from the move sheet)
+    // funnel through, so there is exactly one message per deletion.
+    val deleteAndAnnounce: (Long) -> Unit = { itemId ->
+        val title = list.tiers.flatMap { it.items }.firstOrNull { it.id == itemId }?.title.orEmpty()
+        onDeleteItem(itemId)
+        // Replace, don't queue: a second removal while the snackbar is up shouldn't
+        // leave the user reaching for an Undo that belongs to a different poster.
+        snackbarHostState.currentSnackbarData?.dismiss()
+        coroutineScope.launch {
+            val result = snackbarHostState.showSnackbar(
+                message = String.format(deletedMessageTemplate, title),
+                actionLabel = undoLabel,
+                // Deletion already happened; Undo is an offer, not a question, so this
+                // must not use the implicit Indefinite default a non-null actionLabel
+                // gets otherwise — that variant is for choices blocking further action.
+                // Short, not Long: this fires on a frequent action (deleting posters one
+                // after another), so it shouldn't linger in the way any longer than it has to.
+                duration = SnackbarDuration.Short,
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                onRestoreItem(itemId)
+            }
+        }
+    }
+
+    val density = LocalDensity.current
+
+    BoxWithConstraints(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
             TierScreenTopBar(title = list.title, onBack = onBack, onManualAdd = onAddClick)
 
@@ -171,6 +218,7 @@ private fun TierScreenBody(
                         tier = tier,
                         dragController = dragController,
                         onMoveItem = onMoveItem,
+                        onDeleteItem = deleteAndAnnounce,
                         onDoubleTap = { itemId -> chooserItemId = itemId },
                     )
                 }
@@ -182,14 +230,38 @@ private fun TierScreenBody(
                     onAddClick = onAddClick,
                     dragController = dragController,
                     onMoveItem = onMoveItem,
+                    onDeleteItem = deleteAndAnnounce,
                     onDoubleTap = { itemId -> chooserItemId = itemId },
                 )
             }
         }
 
         if (dragController.isDragging) {
+            TrashTarget(
+                dragController = dragController,
+                poolTierId = pool?.id,
+                modifier = Modifier.align(Alignment.TopEnd),
+            )
             FloatingDragTile(dragController)
         }
+
+        // Anchored 16dp above the pool's own measured top — same "raised, not resting
+        // on the pool" idea the mock uses for the trash target — rather than a fixed
+        // dp guess from the screen edge, which drifts into an overlap once the pool's
+        // own navigationBarsPadding makes it taller than the mock's own layout assumed.
+        val poolTop = pool?.id?.let { dragController.tierBounds(it)?.top }
+        val bottomGap = if (poolTop != null) {
+            (maxHeight - with(density) { poolTop.toDp() }) + 16.dp
+        } else {
+            16.dp
+        }
+
+        DeletedItemSnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(start = 16.dp, end = 16.dp, bottom = bottomGap),
+        )
     }
 
     val chosenId = chooserItemId
@@ -206,7 +278,7 @@ private fun TierScreenBody(
                 chooserItemId = null
             },
             onRemove = {
-                onDeleteItem(chosenId)
+                deleteAndAnnounce(chosenId)
                 chooserItemId = null
             },
             onDismiss = { chooserItemId = null },

@@ -60,4 +60,11 @@ class TierDetailViewModel @Inject constructor(
             loadTierList()
         }
     }
+
+    fun restoreItem(itemId: Long) {
+        viewModelScope.launch {
+            repository.restoreTierItem(itemId)
+            loadTierList()
+        }
+    }
 }

@@ -82,3 +82,10 @@ internal fun SouthIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scal
     drawLine(color, Offset(12f * scale, 20f * scale), Offset(6f * scale, 14f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(12f * scale, 20f * scale), Offset(18f * scale, 14f * scale), stroke, StrokeCap.Round)
 }
+
+@Composable
+internal fun DeleteFilledIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    drawRoundRect(color, Offset(9f * scale, 3.5f * scale), Size(6f * scale, 2.5f * scale), CornerRadius(1f * scale))
+    drawRoundRect(color, Offset(4f * scale, 6f * scale), Size(16f * scale, 2f * scale), CornerRadius(1f * scale))
+    drawRoundRect(color, Offset(6f * scale, 8f * scale), Size(12f * scale, 12f * scale), CornerRadius(2f * scale))
+}
