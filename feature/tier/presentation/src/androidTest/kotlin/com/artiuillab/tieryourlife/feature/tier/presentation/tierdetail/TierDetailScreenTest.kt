@@ -4,18 +4,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.doubleClick
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
@@ -720,44 +721,78 @@ class TierDetailScreenTest {
     }
 
     @Test
-    fun renamingList_returnsTheNewTitle() {
-        var renamedTo: String? = null
+    fun tappingHeaderTitle_turnsItIntoAnEditableField() {
+        setScreen(TierDetailUiState.Success(defaultList()))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performClick()
+
+        // A plain Text node carries no text-input semantics action; this only
+        // succeeds once the tap has swapped it for the editable field.
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).assert(hasSetTextAction())
+    }
+
+    @Test
+    fun editingHeaderTitle_savesTheNewTitleExactlyOnce() {
+        var callCount = 0
+        var savedTitle: String? = null
         setScreen(
             TierDetailUiState.Success(defaultList()),
-            onRenameList = { title -> renamedTo = title },
+            onRenameList = { title ->
+                callCount++
+                savedTitle = title
+            },
         )
 
-        openListSettings()
-        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_RENAME_ROW).performClick()
-        composeRule.onNodeWithTag(TierDetailTestTags.RENAME_DIALOG_FIELD).performTextClearance()
-        composeRule.onNodeWithTag(TierDetailTestTags.RENAME_DIALOG_FIELD).performTextInput("Best sci-fi ever")
-        composeRule.onNodeWithTag(TierDetailTestTags.RENAME_DIALOG_SAVE).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performTextClearance()
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performTextInput("Best sci-fi ever")
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performImeAction()
 
-        composeRule.runOnIdle { assertEquals("Best sci-fi ever", renamedTo) }
+        composeRule.runOnIdle {
+            assertEquals(1, callCount)
+            assertEquals("Best sci-fi ever", savedTitle)
+        }
     }
 
-    // Not specified by the mock (only the settings row that opens renaming is shown, not
-    // the rename UI itself) — this mirrors the only existing precedent for a required text
-    // field in this app: the tier editor's Label field disables Save on a blank value.
+    // Same rule the tier editor's Label field already enforces on a blank value: nothing
+    // is saved. There's no separate Save button here to disable, so the equivalent is
+    // that committing a blank field is simply a no-op — onRenameList is never invoked,
+    // and the header falls back to the title it already had.
     @Test
-    fun renamingList_withBlankTitle_disablesSave() {
+    fun editingHeaderTitle_withBlankTitle_doesNotSaveAndKeepsTheOldTitle() {
+        var callCount = 0
+        setScreen(
+            TierDetailUiState.Success(defaultList()),
+            onRenameList = { callCount++ },
+        )
+
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performTextClearance()
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performImeAction()
+
+        composeRule.runOnIdle { assertEquals(0, callCount) }
+        composeRule.onNodeWithText("Sci-fi films").assertIsDisplayed()
+    }
+
+    @Test
+    fun listSettings_noLongerHasARenameRow() {
         setScreen(TierDetailUiState.Success(defaultList()))
 
         openListSettings()
-        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_RENAME_ROW).performClick()
-        composeRule.onNodeWithTag(TierDetailTestTags.RENAME_DIALOG_FIELD).performTextClearance()
 
-        composeRule.onNodeWithTag(TierDetailTestTags.RENAME_DIALOG_SAVE).assertIsNotEnabled()
+        composeRule.onNodeWithText("Rename list").assertDoesNotExist()
     }
 
     @Test
-    fun renamingList_withNonBlankTitle_keepsSaveEnabled() {
+    fun listSettings_stillShowsDisplayModeOptionsAndNewTierRowAfterRenameRowRemoval() {
         setScreen(TierDetailUiState.Success(defaultList()))
 
         openListSettings()
-        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_RENAME_ROW).performClick()
 
-        composeRule.onNodeWithTag(TierDetailTestTags.RENAME_DIALOG_SAVE).assertIsEnabled()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_WRAP).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_STRIP).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_RANKED).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).assertIsDisplayed()
     }
 
     @Test

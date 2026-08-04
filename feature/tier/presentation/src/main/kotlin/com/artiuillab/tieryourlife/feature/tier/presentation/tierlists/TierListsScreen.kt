@@ -26,13 +26,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +44,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -60,11 +65,42 @@ fun TierListsScreen(
     viewModel: TierListsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    OnResumeEffect(onResume = viewModel::loadTierLists)
+
     TierListsScreenContent(
         state = state,
         onTierListClick = onTierListClick,
         onToggleTheme = onToggleTheme,
     )
+}
+
+// Reads happen here, not in the view model's init: the view model survives both a
+// round trip to the detail screen and a configuration change, so an init-time load
+// only ever covers the very first appearance — renaming, deleting, restoring or
+// changing the display mode on the detail screen would never be reflected back here.
+//
+// LocalLifecycleOwner inside a navigation-compose destination is the back stack
+// entry's own lifecycle, not the activity's: it pauses while another destination is
+// on top and resumes when this one is back on top, which is exactly "returned to
+// this screen" — recomposition alone never toggles it, so an unrelated state change
+// elsewhere on the screen can't trigger a second read. Lifecycle.addObserver also
+// delivers a catch-up ON_RESUME the moment it is registered on an already-resumed
+// lifecycle, which is what covers the very first appearance without a second,
+// separate trigger for it.
+@Composable
+internal fun OnResumeEffect(onResume: () -> Unit) {
+    val currentOnResume by rememberUpdatedState(onResume)
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                currentOnResume()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 }
 
 @Composable

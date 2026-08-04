@@ -1,0 +1,227 @@
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
+
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolMovieDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.yield
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import org.junit.runner.RunWith
+
+// Runs as an instrumented test, not a plain JVM unit test: TierListsViewModel uses
+// viewModelScope, which needs a real Main dispatcher — available on the device, not
+// in a bare JVM test without adding kotlinx-coroutines-test as a dependency.
+@RunWith(AndroidJUnit4::class)
+class TierListsViewModelTest {
+
+    @Test
+    fun loadTierLists_showsExactlyWhatTheRepositoryReturned_noneAdded() = runBlocking {
+        val repository = FakeTierRepository(
+            initial = listOf(
+                fakeList(id = 1, title = "Existing list"),
+                fakeList(id = 2, title = "Another list"),
+            ),
+        )
+        val viewModel = TierListsViewModel(repository)
+
+        viewModel.loadTierLists()
+        val state = viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success
+
+        assertEquals(listOf(1L, 2L), state.lists.map { it.id })
+        assertEquals(listOf("Existing list", "Another list"), state.lists.map { it.title })
+    }
+
+    @Test
+    fun secondLoad_afterARenameOnTheRepository_showsTheNewTitle() = runBlocking {
+        val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))
+        val viewModel = TierListsViewModel(repository)
+
+        viewModel.loadTierLists()
+        viewModel.state.first { it is TierListsUiState.Success }
+
+        // Stands in for the detail screen renaming the list directly through the
+        // repository while this screen's view model instance is still alive.
+        repository.renameTierList(1, "New title")
+
+        viewModel.loadTierLists()
+        val state = viewModel.state.first {
+            it is TierListsUiState.Success && it.lists.singleOrNull()?.title == "New title"
+        } as TierListsUiState.Success
+
+        assertEquals(listOf("New title"), state.lists.map { it.title })
+    }
+
+    @Test
+    fun secondLoad_afterADeletionOnTheRepository_dropsTheDeletedList() = runBlocking {
+        val repository = FakeTierRepository(
+            initial = listOf(
+                fakeList(id = 1, title = "Keeps existing"),
+                fakeList(id = 2, title = "Gets deleted"),
+            ),
+        )
+        val viewModel = TierListsViewModel(repository)
+
+        viewModel.loadTierLists()
+        viewModel.state.first { it is TierListsUiState.Success }
+
+        // Stands in for the detail screen (or its trash) deleting the list directly
+        // through the repository while this screen's view model instance is still alive.
+        repository.deleteTierLists(listOf(2L))
+
+        viewModel.loadTierLists()
+        val state = viewModel.state.first {
+            it is TierListsUiState.Success && it.lists.size == 1
+        } as TierListsUiState.Success
+
+        assertEquals(listOf(1L), state.lists.map { it.id })
+    }
+
+    @Test
+    fun firstLoad_passesThroughLoadingState() = runBlocking {
+        val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Existing")))
+        val viewModel = TierListsViewModel(repository)
+
+        val collected = recordStates(viewModel)
+
+        viewModel.loadTierLists()
+        collected.awaitUntil { it is TierListsUiState.Success }
+        collected.job.cancel()
+
+        assertEquals(listOf(TierListsUiState.Loading), collected.values.dropLast(1))
+        assertTrue(collected.values.last() is TierListsUiState.Success)
+    }
+
+    // The screen already has a list on it when this second read starts (a return trip
+    // from the detail screen, in the real app) — that's the whole point being tested.
+    @Test
+    fun secondLoad_neverShowsLoading_andReplacesTheListInOneStep() = runBlocking {
+        val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))
+        val viewModel = TierListsViewModel(repository)
+
+        viewModel.loadTierLists()
+        viewModel.state.first { it is TierListsUiState.Success }
+
+        // Stands in for a rename on the detail screen while this list is still on screen.
+        repository.renameTierList(1, "New title")
+
+        val collected = recordStates(viewModel)
+
+        viewModel.loadTierLists()
+        collected.awaitUntil {
+            it is TierListsUiState.Success && it.lists.singleOrNull()?.title == "New title"
+        }
+        collected.job.cancel()
+
+        // Exactly two values are ever observed across the whole reload: the list
+        // already on screen (replayed the instant this recorder subscribes) and the
+        // new one replacing it directly — never Loading in between, and never more
+        // than that single step.
+        assertEquals(2, collected.values.size)
+        val before = collected.values[0] as TierListsUiState.Success
+        val after = collected.values[1] as TierListsUiState.Success
+        assertEquals("Old title", before.lists.single().title)
+        assertEquals("New title", after.lists.single().title)
+    }
+
+    private fun fakeList(id: Long, title: String): TierList = TierList(id = id, title = title, tiers = emptyList())
+
+    private class RecordedStates(val values: MutableList<TierListsUiState>, val job: Job) {
+        // Waits on this recorder's own list rather than on a second, independent
+        // subscription to viewModel.state: two separate collectors resumed from the
+        // same emission can be scheduled in either order, so a wait based on the other
+        // subscription can return before this one has appended its value — polling the
+        // list this recorder itself appends to cannot race against itself that way.
+        suspend fun awaitUntil(predicate: (TierListsUiState) -> Boolean) {
+            withTimeout(5_000) {
+                while (values.none(predicate)) {
+                    yield()
+                }
+            }
+        }
+    }
+
+    // Subscribes and suspends until the first (replayed) value has actually been
+    // recorded, so the caller can rely on collected.values already holding whatever
+    // was on screen before triggering the load that's under test — without this, a
+    // race between this subscription and the load's own dispatch could let the
+    // collector miss the pre-load value entirely.
+    private suspend fun CoroutineScope.recordStates(viewModel: TierListsViewModel): RecordedStates {
+        val values = mutableListOf<TierListsUiState>()
+        val subscribed = CompletableDeferred<Unit>()
+        val job = launch {
+            viewModel.state.collect {
+                values.add(it)
+                subscribed.complete(Unit)
+            }
+        }
+        subscribed.await()
+        return RecordedStates(values, job)
+    }
+}
+
+// Backs only what loadTierListsForPresentation and the rename/delete paths exercised
+// above actually touch (getAllTierLists, createTierList, getTierListById, plus the two
+// list-level mutations tested here). Everything else in TierRepository is unrelated to
+// this screen and is never called by it, so it's stubbed rather than implemented.
+private class FakeTierRepository(initial: List<TierList>) : TierRepository {
+
+    private val lists = initial.associateBy { it.id }.toMutableMap()
+    private var nextId = (initial.maxOfOrNull { it.id } ?: 0L) + 1
+
+    override suspend fun getTierListById(id: Long): TierList? = lists[id]
+
+    override suspend fun getAllTierLists(): List<TierList> = lists.values.sortedBy { it.id }
+
+    override suspend fun createTierList(title: String): Long {
+        val id = nextId++
+        lists[id] = TierList(id = id, title = title, tiers = emptyList())
+        return id
+    }
+
+    override suspend fun renameTierList(id: Long, title: String) {
+        lists[id]?.let { lists[id] = it.copy(title = title) }
+    }
+
+    override suspend fun deleteTierLists(ids: List<Long>) {
+        ids.forEach { lists.remove(it) }
+    }
+
+    override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) = unsupported()
+    override suspend fun addMovieToPool(tierListId: Long, title: String, imageUrl: String?): Long = unsupported()
+    override suspend fun addMoviesToPool(tierListId: Long, movies: List<PoolMovieDraft>) = unsupported()
+    override suspend fun attachImageToItem(itemId: Long, sourceUri: String) = unsupported()
+    override suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) = unsupported()
+    override suspend fun addTier(
+        tierListId: Long,
+        label: String,
+        caption: String?,
+        colorLight: String,
+        colorDark: String,
+    ): Long = unsupported()
+
+    override suspend fun renameTier(id: Long, label: String, caption: String?) = unsupported()
+    override suspend fun updateTierColors(id: Long, colorLight: String, colorDark: String) = unsupported()
+    override suspend fun deleteTier(id: Long) = unsupported()
+    override suspend fun reorderTiers(orderedTierIds: List<Long>) = unsupported()
+    override suspend fun restoreTierLists(ids: List<Long>) = unsupported()
+    override suspend fun deleteTierItem(id: Long) = unsupported()
+    override suspend fun restoreTierItem(id: Long) = unsupported()
+    override suspend fun deleteTierListPermanently(id: Long) = unsupported()
+    override suspend fun deleteTierItemPermanently(id: Long) = unsupported()
+    override suspend fun emptyTrash() = unsupported()
+    override suspend fun getTrashEntries(): List<TrashEntry> = unsupported()
+
+    private fun unsupported(): Nothing =
+        throw UnsupportedOperationException("Not used by TierListsViewModel")
+}
