@@ -74,4 +74,43 @@ class RoomTierRepositoryTest {
         assertEquals(tier.label, actual.tiers.single().label)
         assertEquals(item.title, actual.tiers.single().items.single().title)
     }
+
+    @Test
+    fun move_item_relocates_item_to_target_tier_and_position() = runBlocking {
+        val tierListId = dao.insertTierList(TierListEntity(title = "Films"))
+        val sourceTierId = dao.insertTier(
+            TierEntity(
+                tierListId = tierListId,
+                position = 1,
+                label = "S",
+                colorLight = "#B03A32",
+                colorDark = "#F1948C"
+            ),
+        )
+        val targetTierId = dao.insertTier(
+            TierEntity(
+                tierListId = tierListId,
+                position = 2,
+                label = "A",
+                colorLight = "#C06A25",
+                colorDark = "#E9A867"
+            ),
+        )
+        val itemId = dao.insertTierItem(
+            TierItemEntity(
+                tierId = sourceTierId,
+                position = 0,
+                title = "Interstellar",
+                imageUrl = null
+            ),
+        )
+
+        repository.moveItem(itemId = itemId, toTierId = targetTierId, toPosition = 0)
+
+        val movedList = requireNotNull(repository.getTierListById(tierListId))
+        val sourceTier = movedList.tiers.single { it.id == sourceTierId }
+        val targetTier = movedList.tiers.single { it.id == targetTierId }
+        assertEquals(emptyList<String>(), sourceTier.items.map { it.title })
+        assertEquals(listOf("Interstellar"), targetTier.items.map { it.title })
+    }
 }
