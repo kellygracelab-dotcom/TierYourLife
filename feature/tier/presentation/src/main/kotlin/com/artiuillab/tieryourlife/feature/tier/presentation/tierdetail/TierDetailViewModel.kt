@@ -46,4 +46,11 @@ class TierDetailViewModel @Inject constructor(
             loadTierList()
         }
     }
+
+    fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
+        viewModelScope.launch {
+            repository.moveItem(itemId, toTierId, toPosition)
+            loadTierList()
+        }
+    }
 }

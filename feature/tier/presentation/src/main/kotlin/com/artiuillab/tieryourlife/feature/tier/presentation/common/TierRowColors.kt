@@ -9,6 +9,10 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
 // Design-system rule: a row fill is the band color at 12% over the surface.
 private const val ROW_TINT_ALPHA = 0.12f
 
+// Drag-and-drop receiver highlight: the row currently under the pointer gets a
+// stronger tint than its resting state.
+internal const val ROW_HOVER_TINT_ALPHA = 0.24f
+
 internal fun parseTierColor(hex: String, fallback: Color = Color.Unspecified): Color {
     val body = hex.removePrefix("#")
     if (body.length != 6 && body.length != 8) return fallback
@@ -27,8 +31,8 @@ internal fun parseTierColor(hex: String, fallback: Color = Color.Unspecified): C
     return if (body.length == 6) Color(value or 0xFF000000L) else Color(value)
 }
 
-internal fun rowTintFor(band: Color, surface: Color): Color =
-    band.copy(alpha = ROW_TINT_ALPHA).compositeOver(surface)
+internal fun rowTintFor(band: Color, surface: Color, alpha: Float = ROW_TINT_ALPHA): Color =
+    band.copy(alpha = alpha).compositeOver(surface)
 
 internal data class TierRowColors(
     val band: Color,

@@ -13,13 +13,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +37,9 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.ROW_HOVER_TINT_ALPHA
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.dashedBorder
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.rowTintFor
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
@@ -42,14 +50,35 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDeta
 private val TIER_ROW_HEIGHT = 84.dp
 
 @Composable
-internal fun TierRow(tier: Tier) {
+internal fun TierRow(
+    tier: Tier,
+    dragController: TierDragController,
+    onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
+) {
     val colors = tierRowColors(tier.colorLight, tier.colorDark)
+    val listState = rememberLazyListState()
+    val isHovered = dragController.isDragging && dragController.hoveredTierId == tier.id
+    val surface = MaterialTheme.colorScheme.surface
+    val rowBackground = if (isHovered) rowTintFor(colors.band, surface, ROW_HOVER_TINT_ALPHA) else colors.rowTint
+
+    SideEffect {
+        dragController.registerItemsRowMeta(tier.id, listState, tier.items.map { it.id })
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(TIER_ROW_HEIGHT)
             .clip(RoundedCornerShape(12.dp))
-            .background(colors.rowTint),
+            .onGloballyPositioned { coordinates -> dragController.registerRowBounds(tier.id, coordinates.boundsInRoot()) }
+            .background(rowBackground)
+            .then(
+                if (isHovered) {
+                    Modifier.dashedBorder(width = 2.dp, color = colors.band, cornerRadius = 12.dp)
+                } else {
+                    Modifier
+                },
+            ),
     ) {
         Column(
             modifier = Modifier
@@ -77,15 +106,24 @@ internal fun TierRow(tier: Tier) {
         }
 
         LazyRow(
+            state = listState,
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
                 .padding(10.dp)
+                .onGloballyPositioned { coordinates -> dragController.registerItemsRowBounds(tier.id, coordinates.boundsInRoot()) }
                 .testTag(TierDetailTestTags.tierItems(tier.id)),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(tier.items, key = { it.id }) { item ->
-                ItemTile(item = item, width = 44.dp, height = 64.dp)
+                DraggableTile(
+                    item = item,
+                    sourceTierId = tier.id,
+                    width = 44.dp,
+                    height = 64.dp,
+                    dragController = dragController,
+                    onMoveItem = onMoveItem,
+                )
             }
         }
     }
