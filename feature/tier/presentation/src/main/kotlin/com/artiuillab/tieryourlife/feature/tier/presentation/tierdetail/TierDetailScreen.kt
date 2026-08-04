@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,8 +43,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddMovieSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.FloatingDragTile
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.NoteAddIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PoolPanel
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
 
@@ -52,7 +55,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 internal object TierDetailTestTags {
     const val LOADING = "tier_detail_loading"
     const val ADD_CHIP = "tier_detail_add_chip"
+    const val POOL_ITEMS = "tier_detail_pool_items"
+    const val POOL_PANEL = "tier_detail_pool_panel"
     fun tierItems(tierId: Long): String = "tier_detail_items_$tierId"
+    fun tile(itemId: Long): String = "tier_detail_tile_$itemId"
 }
 
 @Composable
@@ -67,6 +73,7 @@ fun TierDetailScreen(
         state = state,
         onBack = onBack,
         onAddClick = { addSheetVisible = true },
+        onMoveItem = viewModel::moveItem,
     )
 
     if (addSheetVisible) {
@@ -85,6 +92,7 @@ fun TierDetailScreenContent(
     state: TierDetailUiState,
     onBack: () -> Unit,
     onAddClick: () -> Unit,
+    onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -103,7 +111,7 @@ fun TierDetailScreenContent(
             }
 
             is TierDetailUiState.Success -> {
-                TierScreenBody(list = state.list, onBack = onBack, onAddClick = onAddClick)
+                TierScreenBody(list = state.list, onBack = onBack, onAddClick = onAddClick, onMoveItem = onMoveItem)
             }
 
             is TierDetailUiState.Error -> {
@@ -125,25 +133,35 @@ private fun TierScreenBody(
     list: TierList,
     onBack: () -> Unit,
     onAddClick: () -> Unit,
+    onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
 ) {
     val rankedTiers = list.tiers.filterNot { it.isPool }
     val pool = list.tiers.firstOrNull { it.isPool }
+    val dragController = remember { TierDragController() }
 
-    Column(Modifier.fillMaxSize()) {
-        TierScreenTopBar(title = list.title, onBack = onBack, onManualAdd = onAddClick)
+    Box(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize()) {
+            TierScreenTopBar(title = list.title, onBack = onBack, onManualAdd = onAddClick)
 
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(rankedTiers, key = { it.id }) { tier -> TierRow(tier) }
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(rankedTiers, key = { it.id }) { tier ->
+                    TierRow(tier = tier, dragController = dragController, onMoveItem = onMoveItem)
+                }
+            }
+
+            if (pool != null) {
+                PoolPanel(pool = pool, onAddClick = onAddClick, dragController = dragController, onMoveItem = onMoveItem)
+            }
         }
 
-        if (pool != null) {
-            PoolPanel(pool = pool, onAddClick = onAddClick)
+        if (dragController.isDragging) {
+            FloatingDragTile(dragController)
         }
     }
 }

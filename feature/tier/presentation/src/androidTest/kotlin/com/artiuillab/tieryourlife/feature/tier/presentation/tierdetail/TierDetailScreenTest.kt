@@ -1,11 +1,13 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToKey
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -15,6 +17,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -106,10 +109,134 @@ class TierDetailScreenTest {
         composeRule.runOnIdle { assertEquals(1, calls) }
     }
 
+    @Test
+    fun dragPoolItem_intoRankedTier_movesToRequestedTierAndIndex() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 6, label = "Pool", items = listOf(item(100, "Interstellar")), isPool = true),
+        ).asTierList()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
+
+        dragTile(sourceTag = TierDetailTestTags.tile(100), targetTag = TierDetailTestTags.tierItems(1), horizontalBias = 0.1f)
+
+        composeRule.runOnIdle { assertEquals(Triple(100L, 1L, 0), moved) }
+    }
+
+    @Test
+    fun dragRankedItem_intoPool_movesToRequestedTierAndIndex() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(200, "Arrival"))),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
+
+        // Target the whole pool panel, not the (empty, zero-height) items row directly: an
+        // empty LazyRow reports degenerate bounds, which is harmless for the real hover
+        // hit-test (it uses the panel's own bounds) but not a reliable point to aim a test at.
+        dragTile(sourceTag = TierDetailTestTags.tile(200), targetTag = TierDetailTestTags.POOL_PANEL, horizontalBias = 0.5f)
+
+        composeRule.runOnIdle { assertEquals(Triple(200L, 6L, 0), moved) }
+    }
+
+    @Test
+    fun dragItem_betweenTwoRankedTiers_movesToRequestedTierAndIndex() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(300, "Dune"))),
+            tier(id = 2, label = "A", items = emptyList()),
+        ).asTierList()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
+
+        dragTile(sourceTag = TierDetailTestTags.tile(300), targetTag = TierDetailTestTags.tierItems(2), horizontalBias = 0.1f)
+
+        composeRule.runOnIdle { assertEquals(Triple(300L, 2L, 0), moved) }
+    }
+
+    @Test
+    fun dragItem_withinSameTier_leftToRight_landsOnRequestedIndex() {
+        // Regression for the off-by-one that only shows up moving forward: toPosition is an
+        // index into the row WITHOUT the dragged item, so dropping item 401 past item 402's
+        // midpoint must land it at index 1 (right after 402), not index 2 or back at index 0.
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(401, "First"), item(402, "Second"))),
+        ).asTierList()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
+
+        dragTile(sourceTag = TierDetailTestTags.tile(401), targetTag = TierDetailTestTags.tierItems(1), horizontalBias = 0.9f)
+
+        composeRule.runOnIdle { assertEquals(Triple(401L, 1L, 1), moved) }
+    }
+
+    @Test
+    fun dragItem_withinSameTier_rightToLeft_landsOnRequestedIndex() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(401, "First"), item(402, "Second"))),
+        ).asTierList()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
+
+        dragTile(sourceTag = TierDetailTestTags.tile(402), targetTag = TierDetailTestTags.tierItems(1), horizontalBias = 0.05f)
+
+        composeRule.runOnIdle { assertEquals(Triple(402L, 1L, 0), moved) }
+    }
+
+    @Test
+    fun dragItem_droppedOutsideAllRows_doesNotInvokeOnMoveItem() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = listOf(item(500, "Enemy"))),
+        ).asTierList()
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
+
+        // The top bar sits above every tier row and the pool panel, so it is never a valid drop target.
+        dragTileToRoot(sourceTag = TierDetailTestTags.tile(500), rootTarget = Offset(20f, 20f))
+
+        composeRule.runOnIdle { assertNull(moved) }
+    }
+
+    private fun dragTile(sourceTag: String, targetTag: String, horizontalBias: Float) {
+        val targetBounds = composeRule.onNodeWithTag(targetTag).fetchSemanticsNode().boundsInRoot
+        // An empty items row (e.g. an empty pool) has zero height, unlike a tier row whose
+        // outer height is fixed regardless of content. Fall back to a small offset from the
+        // top so the drop point still lands unambiguously inside it instead of exactly on its
+        // degenerate (zero-height) edge.
+        val verticalOffset = if (targetBounds.height > 0f) targetBounds.height / 2f else 8f
+        val target = Offset(
+            x = targetBounds.left + targetBounds.width * horizontalBias,
+            y = targetBounds.top + verticalOffset,
+        )
+        dragTileToRoot(sourceTag, target)
+    }
+
+    private fun dragTileToRoot(sourceTag: String, rootTarget: Offset) {
+        val sourceBounds = composeRule.onNodeWithTag(sourceTag).fetchSemanticsNode().boundsInRoot
+        val start = Offset(sourceBounds.width / 2f, sourceBounds.height / 2f)
+        val end = rootTarget - sourceBounds.topLeft
+
+        composeRule.onNodeWithTag(sourceTag).performTouchInput {
+            down(start)
+            advanceEventTime(600)
+            moveTo(start + Offset(2f, 0f))
+            advanceEventTime(20)
+            moveTo(end)
+            advanceEventTime(20)
+            up()
+        }
+        composeRule.waitForIdle()
+    }
+
+    private fun item(id: Long, title: String): TierItem = TierItem(id = id, title = title, imageUrl = null)
+
+    private fun List<Tier>.asTierList(): TierList = TierList(id = 1, title = "Sci-fi films", tiers = this)
+
     private fun setScreen(
         state: TierDetailUiState,
         onBack: () -> Unit = {},
         onAddClick: () -> Unit = {},
+        onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
     ) {
         composeRule.setContent {
             TierYourLifeTheme {
@@ -117,6 +244,7 @@ class TierDetailScreenTest {
                     state = state,
                     onBack = onBack,
                     onAddClick = onAddClick,
+                    onMoveItem = onMoveItem,
                 )
             }
         }

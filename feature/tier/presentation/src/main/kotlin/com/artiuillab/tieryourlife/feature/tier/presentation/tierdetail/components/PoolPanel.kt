@@ -15,13 +15,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -31,15 +35,41 @@ import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.dashedBorder
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
 @Composable
-internal fun PoolPanel(pool: Tier, onAddClick: () -> Unit) {
+internal fun PoolPanel(
+    pool: Tier,
+    onAddClick: () -> Unit,
+    dragController: TierDragController,
+    onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
+) {
+    val listState = rememberLazyListState()
+    val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
+
+    SideEffect {
+        dragController.registerItemsRowMeta(pool.id, listState, pool.items.map { it.id })
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+            .onGloballyPositioned { coordinates -> dragController.registerRowBounds(pool.id, coordinates.boundsInRoot()) }
+            .testTag(TierDetailTestTags.POOL_PANEL)
             .background(MaterialTheme.colorScheme.surfaceContainer)
+            .then(
+                if (isHovered) {
+                    Modifier.dashedBorder(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        cornerRadius = 20.dp,
+                    )
+                } else {
+                    Modifier
+                },
+            )
             .navigationBarsPadding()
             .padding(bottom = 12.dp),
     ) {
@@ -73,12 +103,23 @@ internal fun PoolPanel(pool: Tier, onAddClick: () -> Unit) {
             AddChip(onClick = onAddClick)
         }
         LazyRow(
-            modifier = Modifier.fillMaxWidth(),
+            state = listState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned { coordinates -> dragController.registerItemsRowBounds(pool.id, coordinates.boundsInRoot()) }
+                .testTag(TierDetailTestTags.POOL_ITEMS),
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(pool.items, key = { it.id }) { item ->
-                ItemTile(item = item, width = 52.dp, height = 76.dp)
+                DraggableTile(
+                    item = item,
+                    sourceTierId = pool.id,
+                    width = 52.dp,
+                    height = 76.dp,
+                    dragController = dragController,
+                    onMoveItem = onMoveItem,
+                )
             }
         }
     }
