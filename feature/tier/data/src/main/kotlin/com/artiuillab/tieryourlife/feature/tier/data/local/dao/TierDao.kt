@@ -30,6 +30,30 @@ interface TierDao {
         )
     }
 
+    // All movies land in one transaction with consecutive positions appended to the
+    // pool, so an interruption cannot leave a half-inserted batch. Positions are
+    // computed from getAllTierItemsByTierId, which already reads through the active
+    // items view, so a trashed pool item never reserves or collides with a position.
+    // The target list is read through its own active view too, so a bulk add against
+    // a trashed list's pool is silently skipped instead of resurrecting it.
+    @Transaction
+    suspend fun addMoviesToPool(tierListId: Long, movies: List<NewPoolMovie>) {
+        if (getTierListById(tierListId) == null) return
+        val poolTier = getAllTiersByTierListId(tierListId).first { it.isPool }
+        var nextPosition = (getAllTierItemsByTierId(poolTier.id).maxOfOrNull { it.position } ?: -1) + 1
+
+        movies.forEach { movie ->
+            insertTierItem(
+                TierItemEntity(
+                    tierId = poolTier.id,
+                    position = nextPosition++,
+                    title = movie.title,
+                    imageUrl = movie.imageUrl,
+                ),
+            )
+        }
+    }
+
     @Transaction
     suspend fun createTierListWithDefaultTier(title: String): Long {
         val tierListId = insertTierList(TierListEntity(title = title))
@@ -127,6 +151,28 @@ interface TierDao {
     @Insert
     suspend fun insertTier(tier: TierEntity): Long
 
+    @Query("UPDATE tiers SET label = :label, caption = :caption WHERE id = :id")
+    suspend fun renameTier(id: Long, label: String, caption: String?)
+
+    @Query("UPDATE tiers SET colorLight = :colorLight, colorDark = :colorDark WHERE id = :id")
+    suspend fun updateTierColors(id: Long, colorLight: String, colorDark: String)
+
+    @Query("UPDATE tiers SET position = :position WHERE id = :id")
+    suspend fun updateTierPosition(id: Long, position: Int)
+
+    // The caller sends the final sequence of tier ids in one call; positions are
+    // rewritten to the sequence indices inside a single transaction, so no
+    // intermediate state with duplicated positions is ever visible. A stale id for a
+    // tier that no longer exists (already hard-deleted) is dropped before indices are
+    // assigned, so it can't waste a slot and leave a gap in the real tiers' positions.
+    @Transaction
+    suspend fun reorderTiers(orderedTierIds: List<Long>) {
+        val existingIds = orderedTierIds.filter { getTierById(it) != null }
+        existingIds.forEachIndexed { index, tierId ->
+            updateTierPosition(tierId, index)
+        }
+    }
+
     @Query("SELECT * FROM tiers WHERE id = :id")
     suspend fun getTierById(id: Long): TierEntity?
 
@@ -181,6 +227,20 @@ interface TierDao {
 
     @Query("UPDATE tier_items SET deletedAt = NULL WHERE id = :id")
     suspend fun restoreTierItem(id: Long)
+
+    @Query("UPDATE tier_items SET imageUrl = :imageUrl WHERE id = :id")
+    suspend fun updateTierItemImage(id: Long, imageUrl: String?)
+
+    // Raw table on purpose: the image of a trashed item must still be found when the
+    // item is deleted for good.
+    @Query("SELECT imageUrl FROM tier_items WHERE id = :id")
+    suspend fun getTierItemImageById(id: Long): String?
+
+    // Raw table and unfiltered by soft delete on purpose: a trashed item's image copy
+    // is still referenced (and must not be swept as an orphan) until the item itself
+    // is permanently removed.
+    @Query("SELECT imageUrl FROM tier_items WHERE imageUrl IS NOT NULL")
+    suspend fun getAllImageRefs(): List<String>
 
     // Items whose list is also trashed are represented by the list row, not listed twice.
     @Query(
