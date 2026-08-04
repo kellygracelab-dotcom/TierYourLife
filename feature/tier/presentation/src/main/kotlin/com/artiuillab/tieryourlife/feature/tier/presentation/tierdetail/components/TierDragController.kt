@@ -27,6 +27,8 @@ private data class ItemsRowInfo(
     val itemIds: List<Long> = emptyList(),
 )
 
+private data class TileRecord(val tierId: Long, val index: Int, val bounds: Rect)
+
 // Shared by every row and the pool panel so they agree on one drag state instead
 // of each tracking their own.
 @Stable
@@ -41,7 +43,12 @@ internal class TierDragController {
     val isDragging: Boolean get() = draggedPayload != null
 
     private val rowBounds = mutableStateMapOf<Long, Rect>()
+
+    // Pool only — it stays a single scrolling LazyRow, so its own layout state answers "what's here".
     private val itemsRowInfo = mutableStateMapOf<Long, ItemsRowInfo>()
+
+    // Ranked tiers only — a FlowRow has no layout state of its own, so each tile reports itself.
+    private val tileBounds = mutableStateMapOf<Long, TileRecord>()
 
     fun registerRowBounds(tierId: Long, bounds: Rect) {
         rowBounds[tierId] = bounds
@@ -53,6 +60,10 @@ internal class TierDragController {
 
     fun registerItemsRowMeta(tierId: Long, state: LazyListState, itemIds: List<Long>) {
         itemsRowInfo[tierId] = (itemsRowInfo[tierId] ?: ItemsRowInfo()).copy(state = state, itemIds = itemIds)
+    }
+
+    fun registerTileBounds(tierId: Long, itemId: Long, index: Int, bounds: Rect) {
+        tileBounds[itemId] = TileRecord(tierId, index, bounds)
     }
 
     fun beginDrag(payload: DragPayload, rootPosition: Offset) {
@@ -91,19 +102,23 @@ internal class TierDragController {
     private fun computeDrop(): DropTarget? {
         val payload = draggedPayload ?: return null
         val tierId = hoveredTierId ?: return null
-        val row = itemsRowInfo[tierId] ?: return null
-        val bounds = row.bounds ?: return null
-        val state = row.state ?: return null
-        val localX = pointerPositionInRoot.x - bounds.left
-        // DraggableTile keeps the dragged item's slot in the list (rendered empty);
-        // exclude it so the index is always "within the list without it".
-        val excludedIndex = row.itemIds.indexOf(payload.itemId).takeIf { it >= 0 }
-        val index = insertionIndex(state, localX, excludedIndex)
+
+        val pool = itemsRowInfo[tierId]
+        val index = if (pool != null) {
+            val bounds = pool.bounds ?: return null
+            val state = pool.state ?: return null
+            val excludedIndex = pool.itemIds.indexOf(payload.itemId).takeIf { it >= 0 }
+            insertionIndexInRow(state, pointerPositionInRoot.x - bounds.left, excludedIndex)
+        } else {
+            val tiles = tileBounds.values.filter { it.tierId == tierId }
+            val excludedIndex = tileBounds[payload.itemId]?.takeIf { it.tierId == tierId }?.index
+            insertionIndexInGrid(tiles, pointerPositionInRoot, excludedIndex)
+        }
         return DropTarget(payload.itemId, tierId, index)
     }
 }
 
-private fun insertionIndex(state: LazyListState, localX: Float, excludedFullIndex: Int?): Int {
+private fun insertionIndexInRow(state: LazyListState, localX: Float, excludedFullIndex: Int?): Int {
     val visible = state.layoutInfo.visibleItemsInfo.filter { it.index != excludedFullIndex }
     if (visible.isEmpty()) return 0
 
@@ -115,6 +130,32 @@ private fun insertionIndex(state: LazyListState, localX: Float, excludedFullInde
     }
 
     return translate(visible.last().index + 1, excludedFullIndex)
+}
+
+// Reading order: the line whose vertical midpoint the pointer is still above, then
+// the tile within that line whose horizontal midpoint the pointer is still left of.
+private fun insertionIndexInGrid(tiles: List<TileRecord>, pointer: Offset, excludedFullIndex: Int?): Int {
+    val visible = tiles.filter { it.index != excludedFullIndex }
+    if (visible.isEmpty()) return 0
+
+    val lines = visible.groupBy { it.bounds.top }.toSortedMap().values.toList()
+    for (line in lines) {
+        val lineMidY = (line.minOf { it.bounds.top } + line.maxOf { it.bounds.bottom }) / 2f
+        if (pointer.y < lineMidY) {
+            return translate(columnIndex(line, pointer.x), excludedFullIndex)
+        }
+    }
+
+    return translate(columnIndex(lines.last(), pointer.x), excludedFullIndex)
+}
+
+private fun columnIndex(line: List<TileRecord>, pointerX: Float): Int {
+    val sorted = line.sortedBy { it.bounds.left }
+    for (tile in sorted) {
+        val midX = (tile.bounds.left + tile.bounds.right) / 2f
+        if (pointerX < midX) return tile.index
+    }
+    return sorted.last().index + 1
 }
 
 private fun translate(rawIndex: Int, excludedFullIndex: Int?): Int =

@@ -16,9 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
@@ -47,6 +49,7 @@ internal fun DraggableTile(
     dragController: TierDragController,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
     modifier: Modifier = Modifier,
+    onPositioned: (Rect) -> Unit = {},
 ) {
     var rootPosition by remember { mutableStateOf(Offset.Zero) }
     val isDragging = dragController.draggedPayload?.itemId == item.id
@@ -59,7 +62,10 @@ internal fun DraggableTile(
         Box(
             modifier = modifier
                 .testTag(TierDetailTestTags.tile(item.id))
-                .onGloballyPositioned { coordinates -> rootPosition = coordinates.positionInRoot() }
+                .onGloballyPositioned { coordinates ->
+                    rootPosition = coordinates.positionInRoot()
+                    onPositioned(coordinates.boundsInRoot())
+                }
                 .pointerInput(item.id, sourceTierId) {
                     detectDragGesturesAfterLongPress(
                         onDragStart = { offsetInTile ->

@@ -4,21 +4,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,11 +42,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.rowTintFor
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
-// LazyRow does not support intrinsic measurements (SubcomposeLayout), so the row
-// can't size itself from its content via IntrinsicSize.Min. The height is instead
-// derived explicitly: item tile height (64dp) + LazyRow's own vertical padding
-// (10dp top + 10dp bottom).
-private val TIER_ROW_HEIGHT = 84.dp
+// FlowRow is a plain Layout (unlike the old LazyRow, a SubcomposeLayout), so it
+// supports intrinsic measurement: Row(Modifier.height(IntrinsicSize.Min)) lets the
+// band stretch to match the FlowRow's own wrapped height instead of a fixed one.
+private val MIN_TIER_ROW_HEIGHT = 84.dp
 
 @Composable
 internal fun TierRow(
@@ -56,21 +54,17 @@ internal fun TierRow(
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
 ) {
     val colors = tierRowColors(tier.colorLight, tier.colorDark)
-    val listState = rememberLazyListState()
     val isHovered = dragController.isDragging && dragController.hoveredTierId == tier.id
     val surface = MaterialTheme.colorScheme.surface
     val rowBackground = if (isHovered) rowTintFor(colors.band, surface, ROW_HOVER_TINT_ALPHA) else colors.rowTint
 
-    SideEffect {
-        dragController.registerItemsRowMeta(tier.id, listState, tier.items.map { it.id })
-    }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(TIER_ROW_HEIGHT)
+            .height(IntrinsicSize.Min)
             .clip(RoundedCornerShape(12.dp))
             .onGloballyPositioned { coordinates -> dragController.registerRowBounds(tier.id, coordinates.boundsInRoot()) }
+            .testTag(TierDetailTestTags.tierRow(tier.id))
             .background(rowBackground)
             .then(
                 if (isHovered) {
@@ -84,9 +78,10 @@ internal fun TierRow(
             modifier = Modifier
                 .fillMaxHeight()
                 .width(66.dp)
-                .background(colors.band),
+                .background(colors.band)
+                .padding(top = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Top,
         ) {
             Text(
                 text = tier.label,
@@ -105,17 +100,16 @@ internal fun TierRow(
             }
         }
 
-        LazyRow(
-            state = listState,
+        FlowRow(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxHeight()
+                .heightIn(min = MIN_TIER_ROW_HEIGHT)
                 .padding(10.dp)
-                .onGloballyPositioned { coordinates -> dragController.registerItemsRowBounds(tier.id, coordinates.boundsInRoot()) }
                 .testTag(TierDetailTestTags.tierItems(tier.id)),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(tier.items, key = { it.id }) { item ->
+            tier.items.forEachIndexed { index, item ->
                 DraggableTile(
                     item = item,
                     sourceTierId = tier.id,
@@ -123,6 +117,7 @@ internal fun TierRow(
                     height = 64.dp,
                     dragController = dragController,
                     onMoveItem = onMoveItem,
+                    onPositioned = { bounds -> dragController.registerTileBounds(tier.id, item.id, index, bounds) },
                 )
             }
         }
