@@ -14,6 +14,8 @@ interface TierRepository {
 
     suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode)
 
+    suspend fun renameTierList(id: Long, title: String)
+
     suspend fun addMovieToPool(tierListId: Long, title: String, imageUrl: String?): Long
 
     suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int)

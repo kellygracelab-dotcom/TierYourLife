@@ -5,6 +5,8 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.doubleClick
@@ -24,6 +26,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -681,6 +684,109 @@ class TierDetailScreenTest {
     }
 
     @Test
+    fun listSettings_marksTheListsCurrentDisplayModeSelected() {
+        val list = listOf(tier(id = 1, label = "S", items = List(1) { movie(it) }))
+            .asTierList(displayMode = TierListDisplayMode.HORIZONTAL_SCROLL)
+        setScreen(TierDetailUiState.Success(list))
+
+        openListSettings()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_STRIP).assertIsSelected()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_WRAP).assertIsNotSelected()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_RANKED).assertIsNotSelected()
+    }
+
+    @Test
+    fun selectingADisplayMode_savesExactlyOnceWithTheChosenValue() {
+        var callCount = 0
+        var savedMode: TierListDisplayMode? = null
+        setScreen(
+            TierDetailUiState.Success(defaultList()),
+            onSetDisplayMode = { mode ->
+                callCount++
+                savedMode = mode
+            },
+        )
+
+        openListSettings()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_STRIP).performClick()
+
+        composeRule.runOnIdle {
+            assertEquals(1, callCount)
+            assertEquals(TierListDisplayMode.HORIZONTAL_SCROLL, savedMode)
+        }
+    }
+
+    @Test
+    fun renamingList_returnsTheNewTitle() {
+        var renamedTo: String? = null
+        setScreen(
+            TierDetailUiState.Success(defaultList()),
+            onRenameList = { title -> renamedTo = title },
+        )
+
+        openListSettings()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_RENAME_ROW).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.RENAME_DIALOG_FIELD).performTextClearance()
+        composeRule.onNodeWithTag(TierDetailTestTags.RENAME_DIALOG_FIELD).performTextInput("Best sci-fi ever")
+        composeRule.onNodeWithTag(TierDetailTestTags.RENAME_DIALOG_SAVE).performClick()
+
+        composeRule.runOnIdle { assertEquals("Best sci-fi ever", renamedTo) }
+    }
+
+    // Not specified by the mock (only the settings row that opens renaming is shown, not
+    // the rename UI itself) — this mirrors the only existing precedent for a required text
+    // field in this app: the tier editor's Label field disables Save on a blank value.
+    @Test
+    fun renamingList_withBlankTitle_disablesSave() {
+        setScreen(TierDetailUiState.Success(defaultList()))
+
+        openListSettings()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_RENAME_ROW).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.RENAME_DIALOG_FIELD).performTextClearance()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.RENAME_DIALOG_SAVE).assertIsNotEnabled()
+    }
+
+    @Test
+    fun renamingList_withNonBlankTitle_keepsSaveEnabled() {
+        setScreen(TierDetailUiState.Success(defaultList()))
+
+        openListSettings()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_RENAME_ROW).performClick()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.RENAME_DIALOG_SAVE).assertIsEnabled()
+    }
+
+    @Test
+    fun horizontalScrollMode_keepsAllItemsOnOneLineAndAllowsScrollingToTheLastOne() {
+        val items = List(20) { index -> item((4000 + index).toLong(), "M$index") }
+        val list = listOf(tier(id = 1, label = "S", items = items))
+            .asTierList(displayMode = TierListDisplayMode.HORIZONTAL_SCROLL)
+        setScreen(TierDetailUiState.Success(list))
+
+        val firstTop = tileBounds(items.first().id).top
+
+        // Scrolling the last tile into view only succeeds if the row is actually
+        // horizontally scrollable, not merely clipped — and once visible, it must sit
+        // on the very same line as the first tile, not one a wrap would have pushed down.
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(items.last().id)).performScrollTo().assertIsDisplayed()
+        val lastTop = tileBounds(items.last().id).top
+
+        assertEquals("expected the scrolled-to tile to stay on the same line", firstTop, lastTop, 0.5f)
+    }
+
+    @Test
+    fun wrapMode_stillWrapsItemsAcrossMultipleLines() {
+        val items = List(20) { index -> item((5000 + index).toLong(), "M$index") }
+        val list = listOf(tier(id = 1, label = "S", items = items)).asTierList(displayMode = TierListDisplayMode.WRAP)
+        setScreen(TierDetailUiState.Success(list))
+
+        val tops = items.map { tileBounds(it.id).top }
+        assertTrue("expected the tier to wrap to at least two lines", tops.distinct().size >= 2)
+    }
+
+    @Test
     fun addTier_withLabelAndCaption_returnsBothValuesAndBothColorHexValues() {
         var addedLabel: String? = null
         var addedCaption: String? = null
@@ -954,7 +1060,8 @@ class TierDetailScreenTest {
 
     private fun item(id: Long, title: String): TierItem = TierItem(id = id, title = title, imageUrl = null)
 
-    private fun List<Tier>.asTierList(): TierList = TierList(id = 1, title = "Sci-fi films", tiers = this)
+    private fun List<Tier>.asTierList(displayMode: TierListDisplayMode = TierListDisplayMode.WRAP): TierList =
+        TierList(id = 1, title = "Sci-fi films", tiers = this, displayMode = displayMode)
 
     private fun setScreen(
         state: TierDetailUiState,
@@ -964,6 +1071,8 @@ class TierDetailScreenTest {
         onDeleteItem: (itemId: Long) -> Unit = {},
         onRestoreItem: (itemId: Long) -> Unit = {},
         onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit = { _, _, _, _ -> },
+        onSetDisplayMode: (displayMode: TierListDisplayMode) -> Unit = {},
+        onRenameList: (title: String) -> Unit = {},
     ) {
         composeRule.setContent {
             TierYourLifeTheme {
@@ -975,6 +1084,8 @@ class TierDetailScreenTest {
                     onDeleteItem = onDeleteItem,
                     onRestoreItem = onRestoreItem,
                     onAddTier = onAddTier,
+                    onSetDisplayMode = onSetDisplayMode,
+                    onRenameList = onRenameList,
                 )
             }
         }

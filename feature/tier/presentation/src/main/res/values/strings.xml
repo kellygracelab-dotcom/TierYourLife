@@ -55,6 +55,15 @@
     <string name="tier_detail_snackbar_undo">Undo</string>
 
     <string name="tier_list_settings_title">List settings</string>
+    <string name="tier_list_settings_display_section">Display</string>
+    <string name="tier_list_settings_display_section_caption">How tiers are shown in this list. Other lists are unaffected.</string>
+    <string name="tier_list_settings_mode_wrapped">Wrapped rows</string>
+    <string name="tier_list_settings_mode_wrapped_sub">Every item visible, rows grow taller</string>
+    <string name="tier_list_settings_mode_strip">Single strip</string>
+    <string name="tier_list_settings_mode_strip_sub">One line per tier, scrolls sideways</string>
+    <string name="tier_list_settings_mode_ranked">Ranked list</string>
+    <string name="tier_list_settings_mode_ranked_sub">One column, best to worst, no tiers</string>
+    <string name="tier_list_settings_rename_title">Rename list</string>
     <string name="tier_list_settings_new_tier_title">New tier</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="one">%d tier</item>

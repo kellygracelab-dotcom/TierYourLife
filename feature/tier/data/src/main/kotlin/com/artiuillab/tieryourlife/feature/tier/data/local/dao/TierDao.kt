@@ -95,6 +95,9 @@ interface TierDao {
     @Query("UPDATE tier_lists SET displayMode = :displayMode WHERE id = :id")
     suspend fun updateTierListDisplayMode(id: Long, displayMode: String)
 
+    @Query("UPDATE tier_lists SET title = :title WHERE id = :id")
+    suspend fun updateTierListTitle(id: Long, title: String)
+
     @Query(
         """
         SELECT l.id AS id, l.title AS title, l.deletedAt AS deletedAt,

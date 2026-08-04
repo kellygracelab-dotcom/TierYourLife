@@ -31,6 +31,10 @@ class RoomTierRepository internal constructor(
         dao.updateTierListDisplayMode(id, displayMode.name)
     }
 
+    override suspend fun renameTierList(id: Long, title: String) {
+        dao.updateTierListTitle(id, title)
+    }
+
     override suspend fun addMovieToPool(
         tierListId: Long,
         title: String,

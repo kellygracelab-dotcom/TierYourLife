@@ -121,3 +121,39 @@ internal fun ContrastIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { s
     )
     drawCircle(color, radius = 9f * scale, center = Offset(12f * scale, 12f * scale), style = Stroke(1.5f * scale))
 }
+
+@Composable
+internal fun GridViewIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val cell = CornerRadius(1.5f * scale)
+    drawRoundRect(color, Offset(4f * scale, 4f * scale), Size(7f * scale, 7f * scale), cell)
+    drawRoundRect(color, Offset(13f * scale, 4f * scale), Size(7f * scale, 7f * scale), cell)
+    drawRoundRect(color, Offset(4f * scale, 13f * scale), Size(7f * scale, 7f * scale), cell)
+    drawRoundRect(color, Offset(13f * scale, 13f * scale), Size(7f * scale, 7f * scale), cell)
+}
+
+@Composable
+internal fun ViewCarouselIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val corner = CornerRadius(1.5f * scale)
+    drawRoundRect(color, Offset(2f * scale, 8f * scale), Size(4f * scale, 8f * scale), corner)
+    drawRoundRect(color, Offset(8f * scale, 4f * scale), Size(8f * scale, 16f * scale), corner)
+    drawRoundRect(color, Offset(18f * scale, 8f * scale), Size(4f * scale, 8f * scale), corner)
+}
+
+@Composable
+internal fun FormatListNumberedIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.6f * scale
+    repeat(3) { row ->
+        val y = (6f + row * 6f) * scale
+        drawCircle(color, radius = 1f * scale, center = Offset(4.5f * scale, y))
+        drawLine(color, Offset(9f * scale, y), Offset(20f * scale, y), stroke, StrokeCap.Round)
+    }
+}
+
+@Composable
+internal fun EditIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.7f * scale
+    drawLine(color, Offset(5f * scale, 19f * scale), Offset(15f * scale, 9f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(15f * scale, 9f * scale), Offset(19f * scale, 5f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(19f * scale, 5f * scale), Offset(21f * scale, 7f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(21f * scale, 7f * scale), Offset(17f * scale, 11f * scale), stroke, StrokeCap.Round)
+}

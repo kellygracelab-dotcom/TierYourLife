@@ -45,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddMovieSheet
@@ -74,6 +75,13 @@ internal object TierDetailTestTags {
     const val TRASH_TARGET = "tier_detail_trash_target"
     const val DELETED_ITEM_SNACKBAR = "tier_detail_deleted_item_snackbar"
     const val LIST_SETTINGS_SCREEN = "tier_detail_list_settings_screen"
+    const val LIST_SETTINGS_MODE_WRAP = "tier_detail_list_settings_mode_wrap"
+    const val LIST_SETTINGS_MODE_STRIP = "tier_detail_list_settings_mode_strip"
+    const val LIST_SETTINGS_MODE_RANKED = "tier_detail_list_settings_mode_ranked"
+    const val LIST_SETTINGS_RENAME_ROW = "tier_detail_list_settings_rename_row"
+    const val RENAME_DIALOG_FIELD = "tier_detail_rename_dialog_field"
+    const val RENAME_DIALOG_SAVE = "tier_detail_rename_dialog_save"
+    const val RENAME_DIALOG_CANCEL = "tier_detail_rename_dialog_cancel"
     const val NEW_TIER_ROW = "tier_detail_new_tier_row"
     const val TIER_EDITOR_SHEET = "tier_detail_tier_editor_sheet"
     const val TIER_EDITOR_LABEL_FIELD = "tier_detail_tier_editor_label_field"
@@ -115,6 +123,8 @@ fun TierDetailScreen(
         onDeleteItem = viewModel::deleteItem,
         onRestoreItem = viewModel::restoreItem,
         onAddTier = viewModel::addTier,
+        onSetDisplayMode = viewModel::setDisplayMode,
+        onRenameList = viewModel::renameTierList,
     )
 
     if (addSheetVisible) {
@@ -137,6 +147,8 @@ fun TierDetailScreenContent(
     onDeleteItem: (itemId: Long) -> Unit = {},
     onRestoreItem: (itemId: Long) -> Unit = {},
     onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit = { _, _, _, _ -> },
+    onSetDisplayMode: (displayMode: TierListDisplayMode) -> Unit = {},
+    onRenameList: (title: String) -> Unit = {},
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -163,6 +175,8 @@ fun TierDetailScreenContent(
                     onDeleteItem = onDeleteItem,
                     onRestoreItem = onRestoreItem,
                     onAddTier = onAddTier,
+                    onSetDisplayMode = onSetDisplayMode,
+                    onRenameList = onRenameList,
                 )
             }
 
@@ -189,6 +203,8 @@ private fun TierScreenBody(
     onDeleteItem: (itemId: Long) -> Unit,
     onRestoreItem: (itemId: Long) -> Unit,
     onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
+    onSetDisplayMode: (displayMode: TierListDisplayMode) -> Unit,
+    onRenameList: (title: String) -> Unit,
 ) {
     var listSettingsVisible by remember { mutableStateOf(false) }
 
@@ -197,6 +213,8 @@ private fun TierScreenBody(
             list = list,
             onBack = { listSettingsVisible = false },
             onAddTier = onAddTier,
+            onSetDisplayMode = onSetDisplayMode,
+            onRenameList = onRenameList,
         )
         return
     }
@@ -257,6 +275,7 @@ private fun TierScreenBody(
                 items(rankedTiers, key = { it.id }) { tier ->
                     TierRow(
                         tier = tier,
+                        displayMode = list.displayMode,
                         dragController = dragController,
                         onMoveItem = onMoveItem,
                         onDeleteItem = deleteAndAnnounce,
