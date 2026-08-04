@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -55,6 +57,7 @@ internal fun TierRow(
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
     onDeleteItem: (itemId: Long) -> Unit,
     onDoubleTap: (itemId: Long) -> Unit = {},
+    onEditTier: (tierId: Long) -> Unit = {},
 ) {
     val colors = tierRowColors(tier.colorLight, tier.colorDark)
     val isHovered = dragController.isDragging && dragController.hoveredTierId == tier.id
@@ -92,6 +95,25 @@ internal fun TierRow(
                 .fillMaxHeight()
                 .width(66.dp)
                 .background(colors.band)
+                .testTag(TierDetailTestTags.tierBand(tier.id))
+                // The pool never reaches this composable in practice (callers filter it
+                // out before building rows), but the guard is kept here rather than
+                // trusted to callers: this is the one place that decides whether a band
+                // opens the editor, so it's the right place to also decide the pool
+                // never does.
+                .then(
+                    if (!tier.isPool) {
+                        // A separate pointerInput from the items area below, so this
+                        // gesture can only ever claim touches that land on the band
+                        // itself — the tiles keep their own drag/double-tap recognizers
+                        // exactly as before, untouched by this one.
+                        Modifier.pointerInput(tier.id) {
+                            detectTapGestures(onDoubleTap = { onEditTier(tier.id) })
+                        }
+                    } else {
+                        Modifier
+                    },
+                )
                 .padding(top = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,

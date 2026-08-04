@@ -88,6 +88,25 @@ internal fun defaultTierColorSelection(): TierColorSelection = TierColorSelectio
     colorDark = TIER_COLOR_PRESETS[0].colorDark,
 )
 
+// For editing an existing tier: marks the matching preset selected when the tier's
+// stored pair happens to equal one exactly, so a tier created from a preset still
+// shows that preset picked rather than falling into the custom picker unasked. A
+// tier whose colors don't match any preset — the seeded S–D defaults included, since
+// those were never guaranteed to line up with this picker's own eight — opens as a
+// custom color carrying its exact value, not the nearest preset.
+internal fun tierColorSelectionFor(colorLight: String, colorDark: String): TierColorSelection {
+    val light = colorLight.removePrefix("#")
+    val dark = colorDark.removePrefix("#")
+    val presetIndex = TIER_COLOR_PRESETS.indexOfFirst {
+        it.colorLight.equals(light, ignoreCase = true) && it.colorDark.equals(dark, ignoreCase = true)
+    }
+    return if (presetIndex >= 0) {
+        TierColorSelection.Preset(presetIndex, TIER_COLOR_PRESETS[presetIndex].colorLight, TIER_COLOR_PRESETS[presetIndex].colorDark)
+    } else {
+        TierColorSelection.Custom(hexToHsl(light), hexToHsl(dark))
+    }
+}
+
 private enum class ColorTab { LIGHT, DARK }
 
 @Composable

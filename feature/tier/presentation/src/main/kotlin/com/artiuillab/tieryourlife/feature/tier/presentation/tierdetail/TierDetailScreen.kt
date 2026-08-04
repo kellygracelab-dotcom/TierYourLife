@@ -71,6 +71,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.RankedList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.RankedPoolSection
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierDragController
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierEditorSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierListSettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TrashTarget
@@ -115,6 +116,7 @@ internal object TierDetailTestTags {
     const val TIER_EDITOR_PREVIEW_LIGHT = "tier_detail_tier_editor_preview_light"
     const val TIER_EDITOR_PREVIEW_DARK = "tier_detail_tier_editor_preview_dark"
     fun tierRow(tierId: Long): String = "tier_detail_row_$tierId"
+    fun tierBand(tierId: Long): String = "tier_detail_band_$tierId"
     fun rankedRow(itemId: Long): String = "tier_detail_ranked_row_$itemId"
     fun rankedPoolItem(itemId: Long): String = "tier_detail_ranked_pool_item_$itemId"
     fun tierItems(tierId: Long): String = "tier_detail_items_$tierId"
@@ -141,6 +143,7 @@ fun TierDetailScreen(
         onDeleteItem = viewModel::deleteItem,
         onRestoreItem = viewModel::restoreItem,
         onAddTier = viewModel::addTier,
+        onEditTier = viewModel::editTier,
         onSetDisplayMode = viewModel::setDisplayMode,
         onRenameList = viewModel::renameTierList,
     )
@@ -165,6 +168,8 @@ fun TierDetailScreenContent(
     onDeleteItem: (itemId: Long) -> Unit = {},
     onRestoreItem: (itemId: Long) -> Unit = {},
     onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit = { _, _, _, _ -> },
+    onEditTier: (id: Long, label: String, caption: String?, colorLight: String, colorDark: String) -> Unit =
+        { _, _, _, _, _ -> },
     onSetDisplayMode: (displayMode: TierListDisplayMode) -> Unit = {},
     onRenameList: (title: String) -> Unit = {},
 ) {
@@ -193,6 +198,7 @@ fun TierDetailScreenContent(
                     onDeleteItem = onDeleteItem,
                     onRestoreItem = onRestoreItem,
                     onAddTier = onAddTier,
+                    onEditTier = onEditTier,
                     onSetDisplayMode = onSetDisplayMode,
                     onRenameList = onRenameList,
                 )
@@ -221,6 +227,7 @@ private fun TierScreenBody(
     onDeleteItem: (itemId: Long) -> Unit,
     onRestoreItem: (itemId: Long) -> Unit,
     onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
+    onEditTier: (id: Long, label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
     onSetDisplayMode: (displayMode: TierListDisplayMode) -> Unit,
     onRenameList: (title: String) -> Unit,
 ) {
@@ -240,6 +247,7 @@ private fun TierScreenBody(
     val pool = list.tiers.firstOrNull { it.isPool }
     val dragController = remember { TierDragController() }
     var chooserItemId by remember { mutableStateOf<Long?>(null) }
+    var editingTierId by remember { mutableStateOf<Long?>(null) }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -314,6 +322,7 @@ private fun TierScreenBody(
                             onMoveItem = onMoveItem,
                             onDeleteItem = deleteAndAnnounce,
                             onDoubleTap = { itemId -> chooserItemId = itemId },
+                            onEditTier = { tierId -> editingTierId = tierId },
                         )
                     }
                 }
@@ -377,6 +386,18 @@ private fun TierScreenBody(
                 chooserItemId = null
             },
             onDismiss = { chooserItemId = null },
+        )
+    }
+
+    val editingTier = editingTierId?.let { id -> list.tiers.firstOrNull { it.id == id } }
+    if (editingTier != null) {
+        TierEditorSheet(
+            initialTier = editingTier,
+            onDismiss = { editingTierId = null },
+            onSave = { label, caption, colorLight, colorDark ->
+                onEditTier(editingTier.id, label, caption, colorLight, colorDark)
+                editingTierId = null
+            },
         )
     }
 }

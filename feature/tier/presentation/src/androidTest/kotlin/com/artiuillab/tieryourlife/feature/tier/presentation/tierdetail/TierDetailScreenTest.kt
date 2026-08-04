@@ -5,11 +5,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.doubleClick
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -31,6 +33,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierDragController
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierRow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
@@ -1222,6 +1226,164 @@ class TierDetailScreenTest {
         )
     }
 
+    @Test
+    fun doubleTapTierBand_inRankedTier_opensEditorPrefilledWithItsValues() {
+        val list = listOf(
+            tier(
+                id = 1,
+                label = "S",
+                items = emptyList(),
+                caption = "Masterpiece",
+                colorLight = "#111111",
+                colorDark = "#222222",
+            ),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).performTouchInput { doubleClick() }
+
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SHEET).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).assertTextContains("S")
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CAPTION_FIELD).assertTextContains("Masterpiece")
+        // Neither preset nor custom hex #111111/#222222 matches any of the eight presets,
+        // so the custom swatch — not a preset — must be the one marked selected.
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).assertIsSelected()
+        // The live preview reads from the same label/caption/colorSelection state the
+        // fields above were just confirmed to hold, so it already shows the current row
+        // by construction — same source of truth, not a second thing to keep in sync.
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_PREVIEW_LIGHT).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_PREVIEW_DARK).assertIsDisplayed()
+    }
+
+    // The pool never reaches TierRow through the real screen (rankedTiers filters it out
+    // before rows are built), so this mounts TierRow directly with a pool-flagged tier to
+    // exercise the guard itself, rather than a path production code never takes anyway.
+    @Test
+    fun doubleTapTierBand_onThePool_doesNotOpenEditor() {
+        var editedId: Long? = null
+        val pool = tier(id = 6, label = "Pool", items = emptyList(), isPool = true)
+
+        composeRule.setContent {
+            TierYourLifeTheme {
+                val dragController = remember { TierDragController() }
+                TierRow(
+                    tier = pool,
+                    displayMode = TierListDisplayMode.WRAP,
+                    dragController = dragController,
+                    onMoveItem = { _, _, _ -> },
+                    onDeleteItem = {},
+                    onEditTier = { id -> editedId = id },
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tierBand(6)).performTouchInput { doubleClick() }
+
+        composeRule.runOnIdle { assertNull(editedId) }
+    }
+
+    @Test
+    fun editingTier_savesNewLabelAndCaptionExactlyOnce() {
+        var callCount = 0
+        var editedLabel: String? = null
+        var editedCaption: String? = null
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList(), caption = "Old caption"),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(
+            TierDetailUiState.Success(list),
+            onEditTier = { _, label, caption, _, _ ->
+                callCount++
+                editedLabel = label
+                editedCaption = caption
+            },
+        )
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).performTouchInput { doubleClick() }
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextClearance()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("S+")
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CAPTION_FIELD).performTextClearance()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CAPTION_FIELD).performTextInput("New caption")
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).performClick()
+
+        composeRule.runOnIdle {
+            assertEquals(1, callCount)
+            assertEquals("S+", editedLabel)
+            assertEquals("New caption", editedCaption)
+        }
+    }
+
+    @Test
+    fun editingTier_savesBothColorValues() {
+        var editedColorLight: String? = null
+        var editedColorDark: String? = null
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(
+            TierDetailUiState.Success(list),
+            onEditTier = { _, _, _, colorLight, colorDark ->
+                editedColorLight = colorLight
+                editedColorDark = colorDark
+            },
+        )
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).performTouchInput { doubleClick() }
+        // Preset index 3 is the green preset (3F7F55 / 8FD3A3).
+        composeRule.onNodeWithTag(TierDetailTestTags.tierEditorPresetSwatch(3)).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).performClick()
+
+        composeRule.runOnIdle {
+            assertEquals("#3F7F55", editedColorLight)
+            assertEquals("#8FD3A3", editedColorDark)
+        }
+    }
+
+    @Test
+    fun editingTier_withEmptyCaption_savesNullNotEmptyString() {
+        var editedCaption: String? = "not yet called"
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList(), caption = "Has a caption"),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(
+            TierDetailUiState.Success(list),
+            onEditTier = { _, _, caption, _, _ -> editedCaption = caption },
+        )
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).performTouchInput { doubleClick() }
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CAPTION_FIELD).performTextClearance()
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).performClick()
+
+        composeRule.runOnIdle { assertNull(editedCaption) }
+    }
+
+    // Same rule the add-mode sheet already enforces on a blank label: no click handler is
+    // attached to Save at all, so there is nothing for a click to do — not a disabled
+    // button in the semantic sense, so this is asserted by the action's absence rather
+    // than by an enabled/disabled state.
+    @Test
+    fun editingTier_withEmptyLabel_doesNotSave() {
+        var callCount = 0
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(
+            TierDetailUiState.Success(list),
+            onEditTier = { _, _, _, _, _ -> callCount++ },
+        )
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).performTouchInput { doubleClick() }
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextClearance()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).assertHasNoClickAction()
+        composeRule.runOnIdle { assertEquals(0, callCount) }
+    }
+
     // Line capacity depends on the test device's actual screen width, so this reads
     // the real rendered geometry instead of assuming how many items fit per line.
     private fun secondLineFirstItemId(items: List<TierItem>): Long {
@@ -1320,6 +1482,8 @@ class TierDetailScreenTest {
         onDeleteItem: (itemId: Long) -> Unit = {},
         onRestoreItem: (itemId: Long) -> Unit = {},
         onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit = { _, _, _, _ -> },
+        onEditTier: (id: Long, label: String, caption: String?, colorLight: String, colorDark: String) -> Unit =
+            { _, _, _, _, _ -> },
         onSetDisplayMode: (displayMode: TierListDisplayMode) -> Unit = {},
         onRenameList: (title: String) -> Unit = {},
     ) {
@@ -1333,6 +1497,7 @@ class TierDetailScreenTest {
                     onDeleteItem = onDeleteItem,
                     onRestoreItem = onRestoreItem,
                     onAddTier = onAddTier,
+                    onEditTier = onEditTier,
                     onSetDisplayMode = onSetDisplayMode,
                     onRenameList = onRenameList,
                 )
@@ -1369,12 +1534,21 @@ class TierDetailScreenTest {
 
     private fun movie(index: Int): TierItem = TierItem(id = index.toLong(), title = "Movie $index", imageUrl = null)
 
-    private fun tier(id: Long, label: String, items: List<TierItem>, isPool: Boolean = false): Tier = Tier(
+    private fun tier(
+        id: Long,
+        label: String,
+        items: List<TierItem>,
+        isPool: Boolean = false,
+        caption: String? = null,
+        colorLight: String = "#000000",
+        colorDark: String = "#000000",
+    ): Tier = Tier(
         id = id,
         label = label,
-        colorLight = "#000000",
-        colorDark = "#000000",
+        colorLight = colorLight,
+        colorDark = colorDark,
         items = items,
         isPool = isPool,
+        caption = caption,
     )
 }
