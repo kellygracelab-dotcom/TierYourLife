@@ -115,7 +115,7 @@ class MovieDtoMapperTest {
         val response = networkJson.decodeFromString<MovieSearchResponseDto>(jsonWithNotNullPoster)
         val item = response.results[0].toDomain()
 
-        assertEquals(157336L, item.tmdbId)
+        assertEquals("tmdb:157336", item.id)
         assertEquals("Interstellar", item.title)
         assertEquals("https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", item.imageUrl)
     }
@@ -125,7 +125,7 @@ class MovieDtoMapperTest {
         val response = networkJson.decodeFromString<MovieSearchResponseDto>(jsonWithNullPoster)
         val item = response.results[0].toDomain()
 
-        assertEquals(157336L, item.tmdbId)
+        assertEquals("tmdb:157336", item.id)
         assertEquals("Interstellar", item.title)
         assertNull(item.imageUrl)
     }
@@ -135,7 +135,7 @@ class MovieDtoMapperTest {
         val response = networkJson.decodeFromString<MovieSearchResponseDto>(jsonWithReleaseDate)
         val item = response.results[0].toDomain()
 
-        assertEquals(2014, item.year)
+        assertEquals("2014", item.subtitle)
     }
 
     @Test
@@ -143,7 +143,7 @@ class MovieDtoMapperTest {
         val response = networkJson.decodeFromString<MovieSearchResponseDto>(jsonWithNotNullPoster)
         val item = response.results[0].toDomain()
 
-        assertNull(item.year)
+        assertNull(item.subtitle)
     }
 
     @Test
@@ -151,6 +151,6 @@ class MovieDtoMapperTest {
         val response = networkJson.decodeFromString<MovieSearchResponseDto>(jsonWithBlankReleaseDate)
         val item = response.results[0].toDomain()
 
-        assertNull(item.year)
+        assertNull(item.subtitle)
     }
 }
