@@ -154,15 +154,13 @@ class TierListsViewModel @Inject constructor(
     }
 }
 
-internal suspend fun TierRepository.loadTierListsForPresentation(): List<TierList> {
-    var overviewLists = getAllTierLists()
-    if (overviewLists.isEmpty()) {
-        createTierList("Sci-fi films")
-        createTierList("Every A24 film")
-        overviewLists = getAllTierLists()
-    }
-
-    return overviewLists.map { overview ->
-        getTierListById(overview.id) ?: overview
-    }
-}
+// getAllTierLists returns each list without its tiers; the cards need the tiers to
+// count what's ranked and to draw the distribution bar, so each one is re-read in full.
+//
+// This used to seed "Sci-fi films" and "Every A24 film" whenever it found no lists,
+// which made the two demo lists impossible to get rid of — delete them and they came
+// straight back on the next read. It also meant the empty state could never appear,
+// because there was never a moment with nothing in the database. An empty library is a
+// legitimate state and now says so.
+internal suspend fun TierRepository.loadTierListsForPresentation(): List<TierList> =
+    getAllTierLists().map { overview -> getTierListById(overview.id) ?: overview }

@@ -1,9 +1,10 @@
 package com.artiuillab.tieryourlife
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -11,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.core.os.LocaleListCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -26,8 +28,13 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+// AppCompatActivity, not ComponentActivity: below API 33 (minSdk here is 24),
+// AppCompatDelegate.setApplicationLocales is a backport of the framework per-app-language
+// API, and with Compose that backport only applies through an AppCompat activity context
+// (docs/design-spec-home.md, section 7). The manifest theme is still a bare no-action-bar
+// AppCompat theme — TierYourLifeTheme does all real theming in Compose.
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     // Not a ViewModel: AppPreferences is domain-layer, plain-Kotlin, synchronous —
     // exactly the shape that doesn't need one (docs/design-spec-home.md, section 7).
@@ -36,6 +43,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Applied before enableEdgeToEdge()/setContent below, so the very first frame
+        // already draws in the stored language rather than drawing once and flipping.
+        applyStoredLocale()
         enableEdgeToEdge()
         setContent {
             val systemDarkTheme = isSystemInDarkTheme()
@@ -51,6 +61,16 @@ class MainActivity : ComponentActivity() {
             val onThemeChoiceChange: (ThemeChoice) -> Unit = { choice ->
                 themeChoice = choice
                 appPreferences.setThemeChoice(choice)
+            }
+            // Same seed-once-then-track pattern as themeChoice above, kept as its own
+            // piece of state rather than derived from AppCompatDelegate.getApplicationLocales()
+            // so the Settings row can show it without re-reading appcompat's state on
+            // every recomposition.
+            var languageTag by rememberSaveable { mutableStateOf(appPreferences.languageTag()) }
+            val onLanguageTagChange: (String?) -> Unit = { tag ->
+                languageTag = tag
+                appPreferences.setLanguageTag(tag)
+                applyLocale(tag)
             }
             val navController = rememberNavController()
 
@@ -92,6 +112,8 @@ class MainActivity : ComponentActivity() {
                             onTrashClick = { navController.navigate(Route.Trash) },
                             themeChoice = themeChoice,
                             onThemeChoiceChange = onThemeChoiceChange,
+                            languageTag = languageTag,
+                            onLanguageTagChange = onLanguageTagChange,
                         )
                     }
                     composable<Route.Trash> {
@@ -100,5 +122,15 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun applyStoredLocale() = applyLocale(appPreferences.languageTag())
+
+    // Null means "follow the system" — an empty LocaleListCompat tells AppCompatDelegate
+    // to drop any override, which is exactly the framework's own definition of that
+    // state and matches AppPreferences.languageTag()'s contract.
+    private fun applyLocale(tag: String?) {
+        val locales = tag?.let { LocaleListCompat.forLanguageTags(it) } ?: LocaleListCompat.getEmptyLocaleList()
+        AppCompatDelegate.setApplicationLocales(locales)
     }
 }

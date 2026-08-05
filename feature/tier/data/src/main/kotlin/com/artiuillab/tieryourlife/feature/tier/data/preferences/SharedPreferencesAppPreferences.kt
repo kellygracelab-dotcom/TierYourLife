@@ -9,6 +9,7 @@ import javax.inject.Singleton
 
 private const val PREFS_NAME = "tier_your_life_prefs"
 private const val KEY_THEME_CHOICE = "theme_choice"
+private const val KEY_LANGUAGE_TAG = "language_tag"
 
 // SharedPreferences is memory-cached by the platform after its first read, so reading
 // themeChoice() on every call is cheap — no extra caching layer needed here.
@@ -28,5 +29,13 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun setThemeChoice(choice: ThemeChoice) {
         prefs.edit().putString(KEY_THEME_CHOICE, choice.name).apply()
+    }
+
+    // Absent means "never chosen" — read back as null, same as explicitly following the
+    // system, and distinct from every real tag ("uk", "pt-BR", ...) an option offers.
+    override fun languageTag(): String? = prefs.getString(KEY_LANGUAGE_TAG, null)
+
+    override fun setLanguageTag(tag: String?) {
+        prefs.edit().putString(KEY_LANGUAGE_TAG, tag).apply()
     }
 }

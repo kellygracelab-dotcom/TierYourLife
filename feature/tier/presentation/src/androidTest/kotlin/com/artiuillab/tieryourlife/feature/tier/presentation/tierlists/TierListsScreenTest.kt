@@ -200,6 +200,23 @@ class TierListsScreenTest {
         composeRule.onNodeWithTag("tier_list_card_2").assertIsOff()
     }
 
+    // The design had the heading and its summary collapse away while selecting. Built,
+    // that yanked the whole list upward under the finger still resting on the card it
+    // had just long-pressed, and left the first card flush against the bar. The heading
+    // stays; only the bar above it changes. Decided against the design — see
+    // docs/design-spec-home.md, section 3.
+    @Test
+    fun selectionMode_keepsTheHeadingAndSummaryInPlace() {
+        val lists = listOf(tierList(7L, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 1)))
+        setLiveScreen(lists)
+
+        composeRule.onNodeWithTag("tier_list_card_7").performTouchInput { longClick() }
+
+        composeRule.onNodeWithTag(TierListsTestTags.SELECTION_BAR).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.tier_lists_title)).assertIsDisplayed()
+        composeRule.onNodeWithText(summary(listCount = 1, rankedCount = 1)).assertIsDisplayed()
+    }
+
     @Test
     fun selectionMode_tappingAnotherCard_addsItRatherThanOpeningIt() {
         var openedId: Long? = null

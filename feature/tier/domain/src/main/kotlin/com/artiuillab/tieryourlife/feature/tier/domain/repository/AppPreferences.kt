@@ -10,4 +10,14 @@ interface AppPreferences {
     fun themeChoice(): ThemeChoice
 
     fun setThemeChoice(choice: ThemeChoice)
+
+    // A BCP-47 language tag ("uk", "pt-BR", ...) or null to follow the system locale.
+    // Stored here rather than through appcompat's own autoStoreLocales service: Google's
+    // reference for AppLocalesMetadataHolderService notes that autoStoreLocales=true
+    // performs a blocking read on the main thread and can trip StrictMode's disk-read
+    // and disk-write policies, and this SharedPreferences-backed store is already
+    // synchronous and memory-cached after its first read.
+    fun languageTag(): String?
+
+    fun setLanguageTag(tag: String?)
 }
