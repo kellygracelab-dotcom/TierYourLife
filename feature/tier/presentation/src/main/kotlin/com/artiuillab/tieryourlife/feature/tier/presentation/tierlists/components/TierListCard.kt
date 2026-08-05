@@ -127,7 +127,7 @@ internal fun TierListCard(
 }
 
 // Hand-drawn to an exact 24dp/4dp-radius box rather than the stock M3 Checkbox, the
-// same call MovieSearchScreen's SelectionCheckbox already made for the search sheet
+// same call CatalogueSearchScreen's SelectionCheckbox already made for the search sheet
 // (docs/design-spec-home.md, section 11). Not independently focusable or announced —
 // the checkbox state lives on the card's own semantics (see TierListCard above), so
 // this box clears its own to avoid TalkBack reading "checkbox" twice for one card.

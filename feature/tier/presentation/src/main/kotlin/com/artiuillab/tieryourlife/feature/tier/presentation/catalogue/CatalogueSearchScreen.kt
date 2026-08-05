@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.moviesearch
+package com.artiuillab.tieryourlife.feature.tier.presentation.catalogue
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -61,11 +61,11 @@ private val FieldFillDark = Color(0xFF2A2A31)
 private val SelectedRowTintLight = Color(0xFFEDEBFA)
 private val SelectedRowTintDark = Color(0xFF2E2F45)
 
-// The selection map lives one level up, in whatever hosts this composable (AddMovieSheet in
+// The selection map lives one level up, in whatever hosts this composable (AddItemsSheet in
 // production) — see that file's comment. This composable is deliberately stateless about it.
 @Composable
-fun MovieSearchScreenContent(
-    state: MovieSearchUiState,
+fun CatalogueSearchScreenContent(
+    state: CatalogueSearchUiState,
     query: String,
     onQueryChange: (String) -> Unit,
     onSearchClick: () -> Unit,
@@ -91,7 +91,7 @@ fun MovieSearchScreenContent(
             fill = fieldFill,
         )
 
-        if (state is MovieSearchUiState.Loading) {
+        if (state is CatalogueSearchUiState.Loading) {
             LinearProgressIndicator(
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.primaryContainer,
@@ -105,24 +105,24 @@ fun MovieSearchScreenContent(
 
         Box(modifier = Modifier.weight(1f)) {
             when (state) {
-                is MovieSearchUiState.Initial -> {
-                    CenteredMessage(text = stringResource(R.string.movie_search_min_query))
+                is CatalogueSearchUiState.Initial -> {
+                    CenteredMessage(text = stringResource(R.string.item_search_min_query))
                 }
 
-                is MovieSearchUiState.Loading -> {
+                is CatalogueSearchUiState.Loading -> {
                     // No spinner and no skeleton rows here — the 4dp bar above the caption
                     // line is the only loading indicator; a centred one here would flash the
                     // list empty on every keystroke's debounced request.
                 }
 
-                is MovieSearchUiState.Empty -> {
+                is CatalogueSearchUiState.Empty -> {
                     CenteredMessage(
-                        text = stringResource(R.string.movie_search_empty_title, state.query),
+                        text = stringResource(R.string.item_search_empty_title, state.query),
                     )
                 }
 
-                is MovieSearchUiState.Success -> {
-                    MovieResultsList(
+                is CatalogueSearchUiState.Success -> {
+                    ResultsList(
                         items = state.items,
                         selectedIds = selectedIds,
                         selectedTint = if (isDark) SelectedRowTintDark else SelectedRowTintLight,
@@ -130,11 +130,11 @@ fun MovieSearchScreenContent(
                     )
                 }
 
-                is MovieSearchUiState.Error -> {
+                is CatalogueSearchUiState.Error -> {
                     CenteredMessage(
-                        text = stringResource(R.string.movie_search_error_title),
-                        body = stringResource(R.string.movie_search_error_body),
-                        actionLabel = stringResource(R.string.movie_search_try_again),
+                        text = stringResource(R.string.item_search_error_title),
+                        body = stringResource(R.string.item_search_error_body),
+                        actionLabel = stringResource(R.string.item_search_try_again),
                         onAction = onSearchClick,
                     )
                 }
@@ -158,13 +158,13 @@ private fun SearchField(
     fill: Color,
 ) {
     val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
-    val closeDescription = stringResource(R.string.movie_search_close_content_description)
-    val clearDescription = stringResource(R.string.movie_search_clear_content_description)
+    val closeDescription = stringResource(R.string.item_search_close_content_description)
+    val clearDescription = stringResource(R.string.item_search_clear_content_description)
 
     TextField(
         value = query,
         onValueChange = onQueryChange,
-        placeholder = { Text(stringResource(R.string.movie_search_field_label)) },
+        placeholder = { Text(stringResource(R.string.item_search_field_label)) },
         singleLine = true,
         shape = RoundedCornerShape(28.dp),
         leadingIcon = {
@@ -172,7 +172,7 @@ private fun SearchField(
                 onClick = onClose,
                 modifier = Modifier
                     .semantics { contentDescription = closeDescription }
-                    .testTag(TierDetailTestTags.MOVIE_SEARCH_CLOSE),
+                    .testTag(TierDetailTestTags.ITEM_SEARCH_CLOSE),
             ) { BackIcon() }
         },
         trailingIcon = {
@@ -181,7 +181,7 @@ private fun SearchField(
                     onClick = { onQueryChange("") },
                     modifier = Modifier
                         .semantics { contentDescription = clearDescription }
-                        .testTag(TierDetailTestTags.MOVIE_SEARCH_CLEAR),
+                        .testTag(TierDetailTestTags.ITEM_SEARCH_CLEAR),
                 ) { ClearIcon(20.dp, onSurfaceVariant) }
             }
         },
@@ -200,7 +200,7 @@ private fun SearchField(
             .fillMaxWidth()
             .padding(start = 12.dp, end = 12.dp, bottom = 8.dp)
             .height(56.dp)
-            .testTag(TierDetailTestTags.MOVIE_SEARCH_FIELD),
+            .testTag(TierDetailTestTags.ITEM_SEARCH_FIELD),
     )
 }
 
@@ -208,7 +208,7 @@ private fun SearchField(
 private fun CaptionLine(listTitle: String) {
     val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     val primary = MaterialTheme.colorScheme.primary
-    val fullText = stringResource(R.string.movie_search_source_caption, listTitle)
+    val fullText = stringResource(R.string.item_search_source_caption, listTitle)
     val listNameStart = fullText.indexOf(listTitle).takeIf { listTitle.isNotEmpty() && it >= 0 }
     val annotated = buildAnnotatedString {
         append(fullText)
@@ -258,7 +258,7 @@ private fun CenteredMessage(
                 modifier = Modifier
                     .padding(top = 12.dp)
                     .clickable(onClick = onAction)
-                    .testTag(TierDetailTestTags.MOVIE_SEARCH_TRY_AGAIN)
+                    .testTag(TierDetailTestTags.ITEM_SEARCH_TRY_AGAIN)
                     .padding(8.dp),
             )
         }
@@ -266,13 +266,13 @@ private fun CenteredMessage(
 }
 
 @Composable
-private fun MovieResultsList(
+private fun ResultsList(
     items: List<CatalogueItem>,
     selectedIds: Set<String>,
     selectedTint: Color,
     onToggle: (CatalogueItem) -> Unit,
 ) {
-    LazyColumn(modifier = Modifier.testTag(TierDetailTestTags.MOVIE_SEARCH_RESULTS_LIST)) {
+    LazyColumn(modifier = Modifier.testTag(TierDetailTestTags.ITEM_SEARCH_RESULTS_LIST)) {
         items(items, key = { it.id }) { item ->
             val isSelected = item.id in selectedIds
             val background = if (isSelected) selectedTint else Color.Transparent
@@ -281,7 +281,7 @@ private fun MovieResultsList(
                     .fillMaxWidth()
                     .background(background)
                     .selectable(selected = isSelected, onClick = { onToggle(item) })
-                    .testTag(TierDetailTestTags.movieSearchResult(item.id))
+                    .testTag(TierDetailTestTags.itemSearchResult(item.id))
                     .padding(horizontal = 16.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -342,7 +342,7 @@ private fun SelectionCheckbox(isSelected: Boolean) {
 
 @Composable
 private fun SelectionBar(selectedCount: Int, fill: Color, onConfirm: () -> Unit) {
-    Column(modifier = Modifier.testTag(TierDetailTestTags.MOVIE_SEARCH_BOTTOM_BAR)) {
+    Column(modifier = Modifier.testTag(TierDetailTestTags.ITEM_SEARCH_BOTTOM_BAR)) {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
         Row(
             modifier = Modifier
@@ -353,15 +353,15 @@ private fun SelectionBar(selectedCount: Int, fill: Color, onConfirm: () -> Unit)
             verticalAlignment = Alignment.CenterVertically,
         ) {
             val countText = if (selectedCount == 0) {
-                stringResource(R.string.movie_search_selected_none)
+                stringResource(R.string.item_search_selected_none)
             } else {
-                pluralStringResource(R.plurals.movie_search_selected_count, selectedCount, selectedCount)
+                pluralStringResource(R.plurals.item_search_selected_count, selectedCount, selectedCount)
             }
             Text(
                 text = countText,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.testTag(TierDetailTestTags.MOVIE_SEARCH_SELECTED_COUNT),
+                modifier = Modifier.testTag(TierDetailTestTags.ITEM_SEARCH_SELECTED_COUNT),
             )
 
             val hasSelection = selectedCount > 0
@@ -376,9 +376,9 @@ private fun SelectionBar(selectedCount: Int, fill: Color, onConfirm: () -> Unit)
                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             }
             val buttonLabel = if (hasSelection) {
-                pluralStringResource(R.plurals.movie_search_add_button, selectedCount, selectedCount)
+                pluralStringResource(R.plurals.item_search_add_button, selectedCount, selectedCount)
             } else {
-                stringResource(R.string.movie_search_add_disabled)
+                stringResource(R.string.item_search_add_disabled)
             }
             Box(
                 modifier = Modifier
@@ -393,7 +393,7 @@ private fun SelectionBar(selectedCount: Int, fill: Color, onConfirm: () -> Unit)
                         },
                     )
                     .padding(horizontal = 24.dp)
-                    .testTag(TierDetailTestTags.MOVIE_SEARCH_CONFIRM),
+                    .testTag(TierDetailTestTags.ITEM_SEARCH_CONFIRM),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(text = buttonLabel, style = MaterialTheme.typography.bodyMedium, color = contentColor)
@@ -402,17 +402,17 @@ private fun SelectionBar(selectedCount: Int, fill: Color, onConfirm: () -> Unit)
     }
 }
 
-private val previewMovies = listOf(
+private val previewItems = listOf(
     CatalogueItem(id = "tmdb:1", title = "The Godfather", subtitle = "1972", imageUrl = null),
     CatalogueItem(id = "tmdb:2", title = "Inception", subtitle = "2010", imageUrl = null),
 )
 
 @Preview(name = "Initial", device = "id:pixel_9", showBackground = true, showSystemUi = true)
 @Composable
-fun MovieSearchScreenInitialPreview() {
+fun CatalogueSearchScreenInitialPreview() {
     TierYourLifeTheme {
-        MovieSearchScreenContent(
-            state = MovieSearchUiState.Initial,
+        CatalogueSearchScreenContent(
+            state = CatalogueSearchUiState.Initial,
             query = "",
             onQueryChange = {},
             onSearchClick = {},
@@ -423,10 +423,10 @@ fun MovieSearchScreenInitialPreview() {
 
 @Preview(name = "Loading", device = "id:pixel_9", showBackground = true, showSystemUi = true)
 @Composable
-fun MovieSearchScreenLoadingPreview() {
+fun CatalogueSearchScreenLoadingPreview() {
     TierYourLifeTheme {
-        MovieSearchScreenContent(
-            state = MovieSearchUiState.Loading,
+        CatalogueSearchScreenContent(
+            state = CatalogueSearchUiState.Loading,
             query = "Interstellar",
             onQueryChange = {},
             onSearchClick = {},
@@ -437,10 +437,10 @@ fun MovieSearchScreenLoadingPreview() {
 
 @Preview(name = "Success", device = "id:pixel_9", showBackground = true, showSystemUi = true)
 @Composable
-fun MovieSearchScreenSuccessPreview() {
+fun CatalogueSearchScreenSuccessPreview() {
     TierYourLifeTheme {
-        MovieSearchScreenContent(
-            state = MovieSearchUiState.Success(items = previewMovies),
+        CatalogueSearchScreenContent(
+            state = CatalogueSearchUiState.Success(items = previewItems),
             query = "Godfather",
             onQueryChange = {},
             onSearchClick = {},
@@ -452,10 +452,10 @@ fun MovieSearchScreenSuccessPreview() {
 
 @Preview(name = "Empty", device = "id:pixel_9", showBackground = true, showSystemUi = true)
 @Composable
-fun MovieSearchScreenEmptyPreview() {
+fun CatalogueSearchScreenEmptyPreview() {
     TierYourLifeTheme {
-        MovieSearchScreenContent(
-            state = MovieSearchUiState.Empty(query = "zzxxccvv"),
+        CatalogueSearchScreenContent(
+            state = CatalogueSearchUiState.Empty(query = "zzxxccvv"),
             query = "zzxxccvv",
             onQueryChange = {},
             onSearchClick = {},
@@ -466,10 +466,10 @@ fun MovieSearchScreenEmptyPreview() {
 
 @Preview(name = "Error", device = "id:pixel_9", showBackground = true, showSystemUi = true)
 @Composable
-fun MovieSearchScreenErrorPreview() {
+fun CatalogueSearchScreenErrorPreview() {
     TierYourLifeTheme {
-        MovieSearchScreenContent(
-            state = MovieSearchUiState.Error(message = "No connection to server"),
+        CatalogueSearchScreenContent(
+            state = CatalogueSearchUiState.Error(message = "No connection to server"),
             query = "Interstellar",
             onQueryChange = {},
             onSearchClick = {},

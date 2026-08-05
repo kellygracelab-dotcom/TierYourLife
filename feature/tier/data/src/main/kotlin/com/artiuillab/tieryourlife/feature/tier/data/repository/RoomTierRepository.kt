@@ -1,10 +1,10 @@
 package com.artiuillab.tieryourlife.feature.tier.data.repository
 
-import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewPoolMovie
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewPoolItem
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
-import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolMovieDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
@@ -40,18 +40,18 @@ class RoomTierRepository internal constructor(
         dao.updateTierListTitle(id, title)
     }
 
-    override suspend fun addMovieToPool(
+    override suspend fun addItemToPool(
         tierListId: Long,
         title: String,
         imageUrl: String?
     ): Long {
-        return dao.addMovieToPool(tierListId, title, imageUrl)
+        return dao.addItemToPool(tierListId, title, imageUrl)
     }
 
-    override suspend fun addMoviesToPool(tierListId: Long, movies: List<PoolMovieDraft>) {
-        dao.addMoviesToPool(
+    override suspend fun addItemsToPool(tierListId: Long, items: List<PoolItemDraft>) {
+        dao.addItemsToPool(
             tierListId,
-            movies.map { NewPoolMovie(title = it.title, imageUrl = it.imageUrl) },
+            items.map { NewPoolItem(title = it.title, imageUrl = it.imageUrl) },
         )
     }
 

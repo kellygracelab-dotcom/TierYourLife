@@ -2,7 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolMovieDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -41,7 +41,7 @@ class TierDetailViewModelTest {
 
     // The point of this test: the picked gallery reference must leave the view model
     // only through attachImageToItem (which copies the source into internal storage —
-    // already proven by RoomTierRepositoryImageTest), never as addMovieToPool's own
+    // already proven by RoomTierRepositoryImageTest), never as addItemToPool's own
     // imageUrl argument, which would store the raw, unstable gallery Uri as-is.
     @Test
     fun addManualItem_withAPhoto_sendsTheGalleryUriOnlyToAttachImageToItem() = runBlocking {
@@ -165,7 +165,7 @@ private class FakeTierRepository(initial: TierList) : TierRepository {
 
     override suspend fun getTierListById(id: Long): TierList? = list
 
-    override suspend fun addMovieToPool(tierListId: Long, title: String, imageUrl: String?): Long {
+    override suspend fun addItemToPool(tierListId: Long, title: String, imageUrl: String?): Long {
         lastAddedImageUrl = imageUrl
         val id = nextItemId++
         val pool = list.tiers.single { it.isPool }
@@ -183,7 +183,7 @@ private class FakeTierRepository(initial: TierList) : TierRepository {
     override suspend fun createTierList(title: String): Long = unsupported()
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) = unsupported()
     override suspend fun renameTierList(id: Long, title: String) = unsupported()
-    override suspend fun addMoviesToPool(tierListId: Long, movies: List<PoolMovieDraft>) = unsupported()
+    override suspend fun addItemsToPool(tierListId: Long, items: List<PoolItemDraft>) = unsupported()
     override suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) = unsupported()
     override suspend fun addTier(
         tierListId: Long,

@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.moviesearch
+package com.artiuillab.tieryourlife.feature.tier.presentation.catalogue
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,15 +17,15 @@ private const val SEARCH_DEBOUNCE_MILLIS = 300L
 private const val MIN_QUERY_LENGTH = 2
 
 @HiltViewModel
-class MovieSearchViewModel @Inject constructor(
+class CatalogueSearchViewModel @Inject constructor(
     private val repository: CatalogueSearchRepository,
     private val appPreferences: AppPreferences,
 ) : ViewModel() {
 
     private val _state =
-        MutableStateFlow<MovieSearchUiState>(MovieSearchUiState.Initial)
+        MutableStateFlow<CatalogueSearchUiState>(CatalogueSearchUiState.Initial)
 
-    val state: StateFlow<MovieSearchUiState> = _state.asStateFlow()
+    val state: StateFlow<CatalogueSearchUiState> = _state.asStateFlow()
 
     private var searchJob: Job? = null
 
@@ -36,7 +36,7 @@ class MovieSearchViewModel @Inject constructor(
         searchJob?.cancel()
         val trimmed = query.trim()
         if (trimmed.length < MIN_QUERY_LENGTH) {
-            _state.value = MovieSearchUiState.Initial
+            _state.value = CatalogueSearchUiState.Initial
             return
         }
         searchJob = viewModelScope.launch {
@@ -49,30 +49,30 @@ class MovieSearchViewModel @Inject constructor(
         searchJob?.cancel()
         val trimmed = query.trim()
         if (trimmed.length < MIN_QUERY_LENGTH) {
-            _state.value = MovieSearchUiState.Initial
+            _state.value = CatalogueSearchUiState.Initial
             return
         }
         searchJob = viewModelScope.launch { performSearch(trimmed) }
     }
 
     private suspend fun performSearch(trimmedQuery: String) {
-        _state.value = MovieSearchUiState.Loading
+        _state.value = CatalogueSearchUiState.Loading
 
         repository.search(trimmedQuery, appPreferences.languageTag())
             .fold(
                 onSuccess = { items ->
                     _state.value = if (items.isEmpty()) {
-                        MovieSearchUiState.Empty(
+                        CatalogueSearchUiState.Empty(
                             query = trimmedQuery,
                         )
                     } else {
-                        MovieSearchUiState.Success(
+                        CatalogueSearchUiState.Success(
                             items = items,
                         )
                     }
                 },
                 onFailure = { exception ->
-                    _state.value = MovieSearchUiState.Error(
+                    _state.value = CatalogueSearchUiState.Error(
                         message = exception.message
                             ?: "Search failed",
                     )

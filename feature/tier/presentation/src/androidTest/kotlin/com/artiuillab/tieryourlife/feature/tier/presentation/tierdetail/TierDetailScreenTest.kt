@@ -91,7 +91,7 @@ class TierDetailScreenTest {
     @Test
     fun successState_tierWithThreeItems_occupiesOneLineAtOriginalHeight() {
         val list = listOf(
-            tier(id = 1, label = "S", items = List(3) { movie(it) }),
+            tier(id = 1, label = "S", items = List(3) { tierItem(it) }),
         ).asTierList()
 
         setScreen(TierDetailUiState.Success(list))
@@ -698,8 +698,8 @@ class TierDetailScreenTest {
     @Test
     fun liftingATierRow_collapsesAllRankedRowsToOneHeight() {
         val list = listOf(
-            tier(id = 1, label = "S", items = List(24) { movie(it) }),
-            tier(id = 2, label = "A", items = List(1) { movie(it + 100) }),
+            tier(id = 1, label = "S", items = List(24) { tierItem(it) }),
+            tier(id = 2, label = "A", items = List(1) { tierItem(it + 100) }),
             tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
         ).asTierList()
         setScreen(TierDetailUiState.Success(list))
@@ -720,8 +720,8 @@ class TierDetailScreenTest {
     @Test
     fun releasingATierRow_expandsRowsBackToTheirNormalHeight() {
         val list = listOf(
-            tier(id = 1, label = "S", items = List(24) { movie(it) }),
-            tier(id = 2, label = "A", items = List(1) { movie(it + 100) }),
+            tier(id = 1, label = "S", items = List(24) { tierItem(it) }),
+            tier(id = 2, label = "A", items = List(1) { tierItem(it + 100) }),
             tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
         ).asTierList()
         setScreen(TierDetailUiState.Success(list))
@@ -738,8 +738,8 @@ class TierDetailScreenTest {
     @Test
     fun cancellingATierRowDrag_expandsRowsBackToTheirNormalHeight() {
         val list = listOf(
-            tier(id = 1, label = "S", items = List(24) { movie(it) }),
-            tier(id = 2, label = "A", items = List(1) { movie(it + 100) }),
+            tier(id = 1, label = "S", items = List(24) { tierItem(it) }),
+            tier(id = 2, label = "A", items = List(1) { tierItem(it + 100) }),
             tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
         ).asTierList()
         setScreen(TierDetailUiState.Success(list))
@@ -782,9 +782,9 @@ class TierDetailScreenTest {
     fun pool_staysAtTheBottom_doesNotReorder_andDoesNotCollapse() {
         var reorderedIds: List<Long>? = null
         val list = listOf(
-            tier(id = 1, label = "S", items = List(24) { movie(it) }),
+            tier(id = 1, label = "S", items = List(24) { tierItem(it) }),
             tier(id = 2, label = "A", items = emptyList()),
-            tier(id = 6, label = "Pool", items = List(2) { movie(it + 100) }, isPool = true),
+            tier(id = 6, label = "Pool", items = List(2) { tierItem(it + 100) }, isPool = true),
         ).asTierList()
         setScreen(
             TierDetailUiState.Success(list),
@@ -813,9 +813,9 @@ class TierDetailScreenTest {
         var deletedPoolSize: Int? = null
         var deletedItemIds: List<Long>? = null
         val list = listOf(
-            tier(id = 1, label = "S", items = List(2) { movie(it) }),
+            tier(id = 1, label = "S", items = List(2) { tierItem(it) }),
             tier(id = 2, label = "A", items = emptyList()),
-            tier(id = 6, label = "Pool", items = List(3) { movie(it + 100) }, isPool = true),
+            tier(id = 6, label = "Pool", items = List(3) { tierItem(it + 100) }, isPool = true),
         ).asTierList()
         setScreen(
             TierDetailUiState.Success(list),
@@ -850,13 +850,13 @@ class TierDetailScreenTest {
             tier(
                 id = 2,
                 label = "A",
-                items = List(1) { movie(it) },
+                items = List(1) { tierItem(it) },
                 caption = "Great",
                 colorLight = "#111111",
                 colorDark = "#222222",
             ),
             tier(id = 3, label = "B", items = emptyList()),
-            tier(id = 6, label = "Pool", items = List(2) { movie(it + 100) }, isPool = true),
+            tier(id = 6, label = "Pool", items = List(2) { tierItem(it + 100) }, isPool = true),
         ).asTierList()
         setScreen(
             TierDetailUiState.Success(list),
@@ -896,10 +896,10 @@ class TierDetailScreenTest {
             var list by remember {
                 mutableStateOf(
                     listOf(
-                        tier(id = 1, label = "S", items = List(24) { movie(it) }),
+                        tier(id = 1, label = "S", items = List(24) { tierItem(it) }),
                         tier(id = 2, label = "A", items = emptyList()),
                         tier(id = 3, label = "B", items = emptyList()),
-                        tier(id = 6, label = "Pool", items = List(1) { movie(it + 100) }, isPool = true),
+                        tier(id = 6, label = "Pool", items = List(1) { tierItem(it + 100) }, isPool = true),
                     ).asTierList(),
                 )
             }
@@ -943,7 +943,7 @@ class TierDetailScreenTest {
                 mutableStateOf(
                     listOf(
                         tier(id = 1, label = "S", items = listOf(item(100, "A"), item(101, "B"), item(102, "C"))),
-                        tier(id = 6, label = "Pool", items = List(1) { movie(it + 200) }, isPool = true),
+                        tier(id = 6, label = "Pool", items = List(1) { tierItem(it + 200) }, isPool = true),
                     ).asTierList(),
                 )
             }
@@ -977,7 +977,7 @@ class TierDetailScreenTest {
     fun tileDragAndBandDoubleTap_stillWorkAlongsideTheNewRowDrag() {
         var movedItemId: Long? = null
         val list = listOf(
-            tier(id = 1, label = "S", items = List(1) { movie(it) }, caption = "Masterpiece"),
+            tier(id = 1, label = "S", items = List(1) { tierItem(it) }, caption = "Masterpiece"),
             tier(id = 2, label = "A", items = emptyList()),
             tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
         ).asTierList()
@@ -1116,7 +1116,7 @@ class TierDetailScreenTest {
 
     @Test
     fun listSettings_marksTheListsCurrentDisplayModeSelected() {
-        val list = listOf(tier(id = 1, label = "S", items = List(1) { movie(it) }))
+        val list = listOf(tier(id = 1, label = "S", items = List(1) { tierItem(it) }))
             .asTierList(displayMode = TierListDisplayMode.HORIZONTAL_SCROLL)
         setScreen(TierDetailUiState.Success(list))
 
@@ -2089,16 +2089,16 @@ class TierDetailScreenTest {
         id = 1,
         title = "Sci-fi films",
         tiers = listOf(
-            tier(id = 1, label = "S", items = List(1) { movie(it) }),
-            tier(id = 2, label = "A", items = List(1) { movie(it) }),
-            tier(id = 3, label = "B", items = List(1) { movie(it) }),
-            tier(id = 4, label = "C", items = List(1) { movie(it) }),
-            tier(id = 5, label = "D", items = List(1) { movie(it) }),
-            tier(id = 6, label = "Pool", items = List(6) { movie(it) }, isPool = true),
+            tier(id = 1, label = "S", items = List(1) { tierItem(it) }),
+            tier(id = 2, label = "A", items = List(1) { tierItem(it) }),
+            tier(id = 3, label = "B", items = List(1) { tierItem(it) }),
+            tier(id = 4, label = "C", items = List(1) { tierItem(it) }),
+            tier(id = 5, label = "D", items = List(1) { tierItem(it) }),
+            tier(id = 6, label = "Pool", items = List(6) { tierItem(it) }, isPool = true),
         ),
     )
 
-    private fun movie(index: Int): TierItem = TierItem(id = index.toLong(), title = "Movie $index", imageUrl = null)
+    private fun tierItem(index: Int): TierItem = TierItem(id = index.toLong(), title = "Item $index", imageUrl = null)
 
     private fun tier(
         id: Long,

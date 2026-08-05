@@ -152,29 +152,29 @@
     <string name="tier_editor_preset_color_description">Готовий колір %1$d</string>
     <string name="tier_editor_custom_color_description">Власний колір</string>
 
-    <string name="movie_search_field_label">Пошук</string>
-    <string name="movie_search_close_content_description">Закрити пошук</string>
-    <string name="movie_search_clear_content_description">Очистити пошук</string>
-    <string name="movie_search_source_caption">Додається в пул %1$s</string>
-    <string name="movie_search_min_query">Введіть принаймні дві літери для пошуку.</string>
-    <string name="movie_search_empty_title">Нічого не знайдено за запитом \"%1$s\"</string>
-    <string name="movie_search_error_title">Не вдалося завантажити результати</string>
-    <string name="movie_search_error_body">Перевірте з\'єднання і спробуйте ще раз.</string>
-    <string name="movie_search_try_again">Спробувати ще раз</string>
-    <string name="movie_search_selected_none">Нічого не вибрано</string>
-    <plurals name="movie_search_selected_count">
+    <string name="item_search_field_label">Пошук</string>
+    <string name="item_search_close_content_description">Закрити пошук</string>
+    <string name="item_search_clear_content_description">Очистити пошук</string>
+    <string name="item_search_source_caption">Додається в пул %1$s</string>
+    <string name="item_search_min_query">Введіть принаймні дві літери для пошуку.</string>
+    <string name="item_search_empty_title">Нічого не знайдено за запитом \"%1$s\"</string>
+    <string name="item_search_error_title">Не вдалося завантажити результати</string>
+    <string name="item_search_error_body">Перевірте з\'єднання і спробуйте ще раз.</string>
+    <string name="item_search_try_again">Спробувати ще раз</string>
+    <string name="item_search_selected_none">Нічого не вибрано</string>
+    <plurals name="item_search_selected_count">
         <item quantity="one">%1$d вибрано</item>
         <item quantity="few">%1$d вибрано</item>
         <item quantity="many">%1$d вибрано</item>
         <item quantity="other">%1$d вибрано</item>
     </plurals>
-    <plurals name="movie_search_add_button">
+    <plurals name="item_search_add_button">
         <item quantity="one">Додати %1$d елемент</item>
         <item quantity="few">Додати %1$d елементи</item>
         <item quantity="many">Додати %1$d елементів</item>
         <item quantity="other">Додати %1$d елемента</item>
     </plurals>
-    <string name="movie_search_add_disabled">Додати</string>
+    <string name="item_search_add_disabled">Додати</string>
 
     <string name="manual_dialog_title">Додати елемент</string>
     <string name="manual_dialog_body">Потрапляє в пул. Потім можна перетягнути його в рівень.</string>

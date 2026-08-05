@@ -93,6 +93,8 @@ private class RecordingTierDao : TierDao {
     override suspend fun shiftTiersFrom(tierListId: Long, fromPosition: Int) = Unit
     override suspend fun insertTierItem(tierItem: TierItemEntity): Long = 0L
     override suspend fun getAllTierItemsByTierId(tierId: Long): List<TierItemEntity> = emptyList()
+    override suspend fun getTrashedItemsByTierId(tierId: Long): List<TierItemEntity> = emptyList()
+    override suspend fun reassignTierItem(id: Long, toTierId: Long, position: Int) = Unit
     override suspend fun getTierItemById(id: Long): TierItemEntity? = null
     override suspend fun updateTierItemPosition(id: Long, position: Int) = Unit
     override suspend fun updateTierItemTierAndPosition(id: Long, tierId: Long, position: Int) = Unit

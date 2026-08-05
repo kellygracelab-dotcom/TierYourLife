@@ -126,25 +126,25 @@
     <string name="tier_editor_preset_color_description">Hazır renk %1$d</string>
     <string name="tier_editor_custom_color_description">Özel renk</string>
 
-    <string name="movie_search_field_label">Ara</string>
-    <string name="movie_search_close_content_description">Aramayı kapat</string>
-    <string name="movie_search_clear_content_description">Aramayı temizle</string>
-    <string name="movie_search_source_caption">%1$s havuzuna ekleniyor</string>
-    <string name="movie_search_min_query">Aramak için en az iki harf gir.</string>
-    <string name="movie_search_empty_title">\"%1$s\" için bir şey bulunamadı</string>
-    <string name="movie_search_error_title">Sonuçlar yüklenemedi</string>
-    <string name="movie_search_error_body">Bağlantını kontrol et ve tekrar dene.</string>
-    <string name="movie_search_try_again">Tekrar dene</string>
-    <string name="movie_search_selected_none">Hiçbir şey seçilmedi</string>
-    <plurals name="movie_search_selected_count">
+    <string name="item_search_field_label">Ara</string>
+    <string name="item_search_close_content_description">Aramayı kapat</string>
+    <string name="item_search_clear_content_description">Aramayı temizle</string>
+    <string name="item_search_source_caption">%1$s havuzuna ekleniyor</string>
+    <string name="item_search_min_query">Aramak için en az iki harf gir.</string>
+    <string name="item_search_empty_title">\"%1$s\" için bir şey bulunamadı</string>
+    <string name="item_search_error_title">Sonuçlar yüklenemedi</string>
+    <string name="item_search_error_body">Bağlantını kontrol et ve tekrar dene.</string>
+    <string name="item_search_try_again">Tekrar dene</string>
+    <string name="item_search_selected_none">Hiçbir şey seçilmedi</string>
+    <plurals name="item_search_selected_count">
         <item quantity="one">%1$d seçildi</item>
         <item quantity="other">%1$d seçildi</item>
     </plurals>
-    <plurals name="movie_search_add_button">
+    <plurals name="item_search_add_button">
         <item quantity="one">1 öğe ekle</item>
         <item quantity="other">%1$d öğe ekle</item>
     </plurals>
-    <string name="movie_search_add_disabled">Ekle</string>
+    <string name="item_search_add_disabled">Ekle</string>
 
     <string name="manual_dialog_title">Öğe ekle</string>
     <string name="manual_dialog_body">Havuza gider. Sonra bir seviyeye sürükleyebilirsin.</string>

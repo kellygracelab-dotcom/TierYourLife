@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.moviesearch
+package com.artiuillab.tieryourlife.feature.tier.presentation.catalogue
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -26,14 +26,14 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-// Mirrors AddMovieSheet's own structure: selection is a Map<String, CatalogueItem>
-// owned above MovieSearchScreenContent, in the composable that hosts it, so it survives
+// Mirrors AddItemsSheet's own structure: selection is a Map<String, CatalogueItem>
+// owned above CatalogueSearchScreenContent, in the composable that hosts it, so it survives
 // that composable cycling through Initial/Loading/Success/Empty/Error. Testing it any
 // other way (e.g. state re-created fresh per test state value) wouldn't exercise the
 // thing that was actually broken — a selection that lived inside the branch that gets
 // torn down on every new search.
 @RunWith(AndroidJUnit4::class)
-class MovieSearchScreenContentTest {
+class CatalogueSearchScreenContentTest {
 
     @get:Rule
     val composeRule = createComposeRule()
@@ -42,12 +42,12 @@ class MovieSearchScreenContentTest {
     private val arrival = CatalogueItem(id = "tmdb:329865", title = "Arrival", subtitle = "2016", imageUrl = null)
     private val interstellar = CatalogueItem(id = "tmdb:157336", title = "Interstellar", subtitle = "2014", imageUrl = null)
 
-    private lateinit var stateHolder: MutableState<MovieSearchUiState>
+    private lateinit var stateHolder: MutableState<CatalogueSearchUiState>
     private var confirmed: List<CatalogueItem>? = null
     private var closed = false
     private var lastQuery = ""
 
-    private fun setContent(initial: MovieSearchUiState) {
+    private fun setContent(initial: CatalogueSearchUiState) {
         confirmed = null
         closed = false
         lastQuery = ""
@@ -57,7 +57,7 @@ class MovieSearchScreenContentTest {
             var query by remember { mutableStateOf("") }
             var selectedItems by remember { mutableStateOf<Map<String, CatalogueItem>>(emptyMap()) }
             TierYourLifeTheme {
-                MovieSearchScreenContent(
+                CatalogueSearchScreenContent(
                     state = state,
                     query = query,
                     onQueryChange = {
@@ -83,8 +83,8 @@ class MovieSearchScreenContentTest {
 
     @Test
     fun tappingAResult_marksIt_andTappingAgainUnmarksIt() {
-        setContent(MovieSearchUiState.Success(listOf(dune, arrival)))
-        val row = composeRule.onNodeWithTag(TierDetailTestTags.movieSearchResult(dune.id))
+        setContent(CatalogueSearchUiState.Success(listOf(dune, arrival)))
+        val row = composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id))
 
         row.assertIsNotSelected()
         row.performClick()
@@ -95,26 +95,26 @@ class MovieSearchScreenContentTest {
 
     @Test
     fun selectedCounter_matchesNumberOfMarkedItems() {
-        setContent(MovieSearchUiState.Success(listOf(dune, arrival, interstellar)))
+        setContent(CatalogueSearchUiState.Success(listOf(dune, arrival, interstellar)))
 
-        composeRule.onNodeWithTag(TierDetailTestTags.movieSearchResult(dune.id)).performClick()
-        composeRule.onNodeWithTag(TierDetailTestTags.movieSearchResult(arrival.id)).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(arrival.id)).performClick()
 
-        composeRule.onNodeWithTag(TierDetailTestTags.MOVIE_SEARCH_SELECTED_COUNT).assertTextEquals("2 selected")
+        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_SELECTED_COUNT).assertTextEquals("2 selected")
     }
 
     @Test
     fun marksPersist_throughANewSearchAndItsLoadingState() {
         // The real user flow this bug broke: search, mark, search again (which passes
         // through Loading before the next Success), mark once more, confirm.
-        setContent(MovieSearchUiState.Success(listOf(dune)))
-        composeRule.onNodeWithTag(TierDetailTestTags.movieSearchResult(dune.id)).performClick()
+        setContent(CatalogueSearchUiState.Success(listOf(dune)))
+        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).performClick()
 
-        composeRule.runOnIdle { stateHolder.value = MovieSearchUiState.Loading }
-        composeRule.runOnIdle { stateHolder.value = MovieSearchUiState.Success(listOf(arrival)) }
-        composeRule.onNodeWithTag(TierDetailTestTags.movieSearchResult(arrival.id)).performClick()
+        composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Loading }
+        composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Success(listOf(arrival)) }
+        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(arrival.id)).performClick()
 
-        composeRule.onNodeWithTag(TierDetailTestTags.MOVIE_SEARCH_CONFIRM).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_CONFIRM).performClick()
         composeRule.runOnIdle {
             assertEquals(setOf(dune, arrival), confirmed?.toSet())
         }
@@ -122,23 +122,23 @@ class MovieSearchScreenContentTest {
 
     @Test
     fun marksPersist_throughAnEmptyResultAndAnErrorInBetween() {
-        setContent(MovieSearchUiState.Success(listOf(dune)))
-        composeRule.onNodeWithTag(TierDetailTestTags.movieSearchResult(dune.id)).performClick()
+        setContent(CatalogueSearchUiState.Success(listOf(dune)))
+        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).performClick()
 
-        composeRule.runOnIdle { stateHolder.value = MovieSearchUiState.Empty(query = "zzz") }
-        composeRule.runOnIdle { stateHolder.value = MovieSearchUiState.Error(message = "offline") }
-        composeRule.runOnIdle { stateHolder.value = MovieSearchUiState.Success(listOf(dune)) }
+        composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Empty(query = "zzz") }
+        composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Error(message = "offline") }
+        composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Success(listOf(dune)) }
 
-        composeRule.onNodeWithTag(TierDetailTestTags.movieSearchResult(dune.id)).assertIsSelected()
+        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).assertIsSelected()
     }
 
     @Test
     fun confirming_yieldsExactlyTheMarkedSet_inOneCall() {
-        setContent(MovieSearchUiState.Success(listOf(dune, arrival, interstellar)))
-        composeRule.onNodeWithTag(TierDetailTestTags.movieSearchResult(dune.id)).performClick()
-        composeRule.onNodeWithTag(TierDetailTestTags.movieSearchResult(interstellar.id)).performClick()
+        setContent(CatalogueSearchUiState.Success(listOf(dune, arrival, interstellar)))
+        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(interstellar.id)).performClick()
 
-        composeRule.onNodeWithTag(TierDetailTestTags.MOVIE_SEARCH_CONFIRM).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_CONFIRM).performClick()
 
         composeRule.runOnIdle {
             assertEquals(setOf(dune, interstellar), confirmed?.toSet())
@@ -147,14 +147,14 @@ class MovieSearchScreenContentTest {
 
     @Test
     fun emptySelection_confirmIsUnavailable() {
-        setContent(MovieSearchUiState.Success(listOf(dune)))
+        setContent(CatalogueSearchUiState.Success(listOf(dune)))
 
-        composeRule.onNodeWithTag(TierDetailTestTags.MOVIE_SEARCH_CONFIRM).assertHasNoClickAction()
+        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_CONFIRM).assertHasNoClickAction()
     }
 
     @Test
     fun closeIcon_invokesOnClose() {
-        setContent(MovieSearchUiState.Initial)
+        setContent(CatalogueSearchUiState.Initial)
 
         composeRule.onNodeWithContentDescription("Close search").performClick()
 
@@ -163,9 +163,9 @@ class MovieSearchScreenContentTest {
 
     @Test
     fun clearIcon_appearsOnlyWithQuery_andClearsTextWhenTapped() {
-        setContent(MovieSearchUiState.Initial)
+        setContent(CatalogueSearchUiState.Initial)
 
-        composeRule.onNodeWithTag(TierDetailTestTags.MOVIE_SEARCH_FIELD).performTextInput("Dune")
+        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_FIELD).performTextInput("Dune")
         composeRule.onNodeWithContentDescription("Clear search").performClick()
 
         composeRule.runOnIdle { assertEquals("", lastQuery) }
@@ -179,9 +179,9 @@ class MovieSearchScreenContentTest {
         val manyResults = List(40) { index ->
             CatalogueItem(id = "tmdb:$index", title = "Title $index", subtitle = null, imageUrl = null)
         }
-        setContent(MovieSearchUiState.Success(manyResults))
+        setContent(CatalogueSearchUiState.Success(manyResults))
 
-        composeRule.onNodeWithTag(TierDetailTestTags.MOVIE_SEARCH_BOTTOM_BAR).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_BOTTOM_BAR).assertIsDisplayed()
     }
 
     @Test
@@ -189,18 +189,18 @@ class MovieSearchScreenContentTest {
         val manyResults = List(40) { index ->
             CatalogueItem(id = "tmdb:$index", title = "Title $index", subtitle = null, imageUrl = null)
         }
-        setContent(MovieSearchUiState.Success(manyResults))
+        setContent(CatalogueSearchUiState.Success(manyResults))
 
-        val lastTag = TierDetailTestTags.movieSearchResult(manyResults.last().id)
+        val lastTag = TierDetailTestTags.itemSearchResult(manyResults.last().id)
         // A LazyColumn only composes items near the viewport, so the last row's node
         // doesn't exist yet to scroll to by its own tag — scroll the list itself to the
         // index first, which composes the row, then it can be found and asserted on.
-        composeRule.onNodeWithTag(TierDetailTestTags.MOVIE_SEARCH_RESULTS_LIST)
+        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_RESULTS_LIST)
             .performScrollToIndex(manyResults.lastIndex)
         composeRule.onNodeWithTag(lastTag).assertIsDisplayed()
 
         val lastRowBottom = composeRule.onNodeWithTag(lastTag).fetchSemanticsNode().boundsInRoot.bottom
-        val barTop = composeRule.onNodeWithTag(TierDetailTestTags.MOVIE_SEARCH_BOTTOM_BAR)
+        val barTop = composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_BOTTOM_BAR)
             .fetchSemanticsNode().boundsInRoot.top
 
         assertTrue(
@@ -211,12 +211,12 @@ class MovieSearchScreenContentTest {
 
     @Test
     fun selectedRowTint_spansTheFullRowWidth() {
-        setContent(MovieSearchUiState.Success(listOf(dune, arrival)))
-        composeRule.onNodeWithTag(TierDetailTestTags.movieSearchResult(dune.id)).performClick()
+        setContent(CatalogueSearchUiState.Success(listOf(dune, arrival)))
+        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).performClick()
 
-        val rowWidth = composeRule.onNodeWithTag(TierDetailTestTags.movieSearchResult(dune.id))
+        val rowWidth = composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id))
             .fetchSemanticsNode().boundsInRoot.width
-        val listWidth = composeRule.onNodeWithTag(TierDetailTestTags.MOVIE_SEARCH_RESULTS_LIST)
+        val listWidth = composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_RESULTS_LIST)
             .fetchSemanticsNode().boundsInRoot.width
 
         assertEquals(

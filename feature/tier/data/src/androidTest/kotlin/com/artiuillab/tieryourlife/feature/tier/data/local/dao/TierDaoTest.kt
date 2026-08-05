@@ -249,11 +249,11 @@ class TierDaoTest {
     }
 
     @Test
-    fun add_movie_to_pool_puts_first_item_at_position_zero() = runBlocking {
+    fun add_item_to_pool_puts_first_item_at_position_zero() = runBlocking {
         val listId = dao.createTierListWithDefaultTier(title = "Films")
         val poolTierId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
 
-        dao.addMovieToPool(
+        dao.addItemToPool(
             tierListId = listId,
             title = "Interstellar",
             imageUrl = "https://example.com/interstellar.jpg",
@@ -266,12 +266,12 @@ class TierDaoTest {
     }
 
     @Test
-    fun add_movie_to_pool_appends_items_with_increasing_positions() = runBlocking {
+    fun add_item_to_pool_appends_items_with_increasing_positions() = runBlocking {
         val listId = dao.createTierListWithDefaultTier(title = "Films")
         val poolTierId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
 
-        dao.addMovieToPool(tierListId = listId, title = "Interstellar", imageUrl = null)
-        dao.addMovieToPool(tierListId = listId, title = "Arrival", imageUrl = null)
+        dao.addItemToPool(tierListId = listId, title = "Interstellar", imageUrl = null)
+        dao.addItemToPool(tierListId = listId, title = "Arrival", imageUrl = null)
 
         val poolItems = dao.getAllTierItemsByTierId(poolTierId)
         assertEquals(listOf("Interstellar", "Arrival"), poolItems.map { it.title })
@@ -279,10 +279,10 @@ class TierDaoTest {
     }
 
     @Test
-    fun add_movie_to_pool_leaves_ranked_tiers_empty() = runBlocking {
+    fun add_item_to_pool_leaves_ranked_tiers_empty() = runBlocking {
         val listId = dao.createTierListWithDefaultTier(title = "Films")
 
-        dao.addMovieToPool(tierListId = listId, title = "Interstellar", imageUrl = null)
+        dao.addItemToPool(tierListId = listId, title = "Interstellar", imageUrl = null)
 
         val rankedTiers = dao.getAllTiersByTierListId(listId).filterNot { it.isPool }
         assertTrue(rankedTiers.all { dao.getAllTierItemsByTierId(it.id).isEmpty() })
@@ -376,17 +376,17 @@ class TierDaoTest {
     }
 
     @Test
-    fun bulk_add_movies_to_pool_appends_all_with_contiguous_positions_in_one_call() = runBlocking {
+    fun bulk_add_items_to_pool_appends_all_with_contiguous_positions_in_one_call() = runBlocking {
         val listId = dao.createTierListWithDefaultTier(title = "Films")
         val poolId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
         dao.insertTierItem(tierItem(tierId = poolId, title = "Existing", position = 0))
 
-        dao.addMoviesToPool(
+        dao.addItemsToPool(
             listId,
             listOf(
-                NewPoolMovie(title = "Interstellar", imageUrl = "https://example.com/1.jpg"),
-                NewPoolMovie(title = "Arrival", imageUrl = null),
-                NewPoolMovie(title = "Moon", imageUrl = null),
+                NewPoolItem(title = "Interstellar", imageUrl = "https://example.com/1.jpg"),
+                NewPoolItem(title = "Arrival", imageUrl = null),
+                NewPoolItem(title = "Moon", imageUrl = null),
             ),
         )
 
@@ -397,14 +397,14 @@ class TierDaoTest {
     }
 
     @Test
-    fun bulk_add_movies_does_not_reuse_or_collide_with_a_trashed_items_old_position() = runBlocking {
+    fun bulk_add_items_does_not_reuse_or_collide_with_a_trashed_items_old_position() = runBlocking {
         val listId = dao.createTierListWithDefaultTier(title = "Films")
         val poolId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
         dao.insertTierItem(tierItem(tierId = poolId, title = "Active", position = 0))
         val trashedId = dao.insertTierItem(tierItem(tierId = poolId, title = "Trashed", position = 1))
         dao.markTierItemDeleted(trashedId, deletedAt = 1_000L)
 
-        dao.addMoviesToPool(listId, listOf(NewPoolMovie(title = "New", imageUrl = null)))
+        dao.addItemsToPool(listId, listOf(NewPoolItem(title = "New", imageUrl = null)))
 
         val poolItems = dao.getAllTierItemsByTierId(poolId)
         // The trashed item is invisible to the active-items read the position count is
@@ -415,12 +415,12 @@ class TierDaoTest {
     }
 
     @Test
-    fun bulk_add_movies_to_the_pool_of_a_trashed_list_is_a_no_op() = runBlocking {
+    fun bulk_add_items_to_the_pool_of_a_trashed_list_is_a_no_op() = runBlocking {
         val listId = dao.createTierListWithDefaultTier(title = "Films")
         val poolId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
         dao.markTierListsDeleted(listOf(listId), deletedAt = 1_000L)
 
-        dao.addMoviesToPool(listId, listOf(NewPoolMovie(title = "New", imageUrl = null)))
+        dao.addItemsToPool(listId, listOf(NewPoolItem(title = "New", imageUrl = null)))
 
         assertTrue(dao.getAllTierItemsByTierId(poolId).isEmpty())
     }
@@ -500,7 +500,7 @@ class TierDaoTest {
         val listId = dao.createTierListWithDefaultTier(title = "Films")
         val poolTierId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
-        val itemId = dao.addMovieToPool(tierListId = listId, title = "Interstellar", imageUrl = null)
+        val itemId = dao.addItemToPool(tierListId = listId, title = "Interstellar", imageUrl = null)
 
         dao.moveItem(itemId = itemId, toTierId = sTierId, toPosition = 0)
 

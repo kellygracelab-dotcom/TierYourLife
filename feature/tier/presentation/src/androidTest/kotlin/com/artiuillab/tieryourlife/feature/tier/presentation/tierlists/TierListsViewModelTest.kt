@@ -1,6 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
-import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolMovieDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
@@ -295,8 +295,8 @@ private class FakeTierRepository(initial: List<TierList>) : TierRepository {
     }
 
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) = unsupported()
-    override suspend fun addMovieToPool(tierListId: Long, title: String, imageUrl: String?): Long = unsupported()
-    override suspend fun addMoviesToPool(tierListId: Long, movies: List<PoolMovieDraft>) = unsupported()
+    override suspend fun addItemToPool(tierListId: Long, title: String, imageUrl: String?): Long = unsupported()
+    override suspend fun addItemsToPool(tierListId: Long, items: List<PoolItemDraft>) = unsupported()
     override suspend fun attachImageToItem(itemId: Long, sourceUri: String) = unsupported()
     override suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) = unsupported()
     override suspend fun addTier(
