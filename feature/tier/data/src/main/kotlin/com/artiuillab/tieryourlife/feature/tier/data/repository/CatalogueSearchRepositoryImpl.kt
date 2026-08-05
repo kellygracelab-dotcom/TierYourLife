@@ -3,7 +3,10 @@ package com.artiuillab.tieryourlife.feature.tier.data.repository
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.wikidataLanguageCode
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDetailsByQid
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataApi
+import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataSparqlApi
+import com.artiuillab.tieryourlife.feature.tier.data.remote.wikidataDetailsQuery
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.search.CatalogueSearchMerger
@@ -19,13 +22,15 @@ import javax.inject.Inject
 
 private const val SEARCH_TIMEOUT_MILLIS = 5_000L
 
-// Up to 50 pipe-separated ids per wbgetentities call; the search call itself is already
-// capped at 20 results (WikidataApi.searchEntities' limit default), well under that ceiling.
-private const val MAX_CLAIMS_IDS = 50
+// One details query covers the whole page of search results, and the search itself is capped at
+// 20 (WikidataApi.searchEntities' limit default), so this ceiling is really just a guard against
+// a future larger page turning one request into an enormous one.
+private const val MAX_DETAIL_IDS = 50
 
 class CatalogueSearchRepositoryImpl @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val wikidataApi: WikidataApi,
+    private val wikidataSparqlApi: WikidataSparqlApi,
 ) : CatalogueSearchRepository {
 
     override suspend fun search(
@@ -82,9 +87,9 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
     }
 
     private suspend fun fetchWikidataCandidates(query: String, language: String): List<WikidataCandidate> {
-        // Wikidata's own language codes, not the BCP-47 tag Android hands us — it rejects
-        // an unrecognised one outright rather than falling back, which would take the whole
-        // source down silently. See wikidataLanguageCode.
+        // Wikidata's own language codes, not the BCP-47 tag Android hands us — it rejects an
+        // unrecognised one outright rather than falling back, which would take the whole source
+        // down silently. See wikidataLanguageCode.
         val wikidataLanguage = wikidataLanguageCode(language)
         val searchItems = wikidataApi.searchEntities(
             search = query,
@@ -96,9 +101,9 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
             return emptyList()
         }
 
-        val ids = searchItems.map { it.id }.take(MAX_CLAIMS_IDS)
-        val entitiesById = wikidataApi.getEntities(ids = ids.joinToString("|")).entities
+        val ids = searchItems.map { it.id }.take(MAX_DETAIL_IDS)
+        val detailsByQid = wikidataSparqlApi.query(wikidataDetailsQuery(ids)).toDetailsByQid()
 
-        return searchItems.map { item -> item.toDomain(entitiesById[item.id]) }
+        return searchItems.map { item -> item.toDomain(detailsByQid[item.id]) }
     }
 }
