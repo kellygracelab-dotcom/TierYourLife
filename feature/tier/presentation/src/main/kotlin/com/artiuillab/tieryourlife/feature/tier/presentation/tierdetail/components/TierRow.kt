@@ -70,6 +70,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColor
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import kotlin.math.roundToInt
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 
 // FlowRow (unlike the old LazyRow) supports intrinsic measurement, so
 // IntrinsicSize.Min below can stretch the band to match its wrapped height.
@@ -352,6 +353,7 @@ internal fun FloatingDragRow(dragController: TierDragController, tier: Tier?) {
     val shape = RoundedCornerShape(12.dp)
 
     val readingDirection = LocalLayoutDirection.current
+    val rightToLeft = readingDirection == LayoutDirection.Rtl
 
     // Placed from a root coordinate, so its own placement must not follow the reading
     // direction — see ForcedLeftToRightOverlay. The row's contents are drawn back in the real
@@ -360,11 +362,22 @@ internal fun FloatingDragRow(dragController: TierDragController, tier: Tier?) {
       CompositionLocalProvider(LocalLayoutDirection provides readingDirection) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
         val bandMaxWidth = maxWidth * MAX_TIER_BAND_FRACTION
+        val rowWidthPx = with(density) { maxWidth.toPx() }
         Row(
             modifier = Modifier
                 .absoluteOffset {
+                    // The finger is holding the coloured band, and the row is dragged by it,
+                    // so the offset has to put the band under the pointer — not the row's
+                    // left edge. The band is drawn at the row's leading edge, which is the
+                    // right-hand end in Arabic, so a full-width row placed from its left edge
+                    // there would hang the band off the screen entirely.
+                    val left = if (rightToLeft) {
+                        position.x + halfWidthPx - rowWidthPx
+                    } else {
+                        position.x - halfWidthPx
+                    }
                     IntOffset(
-                        x = (position.x - halfWidthPx).roundToInt(),
+                        x = left.roundToInt(),
                         y = (position.y - halfHeightPx).roundToInt(),
                     )
                 }
