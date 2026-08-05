@@ -12,6 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.os.LocaleListCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -46,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         // Applied before enableEdgeToEdge()/setContent below, so the very first frame
         // already draws in the stored language rather than drawing once and flipping.
         applyStoredLocale()
+        applyWindowBackground()
         enableEdgeToEdge()
         setContent {
             val systemDarkTheme = isSystemInDarkTheme()
@@ -132,5 +135,21 @@ class MainActivity : AppCompatActivity() {
     private fun applyLocale(tag: String?) {
         val locales = tag?.let { LocaleListCompat.forLanguageTags(it) } ?: LocaleListCompat.getEmptyLocaleList()
         AppCompatDelegate.setApplicationLocales(locales)
+    }
+
+    // themes.xml already picks a window background per the system's night setting, which
+    // is right whenever the app is following the system. It cannot be right when the
+    // user has overridden the theme in Settings — a phone in light mode running the app
+    // in Dark would paint a white window behind a dark app for the frames before Compose
+    // draws. The stored choice is the authority, so it is applied here, before the first
+    // frame. LIGHT and DARK are stated outright; SYSTEM defers to the resource the
+    // qualifier already resolved.
+    private fun applyWindowBackground() {
+        val color = when (appPreferences.themeChoice()) {
+            ThemeChoice.LIGHT -> ContextCompat.getColor(this, R.color.window_background_light)
+            ThemeChoice.DARK -> ContextCompat.getColor(this, R.color.window_background_dark)
+            ThemeChoice.SYSTEM -> ContextCompat.getColor(this, R.color.window_background)
+        }
+        window.setBackgroundDrawable(color.toDrawable())
     }
 }
