@@ -145,10 +145,10 @@
 
     <string name="settings_title">設定</string>
     <string name="settings_theme">テーマ</string>
-    <string name="settings_theme_sub">「システムに従う」はAndroidの設定を使用します。</string>
+    <string name="settings_theme_sub">「システム」はAndroidの設定を使用します。</string>
     <string name="theme_light">ライト</string>
     <string name="theme_dark">ダーク</string>
-    <string name="theme_system">システムに従う</string>
+    <string name="theme_system">システム</string>
     <string name="settings_language">言語</string>
     <string name="settings_language_caption">アプリ自体のテキストのみが変わります。あなたが入力した名前はそのまま残ります。</string>
     <string name="language_default">デフォルト</string>

@@ -190,10 +190,10 @@
 
     <string name="settings_title">Налаштування</string>
     <string name="settings_theme">Тема</string>
-    <string name="settings_theme_sub">«Як в системі» використовує налаштування Android.</string>
+    <string name="settings_theme_sub">«Системна» використовує налаштування Android.</string>
     <string name="theme_light">Світла</string>
     <string name="theme_dark">Темна</string>
-    <string name="theme_system">Як в системі</string>
+    <string name="theme_system">Системна</string>
     <string name="settings_language">Мова</string>
     <string name="settings_language_caption">Змінює лише текст додатка. Назви, які ви ввели самі, залишаються без змін.</string>
     <string name="language_default">За замовчуванням</string>
