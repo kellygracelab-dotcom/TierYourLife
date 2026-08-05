@@ -181,6 +181,37 @@ interface TierDao {
     @Query("DELETE FROM tiers WHERE id = :id")
     suspend fun deleteTierById(id: Long): Int
 
+    // Raw table, unfiltered by soft delete on purpose: this is the one read that has to see
+    // the trashed rows, because they are exactly the ones about to be destroyed.
+    @Query("SELECT * FROM tier_items WHERE tierId = :tierId AND deletedAt IS NOT NULL")
+    suspend fun getTrashedItemsByTierId(tierId: Long): List<TierItemEntity>
+
+    @Query("UPDATE tier_items SET tierId = :toTierId, position = :position WHERE id = :id")
+    suspend fun reassignTierItem(id: Long, toTierId: Long, position: Int)
+
+    // tier_items cascades on its tierId foreign key, so deleting a tier destroys every row
+    // that pointed at it — including the ones sitting in the trash, which the user never
+    // agreed to lose. They are moved to the list's pool first, so deleting a tier can still
+    // only ever destroy the tier.
+    //
+    // They land in the pool still trashed, and restoring one later puts it in the pool rather
+    // than in a tier that no longer exists — the only honest place left for it.
+    @Transaction
+    suspend fun deleteTierKeepingTrashedItems(tierId: Long) {
+        val tier = getTierById(tierId) ?: return
+        val pool = getAllTiersByTierListId(tier.tierListId).firstOrNull { it.isPool }
+
+        if (pool != null && pool.id != tierId) {
+            var nextPosition = (getAllTierItemsByTierId(pool.id).maxOfOrNull { it.position } ?: -1) + 1
+            getTrashedItemsByTierId(tierId).forEach { item ->
+                reassignTierItem(id = item.id, toTierId = pool.id, position = nextPosition)
+                nextPosition++
+            }
+        }
+
+        deleteTierById(tierId)
+    }
+
     @Query("UPDATE tiers SET position = position + 1 WHERE tierListId = :tierListId AND position >= :fromPosition")
     suspend fun shiftTiersFrom(tierListId: Long, fromPosition: Int)
 

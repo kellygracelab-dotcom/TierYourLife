@@ -21,6 +21,8 @@ import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
+import org.junit.Assert.assertNotNull
 
 @RunWith(AndroidJUnit4::class)
 class RoomTierRepositoryTest {
@@ -177,6 +179,49 @@ class RoomTierRepositoryTest {
 
         val list = requireNotNull(repository.getTierListById(listId))
         assertNull(list.tiers.find { it.id == sTierId })
+    }
+
+    // tier_items cascades on tierId, so deleting a tier used to destroy the rows in the trash
+    // that had belonged to it — the user deleted a tier and silently lost a poster they had
+    // never agreed to remove for good, and it vanished from the trash with no trace.
+    @Test
+    fun delete_tier_keeps_its_trashed_items_by_moving_them_to_the_pool() = runBlocking {
+        val listId = repository.createTierList("Films")
+        val before = requireNotNull(repository.getTierListById(listId))
+        val sTierId = before.tiers.single { it.label == "S" }.id
+        val poolTierId = before.tiers.single { it.isPool }.id
+        val trashedId = dao.insertTierItem(
+            TierItemEntity(tierId = sTierId, position = 0, title = "Rescued", imageUrl = null),
+        )
+        repository.deleteTierItem(trashedId)
+
+        repository.deleteTier(sTierId)
+
+        val entry = repository.getTrashEntries()
+            .filterIsInstance<TrashEntry.DeletedItem>()
+            .singleOrNull { it.id == trashedId }
+        assertNotNull("the trashed item was destroyed with its tier", entry)
+        // Restored, it has to land somewhere that still exists — the pool is the only
+        // honest place once its own tier is gone.
+        repository.restoreTierItem(trashedId)
+        val after = requireNotNull(repository.getTierListById(listId))
+        assertEquals(
+            listOf("Rescued"),
+            after.tiers.single { it.id == poolTierId }.items.map { it.title },
+        )
+    }
+
+    // The tier's own live items are still cascaded away: only the trash is protected.
+    @Test
+    fun delete_tier_still_removes_the_items_that_were_in_it() = runBlocking {
+        val listId = repository.createTierList("Films")
+        val sTierId = requireNotNull(repository.getTierListById(listId)).tiers.single { it.label == "S" }.id
+        dao.insertTierItem(TierItemEntity(tierId = sTierId, position = 0, title = "Doomed", imageUrl = null))
+
+        repository.deleteTier(sTierId)
+
+        val list = requireNotNull(repository.getTierListById(listId))
+        assertEquals(emptyList<String>(), list.tiers.flatMap { it.items }.map { it.title })
     }
 
     @Test

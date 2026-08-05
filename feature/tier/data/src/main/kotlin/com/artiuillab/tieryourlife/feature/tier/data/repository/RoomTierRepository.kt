@@ -90,8 +90,8 @@ class RoomTierRepository internal constructor(
         val tier = dao.getTierById(id) ?: return
         // The list must always keep exactly one pool; the pool tier can't be deleted.
         if (tier.isPool) return
-        dao.deleteTierById(id)
-        // The cascade removed item rows silently; sweep their image copies.
+        dao.deleteTierKeepingTrashedItems(id)
+        // The cascade removed the tier's active item rows silently; sweep their image copies.
         imageStore.deleteOrphans(dao.getAllImageRefs())
     }
 
