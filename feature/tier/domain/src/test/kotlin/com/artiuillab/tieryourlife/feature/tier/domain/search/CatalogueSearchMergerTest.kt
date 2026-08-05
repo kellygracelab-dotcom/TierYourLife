@@ -8,14 +8,61 @@ import java.io.IOException
 
 class CatalogueSearchMergerTest {
 
-    private fun tmdb(id: Long, title: String) =
-        CatalogueItem(id = "tmdb:$id", title = title, subtitle = null, imageUrl = null)
+    // An image by default, because a result without one is filtered out and would make every
+    // other assertion in this file vacuously pass. The tests that are about the filter pass
+    // imageUrl = null explicitly.
+    private fun tmdb(id: Long, title: String, imageUrl: String? = "https://example.test/$id.jpg") =
+        CatalogueItem(id = "tmdb:$id", title = title, subtitle = null, imageUrl = imageUrl)
 
-    private fun wikidata(qid: String, title: String, linkedTmdbId: Long? = null) =
-        WikidataCandidate(
-            item = CatalogueItem(id = "wikidata:$qid", title = title, subtitle = null, imageUrl = null),
-            linkedTmdbId = linkedTmdbId,
+    private fun wikidata(
+        qid: String,
+        title: String,
+        linkedTmdbId: Long? = null,
+        imageUrl: String? = "https://example.test/$qid.jpg",
+    ) = WikidataCandidate(
+        item = CatalogueItem(id = "wikidata:$qid", title = title, subtitle = null, imageUrl = imageUrl),
+        linkedTmdbId = linkedTmdbId,
+    )
+
+    // Wikidata has an entry for every surname and hamlet on earth and most have no picture. In
+    // a grid of tiles an empty frame is not a weaker result, it is noise between usable ones.
+    @Test
+    fun `drops results that have no image, from either source`() {
+        val tmdbResult = Result.success(
+            listOf(tmdb(1, "With poster"), tmdb(2, "No poster", imageUrl = null)),
         )
+        val wikidataResult = Result.success(
+            listOf(
+                wikidata("Q1", "With picture"),
+                wikidata("Q2", "No picture", imageUrl = null),
+            ),
+        )
+
+        val result = CatalogueSearchMerger.merge("x", tmdbResult, wikidataResult)
+
+        assertEquals(listOf("tmdb:1", "wikidata:Q1"), result.getOrThrow().map { it.id })
+    }
+
+    @Test
+    fun `treats a blank image url as no image`() {
+        val tmdbResult = Result.success(listOf(tmdb(1, "Blank", imageUrl = "   ")))
+
+        val result = CatalogueSearchMerger.merge("blank", tmdbResult, Result.success(emptyList()))
+
+        assertEquals(emptyList<String>(), result.getOrThrow().map { it.id })
+    }
+
+    // Everything filtered out is still a successful search that found nothing — the screen says
+    // "nothing found" rather than reporting an error that did not happen.
+    @Test
+    fun `is still a success when every result was filtered out`() {
+        val tmdbResult = Result.success(listOf(tmdb(1, "No poster", imageUrl = null)))
+
+        val result = CatalogueSearchMerger.merge("x", tmdbResult, Result.success(emptyList()))
+
+        assertTrue(result.isSuccess)
+        assertEquals(emptyList<String>(), result.getOrThrow())
+    }
 
     @Test
     fun `drops a wikidata item whose P4947 id matches a tmdb item already present`() {
