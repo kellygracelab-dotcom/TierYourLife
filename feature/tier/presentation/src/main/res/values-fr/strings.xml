@@ -126,25 +126,25 @@
     <string name="tier_editor_preset_color_description">Couleur prédéfinie %1$d</string>
     <string name="tier_editor_custom_color_description">Couleur personnalisée</string>
 
-    <string name="movie_search_field_label">Rechercher</string>
-    <string name="movie_search_close_content_description">Fermer la recherche</string>
-    <string name="movie_search_clear_content_description">Effacer la recherche</string>
-    <string name="movie_search_source_caption">Ajout au réservoir de %1$s</string>
-    <string name="movie_search_min_query">Saisissez au moins deux lettres pour rechercher.</string>
-    <string name="movie_search_empty_title">Rien trouvé pour \"%1$s\"</string>
-    <string name="movie_search_error_title">Impossible de charger les résultats</string>
-    <string name="movie_search_error_body">Vérifiez votre connexion et réessayez.</string>
-    <string name="movie_search_try_again">Réessayer</string>
-    <string name="movie_search_selected_none">Rien sélectionné</string>
-    <plurals name="movie_search_selected_count">
+    <string name="item_search_field_label">Rechercher</string>
+    <string name="item_search_close_content_description">Fermer la recherche</string>
+    <string name="item_search_clear_content_description">Effacer la recherche</string>
+    <string name="item_search_source_caption">Ajout au réservoir de %1$s</string>
+    <string name="item_search_min_query">Saisissez au moins deux lettres pour rechercher.</string>
+    <string name="item_search_empty_title">Rien trouvé pour \"%1$s\"</string>
+    <string name="item_search_error_title">Impossible de charger les résultats</string>
+    <string name="item_search_error_body">Vérifiez votre connexion et réessayez.</string>
+    <string name="item_search_try_again">Réessayer</string>
+    <string name="item_search_selected_none">Rien sélectionné</string>
+    <plurals name="item_search_selected_count">
         <item quantity="one">%1$d sélectionné</item>
         <item quantity="other">%1$d sélectionnés</item>
     </plurals>
-    <plurals name="movie_search_add_button">
+    <plurals name="item_search_add_button">
         <item quantity="one">Ajouter 1 élément</item>
         <item quantity="other">Ajouter %1$d éléments</item>
     </plurals>
-    <string name="movie_search_add_disabled">Ajouter</string>
+    <string name="item_search_add_disabled">Ajouter</string>
 
     <string name="manual_dialog_title">Ajouter un élément</string>
     <string name="manual_dialog_body">Va dans le réservoir. Vous pourrez ensuite le glisser vers un rang.</string>

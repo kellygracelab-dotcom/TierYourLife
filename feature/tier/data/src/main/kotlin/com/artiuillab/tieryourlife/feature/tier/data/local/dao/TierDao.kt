@@ -14,7 +14,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWith
 interface TierDao {
 
     @Transaction
-    suspend fun addMovieToPool(tierListId: Long, title: String, imageUrl: String?): Long {
+    suspend fun addItemToPool(tierListId: Long, title: String, imageUrl: String?): Long {
         val poolTier = getAllTiersByTierListId(tierListId).first { it.isPool }
 
         val lastPosition = getAllTierItemsByTierId(poolTier.id).maxOfOrNull { it.position }
@@ -30,25 +30,25 @@ interface TierDao {
         )
     }
 
-    // All movies land in one transaction with consecutive positions appended to the
+    // All items land in one transaction with consecutive positions appended to the
     // pool, so an interruption cannot leave a half-inserted batch. Positions are
     // computed from getAllTierItemsByTierId, which already reads through the active
     // items view, so a trashed pool item never reserves or collides with a position.
     // The target list is read through its own active view too, so a bulk add against
     // a trashed list's pool is silently skipped instead of resurrecting it.
     @Transaction
-    suspend fun addMoviesToPool(tierListId: Long, movies: List<NewPoolMovie>) {
+    suspend fun addItemsToPool(tierListId: Long, items: List<NewPoolItem>) {
         if (getTierListById(tierListId) == null) return
         val poolTier = getAllTiersByTierListId(tierListId).first { it.isPool }
         var nextPosition = (getAllTierItemsByTierId(poolTier.id).maxOfOrNull { it.position } ?: -1) + 1
 
-        movies.forEach { movie ->
+        items.forEach { item ->
             insertTierItem(
                 TierItemEntity(
                     tierId = poolTier.id,
                     position = nextPosition++,
-                    title = movie.title,
-                    imageUrl = movie.imageUrl,
+                    title = item.title,
+                    imageUrl = item.imageUrl,
                 ),
             )
         }

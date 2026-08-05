@@ -10,7 +10,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
-import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolMovieDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -256,14 +256,14 @@ class RoomTierRepositoryTest {
     }
 
     @Test
-    fun bulk_add_movies_through_the_repository_appends_all_of_them_to_the_pool() = runBlocking {
+    fun bulk_add_items_through_the_repository_appends_all_of_them_to_the_pool() = runBlocking {
         val listId = repository.createTierList("Films")
 
-        repository.addMoviesToPool(
+        repository.addItemsToPool(
             listId,
             listOf(
-                PoolMovieDraft(title = "Interstellar", imageUrl = "https://example.com/1.jpg"),
-                PoolMovieDraft(title = "Arrival", imageUrl = null),
+                PoolItemDraft(title = "Interstellar", imageUrl = "https://example.com/1.jpg"),
+                PoolItemDraft(title = "Arrival", imageUrl = null),
             ),
         )
 

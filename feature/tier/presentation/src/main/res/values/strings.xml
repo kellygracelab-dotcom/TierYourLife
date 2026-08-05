@@ -128,25 +128,25 @@
     <string name="tier_editor_preset_color_description">Preset color %1$d</string>
     <string name="tier_editor_custom_color_description">Custom color</string>
 
-    <string name="movie_search_field_label">Search</string>
-    <string name="movie_search_close_content_description">Close search</string>
-    <string name="movie_search_clear_content_description">Clear search</string>
-    <string name="movie_search_source_caption">Adding to %1$s pool</string>
-    <string name="movie_search_min_query">Type at least two letters to search.</string>
-    <string name="movie_search_empty_title">Nothing found for \"%1$s\"</string>
-    <string name="movie_search_error_title">Couldn’t load results</string>
-    <string name="movie_search_error_body">Check your connection and try again.</string>
-    <string name="movie_search_try_again">Try again</string>
-    <string name="movie_search_selected_none">Nothing selected</string>
-    <plurals name="movie_search_selected_count">
+    <string name="item_search_field_label">Search</string>
+    <string name="item_search_close_content_description">Close search</string>
+    <string name="item_search_clear_content_description">Clear search</string>
+    <string name="item_search_source_caption">Adding to %1$s pool</string>
+    <string name="item_search_min_query">Type at least two letters to search.</string>
+    <string name="item_search_empty_title">Nothing found for \"%1$s\"</string>
+    <string name="item_search_error_title">Couldn’t load results</string>
+    <string name="item_search_error_body">Check your connection and try again.</string>
+    <string name="item_search_try_again">Try again</string>
+    <string name="item_search_selected_none">Nothing selected</string>
+    <plurals name="item_search_selected_count">
         <item quantity="one">%1$d selected</item>
         <item quantity="other">%1$d selected</item>
     </plurals>
-    <plurals name="movie_search_add_button">
+    <plurals name="item_search_add_button">
         <item quantity="one">Add 1 item</item>
         <item quantity="other">Add %1$d items</item>
     </plurals>
-    <string name="movie_search_add_disabled">Add</string>
+    <string name="item_search_add_disabled">Add</string>
 
     <string name="manual_dialog_title">Add an item</string>
     <string name="manual_dialog_body">Goes into the pool. You can drag it into a tier afterwards.</string>

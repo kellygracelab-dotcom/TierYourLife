@@ -178,17 +178,17 @@
     <string name="tier_editor_preset_color_description">لون جاهز %1$d</string>
     <string name="tier_editor_custom_color_description">لون مخصّص</string>
 
-    <string name="movie_search_field_label">بحث</string>
-    <string name="movie_search_close_content_description">إغلاق البحث</string>
-    <string name="movie_search_clear_content_description">مسح البحث</string>
-    <string name="movie_search_source_caption">تُضاف إلى مجمّع %1$s</string>
-    <string name="movie_search_min_query">أدخل حرفين على الأقل للبحث.</string>
-    <string name="movie_search_empty_title">لم يُعثر على شيء لـ \"%1$s\"</string>
-    <string name="movie_search_error_title">تعذّر تحميل النتائج</string>
-    <string name="movie_search_error_body">تحقق من اتصالك وحاول مرة أخرى.</string>
-    <string name="movie_search_try_again">المحاولة مرة أخرى</string>
-    <string name="movie_search_selected_none">لم يتم تحديد شيء</string>
-    <plurals name="movie_search_selected_count">
+    <string name="item_search_field_label">بحث</string>
+    <string name="item_search_close_content_description">إغلاق البحث</string>
+    <string name="item_search_clear_content_description">مسح البحث</string>
+    <string name="item_search_source_caption">تُضاف إلى مجمّع %1$s</string>
+    <string name="item_search_min_query">أدخل حرفين على الأقل للبحث.</string>
+    <string name="item_search_empty_title">لم يُعثر على شيء لـ \"%1$s\"</string>
+    <string name="item_search_error_title">تعذّر تحميل النتائج</string>
+    <string name="item_search_error_body">تحقق من اتصالك وحاول مرة أخرى.</string>
+    <string name="item_search_try_again">المحاولة مرة أخرى</string>
+    <string name="item_search_selected_none">لم يتم تحديد شيء</string>
+    <plurals name="item_search_selected_count">
         <item quantity="zero">لم يتم تحديد شيء</item>
         <item quantity="one">تم تحديد واحد</item>
         <item quantity="two">تم تحديد اثنين</item>
@@ -196,7 +196,7 @@
         <item quantity="many">تم تحديد %1$d</item>
         <item quantity="other">تم تحديد %1$d</item>
     </plurals>
-    <plurals name="movie_search_add_button">
+    <plurals name="item_search_add_button">
         <item quantity="zero">لا عناصر للإضافة</item>
         <item quantity="one">إضافة عنصر واحد</item>
         <item quantity="two">إضافة عنصرين</item>
@@ -204,7 +204,7 @@
         <item quantity="many">إضافة %1$d عنصرًا</item>
         <item quantity="other">إضافة %1$d عنصر</item>
     </plurals>
-    <string name="movie_search_add_disabled">إضافة</string>
+    <string name="item_search_add_disabled">إضافة</string>
 
     <string name="manual_dialog_title">إضافة عنصر</string>
     <string name="manual_dialog_body">ينتقل إلى المجمّع. يمكنك لاحقًا سحبه إلى مستوى.</string>

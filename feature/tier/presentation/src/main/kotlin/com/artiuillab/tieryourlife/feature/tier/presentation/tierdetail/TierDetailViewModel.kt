@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolMovieDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
@@ -78,18 +78,18 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    fun addMovieToPool(title: String, imageUrl: String?) {
+    fun addItemToPool(title: String, imageUrl: String?) {
         markTouched()
         viewModelScope.launch {
-            repository.addMovieToPool(tierListId, title, imageUrl)
+            repository.addItemToPool(tierListId, title, imageUrl)
             loadTierList()
         }
     }
 
-    fun addMoviesToPool(movies: List<PoolMovieDraft>) {
+    fun addItemsToPool(items: List<PoolItemDraft>) {
         markTouched()
         viewModelScope.launch {
-            repository.addMoviesToPool(tierListId, movies)
+            repository.addItemsToPool(tierListId, items)
             loadTierList()
         }
     }
@@ -100,17 +100,17 @@ class TierDetailViewModel @Inject constructor(
     // supports.
     //
     // attachImageToItem is what copies a picked Uri into internal storage and stores the path
-    // of the copy; addMovieToPool is only ever passed imageUrl = null here, so the raw gallery
+    // of the copy; addItemToPool is only ever passed imageUrl = null here, so the raw gallery
     // reference never reaches the database.
     fun addManualItem(title: String, photoUris: List<String>) {
         markTouched()
         viewModelScope.launch {
             if (photoUris.isEmpty()) {
-                repository.addMovieToPool(tierListId, title, imageUrl = null)
+                repository.addItemToPool(tierListId, title, imageUrl = null)
             } else {
                 val itemTitle = if (photoUris.size == 1) title else ""
                 photoUris.forEach { photoUri ->
-                    val newItemId = repository.addMovieToPool(tierListId, itemTitle, imageUrl = null)
+                    val newItemId = repository.addItemToPool(tierListId, itemTitle, imageUrl = null)
                     repository.attachImageToItem(newItemId, photoUri)
                 }
             }

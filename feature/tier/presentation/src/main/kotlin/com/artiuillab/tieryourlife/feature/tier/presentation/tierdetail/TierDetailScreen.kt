@@ -67,7 +67,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddMovieSheet
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddItemsSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.FloatingDragRow
@@ -126,14 +126,14 @@ internal object TierDetailTestTags {
     const val TIER_EDITOR_CONTRAST_READOUT = "tier_detail_tier_editor_contrast_readout"
     const val TIER_EDITOR_PREVIEW_LIGHT = "tier_detail_tier_editor_preview_light"
     const val TIER_EDITOR_PREVIEW_DARK = "tier_detail_tier_editor_preview_dark"
-    const val MOVIE_SEARCH_FIELD = "tier_detail_movie_search_field"
-    const val MOVIE_SEARCH_CLOSE = "tier_detail_movie_search_close"
-    const val MOVIE_SEARCH_CLEAR = "tier_detail_movie_search_clear"
-    const val MOVIE_SEARCH_SELECTED_COUNT = "tier_detail_movie_search_selected_count"
-    const val MOVIE_SEARCH_CONFIRM = "tier_detail_movie_search_confirm"
-    const val MOVIE_SEARCH_TRY_AGAIN = "tier_detail_movie_search_try_again"
-    const val MOVIE_SEARCH_RESULTS_LIST = "tier_detail_movie_search_results_list"
-    const val MOVIE_SEARCH_BOTTOM_BAR = "tier_detail_movie_search_bottom_bar"
+    const val ITEM_SEARCH_FIELD = "tier_detail_item_search_field"
+    const val ITEM_SEARCH_CLOSE = "tier_detail_item_search_close"
+    const val ITEM_SEARCH_CLEAR = "tier_detail_item_search_clear"
+    const val ITEM_SEARCH_SELECTED_COUNT = "tier_detail_item_search_selected_count"
+    const val ITEM_SEARCH_CONFIRM = "tier_detail_item_search_confirm"
+    const val ITEM_SEARCH_TRY_AGAIN = "tier_detail_item_search_try_again"
+    const val ITEM_SEARCH_RESULTS_LIST = "tier_detail_item_search_results_list"
+    const val ITEM_SEARCH_BOTTOM_BAR = "tier_detail_item_search_bottom_bar"
     const val MANUAL_ADD_BUTTON = "tier_detail_manual_add_button"
     const val MANUAL_ENTRY_DIALOG = "tier_detail_manual_entry_dialog"
     const val MANUAL_ENTRY_NAME_FIELD = "tier_detail_manual_entry_name_field"
@@ -142,7 +142,7 @@ internal object TierDetailTestTags {
     const val MANUAL_ENTRY_REMOVE_PHOTO = "tier_detail_manual_entry_remove_photo"
     const val MANUAL_ENTRY_CANCEL = "tier_detail_manual_entry_cancel"
     const val MANUAL_ENTRY_SAVE = "tier_detail_manual_entry_save"
-    fun movieSearchResult(id: String): String = "tier_detail_movie_search_result_$id"
+    fun itemSearchResult(id: String): String = "tier_detail_item_search_result_$id"
     fun tierRow(tierId: Long): String = "tier_detail_row_$tierId"
     fun tierBand(tierId: Long): String = "tier_detail_band_$tierId"
     fun rankedRow(itemId: Long): String = "tier_detail_ranked_row_$itemId"
@@ -209,11 +209,11 @@ fun TierDetailScreen(
     )
 
     if (addSheetVisible) {
-        AddMovieSheet(
+        AddItemsSheet(
             listTitle = (state as? TierDetailUiState.Success)?.list?.title.orEmpty(),
             onDismiss = { addSheetVisible = false },
-            onMoviesConfirmed = { movies ->
-                viewModel.addMoviesToPool(movies)
+            onItemsConfirmed = { items ->
+                viewModel.addItemsToPool(items)
                 addSheetVisible = false
             },
         )

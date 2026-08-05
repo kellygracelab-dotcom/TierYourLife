@@ -152,29 +152,29 @@
     <string name="tier_editor_preset_color_description">Готовый цвет %1$d</string>
     <string name="tier_editor_custom_color_description">Свой цвет</string>
 
-    <string name="movie_search_field_label">Поиск</string>
-    <string name="movie_search_close_content_description">Закрыть поиск</string>
-    <string name="movie_search_clear_content_description">Очистить поиск</string>
-    <string name="movie_search_source_caption">Добавление в пул %1$s</string>
-    <string name="movie_search_min_query">Введите не менее двух букв для поиска.</string>
-    <string name="movie_search_empty_title">Ничего не найдено по запросу \"%1$s\"</string>
-    <string name="movie_search_error_title">Не удалось загрузить результаты</string>
-    <string name="movie_search_error_body">Проверьте соединение и попробуйте снова.</string>
-    <string name="movie_search_try_again">Повторить</string>
-    <string name="movie_search_selected_none">Ничего не выбрано</string>
-    <plurals name="movie_search_selected_count">
+    <string name="item_search_field_label">Поиск</string>
+    <string name="item_search_close_content_description">Закрыть поиск</string>
+    <string name="item_search_clear_content_description">Очистить поиск</string>
+    <string name="item_search_source_caption">Добавление в пул %1$s</string>
+    <string name="item_search_min_query">Введите не менее двух букв для поиска.</string>
+    <string name="item_search_empty_title">Ничего не найдено по запросу \"%1$s\"</string>
+    <string name="item_search_error_title">Не удалось загрузить результаты</string>
+    <string name="item_search_error_body">Проверьте соединение и попробуйте снова.</string>
+    <string name="item_search_try_again">Повторить</string>
+    <string name="item_search_selected_none">Ничего не выбрано</string>
+    <plurals name="item_search_selected_count">
         <item quantity="one">%1$d выбрано</item>
         <item quantity="few">%1$d выбрано</item>
         <item quantity="many">%1$d выбрано</item>
         <item quantity="other">%1$d выбрано</item>
     </plurals>
-    <plurals name="movie_search_add_button">
+    <plurals name="item_search_add_button">
         <item quantity="one">Добавить %1$d элемент</item>
         <item quantity="few">Добавить %1$d элемента</item>
         <item quantity="many">Добавить %1$d элементов</item>
         <item quantity="other">Добавить %1$d элемента</item>
     </plurals>
-    <string name="movie_search_add_disabled">Добавить</string>
+    <string name="item_search_add_disabled">Добавить</string>
 
     <string name="manual_dialog_title">Добавить элемент</string>
     <string name="manual_dialog_body">Попадает в пул. Потом можно перетащить его на уровень.</string>
