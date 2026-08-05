@@ -58,7 +58,6 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColor
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeleteOutlineIcon
 
-// testTag constants shared between production UI and instrumentation tests.
 internal object TrashTestTags {
     const val BACK = "trash_back"
     const val MORE = "trash_more"
@@ -387,8 +386,6 @@ private fun ListThumbnail() {
     }
 }
 
-// The item's poster, cropped square — falls back to the poster placeholder fill when
-// there is no image.
 @Composable
 private fun ItemThumbnail(imageUrl: String?) {
     val media = TierYourLifeMedia.current

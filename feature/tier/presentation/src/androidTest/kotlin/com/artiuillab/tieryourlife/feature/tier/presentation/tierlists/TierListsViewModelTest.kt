@@ -65,8 +65,6 @@ class TierListsViewModelTest {
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
 
-        // Stands in for the detail screen renaming the list directly through the
-        // repository while this screen's view model instance is still alive.
         repository.renameTierList(1, "New title")
 
         viewModel.loadTierLists()
@@ -90,8 +88,6 @@ class TierListsViewModelTest {
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
 
-        // Stands in for the detail screen (or its trash) deleting the list directly
-        // through the repository while this screen's view model instance is still alive.
         repository.deleteTierLists(listOf(2L))
 
         viewModel.loadTierLists()
@@ -117,8 +113,6 @@ class TierListsViewModelTest {
         assertTrue(collected.values.last() is TierListsUiState.Success)
     }
 
-    // The screen already has a list on it when this second read starts (a return trip
-    // from the detail screen, in the real app) — that's the whole point being tested.
     @Test
     fun secondLoad_neverShowsLoading_andReplacesTheListInOneStep() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))
@@ -127,7 +121,6 @@ class TierListsViewModelTest {
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
 
-        // Stands in for a rename on the detail screen while this list is still on screen.
         repository.renameTierList(1, "New title")
 
         val collected = recordStates(viewModel)
@@ -149,7 +142,6 @@ class TierListsViewModelTest {
         assertEquals("New title", after.lists.single().title)
     }
 
-    // --- Search, selection and delete/undo (docs/design-spec-home.md, sections 2, 3, 5) ---
 
     @Test
     fun search_filtersLists_caseInsensitiveAndAnywhereInTheName() = runBlocking {
@@ -169,8 +161,6 @@ class TierListsViewModelTest {
         } as TierListsUiState.Success
 
         assertEquals(listOf("Pizza in Lisbon"), state.lists.map { it.title })
-        // The summary line needs the true total even while a query has narrowed the
-        // visible list down to a subset.
         assertEquals(2, state.totalListCount)
     }
 
@@ -231,7 +221,6 @@ class TierListsViewModelTest {
             it is TierListsUiState.Success && it.lists.size == 1
         } as TierListsUiState.Success
         assertEquals(listOf(1L), afterDelete.lists.map { it.id })
-        // Selection mode ends on the same tap that deletes.
         assertEquals(HomeMode.Browsing, afterDelete.mode)
 
         viewModel.restoreTierLists(listOf(2L))
@@ -277,15 +266,9 @@ class TierListsViewModelTest {
     }
 }
 
-// Backs only what loadTierListsForPresentation and the rename/delete paths exercised
-// above actually touch (getAllTierLists, createTierList, getTierListById, plus the two
-// list-level mutations tested here). Everything else in TierRepository is unrelated to
-// this screen and is never called by it, so it's stubbed rather than implemented.
 private class FakeTierRepository(initial: List<TierList>) : TierRepository {
 
     private val lists = initial.associateBy { it.id }.toMutableMap()
-    // Soft-deleted lists move here rather than vanishing, mirroring the real repository's
-    // trash — restoreTierLists below reads from it so the undo path is testable too.
     private val trashed = mutableMapOf<Long, TierList>()
     private var nextId = (initial.maxOfOrNull { it.id } ?: 0L) + 1
 

@@ -74,7 +74,6 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.previewTierLists
 import kotlinx.coroutines.launch
 
-// testTag constants shared between production UI and instrumentation tests.
 internal object TierListsTestTags {
     const val LOADING = "tier_lists_loading"
     const val LISTS = "tier_lists"
@@ -183,9 +182,6 @@ internal fun TierListsScreenContent(
     val coroutineScope = rememberCoroutineScope()
     val undoLabel = stringResource(R.string.action_undo)
 
-    // The one place a Home delete funnels through, so there is exactly one message per
-    // deletion and a second delete while the first snackbar is still up replaces it
-    // rather than queuing behind it (docs/design-spec-home.md, section 5).
     val deleteAndAnnounce: (List<Long>) -> Unit = { ids ->
         onDeleteLists(ids)
         snackbarHostState.currentSnackbarData?.dismiss()
@@ -316,9 +312,6 @@ private fun HomeHeader(totalListCount: Int, rankedCount: Int) {
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        // Hidden entirely when there are no lists — "0 lists · 0 ranked" under a
-        // heading that already says there are none is noise (docs/design-spec-home.md,
-        // section 1).
         if (totalListCount > 0) {
             Spacer(Modifier.height(4.dp))
             Text(
@@ -558,9 +551,6 @@ private fun HomeEmptyState() {
     )
 }
 
-// Shared by the "no lists at all" and "no search results" empty states — both are a
-// 56dp surfaceContainerLow circle holding a 28dp glyph, a headline and a body, centred
-// with some amount of bottom offset so the block sits clear of the FAB or search field.
 @Composable
 private fun HomeEmptyStateLayout(
     icon: @Composable () -> Unit,

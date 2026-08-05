@@ -19,14 +19,10 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-// Distinguishes the Wikidata-baseUrl Retrofit instance from the default (TMDB-baseUrl) one —
-// both are bound in this module and share the same OkHttpClient/Json, so Hilt needs a way to
-// tell them apart.
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class WikidataRetrofit
 
-// And the Query Service from both — it is a third host again.
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class WikidataSparqlRetrofit
@@ -94,9 +90,6 @@ object NetworkModule {
         return retrofit.create(TmdbApi::class.java)
     }
 
-    // A second, qualified Retrofit instance rather than @Url absolute paths on WikidataApi:
-    // the search hits one endpoint (api.php) with different query params, which a baseUrl plus
-    // a @GET path expresses more directly than repeating the full URL on every method.
     @WikidataRetrofit
     @Provides
     @Singleton
@@ -123,8 +116,6 @@ object NetworkModule {
         return retrofit.create(WikidataApi::class.java)
     }
 
-    // A third instance, because the Query Service is a different host from the Action API.
-    // It shares the same OkHttpClient, so the User-Agent interceptor covers it too.
     @WikidataSparqlRetrofit
     @Provides
     @Singleton

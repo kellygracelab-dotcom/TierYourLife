@@ -23,9 +23,6 @@ class TierListsViewModel @Inject constructor(
     val state: StateFlow<TierListsUiState> = _state.asStateFlow()
     private val loadMutex = Mutex()
 
-    // Every list as last read from the repository, unfiltered — the single source the
-    // search query is applied against. Lives here, not in the composable: "Filtering is
-    // done in the view model, not the composable" (docs/design-spec-home.md, section 2).
     private var lastLoadedLists: List<TierList> = emptyList()
 
     // Lives here rather than in the composable so it survives a configuration change.
@@ -76,8 +73,6 @@ class TierListsViewModel @Inject constructor(
     private fun emitSuccess() {
         val query = (mode as? HomeMode.Searching)?.query
         val filtered = if (query != null) {
-            // Case-insensitive, matches anywhere in the title — "piz" finds "Pizza in
-            // Lisbon" (docs/design-spec-home.md, section 2).
             lastLoadedLists.filter { it.title.contains(query, ignoreCase = true) }
         } else {
             lastLoadedLists
@@ -113,8 +108,6 @@ class TierListsViewModel @Inject constructor(
 
     fun enterSelection(id: Long) = setMode(HomeMode.Selecting(setOf(id)))
 
-    // Deselecting the last remaining card exits selection mode automatically
-    // (docs/design-spec-home.md, section 3).
     fun toggleSelection(id: Long) {
         val current = mode as? HomeMode.Selecting ?: return
         val updated = if (id in current.selectedIds) current.selectedIds - id else current.selectedIds + id
@@ -123,9 +116,6 @@ class TierListsViewModel @Inject constructor(
 
     fun exitSelection() = setMode(HomeMode.Browsing)
 
-    // Deletes immediately and exits selection mode on the same tap — no confirmation.
-    // Selection mode is cleared synchronously so the contextual bar disappears at once,
-    // ahead of the (async) reload that actually removes the cards.
     fun deleteTierLists(ids: List<Long>) {
         setMode(HomeMode.Browsing)
         viewModelScope.launch {
@@ -141,10 +131,6 @@ class TierListsViewModel @Inject constructor(
         }
     }
 
-    // The FAB's create-and-open path (docs/design-spec-home.md, section 4): the list is
-    // created and saved immediately, and onCreated is invoked with its id as soon as
-    // that finishes so the caller can navigate straight to it — the reload that follows
-    // keeps Home's own list in sync for whenever the user comes back to it.
     fun createTierList(onCreated: (Long) -> Unit) {
         viewModelScope.launch {
             val id = repository.createTierList("Untitled list")
@@ -157,10 +143,7 @@ class TierListsViewModel @Inject constructor(
 // getAllTierLists returns each list without its tiers; the cards need the tiers to
 // count what's ranked and to draw the distribution bar, so each one is re-read in full.
 //
-// This used to seed "Sci-fi films" and "Every A24 film" whenever it found no lists,
-// which made the two demo lists impossible to get rid of — delete them and they came
-// straight back on the next read. It also meant the empty state could never appear,
-// because there was never a moment with nothing in the database. An empty library is a
-// legitimate state and now says so.
+// Nothing is created here when the database is empty. An empty library is a legitimate
+// state, and seeding one would make the seeded lists impossible to delete.
 internal suspend fun TierRepository.loadTierListsForPresentation(): List<TierList> =
     getAllTierLists().map { overview -> getTierListById(overview.id) ?: overview }

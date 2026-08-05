@@ -91,8 +91,6 @@ class TierListsScreenTest {
         composeRule.onNodeWithText("Test failure").assertIsDisplayed()
     }
 
-    // No lists at all: the summary line is noise under a heading that already says
-    // there are none, so it's hidden entirely rather than showing "0 lists · 0 ranked".
     @Test
     fun emptySuccessState_hidesSummaryLine_andShowsTheEmptyState() {
         setScreen(successState(emptyList()))
@@ -103,7 +101,6 @@ class TierListsScreenTest {
         composeRule.onNodeWithText(string(R.string.home_empty_title)).assertIsDisplayed()
     }
 
-    // --- Search (docs/design-spec-home.md, section 2) ---
 
     @Test
     fun search_filtersByTitle_caseInsensitiveAndAnywhereInTheName() {
@@ -151,7 +148,6 @@ class TierListsScreenTest {
         composeRule.onNodeWithText(string(R.string.tier_lists_title)).assertIsDisplayed()
     }
 
-    // --- Selection (docs/design-spec-home.md, section 3) ---
 
     @Test
     fun longPress_entersSelectionMode_showingTheContextualBarAndHidingTheFab() {
@@ -165,8 +161,6 @@ class TierListsScreenTest {
         composeRule.onNodeWithTag(TierListsTestTags.FAB).assertDoesNotExist()
     }
 
-    // Deselecting the last remaining card exits selection mode automatically — an empty
-    // contextual bar with a delete button that does nothing would be a dead end.
     @Test
     fun deselectingTheLastCard_exitsSelectionMode() {
         val lists = listOf(tierList(7L, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 1)))
@@ -175,7 +169,6 @@ class TierListsScreenTest {
         composeRule.onNodeWithTag("tier_list_card_7").performTouchInput { longClick() }
         composeRule.onNodeWithTag(TierListsTestTags.SELECTION_BAR).assertIsDisplayed()
 
-        // A single tap on an already-selected card removes it from the selection.
         composeRule.onNodeWithTag("tier_list_card_7").performClick()
 
         composeRule.onNodeWithTag(TierListsTestTags.SELECTION_BAR).assertDoesNotExist()
@@ -233,7 +226,6 @@ class TierListsScreenTest {
         composeRule.runOnIdle { assertEquals(null, openedId) }
     }
 
-    // --- Delete and undo (docs/design-spec-home.md, section 5) ---
 
     @Test
     fun delete_removesTheCardsAndShowsTheUndoSnackbar_andUndoRestoresThem() {
@@ -249,7 +241,6 @@ class TierListsScreenTest {
         composeRule.onNodeWithTag("tier_list_card_1").assertDoesNotExist()
         composeRule.onNodeWithTag("tier_list_card_2").assertIsDisplayed()
         composeRule.onNodeWithText(plural(R.plurals.snack_lists_deleted, 1)).assertIsDisplayed()
-        // Selection mode ends on the same tap that deletes.
         composeRule.onNodeWithTag(TierListsTestTags.SELECTION_BAR).assertDoesNotExist()
 
         composeRule.onNodeWithText(string(R.string.action_undo)).performClick()
@@ -278,22 +269,16 @@ class TierListsScreenTest {
             }
             lifecycleOwner = owner
             CompositionLocalProvider(LocalLifecycleOwner provides owner) {
-                // Read so this block recomposes when the trigger changes, without ever
-                // touching the lifecycle itself.
                 recomposeTrigger
                 OnResumeEffect(onResume = { resumeCount++ })
             }
         }
 
-        // Registering the observer on an already-resumed lifecycle delivers one
-        // catch-up ON_RESUME — this is what covers the screen's very first appearance.
         composeRule.runOnIdle { assertEquals(1, resumeCount) }
 
-        // A plain recomposition, lifecycle untouched, must not count as a second resume.
         recomposeTrigger++
         composeRule.runOnIdle { assertEquals(1, resumeCount) }
 
-        // Leaving and returning to the screen is a real pause/resume cycle, and must.
         composeRule.runOnIdle {
             lifecycleOwner.registry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
             lifecycleOwner.registry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)

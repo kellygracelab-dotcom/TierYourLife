@@ -22,10 +22,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import org.junit.Assert.assertTrue
 
-// Covers the Language row and its bottom sheet added in docs/design-spec-home.md,
-// section 7, subsection "2 - Language". The row sits between Theme and Trash — that
-// ordering is exercised indirectly by every other Settings test still passing, since
-// SettingsScreenContent lays the column out in one fixed sequence.
 @RunWith(AndroidJUnit4::class)
 class SettingsScreenTest {
 
@@ -104,7 +100,6 @@ class SettingsScreenTest {
         composeRule.runOnIdle { assertEquals(null, reportedTag) }
     }
 
-    // --- Theme control layout (docs/design-spec-home.md, section 7) ---
 
     // Three labels side by side is a bet on their length, and eleven languages plus a
     // system font scale that goes past 2x is enough to lose it: "System" in English is
@@ -133,7 +128,6 @@ class SettingsScreenTest {
         assertEquals(light.left, dark.left)
         assertTrue("dark should sit below light", dark.top > light.top)
         assertTrue("system should sit below dark", system.top > dark.top)
-        // Every label still readable rather than ellipsised into the next one.
         composeRule.onNodeWithText(string(R.string.theme_system)).assertIsDisplayed()
     }
 

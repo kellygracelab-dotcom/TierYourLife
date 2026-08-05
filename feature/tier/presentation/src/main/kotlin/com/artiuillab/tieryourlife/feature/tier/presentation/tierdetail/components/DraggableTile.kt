@@ -43,7 +43,6 @@ import kotlin.math.roundToInt
 // exact threshold rather than defining a second one.
 internal const val DRAG_LONG_PRESS_TIMEOUT_MILLIS = 150L
 
-// Shared by pool and ranked-tier tiles so their drag behaviour can't drift apart.
 @Composable
 internal fun DraggableTile(
     item: TierItem,

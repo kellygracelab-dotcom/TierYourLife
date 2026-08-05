@@ -50,8 +50,6 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.parseTierCol
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
-// The eight presets are literal from the mock; the ninth "tune" swatch opens the
-// picker below instead of picking a color itself.
 internal data class TierPreset(val colorLight: String, val colorDark: String)
 
 internal val TIER_COLOR_PRESETS = listOf(
@@ -65,7 +63,6 @@ internal val TIER_COLOR_PRESETS = listOf(
     TierPreset("A63A66", "F09BB9"),
 )
 
-// Mock's own example custom color, reused as the default the picker opens with.
 private const val DEFAULT_CUSTOM_LIGHT_HEX = "7A3F8C"
 private const val DEFAULT_CUSTOM_DARK_HEX = "D9A2E6"
 
@@ -389,9 +386,6 @@ private fun SliderField(
             text = label,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            // See SLIDER_VERTICAL_COMPENSATION: the slider's own 4dp top inset (from its
-            // honest 32dp height vs its 24dp track) already accounts for part of the gap to
-            // the track below, so this padding is trimmed by that same 4dp.
             modifier = Modifier.padding(bottom = 6.dp - SLIDER_VERTICAL_COMPENSATION),
         )
         GradientSlider(fraction = fraction, onFractionChange = onFractionChange, track = track, testTag = testTag, label = label)

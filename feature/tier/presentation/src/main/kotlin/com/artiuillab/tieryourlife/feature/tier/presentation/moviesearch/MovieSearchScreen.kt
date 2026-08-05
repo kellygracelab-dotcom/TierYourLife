@@ -316,8 +316,6 @@ private fun MovieResultsList(
     }
 }
 
-// Hand-drawn rather than the stock M3 Checkbox: the mock calls for an exact 24dp box with a
-// 4dp corner radius, which is smaller and squarer than M3's own default checkbox geometry.
 @Composable
 private fun SelectionCheckbox(isSelected: Boolean) {
     val outline = MaterialTheme.colorScheme.outline
@@ -342,8 +340,6 @@ private fun SelectionCheckbox(isSelected: Boolean) {
     }
 }
 
-// Mirrors TierEditorSheet's Cancel/Save row for the disabled/enabled treatment (12%/38%-alpha
-// onSurface vs. primary/onPrimary) — no click handler at all when disabled.
 @Composable
 private fun SelectionBar(selectedCount: Int, fill: Color, onConfirm: () -> Unit) {
     Column(modifier = Modifier.testTag(TierDetailTestTags.MOVIE_SEARCH_BOTTOM_BAR)) {

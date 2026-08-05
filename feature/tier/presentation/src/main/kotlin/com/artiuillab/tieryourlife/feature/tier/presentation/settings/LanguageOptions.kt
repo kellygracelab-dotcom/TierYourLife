@@ -18,10 +18,6 @@ internal data class LanguageOption(
     // Theme has a third segment, so the row already at the top of the list (English,
     // because it is the default resource set) is the natural place to hang that meaning.
     val persistTag: String?,
-    // The BCP-47 tag used to match this option against the device's resolved locale,
-    // for the settings row's supporting line when languageTag() is null. The default
-    // entry matches "en" so the row's example ("English") is exactly what a device
-    // already running in English (and never having overridden anything) will show.
     val matchTag: String,
     val nativeName: String,
     val englishNameRes: Int,
@@ -51,10 +47,6 @@ internal val LanguageOptions = listOf(
     ),
 )
 
-// The option the Language row's supporting line should show. An explicit stored tag
-// always wins; "follow system" (null) falls back to whatever locale Android actually
-// resolved this app's resources to, so the row's own subtitle never contradicts what's
-// on screen.
 internal fun currentLanguageOption(context: Context, storedTag: String?): LanguageOption {
     if (storedTag != null) {
         return LanguageOptions.firstOrNull { it.persistTag == storedTag } ?: LanguageOptions.first()

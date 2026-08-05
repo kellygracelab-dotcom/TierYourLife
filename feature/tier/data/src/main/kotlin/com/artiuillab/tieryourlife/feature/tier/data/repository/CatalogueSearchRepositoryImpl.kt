@@ -22,9 +22,6 @@ import javax.inject.Inject
 
 private const val SEARCH_TIMEOUT_MILLIS = 5_000L
 
-// One details query covers the whole page of search results, and the search itself is capped at
-// 20 (WikidataApi.searchEntities' limit default), so this ceiling is really just a guard against
-// a future larger page turning one request into an enormous one.
 private const val MAX_DETAIL_IDS = 50
 
 class CatalogueSearchRepositoryImpl @Inject constructor(
