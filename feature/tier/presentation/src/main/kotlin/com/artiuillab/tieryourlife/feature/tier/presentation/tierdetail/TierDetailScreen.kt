@@ -141,7 +141,7 @@ internal object TierDetailTestTags {
     const val MANUAL_ENTRY_REMOVE_PHOTO = "tier_detail_manual_entry_remove_photo"
     const val MANUAL_ENTRY_CANCEL = "tier_detail_manual_entry_cancel"
     const val MANUAL_ENTRY_SAVE = "tier_detail_manual_entry_save"
-    fun movieSearchResult(tmdbId: Long): String = "tier_detail_movie_search_result_$tmdbId"
+    fun movieSearchResult(id: String): String = "tier_detail_movie_search_result_$id"
     fun tierRow(tierId: Long): String = "tier_detail_row_$tierId"
     fun tierBand(tierId: Long): String = "tier_detail_band_$tierId"
     fun rankedRow(itemId: Long): String = "tier_detail_ranked_row_$itemId"

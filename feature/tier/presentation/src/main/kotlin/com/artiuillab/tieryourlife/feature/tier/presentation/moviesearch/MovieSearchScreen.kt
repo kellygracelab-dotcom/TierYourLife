@@ -45,7 +45,7 @@ import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
-import com.artiuillab.tieryourlife.feature.tier.domain.model.MovieSearchResult
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
@@ -71,8 +71,8 @@ fun MovieSearchScreenContent(
     onSearchClick: () -> Unit,
     onClose: () -> Unit = {},
     listTitle: String = "",
-    selectedIds: Set<Long> = emptySet(),
-    onToggleSelection: (MovieSearchResult) -> Unit = {},
+    selectedIds: Set<String> = emptySet(),
+    onToggleSelection: (CatalogueItem) -> Unit = {},
     onConfirmSelection: () -> Unit = {},
 ) {
     val isDark = TierYourLifeMedia.current.isDark
@@ -267,21 +267,21 @@ private fun CenteredMessage(
 
 @Composable
 private fun MovieResultsList(
-    items: List<MovieSearchResult>,
-    selectedIds: Set<Long>,
+    items: List<CatalogueItem>,
+    selectedIds: Set<String>,
     selectedTint: Color,
-    onToggle: (MovieSearchResult) -> Unit,
+    onToggle: (CatalogueItem) -> Unit,
 ) {
     LazyColumn(modifier = Modifier.testTag(TierDetailTestTags.MOVIE_SEARCH_RESULTS_LIST)) {
-        items(items, key = { it.tmdbId }) { item ->
-            val isSelected = item.tmdbId in selectedIds
+        items(items, key = { it.id }) { item ->
+            val isSelected = item.id in selectedIds
             val background = if (isSelected) selectedTint else Color.Transparent
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(background)
                     .selectable(selected = isSelected, onClick = { onToggle(item) })
-                    .testTag(TierDetailTestTags.movieSearchResult(item.tmdbId))
+                    .testTag(TierDetailTestTags.movieSearchResult(item.id))
                     .padding(horizontal = 16.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -302,9 +302,9 @@ private fun MovieResultsList(
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
-                    item.year?.let { year ->
+                    item.subtitle?.let { subtitle ->
                         Text(
-                            text = year.toString(),
+                            text = subtitle,
                             style = TierYourLifeType.current.captionUnderTitle,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -407,8 +407,8 @@ private fun SelectionBar(selectedCount: Int, fill: Color, onConfirm: () -> Unit)
 }
 
 private val previewMovies = listOf(
-    MovieSearchResult(tmdbId = 1, title = "The Godfather", imageUrl = null, year = 1972),
-    MovieSearchResult(tmdbId = 2, title = "Inception", imageUrl = null, year = 2010),
+    CatalogueItem(id = "tmdb:1", title = "The Godfather", subtitle = "1972", imageUrl = null),
+    CatalogueItem(id = "tmdb:2", title = "Inception", subtitle = "2010", imageUrl = null),
 )
 
 @Preview(name = "Initial", device = "id:pixel_9", showBackground = true, showSystemUi = true)
@@ -449,7 +449,7 @@ fun MovieSearchScreenSuccessPreview() {
             onQueryChange = {},
             onSearchClick = {},
             listTitle = "Sci-fi films",
-            selectedIds = setOf(1L),
+            selectedIds = setOf("tmdb:1"),
         )
     }
 }

@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.artiuillab.tieryourlife.feature.tier.domain.model.MovieSearchResult
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolMovieDraft
 import com.artiuillab.tieryourlife.feature.tier.presentation.moviesearch.MovieSearchScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.moviesearch.MovieSearchViewModel
@@ -31,10 +31,10 @@ internal fun AddMovieSheet(
     // Owned here, one level above MovieSearchScreenContent, so it's unaffected by that
     // composable cycling through Initial/Loading/Success/Empty/Error on every search —
     // this composable itself is mounted once for the sheet's whole lifetime, not
-    // recreated per state. A Map, not a Set<Long>: confirming needs each marked item's
+    // recreated per state. A Map, not a Set<String>: confirming needs each marked item's
     // title/imageUrl to build its PoolMovieDraft, and a later search's result list no
     // longer contains the earlier marked item to read that data back from.
-    var selectedItems by remember { mutableStateOf<Map<Long, MovieSearchResult>>(emptyMap()) }
+    var selectedItems by remember { mutableStateOf<Map<String, CatalogueItem>>(emptyMap()) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -53,10 +53,10 @@ internal fun AddMovieSheet(
             listTitle = listTitle,
             selectedIds = selectedItems.keys,
             onToggleSelection = { item ->
-                selectedItems = if (selectedItems.containsKey(item.tmdbId)) {
-                    selectedItems - item.tmdbId
+                selectedItems = if (selectedItems.containsKey(item.id)) {
+                    selectedItems - item.id
                 } else {
-                    selectedItems + (item.tmdbId to item)
+                    selectedItems + (item.id to item)
                 }
             },
             onConfirmSelection = {

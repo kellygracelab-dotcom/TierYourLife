@@ -2,7 +2,8 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.moviesearch
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.artiuillab.tieryourlife.feature.tier.domain.repository.MovieSearchRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.AppPreferences
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -17,7 +18,8 @@ private const val MIN_QUERY_LENGTH = 2
 
 @HiltViewModel
 class MovieSearchViewModel @Inject constructor(
-    private val repository: MovieSearchRepository,
+    private val repository: CatalogueSearchRepository,
+    private val appPreferences: AppPreferences,
 ) : ViewModel() {
 
     private val _state =
@@ -58,7 +60,7 @@ class MovieSearchViewModel @Inject constructor(
     private suspend fun performSearch(trimmedQuery: String) {
         _state.value = MovieSearchUiState.Loading
 
-        repository.searchMovies(trimmedQuery)
+        repository.search(trimmedQuery, appPreferences.languageTag())
             .fold(
                 onSuccess = { items ->
                     _state.value = if (items.isEmpty()) {

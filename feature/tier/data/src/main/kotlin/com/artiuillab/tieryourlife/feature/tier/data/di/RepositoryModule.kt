@@ -1,10 +1,10 @@
 package com.artiuillab.tieryourlife.feature.tier.data.di
 
 import com.artiuillab.tieryourlife.feature.tier.data.preferences.SharedPreferencesAppPreferences
-import com.artiuillab.tieryourlife.feature.tier.data.repository.MovieSearchRepositoryTmdbImpl
+import com.artiuillab.tieryourlife.feature.tier.data.repository.CatalogueSearchRepositoryImpl
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.AppPreferences
-import com.artiuillab.tieryourlife.feature.tier.domain.repository.MovieSearchRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.Binds
 import dagger.Module
@@ -24,9 +24,9 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindMovieSearchRepository(
-        implementation: MovieSearchRepositoryTmdbImpl,
-    ): MovieSearchRepository
+    abstract fun bindCatalogueSearchRepository(
+        implementation: CatalogueSearchRepositoryImpl,
+    ): CatalogueSearchRepository
 
     @Binds
     @Singleton
