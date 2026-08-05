@@ -16,6 +16,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import org.junit.Assert.assertTrue
 
 // Covers the Language row and its bottom sheet added in docs/design-spec-home.md,
 // section 7, subsection "2 - Language". The row sits between Theme and Trash — that
@@ -99,11 +104,49 @@ class SettingsScreenTest {
         composeRule.runOnIdle { assertEquals(null, reportedTag) }
     }
 
+    // --- Theme control layout (docs/design-spec-home.md, section 7) ---
+
+    // Three labels side by side is a bet on their length, and eleven languages plus a
+    // system font scale that goes past 2x is enough to lose it: "System" in English is
+    // "Zgodnie z systemem" in Polish. The control measures instead of assuming, so the
+    // test drives the measurement rather than the wording — at the default scale the
+    // three choices sit on one line, and at 2x they stack.
+    @Test
+    fun themeControl_atDefaultFontScale_laysTheThreeChoicesOutSideBySide() {
+        setScreen(languageTag = null)
+
+        val light = composeRule.onNodeWithTag(SettingsTestTags.THEME_LIGHT).getUnclippedBoundsInRoot()
+        val dark = composeRule.onNodeWithTag(SettingsTestTags.THEME_DARK).getUnclippedBoundsInRoot()
+
+        assertEquals(light.top, dark.top)
+        assertTrue("dark should sit to the right of light", dark.left > light.left)
+    }
+
+    @Test
+    fun themeControl_atDoubleFontScale_stacksTheThreeChoices() {
+        setScreen(languageTag = null, fontScale = 2f)
+
+        val light = composeRule.onNodeWithTag(SettingsTestTags.THEME_LIGHT).getUnclippedBoundsInRoot()
+        val dark = composeRule.onNodeWithTag(SettingsTestTags.THEME_DARK).getUnclippedBoundsInRoot()
+        val system = composeRule.onNodeWithTag(SettingsTestTags.THEME_SYSTEM).getUnclippedBoundsInRoot()
+
+        assertEquals(light.left, dark.left)
+        assertTrue("dark should sit below light", dark.top > light.top)
+        assertTrue("system should sit below dark", system.top > dark.top)
+        // Every label still readable rather than ellipsised into the next one.
+        composeRule.onNodeWithText(string(R.string.theme_system)).assertIsDisplayed()
+    }
+
     private fun setScreen(
         languageTag: String?,
         onLanguageTagChange: (String?) -> Unit = {},
+        fontScale: Float = 1f,
     ) {
         composeRule.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(
+                LocalDensity provides Density(density.density, fontScale),
+            ) {
             TierYourLifeTheme {
                 SettingsScreenContent(
                     themeChoice = ThemeChoice.SYSTEM,
@@ -115,6 +158,7 @@ class SettingsScreenTest {
                     onTrashClick = {},
                     onExportClick = {},
                 )
+            }
             }
         }
     }

@@ -190,10 +190,10 @@
 
     <string name="settings_title">Ustawienia</string>
     <string name="settings_theme">Motyw</string>
-    <string name="settings_theme_sub">„Zgodnie z systemem” używa ustawienia Androida.</string>
+    <string name="settings_theme_sub">„Systemowy” używa ustawienia Androida.</string>
     <string name="theme_light">Jasny</string>
     <string name="theme_dark">Ciemny</string>
-    <string name="theme_system">Zgodnie z systemem</string>
+    <string name="theme_system">Systemowy</string>
     <string name="settings_language">Język</string>
     <string name="settings_language_caption">Zmienia tylko tekst aplikacji. Nazwy, które wpisałeś, pozostają bez zmian.</string>
     <string name="language_default">Domyślny</string>

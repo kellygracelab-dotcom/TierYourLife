@@ -78,6 +78,15 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 
 // testTag constants shared between production UI and instrumentation tests.
 internal object SettingsTestTags {
@@ -316,7 +325,53 @@ private fun ThemeSection(themeChoice: ThemeChoice, onThemeChoiceChange: (ThemeCh
             Triple(ThemeChoice.DARK, R.string.theme_dark, SettingsTestTags.THEME_DARK),
             Triple(ThemeChoice.SYSTEM, R.string.theme_system, SettingsTestTags.THEME_SYSTEM),
         )
+        val labels = options.map { (_, labelRes, _) -> stringResource(labelRes) }
 
+        // Whether three labels fit side by side is measured, not assumed. Eleven
+        // languages and a system font scale that goes past 2x make any hardcoded
+        // threshold wrong for somebody: "Follow system" is one word in English and
+        // "Zgodnie z systemem" in Polish, and the next translation added will not be
+        // consulted about it. So the labels are measured against the width a segment
+        // would actually get, and the control lays itself out accordingly.
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+        ) {
+            val labelStyle = TierYourLifeType.current.tabLabel
+            val measurer = rememberTextMeasurer()
+            val density = LocalDensity.current
+            val segmentWidth = maxWidth / options.size
+            val widest = labels.maxOf { label ->
+                with(density) {
+                    measurer.measure(AnnotatedString(label), labelStyle, maxLines = 1).size.width.toDp()
+                }
+            }
+            // Reserved on every segment, not just the selected one, so the row does not
+            // reflow as the selection moves: the 18dp check, the gap after it, and the
+            // button's own horizontal padding.
+            val fitsSideBySide = widest <= segmentWidth - SEGMENT_RESERVED_WIDTH
+
+            if (fitsSideBySide) {
+                ThemeSegmentedRow(options, labels, themeChoice, onThemeChoiceChange)
+            } else {
+                ThemeStackedRows(options, labels, themeChoice, onThemeChoiceChange)
+            }
+        }
+    }
+}
+
+// 18dp check + 8dp gap after it + 8dp of padding on each side of the label.
+private val SEGMENT_RESERVED_WIDTH = 42.dp
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ThemeSegmentedRow(
+    options: List<Triple<ThemeChoice, Int, String>>,
+    labels: List<String>,
+    themeChoice: ThemeChoice,
+    onThemeChoiceChange: (ThemeChoice) -> Unit,
+) {
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -341,8 +396,71 @@ private fun ThemeSection(themeChoice: ThemeChoice, onThemeChoiceChange: (ThemeCh
                     },
                     modifier = Modifier.testTag(tag),
                 ) {
-                    Text(text = stringResource(labelRes), style = TierYourLifeType.current.tabLabel)
+                    Text(text = labels[index], style = TierYourLifeType.current.tabLabel)
                 }
+            }
+        }
+}
+
+// The fallback when three labels cannot sit side by side: the same three choices as
+// full-width rows, 48dp each so they clear the touch-target floor, with the check moved
+// to the leading edge. The outline and the rounded outer ends are kept so it still reads
+// as one control rather than as three unrelated rows (docs/design-spec-home.md,
+// section 7).
+@Composable
+private fun ThemeStackedRows(
+    options: List<Triple<ThemeChoice, Int, String>>,
+    labels: List<String>,
+    themeChoice: ThemeChoice,
+    onThemeChoiceChange: (ThemeChoice) -> Unit,
+) {
+    val outline = MaterialTheme.colorScheme.outline
+    val shape = RoundedCornerShape(20.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, outline, shape)
+            .clip(shape)
+            .selectableGroup(),
+    ) {
+        options.forEachIndexed { index, (choice, _, tag) ->
+            val selected = themeChoice == choice
+            if (index > 0) {
+                HorizontalDivider(thickness = 1.dp, color = outline)
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+                    .selectable(
+                        selected = selected,
+                        role = Role.RadioButton,
+                        onClick = { onThemeChoiceChange(choice) },
+                    )
+                    .background(
+                        if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
+                    )
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .testTag(tag),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                // The slot is held whether or not this row is the selected one, so the
+                // labels stay on one vertical line down the column.
+                Box(Modifier.size(18.dp)) {
+                    if (selected) {
+                        CheckIcon(18.dp, MaterialTheme.colorScheme.onPrimaryContainer)
+                    }
+                }
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    text = labels[index],
+                    style = TierYourLifeType.current.tabLabel,
+                    color = if (selected) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                )
             }
         }
     }

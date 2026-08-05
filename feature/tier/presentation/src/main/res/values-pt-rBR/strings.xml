@@ -160,10 +160,10 @@
 
     <string name="settings_title">Configurações</string>
     <string name="settings_theme">Tema</string>
-    <string name="settings_theme_sub">\"Seguir o sistema\" usa a configuração do Android.</string>
+    <string name="settings_theme_sub">\"Sistema\" usa a configuração do Android.</string>
     <string name="theme_light">Claro</string>
     <string name="theme_dark">Escuro</string>
-    <string name="theme_system">Seguir o sistema</string>
+    <string name="theme_system">Sistema</string>
     <string name="settings_language">Idioma</string>
     <string name="settings_language_caption">Muda apenas o texto do app. Os nomes que você digitou permanecem como estão.</string>
     <string name="language_default">Padrão</string>

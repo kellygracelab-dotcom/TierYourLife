@@ -641,3 +641,31 @@ gone. An empty library is a legitimate state and the empty state says so.
 
 Existing installs still hold whichever demo lists they created earlier; deleting them
 now makes them stay deleted.
+
+## The theme control measures instead of assuming (extends §7)
+
+§7 gives the theme choice as a three-segment row and adds a rule: stack it into three
+48dp rows at a font scale of 1.3× or more, "and in German, Polish and Turkish it will
+stack at 100% too".
+
+Two changes to that, both from the device.
+
+**The third label is one word in every language.** It was a phrase — "Follow system",
+"Как в системе", "Systemeinstellung folgen" at twenty-four characters — while the other
+two segments were single words. A third of a 360dp row is about 109dp, less 18dp for the
+check, which is roughly twelve characters at 13sp; the phrase never had a chance. It is
+now System, Системная, Systemowy, Système, Sistema, Sistem, and so on: parallel with
+Light and Dark, and the caption under the heading already explains what it means. The
+caption was reworded to match, since it quoted the old label.
+
+**Whether the three fit is measured, not guessed.** A hardcoded font-scale threshold is
+a bet on the length of eleven translations plus every one added later, and the design
+lost that bet already — it named three languages that would stack at 100% and the built
+app overflowed in six. The control measures the widest label against the width a segment
+would actually get and lays itself out accordingly, so the rule holds for a language
+nobody has thought of yet.
+
+The stacked form is as §7 describes: three rows, minimum 48dp, check moved to the
+leading edge, the outline and rounded outer ends kept so it still reads as one control.
+Both branches are covered by tests that assert the geometry — side by side at the
+default scale, stacked at 2× — rather than the wording.

@@ -220,10 +220,10 @@
 
     <string name="settings_title">الإعدادات</string>
     <string name="settings_theme">المظهر</string>
-    <string name="settings_theme_sub">«اتّباع النظام» يستخدم إعداد أندرويد الخاص بك.</string>
+    <string name="settings_theme_sub">«النظام» يستخدم إعداد أندرويد الخاص بك.</string>
     <string name="theme_light">فاتح</string>
     <string name="theme_dark">داكن</string>
-    <string name="theme_system">اتّباع النظام</string>
+    <string name="theme_system">النظام</string>
     <string name="settings_language">اللغة</string>
     <string name="settings_language_caption">يغيّر نص التطبيق نفسه فقط. الأسماء التي كتبتها تبقى كما هي.</string>
     <string name="language_default">افتراضي</string>

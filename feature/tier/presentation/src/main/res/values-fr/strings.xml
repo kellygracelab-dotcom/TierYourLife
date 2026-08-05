@@ -160,10 +160,10 @@
 
     <string name="settings_title">Paramètres</string>
     <string name="settings_theme">Thème</string>
-    <string name="settings_theme_sub">« Suivre le système » utilise le réglage de votre Android.</string>
+    <string name="settings_theme_sub">« Système » utilise le réglage de votre Android.</string>
     <string name="theme_light">Clair</string>
     <string name="theme_dark">Sombre</string>
-    <string name="theme_system">Suivre le système</string>
+    <string name="theme_system">Système</string>
     <string name="settings_language">Langue</string>
     <string name="settings_language_caption">Modifie uniquement le texte de l\'application. Les noms que vous avez saisis restent inchangés.</string>
     <string name="language_default">Par défaut</string>
