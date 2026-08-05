@@ -39,6 +39,7 @@ android {
 
 dependencies {
     implementation(projects.core.theme)
+    implementation(projects.feature.tier.domain)
     implementation(projects.feature.tier.data)
     implementation(projects.feature.tier.presentation)
     implementation(platform(libs.androidx.compose.bom))

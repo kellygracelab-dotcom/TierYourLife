@@ -15,4 +15,5 @@ data class DeletedTierItemRow(
     val listTitle: String,
     val wasInPool: Boolean,
     val deletedAt: Long,
+    val imageUrl: String?,
 )

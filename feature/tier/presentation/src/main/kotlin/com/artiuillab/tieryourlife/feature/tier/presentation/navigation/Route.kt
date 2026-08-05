@@ -7,5 +7,11 @@ sealed interface Route {
     data object TierLists : Route
 
     @Serializable
-    data class TierDetail(val tierListId: Long) : Route
+    data class TierDetail(val tierListId: Long, val startInTitleEdit: Boolean = false) : Route
+
+    @Serializable
+    data object Settings : Route
+
+    @Serializable
+    data object Trash : Route
 }

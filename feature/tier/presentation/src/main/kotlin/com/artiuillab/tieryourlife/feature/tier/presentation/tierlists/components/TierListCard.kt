@@ -1,7 +1,8 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,8 +32,13 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun TierListCard(list: TierList, onTierListClick: (Long) -> Unit) {
+internal fun TierListCard(
+    list: TierList,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit = {},
+) {
     val ranked = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
     val inPool = list.tiers.firstOrNull { it.isPool }?.items?.size ?: 0
     val rankedText = pluralStringResource(R.plurals.tier_lists_ranked_count, ranked, ranked)
@@ -43,7 +49,7 @@ internal fun TierListCard(list: TierList, onTierListClick: (Long) -> Unit) {
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .testTag("tier_list_card_${list.id}")
-            .clickable { onTierListClick(list.id) }
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
@@ -72,15 +78,20 @@ internal fun TierListCard(list: TierList, onTierListClick: (Long) -> Unit) {
             ChevronIcon()
         }
         TierRibbon(list.tiers)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            val status = tierListStatus(list.title, ranked)
-            status.icon()
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = status.label,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+        // The app holds no update-timestamp data, so a list with rankings shows no
+        // footnote at all rather than a claim it can't back — only the "nothing ranked
+        // yet" case has anything true to say here. Cards differ in height as a result;
+        // that's intended (see docs/design-spec-home.md, section 1).
+        if (ranked == 0) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                DragIcon()
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.tier_lists_status_start_dragging),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }
@@ -133,26 +144,3 @@ private fun TierRibbon(tiers: List<Tier>) {
     }
 }
 
-private data class TierListStatus(
-    val label: String,
-    val icon: @Composable () -> Unit,
-)
-
-@Composable
-private fun tierListStatus(title: String, ranked: Int): TierListStatus = when (title) {
-    "Sci-fi films" -> TierListStatus(
-        label = stringResource(R.string.tier_lists_status_sci_fi),
-        icon = { HistoryIcon() },
-    )
-
-    "Every A24 film" -> TierListStatus(
-        label = stringResource(R.string.tier_lists_status_a24),
-        icon = { ScheduleIcon() },
-    )
-
-    else -> if (ranked == 0) {
-        TierListStatus(stringResource(R.string.tier_lists_status_start_dragging)) { DragIcon() }
-    } else {
-        TierListStatus(stringResource(R.string.tier_lists_status_updated_recently)) { HistoryIcon() }
-    }
-}
