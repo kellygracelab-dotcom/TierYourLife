@@ -57,7 +57,6 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -91,12 +90,6 @@ internal object TierListsTestTags {
     const val EMPTY_STATE = "home_empty_state"
     fun tierListCard(id: Long): String = "tier_list_card_$id"
 }
-
-// Mock-literal colors with no matching M3 role — the same pair already reused by
-// MoveItemSheet's "currently here" tint and the tier-detail settings screen's selected
-// display-mode row (docs/design-spec-home.md, section 3).
-private val SelectedRowTintLight = Color(0xFFEDEBFA)
-private val SelectedRowTintDark = Color(0xFF2E2F45)
 
 @Composable
 fun TierListsScreen(
@@ -484,9 +477,6 @@ private fun HomeContent(
 ) {
     val isSelecting = mode is HomeMode.Selecting
     val selectedIds = (mode as? HomeMode.Selecting)?.selectedIds.orEmpty()
-    val isDark = TierYourLifeMedia.current.isDark
-    val selectedTint = if (isDark) SelectedRowTintDark else SelectedRowTintLight
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -496,16 +486,12 @@ private fun HomeContent(
     ) {
         items(lists, key = { it.id }) { list ->
             val isSelected = list.id in selectedIds
-            // The tint is drawn here, on the item's own full-width background, and only
-            // the card inside it gets the usual 16dp side inset — that's what lets the
-            // tint bleed edge to edge past the card's own margins while the card itself
-            // stays completely unchanged (docs/design-spec-home.md, section 3).
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(if (isSelected) selectedTint else Color.Transparent)
-                    .padding(horizontal = 16.dp),
-            ) {
+            // No tint behind the selected card. It was a full-width square-cornered band
+            // sitting behind a 16dp-rounded card, so it read as something showing through
+            // from underneath rather than as a state of the card — and the checkbox says
+            // the same thing without ambiguity. See the "Decided against the design"
+            // section of docs/design-spec-home.md.
+            Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 TierListCard(
                     list = list,
                     onClick = {
