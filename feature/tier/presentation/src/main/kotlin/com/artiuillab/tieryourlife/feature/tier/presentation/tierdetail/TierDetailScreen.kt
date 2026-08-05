@@ -174,6 +174,7 @@ private fun autoScrollSpeedPx(pointerY: Float, top: Float, bottom: Float, edgePx
 @Composable
 fun TierDetailScreen(
     onBack: () -> Unit,
+    startInTitleEdit: Boolean = false,
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
@@ -183,6 +184,7 @@ fun TierDetailScreen(
     TierDetailScreenContent(
         state = state,
         onBack = onBack,
+        startInTitleEdit = startInTitleEdit,
         onAddClick = { addSheetVisible = true },
         onManualAddClick = { manualEntryVisible = true },
         onMoveItem = viewModel::moveItem,
@@ -223,6 +225,7 @@ fun TierDetailScreen(
 fun TierDetailScreenContent(
     state: TierDetailUiState,
     onBack: () -> Unit,
+    startInTitleEdit: Boolean = false,
     onAddClick: () -> Unit,
     onManualAddClick: () -> Unit = {},
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
@@ -264,6 +267,7 @@ fun TierDetailScreenContent(
                 TierScreenBody(
                     list = state.list,
                     onBack = onBack,
+                    startInTitleEdit = startInTitleEdit,
                     onAddClick = onAddClick,
                     onManualAddClick = onManualAddClick,
                     onMoveItem = onMoveItem,
@@ -297,6 +301,7 @@ fun TierDetailScreenContent(
 private fun TierScreenBody(
     list: TierList,
     onBack: () -> Unit,
+    startInTitleEdit: Boolean = false,
     onAddClick: () -> Unit,
     onManualAddClick: () -> Unit,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
@@ -466,6 +471,7 @@ private fun TierScreenBody(
                 onMoreClick = { listSettingsVisible = true },
                 onRenameList = onRenameList,
                 titleEditable = true,
+                startInTitleEdit = startInTitleEdit,
             )
 
             if (list.displayMode == TierListDisplayMode.FLAT_RANKED) {
@@ -592,6 +598,7 @@ private fun TierScreenTopBar(
     onMoreClick: () -> Unit = {},
     onRenameList: (String) -> Unit = {},
     titleEditable: Boolean = false,
+    startInTitleEdit: Boolean = false,
 ) {
     val backDescription = stringResource(R.string.tier_detail_content_description_back)
     val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
@@ -615,6 +622,7 @@ private fun TierScreenTopBar(
             EditableListTitle(
                 title = title,
                 onRename = onRenameList,
+                initiallyEditing = startInTitleEdit,
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 4.dp),
@@ -657,21 +665,35 @@ private fun TierScreenTopBar(
 // would make the bar taller the moment editing starts, which is exactly the
 // "jump" this is required not to do. BasicTextField has no such chrome, so it
 // can share the read state's own text style pixel-for-pixel.
+// docs/design-spec-home.md, section 4: 60 characters is the only limit on the title.
+private const val TITLE_MAX_LENGTH = 60
+
 @Composable
 private fun EditableListTitle(
     title: String,
     onRename: (String) -> Unit,
+    initiallyEditing: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
-    var isEditing by remember { mutableStateOf(false) }
+    var isEditing by remember { mutableStateOf(initiallyEditing) }
 
     if (isEditing) {
         var fieldValue by remember {
-            // Cursor starts at the end rather than selecting everything: the mock for
-            // this state is gone (see docs/design-spec-turns-8-9.md, section 9), and an
-            // append-friendly default is the least destructive guess — the user can
-            // still select all themselves to replace the title outright.
-            mutableStateOf(TextFieldValue(text = title, selection = TextRange(title.length)))
+            mutableStateOf(
+                if (initiallyEditing) {
+                    // A brand-new list opened straight into edit mode: the whole
+                    // placeholder title is selected so the first keystroke replaces it
+                    // outright, rather than appending after it (docs/design-spec-home.md,
+                    // section 4).
+                    TextFieldValue(text = title, selection = TextRange(0, title.length))
+                } else {
+                    // Renaming an existing list: cursor at the end is the least
+                    // destructive default — the mock for this state is gone (see
+                    // docs/design-spec-turns-8-9.md, section 9) — and the user can still
+                    // select all themselves to replace the title outright.
+                    TextFieldValue(text = title, selection = TextRange(title.length))
+                },
+            )
         }
         // Distinguishes "never focused yet" from "focused, then lost it": onFocusChanged
         // fires once immediately on composition with isFocused = false, before the
@@ -700,7 +722,13 @@ private fun EditableListTitle(
 
         BasicTextField(
             value = fieldValue,
-            onValueChange = { fieldValue = it },
+            onValueChange = { newValue ->
+                // A keystroke past the 60-character cap is simply rejected — the field
+                // never shows more than the limit (docs/design-spec-home.md, section 4).
+                if (newValue.text.length <= TITLE_MAX_LENGTH) {
+                    fieldValue = newValue
+                }
+            },
             modifier = modifier
                 .focusRequester(focusRequester)
                 .onFocusChanged { focusState ->

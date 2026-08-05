@@ -19,5 +19,6 @@ sealed interface TrashEntry {
         val listTitle: String,
         val wasInPool: Boolean,
         override val deletedAtMillis: Long,
+        val imageUrl: String? = null,
     ) : TrashEntry
 }

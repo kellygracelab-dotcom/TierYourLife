@@ -19,4 +19,5 @@ internal fun DeletedTierItemRow.toDomain(): TrashEntry.DeletedItem =
         listTitle = listTitle,
         wasInPool = wasInPool,
         deletedAtMillis = deletedAt,
+        imageUrl = imageUrl,
     )

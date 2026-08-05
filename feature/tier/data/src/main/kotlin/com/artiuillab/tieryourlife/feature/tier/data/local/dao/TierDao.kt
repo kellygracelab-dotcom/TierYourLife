@@ -246,7 +246,7 @@ interface TierDao {
     @Query(
         """
         SELECT i.id AS id, i.title AS title, i.deletedAt AS deletedAt,
-            t.isPool AS wasInPool, l.title AS listTitle
+            t.isPool AS wasInPool, l.title AS listTitle, i.imageUrl AS imageUrl
         FROM tier_items i
         JOIN tiers t ON i.tierId = t.id
         JOIN tier_lists l ON t.tierListId = l.id

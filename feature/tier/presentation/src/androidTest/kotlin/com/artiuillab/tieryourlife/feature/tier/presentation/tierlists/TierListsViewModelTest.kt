@@ -134,6 +134,98 @@ class TierListsViewModelTest {
         assertEquals("New title", after.lists.single().title)
     }
 
+    // --- Search, selection and delete/undo (docs/design-spec-home.md, sections 2, 3, 5) ---
+
+    @Test
+    fun search_filtersLists_caseInsensitiveAndAnywhereInTheName() = runBlocking {
+        val repository = FakeTierRepository(
+            initial = listOf(fakeList(id = 1, title = "Pizza in Lisbon"), fakeList(id = 2, title = "Sushi tour")),
+        )
+        val viewModel = TierListsViewModel(repository)
+
+        viewModel.loadTierLists()
+        viewModel.state.first { it is TierListsUiState.Success }
+
+        viewModel.enterSearch()
+        viewModel.updateSearchQuery("piz")
+
+        val state = viewModel.state.first {
+            it is TierListsUiState.Success && (it.mode as? HomeMode.Searching)?.query == "piz"
+        } as TierListsUiState.Success
+
+        assertEquals(listOf("Pizza in Lisbon"), state.lists.map { it.title })
+        // The summary line needs the true total even while a query has narrowed the
+        // visible list down to a subset.
+        assertEquals(2, state.totalListCount)
+    }
+
+    @Test
+    fun exitSearch_returnsToBrowsingWithEveryListVisibleAgain() = runBlocking {
+        val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Pizza in Lisbon")))
+        val viewModel = TierListsViewModel(repository)
+
+        viewModel.loadTierLists()
+        viewModel.state.first { it is TierListsUiState.Success }
+
+        viewModel.enterSearch()
+        viewModel.updateSearchQuery("nothing matches this")
+        viewModel.exitSearch()
+
+        val state = viewModel.state.first {
+            it is TierListsUiState.Success && it.mode == HomeMode.Browsing
+        } as TierListsUiState.Success
+
+        assertEquals(listOf(1L), state.lists.map { it.id })
+    }
+
+    @Test
+    fun toggleSelection_deselectingTheLastId_returnsToBrowsingMode() = runBlocking {
+        val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Only list")))
+        val viewModel = TierListsViewModel(repository)
+
+        viewModel.loadTierLists()
+        viewModel.state.first { it is TierListsUiState.Success }
+
+        viewModel.enterSelection(1L)
+        val selecting = viewModel.state.first {
+            it is TierListsUiState.Success && it.mode is HomeMode.Selecting
+        } as TierListsUiState.Success
+        assertEquals(HomeMode.Selecting(setOf(1L)), selecting.mode)
+
+        viewModel.toggleSelection(1L)
+        val afterDeselect = viewModel.state.first {
+            it is TierListsUiState.Success
+        } as TierListsUiState.Success
+        assertEquals(HomeMode.Browsing, afterDeselect.mode)
+    }
+
+    @Test
+    fun deleteTierLists_removesThemAndExitsSelection_thenRestoreBringsThemBack() = runBlocking {
+        val repository = FakeTierRepository(
+            initial = listOf(fakeList(id = 1, title = "Keeps existing"), fakeList(id = 2, title = "Gets deleted")),
+        )
+        val viewModel = TierListsViewModel(repository)
+
+        viewModel.loadTierLists()
+        viewModel.state.first { it is TierListsUiState.Success }
+
+        viewModel.enterSelection(2L)
+        viewModel.deleteTierLists(listOf(2L))
+
+        val afterDelete = viewModel.state.first {
+            it is TierListsUiState.Success && it.lists.size == 1
+        } as TierListsUiState.Success
+        assertEquals(listOf(1L), afterDelete.lists.map { it.id })
+        // Selection mode ends on the same tap that deletes.
+        assertEquals(HomeMode.Browsing, afterDelete.mode)
+
+        viewModel.restoreTierLists(listOf(2L))
+        val afterRestore = viewModel.state.first {
+            it is TierListsUiState.Success && it.lists.size == 2
+        } as TierListsUiState.Success
+        assertEquals(listOf(1L, 2L), afterRestore.lists.map { it.id }.sorted())
+    }
+
     private fun fakeList(id: Long, title: String): TierList = TierList(id = id, title = title, tiers = emptyList())
 
     private class RecordedStates(val values: MutableList<TierListsUiState>, val job: Job) {
@@ -177,6 +269,9 @@ class TierListsViewModelTest {
 private class FakeTierRepository(initial: List<TierList>) : TierRepository {
 
     private val lists = initial.associateBy { it.id }.toMutableMap()
+    // Soft-deleted lists move here rather than vanishing, mirroring the real repository's
+    // trash — restoreTierLists below reads from it so the undo path is testable too.
+    private val trashed = mutableMapOf<Long, TierList>()
     private var nextId = (initial.maxOfOrNull { it.id } ?: 0L) + 1
 
     override suspend fun getTierListById(id: Long): TierList? = lists[id]
@@ -194,7 +289,11 @@ private class FakeTierRepository(initial: List<TierList>) : TierRepository {
     }
 
     override suspend fun deleteTierLists(ids: List<Long>) {
-        ids.forEach { lists.remove(it) }
+        ids.forEach { id -> lists.remove(id)?.let { trashed[id] = it } }
+    }
+
+    override suspend fun restoreTierLists(ids: List<Long>) {
+        ids.forEach { id -> trashed.remove(id)?.let { lists[id] = it } }
     }
 
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) = unsupported()
@@ -214,7 +313,6 @@ private class FakeTierRepository(initial: List<TierList>) : TierRepository {
     override suspend fun updateTierColors(id: Long, colorLight: String, colorDark: String) = unsupported()
     override suspend fun deleteTier(id: Long) = unsupported()
     override suspend fun reorderTiers(orderedTierIds: List<Long>) = unsupported()
-    override suspend fun restoreTierLists(ids: List<Long>) = unsupported()
     override suspend fun deleteTierItem(id: Long) = unsupported()
     override suspend fun restoreTierItem(id: Long) = unsupported()
     override suspend fun deleteTierListPermanently(id: Long) = unsupported()

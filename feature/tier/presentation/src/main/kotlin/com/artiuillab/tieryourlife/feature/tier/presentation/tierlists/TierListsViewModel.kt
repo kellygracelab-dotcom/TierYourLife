@@ -23,6 +23,16 @@ class TierListsViewModel @Inject constructor(
     val state: StateFlow<TierListsUiState> = _state.asStateFlow()
     private val loadMutex = Mutex()
 
+    // Every list as last read from the repository, unfiltered — the single source the
+    // search query is applied against. Lives here, not in the composable: "Filtering is
+    // done in the view model, not the composable" (docs/design-spec-home.md, section 2).
+    private var lastLoadedLists: List<TierList> = emptyList()
+
+    // Lives here rather than in the composable so it survives a configuration change.
+    // Search, selection and browsing are mutually exclusive by the HomeMode type itself
+    // (see TierListsUiState.kt) — there is exactly one value here at any time.
+    private var mode: HomeMode = HomeMode.Browsing
+
     // No init-time load here on purpose: the screen's own resume effect (see
     // OnResumeEffect in TierListsScreen.kt) is the single trigger for every load,
     // including the first one — its catch-up dispatch fires on initial mount too.
@@ -47,7 +57,8 @@ class TierListsViewModel @Inject constructor(
         }
 
         try {
-            _state.value = TierListsUiState.Success(repository.loadTierListsForPresentation())
+            lastLoadedLists = repository.loadTierListsForPresentation()
+            emitSuccess()
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -62,9 +73,82 @@ class TierListsViewModel @Inject constructor(
         }
     }
 
-    fun createTierList(title: String) {
+    private fun emitSuccess() {
+        val query = (mode as? HomeMode.Searching)?.query
+        val filtered = if (query != null) {
+            // Case-insensitive, matches anywhere in the title — "piz" finds "Pizza in
+            // Lisbon" (docs/design-spec-home.md, section 2).
+            lastLoadedLists.filter { it.title.contains(query, ignoreCase = true) }
+        } else {
+            lastLoadedLists
+        }
+        val rankedCount = lastLoadedLists.sumOf { list ->
+            list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
+        }
+        _state.value = TierListsUiState.Success(
+            lists = filtered,
+            totalListCount = lastLoadedLists.size,
+            rankedCount = rankedCount,
+            mode = mode,
+        )
+    }
+
+    // Mode changes are synchronous and never touch the repository, so they're applied
+    // directly rather than through viewModelScope.launch — typing in the search field
+    // must never wait on a coroutine dispatch. Only takes effect once a first load has
+    // actually produced a Success: search/selection UI only exists once lists are on
+    // screen, so a mode change before that can't happen from a real user action.
+    private fun setMode(newMode: HomeMode) {
+        mode = newMode
+        if (_state.value is TierListsUiState.Success) {
+            emitSuccess()
+        }
+    }
+
+    fun enterSearch() = setMode(HomeMode.Searching(""))
+
+    fun updateSearchQuery(query: String) = setMode(HomeMode.Searching(query))
+
+    fun exitSearch() = setMode(HomeMode.Browsing)
+
+    fun enterSelection(id: Long) = setMode(HomeMode.Selecting(setOf(id)))
+
+    // Deselecting the last remaining card exits selection mode automatically
+    // (docs/design-spec-home.md, section 3).
+    fun toggleSelection(id: Long) {
+        val current = mode as? HomeMode.Selecting ?: return
+        val updated = if (id in current.selectedIds) current.selectedIds - id else current.selectedIds + id
+        setMode(if (updated.isEmpty()) HomeMode.Browsing else HomeMode.Selecting(updated))
+    }
+
+    fun exitSelection() = setMode(HomeMode.Browsing)
+
+    // Deletes immediately and exits selection mode on the same tap — no confirmation.
+    // Selection mode is cleared synchronously so the contextual bar disappears at once,
+    // ahead of the (async) reload that actually removes the cards.
+    fun deleteTierLists(ids: List<Long>) {
+        setMode(HomeMode.Browsing)
         viewModelScope.launch {
-            repository.createTierList(title)
+            repository.deleteTierLists(ids)
+            loadTierListsInternal()
+        }
+    }
+
+    fun restoreTierLists(ids: List<Long>) {
+        viewModelScope.launch {
+            repository.restoreTierLists(ids)
+            loadTierListsInternal()
+        }
+    }
+
+    // The FAB's create-and-open path (docs/design-spec-home.md, section 4): the list is
+    // created and saved immediately, and onCreated is invoked with its id as soon as
+    // that finishes so the caller can navigate straight to it — the reload that follows
+    // keeps Home's own list in sync for whenever the user comes back to it.
+    fun createTierList(onCreated: (Long) -> Unit) {
+        viewModelScope.launch {
+            val id = repository.createTierList("Untitled list")
+            onCreated(id)
             loadTierListsInternal()
         }
     }
