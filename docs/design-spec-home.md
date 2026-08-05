@@ -605,6 +605,17 @@ the moment it times out.
 
 # Decided against the design, from using it on a device (2026-08-05)
 
+## The selected card carries a checkbox and nothing else (against §11)
+
+§11 kept the full-width tint behind the selected card, demoted to "a scanning aid".
+On a device it does not survive that demotion. The tint is a square-cornered band the
+full width of the screen sitting behind a card with a 16dp radius, so its corners stick
+out past the card on all four sides and it reads as something showing through from
+underneath rather than as a property of the card. The checkbox already states the
+selection without ambiguity, and two signals where one is unambiguous is one too many.
+
+The tint is gone. A selected card differs from an unselected one only by its checkbox.
+
 ## The heading stays while selecting (against §3 and §11)
 
 §3 says the count "replaces 'Your lists' and the summary line entirely". Built, that
