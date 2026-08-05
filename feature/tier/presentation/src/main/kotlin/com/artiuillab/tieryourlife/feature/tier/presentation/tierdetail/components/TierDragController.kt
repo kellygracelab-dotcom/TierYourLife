@@ -65,6 +65,14 @@ internal class TierDragController {
         private set
     var tierPointerPositionInRoot by mutableStateOf(Offset.Zero)
         private set
+
+    // The dragged tier's own band width in px, captured once at drag start from the
+    // band's actual measured size (TierRow's onGloballyPositioned). The band is
+    // wrap-content between MIN_TIER_BAND_WIDTH and MAX_TIER_BAND_FRACTION of the row, so
+    // there is no fixed width to derive this from — FloatingDragRow needs the real one to
+    // center its copy the same way regardless of this tier's caption length.
+    var draggedTierBandWidthPx by mutableStateOf(0f)
+        private set
     private var rankedTierIdsAtDragStart: List<Long> = emptyList()
 
     val isDragging: Boolean get() = draggedPayload != null || draggedTierId != null
@@ -182,10 +190,11 @@ internal class TierDragController {
     // rankedTierIds is the current order, pool excluded — the pool never takes part in
     // reordering, and passing only ranked ids keeps it out of the candidate set entirely
     // rather than filtering it back out at every hover recomputation.
-    fun beginTierDrag(tierId: Long, rankedTierIds: List<Long>, rootPosition: Offset) {
+    fun beginTierDrag(tierId: Long, rankedTierIds: List<Long>, rootPosition: Offset, bandWidthPx: Float) {
         draggedTierId = tierId
         rankedTierIdsAtDragStart = rankedTierIds
         tierPointerPositionInRoot = rootPosition
+        draggedTierBandWidthPx = bandWidthPx
         recomputeTierHover()
     }
 
@@ -209,6 +218,7 @@ internal class TierDragController {
         draggedTierId = null
         hoveredTarget = null
         rankedTierIdsAtDragStart = emptyList()
+        draggedTierBandWidthPx = 0f
     }
 
     private fun recomputeTierHover() {

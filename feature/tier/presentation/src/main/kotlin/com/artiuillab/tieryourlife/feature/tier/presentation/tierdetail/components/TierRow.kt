@@ -51,11 +51,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
@@ -127,6 +127,7 @@ internal fun TierRow(
     }
 
     var bandRootPosition by remember { mutableStateOf(Offset.Zero) }
+    var bandWidthPx by remember { mutableStateOf(0f) }
     val baseViewConfiguration = LocalViewConfiguration.current
     val dragViewConfiguration = remember(baseViewConfiguration) {
         ShortLongPressViewConfiguration(baseViewConfiguration, DRAG_LONG_PRESS_TIMEOUT_MILLIS)
@@ -168,7 +169,10 @@ internal fun TierRow(
                     .then(
                         if (!tier.isPool) {
                             Modifier
-                                .onGloballyPositioned { coordinates -> bandRootPosition = coordinates.positionInRoot() }
+                                .onGloballyPositioned { coordinates ->
+                                    bandRootPosition = coordinates.positionInRoot()
+                                    bandWidthPx = coordinates.size.width.toFloat()
+                                }
                                 // Independent pointerInput from the double-tap one below, same
                                 // reasoning DraggableTile's own two recognizers rely on: a quick
                                 // tap never reaches onDragStart (long-press-gated), so it can't
@@ -182,6 +186,7 @@ internal fun TierRow(
                                                 tierId = tier.id,
                                                 rankedTierIds = rankedTierIds,
                                                 rootPosition = bandRootPosition + offsetInBand,
+                                                bandWidthPx = bandWidthPx,
                                             )
                                         },
                                         onDrag = { change, dragAmount ->
@@ -318,7 +323,7 @@ internal fun ItemTile(item: TierItem, width: Dp, height: Dp) {
             .height(height)
             .clip(RoundedCornerShape(6.dp))
             .background(media.tilePlaceholder),
-        contentAlignment = Alignment.BottomCenter,
+        contentAlignment = Alignment.Center,
     ) {
         if (item.imageUrl != null) {
             AsyncImage(
@@ -328,15 +333,17 @@ internal fun ItemTile(item: TierItem, width: Dp, height: Dp) {
                 contentScale = ContentScale.Crop,
             )
         } else {
-            // Exception: no role in docs/design-spec-turns-8-9.md section 2 goes this
-            // small — this is the fallback label squeezed inside a 44x64 tile when there's
-            // no artwork, and needs to be smaller than any named role to fit it.
+            // docs/design-spec-turns-8-9.md, section 10.4: "Missing artwork falls back to
+            // the title, centred, ellipsised, up to 2 lines" — the real fallback the
+            // design settled on, not a 6-letter uppercase abbreviation. Type role is
+            // section 2's "caption on a poster placeholder" (bodySmall, 12sp/16sp).
             Text(
-                text = item.title.take(6).uppercase(),
-                modifier = Modifier.padding(bottom = 4.dp),
-                fontSize = 9.sp,
-                maxLines = 1,
+                text = item.title,
+                modifier = Modifier.padding(horizontal = 4.dp),
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
                 color = media.tileLabel,
             )
         }
@@ -353,7 +360,12 @@ internal fun FloatingDragRow(dragController: TierDragController, tier: Tier?) {
     val position = dragController.tierPointerPositionInRoot
     val density = LocalDensity.current
     val colors = tierRowColors(tier.colorLight, tier.colorDark)
-    val halfWidthPx = with(density) { 33.dp.toPx() }
+    // Half of the dragged tier's own band width, captured live at drag start (TierRow's
+    // onGloballyPositioned -> beginTierDrag) rather than half of a fixed column width —
+    // the band is wrap-content between MIN_TIER_BAND_WIDTH and MAX_TIER_BAND_FRACTION of
+    // the row (see those constants above), so its width depends on this tier's own
+    // caption length and can no longer be assumed to be a constant 66dp.
+    val halfWidthPx = dragController.draggedTierBandWidthPx / 2f
     val halfHeightPx = with(density) { (MIN_TIER_ROW_HEIGHT / 2).toPx() }
     val shape = RoundedCornerShape(12.dp)
 

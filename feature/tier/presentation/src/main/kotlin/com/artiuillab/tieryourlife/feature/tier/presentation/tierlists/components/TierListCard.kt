@@ -21,11 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -51,8 +51,7 @@ internal fun TierListCard(list: TierList, onTierListClick: (Long) -> Unit) {
             Column(Modifier.weight(1f)) {
                 Text(
                     list.title,
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -66,8 +65,7 @@ internal fun TierListCard(list: TierList, onTierListClick: (Long) -> Unit) {
                             inPoolText,
                         )
                     },
-                    fontSize = 13.sp,
-                    lineHeight = 18.sp,
+                    style = TierYourLifeType.current.captionUnderTitle,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -80,8 +78,7 @@ internal fun TierListCard(list: TierList, onTierListClick: (Long) -> Unit) {
             Spacer(Modifier.width(8.dp))
             Text(
                 text = status.label,
-                fontSize = 12.sp,
-                lineHeight = 16.sp,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
