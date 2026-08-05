@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.common
 
+import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -15,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SdkSuppress
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import org.junit.Assert.assertTrue
@@ -26,7 +28,13 @@ import kotlin.math.abs
 // Compose mirrors layout and Painter-backed icons for right-to-left on its own, but never raw
 // Canvas commands — and every icon here is a Canvas path. So this asserts the pixels, not the
 // wiring: an arrow has to actually point the other way in Arabic, and a plus has to not move.
+//
+// API 26 and up only, and that is a limit of the measurement rather than of the app: reading
+// pixels back needs captureToImage(), which goes through PixelCopy.request(Window, …) — a
+// method that does not exist before API 26. The icons themselves work on minSdk 24; only this
+// way of checking them does not.
 @RunWith(AndroidJUnit4::class)
+@SdkSuppress(minSdkVersion = Build.VERSION_CODES.O)
 class VectorIconMirroringTest {
 
     @get:Rule
