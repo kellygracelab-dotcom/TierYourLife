@@ -1,11 +1,14 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
@@ -16,6 +19,7 @@ import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.doubleClick
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -1742,6 +1746,158 @@ class TierDetailScreenTest {
 
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).assertHasNoClickAction()
         composeRule.runOnIdle { assertEquals(0, callCount) }
+    }
+
+    @Test
+    fun tierBandColumn_widthTracksCaptionLength_andNeverExceedsAThirdOfTheRow() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList(), caption = "X"),
+            tier(
+                id = 2,
+                label = "A",
+                items = emptyList(),
+                caption = "A very very long caption that keeps going and going and going",
+            ),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        val rowWidth = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot.width
+        val shortBandWidth = composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).fetchSemanticsNode().boundsInRoot.width
+        val longBandWidth = composeRule.onNodeWithTag(TierDetailTestTags.tierBand(2)).fetchSemanticsNode().boundsInRoot.width
+        val minWidthPx = with(composeRule.density) { 56.dp.toPx() }
+
+        assertTrue("a short caption's band must be narrower than a long caption's", shortBandWidth < longBandWidth)
+        assertTrue("band must never go below the 56dp floor", shortBandWidth >= minWidthPx - 1f)
+        assertTrue("band must never exceed a third of the row", longBandWidth <= rowWidth / 3f + 1f)
+    }
+
+    @Test
+    fun largeFontScale_hidesTierCaption_keepsTheLetter() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList(), caption = "Masterpiece"),
+        ).asTierList()
+
+        composeRule.setContent {
+            val baseDensity = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density = baseDensity.density, fontScale = 2f)) {
+                TierYourLifeTheme {
+                    TierDetailScreenContent(state = TierDetailUiState.Success(list), onBack = {}, onAddClick = {})
+                }
+            }
+        }
+
+        composeRule.onNodeWithText("S").assertIsDisplayed()
+        composeRule.onNodeWithText("Masterpiece").assertDoesNotExist()
+    }
+
+    @Test
+    fun draggingNearTheBottomEdge_scrollsTheList_untilAnOffscreenTierIsReachable() {
+        val manyTiers = (1..20).map { id -> tier(id = id.toLong(), label = "T$id", items = emptyList()) }
+        val list = (manyTiers + tier(id = 100, label = "Pool", items = listOf(item(500, "Interstellar")), isPool = true))
+            .asTierList()
+        var moved: Pair<Long, Long>? = null
+        setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, _ -> moved = itemId to toTierId })
+
+        // Sanity: with 20 empty tiers, only a handful fit on screen at once — find the
+        // last one that's actually visible before any scrolling happens.
+        composeRule.onNodeWithTag(TierDetailTestTags.tierRow(20)).assertDoesNotExist()
+        val lastVisibleIdBeforeScrolling = (1L..20L).last { id ->
+            composeRule.onAllNodesWithTag(TierDetailTestTags.tierRow(id))
+                .fetchSemanticsNodes(atLeastOneRootRequired = false)
+                .isNotEmpty()
+        }
+
+        val sourceBounds = composeRule.onNodeWithTag(TierDetailTestTags.tile(500)).fetchSemanticsNode().boundsInRoot
+        val start = Offset(sourceBounds.width / 2f, sourceBounds.height / 2f)
+        val rowOneBounds = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot
+        val poolBounds = composeRule.onNodeWithTag(TierDetailTestTags.POOL_PANEL).fetchSemanticsNode().boundsInRoot
+        // Just above the pool, inside the tiers area's own bottom 72dp zone.
+        val edgeTarget = Offset(rowOneBounds.center.x, poolBounds.top - 10f)
+
+        composeRule.mainClock.autoAdvance = false
+        try {
+            composeRule.onNodeWithTag(TierDetailTestTags.tile(500)).performTouchInput {
+                down(start)
+                advanceEventTime(600)
+                moveTo(start + Offset(2f, 0f))
+                advanceEventTime(20)
+                moveTo(edgeTarget - sourceBounds.topLeft)
+                advanceEventTime(20)
+            }
+            // Comfortably long at up to 600dp/s to reach the very end of a 20-tier list.
+            composeRule.mainClock.advanceTimeBy(15000)
+
+            composeRule.onNodeWithTag(TierDetailTestTags.tile(500)).performTouchInput { up() }
+            composeRule.mainClock.advanceTimeBy(500)
+        } finally {
+            composeRule.mainClock.autoAdvance = true
+        }
+        composeRule.waitForIdle()
+
+        composeRule.runOnIdle {
+            assertEquals(500L, moved?.first)
+            assertTrue(
+                "expected a drop into a tier that was off-screen before scrolling (> $lastVisibleIdBeforeScrolling), landed on ${moved?.second}",
+                (moved?.second ?: -1L) > lastVisibleIdBeforeScrolling,
+            )
+        }
+    }
+
+    @Test
+    fun autoscrollStops_oncePointerLeavesTheEdgeZone() {
+        val manyTiers = (1..20).map { id -> tier(id = id.toLong(), label = "T$id", items = emptyList()) }
+        val list = (manyTiers + tier(id = 100, label = "Pool", items = listOf(item(500, "Interstellar")), isPool = true))
+            .asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        val sourceBounds = composeRule.onNodeWithTag(TierDetailTestTags.tile(500)).fetchSemanticsNode().boundsInRoot
+        val start = Offset(sourceBounds.width / 2f, sourceBounds.height / 2f)
+        val rowOneBounds = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot
+        val poolBounds = composeRule.onNodeWithTag(TierDetailTestTags.POOL_PANEL).fetchSemanticsNode().boundsInRoot
+        val edgeTarget = Offset(rowOneBounds.center.x, poolBounds.top - 10f)
+        val midTarget = Offset(rowOneBounds.center.x, (rowOneBounds.top + poolBounds.top) / 2f)
+        val allIds = (1L..20L).toList()
+
+        composeRule.mainClock.autoAdvance = false
+        try {
+            composeRule.onNodeWithTag(TierDetailTestTags.tile(500)).performTouchInput {
+                down(start)
+                advanceEventTime(600)
+                moveTo(start + Offset(2f, 0f))
+                advanceEventTime(20)
+                moveTo(edgeTarget - sourceBounds.topLeft)
+                advanceEventTime(20)
+            }
+            // Some scrolling happens while held near the edge.
+            composeRule.mainClock.advanceTimeBy(1000)
+
+            // Pull back to the middle of the tiers area — outside the 72dp edge zone.
+            composeRule.onNodeWithTag(TierDetailTestTags.tile(500)).performTouchInput {
+                moveTo(midTarget - sourceBounds.topLeft)
+            }
+            composeRule.mainClock.advanceTimeBy(50)
+            val tierAtMidBefore = tierIdAtPoint(midTarget, allIds)
+
+            // Hold well past any reasonable single-frame settling delay; if autoscroll
+            // hadn't actually stopped, whatever is at midTarget would keep changing.
+            composeRule.mainClock.advanceTimeBy(1500)
+            val tierAtMidAfter = tierIdAtPoint(midTarget, allIds)
+
+            assertEquals("scrolling must stop once the pointer leaves the edge zone", tierAtMidBefore, tierAtMidAfter)
+
+            composeRule.onNodeWithTag(TierDetailTestTags.tile(500)).performTouchInput { cancel() }
+        } finally {
+            composeRule.mainClock.autoAdvance = true
+        }
+        composeRule.waitForIdle()
+    }
+
+    private fun tierIdAtPoint(pointInRoot: Offset, candidateIds: List<Long>): Long? = candidateIds.firstOrNull { id ->
+        val bounds = composeRule.onAllNodesWithTag(TierDetailTestTags.tierRow(id))
+            .fetchSemanticsNodes(atLeastOneRootRequired = false)
+            .firstOrNull()
+            ?.boundsInRoot
+        bounds != null && pointInRoot.y >= bounds.top && pointInRoot.y <= bounds.bottom
     }
 
     // Line capacity depends on the test device's actual screen width, so this reads

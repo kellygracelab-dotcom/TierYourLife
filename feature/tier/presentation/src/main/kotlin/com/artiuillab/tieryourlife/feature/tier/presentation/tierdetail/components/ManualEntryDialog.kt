@@ -39,8 +39,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.dashedBorder
@@ -99,16 +99,14 @@ internal fun ManualEntryDialogContent(
         title = {
             Text(
                 text = stringResource(R.string.manual_dialog_title),
-                fontSize = 24.sp,
-                lineHeight = 32.sp,
+                style = MaterialTheme.typography.headlineSmall,
             )
         },
         text = {
             Column {
                 Text(
                     text = stringResource(R.string.manual_dialog_body),
-                    fontSize = 13.sp,
-                    lineHeight = 18.sp,
+                    style = TierYourLifeType.current.captionUnderTitle,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 16.dp),
                 )
@@ -135,8 +133,7 @@ internal fun ManualEntryDialogContent(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = stringResource(R.string.manual_dialog_photo_optional),
-                            fontSize = 13.sp,
-                            lineHeight = 18.sp,
+                            style = TierYourLifeType.current.captionUnderTitle,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = 8.dp),
                         )
@@ -151,8 +148,7 @@ internal fun ManualEntryDialogContent(
                                             R.string.manual_dialog_replace_photo
                                         },
                                     ),
-                                    fontSize = 13.sp,
-                                    lineHeight = 16.sp,
+                                    style = TierYourLifeType.current.chipText,
                                 )
                             },
                             leadingIcon = {

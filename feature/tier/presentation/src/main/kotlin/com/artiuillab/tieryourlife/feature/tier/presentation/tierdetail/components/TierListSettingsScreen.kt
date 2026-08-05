@@ -33,12 +33,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -116,8 +115,7 @@ private fun ListSettingsTopBar(onBack: () -> Unit) {
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 4.dp),
-            fontSize = 20.sp,
-            lineHeight = 28.sp,
+            style = MaterialTheme.typography.titleLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurface,
@@ -134,16 +132,13 @@ private fun DisplayModeSection(
         Text(
             text = stringResource(R.string.tier_list_settings_display_section),
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
-            fontSize = 14.sp,
-            lineHeight = 20.sp,
-            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary,
         )
         Text(
             text = stringResource(R.string.tier_list_settings_display_section_caption),
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-            fontSize = 13.sp,
-            lineHeight = 18.sp,
+            style = TierYourLifeType.current.captionUnderTitle,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Column(Modifier.selectableGroup()) {
@@ -210,8 +205,8 @@ private fun DisplayModeRow(
         )
         icon(24.dp, if (selected) accent else neutral)
         Column(Modifier.weight(1f)) {
-            Text(text = title, fontSize = 16.sp, lineHeight = 22.sp, color = MaterialTheme.colorScheme.onSurface)
-            Text(text = subtitle, fontSize = 13.sp, lineHeight = 18.sp, color = neutral)
+            Text(text = title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+            Text(text = subtitle, style = TierYourLifeType.current.captionUnderTitle, color = neutral)
         }
     }
 }
@@ -247,14 +242,12 @@ private fun SettingsActionRow(
         Column(Modifier.weight(1f).padding(start = 16.dp)) {
             Text(
                 text = title,
-                fontSize = 16.sp,
-                lineHeight = 22.sp,
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
                 text = subtitle,
-                fontSize = 13.sp,
-                lineHeight = 18.sp,
+                style = TierYourLifeType.current.captionUnderTitle,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

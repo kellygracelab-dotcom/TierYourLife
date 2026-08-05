@@ -39,10 +39,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.Hsl
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.contrastRatio
@@ -118,9 +117,7 @@ internal fun TierColorPicker(
     Column(modifier) {
         Text(
             text = stringResource(R.string.tier_editor_color_section_title),
-            fontSize = 14.sp,
-            lineHeight = 20.sp,
-            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 10.dp),
         )
@@ -145,8 +142,7 @@ internal fun TierColorPicker(
 
         Text(
             text = stringResource(R.string.tier_editor_color_section_caption),
-            fontSize = 13.sp,
-            lineHeight = 18.sp,
+            style = TierYourLifeType.current.captionUnderTitle,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 10.dp),
         )
@@ -374,9 +370,7 @@ private fun ColorTabButton(
         Text(
             text = label,
             modifier = Modifier.padding(start = 8.dp),
-            fontSize = 13.sp,
-            lineHeight = 18.sp,
-            fontWeight = FontWeight.Medium,
+            style = TierYourLifeType.current.tabLabel,
             color = textColor,
         )
     }
@@ -393,8 +387,7 @@ private fun SliderField(
     Column {
         Text(
             text = label,
-            fontSize = 12.sp,
-            lineHeight = 16.sp,
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             // See SLIDER_VERTICAL_COMPENSATION: the slider's own 4dp top inset (from its
             // honest 32dp height vs its 24dp track) already accounts for part of the gap to
@@ -506,8 +499,7 @@ private fun ContrastReadout(isDark: Boolean, colorLight: String, colorDark: Stri
             ContrastIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
                 text = "%.1f:1".format(ratio),
-                fontSize = 13.sp,
-                lineHeight = 18.sp,
+                style = TierYourLifeType.current.captionUnderTitle,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.testTag(TierDetailTestTags.TIER_EDITOR_CONTRAST_READOUT),
             )

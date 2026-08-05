@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -36,25 +38,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
@@ -79,6 +83,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TrashTarget
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 // testTag constants shared between production UI and instrumentation tests, so
@@ -145,6 +150,25 @@ internal object TierDetailTestTags {
     fun tierEditorPresetSwatch(index: Int): String = "tier_detail_tier_editor_preset_swatch_$index"
     fun sliderTrack(sliderTag: String): String = "${sliderTag}_track"
     fun sliderThumb(sliderTag: String): String = "${sliderTag}_thumb"
+}
+
+// docs/design-spec-turns-8-9.md, section 3 / 8a: "Drag auto-scroll within 72dp of the
+// top/bottom at up to 600dp/s".
+private val TIER_LIST_AUTOSCROLL_EDGE = 72.dp
+private const val TIER_LIST_AUTOSCROLL_MAX_SPEED_DP_PER_SEC = 600
+
+// Positive scrolls down, negative scrolls up. A pointer within edgePx of an edge (or past
+// it entirely — a lifted tile can be dragged beyond the list's own bounds) scrolls that
+// direction, ramping linearly from 0 at the edge of the zone to maxSpeedPx right at (or
+// past) the edge itself; 0 once the pointer is back in the middle of the list.
+private fun autoScrollSpeedPx(pointerY: Float, top: Float, bottom: Float, edgePx: Float, maxSpeedPx: Float): Float {
+    val distanceFromTop = pointerY - top
+    val distanceFromBottom = bottom - pointerY
+    return when {
+        distanceFromTop <= edgePx -> -maxSpeedPx * (1f - distanceFromTop / edgePx).coerceIn(0f, 1f)
+        distanceFromBottom <= edgePx -> maxSpeedPx * (1f - distanceFromBottom / edgePx).coerceIn(0f, 1f)
+        else -> 0f
+    }
 }
 
 @Composable
@@ -380,6 +404,59 @@ private fun TierScreenBody(
 
     val density = LocalDensity.current
 
+    // Hoisted so a drag near its top/bottom edge can scroll it programmatically (see the
+    // autoscroll effect below) — bounds tracked the same way every other drag-target
+    // rect in this screen is, via onGloballyPositioned on the LazyColumn itself.
+    val tierListState = rememberLazyListState()
+    var tierListBounds by remember { mutableStateOf(Rect.Zero) }
+
+    val autoscrollEdgePx = with(density) { TIER_LIST_AUTOSCROLL_EDGE.toPx() }
+    val autoscrollMaxSpeedPx = with(density) { TIER_LIST_AUTOSCROLL_MAX_SPEED_DP_PER_SEC.dp.toPx() }
+
+    // Speed clamped to zero once there's nowhere further to scroll in that direction — a
+    // tile lifted from the very first row sits within 72dp of the list's own top edge by
+    // construction (that's just where row one is), and that must not read as "scroll up"
+    // when the list is already at the top; symmetrically for the last row and the bottom.
+    fun autoscrollSpeedNow(): Float {
+        if (tierListBounds == Rect.Zero) return 0f
+        val raw = autoScrollSpeedPx(
+            pointerY = dragController.pointerPositionInRoot.y,
+            top = tierListBounds.top,
+            bottom = tierListBounds.bottom,
+            edgePx = autoscrollEdgePx,
+            maxSpeedPx = autoscrollMaxSpeedPx,
+        )
+        return when {
+            raw < 0f && !tierListState.canScrollBackward -> 0f
+            raw > 0f && !tierListState.canScrollForward -> 0f
+            else -> raw
+        }
+    }
+
+    // Rows now grow taller than the screen (FlowRow wrapping), so a poster dragged toward
+    // a tier that scrolled out of view had nothing to carry it there — this is what does.
+    // Keyed on "currently near a scrollable edge" specifically, not merely "a drag is
+    // happening": the loop below awaits a fresh frame every iteration for as long as it
+    // runs, which a Compose UI test's idling check treats as perpetually busy — scoping it
+    // this way means an ordinary drag that never approaches a scrollable edge never starts
+    // it, and it cancels the instant the pointer moves away (or the list runs out of room).
+    val isNearAutoscrollEdge = dragController.isDragging && !dragController.isDraggingTier && autoscrollSpeedNow() != 0f
+
+    LaunchedEffect(isNearAutoscrollEdge) {
+        if (!isNearAutoscrollEdge) return@LaunchedEffect
+        var lastFrameNanos = -1L
+        while (isActive) {
+            val delta = withFrameNanos { frameNanos ->
+                val dtSeconds = if (lastFrameNanos < 0L) 0f else (frameNanos - lastFrameNanos) / 1_000_000_000f
+                lastFrameNanos = frameNanos
+                autoscrollSpeedNow() * dtSeconds
+            }
+            if (delta != 0f) {
+                tierListState.scrollBy(delta)
+            }
+        }
+    }
+
     BoxWithConstraints(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
             TierScreenTopBar(
@@ -407,9 +484,11 @@ private fun TierScreenBody(
                 }
             } else {
                 LazyColumn(
+                    state = tierListState,
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .onGloballyPositioned { coordinates -> tierListBounds = coordinates.boundsInRoot() },
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
@@ -546,8 +625,7 @@ private fun TierScreenTopBar(
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 4.dp),
-                fontSize = 20.sp,
-                lineHeight = 28.sp,
+                style = MaterialTheme.typography.titleLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -633,11 +711,7 @@ private fun EditableListTitle(
                     }
                 }
                 .testTag(TierDetailTestTags.HEADER_TITLE),
-            textStyle = TextStyle(
-                fontSize = 20.sp,
-                lineHeight = 28.sp,
-                color = MaterialTheme.colorScheme.onSurface,
-            ),
+            textStyle = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSurface),
             singleLine = true,
             cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -653,8 +727,7 @@ private fun EditableListTitle(
                 .clickable { isEditing = true }
                 .semantics { contentDescription = editDescription }
                 .testTag(TierDetailTestTags.HEADER_TITLE),
-            fontSize = 20.sp,
-            lineHeight = 28.sp,
+            style = MaterialTheme.typography.titleLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurface,
