@@ -23,8 +23,6 @@ private val ContentDark = Color(0xFF1B1B21)
 private val ActionLight = Color(0xFFBAC3FF)
 private val ActionDark = Color(0xFF4A5BAA)
 
-// The one messaging mechanism for this screen, used by both delete paths (drag to
-// trash, remove from the move sheet) so there is exactly one message per deletion.
 @Composable
 internal fun DeletedItemSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifier) {
     val isDark = TierYourLifeMedia.current.isDark

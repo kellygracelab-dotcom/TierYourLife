@@ -38,8 +38,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    // Not a ViewModel: AppPreferences is domain-layer, plain-Kotlin, synchronous —
-    // exactly the shape that doesn't need one (docs/design-spec-home.md, section 7).
     @Inject
     lateinit var appPreferences: AppPreferences
 
@@ -52,9 +50,6 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContent {
             val systemDarkTheme = isSystemInDarkTheme()
-            // Seeded from the persisted choice once; every later change updates this
-            // state and persists in the same place (onThemeChoiceChange below), so the
-            // two never drift apart.
             var themeChoice by rememberSaveable { mutableStateOf(appPreferences.themeChoice()) }
             val darkTheme = when (themeChoice) {
                 ThemeChoice.LIGHT -> false
@@ -65,10 +60,6 @@ class MainActivity : AppCompatActivity() {
                 themeChoice = choice
                 appPreferences.setThemeChoice(choice)
             }
-            // Same seed-once-then-track pattern as themeChoice above, kept as its own
-            // piece of state rather than derived from AppCompatDelegate.getApplicationLocales()
-            // so the Settings row can show it without re-reading appcompat's state on
-            // every recomposition.
             var languageTag by rememberSaveable { mutableStateOf(appPreferences.languageTag()) }
             val onLanguageTagChange: (String?) -> Unit = { tag ->
                 languageTag = tag
@@ -129,9 +120,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun applyStoredLocale() = applyLocale(appPreferences.languageTag())
 
-    // Null means "follow the system" — an empty LocaleListCompat tells AppCompatDelegate
-    // to drop any override, which is exactly the framework's own definition of that
-    // state and matches AppPreferences.languageTag()'s contract.
     private fun applyLocale(tag: String?) {
         val locales = tag?.let { LocaleListCompat.forLanguageTags(it) } ?: LocaleListCompat.getEmptyLocaleList()
         AppCompatDelegate.setApplicationLocales(locales)

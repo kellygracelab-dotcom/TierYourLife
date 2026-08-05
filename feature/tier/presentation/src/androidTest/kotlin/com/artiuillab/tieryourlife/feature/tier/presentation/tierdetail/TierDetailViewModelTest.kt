@@ -57,7 +57,6 @@ class TierDetailViewModelTest {
         assertNull(repository.lastAddedImageUrl)
     }
 
-    // --- The discard latch (docs/design-spec-home.md, section 12) ---
 
     @Test
     fun canDiscard_seededFromStartInTitleEdit() = runBlocking {
@@ -136,9 +135,6 @@ class TierDetailViewModelTest {
     )
 }
 
-// Backs only what TierDetailViewModel.addManualItem touches — getTierListById,
-// addMovieToPool, attachImageToItem — the rest of TierRepository is unrelated to these
-// tests and is stubbed rather than implemented.
 private class FakeTierRepository(initial: TierList) : TierRepository {
 
     private var list = initial

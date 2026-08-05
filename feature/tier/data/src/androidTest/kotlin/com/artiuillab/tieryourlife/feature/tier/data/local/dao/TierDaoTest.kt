@@ -298,7 +298,6 @@ class TierDaoTest {
         val renamed = requireNotNull(dao.getTierById(sTier.id))
         assertEquals("S+", renamed.label)
         assertEquals("Beyond words", renamed.caption)
-        // The rest of the tier is untouched.
         assertEquals(sTier.position, renamed.position)
         assertEquals(sTier.colorLight, renamed.colorLight)
         assertEquals(sTier.colorDark, renamed.colorDark)
@@ -347,18 +346,13 @@ class TierDaoTest {
         val poolPosition = allTiers.single { it.isPool }.position
         val rankedIds = allTiers.filterNot { it.isPool }.map { it.id }
 
-        // Only the ranked tier ids are sent, mirroring how the pool always sits last
-        // and is never part of a reorder call.
         dao.reorderTiers(rankedIds.reversed())
 
         val tiers = dao.getAllTiersByTierListId(listId)
         val rankedTiers = tiers.filterNot { it.isPool }
         assertEquals(rankedIds.reversed(), rankedTiers.map { it.id })
         assertEquals((0 until rankedTiers.size).toList(), rankedTiers.map { it.position })
-        // Invariant: no repeated positions among the reordered tiers.
         assertEquals(rankedTiers.size, rankedTiers.map { it.position }.toSet().size)
-        // The pool wasn't in the call, so its own position — and its place at the
-        // end of the ordered list — is untouched.
         assertEquals(poolPosition, tiers.single { it.isPool }.position)
         assertEquals("Unranked", tiers.last().label)
     }
@@ -453,8 +447,6 @@ class TierDaoTest {
         )
         dao.markTierItemDeleted(itemId, deletedAt = 1_000L)
 
-        // Raw table read: the copy must still be found while an item sits in the trash,
-        // so permanently deleting it later can still clean up its file.
         assertEquals("/path/1", dao.getTierItemImageById(itemId))
     }
 
@@ -696,8 +688,6 @@ class TierDaoTest {
         val third = dao.insertTierItem(tierItem(tierId = sTierId, title = "Third", position = 2))
         val fourth = dao.insertTierItem(tierItem(tierId = sTierId, title = "Fourth", position = 3))
 
-        // toPosition is an index into the sibling list with `first` already removed:
-        // [second, third, fourth]. Index 2 lands `first` right before `fourth`.
         dao.moveItem(itemId = first, toTierId = sTierId, toPosition = 2)
 
         val items = dao.getAllTierItemsByTierId(sTierId)
@@ -836,7 +826,6 @@ class TierDaoTest {
         dao.markTierListsDeleted(listOf(filmsId, keptListId), deletedAt = 1_000L)
         dao.deleteTierListById(filmsId)
 
-        // Only the explicitly deleted entry is gone; the other stays in trash forever.
         assertEquals(listOf(keptListId), dao.getDeletedTierLists().map { it.id })
         assertTrue(dao.getDeletedTierItems().isEmpty())
         assertNull(dao.getTierListById(filmsId))
@@ -914,7 +903,6 @@ class TierDaoTest {
         assertEquals(listOf("Pool one"), deletedItems.map { it.title })
         assertEquals(listOf("Films"), deletedItems.map { it.listTitle })
         assertTrue(deletedItems.single().wasInPool)
-        // Items that only belong to a trashed list are not listed as separate rows.
         assertFalse(deletedItems.any { it.title == "Game item" })
     }
 
@@ -929,7 +917,6 @@ class TierDaoTest {
         dao.moveItem(itemId = itemId, toTierId = aTierId, toPosition = 0)
         dao.restoreTierItem(itemId)
 
-        // Restoring afterwards proves the move never touched it: it settles back where it was.
         assertEquals(listOf(itemId), dao.getAllTierItemsByTierId(sTierId).map { it.id })
         assertTrue(dao.getAllTierItemsByTierId(aTierId).isEmpty())
     }

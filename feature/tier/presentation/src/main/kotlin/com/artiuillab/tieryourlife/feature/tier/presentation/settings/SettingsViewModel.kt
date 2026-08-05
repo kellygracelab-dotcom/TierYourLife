@@ -31,9 +31,6 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    // The one place that assembles every list's full detail (tiers and items) for
-    // export — getAllTierLists() alone only returns the overview shape, same gap
-    // loadTierListsForPresentation() on Home already works around.
     fun exportText(strings: TierListsExportStrings, onResult: (ExportedText) -> Unit) {
         viewModelScope.launch {
             val overviews = repository.getAllTierLists()

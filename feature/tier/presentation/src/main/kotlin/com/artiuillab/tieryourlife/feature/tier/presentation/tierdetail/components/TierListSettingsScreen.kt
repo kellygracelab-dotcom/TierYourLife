@@ -49,13 +49,6 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDeta
 private val DisplayModeSelectedTintLight = Color(0xFFEDEBFA)
 private val DisplayModeSelectedTintDark = Color(0xFF2E2F45)
 
-// Reached from the tier detail screen's more_vert button, as one screen-shaped state
-// swap rather than a nav destination — same pattern as the sheets it hosts, and it
-// keeps this directly testable the way the rest of tierdetail already is.
-//
-// Renaming used to live here (a row that opened a dialog); it's now done in place in
-// the tier detail screen's own header, so this screen no longer offers a second path
-// to the same action.
 @Composable
 internal fun TierListSettingsScreenContent(
     list: TierList,

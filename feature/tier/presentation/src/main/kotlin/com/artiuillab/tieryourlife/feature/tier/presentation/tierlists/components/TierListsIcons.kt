@@ -59,8 +59,6 @@ private fun DragVectorIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { 
     }
 }
 
-// A gear: a ring plus eight radial teeth, drawn the same hand-path way as every other
-// icon in this file rather than pulling in material-icons-extended.
 @Composable
 internal fun SettingsIcon() = SettingsVectorIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
 
@@ -76,7 +74,6 @@ private fun SettingsVectorIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize
     }
 }
 
-// A magnifying glass with a diagonal slash — the "nothing found" glyph.
 @Composable
 internal fun SearchOffIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     drawCircle(color, 6f * scale, Offset(10f * scale, 10f * scale), style = Stroke(1.7f * scale))
@@ -90,7 +87,6 @@ internal fun SearchOffIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { 
     drawLine(color, Offset(4f * scale, 4f * scale), Offset(20f * scale, 20f * scale), 1.7f * scale, StrokeCap.Round)
 }
 
-// Three bullet-and-line rows — the "no lists at all" glyph.
 @Composable
 internal fun FormatListBulletedIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     repeat(3) { row ->

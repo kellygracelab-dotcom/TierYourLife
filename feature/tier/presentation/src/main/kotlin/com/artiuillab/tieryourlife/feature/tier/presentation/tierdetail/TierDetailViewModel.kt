@@ -117,8 +117,6 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    // orderedTierIds excludes the pool — it never takes part in reordering and always
-    // sorts after every id passed here, so leaving it out keeps it exactly where it was.
     fun reorderTiers(orderedTierIds: List<Long>) {
         markTouched()
         viewModelScope.launch {
@@ -217,11 +215,6 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    // Only ever called with a committed, non-empty title — EditableListTitle skips
-    // calling this at all for a blank commit — but markTouched() is one-way, so calling
-    // it here too is harmless; the title field's own first-keystroke call
-    // (TierDetailScreen wires it directly) is what actually has to fire early, since a
-    // keystroke that gets deleted back to nothing never reaches this function.
     fun renameTierList(title: String) {
         markTouched()
         viewModelScope.launch {

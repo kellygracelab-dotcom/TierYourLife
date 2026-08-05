@@ -101,10 +101,6 @@ internal fun TierListCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            // The chevron (20dp) and the checkbox (24dp) never coexist — entering
-            // selection mode replaces one with the other in the same slot, and the
-            // title column simply absorbs the 4dp difference since neither has a fixed
-            // width (docs/design-spec-home.md, section 11).
             if (selectionMode) {
                 SelectionCheckbox(selected)
             } else {

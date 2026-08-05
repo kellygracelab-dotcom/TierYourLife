@@ -22,9 +22,6 @@ data class TierListsExportStrings(
     val unrankedHeading: String,
 )
 
-// docs/design-spec-home.md, section 8. A plain, readable listing — not JSON, not CSV —
-// in the same order Home shows the lists, tiers in position order (S first, worst
-// last), items numbered within their tier, the pool last and unnumbered.
 fun buildTierListsExport(lists: List<TierList>, strings: TierListsExportStrings): String {
     val lines = mutableListOf<String>()
 
@@ -42,7 +39,6 @@ fun buildTierListsExport(lists: List<TierList>, strings: TierListsExportStrings)
 
     lists.forEachIndexed { index, list ->
         lines += list.title
-        // A rule of "=" the width of the name — re-measured per list, not a fixed width.
         lines += "=".repeat(list.title.length)
         lines += listOf(
             strings.rankedCountText(list.rankedItemCount()),
@@ -69,7 +65,6 @@ fun buildTierListsExport(lists: List<TierList>, strings: TierListsExportStrings)
 
         val pool = list.tiers.firstOrNull { it.isPool }
         if (pool != null && pool.items.isNotEmpty()) {
-            // Unnumbered and last — the pool has no order worth exporting.
             lines += strings.unrankedHeading
             pool.items.forEach { item -> lines += "  ${item.title}" }
         }

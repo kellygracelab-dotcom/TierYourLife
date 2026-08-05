@@ -30,7 +30,6 @@ internal fun wikidataDetailsQuery(ids: List<String>): String {
         "}"
 }
 
-// "http://www.wikidata.org/entity/Q11788" -> "Q11788"
 internal fun qidFromEntityUri(uri: String): String = uri.substringAfterLast('/')
 
 // The Query Service hands back a ready Commons FilePath URL, already percent-encoded — spaces

@@ -135,7 +135,6 @@ interface TierDao {
     )
     suspend fun getDeletedTierLists(): List<DeletedTierListRow>
 
-    // One transaction: either the whole trash is gone or none of it.
     @Transaction
     suspend fun emptyTrash() {
         deleteAllTrashedTierLists()
@@ -242,7 +241,6 @@ interface TierDao {
     @Query("SELECT imageUrl FROM tier_items WHERE imageUrl IS NOT NULL")
     suspend fun getAllImageRefs(): List<String>
 
-    // Items whose list is also trashed are represented by the list row, not listed twice.
     @Query(
         """
         SELECT i.id AS id, i.title AS title, i.deletedAt AS deletedAt,

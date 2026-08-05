@@ -2,10 +2,6 @@ package com.artiuillab.tieryourlife.feature.tier.domain.search
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 
-// Wraps a Wikidata search hit with the linked TMDB movie id read from its P4947 claim, purely
-// so the merge below can drop it when TMDB already surfaced the same film. This wrapper is
-// merge-input plumbing only — CatalogueItem itself stays source-agnostic with no TMDB-specific
-// field, and never leaves this function as this type.
 data class WikidataCandidate(
     val item: CatalogueItem,
     val linkedTmdbId: Long?,
@@ -27,8 +23,6 @@ object CatalogueSearchMerger {
         wikidataResult: Result<List<WikidataCandidate>>,
     ): Result<List<CatalogueItem>> {
         if (tmdbResult.isFailure && wikidataResult.isFailure) {
-            // One source succeeding — even with zero results — is a success; this branch is
-            // only reachable when both sources failed or timed out.
             return Result.failure(
                 tmdbResult.exceptionOrNull() ?: wikidataResult.exceptionOrNull()!!,
             )
@@ -80,9 +74,6 @@ object CatalogueSearchMerger {
         return result
     }
 
-    // Lower is better: exact match first, then a title that starts with the query, then
-    // everything else. Case-insensitive, since the ranking is about matching what the user
-    // typed, not a literal-string contest.
     private fun score(title: String, trimmedQuery: String): Int = when {
         trimmedQuery.isNotEmpty() && title.equals(trimmedQuery, ignoreCase = true) -> 0
         trimmedQuery.isNotEmpty() && title.startsWith(trimmedQuery, ignoreCase = true) -> 1

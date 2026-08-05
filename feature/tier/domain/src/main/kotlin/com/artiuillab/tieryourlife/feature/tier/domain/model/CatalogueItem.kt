@@ -11,7 +11,6 @@ package com.artiuillab.tieryourlife.feature.tier.domain.model
 data class CatalogueItem(
     val id: String,
     val title: String,
-    // The year for a TMDB result, the description for a Wikidata result.
     val subtitle: String?,
     val imageUrl: String?,
 )

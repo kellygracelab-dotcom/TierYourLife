@@ -24,7 +24,6 @@ class TierImageStore internal constructor(
         openSource = { uri -> context.contentResolver.openInputStream(Uri.parse(uri)) },
     )
 
-    // Copies the source into internal storage and returns the path of the copy.
     fun copyToInternalStorage(sourceUri: String): String {
         directory.mkdirs()
         val target = File(directory, UUID.randomUUID().toString())

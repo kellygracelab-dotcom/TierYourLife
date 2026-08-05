@@ -17,15 +17,12 @@ import androidx.compose.ui.unit.sp
 // design uses that have no matching M3 slot at all (the tier band letter/caption, the
 // swatch letter, tab labels, chip text) live in TierYourLifeExtraType, see Theme.kt.
 val Typography = Typography(
-    // Top app bar title, the list's editable header title, the list-settings screen title.
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
         fontSize = 20.sp,
         lineHeight = 28.sp,
     ),
-    // List row title: move-to-tier destination rows, list-settings rows, ranked-list
-    // rows (title and the rank-number column).
     titleMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,

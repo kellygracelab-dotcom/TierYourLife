@@ -76,9 +76,6 @@ import kotlin.math.roundToInt
 // task this shipped with) is exactly this value, not a second constant.
 private val MIN_TIER_ROW_HEIGHT = 84.dp
 
-// Tier band column: wraps to its content (the letter, and the caption below it), never
-// narrower than this floor and never wider than a third of the row — see
-// docs/design-spec-turns-8-9.md, section 3.
 private val MIN_TIER_BAND_WIDTH = 56.dp
 private const val MAX_TIER_BAND_FRACTION = 1f / 3f
 
@@ -139,8 +136,6 @@ internal fun TierRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .then(rowHeightModifier)
-                // Short and not abrupt: this is the one thing that tells the user it's still
-                // the same list collapsing, not a different screen.
                 .animateContentSize(animationSpec = tween(durationMillis = 200))
                 .clip(RoundedCornerShape(12.dp))
                 .onGloballyPositioned { coordinates -> dragController.registerRowBounds(tier.id, coordinates.boundsInRoot()) }
@@ -161,11 +156,6 @@ internal fun TierRow(
                     .widthIn(min = MIN_TIER_BAND_WIDTH, max = bandMaxWidth)
                     .background(colors.band)
                     .testTag(TierDetailTestTags.tierBand(tier.id))
-                    // The pool never reaches this composable in practice (callers filter it
-                    // out before building rows), but the guard is kept here rather than
-                    // trusted to callers: this is the one place that decides whether a band
-                    // opens the editor or can be lifted, so it's the right place to also
-                    // decide the pool never does either.
                     .then(
                         if (!tier.isPool) {
                             Modifier
@@ -246,11 +236,6 @@ internal fun TierRow(
                     .testTag(TierDetailTestTags.tierItems(tier.id)),
             )
         } else if (displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
-            // HORIZONTAL_SCROLL is the only mode that changes this row: everything else about
-            // it (label column, tile size, spacing, padding, drag/double-tap wiring) is the
-            // same regardless of mode, only the items container differs — a single
-            // non-wrapping, horizontally scrollable line instead of one that wraps and grows
-            // taller. FLAT_RANKED isn't drawn yet, so it falls back to the wrap behaviour too.
             Row(
                 modifier = Modifier
                     .weight(1f)
@@ -350,10 +335,6 @@ internal fun ItemTile(item: TierItem, width: Dp, height: Dp) {
     }
 }
 
-// The visual copy that follows the finger while a tier row is lifted — same idea as
-// FloatingDragTile, scaled down for a full-width row per the "reorder tiers" spec this
-// shipped with: 1.02 rather than a tile's 1.06, since a full-width row at 1.06 would
-// bleed past the screen edge.
 @Composable
 internal fun FloatingDragRow(dragController: TierDragController, tier: Tier?) {
     if (tier == null) return

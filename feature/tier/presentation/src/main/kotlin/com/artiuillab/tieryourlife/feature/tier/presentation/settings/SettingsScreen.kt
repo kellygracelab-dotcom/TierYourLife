@@ -88,7 +88,6 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 
-// testTag constants shared between production UI and instrumentation tests.
 internal object SettingsTestTags {
     const val BACK = "settings_back"
     const val THEME_ROW = "settings_theme_row"
@@ -113,8 +112,6 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val trashCount by viewModel.trashCount.collectAsState()
-    // Reused from Home: the back-stack entry's own lifecycle resumes on returning from
-    // Trash, which is exactly when this row's count can have changed.
     OnResumeEffect(onResume = viewModel::loadTrashCount)
 
     val context = LocalContext.current
@@ -128,7 +125,6 @@ fun SettingsScreen(
     val createDocumentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("text/plain"),
     ) { uri ->
-        // A cancelled picker shows nothing at all (docs/design-spec-home.md, section 8).
         if (uri == null) return@rememberLauncherForActivityResult
         viewModel.exportText(exportStrings) { exported ->
             coroutineScope.launch {
@@ -254,8 +250,6 @@ internal fun SettingsScreenContent(
                 Column(Modifier.verticalScroll(rememberScrollState())) {
                     ThemeSection(themeChoice = themeChoice, onThemeChoiceChange = onThemeChoiceChange)
                     SettingsDivider()
-                    // Second in the column, between Theme and Trash (docs/design-spec-home.md,
-                    // section 7's own row order).
                     LanguageRow(languageTag = languageTag, onLanguageTagChange = onLanguageTagChange)
                     SettingsDivider()
                     TrashRow(trashCount = trashCount, onClick = onTrashClick)
@@ -361,7 +355,6 @@ private fun ThemeSection(themeChoice: ThemeChoice, onThemeChoiceChange: (ThemeCh
     }
 }
 
-// 18dp check + 8dp gap after it + 8dp of padding on each side of the label.
 private val SEGMENT_RESERVED_WIDTH = 42.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -444,8 +437,6 @@ private fun ThemeStackedRows(
                     .testTag(tag),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                // The slot is held whether or not this row is the selected one, so the
-                // labels stay on one vertical line down the column.
                 Box(Modifier.size(18.dp)) {
                     if (selected) {
                         CheckIcon(18.dp, MaterialTheme.colorScheme.onPrimaryContainer)
@@ -582,8 +573,6 @@ private fun LanguageOptionRow(option: LanguageOption, selected: Boolean, onClick
     }
 }
 
-// The chooser's own radio glyph, hand-drawn like every other icon here rather than
-// pulled from material-icons-extended (this project has no dependency on it).
 @Composable
 private fun LanguageRadioDot(selected: Boolean, color: Color) {
     Canvas(Modifier.size(20.dp)) {
@@ -595,8 +584,6 @@ private fun LanguageRadioDot(selected: Boolean, color: Color) {
     }
 }
 
-// A globe — meridian and equator lines on a circle — for the "translate" glyph on the
-// Language row, hand-drawn in the same style as the rest of this screen's icons.
 @Composable
 private fun TranslateIcon(iconSize: androidx.compose.ui.unit.Dp, color: Color) = VectorIcon(iconSize) { scale ->
     val stroke = 1.5f * scale

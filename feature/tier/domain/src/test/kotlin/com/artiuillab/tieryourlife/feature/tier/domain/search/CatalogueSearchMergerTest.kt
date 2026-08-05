@@ -24,8 +24,6 @@ class CatalogueSearchMergerTest {
         linkedTmdbId = linkedTmdbId,
     )
 
-    // Wikidata has an entry for every surname and hamlet on earth and most have no picture. In
-    // a grid of tiles an empty frame is not a weaker result, it is noise between usable ones.
     @Test
     fun `drops results that have no image, from either source`() {
         val tmdbResult = Result.success(
@@ -205,8 +203,6 @@ class CatalogueSearchMergerTest {
 
         val result = CatalogueSearchMerger.merge("   ", tmdbResult, Result.success(emptyList()))
 
-        // Neither item should be treated as an exact/prefix hit against a blank query — the
-        // round-robin order (single source here, so just insertion order) is preserved.
         assertEquals(listOf("tmdb:1", "tmdb:2"), result.getOrThrow().map { it.id })
     }
 }

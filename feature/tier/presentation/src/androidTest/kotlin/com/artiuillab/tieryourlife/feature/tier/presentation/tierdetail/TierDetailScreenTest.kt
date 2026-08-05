@@ -74,8 +74,6 @@ class TierDetailScreenTest {
 
     @Test
     fun successState_tierWithManyItems_wrapsToNewLinesAndGrowsTaller() {
-        // Titles are short so the tile's fallback label (title.take(6).uppercase())
-        // stays unique and predictable instead of being truncated into "MOVIE ".
         val manyItems = List(24) { index ->
             TierItem(id = index.toLong(), title = "M$index", imageUrl = null)
         }
@@ -130,7 +128,6 @@ class TierDetailScreenTest {
         composeRule.runOnIdle { assertEquals(1, calls) }
     }
 
-    // --- The discard escape hatch on a brand-new list (docs/design-spec-home.md, section 12) ---
 
     @Test
     fun newUntouchedList_showsADiscardCross_notTheBackArrow() {
@@ -269,8 +266,6 @@ class TierDetailScreenTest {
         var moved: Triple<Long, Long, Int>? = null
         setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
 
-        // Target the whole row; see the pool-item-into-ranked-tier test above for why an
-        // empty items area isn't a reliable point to aim at.
         dragTile(sourceTag = TierDetailTestTags.tile(300), targetTag = TierDetailTestTags.tierRow(2), horizontalBias = 0.1f)
 
         composeRule.runOnIdle { assertEquals(Triple(300L, 2L, 0), moved) }
@@ -318,8 +313,6 @@ class TierDetailScreenTest {
         val secondLineAnchor = secondLineFirstItemId(rankedItems)
         val expectedIndex = rankedItems.indexOfFirst { it.id == secondLineAnchor }
 
-        // Dropped from the pool, so nothing in the S tier is excluded from indexing:
-        // the expected position is exactly the anchor tile's own reading-order index.
         dragTile(sourceTag = TierDetailTestTags.tile(2000), targetTag = TierDetailTestTags.tile(secondLineAnchor), horizontalBias = 0.1f)
 
         composeRule.runOnIdle { assertEquals(Triple(2000L, 1L, expectedIndex), moved) }
@@ -337,8 +330,6 @@ class TierDetailScreenTest {
         val draggedItemId = items.first().id
         val secondLineAnchor = secondLineFirstItemId(items)
         val anchorIndex = items.indexOfFirst { it.id == secondLineAnchor }
-        // The dragged item (index 0) is excluded from the target list, so every raw
-        // index past it shifts back by one.
         val expectedIndex = anchorIndex - 1
 
         dragTile(sourceTag = TierDetailTestTags.tile(draggedItemId), targetTag = TierDetailTestTags.tile(secondLineAnchor), horizontalBias = 0.1f)
@@ -354,7 +345,6 @@ class TierDetailScreenTest {
         var moved: Triple<Long, Long, Int>? = null
         setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
 
-        // The top bar sits above every tier row and the pool panel, so it is never a valid drop target.
         dragTileToRoot(sourceTag = TierDetailTestTags.tile(500), rootTarget = Offset(20f, 20f))
 
         composeRule.runOnIdle { assertNull(moved) }
@@ -400,7 +390,6 @@ class TierDetailScreenTest {
 
         composeRule.onNodeWithText("Currently here").assertIsDisplayed()
 
-        // The current tier's own row isn't a destination: tapping it must not trigger a move.
         composeRule.onNodeWithTag(TierDetailTestTags.moveSheetTierOption(1)).performClick()
 
         composeRule.runOnIdle { assertNull(moved) }
@@ -419,7 +408,6 @@ class TierDetailScreenTest {
         composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
         composeRule.onNodeWithTag(TierDetailTestTags.moveSheetTierOption(2)).performClick()
 
-        // Tier A already has two items, so the poster is appended at index 2 (the end).
         composeRule.runOnIdle { assertEquals(Triple(100L, 2L, 2), moved) }
     }
 
@@ -435,7 +423,6 @@ class TierDetailScreenTest {
         composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
         composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET_POOL).performClick()
 
-        // This list's pool already holds one item, so the poster lands at index 1.
         composeRule.runOnIdle { assertEquals(Triple(100L, 6L, 1), moved) }
     }
 
@@ -585,7 +572,6 @@ class TierDetailScreenTest {
             onDeleteItem = { deleted += it },
         )
 
-        // The top bar sits above every tier row, the pool panel, and the trash, so it's never a valid drop target.
         dragTileToRoot(sourceTag = TierDetailTestTags.tile(500), rootTarget = Offset(20f, 20f))
 
         composeRule.runOnIdle {
@@ -653,8 +639,6 @@ class TierDetailScreenTest {
         var moved: Triple<Long, Long, Int>? = null
         setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
 
-        // Trigger the snackbar, then drag a different tile out of the pool — right where
-        // the message now floats — while it's still up.
         dragTileIntoTrash(TierDetailTestTags.tile(100))
         composeRule.onNodeWithTag(TierDetailTestTags.DELETED_ITEM_SNACKBAR).assertIsDisplayed()
 
@@ -786,7 +770,6 @@ class TierDetailScreenTest {
             },
         )
 
-        // Drop S near the top of B's row — above B's own midpoint lands it between A and B.
         dragTile(TierDetailTestTags.tierBand(1), TierDetailTestTags.tierRow(3), horizontalBias = 0.5f)
 
         composeRule.runOnIdle {
@@ -810,8 +793,6 @@ class TierDetailScreenTest {
 
         beginDrag(TierDetailTestTags.tierBand(1))
 
-        // Unlike a ranked row, the pool keeps showing its real items — it never swaps to
-        // a bare count.
         composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertIsDisplayed()
         val rankedBottom = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(2)).fetchSemanticsNode().boundsInRoot.bottom
         val poolTop = composeRule.onNodeWithTag(TierDetailTestTags.POOL_PANEL).fetchSemanticsNode().boundsInRoot.top
@@ -889,7 +870,6 @@ class TierDetailScreenTest {
             },
         )
 
-        // "A" is at index 1 among the ranked tiers [S, A, B].
         dragTileIntoTrash(TierDetailTestTags.tierBand(2))
         composeRule.onNodeWithText("Undo").performClick()
 
@@ -1006,13 +986,9 @@ class TierDetailScreenTest {
             onMoveItem = { itemId, _, _ -> movedItemId = itemId },
         )
 
-        // Lifting a tile by holding it still moves the item — the row's own drag detector
-        // doesn't claim touches that land on a tile.
         dragTile(TierDetailTestTags.tile(0), TierDetailTestTags.tierRow(2), horizontalBias = 0.5f)
         composeRule.runOnIdle { assertEquals(0L, movedItemId) }
 
-        // Double-tapping the band still opens the editor — the new long-press-drag
-        // recognizer on the same band doesn't intercept it.
         composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).performTouchInput { doubleClick() }
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SHEET).assertIsDisplayed()
     }
@@ -1029,7 +1005,6 @@ class TierDetailScreenTest {
         composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
         composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET_REMOVE).performClick()
 
-        // Same message, same action, regardless of which of the two delete paths fired it.
         composeRule.onNodeWithText("Interstellar moved to the trash").assertIsDisplayed()
         composeRule.onNodeWithText("Undo").performClick()
 
@@ -1179,8 +1154,6 @@ class TierDetailScreenTest {
 
         composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performClick()
 
-        // A plain Text node carries no text-input semantics action; this only
-        // succeeds once the tap has swapped it for the editable field.
         composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).assert(hasSetTextAction())
     }
 
@@ -1207,10 +1180,6 @@ class TierDetailScreenTest {
         }
     }
 
-    // Same rule the tier editor's Label field already enforces on a blank value: nothing
-    // is saved. There's no separate Save button here to disable, so the equivalent is
-    // that committing a blank field is simply a no-op — onRenameList is never invoked,
-    // and the header falls back to the title it already had.
     @Test
     fun editingHeaderTitle_withBlankTitle_doesNotSaveAndKeepsTheOldTitle() {
         var callCount = 0
@@ -1257,9 +1226,6 @@ class TierDetailScreenTest {
 
         val firstTop = tileBounds(items.first().id).top
 
-        // Scrolling the last tile into view only succeeds if the row is actually
-        // horizontally scrollable, not merely clipped — and once visible, it must sit
-        // on the very same line as the first tile, not one a wrap would have pushed down.
         composeRule.onNodeWithTag(TierDetailTestTags.tile(items.last().id)).performScrollTo().assertIsDisplayed()
         val lastTop = tileBounds(items.last().id).top
 
@@ -1338,7 +1304,6 @@ class TierDetailScreenTest {
         setScreen(TierDetailUiState.Success(list))
 
         composeRule.onNodeWithTag(TierDetailTestTags.RANKED_POOL_COLLAPSED).assertIsDisplayed()
-        // Collapsed: the pooled item isn't rendered as its own tile, ranked row, or expanded pool row anywhere.
         composeRule.onNodeWithTag(TierDetailTestTags.RANKED_POOL_ITEMS).assertDoesNotExist()
         composeRule.onNodeWithTag(TierDetailTestTags.tile(200)).assertDoesNotExist()
         composeRule.onNodeWithTag(TierDetailTestTags.rankedRow(200)).assertDoesNotExist()
@@ -1506,7 +1471,6 @@ class TierDetailScreenTest {
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CAPTION_FIELD).performTextInput("Zenith")
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).performClick()
 
-        // The first preset is selected by default, so its literal hex pair is expected.
         composeRule.runOnIdle {
             assertEquals("Z", addedLabel)
             assertEquals("Zenith", addedCaption)
@@ -1544,7 +1508,6 @@ class TierDetailScreenTest {
 
         openTierEditor()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("Z")
-        // Preset index 3 is the green preset (3F7F55 / 8FD3A3).
         composeRule.onNodeWithTag(TierDetailTestTags.tierEditorPresetSwatch(3)).performClick()
 
         composeRule.onNodeWithTag(TierDetailTestTags.tierEditorPresetSwatch(3)).assertIsSelected()
@@ -1574,7 +1537,6 @@ class TierDetailScreenTest {
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("Z")
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).performClick()
 
-        // Only touch the Dark tab's hex value; the Light tab's default must survive untouched.
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_TAB_DARK).performClick()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HEX_FIELD).performTextClearance()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HEX_FIELD).performTextInput("336699")
@@ -1582,7 +1544,6 @@ class TierDetailScreenTest {
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).performClick()
 
         composeRule.runOnIdle {
-            // Default custom light value from the mock's own example, untouched.
             assertEquals("#7A3F8C", addedColorLight)
             assertEquals("#336699", addedColorDark)
             assertNotEquals(addedColorLight, addedColorDark)
@@ -1600,9 +1561,6 @@ class TierDetailScreenTest {
         openTierEditor()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("Z")
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).performClick()
-        // Near-white on the Light tab: the label ("onTierBand") is white there too, so
-        // this is a deliberately low-contrast combination — the readout should show it,
-        // but it must not stop Save from working.
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HEX_FIELD).performTextClearance()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HEX_FIELD).performTextInput("F5F0FA")
 
@@ -1643,8 +1601,6 @@ class TierDetailScreenTest {
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).performClick()
 
         composeRule.runOnIdle {
-            // Default custom light colour is a violet (#7A3F8C); dragging the Hue slider to
-            // the opposite end of the track must move it to a visibly different hue.
             assertNotEquals("#7A3F8C", addedColorLight)
         }
     }
@@ -1695,12 +1651,7 @@ class TierDetailScreenTest {
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SHEET).assertIsDisplayed()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).assertTextContains("S")
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CAPTION_FIELD).assertTextContains("Masterpiece")
-        // Neither preset nor custom hex #111111/#222222 matches any of the eight presets,
-        // so the custom swatch — not a preset — must be the one marked selected.
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).assertIsSelected()
-        // The live preview reads from the same label/caption/colorSelection state the
-        // fields above were just confirmed to hold, so it already shows the current row
-        // by construction — same source of truth, not a second thing to keep in sync.
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_PREVIEW_LIGHT).assertIsDisplayed()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_PREVIEW_DARK).assertIsDisplayed()
     }
@@ -1784,7 +1735,6 @@ class TierDetailScreenTest {
         )
 
         composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).performTouchInput { doubleClick() }
-        // Preset index 3 is the green preset (3F7F55 / 8FD3A3).
         composeRule.onNodeWithTag(TierDetailTestTags.tierEditorPresetSwatch(3)).performClick()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).performClick()
 
@@ -1813,10 +1763,6 @@ class TierDetailScreenTest {
         composeRule.runOnIdle { assertNull(editedCaption) }
     }
 
-    // Same rule the add-mode sheet already enforces on a blank label: no click handler is
-    // attached to Save at all, so there is nothing for a click to do — not a disabled
-    // button in the semantic sense, so this is asserted by the action's absence rather
-    // than by an enabled/disabled state.
     @Test
     fun editingTier_withEmptyLabel_doesNotSave() {
         var callCount = 0
@@ -1886,8 +1832,6 @@ class TierDetailScreenTest {
         var moved: Pair<Long, Long>? = null
         setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, _ -> moved = itemId to toTierId })
 
-        // Sanity: with 20 empty tiers, only a handful fit on screen at once — find the
-        // last one that's actually visible before any scrolling happens.
         composeRule.onNodeWithTag(TierDetailTestTags.tierRow(20)).assertDoesNotExist()
         val lastVisibleIdBeforeScrolling = (1L..20L).last { id ->
             composeRule.onAllNodesWithTag(TierDetailTestTags.tierRow(id))
@@ -1899,7 +1843,6 @@ class TierDetailScreenTest {
         val start = Offset(sourceBounds.width / 2f, sourceBounds.height / 2f)
         val rowOneBounds = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot
         val poolBounds = composeRule.onNodeWithTag(TierDetailTestTags.POOL_PANEL).fetchSemanticsNode().boundsInRoot
-        // Just above the pool, inside the tiers area's own bottom 72dp zone.
         val edgeTarget = Offset(rowOneBounds.center.x, poolBounds.top - 10f)
 
         composeRule.mainClock.autoAdvance = false
@@ -1912,7 +1855,6 @@ class TierDetailScreenTest {
                 moveTo(edgeTarget - sourceBounds.topLeft)
                 advanceEventTime(20)
             }
-            // Comfortably long at up to 600dp/s to reach the very end of a 20-tier list.
             composeRule.mainClock.advanceTimeBy(15000)
 
             composeRule.onNodeWithTag(TierDetailTestTags.tile(500)).performTouchInput { up() }
@@ -1956,10 +1898,8 @@ class TierDetailScreenTest {
                 moveTo(edgeTarget - sourceBounds.topLeft)
                 advanceEventTime(20)
             }
-            // Some scrolling happens while held near the edge.
             composeRule.mainClock.advanceTimeBy(1000)
 
-            // Pull back to the middle of the tiers area — outside the 72dp edge zone.
             composeRule.onNodeWithTag(TierDetailTestTags.tile(500)).performTouchInput {
                 moveTo(midTarget - sourceBounds.topLeft)
             }

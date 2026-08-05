@@ -43,9 +43,6 @@ private val HoverBgDark = Color(0xFFFFB4AB)
 private val HoverContentLight = Color(0xFFFFFFFF)
 private val HoverContentDark = Color(0xFF601410)
 
-// The drop target for removing a poster. Only ever composed while a tile is lifted —
-// it registers itself with the same TierDragController rows and the pool use, so
-// hover/drop detection is one mechanism, not a special case next to it.
 @Composable
 internal fun TrashTarget(
     dragController: TierDragController,
@@ -91,8 +88,6 @@ internal fun TrashTarget(
             .padding(end = 16.dp)
             .size(size)
             .offset {
-                // The box's bottom edge sits a fixed 16dp above the pool's top regardless
-                // of size, so growing on hover extends upward, not into the pool.
                 val top = poolTop?.let { it - 16.dp.toPx() - size.toPx() } ?: -size.toPx()
                 IntOffset(x = 0, y = top.roundToInt())
             }

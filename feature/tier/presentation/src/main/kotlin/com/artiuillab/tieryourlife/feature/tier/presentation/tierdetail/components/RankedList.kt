@@ -53,8 +53,6 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDeta
 // has no defined meaning for a ranking with no tiers to drop into (see RankedItemRow).
 private data class RankedEntry(val position: Int, val item: TierItem, val tier: Tier)
 
-// Position within the whole ranking, not within a tier: tier order then item order
-// inside each tier, both already sorted upstream — nothing extra to fetch here.
 private fun buildRankedEntries(rankedTiers: List<Tier>): List<RankedEntry> {
     var rank = 0
     return rankedTiers.flatMap { tier -> tier.items.map { item -> RankedEntry(++rank, item, tier) } }
@@ -220,9 +218,6 @@ internal fun RankedPoolSection(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            // Same chevron the mock draws for the collapsed bar, flipped upside down
-            // once expanded — the familiar "tap again to put this away" reversal,
-            // without a second icon asset for a state the mock never shows.
             Box(Modifier.rotate(if (expanded) 180f else 0f)) {
                 ExpandLessIcon(20.dp, MaterialTheme.colorScheme.onSurfaceVariant)
             }

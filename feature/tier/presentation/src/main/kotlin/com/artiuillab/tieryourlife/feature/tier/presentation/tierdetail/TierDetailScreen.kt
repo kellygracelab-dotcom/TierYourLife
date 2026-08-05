@@ -88,8 +88,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-// testTag constants shared between production UI and instrumentation tests, so
-// the two never drift out of sync.
 internal object TierDetailTestTags {
     const val LOADING = "tier_detail_loading"
     const val HEADER_TITLE = "tier_detail_header_title"
@@ -159,7 +157,6 @@ internal object TierDetailTestTags {
 private val TIER_LIST_AUTOSCROLL_EDGE = 72.dp
 private const val TIER_LIST_AUTOSCROLL_MAX_SPEED_DP_PER_SEC = 600
 
-// How long a read may take before it is worth telling the user it is happening.
 private const val LOADING_SPINNER_DELAY_MILLIS = 150L
 
 // Positive scrolls down, negative scrolls up. A pointer within edgePx of an edge (or past
@@ -387,8 +384,6 @@ private fun TierScreenBody(
     val deletedMessageTemplate = stringResource(R.string.tier_detail_item_moved_to_trash)
     val undoLabel = stringResource(R.string.tier_detail_snackbar_undo)
 
-    // The one place both delete paths (drag to trash, remove from the move sheet)
-    // funnel through, so there is exactly one message per deletion.
     val deleteAndAnnounce: (Long) -> Unit = { itemId ->
         val title = list.tiers.flatMap { it.items }.firstOrNull { it.id == itemId }?.title.orEmpty()
         onDeleteItem(itemId)
@@ -414,10 +409,6 @@ private fun TierScreenBody(
 
     val tierDeletedMessageTemplate = stringResource(R.string.tier_detail_tier_moved_to_trash)
 
-    // Same shape as deleteAndAnnounce above, for a tier instead of an item: everything
-    // undo needs (label, caption, colours, the tier's position among the ranked tiers,
-    // and which items it held) is captured here, synchronously, from list — the same
-    // data the screen is already showing — before the tier and its position are gone.
     val deleteTierAndAnnounce: (Long) -> Unit = { tierId ->
         val tier = rankedTiers.firstOrNull { it.id == tierId }
         val poolId = pool?.id
@@ -651,10 +642,6 @@ private fun TierScreenTopBar(
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // A brand-new, untouched list gets a close cross that hard-deletes it instead
-        // of the ordinary back arrow — the moment the list is touched, canDiscard flips
-        // for good and this reverts to the plain back arrow (docs/design-spec-home.md,
-        // section 12).
         if (canDiscard) {
             IconButton(
                 onClick = onDiscard,
@@ -741,10 +728,6 @@ private fun EditableListTitle(
                     // section 4).
                     TextFieldValue(text = title, selection = TextRange(0, title.length))
                 } else {
-                    // Renaming an existing list: cursor at the end is the least
-                    // destructive default — the mock for this state is gone (see
-                    // docs/design-spec-turns-8-9.md, section 9) — and the user can still
-                    // select all themselves to replace the title outright.
                     TextFieldValue(text = title, selection = TextRange(title.length))
                 },
             )
@@ -763,11 +746,6 @@ private fun EditableListTitle(
         fun commit() {
             if (!isEditing) return
             val trimmed = fieldValue.text.trim()
-            // Same rule the tier editor's Label field already enforces on a blank
-            // value: nothing is saved. There is no separate Save button to disable
-            // here, so a blank title just closes edit mode without calling onRename —
-            // the header falls back to showing `title`, which is still whatever it
-            // was before, because nothing changed it.
             if (trimmed.isNotEmpty()) {
                 onRename(trimmed)
             }
@@ -791,8 +769,6 @@ private fun EditableListTitle(
                 if (newValue.text != fieldValue.text) {
                     onEditStarted()
                 }
-                // A keystroke past the 60-character cap is simply rejected — the field
-                // never shows more than the limit (docs/design-spec-home.md, section 4).
                 if (newValue.text.length <= TITLE_MAX_LENGTH) {
                     fieldValue = newValue
                 }

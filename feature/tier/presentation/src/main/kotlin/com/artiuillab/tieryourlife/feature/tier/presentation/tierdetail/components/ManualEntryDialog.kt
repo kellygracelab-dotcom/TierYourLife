@@ -46,10 +46,6 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.dashedBorder
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
-// Not in the design doc's own scope (docs/design-spec-turns-8-9.md turns 8-9) — read
-// live from the design tool this session: turn 10, option 10d, "Manual entry — type a
-// title, optionally add a photo". Values below (dialog structure, strings, the
-// Choose/Replace photo chip) are transcribed from there.
 @Composable
 internal fun ManualEntryDialog(
     onDismiss: () -> Unit,
@@ -88,8 +84,6 @@ internal fun ManualEntryDialogContent(
     onDismiss: () -> Unit,
     onSave: () -> Unit,
 ) {
-    // A name alone used to be the only way to identify an item — now a photo can serve
-    // that role instead, so the two are alternatives, not name-required-photo-optional.
     val canSave = title.isNotBlank() || photoUri != null
     val focusRequester = remember { FocusRequester() }
 
@@ -182,9 +176,6 @@ internal fun ManualEntryDialogContent(
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 }
 
-// Removing isn't in 10d (which only ever shows Choose/Replace) — added because this
-// task asks for it directly. Nothing has been attached to a real item yet at this
-// point in the flow, so removing is just clearing local state, not a repository call.
 @Composable
 private fun PhotoFrame(photoUri: String?, onRemove: () -> Unit) {
     val outline = MaterialTheme.colorScheme.outline

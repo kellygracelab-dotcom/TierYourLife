@@ -102,19 +102,12 @@ data class TierYourLifeExtraType(
 )
 
 private val ExtraType = TierYourLifeExtraType(
-    // Large tier letter in a row's colour band.
     tierBandLetter = TextStyle(fontWeight = FontWeight.Medium, fontSize = 24.sp, lineHeight = 28.sp),
-    // Tier caption under the large letter in the colour band.
     tierBandCaption = TextStyle(fontWeight = FontWeight.Normal, fontSize = 10.sp, lineHeight = 12.sp),
-    // Tier letter on the 40dp swatch in the move-to-tier sheet.
     tierSwatchLetter = TextStyle(fontWeight = FontWeight.Medium, fontSize = 20.sp, lineHeight = 24.sp),
-    // Light/Dark tab label in the colour editor.
     tabLabel = TextStyle(fontWeight = FontWeight.Medium, fontSize = 13.sp, lineHeight = 18.sp),
-    // Caption/supporting text under a row title.
     captionUnderTitle = TextStyle(fontWeight = FontWeight.Normal, fontSize = 13.sp, lineHeight = 18.sp),
-    // Chip text (Add).
     chipText = TextStyle(fontWeight = FontWeight.Medium, fontSize = 13.sp, lineHeight = 16.sp),
-    // "Remove" label under the trash icon while hovering during a drag.
     trashRemoveLabel = TextStyle(fontWeight = FontWeight.Medium, fontSize = 10.sp, lineHeight = 12.sp),
 )
 

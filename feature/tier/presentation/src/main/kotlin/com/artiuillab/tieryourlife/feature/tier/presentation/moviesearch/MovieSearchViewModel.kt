@@ -45,8 +45,6 @@ class MovieSearchViewModel @Inject constructor(
         }
     }
 
-    // Called by the keyboard's search action: runs immediately, bypassing the
-    // debounce, even when the query text hasn't changed since the last search.
     fun search(query: String) {
         searchJob?.cancel()
         val trimmed = query.trim()

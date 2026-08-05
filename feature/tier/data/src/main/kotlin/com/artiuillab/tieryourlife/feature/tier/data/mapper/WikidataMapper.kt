@@ -9,8 +9,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.search.WikidataCandidate
 
 private const val WIKIDATA_ID_PREFIX = "wikidata:"
 
-// What the details query knows about one item. Both fields are optional: plenty of items have
-// no image at all, and only films carry a TMDB id.
 internal data class WikidataItemDetails(
     val imageUrl: String? = null,
     val linkedTmdbId: Long? = null,

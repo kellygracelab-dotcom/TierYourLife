@@ -115,11 +115,8 @@ class RoomTierRepository internal constructor(
         dao.restoreTierItem(id)
     }
 
-    // Permanent removal happens only when the user deletes a trashed entry again;
-    // nothing expires on its own.
     override suspend fun deleteTierListPermanently(id: Long) {
         dao.deleteTierListById(id)
-        // The cascade removed item rows (and their images) silently; sweep the copies.
         imageStore.deleteOrphans(dao.getAllImageRefs())
     }
 
