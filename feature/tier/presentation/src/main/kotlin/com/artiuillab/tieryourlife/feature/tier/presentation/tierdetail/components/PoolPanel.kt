@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +53,16 @@ internal fun PoolPanel(
 
     SideEffect {
         dragController.registerItemsRowMeta(pool.id, listState, pool.items.map { it.id })
+    }
+
+    // The pool doesn't actually leave composition in practice (exactly one always
+    // exists), but it registers bounds the same way every other target does, so it
+    // unregisters the same way too rather than being a silent exception to the rule.
+    DisposableEffect(pool.id) {
+        onDispose {
+            dragController.unregisterRowBounds(pool.id)
+            dragController.unregisterItemsRow(pool.id)
+        }
     }
 
     Column(

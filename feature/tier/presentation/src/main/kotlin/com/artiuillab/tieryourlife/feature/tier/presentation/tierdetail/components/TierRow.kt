@@ -1,6 +1,10 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -14,24 +18,41 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -39,14 +60,18 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ROW_HOVER_TINT_ALPHA
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.dashedBorder
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.rowTintFor
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
+import kotlin.math.roundToInt
 
 // FlowRow (unlike the old LazyRow) supports intrinsic measurement, so
 // IntrinsicSize.Min below can stretch the band to match its wrapped height.
+// Also the collapsed row height: "the same as a one-line row of posters now" (see the
+// task this shipped with) is exactly this value, not a second constant.
 private val MIN_TIER_ROW_HEIGHT = 84.dp
 
 @Composable
@@ -54,8 +79,11 @@ internal fun TierRow(
     tier: Tier,
     displayMode: TierListDisplayMode,
     dragController: TierDragController,
+    rankedTierIds: List<Long>,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
     onDeleteItem: (itemId: Long) -> Unit,
+    onReorderTiers: (List<Long>) -> Unit,
+    onDeleteTier: (tierId: Long) -> Unit,
     onDoubleTap: (itemId: Long) -> Unit = {},
     onEditTier: (tierId: Long) -> Unit = {},
 ) {
@@ -64,20 +92,41 @@ internal fun TierRow(
     val surface = MaterialTheme.colorScheme.surface
     val rowBackground = if (isHovered) rowTintFor(colors.band, surface, ROW_HOVER_TINT_ALPHA) else colors.rowTint
 
+    // A deleted (or reordered-away) tier's registered bounds would otherwise sit in
+    // TierDragController's map forever, marking a rectangle for a row that no longer
+    // exists — this is what removes it the moment this composable actually leaves.
+    DisposableEffect(tier.id) {
+        onDispose { dragController.unregisterRowBounds(tier.id) }
+    }
+
+    // Collapsing is triggered by any tier being lifted, not just this one — every ranked
+    // row (including the one under the finger) collapses to the same uniform height, per
+    // the task: with everything one height, the drop index is a plain position compare,
+    // no auto-scroll needed.
+    val collapsed = dragController.isDraggingTier
+
     // A horizontally-scrolling child has unbounded intrinsic width, which IntrinsicSize.Min
     // can't resolve cleanly — its height is already fixed, so it doesn't need an intrinsic
-    // pass at all; only the wrapping FlowRow (whose height depends on how much it wraps)
-    // still needs one to let the label column stretch to match it.
-    val rowHeightModifier = if (displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
+    // pass at all; collapsed content (a line of text) is fixed-height for the same reason.
+    val rowHeightModifier = if (collapsed || displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
         Modifier.height(MIN_TIER_ROW_HEIGHT)
     } else {
         Modifier.height(IntrinsicSize.Min)
+    }
+
+    var bandRootPosition by remember { mutableStateOf(Offset.Zero) }
+    val baseViewConfiguration = LocalViewConfiguration.current
+    val dragViewConfiguration = remember(baseViewConfiguration) {
+        ShortLongPressViewConfiguration(baseViewConfiguration, DRAG_LONG_PRESS_TIMEOUT_MILLIS)
     }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .then(rowHeightModifier)
+            // Short and not abrupt: this is the one thing that tells the user it's still
+            // the same list collapsing, not a different screen.
+            .animateContentSize(animationSpec = tween(durationMillis = 200))
             .clip(RoundedCornerShape(12.dp))
             .onGloballyPositioned { coordinates -> dragController.registerRowBounds(tier.id, coordinates.boundsInRoot()) }
             .testTag(TierDetailTestTags.tierRow(tier.id))
@@ -90,57 +139,98 @@ internal fun TierRow(
                 },
             ),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(66.dp)
-                .background(colors.band)
-                .testTag(TierDetailTestTags.tierBand(tier.id))
-                // The pool never reaches this composable in practice (callers filter it
-                // out before building rows), but the guard is kept here rather than
-                // trusted to callers: this is the one place that decides whether a band
-                // opens the editor, so it's the right place to also decide the pool
-                // never does.
-                .then(
-                    if (!tier.isPool) {
-                        // A separate pointerInput from the items area below, so this
-                        // gesture can only ever claim touches that land on the band
-                        // itself — the tiles keep their own drag/double-tap recognizers
-                        // exactly as before, untouched by this one.
-                        Modifier.pointerInput(tier.id) {
-                            detectTapGestures(onDoubleTap = { onEditTier(tier.id) })
-                        }
-                    } else {
-                        Modifier
-                    },
-                )
-                .padding(top = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
-        ) {
-            Text(
-                text = tier.label,
-                fontSize = 24.sp,
-                lineHeight = 28.sp,
-                fontWeight = FontWeight.Medium,
-                color = colors.onBand,
-            )
-            tier.caption?.let { caption ->
+        CompositionLocalProvider(LocalViewConfiguration provides dragViewConfiguration) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(66.dp)
+                    .background(colors.band)
+                    .testTag(TierDetailTestTags.tierBand(tier.id))
+                    // The pool never reaches this composable in practice (callers filter it
+                    // out before building rows), but the guard is kept here rather than
+                    // trusted to callers: this is the one place that decides whether a band
+                    // opens the editor or can be lifted, so it's the right place to also
+                    // decide the pool never does either.
+                    .then(
+                        if (!tier.isPool) {
+                            Modifier
+                                .onGloballyPositioned { coordinates -> bandRootPosition = coordinates.positionInRoot() }
+                                // Independent pointerInput from the double-tap one below, same
+                                // reasoning DraggableTile's own two recognizers rely on: a quick
+                                // tap never reaches onDragStart (long-press-gated), so it can't
+                                // steal a real double-tap, and a genuine long-press's consumed
+                                // move events fall outside detectTapGestures' up-without-movement
+                                // check — the two can't both fire for the same gesture.
+                                .pointerInput(tier.id, rankedTierIds) {
+                                    detectDragGesturesAfterLongPress(
+                                        onDragStart = { offsetInBand ->
+                                            dragController.beginTierDrag(
+                                                tierId = tier.id,
+                                                rankedTierIds = rankedTierIds,
+                                                rootPosition = bandRootPosition + offsetInBand,
+                                            )
+                                        },
+                                        onDrag = { change, dragAmount ->
+                                            change.consume()
+                                            dragController.updateTierDrag(dragAmount)
+                                        },
+                                        onDragEnd = {
+                                            when (val outcome = dragController.endTierDrag()) {
+                                                is TierDropOutcome.Reorder -> onReorderTiers(outcome.orderedTierIds)
+                                                is TierDropOutcome.Delete -> onDeleteTier(outcome.tierId)
+                                                null -> Unit
+                                            }
+                                        },
+                                        onDragCancel = { dragController.cancelTierDrag() },
+                                    )
+                                }
+                                // A separate pointerInput from both the drag above and the tiles
+                                // below, so this gesture can only ever claim touches that land on
+                                // the band itself — the tiles keep their own drag/double-tap
+                                // recognizers exactly as before, untouched by this one.
+                                .pointerInput(tier.id) {
+                                    detectTapGestures(onDoubleTap = { onEditTier(tier.id) })
+                                }
+                        } else {
+                            Modifier
+                        },
+                    )
+                    .padding(top = 10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top,
+            ) {
                 Text(
-                    text = caption,
-                    fontSize = 10.sp,
-                    lineHeight = 12.sp,
-                    color = colors.onBand.copy(alpha = 0.7f),
+                    text = tier.label,
+                    fontSize = 24.sp,
+                    lineHeight = 28.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = colors.onBand,
                 )
+                tier.caption?.let { caption ->
+                    Text(
+                        text = caption,
+                        fontSize = 10.sp,
+                        lineHeight = 12.sp,
+                        color = colors.onBand.copy(alpha = 0.7f),
+                    )
+                }
             }
         }
 
-        // HORIZONTAL_SCROLL is the only mode that changes this row: everything else about
-        // it (label column, tile size, spacing, padding, drag/double-tap wiring) is the
-        // same regardless of mode, only the items container differs — a single
-        // non-wrapping, horizontally scrollable line instead of one that wraps and grows
-        // taller. FLAT_RANKED isn't drawn yet, so it falls back to the wrap behaviour too.
-        if (displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
+        if (collapsed) {
+            CollapsedItemCount(
+                count = tier.items.size,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .testTag(TierDetailTestTags.tierItems(tier.id)),
+            )
+        } else if (displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
+            // HORIZONTAL_SCROLL is the only mode that changes this row: everything else about
+            // it (label column, tile size, spacing, padding, drag/double-tap wiring) is the
+            // same regardless of mode, only the items container differs — a single
+            // non-wrapping, horizontally scrollable line instead of one that wraps and grows
+            // taller. FLAT_RANKED isn't drawn yet, so it falls back to the wrap behaviour too.
             Row(
                 modifier = Modifier
                     .weight(1f)
@@ -193,6 +283,18 @@ internal fun TierRow(
 }
 
 @Composable
+private fun CollapsedItemCount(count: Int, modifier: Modifier = Modifier) {
+    Box(modifier = modifier.padding(horizontal = 10.dp), contentAlignment = Alignment.CenterStart) {
+        Text(
+            text = pluralStringResource(R.plurals.tier_detail_collapsed_item_count, count, count),
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
 internal fun ItemTile(item: TierItem, width: Dp, height: Dp) {
     val media = TierYourLifeMedia.current
     Box(
@@ -220,5 +322,67 @@ internal fun ItemTile(item: TierItem, width: Dp, height: Dp) {
                 color = media.tileLabel,
             )
         }
+    }
+}
+
+// The visual copy that follows the finger while a tier row is lifted — same idea as
+// FloatingDragTile, scaled down for a full-width row per the "reorder tiers" spec this
+// shipped with: 1.02 rather than a tile's 1.06, since a full-width row at 1.06 would
+// bleed past the screen edge.
+@Composable
+internal fun FloatingDragRow(dragController: TierDragController, tier: Tier?) {
+    if (tier == null) return
+    val position = dragController.tierPointerPositionInRoot
+    val density = LocalDensity.current
+    val colors = tierRowColors(tier.colorLight, tier.colorDark)
+    val halfWidthPx = with(density) { 33.dp.toPx() }
+    val halfHeightPx = with(density) { (MIN_TIER_ROW_HEIGHT / 2).toPx() }
+    val shape = RoundedCornerShape(12.dp)
+
+    Row(
+        modifier = Modifier
+            .offset {
+                IntOffset(
+                    x = (position.x - halfWidthPx).roundToInt(),
+                    y = (position.y - halfHeightPx).roundToInt(),
+                )
+            }
+            .fillMaxWidth()
+            .height(MIN_TIER_ROW_HEIGHT)
+            .graphicsLayer {
+                scaleX = 1.02f
+                scaleY = 1.02f
+            }
+            .shadow(elevation = 8.dp, shape = shape)
+            .clip(shape)
+            .background(colors.rowTint)
+            .border(1.dp, Color.White.copy(alpha = if (TierYourLifeMedia.current.isDark) 0.14f else 0.6f), shape),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(66.dp)
+                .background(colors.band)
+                .padding(top = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+        ) {
+            Text(
+                text = tier.label,
+                fontSize = 24.sp,
+                lineHeight = 28.sp,
+                fontWeight = FontWeight.Medium,
+                color = colors.onBand,
+            )
+            tier.caption?.let { caption ->
+                Text(
+                    text = caption,
+                    fontSize = 10.sp,
+                    lineHeight = 12.sp,
+                    color = colors.onBand.copy(alpha = 0.7f),
+                )
+            }
+        }
+        CollapsedItemCount(count = tier.items.size, modifier = Modifier.weight(1f).fillMaxHeight())
     }
 }

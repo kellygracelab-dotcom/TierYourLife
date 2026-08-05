@@ -35,7 +35,7 @@
 
     <string name="tier_detail_add">Add</string>
     <string name="tier_detail_content_description_back">Navigate back</string>
-    <string name="tier_detail_content_description_manual_add">Add item manually</string>
+    <string name="tier_detail_content_description_manual_add">Add an item by hand</string>
     <string name="tier_detail_content_description_more">More options</string>
     <string name="tier_detail_content_description_edit_title">Edit list name</string>
     <plurals name="tier_detail_pool_unranked_count">
@@ -53,7 +53,13 @@
     <string name="tier_detail_trash_target_label">Remove</string>
 
     <string name="tier_detail_item_moved_to_trash">%1$s moved to the trash</string>
+    <string name="tier_detail_tier_moved_to_trash">Tier %1$s moved to the trash</string>
     <string name="tier_detail_snackbar_undo">Undo</string>
+
+    <plurals name="tier_detail_collapsed_item_count">
+        <item quantity="one">%1$d item</item>
+        <item quantity="other">%1$d items</item>
+    </plurals>
 
     <plurals name="tier_detail_ranked_header">
         <item quantity="one">%1$d ranked · best to worst</item>
@@ -121,4 +127,16 @@
         <item quantity="other">Add %1$d items</item>
     </plurals>
     <string name="movie_search_add_disabled">Add</string>
+
+    <string name="manual_dialog_title">Add an item</string>
+    <string name="manual_dialog_body">Goes into the pool. You can drag it into a tier afterwards.</string>
+    <string name="manual_dialog_field_name">Name</string>
+    <string name="manual_dialog_photo_optional">A photo is optional.</string>
+    <string name="manual_dialog_choose_photo">Choose photo</string>
+    <string name="manual_dialog_replace_photo">Replace photo</string>
+    <string name="manual_dialog_cancel">Cancel</string>
+    <string name="manual_dialog_add">Add</string>
+    <string name="manual_dialog_photo_frame_empty">No photo chosen</string>
+    <string name="manual_dialog_photo_frame_chosen">Photo chosen. Tap Replace photo to change it.</string>
+    <string name="manual_dialog_remove_photo">Remove photo</string>
 </resources>

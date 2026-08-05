@@ -56,9 +56,75 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
+    // The photo, if any, is a picked gallery Uri — attachImageToItem is what copies it
+    // into internal storage and stores the copy's path, exactly as it already does for
+    // an existing item; addMovieToPool itself is only ever given imageUrl = null here,
+    // never the picked Uri directly, so the raw gallery reference never reaches the DB.
+    fun addManualItem(title: String, photoUri: String?) {
+        viewModelScope.launch {
+            val newItemId = repository.addMovieToPool(tierListId, title, imageUrl = null)
+            if (photoUri != null) {
+                repository.attachImageToItem(newItemId, photoUri)
+            }
+            loadTierList()
+        }
+    }
+
     fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
         viewModelScope.launch {
             repository.moveItem(itemId, toTierId, toPosition)
+            loadTierList()
+        }
+    }
+
+    // orderedTierIds excludes the pool — it never takes part in reordering and always
+    // sorts after every id passed here, so leaving it out keeps it exactly where it was.
+    fun reorderTiers(orderedTierIds: List<Long>) {
+        viewModelScope.launch {
+            repository.reorderTiers(orderedTierIds)
+            loadTierList()
+        }
+    }
+
+    // Dropping a tier on the trash removes the tier but not its contents: each item is
+    // moved into the pool first (the same repository call MoveItemSheet's "Back to the
+    // pool" action already uses), and only the now-empty tier is deleted.
+    fun deleteTierToPool(tierId: Long, poolId: Long, poolSize: Int, itemIds: List<Long>) {
+        viewModelScope.launch {
+            itemIds.forEachIndexed { index, itemId ->
+                repository.moveItem(itemId, poolId, poolSize + index)
+            }
+            repository.deleteTier(tierId)
+            loadTierList()
+        }
+    }
+
+    // Undo for the above: recreates the tier (a new id — the old one is gone for good),
+    // moves it back to its former position among the ranked tiers, then pulls each item
+    // back out of the pool into it in their original order. All four calls already exist
+    // on TierRepository; nothing here is new to domain or data.
+    fun restoreTier(
+        label: String,
+        caption: String?,
+        colorLight: String,
+        colorDark: String,
+        position: Int,
+        itemIds: List<Long>,
+    ) {
+        viewModelScope.launch {
+            val newTierId = repository.addTier(tierListId, label, caption, colorLight, colorDark)
+
+            val current = repository.getTierListById(tierListId)
+            if (current != null) {
+                val rankedIds = current.tiers.filterNot { it.isPool }.map { it.id }.toMutableList()
+                rankedIds.remove(newTierId)
+                rankedIds.add(position.coerceIn(0, rankedIds.size), newTierId)
+                repository.reorderTiers(rankedIds)
+            }
+
+            itemIds.forEachIndexed { index, itemId ->
+                repository.moveItem(itemId, newTierId, index)
+            }
             loadTierList()
         }
     }

@@ -1,0 +1,240 @@
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
+
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.dashedBorder
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
+
+// Not in the design doc's own scope (docs/design-spec-turns-8-9.md turns 8-9) — read
+// live from the design tool this session: turn 10, option 10d, "Manual entry — type a
+// title, optionally add a photo". Values below (dialog structure, strings, the
+// Choose/Replace photo chip) are transcribed from there.
+@Composable
+internal fun ManualEntryDialog(
+    onDismiss: () -> Unit,
+    onSave: (title: String, photoUri: String?) -> Unit,
+) {
+    var title by rememberSaveable { mutableStateOf("") }
+    var photoUri by rememberSaveable { mutableStateOf<String?>(null) }
+
+    val pickPhoto = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+    ) { uri -> if (uri != null) photoUri = uri.toString() }
+
+    ManualEntryDialogContent(
+        title = title,
+        onTitleChange = { title = it },
+        photoUri = photoUri,
+        onChoosePhotoClick = {
+            pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        },
+        onRemovePhoto = { photoUri = null },
+        onDismiss = onDismiss,
+        onSave = { onSave(title.trim(), photoUri) },
+    )
+}
+
+// Split from ManualEntryDialog so photo selection is testable without the real system
+// picker: this half owns no state and never touches ActivityResultContracts, so a test
+// can drive `photoUri` itself to exercise "shown before saving, removable" directly.
+@Composable
+internal fun ManualEntryDialogContent(
+    title: String,
+    onTitleChange: (String) -> Unit,
+    photoUri: String?,
+    onChoosePhotoClick: () -> Unit,
+    onRemovePhoto: () -> Unit,
+    onDismiss: () -> Unit,
+    onSave: () -> Unit,
+) {
+    // A name alone used to be the only way to identify an item — now a photo can serve
+    // that role instead, so the two are alternatives, not name-required-photo-optional.
+    val canSave = title.isNotBlank() || photoUri != null
+    val focusRequester = remember { FocusRequester() }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.testTag(TierDetailTestTags.MANUAL_ENTRY_DIALOG),
+        title = {
+            Text(
+                text = stringResource(R.string.manual_dialog_title),
+                fontSize = 24.sp,
+                lineHeight = 32.sp,
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    text = stringResource(R.string.manual_dialog_body),
+                    fontSize = 13.sp,
+                    lineHeight = 18.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                )
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = onTitleChange,
+                    label = { Text(stringResource(R.string.manual_dialog_field_name)) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester)
+                        .testTag(TierDetailTestTags.MANUAL_ENTRY_NAME_FIELD),
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    PhotoFrame(
+                        photoUri = photoUri,
+                        onRemove = onRemovePhoto,
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.manual_dialog_photo_optional),
+                            fontSize = 13.sp,
+                            lineHeight = 18.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 8.dp),
+                        )
+                        AssistChip(
+                            onClick = onChoosePhotoClick,
+                            label = {
+                                Text(
+                                    text = stringResource(
+                                        if (photoUri == null) {
+                                            R.string.manual_dialog_choose_photo
+                                        } else {
+                                            R.string.manual_dialog_replace_photo
+                                        },
+                                    ),
+                                    fontSize = 13.sp,
+                                    lineHeight = 16.sp,
+                                )
+                            },
+                            leadingIcon = {
+                                PhotoLibraryIcon(18.dp, MaterialTheme.colorScheme.onPrimaryContainer)
+                            },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                labelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            ),
+                            modifier = Modifier.testTag(TierDetailTestTags.MANUAL_ENTRY_CHOOSE_PHOTO),
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onSave,
+                enabled = canSave,
+                modifier = Modifier.testTag(TierDetailTestTags.MANUAL_ENTRY_SAVE),
+            ) { Text(stringResource(R.string.manual_dialog_add)) }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss,
+                modifier = Modifier.testTag(TierDetailTestTags.MANUAL_ENTRY_CANCEL),
+            ) { Text(stringResource(R.string.manual_dialog_cancel)) }
+        },
+    )
+
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+}
+
+// Removing isn't in 10d (which only ever shows Choose/Replace) — added because this
+// task asks for it directly. Nothing has been attached to a real item yet at this
+// point in the flow, so removing is just clearing local state, not a repository call.
+@Composable
+private fun PhotoFrame(photoUri: String?, onRemove: () -> Unit) {
+    val outline = MaterialTheme.colorScheme.outline
+    val chosenDescription = stringResource(R.string.manual_dialog_photo_frame_chosen)
+    val emptyDescription = stringResource(R.string.manual_dialog_photo_frame_empty)
+
+    Box(
+        modifier = Modifier
+            .size(width = 52.dp, height = 76.dp)
+            .testTag(TierDetailTestTags.MANUAL_ENTRY_PHOTO_FRAME)
+            .semantics { contentDescription = if (photoUri != null) chosenDescription else emptyDescription },
+        contentAlignment = Alignment.Center,
+    ) {
+        if (photoUri != null) {
+            AsyncImage(
+                model = photoUri,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(width = 52.dp, height = 76.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+            )
+            val removeDescription = stringResource(R.string.manual_dialog_remove_photo)
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(2.dp)
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.6f))
+                    .clickable(onClick = onRemove)
+                    .semantics { contentDescription = removeDescription }
+                    .testTag(TierDetailTestTags.MANUAL_ENTRY_REMOVE_PHOTO),
+                contentAlignment = Alignment.Center,
+            ) {
+                ClearIcon(12.dp, Color.White)
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(width = 52.dp, height = 76.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .dashedBorder(width = 1.dp, color = outline, cornerRadius = 8.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                ImagePlaceholderIcon(20.dp, outline)
+            }
+        }
+    }
+}
