@@ -4,7 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -36,6 +36,10 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import kotlin.math.roundToInt
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 
 // Shorter than the system long-press timeout (~500ms, tuned for context menus).
 // A scroll swipe still wins over this via touch-slop consumption, not by racing it.
@@ -144,29 +148,50 @@ internal fun FloatingDragTile(dragController: TierDragController) {
     val halfHeightPx = with(density) { (payload.height / 2).toPx() }
     val borderAlpha = if (media.isDark) 0.14f else 0.6f
     val shape = RoundedCornerShape(6.dp)
+    val readingDirection = LocalLayoutDirection.current
 
-    Box(
-        modifier = Modifier
-            .offset {
-                IntOffset(
-                    x = (position.x - halfWidthPx).roundToInt(),
-                    y = (position.y - halfHeightPx).roundToInt(),
+    // This copy is placed from a root coordinate, and root coordinates do not flip for a
+    // right-to-left language — but everything that places one does. A Box aligns children to
+    // the start, which is the right edge in Arabic, and Modifier.offset flips the sign of x on
+    // top of that; together they left the copy mirrored across the screen from the finger
+    // holding it. Placement is forced left-to-right here; the picture inside is drawn back in
+    // the reading direction.
+    ForcedLeftToRightOverlay {
+        Box(
+            modifier = Modifier
+                .absoluteOffset {
+                    IntOffset(
+                        x = (position.x - halfWidthPx).roundToInt(),
+                        y = (position.y - halfHeightPx).roundToInt(),
+                    )
+                }
+                .size(payload.width, payload.height)
+                .testTag(TierDetailTestTags.FLOATING_DRAG_TILE)
+                .graphicsLayer {
+                    rotationZ = -4f
+                    scaleX = 1.06f
+                    scaleY = 1.06f
+                }
+                .shadow(elevation = 12.dp, shape = shape)
+                .clip(shape)
+                .border(1.dp, Color.White.copy(alpha = borderAlpha), shape),
+        ) {
+            CompositionLocalProvider(LocalLayoutDirection provides readingDirection) {
+                ItemTile(
+                    item = TierItem(id = payload.itemId, title = payload.title, imageUrl = payload.imageUrl),
+                    width = payload.width,
+                    height = payload.height,
                 )
             }
-            .size(payload.width, payload.height)
-            .graphicsLayer {
-                rotationZ = -4f
-                scaleX = 1.06f
-                scaleY = 1.06f
-            }
-            .shadow(elevation = 12.dp, shape = shape)
-            .clip(shape)
-            .border(1.dp, Color.White.copy(alpha = borderAlpha), shape),
-    ) {
-        ItemTile(
-            item = TierItem(id = payload.itemId, title = payload.title, imageUrl = payload.imageUrl),
-            width = payload.width,
-            height = payload.height,
-        )
+        }
+    }
+}
+
+// A full-size, left-to-right layer for things positioned in absolute root coordinates rather
+// than laid out by the parent. Shared by both floating drag copies.
+@Composable
+internal fun ForcedLeftToRightOverlay(content: @Composable BoxScope.() -> Unit) {
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        Box(Modifier.fillMaxSize(), content = content)
     }
 }

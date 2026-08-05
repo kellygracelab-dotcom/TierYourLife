@@ -100,6 +100,7 @@ internal object TierDetailTestTags {
     const val MOVE_SHEET_REMOVE = "tier_detail_move_sheet_remove"
     const val MOVE_SHEET_POOL = "tier_detail_move_sheet_pool"
     const val TRASH_TARGET = "tier_detail_trash_target"
+    const val FLOATING_DRAG_TILE = "tier_detail_floating_drag_tile"
     const val DELETED_ITEM_SNACKBAR = "tier_detail_deleted_item_snackbar"
     const val RANKED_LIST = "tier_detail_ranked_list"
     const val RANKED_HEADER = "tier_detail_ranked_header"
