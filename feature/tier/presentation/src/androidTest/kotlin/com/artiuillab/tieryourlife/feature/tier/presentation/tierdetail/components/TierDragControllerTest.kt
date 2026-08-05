@@ -45,4 +45,85 @@ class TierDragControllerTest {
 
         assertEquals(2L, controller.hoveredTierId)
     }
+
+    // A wrapped tier row lays its tiles out in reading order, which runs the other way in
+    // Arabic: index 0 sits at the right edge, not the left. The insertion index is "how many
+    // tiles has the pointer passed", so it has to be counted in that same direction —
+    // otherwise dropping a poster at the visible start of a row in Arabic files it at the end.
+    @Test
+    fun aDropInAWrappedRow_countsTilesInReadingOrder_whichRunsRightToLeftInArabic() {
+        // Three 100-wide tiles in one line. Left to right on screen: 0 1 2 in English,
+        // 2 1 0 in Arabic — the same rectangles, laid out by the opposite reading order.
+        fun controller(rightToLeft: Boolean, indicesLeftToRight: List<Int>) =
+            TierDragController().apply {
+                registerRowBounds(tierId = 5L, bounds = Rect(0f, 0f, 300f, 100f))
+                indicesLeftToRight.forEachIndexed { slot, index ->
+                    registerTileBounds(
+                        tierId = 5L,
+                        itemId = 100L + index,
+                        index = index,
+                        bounds = Rect(slot * 100f, 0f, slot * 100f + 100f, 100f),
+                    )
+                }
+                setValidTargets(
+                    tierIds = listOf(5L),
+                    itemIds = indicesLeftToRight.map { 100L + it },
+                    rightToLeft = rightToLeft,
+                )
+            }
+
+        // Dropped just inside the row's own leading edge — the left edge in English, the
+        // right edge in Arabic. Either way that is the very front of the row.
+        val english = controller(rightToLeft = false, indicesLeftToRight = listOf(0, 1, 2))
+        english.beginDrag(dragged(), rootPosition = Offset(10f, 50f))
+        val droppedInEnglish = english.endDrag()
+
+        val arabic = controller(rightToLeft = true, indicesLeftToRight = listOf(2, 1, 0))
+        arabic.beginDrag(dragged(), rootPosition = Offset(290f, 50f))
+        val droppedInArabic = arabic.endDrag()
+
+        assertEquals(DropOutcome.MoveTo(itemId = 7L, toTierId = 5L, toPosition = 0), droppedInEnglish)
+        assertEquals(DropOutcome.MoveTo(itemId = 7L, toTierId = 5L, toPosition = 0), droppedInArabic)
+    }
+
+    // The counterpart: the far end of the row is the right edge in English and the left edge
+    // in Arabic, and both must land after all three tiles.
+    @Test
+    fun aDropAtTheFarEndOfAWrappedRow_landsLastInEitherReadingOrder() {
+        fun controller(rightToLeft: Boolean, indicesLeftToRight: List<Int>) =
+            TierDragController().apply {
+                registerRowBounds(tierId = 5L, bounds = Rect(0f, 0f, 300f, 100f))
+                indicesLeftToRight.forEachIndexed { slot, index ->
+                    registerTileBounds(
+                        tierId = 5L,
+                        itemId = 100L + index,
+                        index = index,
+                        bounds = Rect(slot * 100f, 0f, slot * 100f + 100f, 100f),
+                    )
+                }
+                setValidTargets(
+                    tierIds = listOf(5L),
+                    itemIds = indicesLeftToRight.map { 100L + it },
+                    rightToLeft = rightToLeft,
+                )
+            }
+
+        val english = controller(rightToLeft = false, indicesLeftToRight = listOf(0, 1, 2))
+        english.beginDrag(dragged(), rootPosition = Offset(290f, 50f))
+
+        val arabic = controller(rightToLeft = true, indicesLeftToRight = listOf(2, 1, 0))
+        arabic.beginDrag(dragged(), rootPosition = Offset(10f, 50f))
+
+        assertEquals(DropOutcome.MoveTo(itemId = 7L, toTierId = 5L, toPosition = 3), english.endDrag())
+        assertEquals(DropOutcome.MoveTo(itemId = 7L, toTierId = 5L, toPosition = 3), arabic.endDrag())
+    }
+
+    private fun dragged() = DragPayload(
+        itemId = 7L,
+        title = "dragged",
+        imageUrl = null,
+        sourceTierId = 9L,
+        width = 44.dp,
+        height = 64.dp,
+    )
 }
