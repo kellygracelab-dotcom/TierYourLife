@@ -218,6 +218,7 @@
     <string name="language_name_pl">Polski</string>
     <string name="language_name_tr">Turecki</string>
     <string name="language_name_ja">Japoński</string>
+    <string name="language_name_ar">Arabski · od prawej do lewej</string>
     <string name="settings_trash">Kosz</string>
     <string name="settings_trash_empty">Pusto</string>
     <string name="settings_export">Eksportuj dane</string>

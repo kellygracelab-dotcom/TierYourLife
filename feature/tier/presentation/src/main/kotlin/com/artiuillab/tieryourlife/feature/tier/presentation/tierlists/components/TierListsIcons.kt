@@ -31,7 +31,7 @@ private fun SearchVectorIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) 
 internal fun ChevronIcon() = ChevronVectorIcon(20.dp, MaterialTheme.colorScheme.outline)
 
 @Composable
-private fun ChevronVectorIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+private fun ChevronVectorIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
     drawLine(
         color,
         Offset(9f * scale, 7f * scale),
@@ -88,7 +88,7 @@ internal fun SearchOffIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { 
 }
 
 @Composable
-internal fun FormatListBulletedIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+internal fun FormatListBulletedIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
     repeat(3) { row ->
         val y = (6f + row * 6f) * scale
         drawCircle(color, radius = 1.2f * scale, center = Offset(5f * scale, y))

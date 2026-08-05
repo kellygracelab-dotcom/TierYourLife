@@ -10,17 +10,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 // Icons used by more than one screen. Screen-specific icons stay next to their screen.
 
+// autoMirror is opt-in, per icon, because most must not flip: a plus, a trash can or a
+// checkmark mean the same thing in either direction, and mirroring them just makes them look
+// hand-made. Only glyphs that point somewhere horizontally take it. Compose mirrors layout and
+// Painter-backed icons on its own but never raw Canvas commands, which is what every icon in
+// this project is — so this is the one place that can do it.
 @Composable
 internal fun VectorIcon(
     iconSize: Dp,
+    autoMirror: Boolean = false,
     draw: DrawScope.(Float) -> Unit,
-) = Canvas(Modifier.size(iconSize)) {
-    draw(size.minDimension / 24f)
+) {
+    val mirror = autoMirror && LocalLayoutDirection.current == LayoutDirection.Rtl
+    Canvas(Modifier.size(iconSize)) {
+        if (mirror) {
+            scale(scaleX = -1f, scaleY = 1f) { draw(size.minDimension / 24f) }
+        } else {
+            draw(size.minDimension / 24f)
+        }
+    }
 }
 
 @Composable
@@ -58,7 +74,7 @@ internal fun ClearIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scal
 
 // A trash can with two motion lines above it — "empty the trash" in the Trash screen's menu.
 @Composable
-internal fun DeleteSweepIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+internal fun DeleteSweepIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
     val stroke = 1.6f * scale
     drawLine(color, Offset(3f * scale, 7f * scale), Offset(14f * scale, 7f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(8f * scale, 4f * scale), Offset(12f * scale, 4f * scale), stroke, StrokeCap.Round)

@@ -19,16 +19,11 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.VectorIcon
 @Composable
 internal fun BackIcon() {
     val color = MaterialTheme.colorScheme.onSurfaceVariant
-    Canvas(Modifier.size(24.dp)) {
-        val scale = size.minDimension / 24f
-        drawArrow(color, scale)
+    VectorIcon(24.dp, autoMirror = true) { scale ->
+        drawLine(color, Offset(19f * scale, 12f * scale), Offset(5f * scale, 12f * scale), 1.7f * scale, StrokeCap.Round)
+        drawLine(color, Offset(11f * scale, 6f * scale), Offset(5f * scale, 12f * scale), 1.7f * scale, StrokeCap.Round)
+        drawLine(color, Offset(5f * scale, 12f * scale), Offset(11f * scale, 18f * scale), 1.7f * scale, StrokeCap.Round)
     }
-}
-
-private fun DrawScope.drawArrow(color: Color, scale: Float) {
-    drawLine(color, Offset(19f * scale, 12f * scale), Offset(5f * scale, 12f * scale), 1.7f * scale, StrokeCap.Round)
-    drawLine(color, Offset(11f * scale, 6f * scale), Offset(5f * scale, 12f * scale), 1.7f * scale, StrokeCap.Round)
-    drawLine(color, Offset(5f * scale, 12f * scale), Offset(11f * scale, 18f * scale), 1.7f * scale, StrokeCap.Round)
 }
 
 @Composable
@@ -91,14 +86,14 @@ internal fun DeleteFilledIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize)
 }
 
 @Composable
-internal fun ChevronRightIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+internal fun ChevronRightIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
     val stroke = 1.7f * scale
     drawLine(color, Offset(9f * scale, 6f * scale), Offset(15f * scale, 12f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(15f * scale, 12f * scale), Offset(9f * scale, 18f * scale), stroke, StrokeCap.Round)
 }
 
 @Composable
-internal fun TuneIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+internal fun TuneIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
     val trackStroke = 1.3f * scale
     val knobStroke = 1.8f * scale
     drawLine(color, Offset(4f * scale, 6f * scale), Offset(20f * scale, 6f * scale), trackStroke, StrokeCap.Round)
@@ -140,7 +135,7 @@ internal fun ViewCarouselIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize)
 }
 
 @Composable
-internal fun FormatListNumberedIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+internal fun FormatListNumberedIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
     val stroke = 1.6f * scale
     repeat(3) { row ->
         val y = (6f + row * 6f) * scale
@@ -177,7 +172,7 @@ internal fun ImagePlaceholderIcon(iconSize: Dp, color: Color) = VectorIcon(iconS
 
 // Two overlapping frames — the "choose from photos" glyph on the assist chip.
 @Composable
-internal fun PhotoLibraryIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+internal fun PhotoLibraryIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
     val stroke = 1.4f * scale
     drawRoundRect(
         color,

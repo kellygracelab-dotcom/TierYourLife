@@ -218,6 +218,7 @@
     <string name="language_name_pl">Польська</string>
     <string name="language_name_tr">Турецька</string>
     <string name="language_name_ja">Японська</string>
+    <string name="language_name_ar">Арабська · справа наліво</string>
     <string name="settings_trash">Кошик</string>
     <string name="settings_trash_empty">Порожньо</string>
     <string name="settings_export">Експорт даних</string>
