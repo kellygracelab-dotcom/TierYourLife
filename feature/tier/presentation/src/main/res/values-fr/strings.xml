@@ -141,7 +141,7 @@
         <item quantity="other">%1$d sélectionnés</item>
     </plurals>
     <plurals name="item_search_add_button">
-        <item quantity="one">Ajouter 1 élément</item>
+        <item quantity="one">Ajouter %1$d élément</item>
         <item quantity="other">Ajouter %1$d éléments</item>
     </plurals>
     <string name="item_search_add_disabled">Ajouter</string>
@@ -248,7 +248,7 @@
     <string name="export_tier_empty">(vide)</string>
     <string name="export_unranked_heading">Non classé</string>
     <plurals name="snack_export_done">
-        <item quantity="one">1 liste exportée</item>
+        <item quantity="one">%1$d liste exportée</item>
         <item quantity="other">%1$d listes exportées</item>
     </plurals>
     <string name="action_share">Partager</string>
