@@ -184,6 +184,7 @@
     <string name="language_name_pl">Polonês</string>
     <string name="language_name_tr">Turco</string>
     <string name="language_name_ja">Japonês</string>
+    <string name="language_name_ar">Árabe · da direita para a esquerda</string>
     <string name="settings_trash">Lixeira</string>
     <string name="settings_trash_empty">Vazia</string>
     <string name="settings_export">Exportar dados</string>

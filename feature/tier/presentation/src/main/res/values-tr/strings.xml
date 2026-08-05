@@ -184,6 +184,7 @@
     <string name="language_name_pl">Lehçe</string>
     <string name="language_name_tr">Türkçe</string>
     <string name="language_name_ja">Japonca</string>
+    <string name="language_name_ar">Arapça · sağdan sola</string>
     <string name="settings_trash">Çöp kutusu</string>
     <string name="settings_trash_empty">Boş</string>
     <string name="settings_export">Verileri dışa aktar</string>

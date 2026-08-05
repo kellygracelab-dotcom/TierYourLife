@@ -118,7 +118,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun applyStoredLocale() = applyLocale(appPreferences.languageTag())
+    // Only when something is actually stored. Calling applyLocale(null) here would clear the
+    // override on every launch — including one the user set from Android's own per-app
+    // language screen, which locales_config advertises this app to. Picking "Default" in
+    // Settings still clears it, at the moment it is picked.
+    private fun applyStoredLocale() {
+        appPreferences.languageTag()?.let(::applyLocale)
+    }
 
     private fun applyLocale(tag: String?) {
         val locales = tag?.let { LocaleListCompat.forLanguageTags(it) } ?: LocaleListCompat.getEmptyLocaleList()

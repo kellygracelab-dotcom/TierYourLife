@@ -9,7 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 // speaker count. `nativeName` is deliberately a Kotlin literal, not a string resource:
 // "The language names shown in the chooser are not translated - each language is
 // written in its own script in every locale." Only the trailing English name
-// (`englishNameRes`) and the "Default" label are resources,
+// (`englishNameRes`) and the "Default"/"Arabic - right-to-left" labels are resources,
 // so they translate along with everything else in strings.xml.
 internal data class LanguageOption(
     // Value persisted by AppPreferences.setLanguageTag and read back by languageTag().
@@ -39,6 +39,7 @@ internal val LanguageOptions = listOf(
     LanguageOption(persistTag = "pl", matchTag = "pl", nativeName = "Polski", englishNameRes = R.string.language_name_pl),
     LanguageOption(persistTag = "tr", matchTag = "tr", nativeName = "Türkçe", englishNameRes = R.string.language_name_tr),
     LanguageOption(persistTag = "ja", matchTag = "ja", nativeName = "日本語", englishNameRes = R.string.language_name_ja),
+    LanguageOption(persistTag = "ar", matchTag = "ar", nativeName = "العربية", englishNameRes = R.string.language_name_ar),
 )
 
 internal fun currentLanguageOption(context: Context, storedTag: String?): LanguageOption {

@@ -670,20 +670,23 @@ leading edge, the outline and rounded outer ends kept so it still reads as one c
 Both branches are covered by tests that assert the geometry — side by side at the
 default scale, stacked at 2× — rather than the wording.
 
-## Arabic is not offered, and the app is left-to-right (against §7)
+## Right-to-left, and which icons mirror
 
-§7 lists eleven languages, Arabic among them, labelled "right-to-left". It shipped and it
-looked wrong: every icon in this project is a hand-drawn `Canvas` path, and Compose mirrors
-layout and `Painter`-backed icons for RTL but not raw drawing commands. The screen flipped
+Arabic ships, so the app declares `supportsRtl` and Compose mirrors the layout. It does not
+mirror the icons: every glyph in this project is a hand-drawn `Canvas` path, and Compose
+mirrors layout and `Painter`-backed icons only. Shipped that way once, the screen flipped
 while the back arrow and every chevron kept pointing the way they do in English.
 
-Arabic is removed rather than half-supported. Ten languages remain.
+`VectorIcon` is the single place every icon is drawn, so the flip lives there, behind an
+`autoMirror` flag that each icon opts into. Opt-in rather than automatic because most must
+not move: a plus, a trash can, a checkmark and a gear mean the same thing either way, and
+flipping them only makes them look hand-made. A magnifying glass is deliberately among them —
+Material does not mirror search either.
 
-`android:supportsRtl` goes to `false` with it, which is the part worth writing down: layout
-direction follows the **device locale**, not the app's own resources. Dropping `values-ar`
-alone would still have left a phone set to Arabic mirroring the whole app while showing
-English text — the same broken screen, reached a different way. Off is the honest state.
+The eight that do flip: the back arrow, both chevrons, the bulleted and numbered list glyphs,
+the tune sliders, the photo library stack and the sweep lines on empty-trash.
 
-Both flip back together when the icons learn to mirror: `VectorIcon` is the single place
-that draws them, so a layout-direction-aware flip belongs there, opted into per icon, since
-a plus or a trash can must not mirror.
+Two tests hold this. One asserts the manifest still claims RTL, since turning it off would
+silently un-mirror everything. The other captures an icon's pixels in both directions and
+compares where the ink sits: the arrowhead has to be left of centre in English and the same
+distance right of centre in Arabic, and the plus has to not move at all.

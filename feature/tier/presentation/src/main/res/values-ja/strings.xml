@@ -167,6 +167,7 @@
     <string name="language_name_pl">ポーランド語</string>
     <string name="language_name_tr">トルコ語</string>
     <string name="language_name_ja">日本語</string>
+    <string name="language_name_ar">アラビア語 · 右から左</string>
     <string name="settings_trash">ゴミ箱</string>
     <string name="settings_trash_empty">空です</string>
     <string name="settings_export">データをエクスポート</string>
