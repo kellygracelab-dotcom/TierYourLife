@@ -86,6 +86,7 @@ internal class TierDragController {
     // supposed to unregister itself (see the unregister* functions), but nothing here
     // should have to trust that happened. A target whose id isn't in these sets is never
     // chosen, whatever its bounds map still says.
+    private var rightToLeft: Boolean = false
     private var validTierIds: Set<Long> = emptySet()
     private var validItemIds: Set<Long> = emptySet()
 
@@ -129,9 +130,19 @@ internal class TierDragController {
 
     // Called every recomposition (see TierScreenBody) with the TierList actually on
     // screen. Plain fields, not Compose state: nothing observes them reactively, they're
-    fun setValidTargets(tierIds: Collection<Long>, itemIds: Collection<Long>) {
+    // Every insertion index below is "how many tiles has the pointer passed", and passing
+    // runs the other way in Arabic: FlowRow puts index 0 at the right edge, and LazyRow
+    // measures its offsets from the right edge too. Told from the screen, which is the only
+    // place that knows — this is a plain class, not a composable, so it cannot read
+    // LocalLayoutDirection itself.
+    fun setValidTargets(
+        tierIds: Collection<Long>,
+        itemIds: Collection<Long>,
+        rightToLeft: Boolean = false,
+    ) {
         validTierIds = tierIds.toSet()
         validItemIds = itemIds.toSet()
+        this.rightToLeft = rightToLeft
     }
 
     fun beginDrag(payload: DragPayload, rootPosition: Offset) {
@@ -250,13 +261,18 @@ internal class TierDragController {
             val bounds = pool.bounds ?: return null
             val state = pool.state ?: return null
             val excludedIndex = pool.itemIds.indexOf(payload.itemId).takeIf { it >= 0 }
-            insertionIndexInRow(state, pointerPositionInRoot.x - bounds.left, excludedIndex)
+            val fromStart = if (rightToLeft) {
+                bounds.right - pointerPositionInRoot.x
+            } else {
+                pointerPositionInRoot.x - bounds.left
+            }
+            insertionIndexInRow(state, fromStart, excludedIndex)
         } else {
             val tiles = tileBounds.entries
                 .filter { (itemId, record) -> record.tierId == tierId && itemId in validItemIds }
                 .map { it.value }
             val excludedIndex = tileBounds[payload.itemId]?.takeIf { it.tierId == tierId }?.index
-            insertionIndexInGrid(tiles, pointerPositionInRoot, excludedIndex)
+            insertionIndexInGrid(tiles, pointerPositionInRoot, excludedIndex, rightToLeft)
         }
         return DropOutcome.MoveTo(payload.itemId, tierId, index)
     }
@@ -276,9 +292,14 @@ private fun insertionIndexInRow(state: LazyListState, localX: Float, excludedFul
     return translate(visible.last().index + 1, excludedFullIndex)
 }
 
-// Reading order: the line whose vertical midpoint the pointer is still above, then
-// the tile within that line whose horizontal midpoint the pointer is still left of.
-private fun insertionIndexInGrid(tiles: List<TileRecord>, pointer: Offset, excludedFullIndex: Int?): Int {
+// Reading order: the line whose vertical midpoint the pointer is still above, then the tile
+// within that line the pointer has not yet passed.
+private fun insertionIndexInGrid(
+    tiles: List<TileRecord>,
+    pointer: Offset,
+    excludedFullIndex: Int?,
+    rightToLeft: Boolean,
+): Int {
     val visible = tiles.filter { it.index != excludedFullIndex }
     if (visible.isEmpty()) return 0
 
@@ -286,18 +307,25 @@ private fun insertionIndexInGrid(tiles: List<TileRecord>, pointer: Offset, exclu
     for (line in lines) {
         val lineMidY = (line.minOf { it.bounds.top } + line.maxOf { it.bounds.bottom }) / 2f
         if (pointer.y < lineMidY) {
-            return translate(columnIndex(line, pointer.x), excludedFullIndex)
+            return translate(columnIndex(line, pointer.x, rightToLeft), excludedFullIndex)
         }
     }
 
-    return translate(columnIndex(lines.last(), pointer.x), excludedFullIndex)
+    return translate(columnIndex(lines.last(), pointer.x, rightToLeft), excludedFullIndex)
 }
 
-private fun columnIndex(line: List<TileRecord>, pointerX: Float): Int {
-    val sorted = line.sortedBy { it.bounds.left }
+// In reading order, not screen order: the first tile the pointer has not yet passed. Reading
+// order is right to left in Arabic, so both the sort and the comparison flip with it.
+private fun columnIndex(line: List<TileRecord>, pointerX: Float, rightToLeft: Boolean): Int {
+    val sorted = if (rightToLeft) {
+        line.sortedByDescending { it.bounds.right }
+    } else {
+        line.sortedBy { it.bounds.left }
+    }
     for (tile in sorted) {
         val midX = (tile.bounds.left + tile.bounds.right) / 2f
-        if (pointerX < midX) return tile.index
+        val beforeThisTile = if (rightToLeft) pointerX > midX else pointerX < midX
+        if (beforeThisTile) return tile.index
     }
     return sorted.last().index + 1
 }

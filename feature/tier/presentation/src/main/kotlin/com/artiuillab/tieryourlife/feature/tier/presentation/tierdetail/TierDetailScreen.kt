@@ -87,6 +87,8 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 
 internal object TierDetailTestTags {
     const val LOADING = "tier_detail_loading"
@@ -365,6 +367,7 @@ private fun TierScreenBody(
 
     val rankedTiers = list.tiers.filterNot { it.isPool }
     val pool = list.tiers.firstOrNull { it.isPool }
+    val layoutDirection = LocalLayoutDirection.current
     val dragController = remember { TierDragController() }
     var chooserItemId by remember { mutableStateOf<Long?>(null) }
     var editingTierId by remember { mutableStateOf<Long?>(null) }
@@ -376,6 +379,7 @@ private fun TierScreenBody(
         dragController.setValidTargets(
             tierIds = list.tiers.map { it.id },
             itemIds = list.tiers.flatMap { it.items }.map { it.id },
+            rightToLeft = layoutDirection == LayoutDirection.Rtl,
         )
     }
 
