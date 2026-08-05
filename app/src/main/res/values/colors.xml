@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- The colour the system paints into the window before Compose draws into it, so
+         these must agree with what Compose is about to draw: SurfaceLight and
+         SurfaceDark in core/theme.
+
+         window_background follows the system's night setting through values-night and is
+         used when the app's own theme choice is "follow system". The two explicit ones
+         are for when the user has overridden that in Settings — see
+         MainActivity.applyWindowBackground. -->
+    <color name="window_background_light">#FBF8FF</color>
+    <color name="window_background_dark">#121318</color>
+    <color name="window_background">@color/window_background_light</color>
 </resources>

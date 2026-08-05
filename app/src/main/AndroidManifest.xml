@@ -14,8 +14,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TierYourLife">
+        <!-- configChanges: this activity handles a locale change itself rather than
+             being destroyed and rebuilt for one. Compose re-reads every stringResource
+             when LocalConfiguration changes, so switching language becomes a
+             recomposition instead of a restart, and the blink between the two goes
+             away.
+
+             All three are needed, not just locale. Verified against the device log:
+             with only locale|layoutDirection declared, the system still reported
+             CONFIG_SCREEN_LAYOUT as changed and restarted the activity anyway, because
+             the layout-direction bits physically live inside screenLayout. Declaring
+             two of the three buys nothing — the restart happens on the one left out.
+
+             Below API 33 appcompat's backport recreates the activity itself and this
+             cannot prevent that; the window background in themes.xml is what covers
+             that case. -->
         <activity
             android:name=".MainActivity"
+            android:configChanges="locale|layoutDirection|screenLayout"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.TierYourLife"
