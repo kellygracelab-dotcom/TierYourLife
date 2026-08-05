@@ -10,6 +10,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -49,7 +51,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -57,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
@@ -73,6 +75,16 @@ import kotlin.math.roundToInt
 // Also the collapsed row height: "the same as a one-line row of posters now" (see the
 // task this shipped with) is exactly this value, not a second constant.
 private val MIN_TIER_ROW_HEIGHT = 84.dp
+
+// Tier band column: wraps to its content (the letter, and the caption below it), never
+// narrower than this floor and never wider than a third of the row — see
+// docs/design-spec-turns-8-9.md, section 3.
+private val MIN_TIER_BAND_WIDTH = 56.dp
+private const val MAX_TIER_BAND_FRACTION = 1f / 3f
+
+// docs/design-spec-turns-8-9.md, section 3: "The caption disappears entirely at a
+// system font scale of >=1.5x. The large tier letter always stays."
+internal const val CAPTION_HIDDEN_FONT_SCALE = 1.5f
 
 @Composable
 internal fun TierRow(
@@ -120,30 +132,32 @@ internal fun TierRow(
         ShortLongPressViewConfiguration(baseViewConfiguration, DRAG_LONG_PRESS_TIMEOUT_MILLIS)
     }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(rowHeightModifier)
-            // Short and not abrupt: this is the one thing that tells the user it's still
-            // the same list collapsing, not a different screen.
-            .animateContentSize(animationSpec = tween(durationMillis = 200))
-            .clip(RoundedCornerShape(12.dp))
-            .onGloballyPositioned { coordinates -> dragController.registerRowBounds(tier.id, coordinates.boundsInRoot()) }
-            .testTag(TierDetailTestTags.tierRow(tier.id))
-            .background(rowBackground)
-            .then(
-                if (isHovered) {
-                    Modifier.dashedBorder(width = 2.dp, color = colors.band, cornerRadius = 12.dp)
-                } else {
-                    Modifier
-                },
-            ),
-    ) {
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val bandMaxWidth = maxWidth * MAX_TIER_BAND_FRACTION
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(rowHeightModifier)
+                // Short and not abrupt: this is the one thing that tells the user it's still
+                // the same list collapsing, not a different screen.
+                .animateContentSize(animationSpec = tween(durationMillis = 200))
+                .clip(RoundedCornerShape(12.dp))
+                .onGloballyPositioned { coordinates -> dragController.registerRowBounds(tier.id, coordinates.boundsInRoot()) }
+                .testTag(TierDetailTestTags.tierRow(tier.id))
+                .background(rowBackground)
+                .then(
+                    if (isHovered) {
+                        Modifier.dashedBorder(width = 2.dp, color = colors.band, cornerRadius = 12.dp)
+                    } else {
+                        Modifier
+                    },
+                ),
+        ) {
         CompositionLocalProvider(LocalViewConfiguration provides dragViewConfiguration) {
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(66.dp)
+                    .widthIn(min = MIN_TIER_BAND_WIDTH, max = bandMaxWidth)
                     .background(colors.band)
                     .testTag(TierDetailTestTags.tierBand(tier.id))
                     // The pool never reaches this composable in practice (callers filter it
@@ -201,18 +215,19 @@ internal fun TierRow(
             ) {
                 Text(
                     text = tier.label,
-                    fontSize = 24.sp,
-                    lineHeight = 28.sp,
-                    fontWeight = FontWeight.Medium,
+                    style = TierYourLifeType.current.tierBandLetter,
                     color = colors.onBand,
                 )
                 tier.caption?.let { caption ->
-                    Text(
-                        text = caption,
-                        fontSize = 10.sp,
-                        lineHeight = 12.sp,
-                        color = colors.onBand.copy(alpha = 0.7f),
-                    )
+                    if (LocalDensity.current.fontScale < CAPTION_HIDDEN_FONT_SCALE) {
+                        Text(
+                            text = caption,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = TierYourLifeType.current.tierBandCaption,
+                            color = colors.onBand.copy(alpha = 0.7f),
+                        )
+                    }
                 }
             }
         }
@@ -279,6 +294,7 @@ internal fun TierRow(
                 }
             }
         }
+        }
     }
 }
 
@@ -287,8 +303,7 @@ private fun CollapsedItemCount(count: Int, modifier: Modifier = Modifier) {
     Box(modifier = modifier.padding(horizontal = 10.dp), contentAlignment = Alignment.CenterStart) {
         Text(
             text = pluralStringResource(R.plurals.tier_detail_collapsed_item_count, count, count),
-            fontSize = 14.sp,
-            lineHeight = 20.sp,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
@@ -313,6 +328,9 @@ internal fun ItemTile(item: TierItem, width: Dp, height: Dp) {
                 contentScale = ContentScale.Crop,
             )
         } else {
+            // Exception: no role in docs/design-spec-turns-8-9.md section 2 goes this
+            // small — this is the fallback label squeezed inside a 44x64 tile when there's
+            // no artwork, and needs to be smaller than any named role to fit it.
             Text(
                 text = item.title.take(6).uppercase(),
                 modifier = Modifier.padding(bottom = 4.dp),
@@ -339,29 +357,31 @@ internal fun FloatingDragRow(dragController: TierDragController, tier: Tier?) {
     val halfHeightPx = with(density) { (MIN_TIER_ROW_HEIGHT / 2).toPx() }
     val shape = RoundedCornerShape(12.dp)
 
-    Row(
-        modifier = Modifier
-            .offset {
-                IntOffset(
-                    x = (position.x - halfWidthPx).roundToInt(),
-                    y = (position.y - halfHeightPx).roundToInt(),
-                )
-            }
-            .fillMaxWidth()
-            .height(MIN_TIER_ROW_HEIGHT)
-            .graphicsLayer {
-                scaleX = 1.02f
-                scaleY = 1.02f
-            }
-            .shadow(elevation = 8.dp, shape = shape)
-            .clip(shape)
-            .background(colors.rowTint)
-            .border(1.dp, Color.White.copy(alpha = if (TierYourLifeMedia.current.isDark) 0.14f else 0.6f), shape),
-    ) {
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val bandMaxWidth = maxWidth * MAX_TIER_BAND_FRACTION
+        Row(
+            modifier = Modifier
+                .offset {
+                    IntOffset(
+                        x = (position.x - halfWidthPx).roundToInt(),
+                        y = (position.y - halfHeightPx).roundToInt(),
+                    )
+                }
+                .fillMaxWidth()
+                .height(MIN_TIER_ROW_HEIGHT)
+                .graphicsLayer {
+                    scaleX = 1.02f
+                    scaleY = 1.02f
+                }
+                .shadow(elevation = 8.dp, shape = shape)
+                .clip(shape)
+                .background(colors.rowTint)
+                .border(1.dp, Color.White.copy(alpha = if (TierYourLifeMedia.current.isDark) 0.14f else 0.6f), shape),
+        ) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .width(66.dp)
+                .widthIn(min = MIN_TIER_BAND_WIDTH, max = bandMaxWidth)
                 .background(colors.band)
                 .padding(top = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -369,20 +389,22 @@ internal fun FloatingDragRow(dragController: TierDragController, tier: Tier?) {
         ) {
             Text(
                 text = tier.label,
-                fontSize = 24.sp,
-                lineHeight = 28.sp,
-                fontWeight = FontWeight.Medium,
+                style = TierYourLifeType.current.tierBandLetter,
                 color = colors.onBand,
             )
             tier.caption?.let { caption ->
-                Text(
-                    text = caption,
-                    fontSize = 10.sp,
-                    lineHeight = 12.sp,
-                    color = colors.onBand.copy(alpha = 0.7f),
-                )
+                if (LocalDensity.current.fontScale < CAPTION_HIDDEN_FONT_SCALE) {
+                    Text(
+                        text = caption,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = TierYourLifeType.current.tierBandCaption,
+                        color = colors.onBand.copy(alpha = 0.7f),
+                    )
+                }
             }
         }
         CollapsedItemCount(count = tier.items.size, modifier = Modifier.weight(1f).fillMaxHeight())
+        }
     }
 }

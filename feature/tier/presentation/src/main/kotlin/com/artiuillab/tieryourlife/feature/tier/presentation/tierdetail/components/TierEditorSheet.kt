@@ -31,12 +31,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
@@ -74,8 +75,7 @@ internal fun TierEditorSheet(
                     if (initialTier == null) R.string.tier_editor_add_title else R.string.tier_editor_title,
                 ),
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 2.dp),
-                fontSize = 24.sp,
-                lineHeight = 32.sp,
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )
 
@@ -132,9 +132,7 @@ internal fun TierEditorSheet(
                         .padding(horizontal = 12.dp, vertical = 10.dp)
                         .testTag(TierDetailTestTags.TIER_EDITOR_CANCEL),
                     color = MaterialTheme.colorScheme.primary,
-                    fontSize = 14.sp,
-                    lineHeight = 20.sp,
-                    fontWeight = FontWeight.Medium,
+                    style = MaterialTheme.typography.labelLarge,
                 )
                 Spacer(Modifier.width(8.dp))
                 val saveContainerColor = if (isLabelValid) {
@@ -173,9 +171,7 @@ internal fun TierEditorSheet(
                     Text(
                         text = stringResource(R.string.tier_editor_save),
                         color = saveContentColor,
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp,
-                        fontWeight = FontWeight.Medium,
+                        style = MaterialTheme.typography.labelLarge,
                     )
                 }
             }
@@ -226,9 +222,7 @@ private fun LivePreviewCard(
     Column(modifier) {
         Text(
             text = themeLabel,
-            fontSize = 13.sp,
-            lineHeight = 18.sp,
-            fontWeight = FontWeight.Medium,
+            style = TierYourLifeType.current.tabLabel,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 6.dp),
         )
@@ -253,9 +247,15 @@ private fun LivePreviewCard(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    Text(text = label, fontSize = 24.sp, lineHeight = 28.sp, fontWeight = FontWeight.Medium, color = colors.onBand)
-                    if (caption != null) {
-                        Text(text = caption, fontSize = 10.sp, lineHeight = 12.sp, color = colors.onBand.copy(alpha = 0.7f))
+                    Text(text = label, style = TierYourLifeType.current.tierBandLetter, color = colors.onBand)
+                    if (caption != null && LocalDensity.current.fontScale < CAPTION_HIDDEN_FONT_SCALE) {
+                        Text(
+                            text = caption,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = TierYourLifeType.current.tierBandCaption,
+                            color = colors.onBand.copy(alpha = 0.7f),
+                        )
                     }
                 }
                 Spacer(Modifier.weight(1f))

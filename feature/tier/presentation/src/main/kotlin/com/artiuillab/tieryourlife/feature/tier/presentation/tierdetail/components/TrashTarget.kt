@@ -24,11 +24,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import kotlin.math.roundToInt
@@ -108,7 +107,7 @@ internal fun TrashTarget(
     ) {
         if (isHovering) {
             DeleteFilledIcon(30.dp, contentColor)
-            Text(text = label, fontSize = 10.sp, lineHeight = 12.sp, fontWeight = FontWeight.Medium, color = contentColor)
+            Text(text = label, style = TierYourLifeType.current.trashRemoveLabel, color = contentColor)
         } else {
             DeleteOutlineIcon(24.dp, contentColor)
         }

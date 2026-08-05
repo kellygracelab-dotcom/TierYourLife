@@ -27,13 +27,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -124,16 +123,14 @@ private fun MoveSheetHeader(item: TierItem) {
         Column(Modifier.weight(1f)) {
             Text(
                 text = item.title,
-                fontSize = 24.sp,
-                lineHeight = 32.sp,
+                style = MaterialTheme.typography.headlineSmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
                 text = stringResource(R.string.tier_detail_move_sheet_subtitle),
-                fontSize = 13.sp,
-                lineHeight = 18.sp,
+                style = TierYourLifeType.current.captionUnderTitle,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
@@ -199,24 +196,20 @@ private fun MoveSheetTierRow(tier: Tier, isCurrent: Boolean, onClick: (() -> Uni
         ) {
             Text(
                 text = tier.label,
-                fontSize = 20.sp,
-                lineHeight = 24.sp,
-                fontWeight = FontWeight.Medium,
+                style = TierYourLifeType.current.tierSwatchLetter,
                 color = colors.onBand,
             )
         }
         Column(Modifier.weight(1f)) {
             Text(
                 text = tier.caption ?: tier.label,
-                fontSize = 16.sp,
-                lineHeight = 22.sp,
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             if (isCurrent) {
                 Text(
                     text = stringResource(R.string.tier_detail_move_sheet_current_tier),
-                    fontSize = 13.sp,
-                    lineHeight = 18.sp,
+                    style = TierYourLifeType.current.captionUnderTitle,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
@@ -256,11 +249,10 @@ private fun MoveSheetActionRow(
             contentAlignment = Alignment.Center,
         ) { icon() }
         Column(Modifier.weight(1f)) {
-            Text(text = title, fontSize = 16.sp, lineHeight = 22.sp, color = titleColor)
+            Text(text = title, style = MaterialTheme.typography.titleMedium, color = titleColor)
             Text(
                 text = subtitle,
-                fontSize = 13.sp,
-                lineHeight = 18.sp,
+                style = TierYourLifeType.current.captionUnderTitle,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

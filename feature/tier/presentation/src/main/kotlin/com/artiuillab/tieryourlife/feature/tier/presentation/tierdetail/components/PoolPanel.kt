@@ -30,9 +30,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
@@ -108,9 +107,7 @@ internal fun PoolPanel(
                     pool.items.size,
                 ),
                 modifier = Modifier.weight(1f),
-                fontSize = 14.sp,
-                lineHeight = 20.sp,
-                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             AddChip(onClick = onAddClick)
@@ -155,9 +152,7 @@ private fun AddChip(onClick: () -> Unit) {
         Spacer(Modifier.width(4.dp))
         Text(
             text = stringResource(R.string.tier_detail_add),
-            fontSize = 13.sp,
-            lineHeight = 16.sp,
-            fontWeight = FontWeight.Medium,
+            style = TierYourLifeType.current.chipText,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
     }

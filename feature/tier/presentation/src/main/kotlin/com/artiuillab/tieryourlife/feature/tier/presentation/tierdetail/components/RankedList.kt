@@ -20,7 +20,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,11 +36,10 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -81,8 +79,7 @@ internal fun RankedList(
             modifier = Modifier
                 .padding(start = 20.dp, end = 20.dp, bottom = 6.dp)
                 .testTag(TierDetailTestTags.RANKED_HEADER),
-            fontSize = 12.sp,
-            lineHeight = 16.sp,
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
@@ -135,17 +132,14 @@ private fun RankedItemRow(entry: RankedEntry, onSelect: (itemId: Long) -> Unit) 
             text = entry.position.toString(),
             modifier = Modifier.width(28.dp),
             textAlign = TextAlign.End,
-            fontSize = 16.sp,
-            lineHeight = 22.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
+            style = MaterialTheme.typography.titleMedium.copy(fontFeatureSettings = "tnum"),
         )
         ItemTile(item = entry.item, width = 32.dp, height = 48.dp)
         Text(
             text = entry.item.title,
             modifier = Modifier.weight(1f),
-            fontSize = 16.sp,
-            lineHeight = 22.sp,
+            style = MaterialTheme.typography.titleMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurface,
@@ -168,9 +162,7 @@ private fun TierBadge(tier: Tier) {
     ) {
         Text(
             text = tier.label,
-            fontSize = 12.sp,
-            lineHeight = 16.sp,
-            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.labelMedium,
             color = colors.onBand,
         )
     }
@@ -241,9 +233,7 @@ internal fun RankedPoolSection(
                     pool.items.size,
                 ),
                 modifier = Modifier.weight(1f),
-                fontSize = 14.sp,
-                lineHeight = 20.sp,
-                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             CollapsedPoolAddChip(onClick = onAddClick)
@@ -287,8 +277,7 @@ private fun PoolItemRow(item: TierItem, onSelect: (itemId: Long) -> Unit) {
         Text(
             text = item.title,
             modifier = Modifier.weight(1f),
-            fontSize = 16.sp,
-            lineHeight = 22.sp,
+            style = MaterialTheme.typography.titleMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurface,
@@ -311,9 +300,7 @@ private fun CollapsedPoolAddChip(onClick: () -> Unit) {
         Spacer(Modifier.width(4.dp))
         Text(
             text = stringResource(R.string.tier_detail_add),
-            fontSize = 13.sp,
-            lineHeight = 16.sp,
-            fontWeight = FontWeight.Medium,
+            style = TierYourLifeType.current.chipText,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
     }
