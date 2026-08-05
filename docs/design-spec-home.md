@@ -535,3 +535,68 @@ Two things the design assumes that the code does *not* do, and which are decided
   `values/strings.xml` and no translations, so the row would open a chooser over a
   single language. It is left out until the localization pass; Settings is Theme,
   Trash, Export, in that order, with the same dividers and geometry.
+
+---
+
+# Turn 13 — the two device fixes (transcribed 2026-08-05)
+
+Both come from using the built screen on a real phone. Turn 13 supersedes the named
+lines in §3 and §4 above; where the two disagree, turn 13 wins.
+
+## 11. Selection mode gets a checkbox (supersedes §3 "The selected card")
+
+The design's own verdict, quoted so the reasoning survives:
+
+> The tint alone was a mistake, and the build is faithful to it. A full-bleed tint
+> behind a card that already has its own fill is a weak signal — the card's
+> `surfaceContainerLow` is doing the visual work, and a wash behind it reads as
+> *underneath* rather than *about* the card. Worse, a transient full-width tint is
+> exactly what a ripple looks like on Android, so the platform's own vocabulary says
+> "pressed", not "chosen".
+>
+> But the real failure isn't aesthetic. Selection mode **re-binds what a tap does**,
+> and I put no affordance on the card to signal that. The owner concluding multi-select
+> was broken is the correct inference from what's on screen. And I'd already written the
+> rule that fixes it, for the TMDB sheet: *"the empty checkbox on every other row is what
+> makes the list read as a set of checkboxes."* I failed to apply my own rule on Home.
+
+| Part | Value |
+| --- | --- |
+| Where it goes | **The checkbox takes the chevron's slot.** The chevron says "tap goes deeper", which stops being true the moment selection starts, so the two never coexist. |
+| The box | 24dp square, 4dp radius. Unchecked: outlined, no fill. Checked: filled with primary and an 18dp check glyph on it. |
+| Nothing shifts | Chevron 20dp → box 24dp; the text column absorbs the 4dp. No layout jump when the mode starts. |
+| The tint | **Kept**, but demoted — it is now for scanning the list at a glance. The checkbox is what states the selection. |
+| Hit target | The whole card stays one target. Give the card `Role.Checkbox` and silence the box itself so TalkBack does not announce it twice. |
+| The frame that matters | On entering the mode, the **unselected** cards grow empty boxes at the same instant as the pressed one fills. That simultaneous appearance is what teaches the user that a plain tap now selects. |
+
+## 12. Creating a list gets an escape hatch (supersedes §4 "Confirming")
+
+The leading control on a brand-new list is a close cross; pressing it throws the list
+away. Once the list has been touched it becomes the ordinary back arrow and the list is
+kept.
+
+| Part | Value |
+| --- | --- |
+| "Untouched" means | Empty trimmed title, no items, five untouched seeded tiers, Wrapped display mode. |
+| Typing a character and deleting it again | **The latch has already flipped.** The flag goes on the first keystroke and is one-way. A leading control that oscillates between "discard" and "back" under the user's thumb is worse than one that commits. |
+| Opening the TMDB sheet and adding nothing | **Not touched.** Same for cancelling any dialog or sheet. |
+| Discarding | No confirmation dialog, and it does **not** go to the trash — a hard delete. |
+| An existing list | **Never shows a cross.** The flag is session state and is dropped when the screen is left. |
+
+Three things the design pushed back on, recorded because they are real:
+
+- Discard is a hard delete with no dialog — the only genuinely unrecoverable action in
+  the app.
+- **System back keeps the list.** A mis-tap plus a back gesture still strands an
+  "Untitled list". The cross only helps people who see the cross.
+- `close` now means two things — discard here, cancel-renaming on an established list.
+  The cancel-renaming affordance was removed on new lists to keep them apart, but this
+  is the weakest seam in the design.
+
+### Decided here, against the design
+
+The design proposes an Undo snackbar after discarding. **We show none.** An untouched
+list has no name and no items by definition, so there is nothing to restore — "undo"
+would create a fresh empty list, which is precisely what pressing + does. A snackbar
+offering to recover nothing is theatre, and the design itself admits the undo is gone
+the moment it times out.
