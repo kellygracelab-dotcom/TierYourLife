@@ -126,13 +126,13 @@
     <string name="tier_editor_preset_color_description">Vordefinierte Farbe %1$d</string>
     <string name="tier_editor_custom_color_description">Benutzerdefinierte Farbe</string>
 
-    <string name="movie_search_field_label">%1$s durchsuchen</string>
+    <string name="movie_search_field_label">Suchen</string>
     <string name="movie_search_close_content_description">Suche schließen</string>
     <string name="movie_search_clear_content_description">Suche leeren</string>
-    <string name="movie_search_source_caption">Ergebnisse von %1$s · wird zum Pool von %2$s hinzugefügt</string>
+    <string name="movie_search_source_caption">Wird zum Pool von %1$s hinzugefügt</string>
     <string name="movie_search_min_query">Gib mindestens zwei Buchstaben zum Suchen ein.</string>
     <string name="movie_search_empty_title">Nichts gefunden für \"%1$s\"</string>
-    <string name="movie_search_error_title">Verbindung zu %1$s fehlgeschlagen</string>
+    <string name="movie_search_error_title">Ergebnisse konnten nicht geladen werden</string>
     <string name="movie_search_error_body">Überprüfe deine Verbindung und versuche es erneut.</string>
     <string name="movie_search_try_again">Erneut versuchen</string>
     <string name="movie_search_selected_none">Nichts ausgewählt</string>

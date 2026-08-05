@@ -52,8 +52,6 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDeta
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
 
-private const val DEFAULT_SOURCE_NAME = "TMDB"
-
 // Mock-literal colours with no single matching M3 role (see docs/design-spec-turns-8-9.md
 // §10.2/§10.6/§10.7) — the field/bar fill's dark half matches surfaceContainerHigh but its
 // light half matches surfaceContainer, and the selected-row tint matches neither; both are
@@ -72,7 +70,6 @@ fun MovieSearchScreenContent(
     onQueryChange: (String) -> Unit,
     onSearchClick: () -> Unit,
     onClose: () -> Unit = {},
-    sourceName: String = DEFAULT_SOURCE_NAME,
     listTitle: String = "",
     selectedIds: Set<Long> = emptySet(),
     onToggleSelection: (MovieSearchResult) -> Unit = {},
@@ -91,7 +88,6 @@ fun MovieSearchScreenContent(
             onQueryChange = onQueryChange,
             onSearchClick = onSearchClick,
             onClose = onClose,
-            sourceName = sourceName,
             fill = fieldFill,
         )
 
@@ -105,7 +101,7 @@ fun MovieSearchScreenContent(
             )
         }
 
-        CaptionLine(sourceName = sourceName, listTitle = listTitle)
+        CaptionLine(listTitle = listTitle)
 
         Box(modifier = Modifier.weight(1f)) {
             when (state) {
@@ -136,7 +132,7 @@ fun MovieSearchScreenContent(
 
                 is MovieSearchUiState.Error -> {
                     CenteredMessage(
-                        text = stringResource(R.string.movie_search_error_title, sourceName),
+                        text = stringResource(R.string.movie_search_error_title),
                         body = stringResource(R.string.movie_search_error_body),
                         actionLabel = stringResource(R.string.movie_search_try_again),
                         onAction = onSearchClick,
@@ -159,7 +155,6 @@ private fun SearchField(
     onQueryChange: (String) -> Unit,
     onSearchClick: () -> Unit,
     onClose: () -> Unit,
-    sourceName: String,
     fill: Color,
 ) {
     val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
@@ -169,7 +164,7 @@ private fun SearchField(
     TextField(
         value = query,
         onValueChange = onQueryChange,
-        placeholder = { Text(stringResource(R.string.movie_search_field_label, sourceName)) },
+        placeholder = { Text(stringResource(R.string.movie_search_field_label)) },
         singleLine = true,
         shape = RoundedCornerShape(28.dp),
         leadingIcon = {
@@ -210,10 +205,10 @@ private fun SearchField(
 }
 
 @Composable
-private fun CaptionLine(sourceName: String, listTitle: String) {
+private fun CaptionLine(listTitle: String) {
     val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     val primary = MaterialTheme.colorScheme.primary
-    val fullText = stringResource(R.string.movie_search_source_caption, sourceName, listTitle)
+    val fullText = stringResource(R.string.movie_search_source_caption, listTitle)
     val listNameStart = fullText.indexOf(listTitle).takeIf { listTitle.isNotEmpty() && it >= 0 }
     val annotated = buildAnnotatedString {
         append(fullText)

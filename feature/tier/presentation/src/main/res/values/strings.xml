@@ -128,13 +128,13 @@
     <string name="tier_editor_preset_color_description">Preset color %1$d</string>
     <string name="tier_editor_custom_color_description">Custom color</string>
 
-    <string name="movie_search_field_label">Search %1$s</string>
+    <string name="movie_search_field_label">Search</string>
     <string name="movie_search_close_content_description">Close search</string>
     <string name="movie_search_clear_content_description">Clear search</string>
-    <string name="movie_search_source_caption">Results from %1$s · adding to %2$s pool</string>
+    <string name="movie_search_source_caption">Adding to %1$s pool</string>
     <string name="movie_search_min_query">Type at least two letters to search.</string>
     <string name="movie_search_empty_title">Nothing found for \"%1$s\"</string>
-    <string name="movie_search_error_title">Couldn\'t reach %1$s</string>
+    <string name="movie_search_error_title">Couldn’t load results</string>
     <string name="movie_search_error_body">Check your connection and try again.</string>
     <string name="movie_search_try_again">Try again</string>
     <string name="movie_search_selected_none">Nothing selected</string>
