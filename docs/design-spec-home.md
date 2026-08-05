@@ -669,3 +669,21 @@ The stacked form is as §7 describes: three rows, minimum 48dp, check moved to t
 leading edge, the outline and rounded outer ends kept so it still reads as one control.
 Both branches are covered by tests that assert the geometry — side by side at the
 default scale, stacked at 2× — rather than the wording.
+
+## Arabic is not offered, and the app is left-to-right (against §7)
+
+§7 lists eleven languages, Arabic among them, labelled "right-to-left". It shipped and it
+looked wrong: every icon in this project is a hand-drawn `Canvas` path, and Compose mirrors
+layout and `Painter`-backed icons for RTL but not raw drawing commands. The screen flipped
+while the back arrow and every chevron kept pointing the way they do in English.
+
+Arabic is removed rather than half-supported. Ten languages remain.
+
+`android:supportsRtl` goes to `false` with it, which is the part worth writing down: layout
+direction follows the **device locale**, not the app's own resources. Dropping `values-ar`
+alone would still have left a phone set to Arabic mirroring the whole app while showing
+English text — the same broken screen, reached a different way. Off is the honest state.
+
+Both flip back together when the icons learn to mirror: `VectorIcon` is the single place
+that draws them, so a layout-direction-aware flip belongs there, opted into per icon, since
+a plus or a trash can must not mirror.

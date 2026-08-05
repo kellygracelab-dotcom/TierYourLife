@@ -3,6 +3,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- supportsRtl is off because no right-to-left language is offered, and layout
+         direction follows the device locale rather than the app's own strings: with it on,
+         a phone set to Arabic would mirror the whole app while showing English text and
+         leaving every icon pointing the way it does in English — they are hand-drawn Canvas
+         paths, which Compose does not mirror. Off is the honest state until RTL is done
+         properly; then this flips back and the icons learn to mirror. -->
     <application
         android:name=".TierYourLifeApplication"
         android:allowBackup="true"
@@ -12,7 +18,7 @@
         android:label="@string/app_name"
         android:localeConfig="@xml/locales_config"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
+        android:supportsRtl="false"
         android:theme="@style/Theme.TierYourLife">
         <!-- configChanges: this activity handles a locale change itself rather than
              being destroyed and rebuilt for one. Compose re-reads every stringResource

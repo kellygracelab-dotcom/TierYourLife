@@ -186,7 +186,6 @@
     <string name="language_name_pl">Polish</string>
     <string name="language_name_tr">Turkish</string>
     <string name="language_name_ja">Japanese</string>
-    <string name="language_name_ar">Arabic · right-to-left</string>
     <string name="settings_trash">Trash</string>
     <string name="settings_trash_empty">Empty</string>
     <string name="settings_export">Export data</string>
