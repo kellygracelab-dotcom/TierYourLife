@@ -3,12 +3,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- supportsRtl is off because no right-to-left language is offered, and layout
-         direction follows the device locale rather than the app's own strings: with it on,
-         a phone set to Arabic would mirror the whole app while showing English text and
-         leaving every icon pointing the way it does in English — they are hand-drawn Canvas
-         paths, which Compose does not mirror. Off is the honest state until RTL is done
-         properly; then this flips back and the icons learn to mirror. -->
+    <!-- Off deliberately: the icons are hand-drawn Canvas paths, which Compose does not
+         mirror, so a mirrored layout points them the wrong way. See docs/design-spec-home.md. -->
     <application
         android:name=".TierYourLifeApplication"
         android:allowBackup="true"
@@ -20,21 +16,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
         android:theme="@style/Theme.TierYourLife">
-        <!-- configChanges: this activity handles a locale change itself rather than
-             being destroyed and rebuilt for one. Compose re-reads every stringResource
-             when LocalConfiguration changes, so switching language becomes a
-             recomposition instead of a restart, and the blink between the two goes
-             away.
-
-             All three are needed, not just locale. Verified against the device log:
-             with only locale|layoutDirection declared, the system still reported
-             CONFIG_SCREEN_LAYOUT as changed and restarted the activity anyway, because
-             the layout-direction bits physically live inside screenLayout. Declaring
-             two of the three buys nothing — the restart happens on the one left out.
-
-             Below API 33 appcompat's backport recreates the activity itself and this
-             cannot prevent that; the window background in themes.xml is what covers
-             that case. -->
+        <!-- All three, or the activity restarts on a language change anyway: the
+             layout-direction bits live inside screenLayout, so the system reports it
+             changed too. Verified on a device; dropping any one brings the blink back. -->
         <activity
             android:name=".MainActivity"
             android:configChanges="locale|layoutDirection|screenLayout"
