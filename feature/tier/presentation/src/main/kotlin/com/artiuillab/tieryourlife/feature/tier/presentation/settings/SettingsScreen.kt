@@ -87,6 +87,9 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
+import androidx.compose.runtime.key
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalConfiguration
 
 internal object SettingsTestTags {
     const val BACK = "settings_back"
@@ -365,6 +368,13 @@ private fun ThemeSegmentedRow(
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
 ) {
+    // Rebuilt from scratch whenever the reading direction changes. SegmentedButton keeps its
+    // own remembered state for the shape and the border, and that state does not survive the
+    // direction flipping underneath it — switching to Arabic and back left the rounded ends
+    // drawn correctly with a square border stacked on top, and it stayed that way until
+    // picking a theme forced the row to recompose. Now the activity handles a locale change
+    // instead of restarting, nothing else was going to invalidate it.
+    key(LocalLayoutDirection.current) {
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -393,6 +403,7 @@ private fun ThemeSegmentedRow(
                 }
             }
         }
+    }
 }
 
 // The fallback when three labels cannot sit side by side: the same three choices as
@@ -477,7 +488,15 @@ private val LanguageOptionSelectedTintDark = Color(0xFF2E2F45)
 private fun LanguageRow(languageTag: String?, onLanguageTagChange: (String?) -> Unit) {
     var sheetVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val current = remember(languageTag) { currentLanguageOption(context, languageTag) }
+    // Keyed on the configuration as well as the stored tag: with "follow system" stored, the
+    // answer comes from whatever locale Android resolved the app's resources to, and that
+    // changes without the tag changing. Without this the row went on naming the previous
+    // language after a switch — the screen was already in English while the row still said
+    // العربية — because the activity is no longer recreated on a locale change.
+    val configuration = LocalConfiguration.current
+    val current = remember(languageTag, configuration) {
+        currentLanguageOption(context, languageTag)
+    }
 
     SettingsRow(
         icon = { TranslateIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
