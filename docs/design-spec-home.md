@@ -600,3 +600,33 @@ list has no name and no items by definition, so there is nothing to restore — 
 would create a fresh empty list, which is precisely what pressing + does. A snackbar
 offering to recover nothing is theatre, and the design itself admits the undo is gone
 the moment it times out.
+
+---
+
+# Decided against the design, from using it on a device (2026-08-05)
+
+## The heading stays while selecting (against §3 and §11)
+
+§3 says the count "replaces 'Your lists' and the summary line entirely". Built, that
+made entering selection mode yank the whole list upward — under the finger still
+resting on the card it had just long-pressed — and left the first card flush against
+the contextual bar with nothing between them.
+
+The heading and summary now stay put in selection mode. Only the bar above them
+changes: close on the left, the count as its title, delete at the trailing edge. The
+FAB still hides.
+
+Search keeps the design's behaviour, because there the field genuinely replaces the bar
+and a heading beside a search field is redundant. The difference is that search swaps
+one control for another, while selection only re-labels what is already there.
+
+## Nothing is seeded (against nothing — this was never designed, only built)
+
+`loadTierListsForPresentation` used to create "Sci-fi films" and "Every A24 film"
+whenever it found no lists. That made the two demo lists impossible to remove — delete
+them and they returned on the next read — and it meant the empty state in §5 could
+never appear, because there was never a moment with an empty database. The seeding is
+gone. An empty library is a legitimate state and the empty state says so.
+
+Existing installs still hold whichever demo lists they created earlier; deleting them
+now makes them stay deleted.

@@ -231,7 +231,14 @@ internal fun TierListsScreenContent(
                     )
                 }
 
-                if (mode is HomeMode.Browsing) {
+                // The heading and its summary line stay put while selecting, and only
+                // the bar above them changes. The design had them collapse away, which
+                // meant entering the mode yanked the whole list upward under the
+                // finger that was still resting on the card it had just long-pressed —
+                // and left the first card flush against the bar with nothing between
+                // them. Search is different: there the field replaces the bar and the
+                // heading really is redundant beside it.
+                if (mode !is HomeMode.Searching) {
                     HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
                 }
 

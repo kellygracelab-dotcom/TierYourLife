@@ -1,0 +1,293 @@
+<resources>
+    <string name="tier_lists_title">Ваші списки</string>
+    <string name="tier_lists_private">приватно</string>
+    <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <plurals name="tier_lists_count">
+        <item quantity="one">%d список</item>
+        <item quantity="few">%d списки</item>
+        <item quantity="many">%d списків</item>
+        <item quantity="other">%d списку</item>
+    </plurals>
+    <plurals name="tier_lists_rankings_count">
+        <item quantity="one">%d рейтинг</item>
+        <item quantity="few">%d рейтинги</item>
+        <item quantity="many">%d рейтингів</item>
+        <item quantity="other">%d рейтингу</item>
+    </plurals>
+    <plurals name="tier_lists_ranked_count">
+        <item quantity="one">%d оцінено</item>
+        <item quantity="few">%d оцінено</item>
+        <item quantity="many">%d оцінено</item>
+        <item quantity="other">%d оцінено</item>
+    </plurals>
+    <plurals name="tier_lists_in_pool_count">
+        <item quantity="one">%d у пулі</item>
+        <item quantity="few">%d у пулі</item>
+        <item quantity="many">%d у пулі</item>
+        <item quantity="other">%d у пулі</item>
+    </plurals>
+    <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · ще нічого не оцінено</string>
+    <string name="tier_lists_status_start_dragging">Перетягніть, щоб оцінити</string>
+    <string name="tier_lists_content_description_search">Пошук у ваших списках</string>
+    <string name="tier_lists_content_description_settings">Налаштування</string>
+
+    <string name="home_search_hint">Пошук у ваших списках</string>
+    <plurals name="search_results_count">
+        <item quantity="one">%1$d список</item>
+        <item quantity="few">%1$d списки</item>
+        <item quantity="many">%1$d списків</item>
+        <item quantity="other">%1$d списку</item>
+    </plurals>
+    <string name="search_no_results_title">Немає списків за запитом «%1$s»</string>
+    <string name="search_no_results_body">Спробуйте коротше слово або перевірте орфографію.</string>
+    <string name="cd_close_search">Закрити пошук</string>
+    <string name="cd_clear_query">Очистити пошук</string>
+
+    <plurals name="selection_count">
+        <item quantity="one">%1$d вибрано</item>
+        <item quantity="few">%1$d вибрано</item>
+        <item quantity="many">%1$d вибрано</item>
+        <item quantity="other">%1$d вибрано</item>
+    </plurals>
+    <string name="cd_close_selection">Вийти з вибору</string>
+    <string name="cd_delete_selected">Видалити %1$s</string>
+
+    <plurals name="snack_lists_deleted">
+        <item quantity="one">%1$d список видалено</item>
+        <item quantity="few">%1$d списки видалено</item>
+        <item quantity="many">%1$d списків видалено</item>
+        <item quantity="other">%1$d списку видалено</item>
+    </plurals>
+    <string name="action_undo">Скасувати</string>
+    <string name="home_empty_title">Поки немає списків</string>
+    <string name="home_empty_body">Натисніть +, щоб щось оцінити.</string>
+    <string name="cd_new_list">Новий список</string>
+
+    <string name="tier_detail_add">Додати</string>
+    <string name="tier_detail_content_description_back">Назад</string>
+    <string name="tier_detail_content_description_manual_add">Додати елемент вручну</string>
+    <string name="tier_detail_content_description_more">Більше опцій</string>
+    <string name="tier_detail_content_description_edit_title">Редагувати назву списку</string>
+    <string name="tier_detail_content_description_discard">Скасувати цей список</string>
+    <plurals name="tier_detail_pool_unranked_count">
+        <item quantity="one">Пул · %d без оцінки</item>
+        <item quantity="few">Пул · %d без оцінки</item>
+        <item quantity="many">Пул · %d без оцінки</item>
+        <item quantity="other">Пул · %d без оцінки</item>
+    </plurals>
+
+    <string name="tier_detail_move_sheet_subtitle">Перемістити до рівня</string>
+    <string name="tier_detail_move_sheet_current_tier">Зараз тут</string>
+    <string name="tier_detail_move_sheet_remove_title">Видалити зі списку</string>
+    <string name="tier_detail_move_sheet_remove_subtitle">Потрапляє в кошик</string>
+    <string name="tier_detail_move_sheet_pool_title">Повернути в пул</string>
+    <string name="tier_detail_move_sheet_pool_subtitle">Без оцінки, залишається у списку</string>
+
+    <string name="tier_detail_trash_target_label">Видалити</string>
+
+    <string name="tier_detail_item_moved_to_trash">«%1$s» переміщено в кошик</string>
+    <string name="tier_detail_tier_moved_to_trash">Рівень %1$s переміщено в кошик</string>
+    <string name="tier_detail_snackbar_undo">Скасувати</string>
+
+    <plurals name="tier_detail_collapsed_item_count">
+        <item quantity="one">%1$d елемент</item>
+        <item quantity="few">%1$d елементи</item>
+        <item quantity="many">%1$d елементів</item>
+        <item quantity="other">%1$d елемента</item>
+    </plurals>
+
+    <plurals name="tier_detail_ranked_header">
+        <item quantity="one">%1$d оцінено · від кращого до гіршого</item>
+        <item quantity="few">%1$d оцінено · від кращого до гіршого</item>
+        <item quantity="many">%1$d оцінено · від кращого до гіршого</item>
+        <item quantity="other">%1$d оцінено · від кращого до гіршого</item>
+    </plurals>
+    <string name="tier_detail_ranked_header_empty">Ще нічого не оцінено</string>
+    <string name="tier_detail_ranked_row_description">Місце %1$d, %2$s, рівень %3$s.</string>
+    <plurals name="tier_detail_ranked_pool_collapsed_description">
+        <item quantity="one">Пул, %1$d без оцінки. Розгорнути.</item>
+        <item quantity="few">Пул, %1$d без оцінки. Розгорнути.</item>
+        <item quantity="many">Пул, %1$d без оцінки. Розгорнути.</item>
+        <item quantity="other">Пул, %1$d без оцінки. Розгорнути.</item>
+    </plurals>
+    <plurals name="tier_detail_ranked_pool_expanded_description">
+        <item quantity="one">Пул, %1$d без оцінки. Згорнути.</item>
+        <item quantity="few">Пул, %1$d без оцінки. Згорнути.</item>
+        <item quantity="many">Пул, %1$d без оцінки. Згорнути.</item>
+        <item quantity="other">Пул, %1$d без оцінки. Згорнути.</item>
+    </plurals>
+
+    <string name="tier_list_settings_title">Налаштування списку</string>
+    <string name="tier_list_settings_display_section">Відображення</string>
+    <string name="tier_list_settings_display_section_caption">Як показуються рівні в цьому списку. На інші списки це не впливає.</string>
+    <string name="tier_list_settings_mode_wrapped">Рядки, що переносяться</string>
+    <string name="tier_list_settings_mode_wrapped_sub">Видно кожен елемент, рядки стають вищими</string>
+    <string name="tier_list_settings_mode_strip">Одна смуга</string>
+    <string name="tier_list_settings_mode_strip_sub">Один рядок на рівень, прокрутка вбік</string>
+    <string name="tier_list_settings_mode_ranked">Список за місцями</string>
+    <string name="tier_list_settings_mode_ranked_sub">Одна колонка, від кращого до гіршого, без рівнів</string>
+    <string name="tier_list_settings_new_tier_title">Новий рівень</string>
+    <plurals name="tier_list_settings_tier_count">
+        <item quantity="one">%d рівень</item>
+        <item quantity="few">%d рівні</item>
+        <item quantity="many">%d рівнів</item>
+        <item quantity="other">%d рівня</item>
+    </plurals>
+
+    <string name="tier_editor_title">Редагувати рівень</string>
+    <string name="tier_editor_add_title">Додати рівень</string>
+    <string name="tier_editor_label_field">Мітка</string>
+    <string name="tier_editor_caption_field">Підпис</string>
+    <string name="tier_editor_color_section_title">Колір</string>
+    <string name="tier_editor_color_section_caption">Власний · встановіть світлий і темний колір окремо</string>
+    <string name="tier_editor_theme_light">Світла</string>
+    <string name="tier_editor_theme_dark">Темна</string>
+    <string name="tier_editor_hue_label">Відтінок</string>
+    <string name="tier_editor_saturation_label">Насиченість</string>
+    <string name="tier_editor_lightness_label">Яскравість</string>
+    <string name="tier_editor_hex_label">Hex</string>
+    <string name="tier_editor_cancel">Скасувати</string>
+    <string name="tier_editor_save">Зберегти</string>
+    <string name="tier_editor_preset_color_description">Готовий колір %1$d</string>
+    <string name="tier_editor_custom_color_description">Власний колір</string>
+
+    <string name="movie_search_field_label">Пошук %1$s</string>
+    <string name="movie_search_close_content_description">Закрити пошук</string>
+    <string name="movie_search_clear_content_description">Очистити пошук</string>
+    <string name="movie_search_source_caption">Результати з %1$s · додається в пул %2$s</string>
+    <string name="movie_search_min_query">Введіть принаймні дві літери для пошуку.</string>
+    <string name="movie_search_empty_title">Нічого не знайдено за запитом \"%1$s\"</string>
+    <string name="movie_search_error_title">Не вдалося з\'єднатися з %1$s</string>
+    <string name="movie_search_error_body">Перевірте з\'єднання і спробуйте ще раз.</string>
+    <string name="movie_search_try_again">Спробувати ще раз</string>
+    <string name="movie_search_selected_none">Нічого не вибрано</string>
+    <plurals name="movie_search_selected_count">
+        <item quantity="one">%1$d вибрано</item>
+        <item quantity="few">%1$d вибрано</item>
+        <item quantity="many">%1$d вибрано</item>
+        <item quantity="other">%1$d вибрано</item>
+    </plurals>
+    <plurals name="movie_search_add_button">
+        <item quantity="one">Додати %1$d елемент</item>
+        <item quantity="few">Додати %1$d елементи</item>
+        <item quantity="many">Додати %1$d елементів</item>
+        <item quantity="other">Додати %1$d елемента</item>
+    </plurals>
+    <string name="movie_search_add_disabled">Додати</string>
+
+    <string name="manual_dialog_title">Додати елемент</string>
+    <string name="manual_dialog_body">Потрапляє в пул. Потім можна перетягнути його в рівень.</string>
+    <string name="manual_dialog_field_name">Назва</string>
+    <string name="manual_dialog_photo_optional">Фото не обов\'язкове.</string>
+    <string name="manual_dialog_choose_photo">Вибрати фото</string>
+    <string name="manual_dialog_replace_photo">Замінити фото</string>
+    <string name="manual_dialog_cancel">Скасувати</string>
+    <string name="manual_dialog_add">Додати</string>
+    <string name="manual_dialog_photo_frame_empty">Фото не вибрано</string>
+    <string name="manual_dialog_photo_frame_chosen">Фото вибрано. Натисніть «Замінити фото», щоб змінити.</string>
+    <string name="manual_dialog_remove_photo">Видалити фото</string>
+
+    <string name="settings_title">Налаштування</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_sub">«Як в системі» використовує налаштування Android.</string>
+    <string name="theme_light">Світла</string>
+    <string name="theme_dark">Темна</string>
+    <string name="theme_system">Як в системі</string>
+    <string name="settings_language">Мова</string>
+    <string name="settings_language_caption">Змінює лише текст додатка. Назви, які ви ввели самі, залишаються без змін.</string>
+    <string name="language_default">За замовчуванням</string>
+    <string name="language_name_uk">Українська</string>
+    <string name="language_name_ru">Російська</string>
+    <string name="language_name_es">Іспанська</string>
+    <string name="language_name_pt_br">Португальська (Бразилія)</string>
+    <string name="language_name_de">Німецька</string>
+    <string name="language_name_fr">Французька</string>
+    <string name="language_name_pl">Польська</string>
+    <string name="language_name_tr">Турецька</string>
+    <string name="language_name_ja">Японська</string>
+    <string name="language_name_ar">Арабська · справа наліво</string>
+    <string name="settings_trash">Кошик</string>
+    <string name="settings_trash_empty">Порожньо</string>
+    <string name="settings_export">Експорт даних</string>
+    <string name="settings_export_sub">Зберегти читабельну копію кожного списку</string>
+    <string name="cd_settings_back">Назад</string>
+
+    <string name="trash_title">Кошик</string>
+    <string name="trash_subtitle">Видалені списки та елементи залишаються тут, доки ви їх не приберете.</string>
+    <string name="trash_row_list_meta">Список · %1$s · видалено %2$s</string>
+    <string name="trash_row_item_meta">Елемент · з %1$s · видалено %2$s</string>
+    <plurals name="list_items_count">
+        <item quantity="one">%1$d елемент</item>
+        <item quantity="few">%1$d елементи</item>
+        <item quantity="many">%1$d елементів</item>
+        <item quantity="other">%1$d елемента</item>
+    </plurals>
+    <string name="trash_time_just_now">щойно</string>
+    <plurals name="trash_time_minutes_ago">
+        <item quantity="one">%1$d хв тому</item>
+        <item quantity="few">%1$d хв тому</item>
+        <item quantity="many">%1$d хв тому</item>
+        <item quantity="other">%1$d хв тому</item>
+    </plurals>
+    <plurals name="trash_time_hours_ago">
+        <item quantity="one">%1$d год тому</item>
+        <item quantity="few">%1$d год тому</item>
+        <item quantity="many">%1$d год тому</item>
+        <item quantity="other">%1$d год тому</item>
+    </plurals>
+    <string name="trash_time_yesterday">учора</string>
+    <plurals name="trash_time_days_ago">
+        <item quantity="one">%1$d день тому</item>
+        <item quantity="few">%1$d дні тому</item>
+        <item quantity="many">%1$d днів тому</item>
+        <item quantity="other">%1$d дня тому</item>
+    </plurals>
+    <string name="action_restore">Відновити</string>
+    <string name="action_remove">Видалити</string>
+    <string name="remove_dialog_title">Видалити назавжди?</string>
+    <string name="remove_dialog_body_list">«%1$s» та його %2$s буде видалено з цього пристрою. Це неможливо скасувати.</string>
+    <string name="remove_dialog_body_item">«%1$s» буде видалено з цього пристрою. Це неможливо скасувати.</string>
+    <string name="menu_empty_trash">Очистити кошик</string>
+    <string name="action_empty_trash">Очистити кошик</string>
+    <string name="action_cancel">Скасувати</string>
+    <string name="empty_trash_dialog_title">Очистити кошик?</string>
+    <string name="empty_trash_dialog_body">%1$s буде видалено з цього пристрою. Це неможливо скасувати.</string>
+    <plurals name="trash_entry_count">
+        <item quantity="one">%1$d запис</item>
+        <item quantity="few">%1$d записи</item>
+        <item quantity="many">%1$d записів</item>
+        <item quantity="other">%1$d запису</item>
+    </plurals>
+    <string name="trash_empty_title">У кошику порожньо</string>
+    <string name="trash_empty_body">Списки та елементи, які ви видаляєте, з\'являються тут. Вони залишаються, доки ви їх не приберете.</string>
+    <string name="cd_more">Більше опцій</string>
+    <string name="cd_restore">Відновити %1$s</string>
+    <string name="cd_remove">Видалити %1$s назавжди</string>
+    <string name="cd_trash_back">Назад</string>
+
+    <string name="export_filename">TierYourLife %1$s.txt</string>
+    <string name="export_file_header">TierYourLife</string>
+    <string name="export_file_date">Експортовано %1$s</string>
+    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
+    <plurals name="unranked_count">
+        <item quantity="one">%1$d без оцінки</item>
+        <item quantity="few">%1$d без оцінки</item>
+        <item quantity="many">%1$d без оцінки</item>
+        <item quantity="other">%1$d без оцінки</item>
+    </plurals>
+    <string name="export_list_counts">%1$s · %2$s</string>
+    <string name="export_tier_with_caption">%1$s — %2$s</string>
+    <string name="export_tier_plain">%1$s</string>
+    <string name="export_tier_empty">(порожньо)</string>
+    <string name="export_unranked_heading">Без оцінки</string>
+    <plurals name="snack_export_done">
+        <item quantity="one">Експортовано %1$d список</item>
+        <item quantity="few">Експортовано %1$d списки</item>
+        <item quantity="many">Експортовано %1$d списків</item>
+        <item quantity="other">Експортовано %1$d списку</item>
+    </plurals>
+    <string name="action_share">Поділитися</string>
+    <string name="snack_export_failed">Не вдалося зберегти файл</string>
+    <string name="action_try_again">Спробувати ще раз</string>
+</resources>

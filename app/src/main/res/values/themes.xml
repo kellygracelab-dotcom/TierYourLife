@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.TierYourLife" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- AppCompat, not the platform theme: AppCompatDelegate.setApplicationLocales only
+         applies its per-app-language backport (minSdk 24 needs the backport; the
+         framework API is 33+ only) through an Activity whose theme descends from
+         AppCompat. Still a bare no-action-bar theme — TierYourLifeTheme in Compose does
+         all real theming, so this must not draw its own action bar or background. -->
+    <style name="Theme.TierYourLife" parent="Theme.AppCompat.Light.NoActionBar" />
 </resources>

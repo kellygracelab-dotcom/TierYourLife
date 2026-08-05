@@ -42,6 +42,21 @@ class TierListsViewModelTest {
         assertEquals(listOf("Existing list", "Another list"), state.lists.map { it.title })
     }
 
+    // An empty library used to be impossible: finding no lists, the load seeded two demo
+    // lists, so deleting everything brought them straight back on the next read and the
+    // empty state could never appear. Nothing is created on the user's behalf now.
+    @Test
+    fun loadTierLists_onAnEmptyRepository_staysEmpty_andCreatesNothing() = runBlocking {
+        val repository = FakeTierRepository(initial = emptyList())
+        val viewModel = TierListsViewModel(repository)
+
+        viewModel.loadTierLists()
+        val state = viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success
+
+        assertEquals(emptyList<Long>(), state.lists.map { it.id })
+        assertEquals(0, state.totalListCount)
+    }
+
     @Test
     fun secondLoad_afterARenameOnTheRepository_showsTheNewTitle() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))

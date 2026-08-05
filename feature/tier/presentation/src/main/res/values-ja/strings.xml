@@ -1,0 +1,227 @@
+<resources>
+    <string name="tier_lists_title">あなたのリスト</string>
+    <string name="tier_lists_private">非公開</string>
+    <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <plurals name="tier_lists_count">
+        <item quantity="other">%dリスト</item>
+    </plurals>
+    <plurals name="tier_lists_rankings_count">
+        <item quantity="other">%d件のランキング</item>
+    </plurals>
+    <plurals name="tier_lists_ranked_count">
+        <item quantity="other">%d件評価済み</item>
+    </plurals>
+    <plurals name="tier_lists_in_pool_count">
+        <item quantity="other">プールに%d件</item>
+    </plurals>
+    <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · まだ何もランク付けされていません</string>
+    <string name="tier_lists_status_start_dragging">ドラッグしてランク付け</string>
+    <string name="tier_lists_content_description_search">リストを検索</string>
+    <string name="tier_lists_content_description_settings">設定</string>
+
+    <string name="home_search_hint">リストを検索</string>
+    <plurals name="search_results_count">
+        <item quantity="other">%1$d件のリスト</item>
+    </plurals>
+    <string name="search_no_results_title">「%1$s」に一致するリストはありません</string>
+    <string name="search_no_results_body">もっと短い単語を試すか、つづりを確認してください。</string>
+    <string name="cd_close_search">検索を閉じる</string>
+    <string name="cd_clear_query">検索をクリア</string>
+
+    <plurals name="selection_count">
+        <item quantity="other">%1$d件選択</item>
+    </plurals>
+    <string name="cd_close_selection">選択を終了</string>
+    <string name="cd_delete_selected">%1$s を削除</string>
+
+    <plurals name="snack_lists_deleted">
+        <item quantity="other">%1$d件のリストを削除しました</item>
+    </plurals>
+    <string name="action_undo">元に戻す</string>
+    <string name="home_empty_title">リストはまだありません</string>
+    <string name="home_empty_body">+ をタップして何かをランク付けしましょう。</string>
+    <string name="cd_new_list">新しいリスト</string>
+
+    <string name="tier_detail_add">追加</string>
+    <string name="tier_detail_content_description_back">戻る</string>
+    <string name="tier_detail_content_description_manual_add">手動でアイテムを追加</string>
+    <string name="tier_detail_content_description_more">その他のオプション</string>
+    <string name="tier_detail_content_description_edit_title">リスト名を編集</string>
+    <string name="tier_detail_content_description_discard">このリストを破棄</string>
+    <plurals name="tier_detail_pool_unranked_count">
+        <item quantity="other">プール · 未評価%d件</item>
+    </plurals>
+
+    <string name="tier_detail_move_sheet_subtitle">ティアに移動</string>
+    <string name="tier_detail_move_sheet_current_tier">現在ここにあります</string>
+    <string name="tier_detail_move_sheet_remove_title">リストから削除</string>
+    <string name="tier_detail_move_sheet_remove_subtitle">ゴミ箱に移動します</string>
+    <string name="tier_detail_move_sheet_pool_title">プールに戻す</string>
+    <string name="tier_detail_move_sheet_pool_subtitle">未評価のまま、リストには残ります</string>
+
+    <string name="tier_detail_trash_target_label">削除</string>
+
+    <string name="tier_detail_item_moved_to_trash">%1$s をゴミ箱に移動しました</string>
+    <string name="tier_detail_tier_moved_to_trash">ティア %1$s をゴミ箱に移動しました</string>
+    <string name="tier_detail_snackbar_undo">元に戻す</string>
+
+    <plurals name="tier_detail_collapsed_item_count">
+        <item quantity="other">%1$d件</item>
+    </plurals>
+
+    <plurals name="tier_detail_ranked_header">
+        <item quantity="other">%1$d件評価済み · 最高から最低</item>
+    </plurals>
+    <string name="tier_detail_ranked_header_empty">まだ何もランク付けされていません</string>
+    <string name="tier_detail_ranked_row_description">%1$d 位、%2$s、ティア %3$s。</string>
+    <plurals name="tier_detail_ranked_pool_collapsed_description">
+        <item quantity="other">プール、未評価%1$d件。展開。</item>
+    </plurals>
+    <plurals name="tier_detail_ranked_pool_expanded_description">
+        <item quantity="other">プール、未評価%1$d件。折りたたむ。</item>
+    </plurals>
+
+    <string name="tier_list_settings_title">リストの設定</string>
+    <string name="tier_list_settings_display_section">表示</string>
+    <string name="tier_list_settings_display_section_caption">このリストでのティアの表示方法です。他のリストには影響しません。</string>
+    <string name="tier_list_settings_mode_wrapped">折り返し行</string>
+    <string name="tier_list_settings_mode_wrapped_sub">すべてのアイテムが見え、行が高くなります</string>
+    <string name="tier_list_settings_mode_strip">一本のストリップ</string>
+    <string name="tier_list_settings_mode_strip_sub">ティアごとに1行、横スクロール</string>
+    <string name="tier_list_settings_mode_ranked">ランク順リスト</string>
+    <string name="tier_list_settings_mode_ranked_sub">1列、最高から最低へ、ティアなし</string>
+    <string name="tier_list_settings_new_tier_title">新しいティア</string>
+    <plurals name="tier_list_settings_tier_count">
+        <item quantity="other">%d個のティア</item>
+    </plurals>
+
+    <string name="tier_editor_title">ティアを編集</string>
+    <string name="tier_editor_add_title">ティアを追加</string>
+    <string name="tier_editor_label_field">ラベル</string>
+    <string name="tier_editor_caption_field">キャプション</string>
+    <string name="tier_editor_color_section_title">色</string>
+    <string name="tier_editor_color_section_caption">カスタム · ライトとダークの色を別々に設定</string>
+    <string name="tier_editor_theme_light">ライト</string>
+    <string name="tier_editor_theme_dark">ダーク</string>
+    <string name="tier_editor_hue_label">色相</string>
+    <string name="tier_editor_saturation_label">彩度</string>
+    <string name="tier_editor_lightness_label">明度</string>
+    <string name="tier_editor_hex_label">Hex</string>
+    <string name="tier_editor_cancel">キャンセル</string>
+    <string name="tier_editor_save">保存</string>
+    <string name="tier_editor_preset_color_description">プリセットカラー %1$d</string>
+    <string name="tier_editor_custom_color_description">カスタムカラー</string>
+
+    <string name="movie_search_field_label">%1$s を検索</string>
+    <string name="movie_search_close_content_description">検索を閉じる</string>
+    <string name="movie_search_clear_content_description">検索をクリア</string>
+    <string name="movie_search_source_caption">%1$s の検索結果 · %2$s のプールに追加</string>
+    <string name="movie_search_min_query">検索するには2文字以上入力してください。</string>
+    <string name="movie_search_empty_title">「%1$s」に一致するものは見つかりませんでした</string>
+    <string name="movie_search_error_title">%1$s に接続できませんでした</string>
+    <string name="movie_search_error_body">接続を確認して、もう一度お試しください。</string>
+    <string name="movie_search_try_again">もう一度試す</string>
+    <string name="movie_search_selected_none">何も選択されていません</string>
+    <plurals name="movie_search_selected_count">
+        <item quantity="other">%1$d件選択</item>
+    </plurals>
+    <plurals name="movie_search_add_button">
+        <item quantity="other">%1$d件を追加</item>
+    </plurals>
+    <string name="movie_search_add_disabled">追加</string>
+
+    <string name="manual_dialog_title">アイテムを追加</string>
+    <string name="manual_dialog_body">プールに入ります。あとでティアにドラッグできます。</string>
+    <string name="manual_dialog_field_name">名前</string>
+    <string name="manual_dialog_photo_optional">写真は任意です。</string>
+    <string name="manual_dialog_choose_photo">写真を選択</string>
+    <string name="manual_dialog_replace_photo">写真を変更</string>
+    <string name="manual_dialog_cancel">キャンセル</string>
+    <string name="manual_dialog_add">追加</string>
+    <string name="manual_dialog_photo_frame_empty">写真が選択されていません</string>
+    <string name="manual_dialog_photo_frame_chosen">写真を選択しました。変更するには「写真を変更」をタップしてください。</string>
+    <string name="manual_dialog_remove_photo">写真を削除</string>
+
+    <string name="settings_title">設定</string>
+    <string name="settings_theme">テーマ</string>
+    <string name="settings_theme_sub">「システムに従う」はAndroidの設定を使用します。</string>
+    <string name="theme_light">ライト</string>
+    <string name="theme_dark">ダーク</string>
+    <string name="theme_system">システムに従う</string>
+    <string name="settings_language">言語</string>
+    <string name="settings_language_caption">アプリ自体のテキストのみが変わります。あなたが入力した名前はそのまま残ります。</string>
+    <string name="language_default">デフォルト</string>
+    <string name="language_name_uk">ウクライナ語</string>
+    <string name="language_name_ru">ロシア語</string>
+    <string name="language_name_es">スペイン語</string>
+    <string name="language_name_pt_br">ポルトガル語（ブラジル）</string>
+    <string name="language_name_de">ドイツ語</string>
+    <string name="language_name_fr">フランス語</string>
+    <string name="language_name_pl">ポーランド語</string>
+    <string name="language_name_tr">トルコ語</string>
+    <string name="language_name_ja">日本語</string>
+    <string name="language_name_ar">アラビア語 · 右から左</string>
+    <string name="settings_trash">ゴミ箱</string>
+    <string name="settings_trash_empty">空です</string>
+    <string name="settings_export">データをエクスポート</string>
+    <string name="settings_export_sub">各リストの読みやすいコピーを保存</string>
+    <string name="cd_settings_back">戻る</string>
+
+    <string name="trash_title">ゴミ箱</string>
+    <string name="trash_subtitle">削除されたリストとアイテムは、削除するまでここに残ります。</string>
+    <string name="trash_row_list_meta">リスト · %1$s · %2$s に削除</string>
+    <string name="trash_row_item_meta">アイテム · %1$s から · %2$s に削除</string>
+    <plurals name="list_items_count">
+        <item quantity="other">%1$d件</item>
+    </plurals>
+    <string name="trash_time_just_now">たった今</string>
+    <plurals name="trash_time_minutes_ago">
+        <item quantity="other">%1$d分前</item>
+    </plurals>
+    <plurals name="trash_time_hours_ago">
+        <item quantity="other">%1$d時間前</item>
+    </plurals>
+    <string name="trash_time_yesterday">昨日</string>
+    <plurals name="trash_time_days_ago">
+        <item quantity="other">%1$d日前</item>
+    </plurals>
+    <string name="action_restore">復元</string>
+    <string name="action_remove">削除</string>
+    <string name="remove_dialog_title">完全に削除しますか？</string>
+    <string name="remove_dialog_body_list">%1$s とその %2$s がこの端末から削除されます。これは元に戻せません。</string>
+    <string name="remove_dialog_body_item">%1$s がこの端末から削除されます。これは元に戻せません。</string>
+    <string name="menu_empty_trash">ゴミ箱を空にする</string>
+    <string name="action_empty_trash">ゴミ箱を空にする</string>
+    <string name="action_cancel">キャンセル</string>
+    <string name="empty_trash_dialog_title">ゴミ箱を空にしますか？</string>
+    <string name="empty_trash_dialog_body">%1$s がこの端末から削除されます。これは元に戻せません。</string>
+    <plurals name="trash_entry_count">
+        <item quantity="other">%1$d件</item>
+    </plurals>
+    <string name="trash_empty_title">ゴミ箱は空です</string>
+    <string name="trash_empty_body">削除したリストとアイテムはここに表示されます。削除するまで残ります。</string>
+    <string name="cd_more">その他のオプション</string>
+    <string name="cd_restore">%1$s を復元</string>
+    <string name="cd_remove">%1$s を完全に削除</string>
+    <string name="cd_trash_back">戻る</string>
+
+    <string name="export_filename">TierYourLife %1$s.txt</string>
+    <string name="export_file_header">TierYourLife</string>
+    <string name="export_file_date">%1$s にエクスポート</string>
+    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
+    <plurals name="unranked_count">
+        <item quantity="other">%1$d件未評価</item>
+    </plurals>
+    <string name="export_list_counts">%1$s · %2$s</string>
+    <string name="export_tier_with_caption">%1$s — %2$s</string>
+    <string name="export_tier_plain">%1$s</string>
+    <string name="export_tier_empty">（空）</string>
+    <string name="export_unranked_heading">未評価</string>
+    <plurals name="snack_export_done">
+        <item quantity="other">%1$d件のリストをエクスポートしました</item>
+    </plurals>
+    <string name="action_share">共有</string>
+    <string name="snack_export_failed">ファイルを保存できませんでした</string>
+    <string name="action_try_again">もう一度試す</string>
+</resources>

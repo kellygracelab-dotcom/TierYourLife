@@ -5,6 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,15 +15,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -30,27 +36,37 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.export.TierListsExportStrings
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ThemeChoice
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.FileDownloadIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.VectorIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ChevronRightIcon
@@ -70,8 +86,11 @@ internal object SettingsTestTags {
     const val THEME_LIGHT = "settings_theme_light"
     const val THEME_DARK = "settings_theme_dark"
     const val THEME_SYSTEM = "settings_theme_system"
+    const val LANGUAGE_ROW = "settings_language_row"
+    const val LANGUAGE_SHEET = "settings_language_sheet"
     const val TRASH_ROW = "settings_trash_row"
     const val EXPORT_ROW = "settings_export_row"
+    fun languageOption(tag: String?) = "settings_language_option_${tag ?: "default"}"
 }
 
 @Composable
@@ -80,6 +99,8 @@ fun SettingsScreen(
     onTrashClick: () -> Unit,
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
+    languageTag: String?,
+    onLanguageTagChange: (String?) -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val trashCount by viewModel.trashCount.collectAsState()
@@ -119,6 +140,8 @@ fun SettingsScreen(
     SettingsScreenContent(
         themeChoice = themeChoice,
         onThemeChoiceChange = onThemeChoiceChange,
+        languageTag = languageTag,
+        onLanguageTagChange = onLanguageTagChange,
         trashCount = trashCount,
         onBack = onBack,
         onTrashClick = onTrashClick,
@@ -207,6 +230,8 @@ private fun buildExportStrings(context: Context): TierListsExportStrings {
 internal fun SettingsScreenContent(
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
+    languageTag: String?,
+    onLanguageTagChange: (String?) -> Unit,
     trashCount: Int,
     onBack: () -> Unit,
     onTrashClick: () -> Unit,
@@ -219,6 +244,10 @@ internal fun SettingsScreenContent(
                 SettingsTopBar(onBack = onBack)
                 Column(Modifier.verticalScroll(rememberScrollState())) {
                     ThemeSection(themeChoice = themeChoice, onThemeChoiceChange = onThemeChoiceChange)
+                    SettingsDivider()
+                    // Second in the column, between Theme and Trash (docs/design-spec-home.md,
+                    // section 7's own row order).
+                    LanguageRow(languageTag = languageTag, onLanguageTagChange = onLanguageTagChange)
                     SettingsDivider()
                     TrashRow(trashCount = trashCount, onClick = onTrashClick)
                     SettingsDivider()
@@ -325,6 +354,153 @@ private fun SettingsDivider() {
         modifier = Modifier.padding(horizontal = 16.dp),
         color = MaterialTheme.colorScheme.outlineVariant,
         thickness = 1.dp,
+    )
+}
+
+// Mock-literal color with no matching theme role — the same selection tint the
+// display-mode rows in TierListSettingsScreen.kt and the "currently here" tier row in
+// MoveItemSheet.kt already use for "the standard row tint" (docs/design-spec-home.md,
+// section 7's own wording for the selected radio row).
+private val LanguageOptionSelectedTintLight = Color(0xFFEDEBFA)
+private val LanguageOptionSelectedTintDark = Color(0xFF2E2F45)
+
+@Composable
+private fun LanguageRow(languageTag: String?, onLanguageTagChange: (String?) -> Unit) {
+    var sheetVisible by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val current = remember(languageTag) { currentLanguageOption(context, languageTag) }
+
+    SettingsRow(
+        icon = { TranslateIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = stringResource(R.string.settings_language),
+        subtitle = current.nativeName,
+        onClick = { sheetVisible = true },
+        testTag = SettingsTestTags.LANGUAGE_ROW,
+    )
+
+    if (sheetVisible) {
+        LanguageBottomSheet(
+            selectedTag = languageTag,
+            onSelect = { tag ->
+                onLanguageTagChange(tag)
+                sheetVisible = false
+            },
+            onDismiss = { sheetVisible = false },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LanguageBottomSheet(
+    selectedTag: String?,
+    onSelect: (String?) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+    ) {
+        Column(Modifier.testTag(SettingsTestTags.LANGUAGE_SHEET)) {
+            Column(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 8.dp)) {
+                Text(
+                    text = stringResource(R.string.settings_language),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = stringResource(R.string.settings_language_caption),
+                    style = TierYourLifeType.current.captionUnderTitle,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Column(Modifier.selectableGroup()) {
+                LanguageOptions.forEach { option ->
+                    LanguageOptionRow(
+                        option = option,
+                        selected = option.persistTag == selectedTag,
+                        onClick = { onSelect(option.persistTag) },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LanguageOptionRow(option: LanguageOption, selected: Boolean, onClick: () -> Unit) {
+    val isDark = TierYourLifeMedia.current.isDark
+    val background = if (selected) {
+        if (isDark) LanguageOptionSelectedTintDark else LanguageOptionSelectedTintLight
+    } else {
+        Color.Transparent
+    }
+    val accent = MaterialTheme.colorScheme.primary
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .background(background)
+            .selectable(selected = selected, onClick = onClick, role = Role.RadioButton)
+            .testTag(SettingsTestTags.languageOption(option.persistTag))
+            .padding(horizontal = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        LanguageRadioDot(selected = selected, color = if (selected) accent else MaterialTheme.colorScheme.outline)
+        Text(
+            text = option.nativeName,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Text(
+            text = stringResource(option.englishNameRes),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+// The chooser's own radio glyph, hand-drawn like every other icon here rather than
+// pulled from material-icons-extended (this project has no dependency on it).
+@Composable
+private fun LanguageRadioDot(selected: Boolean, color: Color) {
+    Canvas(Modifier.size(20.dp)) {
+        val strokeWidth = 1.6.dp.toPx()
+        drawCircle(color, radius = (size.minDimension - strokeWidth) / 2f, style = Stroke(strokeWidth))
+        if (selected) {
+            drawCircle(color, radius = size.minDimension / 4.5f)
+        }
+    }
+}
+
+// A globe — meridian and equator lines on a circle — for the "translate" glyph on the
+// Language row, hand-drawn in the same style as the rest of this screen's icons.
+@Composable
+private fun TranslateIcon(iconSize: androidx.compose.ui.unit.Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.5f * scale
+    drawCircle(color, radius = 9f * scale, center = Offset(12f * scale, 12f * scale), style = Stroke(stroke))
+    drawLine(color, Offset(3f * scale, 12f * scale), Offset(21f * scale, 12f * scale), stroke, StrokeCap.Round)
+    drawArc(
+        color,
+        startAngle = -90f,
+        sweepAngle = 180f,
+        useCenter = false,
+        topLeft = Offset(8f * scale, 3f * scale),
+        size = androidx.compose.ui.geometry.Size(8f * scale, 18f * scale),
+        style = Stroke(stroke),
+    )
+    drawArc(
+        color,
+        startAngle = 90f,
+        sweepAngle = 180f,
+        useCenter = false,
+        topLeft = Offset(8f * scale, 3f * scale),
+        size = androidx.compose.ui.geometry.Size(8f * scale, 18f * scale),
+        style = Stroke(stroke),
     )
 }
 
