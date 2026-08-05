@@ -65,6 +65,7 @@ import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddMovieSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
@@ -83,6 +84,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TrashTarget
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
@@ -157,6 +159,9 @@ internal object TierDetailTestTags {
 private val TIER_LIST_AUTOSCROLL_EDGE = 72.dp
 private const val TIER_LIST_AUTOSCROLL_MAX_SPEED_DP_PER_SEC = 600
 
+// How long a read may take before it is worth telling the user it is happening.
+private const val LOADING_SPINNER_DELAY_MILLIS = 150L
+
 // Positive scrolls down, negative scrolls up. A pointer within edgePx of an edge (or past
 // it entirely — a lifted tile can be dragged beyond the list's own bounds) scrolls that
 // direction, ramping linearly from 0 at the edge of the zone to maxSpeedPx right at (or
@@ -178,6 +183,7 @@ fun TierDetailScreen(
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    val canDiscard by viewModel.canDiscard.collectAsState()
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
     var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -185,6 +191,9 @@ fun TierDetailScreen(
         state = state,
         onBack = onBack,
         startInTitleEdit = startInTitleEdit,
+        canDiscard = canDiscard,
+        onDiscard = { viewModel.discardList(onBack) },
+        onTitleEditStarted = viewModel::markTouched,
         onAddClick = { addSheetVisible = true },
         onManualAddClick = { manualEntryVisible = true },
         onMoveItem = viewModel::moveItem,
@@ -226,6 +235,9 @@ fun TierDetailScreenContent(
     state: TierDetailUiState,
     onBack: () -> Unit,
     startInTitleEdit: Boolean = false,
+    canDiscard: Boolean = false,
+    onDiscard: () -> Unit = {},
+    onTitleEditStarted: () -> Unit = {},
     onAddClick: () -> Unit,
     onManualAddClick: () -> Unit = {},
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
@@ -250,6 +262,18 @@ fun TierDetailScreenContent(
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
             is TierDetailUiState.Loading -> {
+                // Reading one list out of Room takes a handful of milliseconds, so a
+                // spinner drawn the instant this state appears is on screen for two or
+                // three frames and reads as a flash rather than as progress — worse
+                // than showing nothing. The bar is drawn immediately so the screen is
+                // never blank; only the spinner waits, and it appears solely on the
+                // reads slow enough to be worth reporting.
+                var spinnerVisible by remember { mutableStateOf(false) }
+                LaunchedEffect(Unit) {
+                    delay(LOADING_SPINNER_DELAY_MILLIS)
+                    spinnerVisible = true
+                }
+
                 Column(Modifier.fillMaxSize()) {
                     TierScreenTopBar(title = "", onBack = onBack, onManualAdd = onManualAddClick)
                     Box(
@@ -258,7 +282,9 @@ fun TierDetailScreenContent(
                             .testTag(TierDetailTestTags.LOADING),
                         contentAlignment = Alignment.Center,
                     ) {
-                        CircularProgressIndicator()
+                        if (spinnerVisible) {
+                            CircularProgressIndicator()
+                        }
                     }
                 }
             }
@@ -268,6 +294,9 @@ fun TierDetailScreenContent(
                     list = state.list,
                     onBack = onBack,
                     startInTitleEdit = startInTitleEdit,
+                    canDiscard = canDiscard,
+                    onDiscard = onDiscard,
+                    onTitleEditStarted = onTitleEditStarted,
                     onAddClick = onAddClick,
                     onManualAddClick = onManualAddClick,
                     onMoveItem = onMoveItem,
@@ -302,6 +331,9 @@ private fun TierScreenBody(
     list: TierList,
     onBack: () -> Unit,
     startInTitleEdit: Boolean = false,
+    canDiscard: Boolean = false,
+    onDiscard: () -> Unit = {},
+    onTitleEditStarted: () -> Unit = {},
     onAddClick: () -> Unit,
     onManualAddClick: () -> Unit,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
@@ -472,6 +504,9 @@ private fun TierScreenBody(
                 onRenameList = onRenameList,
                 titleEditable = true,
                 startInTitleEdit = startInTitleEdit,
+                canDiscard = canDiscard,
+                onDiscard = onDiscard,
+                onTitleEditStarted = onTitleEditStarted,
             )
 
             if (list.displayMode == TierListDisplayMode.FLAT_RANKED) {
@@ -599,8 +634,12 @@ private fun TierScreenTopBar(
     onRenameList: (String) -> Unit = {},
     titleEditable: Boolean = false,
     startInTitleEdit: Boolean = false,
+    canDiscard: Boolean = false,
+    onDiscard: () -> Unit = {},
+    onTitleEditStarted: () -> Unit = {},
 ) {
     val backDescription = stringResource(R.string.tier_detail_content_description_back)
+    val discardDescription = stringResource(R.string.tier_detail_content_description_discard)
     val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
     val moreDescription = stringResource(R.string.tier_detail_content_description_more)
 
@@ -612,17 +651,31 @@ private fun TierScreenTopBar(
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(
-            onClick = onBack,
-            modifier = Modifier
-                .size(48.dp)
-                .semantics { contentDescription = backDescription },
-        ) { BackIcon() }
+        // A brand-new, untouched list gets a close cross that hard-deletes it instead
+        // of the ordinary back arrow — the moment the list is touched, canDiscard flips
+        // for good and this reverts to the plain back arrow (docs/design-spec-home.md,
+        // section 12).
+        if (canDiscard) {
+            IconButton(
+                onClick = onDiscard,
+                modifier = Modifier
+                    .size(48.dp)
+                    .semantics { contentDescription = discardDescription },
+            ) { ClearIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) }
+        } else {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .size(48.dp)
+                    .semantics { contentDescription = backDescription },
+            ) { BackIcon() }
+        }
         if (titleEditable) {
             EditableListTitle(
                 title = title,
                 onRename = onRenameList,
                 initiallyEditing = startInTitleEdit,
+                onEditStarted = onTitleEditStarted,
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 4.dp),
@@ -673,6 +726,7 @@ private fun EditableListTitle(
     title: String,
     onRename: (String) -> Unit,
     initiallyEditing: Boolean = false,
+    onEditStarted: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var isEditing by remember { mutableStateOf(initiallyEditing) }
@@ -723,6 +777,20 @@ private fun EditableListTitle(
         BasicTextField(
             value = fieldValue,
             onValueChange = { newValue ->
+                // The discard latch flips here, on the very first keystroke, rather
+                // than waiting for commit() — a character typed and then deleted back
+                // to nothing never calls onRename, but it must still count as touching
+                // the list (docs/design-spec-home.md, section 12: "the latch has
+                // already flipped").
+                //
+                // Only a change to the text counts. onValueChange also fires when just
+                // the selection moves — tapping into the field, or dragging the caret,
+                // with nothing typed — and that is the same kind of non-event as
+                // opening the search sheet and adding nothing, which section 12 says
+                // explicitly is not a touch.
+                if (newValue.text != fieldValue.text) {
+                    onEditStarted()
+                }
                 // A keystroke past the 60-character cap is simply rejected — the field
                 // never shows more than the limit (docs/design-spec-home.md, section 4).
                 if (newValue.text.length <= TITLE_MAX_LENGTH) {

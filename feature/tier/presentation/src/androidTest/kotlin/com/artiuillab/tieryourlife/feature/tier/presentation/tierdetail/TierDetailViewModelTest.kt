@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -56,7 +57,75 @@ class TierDetailViewModelTest {
         assertNull(repository.lastAddedImageUrl)
     }
 
-    private fun savedStateHandle(): SavedStateHandle = SavedStateHandle(mapOf("tierListId" to 1L))
+    // --- The discard latch (docs/design-spec-home.md, section 12) ---
+
+    @Test
+    fun canDiscard_seededFromStartInTitleEdit() = runBlocking {
+        val newListViewModel = TierDetailViewModel(FakeTierRepository(pool()), savedStateHandle(startInTitleEdit = true))
+        val existingListViewModel = TierDetailViewModel(FakeTierRepository(pool()), savedStateHandle(startInTitleEdit = false))
+
+        assertEquals(true, newListViewModel.canDiscard.first())
+        assertEquals(false, existingListViewModel.canDiscard.first())
+    }
+
+    @Test
+    fun markTouched_flipsCanDiscardToFalse_andItStaysFalse() {
+        val viewModel = TierDetailViewModel(FakeTierRepository(pool()), savedStateHandle(startInTitleEdit = true))
+
+        viewModel.markTouched()
+        assertEquals(false, viewModel.canDiscard.value)
+
+        // One-way: a second call (standing in for "typed a character, then deleted it
+        // again") must not flip it back.
+        viewModel.markTouched()
+        assertEquals(false, viewModel.canDiscard.value)
+    }
+
+    @Test
+    fun addManualItem_touchesTheList() {
+        val viewModel = TierDetailViewModel(FakeTierRepository(pool()), savedStateHandle(startInTitleEdit = true))
+
+        viewModel.addManualItem("Dune", photoUri = null)
+
+        assertEquals(false, viewModel.canDiscard.value)
+    }
+
+    @Test
+    fun discardList_whenUntouched_deletesPermanentlyAndInvokesCallback() = runBlocking {
+        val repository = FakeTierRepository(pool())
+        val viewModel = TierDetailViewModel(repository, savedStateHandle(startInTitleEdit = true))
+        // discardList runs repository.deleteTierListPermanently(...) then onDiscarded()
+        // sequentially on the same coroutine, so awaiting this deferred (completed from
+        // inside onDiscarded) guarantees the delete already happened by the time the
+        // assertions below run — no arbitrary polling needed.
+        val discardedSignal = CompletableDeferred<Unit>()
+        var discarded = 0
+
+        viewModel.discardList {
+            discarded++
+            discardedSignal.complete(Unit)
+        }
+        discardedSignal.await()
+
+        assertEquals(listOf(1L), repository.permanentlyDeletedIds)
+        assertEquals(1, discarded)
+    }
+
+    @Test
+    fun discardList_onceTouched_doesNothing() {
+        val repository = FakeTierRepository(pool())
+        val viewModel = TierDetailViewModel(repository, savedStateHandle(startInTitleEdit = true))
+        var discarded = 0
+
+        viewModel.markTouched()
+        viewModel.discardList { discarded++ }
+
+        assertEquals(emptyList<Long>(), repository.permanentlyDeletedIds)
+        assertEquals(0, discarded)
+    }
+
+    private fun savedStateHandle(startInTitleEdit: Boolean = false): SavedStateHandle =
+        SavedStateHandle(mapOf("tierListId" to 1L, "startInTitleEdit" to startInTitleEdit))
 
     private fun pool(): TierList = TierList(
         id = 1,
@@ -77,6 +146,7 @@ private class FakeTierRepository(initial: TierList) : TierRepository {
     var lastAddedImageUrl: String? = "not yet called"
         private set
     val attachedSources = mutableListOf<String>()
+    val permanentlyDeletedIds = mutableListOf<Long>()
 
     override suspend fun getTierListById(id: Long): TierList? = list
 
@@ -116,7 +186,9 @@ private class FakeTierRepository(initial: TierList) : TierRepository {
     override suspend fun restoreTierLists(ids: List<Long>) = unsupported()
     override suspend fun deleteTierItem(id: Long) = unsupported()
     override suspend fun restoreTierItem(id: Long) = unsupported()
-    override suspend fun deleteTierListPermanently(id: Long) = unsupported()
+    override suspend fun deleteTierListPermanently(id: Long) {
+        permanentlyDeletedIds += id
+    }
     override suspend fun deleteTierItemPermanently(id: Long) = unsupported()
     override suspend fun emptyTrash() = unsupported()
     override suspend fun getTrashEntries(): List<TrashEntry> = unsupported()

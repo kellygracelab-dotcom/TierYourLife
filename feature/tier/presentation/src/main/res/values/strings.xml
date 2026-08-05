@@ -55,6 +55,9 @@
     <string name="tier_detail_content_description_manual_add">Add an item by hand</string>
     <string name="tier_detail_content_description_more">More options</string>
     <string name="tier_detail_content_description_edit_title">Edit list name</string>
+    <!-- The leading control on a brand-new, untouched list (docs/design-spec-home.md,
+         section 12) — not drawn in the design, so this is our own copy. -->
+    <string name="tier_detail_content_description_discard">Discard this list</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Pool · %d unranked</item>
         <item quantity="other">Pool · %d unranked</item>
