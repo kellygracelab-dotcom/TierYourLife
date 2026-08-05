@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.BuildConfig
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbAuthInterceptor
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataApi
+import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataSparqlApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikimediaUserAgentInterceptor
 import com.artiuillab.tieryourlife.feature.tier.data.remote.networkJson
 import dagger.Module
@@ -24,6 +25,11 @@ import javax.inject.Singleton
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class WikidataRetrofit
+
+// And the Query Service from both — it is a third host again.
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class WikidataSparqlRetrofit
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -89,9 +95,8 @@ object NetworkModule {
     }
 
     // A second, qualified Retrofit instance rather than @Url absolute paths on WikidataApi:
-    // both Wikidata calls hit the same single endpoint (api.php) with different query params,
-    // which a baseUrl + @GET path expresses more directly than repeating the full URL on
-    // every method.
+    // the search hits one endpoint (api.php) with different query params, which a baseUrl plus
+    // a @GET path expresses more directly than repeating the full URL on every method.
     @WikidataRetrofit
     @Provides
     @Singleton
@@ -118,8 +123,37 @@ object NetworkModule {
         return retrofit.create(WikidataApi::class.java)
     }
 
+    // A third instance, because the Query Service is a different host from the Action API.
+    // It shares the same OkHttpClient, so the User-Agent interceptor covers it too.
+    @WikidataSparqlRetrofit
+    @Provides
+    @Singleton
+    fun provideWikidataSparqlRetrofit(
+        okHttpClient: OkHttpClient,
+        json: Json,
+    ): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(WIKIDATA_SPARQL_BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(
+                json.asConverterFactory(
+                    JSON_MEDIA_TYPE.toMediaType(),
+                ),
+            )
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWikidataSparqlApi(
+        @WikidataSparqlRetrofit retrofit: Retrofit,
+    ): WikidataSparqlApi {
+        return retrofit.create(WikidataSparqlApi::class.java)
+    }
+
     private const val TMDB_BASE_URL = "https://api.themoviedb.org/"
     private const val WIKIDATA_BASE_URL = "https://www.wikidata.org/w/"
+    private const val WIKIDATA_SPARQL_BASE_URL = "https://query.wikidata.org/"
     private const val JSON_MEDIA_TYPE = "application/json"
     private const val WIKIMEDIA_USER_AGENT = "TierYourLife/1.0 (com.artiuillab.tieryourlife; Android)"
 }

@@ -5,6 +5,7 @@ import okhttp3.Response
 
 private const val WIKIDATA_HOST = "www.wikidata.org"
 private const val COMMONS_HOST = "commons.wikimedia.org"
+private const val WIKIDATA_QUERY_HOST = "query.wikidata.org"
 
 // Wikimedia's API etiquette policy requires a descriptive User-Agent and throttles requests
 // without one. Host-gated the same way TmdbAuthInterceptor gates its Authorization header, so
@@ -17,7 +18,7 @@ class WikimediaUserAgentInterceptor(
         val originalRequest = chain.request()
         val host = originalRequest.url.host
 
-        if (host != WIKIDATA_HOST && host != COMMONS_HOST) {
+        if (host != WIKIDATA_HOST && host != COMMONS_HOST && host != WIKIDATA_QUERY_HOST) {
             return chain.proceed(originalRequest)
         }
 
