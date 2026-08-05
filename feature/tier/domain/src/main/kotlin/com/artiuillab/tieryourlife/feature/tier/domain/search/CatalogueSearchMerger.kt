@@ -34,8 +34,17 @@ object CatalogueSearchMerger {
             )
         }
 
-        val tmdbItems = tmdbResult.getOrDefault(emptyList())
+        // A result with no picture is dropped, from either source — Wikidata has an entry for
+        // every surname and hamlet on earth and most of them have no image, and TMDB has films
+        // with no poster. In a grid of tiles a row with an empty frame is not a weaker result,
+        // it is noise between the usable ones.
+        //
+        // The cost, stated so it is a choice rather than an accident: something real and
+        // imageless becomes unfindable through search. The manual-add path with a photo from
+        // the gallery is what covers that, and it is one tap away in the same screen.
+        val tmdbItems = tmdbResult.getOrDefault(emptyList()).filter { it.hasImage() }
         val wikidataCandidates = wikidataResult.getOrDefault(emptyList())
+            .filter { it.item.hasImage() }
 
         val presentTmdbIds = tmdbItems.mapNotNull { it.tmdbNumericId() }.toSet()
 
@@ -55,6 +64,8 @@ object CatalogueSearchMerger {
         val trimmedQuery = query.trim()
         return Result.success(interleaved.sortedBy { score(it.title, trimmedQuery) })
     }
+
+    private fun CatalogueItem.hasImage(): Boolean = !imageUrl.isNullOrBlank()
 
     private fun CatalogueItem.tmdbNumericId(): Long? =
         if (id.startsWith(TMDB_ID_PREFIX)) id.removePrefix(TMDB_ID_PREFIX).toLongOrNull() else null
