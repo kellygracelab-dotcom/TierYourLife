@@ -20,6 +20,9 @@ import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import androidx.test.platform.app.InstrumentationRegistry
+import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import androidx.compose.ui.test.onNodeWithText
 
 @RunWith(AndroidJUnit4::class)
 class ManualEntryDialogTest {
@@ -35,9 +38,9 @@ class ManualEntryDialogTest {
             TierYourLifeTheme {
                 ManualEntryDialog(
                     onDismiss = {},
-                    onSave = { title, photoUri ->
+                    onSave = { title, photoUris ->
                         savedTitle = title
-                        savedPhoto = photoUri
+                        savedPhoto = photoUris.firstOrNull()
                     },
                 )
             }
@@ -70,18 +73,18 @@ class ManualEntryDialogTest {
         var savedTitle: String? = "not yet called"
         var savedPhoto: String? = null
         composeRule.setContent {
-            var photoUri by remember { mutableStateOf<String?>(null) }
+            var photoUris by remember { mutableStateOf(emptyList<String>()) }
             TierYourLifeTheme {
                 ManualEntryDialogContent(
                     title = "",
                     onTitleChange = {},
-                    photoUri = photoUri,
-                    onChoosePhotoClick = { photoUri = "content://gallery/42" },
-                    onRemovePhoto = { photoUri = null },
+                    photoUris = photoUris,
+                    onChoosePhotoClick = { photoUris = listOf("content://gallery/42") },
+                    onRemovePhotos = { photoUris = emptyList() },
                     onDismiss = {},
                     onSave = {
                         savedTitle = ""
-                        savedPhoto = photoUri
+                        savedPhoto = photoUris.firstOrNull()
                     },
                 )
             }
@@ -105,14 +108,14 @@ class ManualEntryDialogTest {
     @Test
     fun photoPreview_isVisibleBeforeSaving_andCanBeRemoved() {
         composeRule.setContent {
-            var photoUri by remember { mutableStateOf<String?>(null) }
+            var photoUris by remember { mutableStateOf(emptyList<String>()) }
             TierYourLifeTheme {
                 ManualEntryDialogContent(
                     title = "Dune",
                     onTitleChange = {},
-                    photoUri = photoUri,
-                    onChoosePhotoClick = { photoUri = "content://gallery/42" },
-                    onRemovePhoto = { photoUri = null },
+                    photoUris = photoUris,
+                    onChoosePhotoClick = { photoUris = listOf("content://gallery/42") },
+                    onRemovePhotos = { photoUris = emptyList() },
                     onDismiss = {},
                     onSave = {},
                 )
@@ -130,4 +133,33 @@ class ManualEntryDialogTest {
 
         composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ENTRY_REMOVE_PHOTO).assertDoesNotExist()
     }
+
+    // Naming five pictures with one field is not possible, so the field goes away rather than
+    // quietly discarding whatever was typed into it.
+    @Test
+    fun severalPhotos_replaceTheNameFieldWithACount() {
+        composeRule.setContent {
+            TierYourLifeTheme {
+                ManualEntryDialogContent(
+                    title = "",
+                    onTitleChange = {},
+                    photoUris = listOf("content://gallery/1", "content://gallery/2"),
+                    onChoosePhotoClick = {},
+                    onRemovePhotos = {},
+                    onDismiss = {},
+                    onSave = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ENTRY_NAME_FIELD).assertDoesNotExist()
+        composeRule.onNodeWithText(
+            plural(R.plurals.manual_dialog_photos_chosen, 2),
+        ).assertIsDisplayed()
+        composeRule.onNodeWithText(plural(R.plurals.manual_dialog_add_many, 2)).assertIsDisplayed()
+    }
+
+    private fun plural(resourceId: Int, count: Int): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.resources
+            .getQuantityString(resourceId, count, count)
 }

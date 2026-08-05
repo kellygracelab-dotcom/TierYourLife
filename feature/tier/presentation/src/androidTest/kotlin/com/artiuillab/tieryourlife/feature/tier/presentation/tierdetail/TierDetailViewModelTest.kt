@@ -28,7 +28,7 @@ class TierDetailViewModelTest {
         val repository = FakeTierRepository(pool())
         val viewModel = TierDetailViewModel(repository, savedStateHandle())
 
-        viewModel.addManualItem("Dune", photoUri = null)
+        viewModel.addManualItem("Dune", photoUris = emptyList())
         val state = viewModel.state.first {
             it is TierDetailUiState.Success && it.list.tiers.single().items.isNotEmpty()
         } as TierDetailUiState.Success
@@ -48,7 +48,7 @@ class TierDetailViewModelTest {
         val repository = FakeTierRepository(pool())
         val viewModel = TierDetailViewModel(repository, savedStateHandle())
 
-        viewModel.addManualItem("Dune", photoUri = "content://gallery/42")
+        viewModel.addManualItem("Dune", photoUris = listOf("content://gallery/42"))
         viewModel.state.first {
             it is TierDetailUiState.Success && it.list.tiers.single().items.isNotEmpty()
         }
@@ -80,11 +80,30 @@ class TierDetailViewModelTest {
         assertEquals(false, viewModel.canDiscard.value)
     }
 
+    // Several photos are several items, one each — not one item that somehow holds five
+    // pictures. The title is dropped in that case because the dialog stops offering the field
+    // when more than one photo is picked, so there is nothing left for it to name.
+    @Test
+    fun addManualItem_withSeveralPhotos_addsOneItemPerPhoto() = runBlocking {
+        val repository = FakeTierRepository(pool())
+        val viewModel = TierDetailViewModel(repository, savedStateHandle())
+        val picked = listOf("content://gallery/1", "content://gallery/2", "content://gallery/3")
+
+        viewModel.addManualItem("", photoUris = picked)
+        val state = viewModel.state.first {
+            it is TierDetailUiState.Success && it.list.tiers.single().items.size == picked.size
+        } as TierDetailUiState.Success
+
+        assertEquals(picked, repository.attachedSources)
+        assertEquals(listOf("", "", ""), state.list.tiers.single().items.map { it.title })
+        assertNull(repository.lastAddedImageUrl)
+    }
+
     @Test
     fun addManualItem_touchesTheList() {
         val viewModel = TierDetailViewModel(FakeTierRepository(pool()), savedStateHandle(startInTitleEdit = true))
 
-        viewModel.addManualItem("Dune", photoUri = null)
+        viewModel.addManualItem("Dune", photoUris = emptyList())
 
         assertEquals(false, viewModel.canDiscard.value)
     }

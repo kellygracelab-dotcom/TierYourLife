@@ -94,16 +94,25 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    // The photo, if any, is a picked gallery Uri — attachImageToItem is what copies it
-    // into internal storage and stores the copy's path, exactly as it already does for
-    // an existing item; addMovieToPool itself is only ever given imageUrl = null here,
-    // never the picked Uri directly, so the raw gallery reference never reaches the DB.
-    fun addManualItem(title: String, photoUri: String?) {
+    // One item per picked photo. The title only applies when there is a single item for it to
+    // belong to — with several photos the dialog does not offer the field at all, so an empty
+    // title here is the picture standing in as the item's identity, which the tile already
+    // supports.
+    //
+    // attachImageToItem is what copies a picked Uri into internal storage and stores the path
+    // of the copy; addMovieToPool is only ever passed imageUrl = null here, so the raw gallery
+    // reference never reaches the database.
+    fun addManualItem(title: String, photoUris: List<String>) {
         markTouched()
         viewModelScope.launch {
-            val newItemId = repository.addMovieToPool(tierListId, title, imageUrl = null)
-            if (photoUri != null) {
-                repository.attachImageToItem(newItemId, photoUri)
+            if (photoUris.isEmpty()) {
+                repository.addMovieToPool(tierListId, title, imageUrl = null)
+            } else {
+                val itemTitle = if (photoUris.size == 1) title else ""
+                photoUris.forEach { photoUri ->
+                    val newItemId = repository.addMovieToPool(tierListId, itemTitle, imageUrl = null)
+                    repository.attachImageToItem(newItemId, photoUri)
+                }
             }
             loadTierList()
         }

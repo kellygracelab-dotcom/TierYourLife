@@ -219,8 +219,8 @@ fun TierDetailScreen(
     if (manualEntryVisible) {
         ManualEntryDialog(
             onDismiss = { manualEntryVisible = false },
-            onSave = { title, photoUri ->
-                viewModel.addManualItem(title, photoUri)
+            onSave = { title, photoUris ->
+                viewModel.addManualItem(title, photoUris)
                 manualEntryVisible = false
             },
         )

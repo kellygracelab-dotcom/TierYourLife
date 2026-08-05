@@ -156,6 +156,14 @@
     <string name="manual_dialog_add">Ekle</string>
     <string name="manual_dialog_photo_frame_empty">Fotoğraf seçilmedi</string>
     <string name="manual_dialog_photo_frame_chosen">Fotoğraf seçildi. Değiştirmek için \"Fotoğrafı değiştir\" öğesine dokun.</string>
+    <plurals name="manual_dialog_photos_chosen">
+        <item quantity="one">%1$d fotoğraf seçildi</item>
+        <item quantity="other">%1$d fotoğraf seçildi</item>
+    </plurals>
+    <plurals name="manual_dialog_add_many">
+        <item quantity="one">%1$d öğe ekle</item>
+        <item quantity="other">%1$d öğe ekle</item>
+    </plurals>
     <string name="manual_dialog_remove_photo">Fotoğrafı kaldır</string>
 
     <string name="settings_title">Ayarlar</string>

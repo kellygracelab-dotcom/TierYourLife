@@ -35,6 +35,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -49,25 +50,25 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDeta
 @Composable
 internal fun ManualEntryDialog(
     onDismiss: () -> Unit,
-    onSave: (title: String, photoUri: String?) -> Unit,
+    onSave: (title: String, photoUris: List<String>) -> Unit,
 ) {
     var title by rememberSaveable { mutableStateOf("") }
-    var photoUri by rememberSaveable { mutableStateOf<String?>(null) }
+    var photoUris by rememberSaveable { mutableStateOf(emptyList<String>()) }
 
-    val pickPhoto = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-    ) { uri -> if (uri != null) photoUri = uri.toString() }
+    val pickPhotos = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+    ) { uris -> if (uris.isNotEmpty()) photoUris = uris.map { it.toString() } }
 
     ManualEntryDialogContent(
         title = title,
         onTitleChange = { title = it },
-        photoUri = photoUri,
+        photoUris = photoUris,
         onChoosePhotoClick = {
-            pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            pickPhotos.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         },
-        onRemovePhoto = { photoUri = null },
+        onRemovePhotos = { photoUris = emptyList() },
         onDismiss = onDismiss,
-        onSave = { onSave(title.trim(), photoUri) },
+        onSave = { onSave(title.trim(), photoUris) },
     )
 }
 
@@ -78,13 +79,17 @@ internal fun ManualEntryDialog(
 internal fun ManualEntryDialogContent(
     title: String,
     onTitleChange: (String) -> Unit,
-    photoUri: String?,
+    photoUris: List<String>,
     onChoosePhotoClick: () -> Unit,
-    onRemovePhoto: () -> Unit,
+    onRemovePhotos: () -> Unit,
     onDismiss: () -> Unit,
     onSave: () -> Unit,
 ) {
-    val canSave = title.isNotBlank() || photoUri != null
+    // Several photos become several items, one each, so there is no single thing left for a
+    // name to belong to. The field is taken away rather than ignored — silently dropping
+    // something the user typed is worse than not offering the field at all.
+    val isBatch = photoUris.size > 1
+    val canSave = title.isNotBlank() || photoUris.isNotEmpty()
     val focusRequester = remember { FocusRequester() }
 
     AlertDialog(
@@ -104,16 +109,18 @@ internal fun ManualEntryDialogContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 16.dp),
                 )
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = onTitleChange,
-                    label = { Text(stringResource(R.string.manual_dialog_field_name)) },
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester)
-                        .testTag(TierDetailTestTags.MANUAL_ENTRY_NAME_FIELD),
-                )
+                if (!isBatch) {
+                    OutlinedTextField(
+                        value = title,
+                        onValueChange = onTitleChange,
+                        label = { Text(stringResource(R.string.manual_dialog_field_name)) },
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester)
+                            .testTag(TierDetailTestTags.MANUAL_ENTRY_NAME_FIELD),
+                    )
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -121,12 +128,20 @@ internal fun ManualEntryDialogContent(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     PhotoFrame(
-                        photoUri = photoUri,
-                        onRemove = onRemovePhoto,
+                        photoUri = photoUris.firstOrNull(),
+                        onRemove = onRemovePhotos,
                     )
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = stringResource(R.string.manual_dialog_photo_optional),
+                            text = if (isBatch) {
+                                pluralStringResource(
+                                    R.plurals.manual_dialog_photos_chosen,
+                                    photoUris.size,
+                                    photoUris.size,
+                                )
+                            } else {
+                                stringResource(R.string.manual_dialog_photo_optional)
+                            },
                             style = TierYourLifeType.current.captionUnderTitle,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = 8.dp),
@@ -136,7 +151,7 @@ internal fun ManualEntryDialogContent(
                             label = {
                                 Text(
                                     text = stringResource(
-                                        if (photoUri == null) {
+                                        if (photoUris.isEmpty()) {
                                             R.string.manual_dialog_choose_photo
                                         } else {
                                             R.string.manual_dialog_replace_photo
@@ -163,7 +178,19 @@ internal fun ManualEntryDialogContent(
                 onClick = onSave,
                 enabled = canSave,
                 modifier = Modifier.testTag(TierDetailTestTags.MANUAL_ENTRY_SAVE),
-            ) { Text(stringResource(R.string.manual_dialog_add)) }
+            ) {
+                Text(
+                    text = if (isBatch) {
+                        pluralStringResource(
+                            R.plurals.manual_dialog_add_many,
+                            photoUris.size,
+                            photoUris.size,
+                        )
+                    } else {
+                        stringResource(R.string.manual_dialog_add)
+                    },
+                )
+            }
         },
         dismissButton = {
             TextButton(
@@ -173,7 +200,9 @@ internal fun ManualEntryDialogContent(
         },
     )
 
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    // Nothing to focus once the name field is gone, and requesting focus on a detached
+    // requester throws.
+    LaunchedEffect(isBatch) { if (!isBatch) focusRequester.requestFocus() }
 }
 
 @Composable

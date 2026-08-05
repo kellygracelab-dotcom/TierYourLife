@@ -158,6 +158,14 @@
     <string name="manual_dialog_add">Add</string>
     <string name="manual_dialog_photo_frame_empty">No photo chosen</string>
     <string name="manual_dialog_photo_frame_chosen">Photo chosen. Tap Replace photo to change it.</string>
+    <plurals name="manual_dialog_photos_chosen">
+        <item quantity="one">%1$d photo chosen</item>
+        <item quantity="other">%1$d photos chosen</item>
+    </plurals>
+    <plurals name="manual_dialog_add_many">
+        <item quantity="one">Add %1$d item</item>
+        <item quantity="other">Add %1$d items</item>
+    </plurals>
     <string name="manual_dialog_remove_photo">Remove photo</string>
 
     <string name="settings_title">Settings</string>
