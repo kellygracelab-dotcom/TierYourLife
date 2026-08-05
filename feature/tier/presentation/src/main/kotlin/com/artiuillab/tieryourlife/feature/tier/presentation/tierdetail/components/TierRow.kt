@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -69,6 +69,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.rowTintFor
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import kotlin.math.roundToInt
+import androidx.compose.ui.platform.LocalLayoutDirection
 
 // FlowRow (unlike the old LazyRow) supports intrinsic measurement, so
 // IntrinsicSize.Min below can stretch the band to match its wrapped height.
@@ -350,11 +351,18 @@ internal fun FloatingDragRow(dragController: TierDragController, tier: Tier?) {
     val halfHeightPx = with(density) { (MIN_TIER_ROW_HEIGHT / 2).toPx() }
     val shape = RoundedCornerShape(12.dp)
 
-    BoxWithConstraints(Modifier.fillMaxWidth()) {
+    val readingDirection = LocalLayoutDirection.current
+
+    // Placed from a root coordinate, so its own placement must not follow the reading
+    // direction — see ForcedLeftToRightOverlay. The row's contents are drawn back in the real
+    // direction inside, so the band still sits on the correct side.
+    ForcedLeftToRightOverlay {
+      CompositionLocalProvider(LocalLayoutDirection provides readingDirection) {
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
         val bandMaxWidth = maxWidth * MAX_TIER_BAND_FRACTION
         Row(
             modifier = Modifier
-                .offset {
+                .absoluteOffset {
                     IntOffset(
                         x = (position.x - halfWidthPx).roundToInt(),
                         y = (position.y - halfHeightPx).roundToInt(),
@@ -398,6 +406,8 @@ internal fun FloatingDragRow(dragController: TierDragController, tier: Tier?) {
             }
         }
         CollapsedItemCount(count = tier.items.size, modifier = Modifier.weight(1f).fillMaxHeight())
+            }
         }
+      }
     }
 }
