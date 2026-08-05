@@ -141,6 +141,12 @@
     <string name="manual_dialog_add">追加</string>
     <string name="manual_dialog_photo_frame_empty">写真が選択されていません</string>
     <string name="manual_dialog_photo_frame_chosen">写真を選択しました。変更するには「写真を変更」をタップしてください。</string>
+    <plurals name="manual_dialog_photos_chosen">
+        <item quantity="other">写真%1$d枚を選択</item>
+    </plurals>
+    <plurals name="manual_dialog_add_many">
+        <item quantity="other">%1$d件を追加</item>
+    </plurals>
     <string name="manual_dialog_remove_photo">写真を削除</string>
 
     <string name="settings_title">設定</string>

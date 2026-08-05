@@ -186,6 +186,18 @@
     <string name="manual_dialog_add">Добавить</string>
     <string name="manual_dialog_photo_frame_empty">Фото не выбрано</string>
     <string name="manual_dialog_photo_frame_chosen">Фото выбрано. Нажмите «Заменить фото», чтобы изменить.</string>
+    <plurals name="manual_dialog_photos_chosen">
+        <item quantity="one">выбрано %1$d фото</item>
+        <item quantity="few">выбрано %1$d фото</item>
+        <item quantity="many">выбрано %1$d фото</item>
+        <item quantity="other">выбрано %1$d фото</item>
+    </plurals>
+    <plurals name="manual_dialog_add_many">
+        <item quantity="one">Добавить %1$d элемент</item>
+        <item quantity="few">Добавить %1$d элемента</item>
+        <item quantity="many">Добавить %1$d элементов</item>
+        <item quantity="other">Добавить %1$d элементов</item>
+    </plurals>
     <string name="manual_dialog_remove_photo">Удалить фото</string>
 
     <string name="settings_title">Настройки</string>

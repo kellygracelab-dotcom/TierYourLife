@@ -216,6 +216,22 @@
     <string name="manual_dialog_add">إضافة</string>
     <string name="manual_dialog_photo_frame_empty">لم يتم اختيار صورة</string>
     <string name="manual_dialog_photo_frame_chosen">تم اختيار الصورة. اضغط على «استبدال الصورة» لتغييرها.</string>
+    <plurals name="manual_dialog_photos_chosen">
+        <item quantity="zero">لم يُختَر أي صورة</item>
+        <item quantity="one">تم اختيار صورة واحدة</item>
+        <item quantity="two">تم اختيار صورتين</item>
+        <item quantity="few">تم اختيار %1$d صور</item>
+        <item quantity="many">تم اختيار %1$d صورة</item>
+        <item quantity="other">تم اختيار %1$d صورة</item>
+    </plurals>
+    <plurals name="manual_dialog_add_many">
+        <item quantity="zero">إضافة %1$d عنصر</item>
+        <item quantity="one">إضافة عنصر واحد</item>
+        <item quantity="two">إضافة عنصرين</item>
+        <item quantity="few">إضافة %1$d عناصر</item>
+        <item quantity="many">إضافة %1$d عنصرًا</item>
+        <item quantity="other">إضافة %1$d عنصر</item>
+    </plurals>
     <string name="manual_dialog_remove_photo">إزالة الصورة</string>
 
     <string name="settings_title">الإعدادات</string>

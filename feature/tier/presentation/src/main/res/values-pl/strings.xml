@@ -186,6 +186,18 @@
     <string name="manual_dialog_add">Dodaj</string>
     <string name="manual_dialog_photo_frame_empty">Nie wybrano zdjęcia</string>
     <string name="manual_dialog_photo_frame_chosen">Zdjęcie wybrane. Dotknij „Zmień zdjęcie”, aby je zmienić.</string>
+    <plurals name="manual_dialog_photos_chosen">
+        <item quantity="one">wybrano %1$d zdjęcie</item>
+        <item quantity="few">wybrano %1$d zdjęcia</item>
+        <item quantity="many">wybrano %1$d zdjęć</item>
+        <item quantity="other">wybrano %1$d zdjęć</item>
+    </plurals>
+    <plurals name="manual_dialog_add_many">
+        <item quantity="one">Dodaj %1$d element</item>
+        <item quantity="few">Dodaj %1$d elementy</item>
+        <item quantity="many">Dodaj %1$d elementów</item>
+        <item quantity="other">Dodaj %1$d elementów</item>
+    </plurals>
     <string name="manual_dialog_remove_photo">Usuń zdjęcie</string>
 
     <string name="settings_title">Ustawienia</string>

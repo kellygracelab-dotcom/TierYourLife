@@ -156,6 +156,14 @@
     <string name="manual_dialog_add">Ajouter</string>
     <string name="manual_dialog_photo_frame_empty">Aucune photo choisie</string>
     <string name="manual_dialog_photo_frame_chosen">Photo choisie. Appuyez sur « Remplacer la photo » pour la changer.</string>
+    <plurals name="manual_dialog_photos_chosen">
+        <item quantity="one">%1$d photo sélectionnée</item>
+        <item quantity="other">%1$d photos sélectionnées</item>
+    </plurals>
+    <plurals name="manual_dialog_add_many">
+        <item quantity="one">Ajouter %1$d élément</item>
+        <item quantity="other">Ajouter %1$d éléments</item>
+    </plurals>
     <string name="manual_dialog_remove_photo">Retirer la photo</string>
 
     <string name="settings_title">Paramètres</string>
