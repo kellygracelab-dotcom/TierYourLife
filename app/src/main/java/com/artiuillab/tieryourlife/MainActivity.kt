@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +55,21 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             TierYourLifeTheme(darkTheme = darkTheme) {
-                NavHost(navController = navController, startDestination = Route.TierLists) {
+                // No transitions between destinations. Navigation Compose fades the
+                // outgoing screen out and the incoming one in by default, and on this
+                // app that reads as a blink rather than as movement: every destination
+                // here fills the screen edge to edge with a surface of the same colour,
+                // so a cross-fade between two of them has nothing to describe — it just
+                // dims the screen and brings it back. It is most obvious on the create
+                // button, where the whole point is that the new list is already open.
+                NavHost(
+                    navController = navController,
+                    startDestination = Route.TierLists,
+                    enterTransition = { EnterTransition.None },
+                    exitTransition = { ExitTransition.None },
+                    popEnterTransition = { EnterTransition.None },
+                    popExitTransition = { ExitTransition.None },
+                ) {
                     composable<Route.TierLists> {
                         TierListsScreen(
                             onTierListClick = { id -> navController.navigate(Route.TierDetail(id)) },

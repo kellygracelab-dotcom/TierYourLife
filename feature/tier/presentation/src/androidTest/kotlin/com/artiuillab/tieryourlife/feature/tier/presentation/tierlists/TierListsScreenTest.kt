@@ -8,6 +8,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -178,6 +180,24 @@ class TierListsScreenTest {
 
         composeRule.onNodeWithTag(TierListsTestTags.SELECTION_BAR).assertDoesNotExist()
         composeRule.onNodeWithTag(TierListsTestTags.FAB).assertIsDisplayed()
+    }
+
+    // The checkbox is what actually states the selection now (docs/design-spec-home.md,
+    // section 11) — every card gets checkbox semantics the instant the mode starts, not
+    // only the one that was long-pressed, and that simultaneous appearance is what
+    // teaches the user a plain tap now selects.
+    @Test
+    fun enteringSelectionMode_showsACheckboxOnEveryCard_checkedOnlyOnTheSelectedOne() {
+        val lists = listOf(
+            tierList(1L, "First", intArrayOf(0, 0, 0, 0, 0, 0)),
+            tierList(2L, "Second", intArrayOf(0, 0, 0, 0, 0, 0)),
+        )
+        setLiveScreen(lists)
+
+        composeRule.onNodeWithTag("tier_list_card_1").performTouchInput { longClick() }
+
+        composeRule.onNodeWithTag("tier_list_card_1").assertIsOn()
+        composeRule.onNodeWithTag("tier_list_card_2").assertIsOff()
     }
 
     @Test

@@ -507,6 +507,13 @@ private fun HomeContent(
                     onLongClick = {
                         if (!isSelecting) onLongPressCard(list.id)
                     },
+                    // Driven purely by isSelecting, which is shared by every card in
+                    // this LazyColumn — that's what makes every unselected card grow its
+                    // empty checkbox on the same frame the long-pressed one fills,
+                    // rather than staggering in one at a time (docs/design-spec-home.md,
+                    // section 11).
+                    selectionMode = isSelecting,
+                    selected = isSelected,
                 )
             }
         }

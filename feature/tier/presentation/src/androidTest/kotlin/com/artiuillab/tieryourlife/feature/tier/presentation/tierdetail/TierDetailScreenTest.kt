@@ -27,6 +27,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInputSelection
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -126,6 +128,92 @@ class TierDetailScreenTest {
         ).performClick()
 
         composeRule.runOnIdle { assertEquals(1, calls) }
+    }
+
+    // --- The discard escape hatch on a brand-new list (docs/design-spec-home.md, section 12) ---
+
+    @Test
+    fun newUntouchedList_showsADiscardCross_notTheBackArrow() {
+        setScreen(TierDetailUiState.Success(defaultList()), canDiscard = true)
+
+        composeRule.onNodeWithContentDescription(
+            string(R.string.tier_detail_content_description_discard),
+        ).assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(
+            string(R.string.tier_detail_content_description_back),
+        ).assertDoesNotExist()
+    }
+
+    @Test
+    fun touchedList_showsTheBackArrow_notTheDiscardCross() {
+        setScreen(TierDetailUiState.Success(defaultList()), canDiscard = false)
+
+        composeRule.onNodeWithContentDescription(
+            string(R.string.tier_detail_content_description_back),
+        ).assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(
+            string(R.string.tier_detail_content_description_discard),
+        ).assertDoesNotExist()
+    }
+
+    @Test
+    fun discardCross_clickInvokesOnDiscardOnce_notOnBack() {
+        var discardCalls = 0
+        var backCalls = 0
+        setScreen(
+            TierDetailUiState.Success(defaultList()),
+            onBack = { backCalls++ },
+            canDiscard = true,
+            onDiscard = { discardCalls++ },
+        )
+
+        composeRule.onNodeWithContentDescription(
+            string(R.string.tier_detail_content_description_discard),
+        ).performClick()
+
+        composeRule.runOnIdle {
+            assertEquals(1, discardCalls)
+            assertEquals(0, backCalls)
+        }
+    }
+
+    // The first keystroke has to flip the latch even though a cleared field never
+    // calls onRenameList at all — otherwise typing then deleting a character would
+    // leave the cross showing, which the spec explicitly rules out.
+    @Test
+    fun typingInTheTitleField_touchesTheListOnTheFirstKeystroke_evenIfClearedAfterward() {
+        var touchedCalls = 0
+        setScreen(
+            TierDetailUiState.Success(defaultList()),
+            startInTitleEdit = true,
+            canDiscard = true,
+            onTitleEditStarted = { touchedCalls++ },
+        )
+
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performTextInput("X")
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performTextClearance()
+
+        composeRule.runOnIdle { assertTrue(touchedCalls > 0) }
+    }
+
+    // onValueChange also fires when only the selection moves, so without the text
+    // comparison guarding it, putting a caret in the field would count as touching the
+    // list — the same non-event as opening the search sheet and adding nothing, which
+    // the spec says explicitly does not count (docs/design-spec-home.md, section 12).
+    @Test
+    fun movingTheCaretInTheTitleField_withoutTyping_doesNotTouchTheList() {
+        var touchedCalls = 0
+        setScreen(
+            TierDetailUiState.Success(defaultList()),
+            startInTitleEdit = true,
+            canDiscard = true,
+            onTitleEditStarted = { touchedCalls++ },
+        )
+
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE)
+            .performTextInputSelection(TextRange(0))
+
+        composeRule.runOnIdle { assertEquals(0, touchedCalls) }
     }
 
     @Test
@@ -1993,6 +2081,10 @@ class TierDetailScreenTest {
     private fun setScreen(
         state: TierDetailUiState,
         onBack: () -> Unit = {},
+        startInTitleEdit: Boolean = false,
+        canDiscard: Boolean = false,
+        onDiscard: () -> Unit = {},
+        onTitleEditStarted: () -> Unit = {},
         onAddClick: () -> Unit = {},
         onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
         onDeleteItem: (itemId: Long) -> Unit = {},
@@ -2019,6 +2111,10 @@ class TierDetailScreenTest {
                 TierDetailScreenContent(
                     state = state,
                     onBack = onBack,
+                    startInTitleEdit = startInTitleEdit,
+                    canDiscard = canDiscard,
+                    onDiscard = onDiscard,
+                    onTitleEditStarted = onTitleEditStarted,
                     onAddClick = onAddClick,
                     onMoveItem = onMoveItem,
                     onDeleteItem = onDeleteItem,
