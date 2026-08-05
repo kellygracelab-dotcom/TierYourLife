@@ -40,7 +40,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -134,8 +133,7 @@ internal fun TierListsScreenContent(
                 ) {
                     Text(
                         text = stringResource(R.string.tier_lists_title),
-                        fontSize = 32.sp,
-                        lineHeight = 40.sp,
+                        style = MaterialTheme.typography.headlineLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Spacer(Modifier.height(4.dp))
@@ -146,8 +144,7 @@ internal fun TierListsScreenContent(
                             rankingsCountText,
                             stringResource(R.string.tier_lists_private),
                         ),
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
@@ -251,8 +248,7 @@ private fun RecentChanges() {
         Text(
             stringResource(R.string.tier_lists_recent_changes),
             modifier = Modifier.padding(start = 4.dp, top = 12.dp),
-            fontSize = 14.sp,
-            lineHeight = 20.sp,
+            style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface,
         )
@@ -292,16 +288,17 @@ private fun RecentChange(title: String, subtitle: String, moved: Boolean) {
         Column {
             Text(
                 title,
-                fontSize = 15.sp,
-                lineHeight = 20.sp,
+                // No theme role is exactly 15sp/20sp; bodyMedium (14sp/20sp) is the closest
+                // match — same line height, 1sp off on size, same Normal weight so the
+                // rendered weight doesn't change (see report).
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 subtitle,
-                fontSize = 12.sp,
-                lineHeight = 16.sp,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

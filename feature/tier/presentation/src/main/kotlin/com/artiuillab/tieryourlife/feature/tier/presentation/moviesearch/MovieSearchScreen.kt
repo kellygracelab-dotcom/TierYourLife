@@ -41,10 +41,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.MovieSearchResult
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
@@ -224,8 +224,7 @@ private fun CaptionLine(sourceName: String, listTitle: String) {
     Text(
         text = annotated,
         color = onSurfaceVariant,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
+        style = MaterialTheme.typography.bodySmall,
         modifier = Modifier.padding(horizontal = 20.dp, vertical = 0.dp).padding(bottom = 8.dp),
     )
 }
@@ -246,15 +245,13 @@ private fun CenteredMessage(
         Text(
             text = text,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 14.sp,
-            lineHeight = 20.sp,
+            style = MaterialTheme.typography.bodyMedium,
         )
         body?.let {
             Text(
                 text = it,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp,
-                lineHeight = 20.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = 8.dp),
             )
         }
@@ -262,8 +259,7 @@ private fun CenteredMessage(
             Text(
                 text = actionLabel,
                 color = MaterialTheme.colorScheme.primary,
-                fontSize = 14.sp,
-                lineHeight = 20.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .padding(top = 12.dp)
                     .clickable(onClick = onAction)
@@ -308,15 +304,13 @@ private fun MovieResultsList(
                 ) {
                     Text(
                         text = item.title,
-                        fontSize = 16.sp,
-                        lineHeight = 22.sp,
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     item.year?.let { year ->
                         Text(
                             text = year.toString(),
-                            fontSize = 13.sp,
-                            lineHeight = 18.sp,
+                            style = TierYourLifeType.current.captionUnderTitle,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -374,8 +368,7 @@ private fun SelectionBar(selectedCount: Int, fill: Color, onConfirm: () -> Unit)
             }
             Text(
                 text = countText,
-                fontSize = 14.sp,
-                lineHeight = 20.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.testTag(TierDetailTestTags.MOVIE_SEARCH_SELECTED_COUNT),
             )
@@ -412,7 +405,7 @@ private fun SelectionBar(selectedCount: Int, fill: Color, onConfirm: () -> Unit)
                     .testTag(TierDetailTestTags.MOVIE_SEARCH_CONFIRM),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(text = buttonLabel, fontSize = 14.sp, lineHeight = 20.sp, color = contentColor)
+                Text(text = buttonLabel, style = MaterialTheme.typography.bodyMedium, color = contentColor)
             }
         }
     }
