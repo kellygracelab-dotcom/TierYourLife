@@ -126,13 +126,13 @@
     <string name="tier_editor_preset_color_description">Color predefinido %1$d</string>
     <string name="tier_editor_custom_color_description">Color personalizado</string>
 
-    <string name="movie_search_field_label">Buscar en %1$s</string>
+    <string name="movie_search_field_label">Buscar</string>
     <string name="movie_search_close_content_description">Cerrar búsqueda</string>
     <string name="movie_search_clear_content_description">Borrar búsqueda</string>
-    <string name="movie_search_source_caption">Resultados de %1$s · se añaden al montón de %2$s</string>
+    <string name="movie_search_source_caption">Se añaden al montón de %1$s</string>
     <string name="movie_search_min_query">Escribe al menos dos letras para buscar.</string>
     <string name="movie_search_empty_title">No se encontró nada para \"%1$s\"</string>
-    <string name="movie_search_error_title">No se pudo conectar con %1$s</string>
+    <string name="movie_search_error_title">No se pudieron cargar los resultados</string>
     <string name="movie_search_error_body">Comprueba tu conexión e inténtalo de nuevo.</string>
     <string name="movie_search_try_again">Intentar de nuevo</string>
     <string name="movie_search_selected_none">Nada seleccionado</string>

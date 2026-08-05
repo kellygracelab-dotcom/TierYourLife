@@ -152,13 +152,13 @@
     <string name="tier_editor_preset_color_description">Готовый цвет %1$d</string>
     <string name="tier_editor_custom_color_description">Свой цвет</string>
 
-    <string name="movie_search_field_label">Поиск %1$s</string>
+    <string name="movie_search_field_label">Поиск</string>
     <string name="movie_search_close_content_description">Закрыть поиск</string>
     <string name="movie_search_clear_content_description">Очистить поиск</string>
-    <string name="movie_search_source_caption">Результаты из %1$s · добавление в пул %2$s</string>
+    <string name="movie_search_source_caption">Добавление в пул %1$s</string>
     <string name="movie_search_min_query">Введите не менее двух букв для поиска.</string>
     <string name="movie_search_empty_title">Ничего не найдено по запросу \"%1$s\"</string>
-    <string name="movie_search_error_title">Не удалось подключиться к %1$s</string>
+    <string name="movie_search_error_title">Не удалось загрузить результаты</string>
     <string name="movie_search_error_body">Проверьте соединение и попробуйте снова.</string>
     <string name="movie_search_try_again">Повторить</string>
     <string name="movie_search_selected_none">Ничего не выбрано</string>

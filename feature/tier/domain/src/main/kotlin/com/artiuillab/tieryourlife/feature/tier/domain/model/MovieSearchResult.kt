@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.model
 
-// A found movie from search, identified by its TMDB id — distinct from TierItem,
+// A result from the remote catalogue, identified by that catalogue's id — distinct from
+// TierItem,
 // which is a persisted list entry keyed by the local Room row id.
 data class MovieSearchResult(
     val tmdbId: Long,

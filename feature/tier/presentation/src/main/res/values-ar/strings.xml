@@ -178,13 +178,13 @@
     <string name="tier_editor_preset_color_description">لون جاهز %1$d</string>
     <string name="tier_editor_custom_color_description">لون مخصّص</string>
 
-    <string name="movie_search_field_label">البحث في %1$s</string>
+    <string name="movie_search_field_label">بحث</string>
     <string name="movie_search_close_content_description">إغلاق البحث</string>
     <string name="movie_search_clear_content_description">مسح البحث</string>
-    <string name="movie_search_source_caption">نتائج من %1$s · تُضاف إلى مجمّع %2$s</string>
+    <string name="movie_search_source_caption">تُضاف إلى مجمّع %1$s</string>
     <string name="movie_search_min_query">أدخل حرفين على الأقل للبحث.</string>
     <string name="movie_search_empty_title">لم يُعثر على شيء لـ \"%1$s\"</string>
-    <string name="movie_search_error_title">تعذّر الاتصال بـ %1$s</string>
+    <string name="movie_search_error_title">تعذّر تحميل النتائج</string>
     <string name="movie_search_error_body">تحقق من اتصالك وحاول مرة أخرى.</string>
     <string name="movie_search_try_again">المحاولة مرة أخرى</string>
     <string name="movie_search_selected_none">لم يتم تحديد شيء</string>

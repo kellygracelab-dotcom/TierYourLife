@@ -152,13 +152,13 @@
     <string name="tier_editor_preset_color_description">Gotowy kolor %1$d</string>
     <string name="tier_editor_custom_color_description">Własny kolor</string>
 
-    <string name="movie_search_field_label">Szukaj %1$s</string>
+    <string name="movie_search_field_label">Szukaj</string>
     <string name="movie_search_close_content_description">Zamknij wyszukiwanie</string>
     <string name="movie_search_clear_content_description">Wyczyść wyszukiwanie</string>
-    <string name="movie_search_source_caption">Wyniki z %1$s · dodawanie do puli %2$s</string>
+    <string name="movie_search_source_caption">Dodawanie do puli %1$s</string>
     <string name="movie_search_min_query">Wpisz co najmniej dwie litery, aby wyszukać.</string>
     <string name="movie_search_empty_title">Nic nie znaleziono dla \"%1$s\"</string>
-    <string name="movie_search_error_title">Nie udało się połączyć z %1$s</string>
+    <string name="movie_search_error_title">Nie udało się wczytać wyników</string>
     <string name="movie_search_error_body">Sprawdź połączenie i spróbuj ponownie.</string>
     <string name="movie_search_try_again">Spróbuj ponownie</string>
     <string name="movie_search_selected_none">Nic nie wybrano</string>

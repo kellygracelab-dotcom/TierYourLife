@@ -126,13 +126,13 @@
     <string name="tier_editor_preset_color_description">Couleur prédéfinie %1$d</string>
     <string name="tier_editor_custom_color_description">Couleur personnalisée</string>
 
-    <string name="movie_search_field_label">Rechercher %1$s</string>
+    <string name="movie_search_field_label">Rechercher</string>
     <string name="movie_search_close_content_description">Fermer la recherche</string>
     <string name="movie_search_clear_content_description">Effacer la recherche</string>
-    <string name="movie_search_source_caption">Résultats de %1$s · ajout au réservoir de %2$s</string>
+    <string name="movie_search_source_caption">Ajout au réservoir de %1$s</string>
     <string name="movie_search_min_query">Saisissez au moins deux lettres pour rechercher.</string>
     <string name="movie_search_empty_title">Rien trouvé pour \"%1$s\"</string>
-    <string name="movie_search_error_title">Impossible de joindre %1$s</string>
+    <string name="movie_search_error_title">Impossible de charger les résultats</string>
     <string name="movie_search_error_body">Vérifiez votre connexion et réessayez.</string>
     <string name="movie_search_try_again">Réessayer</string>
     <string name="movie_search_selected_none">Rien sélectionné</string>

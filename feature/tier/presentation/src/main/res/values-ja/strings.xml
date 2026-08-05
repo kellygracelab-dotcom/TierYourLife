@@ -113,13 +113,13 @@
     <string name="tier_editor_preset_color_description">プリセットカラー %1$d</string>
     <string name="tier_editor_custom_color_description">カスタムカラー</string>
 
-    <string name="movie_search_field_label">%1$s を検索</string>
+    <string name="movie_search_field_label">検索</string>
     <string name="movie_search_close_content_description">検索を閉じる</string>
     <string name="movie_search_clear_content_description">検索をクリア</string>
-    <string name="movie_search_source_caption">%1$s の検索結果 · %2$s のプールに追加</string>
+    <string name="movie_search_source_caption">%1$s のプールに追加</string>
     <string name="movie_search_min_query">検索するには2文字以上入力してください。</string>
     <string name="movie_search_empty_title">「%1$s」に一致するものは見つかりませんでした</string>
-    <string name="movie_search_error_title">%1$s に接続できませんでした</string>
+    <string name="movie_search_error_title">結果を読み込めませんでした</string>
     <string name="movie_search_error_body">接続を確認して、もう一度お試しください。</string>
     <string name="movie_search_try_again">もう一度試す</string>
     <string name="movie_search_selected_none">何も選択されていません</string>
