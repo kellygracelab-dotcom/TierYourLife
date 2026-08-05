@@ -1,0 +1,353 @@
+<resources>
+    <string name="tier_lists_title">قوائمك</string>
+    <string name="tier_lists_private">خاص</string>
+    <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <plurals name="tier_lists_count">
+        <item quantity="zero">لا قوائم</item>
+        <item quantity="one">قائمة واحدة</item>
+        <item quantity="two">قائمتان</item>
+        <item quantity="few">%d قوائم</item>
+        <item quantity="many">%d قائمة</item>
+        <item quantity="other">%d قائمة</item>
+    </plurals>
+    <plurals name="tier_lists_rankings_count">
+        <item quantity="zero">لا تصنيفات</item>
+        <item quantity="one">تصنيف واحد</item>
+        <item quantity="two">تصنيفان</item>
+        <item quantity="few">%d تصنيفات</item>
+        <item quantity="many">%d تصنيفًا</item>
+        <item quantity="other">%d تصنيف</item>
+    </plurals>
+    <plurals name="tier_lists_ranked_count">
+        <item quantity="zero">لم يُصنَّف شيء</item>
+        <item quantity="one">مصنَّف واحد</item>
+        <item quantity="two">مصنَّفان</item>
+        <item quantity="few">%d مصنَّفة</item>
+        <item quantity="many">%d مصنَّفًا</item>
+        <item quantity="other">%d مصنَّف</item>
+    </plurals>
+    <plurals name="tier_lists_in_pool_count">
+        <item quantity="zero">لا شيء في المجمّع</item>
+        <item quantity="one">واحد في المجمّع</item>
+        <item quantity="two">اثنان في المجمّع</item>
+        <item quantity="few">%d في المجمّع</item>
+        <item quantity="many">%d في المجمّع</item>
+        <item quantity="other">%d في المجمّع</item>
+    </plurals>
+    <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · لم يتم تصنيف أي شيء بعد</string>
+    <string name="tier_lists_status_start_dragging">اسحب لتبدأ التصنيف</string>
+    <string name="tier_lists_content_description_search">البحث في قوائمك</string>
+    <string name="tier_lists_content_description_settings">الإعدادات</string>
+
+    <string name="home_search_hint">البحث في قوائمك</string>
+    <plurals name="search_results_count">
+        <item quantity="zero">لا قوائم</item>
+        <item quantity="one">قائمة واحدة</item>
+        <item quantity="two">قائمتان</item>
+        <item quantity="few">%1$d قوائم</item>
+        <item quantity="many">%1$d قائمة</item>
+        <item quantity="other">%1$d قائمة</item>
+    </plurals>
+    <string name="search_no_results_title">لا توجد قوائم مطابقة لـ «%1$s»</string>
+    <string name="search_no_results_body">جرّب كلمة أقصر أو تحقق من الإملاء.</string>
+    <string name="cd_close_search">إغلاق البحث</string>
+    <string name="cd_clear_query">مسح البحث</string>
+
+    <plurals name="selection_count">
+        <item quantity="zero">لم يتم تحديد شيء</item>
+        <item quantity="one">تم تحديد واحد</item>
+        <item quantity="two">تم تحديد اثنين</item>
+        <item quantity="few">تم تحديد %1$d</item>
+        <item quantity="many">تم تحديد %1$d</item>
+        <item quantity="other">تم تحديد %1$d</item>
+    </plurals>
+    <string name="cd_close_selection">الخروج من التحديد</string>
+    <string name="cd_delete_selected">حذف %1$s</string>
+
+    <plurals name="snack_lists_deleted">
+        <item quantity="zero">لم يتم حذف أي قائمة</item>
+        <item quantity="one">تم حذف قائمة واحدة</item>
+        <item quantity="two">تم حذف قائمتين</item>
+        <item quantity="few">تم حذف %1$d قوائم</item>
+        <item quantity="many">تم حذف %1$d قائمة</item>
+        <item quantity="other">تم حذف %1$d قائمة</item>
+    </plurals>
+    <string name="action_undo">تراجع</string>
+    <string name="home_empty_title">لا توجد قوائم بعد</string>
+    <string name="home_empty_body">اضغط على + لتصنيف شيء ما.</string>
+    <string name="cd_new_list">قائمة جديدة</string>
+
+    <string name="tier_detail_add">إضافة</string>
+    <string name="tier_detail_content_description_back">رجوع</string>
+    <string name="tier_detail_content_description_manual_add">إضافة عنصر يدويًا</string>
+    <string name="tier_detail_content_description_more">خيارات أخرى</string>
+    <string name="tier_detail_content_description_edit_title">تعديل اسم القائمة</string>
+    <string name="tier_detail_content_description_discard">تجاهل هذه القائمة</string>
+    <plurals name="tier_detail_pool_unranked_count">
+        <item quantity="zero">المجمّع · لا شيء غير مصنَّف</item>
+        <item quantity="one">المجمّع · عنصر واحد غير مصنَّف</item>
+        <item quantity="two">المجمّع · عنصران غير مصنَّفين</item>
+        <item quantity="few">المجمّع · %d غير مصنَّفة</item>
+        <item quantity="many">المجمّع · %d غير مصنَّف</item>
+        <item quantity="other">المجمّع · %d غير مصنَّف</item>
+    </plurals>
+
+    <string name="tier_detail_move_sheet_subtitle">النقل إلى مستوى</string>
+    <string name="tier_detail_move_sheet_current_tier">هنا حاليًا</string>
+    <string name="tier_detail_move_sheet_remove_title">إزالة من القائمة</string>
+    <string name="tier_detail_move_sheet_remove_subtitle">ينتقل إلى سلة المهملات</string>
+    <string name="tier_detail_move_sheet_pool_title">الإعادة إلى المجمّع</string>
+    <string name="tier_detail_move_sheet_pool_subtitle">غير مصنَّف، يبقى في القائمة</string>
+
+    <string name="tier_detail_trash_target_label">إزالة</string>
+
+    <string name="tier_detail_item_moved_to_trash">تم نقل %1$s إلى سلة المهملات</string>
+    <string name="tier_detail_tier_moved_to_trash">تم نقل المستوى %1$s إلى سلة المهملات</string>
+    <string name="tier_detail_snackbar_undo">تراجع</string>
+
+    <plurals name="tier_detail_collapsed_item_count">
+        <item quantity="zero">لا عناصر</item>
+        <item quantity="one">عنصر واحد</item>
+        <item quantity="two">عنصران</item>
+        <item quantity="few">%1$d عناصر</item>
+        <item quantity="many">%1$d عنصرًا</item>
+        <item quantity="other">%1$d عنصر</item>
+    </plurals>
+
+    <plurals name="tier_detail_ranked_header">
+        <item quantity="zero">لا شيء مصنَّف · من الأفضل إلى الأسوأ</item>
+        <item quantity="one">عنصر واحد مصنَّف · من الأفضل إلى الأسوأ</item>
+        <item quantity="two">عنصران مصنَّفان · من الأفضل إلى الأسوأ</item>
+        <item quantity="few">%1$d مصنَّفة · من الأفضل إلى الأسوأ</item>
+        <item quantity="many">%1$d مصنَّفًا · من الأفضل إلى الأسوأ</item>
+        <item quantity="other">%1$d مصنَّف · من الأفضل إلى الأسوأ</item>
+    </plurals>
+    <string name="tier_detail_ranked_header_empty">لم يتم تصنيف أي شيء بعد</string>
+    <string name="tier_detail_ranked_row_description">المرتبة %1$d، %2$s، المستوى %3$s.</string>
+    <plurals name="tier_detail_ranked_pool_collapsed_description">
+        <item quantity="zero">المجمّع، لا شيء غير مصنَّف. توسيع.</item>
+        <item quantity="one">المجمّع، عنصر واحد غير مصنَّف. توسيع.</item>
+        <item quantity="two">المجمّع، عنصران غير مصنَّفين. توسيع.</item>
+        <item quantity="few">المجمّع، %1$d غير مصنَّفة. توسيع.</item>
+        <item quantity="many">المجمّع، %1$d غير مصنَّف. توسيع.</item>
+        <item quantity="other">المجمّع، %1$d غير مصنَّف. توسيع.</item>
+    </plurals>
+    <plurals name="tier_detail_ranked_pool_expanded_description">
+        <item quantity="zero">المجمّع، لا شيء غير مصنَّف. طي.</item>
+        <item quantity="one">المجمّع، عنصر واحد غير مصنَّف. طي.</item>
+        <item quantity="two">المجمّع، عنصران غير مصنَّفين. طي.</item>
+        <item quantity="few">المجمّع، %1$d غير مصنَّفة. طي.</item>
+        <item quantity="many">المجمّع، %1$d غير مصنَّف. طي.</item>
+        <item quantity="other">المجمّع، %1$d غير مصنَّف. طي.</item>
+    </plurals>
+
+    <string name="tier_list_settings_title">إعدادات القائمة</string>
+    <string name="tier_list_settings_display_section">العرض</string>
+    <string name="tier_list_settings_display_section_caption">كيفية عرض المستويات في هذه القائمة. لا يؤثر ذلك على القوائم الأخرى.</string>
+    <string name="tier_list_settings_mode_wrapped">صفوف ملتفّة</string>
+    <string name="tier_list_settings_mode_wrapped_sub">كل عنصر مرئي، وتصبح الصفوف أطول</string>
+    <string name="tier_list_settings_mode_strip">شريط واحد</string>
+    <string name="tier_list_settings_mode_strip_sub">سطر واحد لكل مستوى، تمرير أفقي</string>
+    <string name="tier_list_settings_mode_ranked">قائمة مرتّبة</string>
+    <string name="tier_list_settings_mode_ranked_sub">عمود واحد، من الأفضل إلى الأسوأ، بدون مستويات</string>
+    <string name="tier_list_settings_new_tier_title">مستوى جديد</string>
+    <plurals name="tier_list_settings_tier_count">
+        <item quantity="zero">لا مستويات</item>
+        <item quantity="one">مستوى واحد</item>
+        <item quantity="two">مستويان</item>
+        <item quantity="few">%d مستويات</item>
+        <item quantity="many">%d مستوى</item>
+        <item quantity="other">%d مستوى</item>
+    </plurals>
+
+    <string name="tier_editor_title">تعديل المستوى</string>
+    <string name="tier_editor_add_title">إضافة مستوى</string>
+    <string name="tier_editor_label_field">التسمية</string>
+    <string name="tier_editor_caption_field">الوصف</string>
+    <string name="tier_editor_color_section_title">اللون</string>
+    <string name="tier_editor_color_section_caption">مخصّص · اضبط اللون الفاتح والداكن كل على حدة</string>
+    <string name="tier_editor_theme_light">فاتح</string>
+    <string name="tier_editor_theme_dark">داكن</string>
+    <string name="tier_editor_hue_label">درجة اللون</string>
+    <string name="tier_editor_saturation_label">التشبع</string>
+    <string name="tier_editor_lightness_label">السطوع</string>
+    <string name="tier_editor_hex_label">Hex</string>
+    <string name="tier_editor_cancel">إلغاء</string>
+    <string name="tier_editor_save">حفظ</string>
+    <string name="tier_editor_preset_color_description">لون جاهز %1$d</string>
+    <string name="tier_editor_custom_color_description">لون مخصّص</string>
+
+    <string name="item_search_field_label">بحث</string>
+    <string name="item_search_close_content_description">إغلاق البحث</string>
+    <string name="item_search_clear_content_description">مسح البحث</string>
+    <string name="item_search_source_caption">تُضاف إلى مجمّع %1$s</string>
+    <string name="item_search_min_query">أدخل حرفين على الأقل للبحث.</string>
+    <string name="item_search_empty_title">لم يُعثر على شيء لـ \"%1$s\"</string>
+    <string name="item_search_error_title">تعذّر تحميل النتائج</string>
+    <string name="item_search_error_body">تحقق من اتصالك وحاول مرة أخرى.</string>
+    <string name="item_search_try_again">المحاولة مرة أخرى</string>
+    <string name="item_search_selected_none">لم يتم تحديد شيء</string>
+    <plurals name="item_search_selected_count">
+        <item quantity="zero">لم يتم تحديد شيء</item>
+        <item quantity="one">تم تحديد واحد</item>
+        <item quantity="two">تم تحديد اثنين</item>
+        <item quantity="few">تم تحديد %1$d</item>
+        <item quantity="many">تم تحديد %1$d</item>
+        <item quantity="other">تم تحديد %1$d</item>
+    </plurals>
+    <plurals name="item_search_add_button">
+        <item quantity="zero">لا عناصر للإضافة</item>
+        <item quantity="one">إضافة عنصر واحد</item>
+        <item quantity="two">إضافة عنصرين</item>
+        <item quantity="few">إضافة %1$d عناصر</item>
+        <item quantity="many">إضافة %1$d عنصرًا</item>
+        <item quantity="other">إضافة %1$d عنصر</item>
+    </plurals>
+    <string name="item_search_add_disabled">إضافة</string>
+
+    <string name="manual_dialog_title">إضافة عنصر</string>
+    <string name="manual_dialog_body">ينتقل إلى المجمّع. يمكنك لاحقًا سحبه إلى مستوى.</string>
+    <string name="manual_dialog_field_name">الاسم</string>
+    <string name="manual_dialog_photo_optional">الصورة اختيارية.</string>
+    <string name="manual_dialog_choose_photo">اختيار صورة</string>
+    <string name="manual_dialog_replace_photo">استبدال الصورة</string>
+    <string name="manual_dialog_cancel">إلغاء</string>
+    <string name="manual_dialog_add">إضافة</string>
+    <string name="manual_dialog_photo_frame_empty">لم يتم اختيار صورة</string>
+    <string name="manual_dialog_photo_frame_chosen">تم اختيار الصورة. اضغط على «استبدال الصورة» لتغييرها.</string>
+    <plurals name="manual_dialog_photos_chosen">
+        <item quantity="zero">لم يُختَر أي صورة</item>
+        <item quantity="one">تم اختيار صورة واحدة</item>
+        <item quantity="two">تم اختيار صورتين</item>
+        <item quantity="few">تم اختيار %1$d صور</item>
+        <item quantity="many">تم اختيار %1$d صورة</item>
+        <item quantity="other">تم اختيار %1$d صورة</item>
+    </plurals>
+    <plurals name="manual_dialog_add_many">
+        <item quantity="zero">إضافة %1$d عنصر</item>
+        <item quantity="one">إضافة عنصر واحد</item>
+        <item quantity="two">إضافة عنصرين</item>
+        <item quantity="few">إضافة %1$d عناصر</item>
+        <item quantity="many">إضافة %1$d عنصرًا</item>
+        <item quantity="other">إضافة %1$d عنصر</item>
+    </plurals>
+    <string name="manual_dialog_remove_photo">إزالة الصورة</string>
+
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_theme">المظهر</string>
+    <string name="settings_theme_sub">«النظام» يستخدم إعداد أندرويد الخاص بك.</string>
+    <string name="theme_light">فاتح</string>
+    <string name="theme_dark">داكن</string>
+    <string name="theme_system">النظام</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_language_caption">يغيّر نص التطبيق نفسه فقط. الأسماء التي كتبتها تبقى كما هي.</string>
+    <string name="language_default">افتراضي</string>
+    <string name="language_name_uk">الأوكرانية</string>
+    <string name="language_name_ru">الروسية</string>
+    <string name="language_name_es">الإسبانية</string>
+    <string name="language_name_pt_br">البرتغالية (البرازيل)</string>
+    <string name="language_name_de">الألمانية</string>
+    <string name="language_name_fr">الفرنسية</string>
+    <string name="language_name_pl">البولندية</string>
+    <string name="language_name_tr">التركية</string>
+    <string name="language_name_ja">اليابانية</string>
+    <string name="language_name_ar">العربية · من اليمين إلى اليسار</string>
+    <string name="settings_trash">سلة المهملات</string>
+    <string name="settings_trash_empty">فارغة</string>
+    <string name="settings_export">تصدير البيانات</string>
+    <string name="settings_export_sub">حفظ نسخة قابلة للقراءة من كل قائمة</string>
+    <string name="cd_settings_back">رجوع</string>
+
+    <string name="trash_title">سلة المهملات</string>
+    <string name="trash_subtitle">تبقى القوائم والعناصر المحذوفة هنا حتى تزيلها.</string>
+    <string name="trash_row_list_meta">قائمة · %1$s · حُذفت %2$s</string>
+    <string name="trash_row_item_meta">عنصر · من %1$s · حُذف %2$s</string>
+    <plurals name="list_items_count">
+        <item quantity="zero">لا عناصر</item>
+        <item quantity="one">عنصر واحد</item>
+        <item quantity="two">عنصران</item>
+        <item quantity="few">%1$d عناصر</item>
+        <item quantity="many">%1$d عنصرًا</item>
+        <item quantity="other">%1$d عنصر</item>
+    </plurals>
+    <string name="trash_time_just_now">الآن</string>
+    <plurals name="trash_time_minutes_ago">
+        <item quantity="zero">قبل أقل من دقيقة</item>
+        <item quantity="one">قبل دقيقة واحدة</item>
+        <item quantity="two">قبل دقيقتين</item>
+        <item quantity="few">قبل %1$d دقائق</item>
+        <item quantity="many">قبل %1$d دقيقة</item>
+        <item quantity="other">قبل %1$d دقيقة</item>
+    </plurals>
+    <plurals name="trash_time_hours_ago">
+        <item quantity="zero">قبل أقل من ساعة</item>
+        <item quantity="one">قبل ساعة واحدة</item>
+        <item quantity="two">قبل ساعتين</item>
+        <item quantity="few">قبل %1$d ساعات</item>
+        <item quantity="many">قبل %1$d ساعة</item>
+        <item quantity="other">قبل %1$d ساعة</item>
+    </plurals>
+    <string name="trash_time_yesterday">أمس</string>
+    <plurals name="trash_time_days_ago">
+        <item quantity="zero">قبل أقل من يوم</item>
+        <item quantity="one">قبل يوم واحد</item>
+        <item quantity="two">قبل يومين</item>
+        <item quantity="few">قبل %1$d أيام</item>
+        <item quantity="many">قبل %1$d يومًا</item>
+        <item quantity="other">قبل %1$d يوم</item>
+    </plurals>
+    <string name="action_restore">استعادة</string>
+    <string name="action_remove">إزالة</string>
+    <string name="remove_dialog_title">الإزالة نهائيًا؟</string>
+    <string name="remove_dialog_body_list">سيتم حذف %1$s و%2$s من هذا الجهاز. لا يمكن التراجع عن هذا.</string>
+    <string name="remove_dialog_body_item">سيتم حذف %1$s من هذا الجهاز. لا يمكن التراجع عن هذا.</string>
+    <string name="menu_empty_trash">إفراغ سلة المهملات</string>
+    <string name="action_empty_trash">إفراغ سلة المهملات</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="empty_trash_dialog_title">إفراغ سلة المهملات؟</string>
+    <string name="empty_trash_dialog_body">سيتم حذف %1$s من هذا الجهاز. لا يمكن التراجع عن هذا.</string>
+    <plurals name="trash_entry_count">
+        <item quantity="zero">لا سجلات</item>
+        <item quantity="one">سجل واحد</item>
+        <item quantity="two">سجلان</item>
+        <item quantity="few">%1$d سجلات</item>
+        <item quantity="many">%1$d سجلًا</item>
+        <item quantity="other">%1$d سجل</item>
+    </plurals>
+    <string name="trash_empty_title">سلة المهملات فارغة</string>
+    <string name="trash_empty_body">تظهر هنا القوائم والعناصر التي تحذفها. تبقى حتى تزيلها.</string>
+    <string name="cd_more">خيارات أخرى</string>
+    <string name="cd_restore">استعادة %1$s</string>
+    <string name="cd_remove">إزالة %1$s نهائيًا</string>
+    <string name="cd_trash_back">رجوع</string>
+
+    <string name="export_filename">TierYourLife %1$s.txt</string>
+    <string name="export_file_header">TierYourLife</string>
+    <string name="export_file_date">تم التصدير في %1$s</string>
+    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
+    <plurals name="unranked_count">
+        <item quantity="zero">لا شيء غير مصنَّف</item>
+        <item quantity="one">عنصر واحد غير مصنَّف</item>
+        <item quantity="two">عنصران غير مصنَّفين</item>
+        <item quantity="few">%1$d غير مصنَّفة</item>
+        <item quantity="many">%1$d غير مصنَّف</item>
+        <item quantity="other">%1$d غير مصنَّف</item>
+    </plurals>
+    <string name="export_list_counts">%1$s · %2$s</string>
+    <string name="export_tier_with_caption">%1$s — %2$s</string>
+    <string name="export_tier_plain">%1$s</string>
+    <string name="export_tier_empty">(فارغ)</string>
+    <string name="export_unranked_heading">غير مصنَّف</string>
+    <plurals name="snack_export_done">
+        <item quantity="zero">لم يتم تصدير أي قائمة</item>
+        <item quantity="one">تم تصدير قائمة واحدة</item>
+        <item quantity="two">تم تصدير قائمتين</item>
+        <item quantity="few">تم تصدير %1$d قوائم</item>
+        <item quantity="many">تم تصدير %1$d قائمة</item>
+        <item quantity="other">تم تصدير %1$d قائمة</item>
+    </plurals>
+    <string name="action_share">مشاركة</string>
+    <string name="snack_export_failed">تعذّر حفظ الملف</string>
+    <string name="action_try_again">المحاولة مرة أخرى</string>
+</resources>

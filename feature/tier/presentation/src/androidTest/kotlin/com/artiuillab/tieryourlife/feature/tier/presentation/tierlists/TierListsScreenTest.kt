@@ -1,12 +1,26 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollToKey
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
@@ -28,7 +42,7 @@ class TierListsScreenTest {
     @Test
     fun successState_displaysTitleSummaryAndTierLists() {
         val lists = initialLists()
-        setScreen(TierListsUiState.Success(lists))
+        setScreen(successState(lists))
 
         composeRule.onNodeWithText(string(R.string.tier_lists_title)).assertIsDisplayed()
         composeRule.onNodeWithText(summary(listCount = 2, rankedCount = 19)).assertIsDisplayed()
@@ -36,37 +50,25 @@ class TierListsScreenTest {
         composeRule.onNodeWithText("Every A24 film").assertIsDisplayed()
         composeRule.onNodeWithText(cardCounts(ranked = 7, pool = 6)).assertIsDisplayed()
         composeRule.onNodeWithText(cardCounts(ranked = 12, pool = 4)).assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.tier_lists_recent_changes)).assertIsDisplayed()
     }
 
     @Test
-    fun successState_withFifteenLists_scrollsToLastList() {
-        val lists = initialLists() + (3..15).map { index ->
-            tierList(id = -index.toLong(), title = "Demo list $index", counts = intArrayOf(1, 1, 1, 0, 0, 2))
-        }
-        setScreen(TierListsUiState.Success(lists))
-
-        composeRule.onNodeWithTag("tier_lists").performScrollToKey(-15L)
-        composeRule.onNodeWithText("Demo list 15").assertIsDisplayed()
-    }
-
-    @Test
-    fun themeButton_clickInvokesToggleCallback() {
+    fun settingsButton_clickInvokesCallback() {
         var calls = 0
-        setScreen(TierListsUiState.Success(emptyList()), onToggleTheme = { calls++ })
+        setScreen(successState(emptyList()), onSettingsClick = { calls++ })
 
         composeRule.onNodeWithContentDescription(
-            string(R.string.tier_lists_content_description_toggle_theme),
+            string(R.string.tier_lists_content_description_settings),
         ).performClick()
 
         composeRule.runOnIdle { assertEquals(1, calls) }
     }
 
     @Test
-    fun positiveIdTierList_clickPassesIdToCallback() {
+    fun tierListCard_clickPassesIdToCallback() {
         var clickedId: Long? = null
         setScreen(
-            TierListsUiState.Success(listOf(tierList(7L, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 1)))),
+            successState(listOf(tierList(7L, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 1)))),
             onTierListClick = { clickedId = it },
         )
 
@@ -76,23 +78,10 @@ class TierListsScreenTest {
     }
 
     @Test
-    fun negativeIdDemoTierList_clickDoesNotInvokeCallback() {
-        var calls = 0
-        setScreen(
-            TierListsUiState.Success(listOf(tierList(-3L, "Demo list 03", intArrayOf(1, 0, 0, 0, 0, 1)))),
-            onTierListClick = { calls++ },
-        )
-
-        composeRule.onNodeWithTag("tier_list_card_-3").performClick()
-
-        composeRule.runOnIdle { assertEquals(0, calls) }
-    }
-
-    @Test
     fun loadingState_displaysProgressIndicator() {
         setScreen(TierListsUiState.Loading)
 
-        composeRule.onNodeWithTag("tier_lists_loading").assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.LOADING).assertIsDisplayed()
     }
 
     @Test
@@ -103,26 +92,269 @@ class TierListsScreenTest {
     }
 
     @Test
-    fun emptySuccessState_displaysZeroCounts() {
-        setScreen(TierListsUiState.Success(emptyList()))
+    fun emptySuccessState_hidesSummaryLine_andShowsTheEmptyState() {
+        setScreen(successState(emptyList()))
 
-        composeRule.onNodeWithText(summary(listCount = 0, rankedCount = 0)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.tier_lists_title)).assertIsDisplayed()
+        composeRule.onNodeWithText(summary(listCount = 0, rankedCount = 0)).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierListsTestTags.EMPTY_STATE).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.home_empty_title)).assertIsDisplayed()
+    }
+
+
+    @Test
+    fun search_filtersByTitle_caseInsensitiveAndAnywhereInTheName() {
+        val lists = listOf(
+            tierList(1L, "Pizza in Lisbon", intArrayOf(0, 0, 0, 0, 0, 0)),
+            tierList(2L, "Sushi tour", intArrayOf(0, 0, 0, 0, 0, 0)),
+        )
+        setLiveScreen(lists)
+
+        composeRule.onNodeWithContentDescription(
+            string(R.string.tier_lists_content_description_search),
+        ).performClick()
+        composeRule.onNodeWithTag(TierListsTestTags.SEARCH_FIELD).performTextInput("piz")
+
+        composeRule.onNodeWithText("Pizza in Lisbon").assertIsDisplayed()
+        composeRule.onNodeWithText("Sushi tour").assertDoesNotExist()
+        composeRule.onNodeWithText(plural(R.plurals.search_results_count, 1)).assertIsDisplayed()
+    }
+
+    @Test
+    fun search_withNoMatches_showsTheNoResultsState() {
+        val lists = listOf(tierList(1L, "Pizza in Lisbon", intArrayOf(0, 0, 0, 0, 0, 0)))
+        setLiveScreen(lists)
+
+        composeRule.onNodeWithContentDescription(
+            string(R.string.tier_lists_content_description_search),
+        ).performClick()
+        composeRule.onNodeWithTag(TierListsTestTags.SEARCH_FIELD).performTextInput("sushi")
+
+        composeRule.onNodeWithTag(TierListsTestTags.SEARCH_NO_RESULTS).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.search_no_results_title, "sushi")).assertIsDisplayed()
+    }
+
+    @Test
+    fun search_closeButton_returnsToBrowsingAndRestoresTheFab() {
+        val lists = listOf(tierList(1L, "Pizza in Lisbon", intArrayOf(0, 0, 0, 0, 0, 0)))
+        setLiveScreen(lists)
+
+        composeRule.onNodeWithContentDescription(
+            string(R.string.tier_lists_content_description_search),
+        ).performClick()
+        composeRule.onNodeWithTag(TierListsTestTags.SEARCH_CLOSE).performClick()
+
+        composeRule.onNodeWithTag(TierListsTestTags.FAB).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.tier_lists_title)).assertIsDisplayed()
+    }
+
+
+    @Test
+    fun longPress_entersSelectionMode_showingTheContextualBarAndHidingTheFab() {
+        val lists = listOf(tierList(7L, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 1)))
+        setLiveScreen(lists)
+
+        composeRule.onNodeWithTag("tier_list_card_7").performTouchInput { longClick() }
+
+        composeRule.onNodeWithTag(TierListsTestTags.SELECTION_BAR).assertIsDisplayed()
+        composeRule.onNodeWithText(plural(R.plurals.selection_count, 1)).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.FAB).assertDoesNotExist()
+    }
+
+    @Test
+    fun deselectingTheLastCard_exitsSelectionMode() {
+        val lists = listOf(tierList(7L, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 1)))
+        setLiveScreen(lists)
+
+        composeRule.onNodeWithTag("tier_list_card_7").performTouchInput { longClick() }
+        composeRule.onNodeWithTag(TierListsTestTags.SELECTION_BAR).assertIsDisplayed()
+
+        composeRule.onNodeWithTag("tier_list_card_7").performClick()
+
+        composeRule.onNodeWithTag(TierListsTestTags.SELECTION_BAR).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierListsTestTags.FAB).assertIsDisplayed()
+    }
+
+    // The checkbox is what actually states the selection now (docs/design-spec-home.md,
+    // section 11) — every card gets checkbox semantics the instant the mode starts, not
+    // only the one that was long-pressed, and that simultaneous appearance is what
+    // teaches the user a plain tap now selects.
+    @Test
+    fun enteringSelectionMode_showsACheckboxOnEveryCard_checkedOnlyOnTheSelectedOne() {
+        val lists = listOf(
+            tierList(1L, "First", intArrayOf(0, 0, 0, 0, 0, 0)),
+            tierList(2L, "Second", intArrayOf(0, 0, 0, 0, 0, 0)),
+        )
+        setLiveScreen(lists)
+
+        composeRule.onNodeWithTag("tier_list_card_1").performTouchInput { longClick() }
+
+        composeRule.onNodeWithTag("tier_list_card_1").assertIsOn()
+        composeRule.onNodeWithTag("tier_list_card_2").assertIsOff()
+    }
+
+    // The design had the heading and its summary collapse away while selecting. Built,
+    // that yanked the whole list upward under the finger still resting on the card it
+    // had just long-pressed, and left the first card flush against the bar. The heading
+    // stays; only the bar above it changes. Decided against the design — see
+    // docs/design-spec-home.md, section 3.
+    @Test
+    fun selectionMode_keepsTheHeadingAndSummaryInPlace() {
+        val lists = listOf(tierList(7L, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 1)))
+        setLiveScreen(lists)
+
+        composeRule.onNodeWithTag("tier_list_card_7").performTouchInput { longClick() }
+
+        composeRule.onNodeWithTag(TierListsTestTags.SELECTION_BAR).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.tier_lists_title)).assertIsDisplayed()
+        composeRule.onNodeWithText(summary(listCount = 1, rankedCount = 1)).assertIsDisplayed()
+    }
+
+    @Test
+    fun selectionMode_tappingAnotherCard_addsItRatherThanOpeningIt() {
+        var openedId: Long? = null
+        val lists = listOf(
+            tierList(1L, "First", intArrayOf(0, 0, 0, 0, 0, 0)),
+            tierList(2L, "Second", intArrayOf(0, 0, 0, 0, 0, 0)),
+        )
+        setLiveScreen(lists, onTierListClick = { openedId = it })
+
+        composeRule.onNodeWithTag("tier_list_card_1").performTouchInput { longClick() }
+        composeRule.onNodeWithTag("tier_list_card_2").performClick()
+
+        composeRule.onNodeWithText(plural(R.plurals.selection_count, 2)).assertIsDisplayed()
+        composeRule.runOnIdle { assertEquals(null, openedId) }
+    }
+
+
+    @Test
+    fun delete_removesTheCardsAndShowsTheUndoSnackbar_andUndoRestoresThem() {
+        val lists = listOf(
+            tierList(1L, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 1)),
+            tierList(2L, "Every A24 film", intArrayOf(1, 0, 0, 0, 0, 1)),
+        )
+        setLiveScreen(lists)
+
+        composeRule.onNodeWithTag("tier_list_card_1").performTouchInput { longClick() }
+        composeRule.onNodeWithTag(TierListsTestTags.SELECTION_DELETE).performClick()
+
+        composeRule.onNodeWithTag("tier_list_card_1").assertDoesNotExist()
+        composeRule.onNodeWithTag("tier_list_card_2").assertIsDisplayed()
+        composeRule.onNodeWithText(plural(R.plurals.snack_lists_deleted, 1)).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.SELECTION_BAR).assertDoesNotExist()
+
+        composeRule.onNodeWithText(string(R.string.action_undo)).performClick()
+
+        composeRule.onNodeWithTag("tier_list_card_1").assertIsDisplayed()
+    }
+
+    // Exercises OnResumeEffect directly against a lifecycle we drive by hand, rather
+    // than through real navigation — this is what proves the trigger itself is sound:
+    // one catch-up resume for the screen's first appearance, none for an unrelated
+    // recomposition, and exactly one more for a genuine pause/resume cycle (leaving
+    // for the detail screen and coming back).
+    @Test
+    fun onResumeEffect_firesOnResumeButNotOnPlainRecomposition() {
+        var resumeCount = 0
+        lateinit var lifecycleOwner: ManualLifecycleOwner
+        var recomposeTrigger by mutableIntStateOf(0)
+
+        composeRule.setContent {
+            val owner = remember {
+                ManualLifecycleOwner().apply {
+                    registry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+                    registry.handleLifecycleEvent(Lifecycle.Event.ON_START)
+                    registry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+                }
+            }
+            lifecycleOwner = owner
+            CompositionLocalProvider(LocalLifecycleOwner provides owner) {
+                recomposeTrigger
+                OnResumeEffect(onResume = { resumeCount++ })
+            }
+        }
+
+        composeRule.runOnIdle { assertEquals(1, resumeCount) }
+
+        recomposeTrigger++
+        composeRule.runOnIdle { assertEquals(1, resumeCount) }
+
+        composeRule.runOnIdle {
+            lifecycleOwner.registry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+            lifecycleOwner.registry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+        }
+        composeRule.runOnIdle { assertEquals(2, resumeCount) }
     }
 
     private fun setScreen(
         state: TierListsUiState,
         onTierListClick: (Long) -> Unit = {},
-        onToggleTheme: () -> Unit = {},
+        onSettingsClick: () -> Unit = {},
     ) {
         composeRule.setContent {
             TierYourLifeTheme {
                 TierListsScreenContent(
                     state = state,
                     onTierListClick = onTierListClick,
-                    onToggleTheme = onToggleTheme,
+                    onSettingsClick = onSettingsClick,
                 )
             }
         }
+    }
+
+    // Wires every callback back into local state the same way TierListsViewModel does,
+    // so the tests above exercise the real reactive loop (mode changes driving what the
+    // screen shows) without needing Hilt or a real repository.
+    private fun setLiveScreen(
+        initialLists: List<TierList>,
+        onTierListClick: (Long) -> Unit = {},
+    ) {
+        composeRule.setContent {
+            var lists by remember { mutableStateOf(initialLists) }
+            var mode by remember { mutableStateOf<HomeMode>(HomeMode.Browsing) }
+            val query = (mode as? HomeMode.Searching)?.query
+            val visibleLists = if (query != null) {
+                lists.filter { it.title.contains(query, ignoreCase = true) }
+            } else {
+                lists
+            }
+            val rankedCount = lists.sumOf { list -> list.tiers.filterNot { it.isPool }.sumOf { it.items.size } }
+
+            TierYourLifeTheme {
+                TierListsScreenContent(
+                    state = TierListsUiState.Success(visibleLists, lists.size, rankedCount, mode),
+                    onTierListClick = onTierListClick,
+                    onSearchClick = { mode = HomeMode.Searching("") },
+                    onSearchQueryChange = { newQuery -> mode = HomeMode.Searching(newQuery) },
+                    onCloseSearch = { mode = HomeMode.Browsing },
+                    onLongPressCard = { id -> mode = HomeMode.Selecting(setOf(id)) },
+                    onToggleSelected = { id ->
+                        val current = mode as? HomeMode.Selecting
+                        if (current != null) {
+                            val updated = if (id in current.selectedIds) {
+                                current.selectedIds - id
+                            } else {
+                                current.selectedIds + id
+                            }
+                            mode = if (updated.isEmpty()) HomeMode.Browsing else HomeMode.Selecting(updated)
+                        }
+                    },
+                    onCloseSelection = { mode = HomeMode.Browsing },
+                    onDeleteLists = { ids ->
+                        lists = lists.filterNot { it.id in ids }
+                        mode = HomeMode.Browsing
+                    },
+                    onUndoDelete = { ids ->
+                        lists = lists + initialLists.filter { it.id in ids }
+                    },
+                )
+            }
+        }
+    }
+
+    private fun successState(lists: List<TierList>, mode: HomeMode = HomeMode.Browsing): TierListsUiState.Success {
+        val rankedCount = lists.sumOf { list -> list.tiers.filterNot { it.isPool }.sumOf { it.items.size } }
+        return TierListsUiState.Success(lists, lists.size, rankedCount, mode)
     }
 
     private fun summary(listCount: Int, rankedCount: Int): String = string(
@@ -149,6 +381,13 @@ class TierListsScreenTest {
         tierList(1L, "Sci-fi films", intArrayOf(2, 2, 1, 1, 1, 6)),
         tierList(2L, "Every A24 film", intArrayOf(3, 3, 3, 2, 1, 4)),
     )
+}
+
+// A LifecycleOwner whose state this test drives by hand, standing in for the
+// navigation back stack entry's own lifecycle without needing real navigation.
+private class ManualLifecycleOwner : LifecycleOwner {
+    val registry = LifecycleRegistry(this)
+    override val lifecycle: Lifecycle get() = registry
 }
 
 private fun tierList(id: Long, title: String, counts: IntArray): TierList = TierList(

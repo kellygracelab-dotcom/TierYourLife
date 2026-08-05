@@ -9,5 +9,6 @@ interface TmdbApi {
     @GET("3/search/movie")
     suspend fun searchMovies(
         @Query("query") query: String,
+        @Query("language") language: String,
     ): MovieSearchResponseDto
 }

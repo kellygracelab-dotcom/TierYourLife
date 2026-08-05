@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWithTiers
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierWithItems
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -72,5 +73,33 @@ class TierListMapperTest {
             listOf("First", "Second"),
             actual.tiers.first().items.map { it.title },
         )
+    }
+
+    @Test
+    fun tier_list_entity_with_known_display_mode_maps_to_the_matching_enum_constant() {
+        val entity = TierListEntity(id = 1, title = "Films", displayMode = "HORIZONTAL_SCROLL")
+
+        val actual = entity.toDomain()
+
+        assertEquals(TierListDisplayMode.HORIZONTAL_SCROLL, actual.displayMode)
+    }
+
+    @Test
+    fun tier_list_entity_with_unrecognized_display_mode_falls_back_to_wrap() {
+        val entity = TierListEntity(id = 1, title = "Films", displayMode = "SOME_FUTURE_MODE")
+
+        val actual = entity.toDomain()
+
+        assertEquals(TierListDisplayMode.WRAP, actual.displayMode)
+    }
+
+    @Test
+    fun tier_list_with_tiers_relation_carries_display_mode_from_the_embedded_list() {
+        val entity = TierListEntity(id = 1, title = "Films", displayMode = "FLAT_RANKED")
+        val source = TierListWithTiers(tierList = entity, tiers = emptyList())
+
+        val actual = source.toDomain()
+
+        assertEquals(TierListDisplayMode.FLAT_RANKED, actual.displayMode)
     }
 }

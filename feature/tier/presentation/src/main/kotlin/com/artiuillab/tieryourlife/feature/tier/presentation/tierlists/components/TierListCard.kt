@@ -1,7 +1,9 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -20,19 +23,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun TierListCard(list: TierList, onTierListClick: (Long) -> Unit) {
+internal fun TierListCard(
+    list: TierList,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit = {},
+    selectionMode: Boolean = false,
+    selected: Boolean = false,
+) {
     val ranked = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
     val inPool = list.tiers.firstOrNull { it.isPool }?.items?.size ?: 0
     val rankedText = pluralStringResource(R.plurals.tier_lists_ranked_count, ranked, ranked)
@@ -43,7 +60,22 @@ internal fun TierListCard(list: TierList, onTierListClick: (Long) -> Unit) {
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .testTag("tier_list_card_${list.id}")
-            .clickable { if (list.id > 0) onTierListClick(list.id) }
+            // Selection mode re-binds what a tap does, so the card's own semantics
+            // must say "checkbox" while it's active — TalkBack otherwise has no way to
+            // know a tap now selects rather than opens (docs/design-spec-home.md,
+            // section 11). Applied before combinedClickable so it lands on the same
+            // merged semantics node as the click/long-click actions, not a separate one.
+            .then(
+                if (selectionMode) {
+                    Modifier.semantics {
+                        role = Role.Checkbox
+                        toggleableState = if (selected) ToggleableState.On else ToggleableState.Off
+                    }
+                } else {
+                    Modifier
+                },
+            )
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
@@ -51,8 +83,7 @@ internal fun TierListCard(list: TierList, onTierListClick: (Long) -> Unit) {
             Column(Modifier.weight(1f)) {
                 Text(
                     list.title,
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -66,24 +97,61 @@ internal fun TierListCard(list: TierList, onTierListClick: (Long) -> Unit) {
                             inPoolText,
                         )
                     },
-                    fontSize = 13.sp,
-                    lineHeight = 18.sp,
+                    style = TierYourLifeType.current.captionUnderTitle,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            ChevronIcon()
+            if (selectionMode) {
+                SelectionCheckbox(selected)
+            } else {
+                ChevronIcon()
+            }
         }
         TierRibbon(list.tiers)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            val status = tierListStatus(list.title, ranked)
-            status.icon()
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = status.label,
-                fontSize = 12.sp,
-                lineHeight = 16.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+        // The app holds no update-timestamp data, so a list with rankings shows no
+        // footnote at all rather than a claim it can't back — only the "nothing ranked
+        // yet" case has anything true to say here. Cards differ in height as a result;
+        // that's intended (see docs/design-spec-home.md, section 1).
+        if (ranked == 0) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                DragIcon()
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.tier_lists_status_start_dragging),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+// Hand-drawn to an exact 24dp/4dp-radius box rather than the stock M3 Checkbox, the
+// same call CatalogueSearchScreen's SelectionCheckbox already made for the search sheet
+// (docs/design-spec-home.md, section 11). Not independently focusable or announced —
+// the checkbox state lives on the card's own semantics (see TierListCard above), so
+// this box clears its own to avoid TalkBack reading "checkbox" twice for one card.
+@Composable
+private fun SelectionCheckbox(selected: Boolean) {
+    val outline = MaterialTheme.colorScheme.outline
+    val primary = MaterialTheme.colorScheme.primary
+    val onPrimary = MaterialTheme.colorScheme.onPrimary
+    Box(
+        modifier = Modifier
+            .size(24.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .then(
+                if (selected) {
+                    Modifier.background(primary)
+                } else {
+                    Modifier.border(2.dp, outline, RoundedCornerShape(4.dp))
+                },
             )
+            .clearAndSetSemantics { },
+        contentAlignment = Alignment.Center,
+    ) {
+        if (selected) {
+            CheckIcon(18.dp, onPrimary)
         }
     }
 }
@@ -136,26 +204,3 @@ private fun TierRibbon(tiers: List<Tier>) {
     }
 }
 
-private data class TierListStatus(
-    val label: String,
-    val icon: @Composable () -> Unit,
-)
-
-@Composable
-private fun tierListStatus(title: String, ranked: Int): TierListStatus = when (title) {
-    "Sci-fi films" -> TierListStatus(
-        label = stringResource(R.string.tier_lists_status_sci_fi),
-        icon = { HistoryIcon() },
-    )
-
-    "Every A24 film" -> TierListStatus(
-        label = stringResource(R.string.tier_lists_status_a24),
-        icon = { ScheduleIcon() },
-    )
-
-    else -> if (ranked == 0) {
-        TierListStatus(stringResource(R.string.tier_lists_status_start_dragging)) { DragIcon() }
-    } else {
-        TierListStatus(stringResource(R.string.tier_lists_status_updated_recently)) { HistoryIcon() }
-    }
-}
