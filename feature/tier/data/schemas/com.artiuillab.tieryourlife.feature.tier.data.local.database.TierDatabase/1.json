@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "570ec3c8ab65c271e0c97f179b8a3074",
+    "identityHash": "36c1b9d0f63153be29f96ac50938e2ce",
     "entities": [
       {
         "tableName": "tier_lists",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `deletedAt` INTEGER, `displayMode` TEXT NOT NULL DEFAULT 'WRAP')",
         "fields": [
           {
             "fieldPath": "id",
@@ -19,6 +19,18 @@
             "columnName": "title",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "deletedAt",
+            "columnName": "deletedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "displayMode",
+            "columnName": "displayMode",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'WRAP'"
           }
         ],
         "primaryKey": {
@@ -30,7 +42,7 @@
       },
       {
         "tableName": "tiers",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tierListId` INTEGER NOT NULL, `position` INTEGER NOT NULL, `label` TEXT NOT NULL, `colorLight` TEXT NOT NULL, `colorDark` TEXT NOT NULL, `isPool` INTEGER NOT NULL, FOREIGN KEY(`tierListId`) REFERENCES `tier_lists`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tierListId` INTEGER NOT NULL, `position` INTEGER NOT NULL, `label` TEXT NOT NULL, `colorLight` TEXT NOT NULL, `colorDark` TEXT NOT NULL, `isPool` INTEGER NOT NULL, `caption` TEXT, FOREIGN KEY(`tierListId`) REFERENCES `tier_lists`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -73,6 +85,11 @@
             "columnName": "isPool",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "caption",
+            "columnName": "caption",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -108,7 +125,7 @@
       },
       {
         "tableName": "tier_items",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tierId` INTEGER NOT NULL, `position` INTEGER NOT NULL, `title` TEXT NOT NULL, `imageUrl` TEXT, FOREIGN KEY(`tierId`) REFERENCES `tiers`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tierId` INTEGER NOT NULL, `position` INTEGER NOT NULL, `title` TEXT NOT NULL, `imageUrl` TEXT, `deletedAt` INTEGER, FOREIGN KEY(`tierId`) REFERENCES `tiers`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -138,6 +155,11 @@
             "fieldPath": "imageUrl",
             "columnName": "imageUrl",
             "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "deletedAt",
+            "columnName": "deletedAt",
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -172,9 +194,19 @@
         ]
       }
     ],
+    "views": [
+      {
+        "viewName": "active_tier_lists",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT * FROM tier_lists WHERE deletedAt IS NULL"
+      },
+      {
+        "viewName": "active_tier_items",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT * FROM tier_items WHERE deletedAt IS NULL"
+      }
+    ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '570ec3c8ab65c271e0c97f179b8a3074')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '36c1b9d0f63153be29f96ac50938e2ce')"
     ]
   }
 }
