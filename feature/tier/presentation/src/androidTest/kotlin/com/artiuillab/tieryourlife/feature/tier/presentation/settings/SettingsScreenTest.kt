@@ -57,11 +57,11 @@ class SettingsScreenTest {
     }
 
     @Test
-    fun languageSheet_listsAllElevenLanguageOptions() {
+    fun languageSheet_listsEveryLanguageOption() {
         setScreen(languageTag = null)
         composeRule.onNodeWithTag(SettingsTestTags.LANGUAGE_ROW).performClick()
 
-        assertEquals(11, LanguageOptions.size)
+        assertEquals(10, LanguageOptions.size)
         LanguageOptions.forEach { option ->
             composeRule.onNodeWithTag(SettingsTestTags.languageOption(option.persistTag)).assertIsDisplayed()
         }
@@ -101,7 +101,7 @@ class SettingsScreenTest {
     }
 
 
-    // Three labels side by side is a bet on their length, and eleven languages plus a
+    // Three labels side by side is a bet on their length, and ten languages plus a
     // system font scale that goes past 2x is enough to lose it: "System" in English is
     // "Zgodnie z systemem" in Polish. The control measures instead of assuming, so the
     // test drives the measurement rather than the wording — at the default scale the

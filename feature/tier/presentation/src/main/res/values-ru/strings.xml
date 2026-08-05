@@ -218,7 +218,6 @@
     <string name="language_name_pl">Польский</string>
     <string name="language_name_tr">Турецкий</string>
     <string name="language_name_ja">Японский</string>
-    <string name="language_name_ar">Арабский · справа налево</string>
     <string name="settings_trash">Корзина</string>
     <string name="settings_trash_empty">Пусто</string>
     <string name="settings_export">Экспорт данных</string>
