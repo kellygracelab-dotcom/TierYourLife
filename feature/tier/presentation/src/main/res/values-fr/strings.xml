@@ -1,0 +1,257 @@
+<resources>
+    <string name="tier_lists_title">Vos listes</string>
+    <string name="tier_lists_private">privé</string>
+    <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <plurals name="tier_lists_count">
+        <item quantity="one">%d liste</item>
+        <item quantity="other">%d listes</item>
+    </plurals>
+    <plurals name="tier_lists_rankings_count">
+        <item quantity="one">%d classement</item>
+        <item quantity="other">%d classements</item>
+    </plurals>
+    <plurals name="tier_lists_ranked_count">
+        <item quantity="one">%d classé</item>
+        <item quantity="other">%d classés</item>
+    </plurals>
+    <plurals name="tier_lists_in_pool_count">
+        <item quantity="one">%d dans le réservoir</item>
+        <item quantity="other">%d dans le réservoir</item>
+    </plurals>
+    <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · rien de classé pour l\'instant</string>
+    <string name="tier_lists_status_start_dragging">Glissez pour classer</string>
+    <string name="tier_lists_content_description_search">Rechercher dans vos listes</string>
+    <string name="tier_lists_content_description_settings">Paramètres</string>
+
+    <string name="home_search_hint">Rechercher dans vos listes</string>
+    <plurals name="search_results_count">
+        <item quantity="one">%1$d liste</item>
+        <item quantity="other">%1$d listes</item>
+    </plurals>
+    <string name="search_no_results_title">Aucune liste ne correspond à « %1$s »</string>
+    <string name="search_no_results_body">Essayez un mot plus court ou vérifiez l\'orthographe.</string>
+    <string name="cd_close_search">Fermer la recherche</string>
+    <string name="cd_clear_query">Effacer la recherche</string>
+
+    <plurals name="selection_count">
+        <item quantity="one">%1$d sélectionné</item>
+        <item quantity="other">%1$d sélectionnés</item>
+    </plurals>
+    <string name="cd_close_selection">Quitter la sélection</string>
+    <string name="cd_delete_selected">Supprimer %1$s</string>
+
+    <plurals name="snack_lists_deleted">
+        <item quantity="one">%1$d liste supprimée</item>
+        <item quantity="other">%1$d listes supprimées</item>
+    </plurals>
+    <string name="action_undo">Annuler</string>
+    <string name="home_empty_title">Aucune liste pour l\'instant</string>
+    <string name="home_empty_body">Appuyez sur + pour classer quelque chose.</string>
+    <string name="cd_new_list">Nouvelle liste</string>
+
+    <string name="tier_detail_add">Ajouter</string>
+    <string name="tier_detail_content_description_back">Retour</string>
+    <string name="tier_detail_content_description_manual_add">Ajouter un élément manuellement</string>
+    <string name="tier_detail_content_description_more">Plus d\'options</string>
+    <string name="tier_detail_content_description_edit_title">Modifier le nom de la liste</string>
+    <string name="tier_detail_content_description_discard">Abandonner cette liste</string>
+    <plurals name="tier_detail_pool_unranked_count">
+        <item quantity="one">Réservoir · %d non classé</item>
+        <item quantity="other">Réservoir · %d non classé</item>
+    </plurals>
+
+    <string name="tier_detail_move_sheet_subtitle">Déplacer vers un rang</string>
+    <string name="tier_detail_move_sheet_current_tier">Actuellement ici</string>
+    <string name="tier_detail_move_sheet_remove_title">Retirer de la liste</string>
+    <string name="tier_detail_move_sheet_remove_subtitle">Va à la corbeille</string>
+    <string name="tier_detail_move_sheet_pool_title">Remettre dans le réservoir</string>
+    <string name="tier_detail_move_sheet_pool_subtitle">Non classé, reste dans la liste</string>
+
+    <string name="tier_detail_trash_target_label">Retirer</string>
+
+    <string name="tier_detail_item_moved_to_trash">%1$s a été déplacé vers la corbeille</string>
+    <string name="tier_detail_tier_moved_to_trash">Le rang %1$s a été déplacé vers la corbeille</string>
+    <string name="tier_detail_snackbar_undo">Annuler</string>
+
+    <plurals name="tier_detail_collapsed_item_count">
+        <item quantity="one">%1$d élément</item>
+        <item quantity="other">%1$d éléments</item>
+    </plurals>
+
+    <plurals name="tier_detail_ranked_header">
+        <item quantity="one">%1$d classé · du meilleur au pire</item>
+        <item quantity="other">%1$d classés · du meilleur au pire</item>
+    </plurals>
+    <string name="tier_detail_ranked_header_empty">Rien de classé pour l\'instant</string>
+    <string name="tier_detail_ranked_row_description">Place %1$d, %2$s, rang %3$s.</string>
+    <plurals name="tier_detail_ranked_pool_collapsed_description">
+        <item quantity="one">Réservoir, %1$d non classé. Déplier.</item>
+        <item quantity="other">Réservoir, %1$d non classé. Déplier.</item>
+    </plurals>
+    <plurals name="tier_detail_ranked_pool_expanded_description">
+        <item quantity="one">Réservoir, %1$d non classé. Replier.</item>
+        <item quantity="other">Réservoir, %1$d non classé. Replier.</item>
+    </plurals>
+
+    <string name="tier_list_settings_title">Paramètres de la liste</string>
+    <string name="tier_list_settings_display_section">Affichage</string>
+    <string name="tier_list_settings_display_section_caption">Comment les rangs s\'affichent dans cette liste. Les autres listes ne sont pas concernées.</string>
+    <string name="tier_list_settings_mode_wrapped">Lignes avec retour</string>
+    <string name="tier_list_settings_mode_wrapped_sub">Chaque élément visible, les lignes s\'agrandissent</string>
+    <string name="tier_list_settings_mode_strip">Bande unique</string>
+    <string name="tier_list_settings_mode_strip_sub">Une ligne par rang, défilement latéral</string>
+    <string name="tier_list_settings_mode_ranked">Liste classée</string>
+    <string name="tier_list_settings_mode_ranked_sub">Une colonne, du meilleur au pire, sans rangs</string>
+    <string name="tier_list_settings_new_tier_title">Nouveau rang</string>
+    <plurals name="tier_list_settings_tier_count">
+        <item quantity="one">%d rang</item>
+        <item quantity="other">%d rangs</item>
+    </plurals>
+
+    <string name="tier_editor_title">Modifier le rang</string>
+    <string name="tier_editor_add_title">Ajouter un rang</string>
+    <string name="tier_editor_label_field">Libellé</string>
+    <string name="tier_editor_caption_field">Légende</string>
+    <string name="tier_editor_color_section_title">Couleur</string>
+    <string name="tier_editor_color_section_caption">Personnalisé · définissez la couleur claire et la couleur sombre séparément</string>
+    <string name="tier_editor_theme_light">Clair</string>
+    <string name="tier_editor_theme_dark">Sombre</string>
+    <string name="tier_editor_hue_label">Teinte</string>
+    <string name="tier_editor_saturation_label">Saturation</string>
+    <string name="tier_editor_lightness_label">Luminosité</string>
+    <string name="tier_editor_hex_label">Hex</string>
+    <string name="tier_editor_cancel">Annuler</string>
+    <string name="tier_editor_save">Enregistrer</string>
+    <string name="tier_editor_preset_color_description">Couleur prédéfinie %1$d</string>
+    <string name="tier_editor_custom_color_description">Couleur personnalisée</string>
+
+    <string name="item_search_field_label">Rechercher</string>
+    <string name="item_search_close_content_description">Fermer la recherche</string>
+    <string name="item_search_clear_content_description">Effacer la recherche</string>
+    <string name="item_search_source_caption">Ajout au réservoir de %1$s</string>
+    <string name="item_search_min_query">Saisissez au moins deux lettres pour rechercher.</string>
+    <string name="item_search_empty_title">Rien trouvé pour \"%1$s\"</string>
+    <string name="item_search_error_title">Impossible de charger les résultats</string>
+    <string name="item_search_error_body">Vérifiez votre connexion et réessayez.</string>
+    <string name="item_search_try_again">Réessayer</string>
+    <string name="item_search_selected_none">Rien sélectionné</string>
+    <plurals name="item_search_selected_count">
+        <item quantity="one">%1$d sélectionné</item>
+        <item quantity="other">%1$d sélectionnés</item>
+    </plurals>
+    <plurals name="item_search_add_button">
+        <item quantity="one">Ajouter %1$d élément</item>
+        <item quantity="other">Ajouter %1$d éléments</item>
+    </plurals>
+    <string name="item_search_add_disabled">Ajouter</string>
+
+    <string name="manual_dialog_title">Ajouter un élément</string>
+    <string name="manual_dialog_body">Va dans le réservoir. Vous pourrez ensuite le glisser vers un rang.</string>
+    <string name="manual_dialog_field_name">Nom</string>
+    <string name="manual_dialog_photo_optional">La photo est facultative.</string>
+    <string name="manual_dialog_choose_photo">Choisir une photo</string>
+    <string name="manual_dialog_replace_photo">Remplacer la photo</string>
+    <string name="manual_dialog_cancel">Annuler</string>
+    <string name="manual_dialog_add">Ajouter</string>
+    <string name="manual_dialog_photo_frame_empty">Aucune photo choisie</string>
+    <string name="manual_dialog_photo_frame_chosen">Photo choisie. Appuyez sur « Remplacer la photo » pour la changer.</string>
+    <plurals name="manual_dialog_photos_chosen">
+        <item quantity="one">%1$d photo sélectionnée</item>
+        <item quantity="other">%1$d photos sélectionnées</item>
+    </plurals>
+    <plurals name="manual_dialog_add_many">
+        <item quantity="one">Ajouter %1$d élément</item>
+        <item quantity="other">Ajouter %1$d éléments</item>
+    </plurals>
+    <string name="manual_dialog_remove_photo">Retirer la photo</string>
+
+    <string name="settings_title">Paramètres</string>
+    <string name="settings_theme">Thème</string>
+    <string name="settings_theme_sub">« Système » utilise le réglage de votre Android.</string>
+    <string name="theme_light">Clair</string>
+    <string name="theme_dark">Sombre</string>
+    <string name="theme_system">Système</string>
+    <string name="settings_language">Langue</string>
+    <string name="settings_language_caption">Modifie uniquement le texte de l\'application. Les noms que vous avez saisis restent inchangés.</string>
+    <string name="language_default">Par défaut</string>
+    <string name="language_name_uk">Ukrainien</string>
+    <string name="language_name_ru">Russe</string>
+    <string name="language_name_es">Espagnol</string>
+    <string name="language_name_pt_br">Portugais (Brésil)</string>
+    <string name="language_name_de">Allemand</string>
+    <string name="language_name_fr">Français</string>
+    <string name="language_name_pl">Polonais</string>
+    <string name="language_name_tr">Turc</string>
+    <string name="language_name_ja">Japonais</string>
+    <string name="language_name_ar">Arabe · de droite à gauche</string>
+    <string name="settings_trash">Corbeille</string>
+    <string name="settings_trash_empty">Vide</string>
+    <string name="settings_export">Exporter les données</string>
+    <string name="settings_export_sub">Enregistrer une copie lisible de chaque liste</string>
+    <string name="cd_settings_back">Retour</string>
+
+    <string name="trash_title">Corbeille</string>
+    <string name="trash_subtitle">Les listes et éléments supprimés restent ici jusqu\'à ce que vous les retiriez.</string>
+    <string name="trash_row_list_meta">Liste · %1$s · supprimée %2$s</string>
+    <string name="trash_row_item_meta">Élément · de %1$s · supprimé %2$s</string>
+    <plurals name="list_items_count">
+        <item quantity="one">%1$d élément</item>
+        <item quantity="other">%1$d éléments</item>
+    </plurals>
+    <string name="trash_time_just_now">à l\'instant</string>
+    <plurals name="trash_time_minutes_ago">
+        <item quantity="one">il y a %1$d min</item>
+        <item quantity="other">il y a %1$d min</item>
+    </plurals>
+    <plurals name="trash_time_hours_ago">
+        <item quantity="one">il y a %1$d h</item>
+        <item quantity="other">il y a %1$d h</item>
+    </plurals>
+    <string name="trash_time_yesterday">hier</string>
+    <plurals name="trash_time_days_ago">
+        <item quantity="one">il y a %1$d jour</item>
+        <item quantity="other">il y a %1$d jours</item>
+    </plurals>
+    <string name="action_restore">Restaurer</string>
+    <string name="action_remove">Retirer</string>
+    <string name="remove_dialog_title">Supprimer définitivement ?</string>
+    <string name="remove_dialog_body_list">%1$s et ses %2$s seront supprimés de cet appareil. Cette action est irréversible.</string>
+    <string name="remove_dialog_body_item">%1$s sera supprimé de cet appareil. Cette action est irréversible.</string>
+    <string name="menu_empty_trash">Vider la corbeille</string>
+    <string name="action_empty_trash">Vider la corbeille</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="empty_trash_dialog_title">Vider la corbeille ?</string>
+    <string name="empty_trash_dialog_body">%1$s seront supprimés de cet appareil. Cette action est irréversible.</string>
+    <plurals name="trash_entry_count">
+        <item quantity="one">%1$d entrée</item>
+        <item quantity="other">%1$d entrées</item>
+    </plurals>
+    <string name="trash_empty_title">La corbeille est vide</string>
+    <string name="trash_empty_body">Les listes et éléments que vous supprimez apparaissent ici. Ils restent jusqu\'à ce que vous les retiriez.</string>
+    <string name="cd_more">Plus d\'options</string>
+    <string name="cd_restore">Restaurer %1$s</string>
+    <string name="cd_remove">Supprimer %1$s définitivement</string>
+    <string name="cd_trash_back">Retour</string>
+
+    <string name="export_filename">TierYourLife %1$s.txt</string>
+    <string name="export_file_header">TierYourLife</string>
+    <string name="export_file_date">Exporté le %1$s</string>
+    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
+    <plurals name="unranked_count">
+        <item quantity="one">%1$d non classé</item>
+        <item quantity="other">%1$d non classé</item>
+    </plurals>
+    <string name="export_list_counts">%1$s · %2$s</string>
+    <string name="export_tier_with_caption">%1$s — %2$s</string>
+    <string name="export_tier_plain">%1$s</string>
+    <string name="export_tier_empty">(vide)</string>
+    <string name="export_unranked_heading">Non classé</string>
+    <plurals name="snack_export_done">
+        <item quantity="one">%1$d liste exportée</item>
+        <item quantity="other">%1$d listes exportées</item>
+    </plurals>
+    <string name="action_share">Partager</string>
+    <string name="snack_export_failed">Impossible d\'enregistrer le fichier</string>
+    <string name="action_try_again">Réessayer</string>
+</resources>

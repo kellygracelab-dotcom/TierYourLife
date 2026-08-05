@@ -39,10 +39,15 @@ android {
 
 dependencies {
     implementation(projects.core.theme)
+    implementation(projects.feature.tier.domain)
     implementation(projects.feature.tier.data)
     implementation(projects.feature.tier.presentation)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.runtime.saveable)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.coil.core)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }

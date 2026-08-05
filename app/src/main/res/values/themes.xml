@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.TierYourLife" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- AppCompat, not the platform theme: AppCompatDelegate.setApplicationLocales only
+         applies its per-app-language backport (minSdk 24 needs the backport; the
+         framework API is 33+ only) through an Activity whose theme descends from
+         AppCompat. Still a bare no-action-bar theme — TierYourLifeTheme in Compose does
+         all real theming.
+
+         DayNight rather than Light, and with an explicit windowBackground: this is the
+         colour the system paints while the window exists but Compose has not drawn into
+         it yet. On the Light parent that colour was white, so every recreate — a
+         language change, a rotation — flashed white through a dark app. The value
+         matches SurfaceLight in core/theme; values-night matches SurfaceDark.
+         MainActivity overrides it at runtime for the one case a resource qualifier
+         cannot see: an in-app theme choice that disagrees with the system's setting. -->
+    <style name="Theme.TierYourLife" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
 </resources>

@@ -10,13 +10,14 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TierYourLife">
         <activity
             android:name=".MainActivity"
+            android:configChanges="locale|layoutDirection|screenLayout"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.TierYourLife"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

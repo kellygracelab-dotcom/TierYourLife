@@ -1,46 +1,149 @@
 package com.artiuillab.tieryourlife
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.os.LocaleListCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ThemeChoice
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.AppPreferences
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashScreen
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+// AppCompatActivity, not ComponentActivity: below API 33 (minSdk here is 24),
+// AppCompatDelegate.setApplicationLocales is a backport of the framework per-app-language
+// API, and with Compose that backport only applies through an AppCompat activity context
+// (docs/design-spec-home.md, section 7). The manifest theme is still a bare no-action-bar
+// AppCompat theme — TierYourLifeTheme does all real theming in Compose.
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var appPreferences: AppPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Applied before enableEdgeToEdge()/setContent below, so the very first frame
+        // already draws in the stored language rather than drawing once and flipping.
+        applyStoredLocale()
+        applyWindowBackground()
         enableEdgeToEdge()
         setContent {
             val systemDarkTheme = isSystemInDarkTheme()
-            var darkTheme by rememberSaveable { mutableStateOf(systemDarkTheme) }
+            var themeChoice by rememberSaveable { mutableStateOf(appPreferences.themeChoice()) }
+            val darkTheme = when (themeChoice) {
+                ThemeChoice.LIGHT -> false
+                ThemeChoice.DARK -> true
+                ThemeChoice.SYSTEM -> systemDarkTheme
+            }
+            val onThemeChoiceChange: (ThemeChoice) -> Unit = { choice ->
+                themeChoice = choice
+                appPreferences.setThemeChoice(choice)
+            }
+            var languageTag by rememberSaveable { mutableStateOf(appPreferences.languageTag()) }
+            val onLanguageTagChange: (String?) -> Unit = { tag ->
+                languageTag = tag
+                appPreferences.setLanguageTag(tag)
+                applyLocale(tag)
+            }
             val navController = rememberNavController()
 
             TierYourLifeTheme(darkTheme = darkTheme) {
-                NavHost(navController = navController, startDestination = Route.TierLists) {
+                // No transitions between destinations. Navigation Compose fades the
+                // outgoing screen out and the incoming one in by default, and on this
+                // app that reads as a blink rather than as movement: every destination
+                // here fills the screen edge to edge with a surface of the same colour,
+                // so a cross-fade between two of them has nothing to describe — it just
+                // dims the screen and brings it back. It is most obvious on the create
+                // button, where the whole point is that the new list is already open.
+                NavHost(
+                    navController = navController,
+                    startDestination = Route.TierLists,
+                    enterTransition = { EnterTransition.None },
+                    exitTransition = { ExitTransition.None },
+                    popEnterTransition = { EnterTransition.None },
+                    popExitTransition = { ExitTransition.None },
+                ) {
                     composable<Route.TierLists> {
                         TierListsScreen(
                             onTierListClick = { id -> navController.navigate(Route.TierDetail(id)) },
-                            onToggleTheme = { darkTheme = !darkTheme },
+                            onSettingsClick = { navController.navigate(Route.Settings) },
+                            onNewListCreated = { id ->
+                                navController.navigate(Route.TierDetail(id, startInTitleEdit = true))
+                            },
                         )
                     }
-                    composable<Route.TierDetail> {
-                        TierDetailScreen(onBack = { navController.popBackStack() })
+                    composable<Route.TierDetail> { backStackEntry ->
+                        val route = backStackEntry.toRoute<Route.TierDetail>()
+                        TierDetailScreen(
+                            onBack = { navController.popBackStack() },
+                            startInTitleEdit = route.startInTitleEdit,
+                        )
+                    }
+                    composable<Route.Settings> {
+                        SettingsScreen(
+                            onBack = { navController.popBackStack() },
+                            onTrashClick = { navController.navigate(Route.Trash) },
+                            themeChoice = themeChoice,
+                            onThemeChoiceChange = onThemeChoiceChange,
+                            languageTag = languageTag,
+                            onLanguageTagChange = onLanguageTagChange,
+                        )
+                    }
+                    composable<Route.Trash> {
+                        TrashScreen(onBack = { navController.popBackStack() })
                     }
                 }
             }
         }
+    }
+
+    // Only when something is actually stored. Calling applyLocale(null) here would clear the
+    // override on every launch — including one the user set from Android's own per-app
+    // language screen, which locales_config advertises this app to. Picking "Default" in
+    // Settings still clears it, at the moment it is picked.
+    private fun applyStoredLocale() {
+        appPreferences.languageTag()?.let(::applyLocale)
+    }
+
+    private fun applyLocale(tag: String?) {
+        val locales = tag?.let { LocaleListCompat.forLanguageTags(it) } ?: LocaleListCompat.getEmptyLocaleList()
+        AppCompatDelegate.setApplicationLocales(locales)
+    }
+
+    // themes.xml already picks a window background per the system's night setting, which
+    // is right whenever the app is following the system. It cannot be right when the
+    // user has overridden the theme in Settings — a phone in light mode running the app
+    // in Dark would paint a white window behind a dark app for the frames before Compose
+    // draws. The stored choice is the authority, so it is applied here, before the first
+    // frame. LIGHT and DARK are stated outright; SYSTEM defers to the resource the
+    // qualifier already resolved.
+    private fun applyWindowBackground() {
+        val color = when (appPreferences.themeChoice()) {
+            ThemeChoice.LIGHT -> ContextCompat.getColor(this, R.color.window_background_light)
+            ThemeChoice.DARK -> ContextCompat.getColor(this, R.color.window_background_dark)
+            ThemeChoice.SYSTEM -> ContextCompat.getColor(this, R.color.window_background)
+        }
+        window.setBackgroundDrawable(color.toDrawable())
     }
 }
