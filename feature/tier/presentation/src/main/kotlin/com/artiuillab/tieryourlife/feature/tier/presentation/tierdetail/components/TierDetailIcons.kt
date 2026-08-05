@@ -155,3 +155,40 @@ internal fun ExpandLessIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) {
     drawLine(color, Offset(6f * scale, 15f * scale), Offset(12f * scale, 9f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(12f * scale, 9f * scale), Offset(18f * scale, 15f * scale), stroke, StrokeCap.Round)
 }
+
+// A generic picture placeholder — frame, a sun, a mountain — for the empty photo slot
+// in the manual-entry dialog.
+@Composable
+internal fun ImagePlaceholderIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.5f * scale
+    drawRoundRect(
+        color,
+        Offset(3f * scale, 4f * scale),
+        Size(18f * scale, 16f * scale),
+        CornerRadius(2f * scale),
+        style = Stroke(stroke),
+    )
+    drawCircle(color, radius = 1.6f * scale, center = Offset(8f * scale, 9.5f * scale))
+    drawLine(color, Offset(5f * scale, 17f * scale), Offset(10.5f * scale, 11f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(10.5f * scale, 11f * scale), Offset(14f * scale, 14.5f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(14f * scale, 14.5f * scale), Offset(19f * scale, 9.5f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(19f * scale, 9.5f * scale), Offset(21f * scale, 12f * scale), stroke, StrokeCap.Round)
+}
+
+// Two overlapping frames — the "choose from photos" glyph on the assist chip.
+@Composable
+internal fun PhotoLibraryIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.4f * scale
+    drawRoundRect(
+        color,
+        Offset(3f * scale, 6f * scale),
+        Size(13f * scale, 13f * scale),
+        CornerRadius(2f * scale),
+        style = Stroke(stroke),
+    )
+    drawLine(color, Offset(8f * scale, 3f * scale), Offset(19f * scale, 3f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(19f * scale, 3f * scale), Offset(19f * scale, 14f * scale), stroke, StrokeCap.Round)
+    drawCircle(color, radius = 1.3f * scale, center = Offset(7f * scale, 10.5f * scale))
+    drawLine(color, Offset(5f * scale, 17f * scale), Offset(9.5f * scale, 12.5f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(9.5f * scale, 12.5f * scale), Offset(16f * scale, 19f * scale), stroke, StrokeCap.Round)
+}

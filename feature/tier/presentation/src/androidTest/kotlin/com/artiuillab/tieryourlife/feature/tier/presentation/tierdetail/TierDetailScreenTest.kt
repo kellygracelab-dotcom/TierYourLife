@@ -1,7 +1,9 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.test.assert
@@ -33,9 +35,11 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ManualEntryDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierRow
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -616,6 +620,312 @@ class TierDetailScreenTest {
     }
 
     @Test
+    fun liftingATierRow_collapsesAllRankedRowsToOneHeight() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = List(24) { movie(it) }),
+            tier(id = 2, label = "A", items = List(1) { movie(it + 100) }),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        val before1 = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot.height
+        val before2 = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(2)).fetchSemanticsNode().boundsInRoot.height
+        assertNotEquals("sanity: S (24 items) must be taller than A (1 item) before collapsing", before1, before2)
+
+        beginDrag(TierDetailTestTags.tierBand(1))
+
+        val during1 = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot.height
+        val during2 = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(2)).fetchSemanticsNode().boundsInRoot.height
+        assertEquals(during1, during2, 0.5f)
+
+        cancelDrag(TierDetailTestTags.tierBand(1))
+    }
+
+    @Test
+    fun releasingATierRow_expandsRowsBackToTheirNormalHeight() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = List(24) { movie(it) }),
+            tier(id = 2, label = "A", items = List(1) { movie(it + 100) }),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+        val expandedHeight = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot.height
+
+        beginDrag(TierDetailTestTags.tierBand(1))
+        composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).performTouchInput { up() }
+        composeRule.waitForIdle()
+
+        val afterHeight = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot.height
+        assertEquals(expandedHeight, afterHeight, 0.5f)
+    }
+
+    @Test
+    fun cancellingATierRowDrag_expandsRowsBackToTheirNormalHeight() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = List(24) { movie(it) }),
+            tier(id = 2, label = "A", items = List(1) { movie(it + 100) }),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+        val expandedHeight = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot.height
+
+        beginDrag(TierDetailTestTags.tierBand(1))
+        cancelDrag(TierDetailTestTags.tierBand(1))
+
+        val afterHeight = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot.height
+        assertEquals(expandedHeight, afterHeight, 0.5f)
+    }
+
+    @Test
+    fun draggingATierRow_reorders_andSubmitsTheFinalSequenceInOneCall() {
+        var callCount = 0
+        var reorderedIds: List<Long>? = null
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 2, label = "A", items = emptyList()),
+            tier(id = 3, label = "B", items = emptyList()),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(
+            TierDetailUiState.Success(list),
+            onReorderTiers = { ids ->
+                callCount++
+                reorderedIds = ids
+            },
+        )
+
+        // Drop S near the top of B's row — above B's own midpoint lands it between A and B.
+        dragTile(TierDetailTestTags.tierBand(1), TierDetailTestTags.tierRow(3), horizontalBias = 0.5f)
+
+        composeRule.runOnIdle {
+            assertEquals(1, callCount)
+            assertEquals(listOf(2L, 1L, 3L), reorderedIds)
+        }
+    }
+
+    @Test
+    fun pool_staysAtTheBottom_doesNotReorder_andDoesNotCollapse() {
+        var reorderedIds: List<Long>? = null
+        val list = listOf(
+            tier(id = 1, label = "S", items = List(24) { movie(it) }),
+            tier(id = 2, label = "A", items = emptyList()),
+            tier(id = 6, label = "Pool", items = List(2) { movie(it + 100) }, isPool = true),
+        ).asTierList()
+        setScreen(
+            TierDetailUiState.Success(list),
+            onReorderTiers = { ids -> reorderedIds = ids },
+        )
+
+        beginDrag(TierDetailTestTags.tierBand(1))
+
+        // Unlike a ranked row, the pool keeps showing its real items — it never swaps to
+        // a bare count.
+        composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertIsDisplayed()
+        val rankedBottom = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(2)).fetchSemanticsNode().boundsInRoot.bottom
+        val poolTop = composeRule.onNodeWithTag(TierDetailTestTags.POOL_PANEL).fetchSemanticsNode().boundsInRoot.top
+        assertTrue("pool must stay below every ranked row", poolTop >= rankedBottom)
+
+        composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).performTouchInput { up() }
+        composeRule.waitForIdle()
+
+        composeRule.runOnIdle {
+            assertFalse("the pool's id must never appear in a tier reorder", reorderedIds!!.contains(6L))
+        }
+    }
+
+    @Test
+    fun droppingATierRow_intoTheTrash_removesTheTier_andMovesItsItemsToThePool() {
+        var deletedTierId: Long? = null
+        var deletedPoolId: Long? = null
+        var deletedPoolSize: Int? = null
+        var deletedItemIds: List<Long>? = null
+        val list = listOf(
+            tier(id = 1, label = "S", items = List(2) { movie(it) }),
+            tier(id = 2, label = "A", items = emptyList()),
+            tier(id = 6, label = "Pool", items = List(3) { movie(it + 100) }, isPool = true),
+        ).asTierList()
+        setScreen(
+            TierDetailUiState.Success(list),
+            onDeleteTierToPool = { tierId, poolId, poolSize, itemIds ->
+                deletedTierId = tierId
+                deletedPoolId = poolId
+                deletedPoolSize = poolSize
+                deletedItemIds = itemIds
+            },
+        )
+
+        dragTileIntoTrash(TierDetailTestTags.tierBand(1))
+
+        composeRule.runOnIdle {
+            assertEquals(1L, deletedTierId)
+            assertEquals(6L, deletedPoolId)
+            assertEquals(3, deletedPoolSize)
+            assertEquals(listOf(0L, 1L), deletedItemIds)
+        }
+    }
+
+    @Test
+    fun undoingATierDeletion_recreatesTheTierWithItsFormerDetails_andReturnsItsItems() {
+        var restoredLabel: String? = null
+        var restoredCaption: String? = null
+        var restoredColorLight: String? = null
+        var restoredColorDark: String? = null
+        var restoredPosition: Int? = null
+        var restoredItemIds: List<Long>? = null
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList(), caption = "Best"),
+            tier(
+                id = 2,
+                label = "A",
+                items = List(1) { movie(it) },
+                caption = "Great",
+                colorLight = "#111111",
+                colorDark = "#222222",
+            ),
+            tier(id = 3, label = "B", items = emptyList()),
+            tier(id = 6, label = "Pool", items = List(2) { movie(it + 100) }, isPool = true),
+        ).asTierList()
+        setScreen(
+            TierDetailUiState.Success(list),
+            onRestoreTier = { label, caption, colorLight, colorDark, position, itemIds ->
+                restoredLabel = label
+                restoredCaption = caption
+                restoredColorLight = colorLight
+                restoredColorDark = colorDark
+                restoredPosition = position
+                restoredItemIds = itemIds
+            },
+        )
+
+        // "A" is at index 1 among the ranked tiers [S, A, B].
+        dragTileIntoTrash(TierDetailTestTags.tierBand(2))
+        composeRule.onNodeWithText("Undo").performClick()
+
+        composeRule.runOnIdle {
+            assertEquals("A", restoredLabel)
+            assertEquals("Great", restoredCaption)
+            assertEquals("#111111", restoredColorLight)
+            assertEquals("#222222", restoredColorDark)
+            assertEquals(1, restoredPosition)
+            assertEquals(listOf(0L), restoredItemIds)
+        }
+    }
+
+    // Regression for a stale drag-target rectangle: S starts big enough that, once it's
+    // gone, A and B shift up into space its own (unremoved) ghost rect would otherwise
+    // still claim — the defect this task fixes doesn't show up on a small ghost. Wires
+    // onDeleteTierToPool back into local state (unlike the other tier-drag tests above,
+    // which only capture the callback) because the bug only exists once the row has
+    // actually left composition, not merely once a callback fired.
+    @Test
+    fun afterDeletingALargeTier_droppingATile_landsInEachRemainingRow_notInTheDeletedTiersGhost() {
+        var moved: Pair<Long, Long>? = null
+        composeRule.setContent {
+            var list by remember {
+                mutableStateOf(
+                    listOf(
+                        tier(id = 1, label = "S", items = List(24) { movie(it) }),
+                        tier(id = 2, label = "A", items = emptyList()),
+                        tier(id = 3, label = "B", items = emptyList()),
+                        tier(id = 6, label = "Pool", items = List(1) { movie(it + 100) }, isPool = true),
+                    ).asTierList(),
+                )
+            }
+            TierYourLifeTheme {
+                TierDetailScreenContent(
+                    state = TierDetailUiState.Success(list),
+                    onBack = {},
+                    onAddClick = {},
+                    onMoveItem = { itemId, toTierId, _ -> moved = itemId to toTierId },
+                    onDeleteTierToPool = { tierId, poolId, _, _ ->
+                        val removedTier = list.tiers.first { it.id == tierId }
+                        list = list.copy(
+                            tiers = list.tiers
+                                .filterNot { it.id == tierId }
+                                .map { t -> if (t.id == poolId) t.copy(items = t.items + removedTier.items) else t },
+                        )
+                    },
+                )
+            }
+        }
+
+        dragTileIntoTrash(TierDetailTestTags.tierBand(1))
+        composeRule.waitForIdle()
+        composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).assertDoesNotExist()
+
+        dragTile(TierDetailTestTags.tile(100), TierDetailTestTags.tierRow(2), horizontalBias = 0.5f)
+        composeRule.runOnIdle { assertEquals(100L to 2L, moved) }
+
+        dragTile(TierDetailTestTags.tile(100), TierDetailTestTags.tierRow(3), horizontalBias = 0.5f)
+        composeRule.runOnIdle { assertEquals(100L to 3L, moved) }
+    }
+
+    // Same class of regression, at tile scale: deleting the middle tile of a row would
+    // otherwise leave a ghost entry that skews insertionIndexInGrid's grouping for a
+    // later drop into that exact row.
+    @Test
+    fun afterDeletingATile_insertionIndexInItsFormerRow_staysCorrect() {
+        var lastPosition: Int? = null
+        composeRule.setContent {
+            var list by remember {
+                mutableStateOf(
+                    listOf(
+                        tier(id = 1, label = "S", items = listOf(item(100, "A"), item(101, "B"), item(102, "C"))),
+                        tier(id = 6, label = "Pool", items = List(1) { movie(it + 200) }, isPool = true),
+                    ).asTierList(),
+                )
+            }
+            TierYourLifeTheme {
+                TierDetailScreenContent(
+                    state = TierDetailUiState.Success(list),
+                    onBack = {},
+                    onAddClick = {},
+                    onMoveItem = { _, _, toPosition -> lastPosition = toPosition },
+                    onDeleteItem = { deletedId ->
+                        list = list.copy(
+                            tiers = list.tiers.map { t -> t.copy(items = t.items.filterNot { it.id == deletedId }) },
+                        )
+                    },
+                )
+            }
+        }
+
+        dragTileIntoTrash(TierDetailTestTags.tile(101))
+        composeRule.waitForIdle()
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(101)).assertDoesNotExist()
+
+        // Row S now holds just [100, 102]. Dropping onto 102's left edge must land right
+        // before it, at index 1 — not shifted by a stale ghost of 101's old bounds.
+        dragTile(TierDetailTestTags.tile(200), TierDetailTestTags.tile(102), horizontalBias = 0.0f)
+
+        composeRule.runOnIdle { assertEquals(1, lastPosition) }
+    }
+
+    @Test
+    fun tileDragAndBandDoubleTap_stillWorkAlongsideTheNewRowDrag() {
+        var movedItemId: Long? = null
+        val list = listOf(
+            tier(id = 1, label = "S", items = List(1) { movie(it) }, caption = "Masterpiece"),
+            tier(id = 2, label = "A", items = emptyList()),
+            tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
+        ).asTierList()
+        setScreen(
+            TierDetailUiState.Success(list),
+            onMoveItem = { itemId, _, _ -> movedItemId = itemId },
+        )
+
+        // Lifting a tile by holding it still moves the item — the row's own drag detector
+        // doesn't claim touches that land on a tile.
+        dragTile(TierDetailTestTags.tile(0), TierDetailTestTags.tierRow(2), horizontalBias = 0.5f)
+        composeRule.runOnIdle { assertEquals(0L, movedItemId) }
+
+        // Double-tapping the band still opens the editor — the new long-press-drag
+        // recognizer on the same band doesn't intercept it.
+        composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).performTouchInput { doubleClick() }
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SHEET).assertIsDisplayed()
+    }
+
+    @Test
     fun removeFromMoveSheet_showsSameMessageAndIsUndoable() {
         val list = listOf(
             tier(id = 1, label = "S", items = listOf(item(100, "Interstellar"))),
@@ -679,6 +989,31 @@ class TierDetailScreenTest {
 
         composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_SCREEN).assertIsDisplayed()
         composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).assertIsDisplayed()
+    }
+
+    @Test
+    fun manualAddButton_opensTheManualEntryDialog() {
+        composeRule.setContent {
+            var manualEntryVisible by remember { mutableStateOf(false) }
+            TierYourLifeTheme {
+                TierDetailScreenContent(
+                    state = TierDetailUiState.Success(defaultList()),
+                    onBack = {},
+                    onAddClick = {},
+                    onManualAddClick = { manualEntryVisible = true },
+                )
+                if (manualEntryVisible) {
+                    ManualEntryDialog(
+                        onDismiss = { manualEntryVisible = false },
+                        onSave = { _, _ -> },
+                    )
+                }
+            }
+        }
+
+        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ENTRY_DIALOG).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ADD_BUTTON).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ENTRY_DIALOG).assertIsDisplayed()
     }
 
     @Test
@@ -1293,8 +1628,11 @@ class TierDetailScreenTest {
                     tier = pool,
                     displayMode = TierListDisplayMode.WRAP,
                     dragController = dragController,
+                    rankedTierIds = emptyList(),
                     onMoveItem = { _, _, _ -> },
                     onDeleteItem = {},
+                    onReorderTiers = {},
+                    onDeleteTier = {},
                     onEditTier = { id -> editedId = id },
                 )
             }
@@ -1503,6 +1841,17 @@ class TierDetailScreenTest {
         onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
         onDeleteItem: (itemId: Long) -> Unit = {},
         onRestoreItem: (itemId: Long) -> Unit = {},
+        onReorderTiers: (orderedTierIds: List<Long>) -> Unit = {},
+        onDeleteTierToPool: (tierId: Long, poolId: Long, poolSize: Int, itemIds: List<Long>) -> Unit =
+            { _, _, _, _ -> },
+        onRestoreTier: (
+            label: String,
+            caption: String?,
+            colorLight: String,
+            colorDark: String,
+            position: Int,
+            itemIds: List<Long>,
+        ) -> Unit = { _, _, _, _, _, _ -> },
         onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit = { _, _, _, _ -> },
         onEditTier: (id: Long, label: String, caption: String?, colorLight: String, colorDark: String) -> Unit =
             { _, _, _, _, _ -> },
@@ -1518,6 +1867,9 @@ class TierDetailScreenTest {
                     onMoveItem = onMoveItem,
                     onDeleteItem = onDeleteItem,
                     onRestoreItem = onRestoreItem,
+                    onReorderTiers = onReorderTiers,
+                    onDeleteTierToPool = onDeleteTierToPool,
+                    onRestoreTier = onRestoreTier,
                     onAddTier = onAddTier,
                     onEditTier = onEditTier,
                     onSetDisplayMode = onSetDisplayMode,

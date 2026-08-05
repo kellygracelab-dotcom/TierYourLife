@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +64,13 @@ internal fun TrashTarget(
 
     LaunchedEffect(isHovering) {
         if (isHovering) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+    }
+
+    // Only ever composed mid-drag, so this always fires between one drag and the next —
+    // registering fresh every time rather than leaving behind a stale rect that a later
+    // drag's very first hover check could read before this drag's own registration runs.
+    DisposableEffect(Unit) {
+        onDispose { dragController.unregisterTrashBounds() }
     }
 
     val size = if (isHovering) 72.dp else 56.dp

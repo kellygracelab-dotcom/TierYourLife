@@ -28,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,7 +65,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddMovieSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.FloatingDragRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.FloatingDragTile
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ManualEntryDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.MoveItemSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.NoteAddIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PoolPanel
@@ -123,6 +126,14 @@ internal object TierDetailTestTags {
     const val MOVIE_SEARCH_TRY_AGAIN = "tier_detail_movie_search_try_again"
     const val MOVIE_SEARCH_RESULTS_LIST = "tier_detail_movie_search_results_list"
     const val MOVIE_SEARCH_BOTTOM_BAR = "tier_detail_movie_search_bottom_bar"
+    const val MANUAL_ADD_BUTTON = "tier_detail_manual_add_button"
+    const val MANUAL_ENTRY_DIALOG = "tier_detail_manual_entry_dialog"
+    const val MANUAL_ENTRY_NAME_FIELD = "tier_detail_manual_entry_name_field"
+    const val MANUAL_ENTRY_PHOTO_FRAME = "tier_detail_manual_entry_photo_frame"
+    const val MANUAL_ENTRY_CHOOSE_PHOTO = "tier_detail_manual_entry_choose_photo"
+    const val MANUAL_ENTRY_REMOVE_PHOTO = "tier_detail_manual_entry_remove_photo"
+    const val MANUAL_ENTRY_CANCEL = "tier_detail_manual_entry_cancel"
+    const val MANUAL_ENTRY_SAVE = "tier_detail_manual_entry_save"
     fun movieSearchResult(tmdbId: Long): String = "tier_detail_movie_search_result_$tmdbId"
     fun tierRow(tierId: Long): String = "tier_detail_row_$tierId"
     fun tierBand(tierId: Long): String = "tier_detail_band_$tierId"
@@ -143,14 +154,19 @@ fun TierDetailScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
+    var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
 
     TierDetailScreenContent(
         state = state,
         onBack = onBack,
         onAddClick = { addSheetVisible = true },
+        onManualAddClick = { manualEntryVisible = true },
         onMoveItem = viewModel::moveItem,
         onDeleteItem = viewModel::deleteItem,
         onRestoreItem = viewModel::restoreItem,
+        onReorderTiers = viewModel::reorderTiers,
+        onDeleteTierToPool = viewModel::deleteTierToPool,
+        onRestoreTier = viewModel::restoreTier,
         onAddTier = viewModel::addTier,
         onEditTier = viewModel::editTier,
         onSetDisplayMode = viewModel::setDisplayMode,
@@ -167,6 +183,16 @@ fun TierDetailScreen(
             },
         )
     }
+
+    if (manualEntryVisible) {
+        ManualEntryDialog(
+            onDismiss = { manualEntryVisible = false },
+            onSave = { title, photoUri ->
+                viewModel.addManualItem(title, photoUri)
+                manualEntryVisible = false
+            },
+        )
+    }
 }
 
 @Composable
@@ -174,9 +200,20 @@ fun TierDetailScreenContent(
     state: TierDetailUiState,
     onBack: () -> Unit,
     onAddClick: () -> Unit,
+    onManualAddClick: () -> Unit = {},
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
     onDeleteItem: (itemId: Long) -> Unit = {},
     onRestoreItem: (itemId: Long) -> Unit = {},
+    onReorderTiers: (orderedTierIds: List<Long>) -> Unit = {},
+    onDeleteTierToPool: (tierId: Long, poolId: Long, poolSize: Int, itemIds: List<Long>) -> Unit = { _, _, _, _ -> },
+    onRestoreTier: (
+        label: String,
+        caption: String?,
+        colorLight: String,
+        colorDark: String,
+        position: Int,
+        itemIds: List<Long>,
+    ) -> Unit = { _, _, _, _, _, _ -> },
     onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit = { _, _, _, _ -> },
     onEditTier: (id: Long, label: String, caption: String?, colorLight: String, colorDark: String) -> Unit =
         { _, _, _, _, _ -> },
@@ -187,7 +224,7 @@ fun TierDetailScreenContent(
         when (state) {
             is TierDetailUiState.Loading -> {
                 Column(Modifier.fillMaxSize()) {
-                    TierScreenTopBar(title = "", onBack = onBack, onManualAdd = onAddClick)
+                    TierScreenTopBar(title = "", onBack = onBack, onManualAdd = onManualAddClick)
                     Box(
                         Modifier
                             .fillMaxSize()
@@ -204,9 +241,13 @@ fun TierDetailScreenContent(
                     list = state.list,
                     onBack = onBack,
                     onAddClick = onAddClick,
+                    onManualAddClick = onManualAddClick,
                     onMoveItem = onMoveItem,
                     onDeleteItem = onDeleteItem,
                     onRestoreItem = onRestoreItem,
+                    onReorderTiers = onReorderTiers,
+                    onDeleteTierToPool = onDeleteTierToPool,
+                    onRestoreTier = onRestoreTier,
                     onAddTier = onAddTier,
                     onEditTier = onEditTier,
                     onSetDisplayMode = onSetDisplayMode,
@@ -216,7 +257,7 @@ fun TierDetailScreenContent(
 
             is TierDetailUiState.Error -> {
                 Column {
-                    TierScreenTopBar(title = "", onBack = onBack, onManualAdd = onAddClick)
+                    TierScreenTopBar(title = "", onBack = onBack, onManualAdd = onManualAddClick)
                     Text(
                         text = state.message,
                         modifier = Modifier.padding(16.dp),
@@ -233,9 +274,20 @@ private fun TierScreenBody(
     list: TierList,
     onBack: () -> Unit,
     onAddClick: () -> Unit,
+    onManualAddClick: () -> Unit,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
     onDeleteItem: (itemId: Long) -> Unit,
     onRestoreItem: (itemId: Long) -> Unit,
+    onReorderTiers: (orderedTierIds: List<Long>) -> Unit,
+    onDeleteTierToPool: (tierId: Long, poolId: Long, poolSize: Int, itemIds: List<Long>) -> Unit,
+    onRestoreTier: (
+        label: String,
+        caption: String?,
+        colorLight: String,
+        colorDark: String,
+        position: Int,
+        itemIds: List<Long>,
+    ) -> Unit,
     onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
     onEditTier: (id: Long, label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
     onSetDisplayMode: (displayMode: TierListDisplayMode) -> Unit,
@@ -258,6 +310,16 @@ private fun TierScreenBody(
     val dragController = remember { TierDragController() }
     var chooserItemId by remember { mutableStateOf<Long?>(null) }
     var editingTierId by remember { mutableStateOf<Long?>(null) }
+
+    // The second layer against a stale drag-target registry: refreshed every
+    // recomposition with whatever this exact list currently holds, so a target that no
+    // longer exists is never chosen even if something failed to unregister its bounds.
+    SideEffect {
+        dragController.setValidTargets(
+            tierIds = list.tiers.map { it.id },
+            itemIds = list.tiers.flatMap { it.items }.map { it.id },
+        )
+    }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -289,6 +351,33 @@ private fun TierScreenBody(
         }
     }
 
+    val tierDeletedMessageTemplate = stringResource(R.string.tier_detail_tier_moved_to_trash)
+
+    // Same shape as deleteAndAnnounce above, for a tier instead of an item: everything
+    // undo needs (label, caption, colours, the tier's position among the ranked tiers,
+    // and which items it held) is captured here, synchronously, from list — the same
+    // data the screen is already showing — before the tier and its position are gone.
+    val deleteTierAndAnnounce: (Long) -> Unit = { tierId ->
+        val tier = rankedTiers.firstOrNull { it.id == tierId }
+        val poolId = pool?.id
+        if (tier != null && poolId != null) {
+            val position = rankedTiers.indexOfFirst { it.id == tierId }
+            val itemIds = tier.items.map { it.id }
+            onDeleteTierToPool(tierId, poolId, pool.items.size, itemIds)
+            snackbarHostState.currentSnackbarData?.dismiss()
+            coroutineScope.launch {
+                val result = snackbarHostState.showSnackbar(
+                    message = String.format(tierDeletedMessageTemplate, tier.label),
+                    actionLabel = undoLabel,
+                    duration = SnackbarDuration.Short,
+                )
+                if (result == SnackbarResult.ActionPerformed) {
+                    onRestoreTier(tier.label, tier.caption, tier.colorLight, tier.colorDark, position, itemIds)
+                }
+            }
+        }
+    }
+
     val density = LocalDensity.current
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -296,7 +385,7 @@ private fun TierScreenBody(
             TierScreenTopBar(
                 title = list.title,
                 onBack = onBack,
-                onManualAdd = onAddClick,
+                onManualAdd = onManualAddClick,
                 onMoreClick = { listSettingsVisible = true },
                 onRenameList = onRenameList,
                 titleEditable = true,
@@ -329,8 +418,11 @@ private fun TierScreenBody(
                             tier = tier,
                             displayMode = list.displayMode,
                             dragController = dragController,
+                            rankedTierIds = rankedTiers.map { it.id },
                             onMoveItem = onMoveItem,
                             onDeleteItem = deleteAndAnnounce,
+                            onReorderTiers = onReorderTiers,
+                            onDeleteTier = deleteTierAndAnnounce,
                             onDoubleTap = { itemId -> chooserItemId = itemId },
                             onEditTier = { tierId -> editingTierId = tierId },
                         )
@@ -357,6 +449,7 @@ private fun TierScreenBody(
                 modifier = Modifier.align(Alignment.TopEnd),
             )
             FloatingDragTile(dragController)
+            FloatingDragRow(dragController, rankedTiers.firstOrNull { it.id == dragController.draggedTierId })
         }
 
         // Anchored 16dp above the pool's own measured top — same "raised, not resting
@@ -464,7 +557,8 @@ private fun TierScreenTopBar(
             onClick = onManualAdd,
             modifier = Modifier
                 .size(48.dp)
-                .semantics { contentDescription = manualAddDescription },
+                .semantics { contentDescription = manualAddDescription }
+                .testTag(TierDetailTestTags.MANUAL_ADD_BUTTON),
         ) { NoteAddIcon() }
         IconButton(
             onClick = onMoreClick,

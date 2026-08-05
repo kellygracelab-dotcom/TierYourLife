@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,7 +39,9 @@ import kotlin.math.roundToInt
 
 // Shorter than the system long-press timeout (~500ms, tuned for context menus).
 // A scroll swipe still wins over this via touch-slop consumption, not by racing it.
-private const val DRAG_LONG_PRESS_TIMEOUT_MILLIS = 150L
+// internal, not private: TierRow's own band-drag (lifting a whole tier) shares this
+// exact threshold rather than defining a second one.
+internal const val DRAG_LONG_PRESS_TIMEOUT_MILLIS = 150L
 
 // Shared by pool and ranked-tier tiles so their drag behaviour can't drift apart.
 @Composable
@@ -59,6 +62,14 @@ internal fun DraggableTile(
     val baseViewConfiguration = LocalViewConfiguration.current
     val dragViewConfiguration = remember(baseViewConfiguration) {
         ShortLongPressViewConfiguration(baseViewConfiguration, DRAG_LONG_PRESS_TIMEOUT_MILLIS)
+    }
+
+    // A deleted (or moved-elsewhere) item's registered grid bounds would otherwise sit in
+    // TierDragController's map forever, skewing insertion-index math for whatever tile
+    // ends up drawn in its old slot — this is what removes it the moment this tile
+    // actually leaves composition. A no-op for pool tiles, which never register here.
+    DisposableEffect(item.id) {
+        onDispose { dragController.unregisterTileBounds(item.id) }
     }
 
     CompositionLocalProvider(LocalViewConfiguration provides dragViewConfiguration) {
@@ -119,7 +130,7 @@ internal fun DraggableTile(
     }
 }
 
-private class ShortLongPressViewConfiguration(
+internal class ShortLongPressViewConfiguration(
     base: ViewConfiguration,
     override val longPressTimeoutMillis: Long,
 ) : ViewConfiguration by base

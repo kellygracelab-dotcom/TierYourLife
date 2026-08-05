@@ -31,6 +31,13 @@ internal sealed interface DropOutcome {
     data class Delete(val itemId: Long) : DropOutcome
 }
 
+// A tier row's own drag: reorder among the other ranked tiers, or delete via the same
+// trash a poster uses. Never a move "into" another tier — tiers don't nest.
+internal sealed interface TierDropOutcome {
+    data class Reorder(val orderedTierIds: List<Long>) : TierDropOutcome
+    data class Delete(val tierId: Long) : TierDropOutcome
+}
+
 private data class ItemsRowInfo(
     val bounds: Rect? = null,
     val state: LazyListState? = null,
@@ -50,7 +57,18 @@ internal class TierDragController {
     var hoveredTarget by mutableStateOf<DragTarget?>(null)
         private set
 
-    val isDragging: Boolean get() = draggedPayload != null
+    // A tier row being dragged, separate from draggedPayload (an item) above — the two
+    // never happen at once, since one starts from a tile and the other from a band, but
+    // they share this same controller instance, hoveredTarget and the trash's bounds
+    // rather than each tracking their own, so there is exactly one drag state per screen.
+    var draggedTierId by mutableStateOf<Long?>(null)
+        private set
+    var tierPointerPositionInRoot by mutableStateOf(Offset.Zero)
+        private set
+    private var rankedTierIdsAtDragStart: List<Long> = emptyList()
+
+    val isDragging: Boolean get() = draggedPayload != null || draggedTierId != null
+    val isDraggingTier: Boolean get() = draggedTierId != null
     val hoveredTierId: Long? get() = (hoveredTarget as? DragTarget.Tier)?.tierId
     val isHoveringTrash: Boolean get() = hoveredTarget is DragTarget.Trash
 
@@ -62,12 +80,29 @@ internal class TierDragController {
     // Ranked tiers only — a FlowRow has no layout state of its own, so each tile reports itself.
     private val tileBounds = mutableStateMapOf<Long, TileRecord>()
 
+    // The second layer: whatever the screen is actually showing right now, refreshed every
+    // recomposition (see setValidTargets). Registration below only ever adds bounds and
+    // never sees a tier or item get deleted — a row/tile that leaves composition is
+    // supposed to unregister itself (see the unregister* functions), but nothing here
+    // should have to trust that happened. A target whose id isn't in these sets is never
+    // chosen, whatever its bounds map still says.
+    private var validTierIds: Set<Long> = emptySet()
+    private var validItemIds: Set<Long> = emptySet()
+
     fun registerRowBounds(tierId: Long, bounds: Rect) {
         rowBounds[DragTarget.Tier(tierId)] = bounds
     }
 
+    fun unregisterRowBounds(tierId: Long) {
+        rowBounds.remove(DragTarget.Tier(tierId))
+    }
+
     fun registerTrashBounds(bounds: Rect) {
         rowBounds[DragTarget.Trash] = bounds
+    }
+
+    fun unregisterTrashBounds() {
+        rowBounds.remove(DragTarget.Trash)
     }
 
     // So the trash can anchor itself above a tier's actual measured position
@@ -82,8 +117,25 @@ internal class TierDragController {
         itemsRowInfo[tierId] = (itemsRowInfo[tierId] ?: ItemsRowInfo()).copy(state = state, itemIds = itemIds)
     }
 
+    fun unregisterItemsRow(tierId: Long) {
+        itemsRowInfo.remove(tierId)
+    }
+
     fun registerTileBounds(tierId: Long, itemId: Long, index: Int, bounds: Rect) {
         tileBounds[itemId] = TileRecord(tierId, index, bounds)
+    }
+
+    fun unregisterTileBounds(itemId: Long) {
+        tileBounds.remove(itemId)
+    }
+
+    // Called every recomposition (see TierScreenBody) with the TierList actually on
+    // screen. Plain fields, not Compose state: nothing observes them reactively, they're
+    // only read inside a drag's own hover/drop computation, always against whatever was
+    // freshest the last time the screen recomposed.
+    fun setValidTargets(tierIds: Collection<Long>, itemIds: Collection<Long>) {
+        validTierIds = tierIds.toSet()
+        validItemIds = itemIds.toSet()
     }
 
     fun beginDrag(payload: DragPayload, rootPosition: Offset) {
@@ -121,8 +173,72 @@ internal class TierDragController {
         hoveredTarget = if (rowBounds[DragTarget.Trash]?.contains(position) == true) {
             DragTarget.Trash
         } else {
-            rowBounds.entries.firstOrNull { (target, rect) -> target is DragTarget.Tier && rect.contains(position) }?.key
+            rowBounds.entries.firstOrNull { (target, rect) ->
+                target is DragTarget.Tier && target.tierId in validTierIds && rect.contains(position)
+            }?.key
         }
+    }
+
+    // rankedTierIds is the current order, pool excluded — the pool never takes part in
+    // reordering, and passing only ranked ids keeps it out of the candidate set entirely
+    // rather than filtering it back out at every hover recomputation.
+    fun beginTierDrag(tierId: Long, rankedTierIds: List<Long>, rootPosition: Offset) {
+        draggedTierId = tierId
+        rankedTierIdsAtDragStart = rankedTierIds
+        tierPointerPositionInRoot = rootPosition
+        recomputeTierHover()
+    }
+
+    fun updateTierDrag(delta: Offset) {
+        if (draggedTierId == null) return
+        tierPointerPositionInRoot += delta
+        recomputeTierHover()
+    }
+
+    fun endTierDrag(): TierDropOutcome? {
+        val drop = computeTierDrop()
+        clearTierDrag()
+        return drop
+    }
+
+    fun cancelTierDrag() {
+        clearTierDrag()
+    }
+
+    private fun clearTierDrag() {
+        draggedTierId = null
+        hoveredTarget = null
+        rankedTierIdsAtDragStart = emptyList()
+    }
+
+    private fun recomputeTierHover() {
+        val position = tierPointerPositionInRoot
+        hoveredTarget = if (rowBounds[DragTarget.Trash]?.contains(position) == true) {
+            DragTarget.Trash
+        } else {
+            null
+        }
+    }
+
+    private fun computeTierDrop(): TierDropOutcome? {
+        val tierId = draggedTierId ?: return null
+        if (hoveredTarget is DragTarget.Trash) return TierDropOutcome.Delete(tierId)
+
+        // Every *other* ranked row keeps reporting its own (now collapsed, uniform-height)
+        // bounds throughout the drag via the same registerRowBounds every row already
+        // calls unconditionally — so the insertion point is just "which of those bounds
+        // is the pointer's Y still above", the same midpoint-comparison idea insertionIndexInRow
+        // already uses for tiles, just against registered rects instead of lazy layout info.
+        val others = rankedTierIdsAtDragStart
+            .filter { it != tierId && it in validTierIds }
+            .mapNotNull { id -> rowBounds[DragTarget.Tier(id)]?.let { id to it } }
+            .sortedBy { (_, rect) -> rect.top }
+        val pointerY = tierPointerPositionInRoot.y
+        val insertAt = others.indexOfFirst { (_, rect) -> pointerY < (rect.top + rect.bottom) / 2f }
+            .let { if (it < 0) others.size else it }
+        val newOrder = others.map { it.first }.toMutableList()
+        newOrder.add(insertAt.coerceIn(0, newOrder.size), tierId)
+        return TierDropOutcome.Reorder(newOrder)
     }
 
     private fun computeDrop(): DropOutcome? {
@@ -142,7 +258,9 @@ internal class TierDragController {
             val excludedIndex = pool.itemIds.indexOf(payload.itemId).takeIf { it >= 0 }
             insertionIndexInRow(state, pointerPositionInRoot.x - bounds.left, excludedIndex)
         } else {
-            val tiles = tileBounds.values.filter { it.tierId == tierId }
+            val tiles = tileBounds.entries
+                .filter { (itemId, record) -> record.tierId == tierId && itemId in validItemIds }
+                .map { it.value }
             val excludedIndex = tileBounds[payload.itemId]?.takeIf { it.tierId == tierId }?.index
             insertionIndexInGrid(tiles, pointerPositionInRoot, excludedIndex)
         }
