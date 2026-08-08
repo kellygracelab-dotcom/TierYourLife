@@ -10,18 +10,15 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
-// Two manifest attributes that a reasonable tidy-up would change, where the change compiles,
-// passes every other test, and breaks the app silently. Asserted here so the manifest cannot
-// drift without something failing.
 @RunWith(AndroidJUnit4::class)
 class ManifestContractTest {
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
-    // Dropping any one of the three brings back the activity restart on a language change,
-    // and with it the blink. locale|layoutDirection alone — what most guides suggest — is not
-    // enough: the layout-direction bits live inside screenLayout, so the system reports that
-    // as changed too and restarts on the flag that was left out.
+    // If this went red after a manifest tidy-up: fix the manifest, not this test.
+    // locale|layoutDirection — what most guides suggest — is not enough: the
+    // layout-direction bits live inside screenLayout, so the system still restarts
+    // the activity on the flag that was left out, and the language-switch blink returns.
     @Test
     fun mainActivity_handlesEveryConfigurationChangeALanguageSwitchReports() {
         val required = ActivityInfo.CONFIG_LOCALE or
@@ -39,8 +36,6 @@ class ManifestContractTest {
         )
     }
 
-    // Arabic is one of the eleven languages offered, so the layout has to mirror for it.
-    // The icons mirror separately, per icon, in VectorIcon — see VectorIconMirroringTest.
     @Test
     fun theApp_supportsRightToLeft_becauseItShipsARightToLeftLanguage() {
         val flags = context.packageManager
