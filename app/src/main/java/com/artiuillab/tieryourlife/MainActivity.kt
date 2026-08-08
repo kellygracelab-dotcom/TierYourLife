@@ -30,11 +30,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-// AppCompatActivity, not ComponentActivity: below API 33 (minSdk here is 24),
-// AppCompatDelegate.setApplicationLocales is a backport of the framework per-app-language
-// API, and with Compose that backport only applies through an AppCompat activity context
-// (docs/design-spec-home.md, section 7). The manifest theme is still a bare no-action-bar
-// AppCompat theme — TierYourLifeTheme does all real theming in Compose.
+// AppCompatActivity on purpose: below API 33, AppCompatDelegate.setApplicationLocales
+// works only through an AppCompat activity. Switching to ComponentActivity compiles and
+// works on new phones — and silently kills in-app language switching on API 24–32.
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
@@ -43,8 +41,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Applied before enableEdgeToEdge()/setContent below, so the very first frame
-        // already draws in the stored language rather than drawing once and flipping.
+        // Before setContent: the first frame must already draw in the stored language.
         applyStoredLocale()
         applyWindowBackground()
         enableEdgeToEdge()
@@ -69,13 +66,10 @@ class MainActivity : AppCompatActivity() {
             val navController = rememberNavController()
 
             TierYourLifeTheme(darkTheme = darkTheme) {
-                // No transitions between destinations. Navigation Compose fades the
-                // outgoing screen out and the incoming one in by default, and on this
-                // app that reads as a blink rather than as movement: every destination
-                // here fills the screen edge to edge with a surface of the same colour,
-                // so a cross-fade between two of them has nothing to describe — it just
-                // dims the screen and brings it back. It is most obvious on the create
-                // button, where the whole point is that the new list is already open.
+                // Transitions are off deliberately: every destination fills the screen
+                // with the same surface colour, so the default cross-fade has nothing to
+                // show — it reads as a blink. Restoring the defaults brings back exactly
+                // the flicker this replaced.
                 NavHost(
                     navController = navController,
                     startDestination = Route.TierLists,
@@ -118,10 +112,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Only when something is actually stored. Calling applyLocale(null) here would clear the
-    // override on every launch — including one the user set from Android's own per-app
-    // language screen, which locales_config advertises this app to. Picking "Default" in
-    // Settings still clears it, at the moment it is picked.
+    // Not simply applyLocale(languageTag()): with nothing stored, applying null would clear
+    // an override the user may have set in Android's own per-app language settings.
+    // Picking "Default" in our Settings still clears it — at the moment it is picked.
     private fun applyStoredLocale() {
         appPreferences.languageTag()?.let(::applyLocale)
     }
@@ -131,13 +124,9 @@ class MainActivity : AppCompatActivity() {
         AppCompatDelegate.setApplicationLocales(locales)
     }
 
-    // themes.xml already picks a window background per the system's night setting, which
-    // is right whenever the app is following the system. It cannot be right when the
-    // user has overridden the theme in Settings — a phone in light mode running the app
-    // in Dark would paint a white window behind a dark app for the frames before Compose
-    // draws. The stored choice is the authority, so it is applied here, before the first
-    // frame. LIGHT and DARK are stated outright; SYSTEM defers to the resource the
-    // qualifier already resolved.
+    // Looks redundant next to themes.xml, but themes.xml follows the system night setting —
+    // wrong once the user overrides the theme: a light phone running Dark would flash a
+    // white window before Compose draws. The stored choice wins, before the first frame.
     private fun applyWindowBackground() {
         val color = when (appPreferences.themeChoice()) {
             ThemeChoice.LIGHT -> ContextCompat.getColor(this, R.color.window_background_light)
