@@ -5,28 +5,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.os.LocaleListCompat
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ThemeChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.AppPreferences
-import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
-import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -36,6 +22,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    // Read here, before the first frame, for the two things that cannot wait for
+    // composition: the locale and the window background. Everything after setContent
+    // reads the same values through AppViewModel.
     @Inject
     lateinit var appPreferences: AppPreferences
 
@@ -46,69 +35,17 @@ class MainActivity : AppCompatActivity() {
         applyWindowBackground()
         enableEdgeToEdge()
         setContent {
-            val systemDarkTheme = isSystemInDarkTheme()
-            var themeChoice by rememberSaveable { mutableStateOf(appPreferences.themeChoice()) }
-            val darkTheme = when (themeChoice) {
-                ThemeChoice.LIGHT -> false
-                ThemeChoice.DARK -> true
-                ThemeChoice.SYSTEM -> systemDarkTheme
-            }
-            val onThemeChoiceChange: (ThemeChoice) -> Unit = { choice ->
-                themeChoice = choice
-                appPreferences.setThemeChoice(choice)
-            }
-            var languageTag by rememberSaveable { mutableStateOf(appPreferences.languageTag()) }
-            val onLanguageTagChange: (String?) -> Unit = { tag ->
-                languageTag = tag
-                appPreferences.setLanguageTag(tag)
-                applyLocale(tag)
-            }
-            val navController = rememberNavController()
+            val viewModel: AppViewModel = viewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
 
-            TierYourLifeTheme(darkTheme = darkTheme) {
-                // Transitions are off deliberately: every destination fills the screen
-                // with the same surface colour, so the default cross-fade has nothing to
-                // show — it reads as a blink. Restoring the defaults brings back exactly
-                // the flicker this replaced.
-                NavHost(
-                    navController = navController,
-                    startDestination = Route.TierLists,
-                    enterTransition = { EnterTransition.None },
-                    exitTransition = { ExitTransition.None },
-                    popEnterTransition = { EnterTransition.None },
-                    popExitTransition = { ExitTransition.None },
-                ) {
-                    composable<Route.TierLists> {
-                        TierListsScreen(
-                            onTierListClick = { id -> navController.navigate(Route.TierDetail(id)) },
-                            onSettingsClick = { navController.navigate(Route.Settings) },
-                            onNewListCreated = { id ->
-                                navController.navigate(Route.TierDetail(id, startInTitleEdit = true))
-                            },
-                        )
-                    }
-                    composable<Route.TierDetail> { backStackEntry ->
-                        val route = backStackEntry.toRoute<Route.TierDetail>()
-                        TierDetailScreen(
-                            onBack = { navController.popBackStack() },
-                            startInTitleEdit = route.startInTitleEdit,
-                        )
-                    }
-                    composable<Route.Settings> {
-                        SettingsScreen(
-                            onBack = { navController.popBackStack() },
-                            onTrashClick = { navController.navigate(Route.Trash) },
-                            themeChoice = themeChoice,
-                            onThemeChoiceChange = onThemeChoiceChange,
-                            languageTag = languageTag,
-                            onLanguageTagChange = onLanguageTagChange,
-                        )
-                    }
-                    composable<Route.Trash> {
-                        TrashScreen(onBack = { navController.popBackStack() })
-                    }
-                }
-            }
+            AppRoot(
+                state = state,
+                onThemeChoiceChange = viewModel::setThemeChoice,
+                onLanguageTagChange = { tag ->
+                    viewModel.setLanguageTag(tag)
+                    applyLocale(tag)
+                },
+            )
         }
     }
 
