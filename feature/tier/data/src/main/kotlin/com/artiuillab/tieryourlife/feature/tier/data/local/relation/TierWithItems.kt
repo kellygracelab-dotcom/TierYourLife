@@ -9,7 +9,6 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.view.ActiveTierItemVi
 data class TierWithItems(
     @Embedded
     val tier: TierEntity,
-    // Fetched from the active-items view: soft-deleted items never appear in the graph.
     @Relation(
         parentColumn = "id",
         entityColumn = "tierId",

@@ -19,9 +19,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
-// Runs as an instrumented test, not a plain JVM unit test: TierListsViewModel uses
-// viewModelScope, which needs a real Main dispatcher — available on the device, not
-// in a bare JVM test without adding kotlinx-coroutines-test as a dependency.
 @RunWith(AndroidJUnit4::class)
 class TierListsViewModelTest {
 
@@ -40,11 +37,9 @@ class TierListsViewModelTest {
 
         assertEquals(listOf(1L, 2L), state.lists.map { it.id })
         assertEquals(listOf("Existing list", "Another list"), state.lists.map { it.title })
+        assertEquals(0, repository.getByIdCalls)
     }
 
-    // An empty library used to be impossible: finding no lists, the load seeded two demo
-    // lists, so deleting everything brought them straight back on the next read and the
-    // empty state could never appear. Nothing is created on the user's behalf now.
     @Test
     fun loadTierLists_onAnEmptyRepository_staysEmpty_andCreatesNothing() = runBlocking {
         val repository = FakeTierRepository(initial = emptyList())
@@ -131,10 +126,6 @@ class TierListsViewModelTest {
         }
         collected.job.cancel()
 
-        // Exactly two values are ever observed across the whole reload: the list
-        // already on screen (replayed the instant this recorder subscribes) and the
-        // new one replacing it directly — never Loading in between, and never more
-        // than that single step.
         assertEquals(2, collected.values.size)
         val before = collected.values[0] as TierListsUiState.Success
         val after = collected.values[1] as TierListsUiState.Success
@@ -233,11 +224,6 @@ class TierListsViewModelTest {
     private fun fakeList(id: Long, title: String): TierList = TierList(id = id, title = title, tiers = emptyList())
 
     private class RecordedStates(val values: MutableList<TierListsUiState>, val job: Job) {
-        // Waits on this recorder's own list rather than on a second, independent
-        // subscription to viewModel.state: two separate collectors resumed from the
-        // same emission can be scheduled in either order, so a wait based on the other
-        // subscription can return before this one has appended its value — polling the
-        // list this recorder itself appends to cannot race against itself that way.
         suspend fun awaitUntil(predicate: (TierListsUiState) -> Boolean) {
             withTimeout(5_000) {
                 while (values.none(predicate)) {
@@ -247,11 +233,6 @@ class TierListsViewModelTest {
         }
     }
 
-    // Subscribes and suspends until the first (replayed) value has actually been
-    // recorded, so the caller can rely on collected.values already holding whatever
-    // was on screen before triggering the load that's under test — without this, a
-    // race between this subscription and the load's own dispatch could let the
-    // collector miss the pre-load value entirely.
     private suspend fun CoroutineScope.recordStates(viewModel: TierListsViewModel): RecordedStates {
         val values = mutableListOf<TierListsUiState>()
         val subscribed = CompletableDeferred<Unit>()
@@ -271,8 +252,13 @@ private class FakeTierRepository(initial: List<TierList>) : TierRepository {
     private val lists = initial.associateBy { it.id }.toMutableMap()
     private val trashed = mutableMapOf<Long, TierList>()
     private var nextId = (initial.maxOfOrNull { it.id } ?: 0L) + 1
+    var getByIdCalls = 0
+        private set
 
-    override suspend fun getTierListById(id: Long): TierList? = lists[id]
+    override suspend fun getTierListById(id: Long): TierList? {
+        getByIdCalls++
+        return lists[id]
+    }
 
     override suspend fun getAllTierLists(): List<TierList> = lists.values.sortedBy { it.id }
 
@@ -309,7 +295,16 @@ private class FakeTierRepository(initial: List<TierList>) : TierRepository {
 
     override suspend fun renameTier(id: Long, label: String, caption: String?) = unsupported()
     override suspend fun updateTierColors(id: Long, colorLight: String, colorDark: String) = unsupported()
-    override suspend fun deleteTier(id: Long) = unsupported()
+    override suspend fun deleteTierToPool(id: Long) = unsupported()
+    override suspend fun restoreTier(
+        tierListId: Long,
+        label: String,
+        caption: String?,
+        colorLight: String,
+        colorDark: String,
+        position: Int,
+        itemIds: List<Long>,
+    ) = unsupported()
     override suspend fun reorderTiers(orderedTierIds: List<Long>) = unsupported()
     override suspend fun deleteTierItem(id: Long) = unsupported()
     override suspend fun restoreTierItem(id: Long) = unsupported()

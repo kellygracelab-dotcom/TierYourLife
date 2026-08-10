@@ -7,9 +7,6 @@ private const val WIKIDATA_HOST = "www.wikidata.org"
 private const val COMMONS_HOST = "commons.wikimedia.org"
 private const val WIKIDATA_QUERY_HOST = "query.wikidata.org"
 
-// Wikimedia's API etiquette policy requires a descriptive User-Agent and throttles requests
-// without one. Host-gated the same way TmdbAuthInterceptor gates its Authorization header, so
-// the two can share one OkHttpClient without either header leaking to the other's host.
 class WikimediaUserAgentInterceptor(
     private val userAgent: String,
 ) : Interceptor {

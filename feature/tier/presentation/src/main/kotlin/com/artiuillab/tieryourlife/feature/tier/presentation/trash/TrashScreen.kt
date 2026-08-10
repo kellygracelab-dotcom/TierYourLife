@@ -30,7 +30,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,8 +47,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.DeleteSweepIcon
@@ -83,7 +83,7 @@ fun TrashScreen(
     onBack: () -> Unit,
     viewModel: TrashViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     TrashScreenContent(
         state = state,
@@ -130,8 +130,8 @@ internal fun TrashScreenContent(
                     CircularProgressIndicator()
                 }
 
-                is TrashUiState.Error -> Text(
-                    text = state.message,
+                TrashUiState.Error -> Text(
+                    text = stringResource(R.string.trash_load_error),
                     modifier = Modifier.padding(16.dp),
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -206,8 +206,6 @@ private fun TrashTopBar(
                     .testTag(TrashTestTags.BACK),
             ) { BackIcon() }
 
-            // Everything else in the bar — title and more_vert — is absent, not just
-            // hidden, when the trash is empty (docs/design-spec-home.md, section 6).
             if (!isEmpty) {
                 Text(
                     text = stringResource(R.string.trash_title),
@@ -356,10 +354,6 @@ private fun TrashRow(
     }
 }
 
-// A miniature of the distribution bar — the S band, the A band and the unranked colour
-// in equal thirds — so a deleted list is recognisable as a list at a glance. The trash
-// entry carries no per-tier colours of its own, so this is decorative rather than data-
-// driven (docs/design-spec-home.md, section 6).
 @Composable
 private fun ListThumbnail() {
     val media = TierYourLifeMedia.current
@@ -441,8 +435,6 @@ private fun RemoveConfirmDialog(entry: TrashEntry, onDismiss: () -> Unit, onConf
 
 @Composable
 private fun EmptyTrashDialog(entryCount: Int, onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    // Read when the dialog opens, so the count in the body can never disagree with the
-    // list behind it (docs/design-spec-home.md, section 6).
     val entryCountText = pluralStringResource(R.plurals.trash_entry_count, entryCount, entryCount)
 
     AlertDialog(

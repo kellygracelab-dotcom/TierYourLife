@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
@@ -86,9 +86,9 @@ class TierListsScreenTest {
 
     @Test
     fun errorState_displaysErrorMessage() {
-        setScreen(TierListsUiState.Error("Test failure"))
+        setScreen(TierListsUiState.Error)
 
-        composeRule.onNodeWithText("Test failure").assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.tier_lists_load_error)).assertIsDisplayed()
     }
 
     @Test
@@ -175,10 +175,6 @@ class TierListsScreenTest {
         composeRule.onNodeWithTag(TierListsTestTags.FAB).assertIsDisplayed()
     }
 
-    // The checkbox is what actually states the selection now (docs/design-spec-home.md,
-    // section 11) — every card gets checkbox semantics the instant the mode starts, not
-    // only the one that was long-pressed, and that simultaneous appearance is what
-    // teaches the user a plain tap now selects.
     @Test
     fun enteringSelectionMode_showsACheckboxOnEveryCard_checkedOnlyOnTheSelectedOne() {
         val lists = listOf(
@@ -193,11 +189,6 @@ class TierListsScreenTest {
         composeRule.onNodeWithTag("tier_list_card_2").assertIsOff()
     }
 
-    // The design had the heading and its summary collapse away while selecting. Built,
-    // that yanked the whole list upward under the finger still resting on the card it
-    // had just long-pressed, and left the first card flush against the bar. The heading
-    // stays; only the bar above it changes. Decided against the design — see
-    // docs/design-spec-home.md, section 3.
     @Test
     fun selectionMode_keepsTheHeadingAndSummaryInPlace() {
         val lists = listOf(tierList(7L, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 1)))
@@ -248,11 +239,6 @@ class TierListsScreenTest {
         composeRule.onNodeWithTag("tier_list_card_1").assertIsDisplayed()
     }
 
-    // Exercises OnResumeEffect directly against a lifecycle we drive by hand, rather
-    // than through real navigation — this is what proves the trigger itself is sound:
-    // one catch-up resume for the screen's first appearance, none for an unrelated
-    // recomposition, and exactly one more for a genuine pause/resume cycle (leaving
-    // for the detail screen and coming back).
     @Test
     fun onResumeEffect_firesOnResumeButNotOnPlainRecomposition() {
         var resumeCount = 0
@@ -302,9 +288,6 @@ class TierListsScreenTest {
         }
     }
 
-    // Wires every callback back into local state the same way TierListsViewModel does,
-    // so the tests above exercise the real reactive loop (mode changes driving what the
-    // screen shows) without needing Hilt or a real repository.
     private fun setLiveScreen(
         initialLists: List<TierList>,
         onTierListClick: (Long) -> Unit = {},
@@ -383,8 +366,6 @@ class TierListsScreenTest {
     )
 }
 
-// A LifecycleOwner whose state this test drives by hand, standing in for the
-// navigation back stack entry's own lifecycle without needing real navigation.
 private class ManualLifecycleOwner : LifecycleOwner {
     val registry = LifecycleRegistry(this)
     override val lifecycle: Lifecycle get() = registry

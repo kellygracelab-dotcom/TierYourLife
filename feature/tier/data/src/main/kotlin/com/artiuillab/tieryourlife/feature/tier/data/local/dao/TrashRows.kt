@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.data.local.dao
 
-// Query projections for trash content; not entities.
 
 data class DeletedTierListRow(
     val id: Long,

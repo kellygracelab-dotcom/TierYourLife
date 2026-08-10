@@ -9,12 +9,6 @@ data class WikidataCandidate(
 
 private const val TMDB_ID_PREFIX = "tmdb:"
 
-// The fan-out itself (parallel fetch, per-source timeout) is impure and lives in the
-// repository, which is the only layer allowed to touch coroutines/IO. Everything about what
-// to do with the two outcomes — whether the combination is a failure, how to dedupe, how to
-// rank — is a decision, not I/O, so it lives here as a pure function of two Results and a
-// query. That's what makes it testable with plain JVM unit tests, the only test tier this
-// project's CI actually runs.
 object CatalogueSearchMerger {
 
     fun merge(
@@ -28,31 +22,16 @@ object CatalogueSearchMerger {
             )
         }
 
-        // A result with no picture is dropped, from either source — Wikidata has an entry for
-        // every surname and hamlet on earth and most of them have no image, and TMDB has films
-        // with no poster. In a grid of tiles a row with an empty frame is not a weaker result,
-        // it is noise between the usable ones.
-        //
-        // The cost, stated so it is a choice rather than an accident: something real and
-        // imageless becomes unfindable through search. The manual-add path with a photo from
-        // the gallery is what covers that, and it is one tap away in the same screen.
         val tmdbItems = tmdbResult.getOrDefault(emptyList()).filter { it.hasImage() }
         val wikidataCandidates = wikidataResult.getOrDefault(emptyList())
             .filter { it.item.hasImage() }
 
         val presentTmdbIds = tmdbItems.mapNotNull { it.tmdbNumericId() }.toSet()
 
-        // Same film, one row: drop a Wikidata item whose linked TMDB id is already present
-        // from TMDB. A Wikidata item with no P4947 claim at all (linkedTmdbId == null) has
-        // nothing to match against, so it always survives this filter.
         val wikidataItems = wikidataCandidates
             .filter { it.linkedTmdbId == null || it.linkedTmdbId !in presentTmdbIds }
             .map { it.item }
 
-        // Round-robin first so plain concatenation can't let one source own the whole top of
-        // the list, then a *stable* sort by score on top of that — ties (most results, in
-        // practice) keep the round-robin order, so neither source's items get all pushed
-        // above or below the other's within a score tier.
         val interleaved = interleave(tmdbItems, wikidataItems)
 
         val trimmedQuery = query.trim()

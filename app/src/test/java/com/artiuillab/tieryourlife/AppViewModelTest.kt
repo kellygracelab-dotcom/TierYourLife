@@ -1,7 +1,7 @@
 package com.artiuillab.tieryourlife
 
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ThemeChoice
-import com.artiuillab.tieryourlife.feature.tier.domain.repository.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -39,8 +39,6 @@ class AppViewModelTest {
         assertEquals(listOf("ar"), preferences.storedLanguageTags)
     }
 
-    // "Default" in Settings arrives as null and must reach the store as null — the tag is
-    // cleared only when the user asks for it, never on a plain launch. See MainActivity.
     @Test
     fun choosingTheSystemLanguage_storesNull_ratherThanSkippingTheWrite() {
         val preferences = FakeAppPreferences(languageTag = "ja")

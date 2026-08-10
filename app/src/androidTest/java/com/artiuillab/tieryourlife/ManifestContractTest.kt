@@ -15,10 +15,6 @@ class ManifestContractTest {
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
-    // If this went red after a manifest tidy-up: fix the manifest, not this test.
-    // locale|layoutDirection — what most guides suggest — is not enough: the
-    // layout-direction bits live inside screenLayout, so the system still restarts
-    // the activity on the flag that was left out, and the language-switch blink returns.
     @Test
     fun mainActivity_handlesEveryConfigurationChangeALanguageSwitchReports() {
         val required = ActivityInfo.CONFIG_LOCALE or

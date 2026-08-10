@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
+import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -60,11 +60,6 @@ internal fun TierListCard(
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .testTag("tier_list_card_${list.id}")
-            // Selection mode re-binds what a tap does, so the card's own semantics
-            // must say "checkbox" while it's active — TalkBack otherwise has no way to
-            // know a tap now selects rather than opens (docs/design-spec-home.md,
-            // section 11). Applied before combinedClickable so it lands on the same
-            // merged semantics node as the click/long-click actions, not a separate one.
             .then(
                 if (selectionMode) {
                     Modifier.semantics {
@@ -108,10 +103,6 @@ internal fun TierListCard(
             }
         }
         TierRibbon(list.tiers)
-        // The app holds no update-timestamp data, so a list with rankings shows no
-        // footnote at all rather than a claim it can't back — only the "nothing ranked
-        // yet" case has anything true to say here. Cards differ in height as a result;
-        // that's intended (see docs/design-spec-home.md, section 1).
         if (ranked == 0) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 DragIcon()
@@ -126,11 +117,6 @@ internal fun TierListCard(
     }
 }
 
-// Hand-drawn to an exact 24dp/4dp-radius box rather than the stock M3 Checkbox, the
-// same call CatalogueSearchScreen's SelectionCheckbox already made for the search sheet
-// (docs/design-spec-home.md, section 11). Not independently focusable or announced —
-// the checkbox state lives on the card's own semantics (see TierListCard above), so
-// this box clears its own to avoid TalkBack reading "checkbox" twice for one card.
 @Composable
 private fun SelectionCheckbox(selected: Boolean) {
     val outline = MaterialTheme.colorScheme.outline
@@ -203,4 +189,3 @@ private fun TierRibbon(tiers: List<Tier>) {
         }
     }
 }
-

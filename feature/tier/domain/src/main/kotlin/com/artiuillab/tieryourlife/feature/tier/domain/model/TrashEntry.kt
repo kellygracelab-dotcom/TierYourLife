@@ -1,7 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.model
 
-// One row of the trash screen. Entries stay until the user deletes them
-// permanently; deletedAtMillis drives the newest-first ordering.
 sealed interface TrashEntry {
     val title: String
     val deletedAtMillis: Long

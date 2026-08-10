@@ -25,14 +25,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.math.abs
 
-// Compose mirrors layout and Painter-backed icons for right-to-left on its own, but never raw
-// Canvas commands — and every icon here is a Canvas path. So this asserts the pixels, not the
-// wiring: an arrow has to actually point the other way in Arabic, and a plus has to not move.
-//
-// API 26 and up only, and that is a limit of the measurement rather than of the app: reading
-// pixels back needs captureToImage(), which goes through PixelCopy.request(Window, …) — a
-// method that does not exist before API 26. The icons themselves work on minSdk 24; only this
-// way of checking them does not.
+// Pixel capture requires API 26; the icons themselves still support minSdk 24.
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.O)
 class VectorIconMirroringTest {
@@ -49,7 +42,6 @@ class VectorIconMirroringTest {
 
         assertTrue("expected the arrowhead left of centre, got $leftToRight", leftToRight < 0.45f)
         assertTrue("expected the arrowhead right of centre, got $rightToLeft", rightToLeft > 0.55f)
-        // Mirrored, not merely shifted: the two must sit the same distance either side.
         assertTrue(abs((1f - leftToRight) - rightToLeft) < 0.02f)
     }
 
@@ -60,9 +52,6 @@ class VectorIconMirroringTest {
         assertTrue(abs(horizontalCentreOfInk(LTR_TAG) - horizontalCentreOfInk(RTL_TAG)) < 0.02f)
     }
 
-    // Both directions in one composition: setContent may only be called once per test, and
-    // rendering them together also removes any chance of the two runs differing for a reason
-    // other than the layout direction.
     private fun showBothDirections(icon: @Composable () -> Unit) {
         composeRule.setContent {
             TierYourLifeTheme {
@@ -78,13 +67,6 @@ class VectorIconMirroringTest {
         }
     }
 
-    // Where the drawn pixels sit horizontally, 0 at the left edge and 1 at the right, weighted
-    // by how far each pixel is from the background.
-    //
-    // Weighted by colour distance rather than alpha: captureToImage reads back from the
-    // window, so the opaque window background comes with it and every pixel is fully opaque.
-    // Weighing by alpha therefore measures the shape of the box, not the shape of the icon,
-    // and lands on the exact centre every time.
     private fun horizontalCentreOfInk(tag: String): Float {
         val bitmap = composeRule.onNodeWithTag(tag).captureToImage().asAndroidBitmap()
         val pixels = IntArray(bitmap.width * bitmap.height)

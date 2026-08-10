@@ -32,7 +32,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import kotlin.math.roundToInt
@@ -41,10 +41,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 
-// Shorter than the system long-press timeout (~500ms, tuned for context menus).
-// A scroll swipe still wins over this via touch-slop consumption, not by racing it.
-// internal, not private: TierRow's own band-drag (lifting a whole tier) shares this
-// exact threshold rather than defining a second one.
 internal const val DRAG_LONG_PRESS_TIMEOUT_MILLIS = 150L
 
 @Composable
@@ -67,10 +63,6 @@ internal fun DraggableTile(
         ShortLongPressViewConfiguration(baseViewConfiguration, DRAG_LONG_PRESS_TIMEOUT_MILLIS)
     }
 
-    // A deleted (or moved-elsewhere) item's registered grid bounds would otherwise sit in
-    // TierDragController's map forever, skewing insertion-index math for whatever tile
-    // ends up drawn in its old slot — this is what removes it the moment this tile
-    // actually leaves composition. A no-op for pool tiles, which never register here.
     DisposableEffect(item.id) {
         onDispose { dragController.unregisterTileBounds(item.id) }
     }
@@ -112,19 +104,11 @@ internal fun DraggableTile(
                         onDragCancel = { dragController.cancelDrag() },
                     )
                 }
-                // Independent recognizer, not merged into the gesture above: a plain tap
-                // that's released quickly never reaches onDragStart (awaitLongPressOrCancellation
-                // resolves to null without consuming anything), so this never races the drag for
-                // a real double-tap. A genuine long-press instead gets claimed by the drag
-                // detector, whose consumed move events fall outside detectTapGestures' own
-                // up-without-movement check, so the two can't both fire for the same gesture.
                 .pointerInput(item.id) {
                     detectTapGestures(onDoubleTap = { onDoubleTap(item.id) })
                 },
         ) {
             if (isDragging) {
-                // Kept in place, empty, so the pointerInput above keeps running;
-                // FloatingDragTile draws the visible copy.
                 Box(Modifier.size(width, height))
             } else {
                 ItemTile(item = item, width = width, height = height)
@@ -150,12 +134,6 @@ internal fun FloatingDragTile(dragController: TierDragController) {
     val shape = RoundedCornerShape(6.dp)
     val readingDirection = LocalLayoutDirection.current
 
-    // This copy is placed from a root coordinate, and root coordinates do not flip for a
-    // right-to-left language — but everything that places one does. A Box aligns children to
-    // the start, which is the right edge in Arabic, and Modifier.offset flips the sign of x on
-    // top of that; together they left the copy mirrored across the screen from the finger
-    // holding it. Placement is forced left-to-right here; the picture inside is drawn back in
-    // the reading direction.
     ForcedLeftToRightOverlay {
         Box(
             modifier = Modifier
@@ -187,8 +165,6 @@ internal fun FloatingDragTile(dragController: TierDragController) {
     }
 }
 
-// A full-size, left-to-right layer for things positioned in absolute root coordinates rather
-// than laid out by the parent. Shared by both floating drag copies.
 @Composable
 internal fun ForcedLeftToRightOverlay(content: @Composable BoxScope.() -> Unit) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {

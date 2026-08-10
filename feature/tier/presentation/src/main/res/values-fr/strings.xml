@@ -1,21 +1,25 @@
-<resources>
+﻿<resources>
     <string name="tier_lists_title">Vos listes</string>
     <string name="tier_lists_private">privé</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
     <plurals name="tier_lists_count">
         <item quantity="one">%d liste</item>
+        <item quantity="many">%d listes</item>
         <item quantity="other">%d listes</item>
     </plurals>
     <plurals name="tier_lists_rankings_count">
         <item quantity="one">%d classement</item>
+        <item quantity="many">%d classements</item>
         <item quantity="other">%d classements</item>
     </plurals>
     <plurals name="tier_lists_ranked_count">
         <item quantity="one">%d classé</item>
+        <item quantity="many">%d classés</item>
         <item quantity="other">%d classés</item>
     </plurals>
     <plurals name="tier_lists_in_pool_count">
         <item quantity="one">%d dans le réservoir</item>
+        <item quantity="many">%d dans le réservoir</item>
         <item quantity="other">%d dans le réservoir</item>
     </plurals>
     <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
@@ -27,6 +31,7 @@
     <string name="home_search_hint">Rechercher dans vos listes</string>
     <plurals name="search_results_count">
         <item quantity="one">%1$d liste</item>
+        <item quantity="many">%1$d listes</item>
         <item quantity="other">%1$d listes</item>
     </plurals>
     <string name="search_no_results_title">Aucune liste ne correspond à « %1$s »</string>
@@ -36,6 +41,7 @@
 
     <plurals name="selection_count">
         <item quantity="one">%1$d sélectionné</item>
+        <item quantity="many">%1$d sélectionnés</item>
         <item quantity="other">%1$d sélectionnés</item>
     </plurals>
     <string name="cd_close_selection">Quitter la sélection</string>
@@ -43,14 +49,18 @@
 
     <plurals name="snack_lists_deleted">
         <item quantity="one">%1$d liste supprimée</item>
+        <item quantity="many">%1$d listes supprimées</item>
         <item quantity="other">%1$d listes supprimées</item>
     </plurals>
     <string name="action_undo">Annuler</string>
     <string name="home_empty_title">Aucune liste pour l\'instant</string>
     <string name="home_empty_body">Appuyez sur + pour classer quelque chose.</string>
     <string name="cd_new_list">Nouvelle liste</string>
+    <string name="default_tier_list_title">Liste sans titre</string>
+    <string name="tier_lists_load_error">Impossible de charger les listes.</string>
 
     <string name="tier_detail_add">Ajouter</string>
+    <string name="tier_detail_not_found">Liste introuvable.</string>
     <string name="tier_detail_content_description_back">Retour</string>
     <string name="tier_detail_content_description_manual_add">Ajouter un élément manuellement</string>
     <string name="tier_detail_content_description_more">Plus d\'options</string>
@@ -58,6 +68,7 @@
     <string name="tier_detail_content_description_discard">Abandonner cette liste</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Réservoir · %d non classé</item>
+        <item quantity="many">Réservoir · %d non classé</item>
         <item quantity="other">Réservoir · %d non classé</item>
     </plurals>
 
@@ -76,21 +87,25 @@
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d élément</item>
+        <item quantity="many">%1$d éléments</item>
         <item quantity="other">%1$d éléments</item>
     </plurals>
 
     <plurals name="tier_detail_ranked_header">
         <item quantity="one">%1$d classé · du meilleur au pire</item>
+        <item quantity="many">%1$d classés · du meilleur au pire</item>
         <item quantity="other">%1$d classés · du meilleur au pire</item>
     </plurals>
     <string name="tier_detail_ranked_header_empty">Rien de classé pour l\'instant</string>
     <string name="tier_detail_ranked_row_description">Place %1$d, %2$s, rang %3$s.</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
         <item quantity="one">Réservoir, %1$d non classé. Déplier.</item>
+        <item quantity="many">Réservoir, %1$d non classé. Déplier.</item>
         <item quantity="other">Réservoir, %1$d non classé. Déplier.</item>
     </plurals>
     <plurals name="tier_detail_ranked_pool_expanded_description">
         <item quantity="one">Réservoir, %1$d non classé. Replier.</item>
+        <item quantity="many">Réservoir, %1$d non classé. Replier.</item>
         <item quantity="other">Réservoir, %1$d non classé. Replier.</item>
     </plurals>
 
@@ -106,6 +121,7 @@
     <string name="tier_list_settings_new_tier_title">Nouveau rang</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="one">%d rang</item>
+        <item quantity="many">%d rangs</item>
         <item quantity="other">%d rangs</item>
     </plurals>
 
@@ -138,10 +154,12 @@
     <string name="item_search_selected_none">Rien sélectionné</string>
     <plurals name="item_search_selected_count">
         <item quantity="one">%1$d sélectionné</item>
+        <item quantity="many">%1$d sélectionnés</item>
         <item quantity="other">%1$d sélectionnés</item>
     </plurals>
     <plurals name="item_search_add_button">
         <item quantity="one">Ajouter %1$d élément</item>
+        <item quantity="many">Ajouter %1$d éléments</item>
         <item quantity="other">Ajouter %1$d éléments</item>
     </plurals>
     <string name="item_search_add_disabled">Ajouter</string>
@@ -158,10 +176,12 @@
     <string name="manual_dialog_photo_frame_chosen">Photo choisie. Appuyez sur « Remplacer la photo » pour la changer.</string>
     <plurals name="manual_dialog_photos_chosen">
         <item quantity="one">%1$d photo sélectionnée</item>
+        <item quantity="many">%1$d photos sélectionnées</item>
         <item quantity="other">%1$d photos sélectionnées</item>
     </plurals>
     <plurals name="manual_dialog_add_many">
         <item quantity="one">Ajouter %1$d élément</item>
+        <item quantity="many">Ajouter %1$d éléments</item>
         <item quantity="other">Ajouter %1$d éléments</item>
     </plurals>
     <string name="manual_dialog_remove_photo">Retirer la photo</string>
@@ -192,25 +212,30 @@
     <string name="cd_settings_back">Retour</string>
 
     <string name="trash_title">Corbeille</string>
+    <string name="trash_load_error">Impossible de charger la corbeille.</string>
     <string name="trash_subtitle">Les listes et éléments supprimés restent ici jusqu\'à ce que vous les retiriez.</string>
     <string name="trash_row_list_meta">Liste · %1$s · supprimée %2$s</string>
     <string name="trash_row_item_meta">Élément · de %1$s · supprimé %2$s</string>
     <plurals name="list_items_count">
         <item quantity="one">%1$d élément</item>
+        <item quantity="many">%1$d éléments</item>
         <item quantity="other">%1$d éléments</item>
     </plurals>
     <string name="trash_time_just_now">à l\'instant</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">il y a %1$d min</item>
+        <item quantity="many">il y a %1$d min</item>
         <item quantity="other">il y a %1$d min</item>
     </plurals>
     <plurals name="trash_time_hours_ago">
         <item quantity="one">il y a %1$d h</item>
+        <item quantity="many">il y a %1$d h</item>
         <item quantity="other">il y a %1$d h</item>
     </plurals>
     <string name="trash_time_yesterday">hier</string>
     <plurals name="trash_time_days_ago">
         <item quantity="one">il y a %1$d jour</item>
+        <item quantity="many">il y a %1$d jours</item>
         <item quantity="other">il y a %1$d jours</item>
     </plurals>
     <string name="action_restore">Restaurer</string>
@@ -225,6 +250,7 @@
     <string name="empty_trash_dialog_body">%1$s seront supprimés de cet appareil. Cette action est irréversible.</string>
     <plurals name="trash_entry_count">
         <item quantity="one">%1$d entrée</item>
+        <item quantity="many">%1$d entrées</item>
         <item quantity="other">%1$d entrées</item>
     </plurals>
     <string name="trash_empty_title">La corbeille est vide</string>
@@ -240,6 +266,7 @@
     <string name="export_file_totals">%1$s · %2$s · %3$s</string>
     <plurals name="unranked_count">
         <item quantity="one">%1$d non classé</item>
+        <item quantity="many">%1$d non classé</item>
         <item quantity="other">%1$d non classé</item>
     </plurals>
     <string name="export_list_counts">%1$s · %2$s</string>
@@ -249,6 +276,7 @@
     <string name="export_unranked_heading">Non classé</string>
     <plurals name="snack_export_done">
         <item quantity="one">%1$d liste exportée</item>
+        <item quantity="many">%1$d listes exportées</item>
         <item quantity="other">%1$d listes exportées</item>
     </plurals>
     <string name="action_share">Partager</string>

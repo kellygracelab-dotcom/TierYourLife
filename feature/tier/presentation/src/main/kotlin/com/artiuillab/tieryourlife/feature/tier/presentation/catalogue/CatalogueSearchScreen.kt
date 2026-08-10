@@ -42,9 +42,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
+import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
@@ -52,17 +52,11 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDeta
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
 
-// Mock-literal colours with no single matching M3 role (see docs/design-spec-turns-8-9.md
-// §10.2/§10.6/§10.7) — the field/bar fill's dark half matches surfaceContainerHigh but its
-// light half matches surfaceContainer, and the selected-row tint matches neither; both are
-// hardcoded the same way MoveItemSheet's current-tier tint already is.
 private val FieldFillLight = Color(0xFFEFEDF4)
 private val FieldFillDark = Color(0xFF2A2A31)
 private val SelectedRowTintLight = Color(0xFFEDEBFA)
 private val SelectedRowTintDark = Color(0xFF2E2F45)
 
-// The selection map lives one level up, in whatever hosts this composable (AddItemsSheet in
-// production) — see that file's comment. This composable is deliberately stateless about it.
 @Composable
 fun CatalogueSearchScreenContent(
     state: CatalogueSearchUiState,
@@ -110,9 +104,6 @@ fun CatalogueSearchScreenContent(
                 }
 
                 is CatalogueSearchUiState.Loading -> {
-                    // No spinner and no skeleton rows here — the 4dp bar above the caption
-                    // line is the only loading indicator; a centred one here would flash the
-                    // list empty on every keystroke's debounced request.
                 }
 
                 is CatalogueSearchUiState.Empty -> {
@@ -130,7 +121,7 @@ fun CatalogueSearchScreenContent(
                     )
                 }
 
-                is CatalogueSearchUiState.Error -> {
+                CatalogueSearchUiState.Error -> {
                     CenteredMessage(
                         text = stringResource(R.string.item_search_error_title),
                         body = stringResource(R.string.item_search_error_body),
@@ -469,7 +460,7 @@ fun CatalogueSearchScreenEmptyPreview() {
 fun CatalogueSearchScreenErrorPreview() {
     TierYourLifeTheme {
         CatalogueSearchScreenContent(
-            state = CatalogueSearchUiState.Error(message = "No connection to server"),
+            state = CatalogueSearchUiState.Error,
             query = "Interstellar",
             onQueryChange = {},
             onSearchClick = {},

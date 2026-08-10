@@ -21,8 +21,6 @@ class TrashScreenTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    // "When the trash is empty the more_vert button is not composed at all — not
-    // disabled, not hidden with alpha." (docs/design-spec-home.md, section 6.)
     @Test
     fun emptyState_composesNoMoreVertButton() {
         setScreen(TrashUiState.Success(emptyList()))
@@ -40,7 +38,6 @@ class TrashScreenTest {
         composeRule.onNodeWithTag(TrashTestTags.MORE).assertIsDisplayed()
     }
 
-    // One of only two dialogs in the app that confirm anything — Restore never confirms.
     @Test
     fun removeDialog_appearsOnRemoveClick_andCancelDismissesWithoutRemoving() {
         val entry = deletedList(1L, "Pizza in Lisbon", 5)

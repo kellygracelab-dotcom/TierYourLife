@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ThemeChoice
+import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
@@ -22,9 +22,7 @@ fun AppNavHost(
     onLanguageTagChange: (String?) -> Unit,
     navController: NavHostController = rememberNavController(),
 ) {
-    // Transitions are off deliberately: every destination fills the screen with the same
-    // surface colour, so the default cross-fade has nothing to show — it reads as a blink.
-    // Restoring the defaults brings back exactly the flicker this replaced.
+    // Default cross-fades look like a flash because destinations share the same surface.
     NavHost(
         navController = navController,
         startDestination = Route.TierLists,

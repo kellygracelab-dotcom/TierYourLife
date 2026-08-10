@@ -1,9 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.data.local
 
-// Lives in data rather than theme: these values are written to the database when a tier list is created
-// and can later be edited by the user.
-// Both variants are stored because the dark color cannot be derived from the light one:
-// Material 3 tonal utilities (TonalPalette, HctSolver) are internal.
 internal object DefaultTierColors {
     const val S_LIGHT = "#B03A32"
     const val S_DARK = "#F1948C"

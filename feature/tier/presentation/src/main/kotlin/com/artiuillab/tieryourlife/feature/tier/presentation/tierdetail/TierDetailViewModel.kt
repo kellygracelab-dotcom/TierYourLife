@@ -27,18 +27,6 @@ class TierDetailViewModel @Inject constructor(
     private val _state = MutableStateFlow<TierDetailUiState>(TierDetailUiState.Loading)
     val state: StateFlow<TierDetailUiState> = _state.asStateFlow()
 
-    // Whether the leading control on this screen is still the discard cross rather
-    // than the ordinary back arrow (docs/design-spec-home.md, section 12). Seeded from
-    // startInTitleEdit — the same signal Route.TierDetail already uses for "this list
-    // was just created" — but kept as its own flag: startInTitleEdit only ever drives
-    // the title field's initial edit state, never the leading control, per the spec's
-    // instruction to keep the two concepts separate.
-    //
-    // One-way by construction: markTouched() only ever sets this false, never back to
-    // true, so retyping and clearing a title (or any other action that briefly returns
-    // the list to its untouched shape) leaves the cross gone for good — a leading
-    // control that oscillates under the user's thumb would be worse than one that
-    // commits early.
     private val _canDiscard = MutableStateFlow(route.startInTitleEdit)
     val canDiscard: StateFlow<Boolean> = _canDiscard.asStateFlow()
 
@@ -46,18 +34,10 @@ class TierDetailViewModel @Inject constructor(
         loadTierList()
     }
 
-    // Called by every mutation below, and separately by the title field on its very
-    // first keystroke (TierDetailScreen wires that call directly) — a keystroke that
-    // never actually commits a rename still has to flip this, which is why it can't
-    // simply live inside renameTierList().
     fun markTouched() {
         if (_canDiscard.value) _canDiscard.value = false
     }
 
-    // The discard cross's action: a hard delete — never the trash, since an untouched
-    // list has no name and no items, nothing worth recovering — followed by whatever
-    // the caller does to leave (popping back to Home). Guarded by canDiscard so this
-    // can only ever fire against a list that is still in its untouched state.
     fun discardList(onDiscarded: () -> Unit) {
         if (!_canDiscard.value) return
         viewModelScope.launch {
@@ -72,7 +52,7 @@ class TierDetailViewModel @Inject constructor(
                 if (it != null) {
                     _state.value = TierDetailUiState.Success(it)
                 } else {
-                    _state.value = TierDetailUiState.Error("Tier list not found")
+                    _state.value = TierDetailUiState.Error
                 }
             }
         }
@@ -94,14 +74,6 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    // One item per picked photo. The title only applies when there is a single item for it to
-    // belong to — with several photos the dialog does not offer the field at all, so an empty
-    // title here is the picture standing in as the item's identity, which the tile already
-    // supports.
-    //
-    // attachImageToItem is what copies a picked Uri into internal storage and stores the path
-    // of the copy; addItemToPool is only ever passed imageUrl = null here, so the raw gallery
-    // reference never reaches the database.
     fun addManualItem(title: String, photoUris: List<String>) {
         markTouched()
         viewModelScope.launch {
@@ -134,24 +106,14 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    // Dropping a tier on the trash removes the tier but not its contents: each item is
-    // moved into the pool first (the same repository call MoveItemSheet's "Back to the
-    // pool" action already uses), and only the now-empty tier is deleted.
-    fun deleteTierToPool(tierId: Long, poolId: Long, poolSize: Int, itemIds: List<Long>) {
+    fun deleteTierToPool(tierId: Long) {
         markTouched()
         viewModelScope.launch {
-            itemIds.forEachIndexed { index, itemId ->
-                repository.moveItem(itemId, poolId, poolSize + index)
-            }
-            repository.deleteTier(tierId)
+            repository.deleteTierToPool(tierId)
             loadTierList()
         }
     }
 
-    // Undo for the above: recreates the tier (a new id — the old one is gone for good),
-    // moves it back to its former position among the ranked tiers, then pulls each item
-    // back out of the pool into it in their original order. All four calls already exist
-    // on TierRepository; nothing here is new to domain or data.
     fun restoreTier(
         label: String,
         caption: String?,
@@ -162,19 +124,7 @@ class TierDetailViewModel @Inject constructor(
     ) {
         markTouched()
         viewModelScope.launch {
-            val newTierId = repository.addTier(tierListId, label, caption, colorLight, colorDark)
-
-            val current = repository.getTierListById(tierListId)
-            if (current != null) {
-                val rankedIds = current.tiers.filterNot { it.isPool }.map { it.id }.toMutableList()
-                rankedIds.remove(newTierId)
-                rankedIds.add(position.coerceIn(0, rankedIds.size), newTierId)
-                repository.reorderTiers(rankedIds)
-            }
-
-            itemIds.forEachIndexed { index, itemId ->
-                repository.moveItem(itemId, newTierId, index)
-            }
+            repository.restoreTier(tierListId, label, caption, colorLight, colorDark, position, itemIds)
             loadTierList()
         }
     }
@@ -203,10 +153,6 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    // Renaming and recoloring are two separate repository calls — there's no combined
-    // one, and adding one would mean changing the domain layer, out of scope here — but
-    // one user action ("save this tier's edits") should still mean one reload, not two,
-    // so both run before loadTierList() rather than each triggering its own.
     fun editTier(id: Long, label: String, caption: String?, colorLight: String, colorDark: String) {
         markTouched()
         viewModelScope.launch {

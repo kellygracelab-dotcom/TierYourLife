@@ -103,18 +103,27 @@ class RoomTierRepositoryImageTest {
     }
 
     @Test
-    fun deleting_a_tier_sweeps_the_image_copies_of_its_cascade_deleted_items() = runBlocking {
+    fun deleting_a_tier_to_pool_keeps_the_item_and_its_image_copy() = runBlocking {
         val itemId = insertItem()
         repository.attachImageToItem(itemId, sourceUri = "content://gallery/42")
         val storedPath = requireNotNull(dao.getTierItemImageById(itemId))
         val tierId = dao.getTierItemById(itemId)!!.tierId
+        val tier = requireNotNull(dao.getTierById(tierId))
+        val poolId = dao.insertTier(
+            TierEntity(
+                tierListId = tier.tierListId,
+                position = 1,
+                label = "Unranked",
+                colorLight = "#000000",
+                colorDark = "#000000",
+                isPool = true,
+            ),
+        )
 
-        // A hard tier delete cascades the item row away without going through
-        // deleteTierItemPermanently, so the orphan sweep is the only thing that
-        // catches its now-dangling image copy.
-        repository.deleteTier(tierId)
+        repository.deleteTierToPool(tierId)
 
-        assertFalse(File(storedPath).exists())
+        assertTrue(File(storedPath).exists())
+        assertEquals(poolId, dao.getTierItemById(itemId)?.tierId)
     }
 
     private suspend fun insertItem(): Long {

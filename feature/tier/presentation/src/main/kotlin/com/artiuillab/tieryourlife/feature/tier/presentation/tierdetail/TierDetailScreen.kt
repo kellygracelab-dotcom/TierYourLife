@@ -1,27 +1,18 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -31,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,40 +31,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddItemsSheet
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.FloatingDragRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.FloatingDragTile
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ManualEntryDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.MoveItemSheet
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.NoteAddIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PoolPanel
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.RankedList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.RankedPoolSection
@@ -155,17 +133,11 @@ internal object TierDetailTestTags {
     fun sliderThumb(sliderTag: String): String = "${sliderTag}_thumb"
 }
 
-// docs/design-spec-turns-8-9.md, section 3 / 8a: "Drag auto-scroll within 72dp of the
-// top/bottom at up to 600dp/s".
 private val TIER_LIST_AUTOSCROLL_EDGE = 72.dp
 private const val TIER_LIST_AUTOSCROLL_MAX_SPEED_DP_PER_SEC = 600
 
 private const val LOADING_SPINNER_DELAY_MILLIS = 150L
 
-// Positive scrolls down, negative scrolls up. A pointer within edgePx of an edge (or past
-// it entirely — a lifted tile can be dragged beyond the list's own bounds) scrolls that
-// direction, ramping linearly from 0 at the edge of the zone to maxSpeedPx right at (or
-// past) the edge itself; 0 once the pointer is back in the middle of the list.
 private fun autoScrollSpeedPx(pointerY: Float, top: Float, bottom: Float, edgePx: Float, maxSpeedPx: Float): Float {
     val distanceFromTop = pointerY - top
     val distanceFromBottom = bottom - pointerY
@@ -182,30 +154,32 @@ fun TierDetailScreen(
     startInTitleEdit: Boolean = false,
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
-    val canDiscard by viewModel.canDiscard.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val canDiscard by viewModel.canDiscard.collectAsStateWithLifecycle()
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
     var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
 
     TierDetailScreenContent(
         state = state,
-        onBack = onBack,
         startInTitleEdit = startInTitleEdit,
         canDiscard = canDiscard,
-        onDiscard = { viewModel.discardList(onBack) },
-        onTitleEditStarted = viewModel::markTouched,
-        onAddClick = { addSheetVisible = true },
-        onManualAddClick = { manualEntryVisible = true },
-        onMoveItem = viewModel::moveItem,
-        onDeleteItem = viewModel::deleteItem,
-        onRestoreItem = viewModel::restoreItem,
-        onReorderTiers = viewModel::reorderTiers,
-        onDeleteTierToPool = viewModel::deleteTierToPool,
-        onRestoreTier = viewModel::restoreTier,
-        onAddTier = viewModel::addTier,
-        onEditTier = viewModel::editTier,
-        onSetDisplayMode = viewModel::setDisplayMode,
-        onRenameList = viewModel::renameTierList,
+        actions = TierDetailActions(
+            onBack = onBack,
+            onDiscard = { viewModel.discardList(onBack) },
+            onTitleEditStarted = viewModel::markTouched,
+            onAddClick = { addSheetVisible = true },
+            onManualAddClick = { manualEntryVisible = true },
+            onMoveItem = viewModel::moveItem,
+            onDeleteItem = viewModel::deleteItem,
+            onRestoreItem = viewModel::restoreItem,
+            onReorderTiers = viewModel::reorderTiers,
+            onDeleteTierToPool = viewModel::deleteTierToPool,
+            onRestoreTier = viewModel::restoreTier,
+            onAddTier = viewModel::addTier,
+            onEditTier = viewModel::editTier,
+            onSetDisplayMode = viewModel::setDisplayMode,
+            onRenameList = viewModel::renameTierList,
+        ),
     )
 
     if (addSheetVisible) {
@@ -231,43 +205,15 @@ fun TierDetailScreen(
 }
 
 @Composable
-fun TierDetailScreenContent(
+internal fun TierDetailScreenContent(
     state: TierDetailUiState,
-    onBack: () -> Unit,
+    actions: TierDetailActions = TierDetailActions(),
     startInTitleEdit: Boolean = false,
     canDiscard: Boolean = false,
-    onDiscard: () -> Unit = {},
-    onTitleEditStarted: () -> Unit = {},
-    onAddClick: () -> Unit,
-    onManualAddClick: () -> Unit = {},
-    onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
-    onDeleteItem: (itemId: Long) -> Unit = {},
-    onRestoreItem: (itemId: Long) -> Unit = {},
-    onReorderTiers: (orderedTierIds: List<Long>) -> Unit = {},
-    onDeleteTierToPool: (tierId: Long, poolId: Long, poolSize: Int, itemIds: List<Long>) -> Unit = { _, _, _, _ -> },
-    onRestoreTier: (
-        label: String,
-        caption: String?,
-        colorLight: String,
-        colorDark: String,
-        position: Int,
-        itemIds: List<Long>,
-    ) -> Unit = { _, _, _, _, _, _ -> },
-    onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit = { _, _, _, _ -> },
-    onEditTier: (id: Long, label: String, caption: String?, colorLight: String, colorDark: String) -> Unit =
-        { _, _, _, _, _ -> },
-    onSetDisplayMode: (displayMode: TierListDisplayMode) -> Unit = {},
-    onRenameList: (title: String) -> Unit = {},
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
             is TierDetailUiState.Loading -> {
-                // Reading one list out of Room takes a handful of milliseconds, so a
-                // spinner drawn the instant this state appears is on screen for two or
-                // three frames and reads as a flash rather than as progress — worse
-                // than showing nothing. The bar is drawn immediately so the screen is
-                // never blank; only the spinner waits, and it appears solely on the
-                // reads slow enough to be worth reporting.
                 var spinnerVisible by remember { mutableStateOf(false) }
                 LaunchedEffect(Unit) {
                     delay(LOADING_SPINNER_DELAY_MILLIS)
@@ -275,7 +221,7 @@ fun TierDetailScreenContent(
                 }
 
                 Column(Modifier.fillMaxSize()) {
-                    TierScreenTopBar(title = "", onBack = onBack, onManualAdd = onManualAddClick)
+                    TierScreenTopBar(title = "", onBack = actions.onBack, onManualAdd = actions.onManualAddClick)
                     Box(
                         Modifier
                             .fillMaxSize()
@@ -292,31 +238,17 @@ fun TierDetailScreenContent(
             is TierDetailUiState.Success -> {
                 TierScreenBody(
                     list = state.list,
-                    onBack = onBack,
+                    actions = actions,
                     startInTitleEdit = startInTitleEdit,
                     canDiscard = canDiscard,
-                    onDiscard = onDiscard,
-                    onTitleEditStarted = onTitleEditStarted,
-                    onAddClick = onAddClick,
-                    onManualAddClick = onManualAddClick,
-                    onMoveItem = onMoveItem,
-                    onDeleteItem = onDeleteItem,
-                    onRestoreItem = onRestoreItem,
-                    onReorderTiers = onReorderTiers,
-                    onDeleteTierToPool = onDeleteTierToPool,
-                    onRestoreTier = onRestoreTier,
-                    onAddTier = onAddTier,
-                    onEditTier = onEditTier,
-                    onSetDisplayMode = onSetDisplayMode,
-                    onRenameList = onRenameList,
                 )
             }
 
-            is TierDetailUiState.Error -> {
+            TierDetailUiState.Error -> {
                 Column {
-                    TierScreenTopBar(title = "", onBack = onBack, onManualAdd = onManualAddClick)
+                    TierScreenTopBar(title = "", onBack = actions.onBack, onManualAdd = actions.onManualAddClick)
                     Text(
-                        text = state.message,
+                        text = stringResource(R.string.tier_detail_not_found),
                         modifier = Modifier.padding(16.dp),
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -329,31 +261,25 @@ fun TierDetailScreenContent(
 @Composable
 private fun TierScreenBody(
     list: TierList,
-    onBack: () -> Unit,
+    actions: TierDetailActions,
     startInTitleEdit: Boolean = false,
     canDiscard: Boolean = false,
-    onDiscard: () -> Unit = {},
-    onTitleEditStarted: () -> Unit = {},
-    onAddClick: () -> Unit,
-    onManualAddClick: () -> Unit,
-    onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
-    onDeleteItem: (itemId: Long) -> Unit,
-    onRestoreItem: (itemId: Long) -> Unit,
-    onReorderTiers: (orderedTierIds: List<Long>) -> Unit,
-    onDeleteTierToPool: (tierId: Long, poolId: Long, poolSize: Int, itemIds: List<Long>) -> Unit,
-    onRestoreTier: (
-        label: String,
-        caption: String?,
-        colorLight: String,
-        colorDark: String,
-        position: Int,
-        itemIds: List<Long>,
-    ) -> Unit,
-    onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
-    onEditTier: (id: Long, label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
-    onSetDisplayMode: (displayMode: TierListDisplayMode) -> Unit,
-    onRenameList: (title: String) -> Unit,
 ) {
+    val onBack = actions.onBack
+    val onDiscard = actions.onDiscard
+    val onTitleEditStarted = actions.onTitleEditStarted
+    val onAddClick = actions.onAddClick
+    val onManualAddClick = actions.onManualAddClick
+    val onMoveItem = actions.onMoveItem
+    val onDeleteItem = actions.onDeleteItem
+    val onRestoreItem = actions.onRestoreItem
+    val onReorderTiers = actions.onReorderTiers
+    val onDeleteTierToPool = actions.onDeleteTierToPool
+    val onRestoreTier = actions.onRestoreTier
+    val onAddTier = actions.onAddTier
+    val onEditTier = actions.onEditTier
+    val onSetDisplayMode = actions.onSetDisplayMode
+    val onRenameList = actions.onRenameList
     var listSettingsVisible by remember { mutableStateOf(false) }
 
     if (listSettingsVisible) {
@@ -373,9 +299,6 @@ private fun TierScreenBody(
     var chooserItemId by remember { mutableStateOf<Long?>(null) }
     var editingTierId by remember { mutableStateOf<Long?>(null) }
 
-    // The second layer against a stale drag-target registry: refreshed every
-    // recomposition with whatever this exact list currently holds, so a target that no
-    // longer exists is never chosen even if something failed to unregister its bounds.
     SideEffect {
         dragController.setValidTargets(
             tierIds = list.tiers.map { it.id },
@@ -392,18 +315,11 @@ private fun TierScreenBody(
     val deleteAndAnnounce: (Long) -> Unit = { itemId ->
         val title = list.tiers.flatMap { it.items }.firstOrNull { it.id == itemId }?.title.orEmpty()
         onDeleteItem(itemId)
-        // Replace, don't queue: a second removal while the snackbar is up shouldn't
-        // leave the user reaching for an Undo that belongs to a different poster.
         snackbarHostState.currentSnackbarData?.dismiss()
         coroutineScope.launch {
             val result = snackbarHostState.showSnackbar(
                 message = String.format(deletedMessageTemplate, title),
                 actionLabel = undoLabel,
-                // Deletion already happened; Undo is an offer, not a question, so this
-                // must not use the implicit Indefinite default a non-null actionLabel
-                // gets otherwise — that variant is for choices blocking further action.
-                // Short, not Long: this fires on a frequent action (deleting posters one
-                // after another), so it shouldn't linger in the way any longer than it has to.
                 duration = SnackbarDuration.Short,
             )
             if (result == SnackbarResult.ActionPerformed) {
@@ -420,7 +336,7 @@ private fun TierScreenBody(
         if (tier != null && poolId != null) {
             val position = rankedTiers.indexOfFirst { it.id == tierId }
             val itemIds = tier.items.map { it.id }
-            onDeleteTierToPool(tierId, poolId, pool.items.size, itemIds)
+            onDeleteTierToPool(tierId)
             snackbarHostState.currentSnackbarData?.dismiss()
             coroutineScope.launch {
                 val result = snackbarHostState.showSnackbar(
@@ -437,19 +353,12 @@ private fun TierScreenBody(
 
     val density = LocalDensity.current
 
-    // Hoisted so a drag near its top/bottom edge can scroll it programmatically (see the
-    // autoscroll effect below) — bounds tracked the same way every other drag-target
-    // rect in this screen is, via onGloballyPositioned on the LazyColumn itself.
     val tierListState = rememberLazyListState()
     var tierListBounds by remember { mutableStateOf(Rect.Zero) }
 
     val autoscrollEdgePx = with(density) { TIER_LIST_AUTOSCROLL_EDGE.toPx() }
     val autoscrollMaxSpeedPx = with(density) { TIER_LIST_AUTOSCROLL_MAX_SPEED_DP_PER_SEC.dp.toPx() }
 
-    // Speed clamped to zero once there's nowhere further to scroll in that direction — a
-    // tile lifted from the very first row sits within 72dp of the list's own top edge by
-    // construction (that's just where row one is), and that must not read as "scroll up"
-    // when the list is already at the top; symmetrically for the last row and the bottom.
     fun autoscrollSpeedNow(): Float {
         if (tierListBounds == Rect.Zero) return 0f
         val raw = autoScrollSpeedPx(
@@ -466,13 +375,6 @@ private fun TierScreenBody(
         }
     }
 
-    // Rows now grow taller than the screen (FlowRow wrapping), so a poster dragged toward
-    // a tier that scrolled out of view had nothing to carry it there — this is what does.
-    // Keyed on "currently near a scrollable edge" specifically, not merely "a drag is
-    // happening": the loop below awaits a fresh frame every iteration for as long as it
-    // runs, which a Compose UI test's idling check treats as perpetually busy — scoping it
-    // this way means an ordinary drag that never approaches a scrollable edge never starts
-    // it, and it cancels the instant the pointer moves away (or the list runs out of room).
     val isNearAutoscrollEdge = dragController.isDragging && !dragController.isDraggingTier && autoscrollSpeedNow() != 0f
 
     LaunchedEffect(isNearAutoscrollEdge) {
@@ -568,10 +470,6 @@ private fun TierScreenBody(
             FloatingDragRow(dragController, rankedTiers.firstOrNull { it.id == dragController.draggedTierId })
         }
 
-        // Anchored 16dp above the pool's own measured top — same "raised, not resting
-        // on the pool" idea the mock uses for the trash target — rather than a fixed
-        // dp guess from the screen edge, which drifts into an overlap once the pool's
-        // own navigationBarsPadding makes it taller than the mock's own layout assumed.
         val poolTop = pool?.id?.let { dragController.tierBounds(it)?.top }
         val bottomGap = if (poolTop != null) {
             (maxHeight - with(density) { poolTop.toDp() }) + 16.dp
@@ -621,214 +519,23 @@ private fun TierScreenBody(
     }
 }
 
-@Composable
-private fun TierScreenTopBar(
-    title: String,
-    onBack: () -> Unit,
-    onManualAdd: () -> Unit,
-    onMoreClick: () -> Unit = {},
-    onRenameList: (String) -> Unit = {},
-    titleEditable: Boolean = false,
-    startInTitleEdit: Boolean = false,
-    canDiscard: Boolean = false,
-    onDiscard: () -> Unit = {},
-    onTitleEditStarted: () -> Unit = {},
-) {
-    val backDescription = stringResource(R.string.tier_detail_content_description_back)
-    val discardDescription = stringResource(R.string.tier_detail_content_description_discard)
-    val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
-    val moreDescription = stringResource(R.string.tier_detail_content_description_more)
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp)
-            .padding(horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (canDiscard) {
-            IconButton(
-                onClick = onDiscard,
-                modifier = Modifier
-                    .size(48.dp)
-                    .semantics { contentDescription = discardDescription },
-            ) { ClearIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) }
-        } else {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .size(48.dp)
-                    .semantics { contentDescription = backDescription },
-            ) { BackIcon() }
-        }
-        if (titleEditable) {
-            EditableListTitle(
-                title = title,
-                onRename = onRenameList,
-                initiallyEditing = startInTitleEdit,
-                onEditStarted = onTitleEditStarted,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 4.dp),
-            )
-        } else {
-            Text(
-                text = title,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 4.dp),
-                style = MaterialTheme.typography.titleLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-        IconButton(
-            onClick = onManualAdd,
-            modifier = Modifier
-                .size(48.dp)
-                .semantics { contentDescription = manualAddDescription }
-                .testTag(TierDetailTestTags.MANUAL_ADD_BUTTON),
-        ) { NoteAddIcon() }
-        IconButton(
-            onClick = onMoreClick,
-            modifier = Modifier
-                .size(48.dp)
-                .semantics { contentDescription = moreDescription },
-        ) { MoreIcon() }
-    }
-}
-
-// One path to one action: the list's title is edited in place here, and the
-// settings screen's old "Rename list" row is gone. At rest this is exactly the
-// same Text the header always had (same size, same padding, same position) so
-// entering and leaving edit mode never shifts anything else in the bar — only
-// whether the space is typable and whether a cursor sits in it.
-//
-// A plain OutlinedTextField was ruled out: its own box padding and min height
-// would make the bar taller the moment editing starts, which is exactly the
-// "jump" this is required not to do. BasicTextField has no such chrome, so it
-// can share the read state's own text style pixel-for-pixel.
-// docs/design-spec-home.md, section 4: 60 characters is the only limit on the title.
-private const val TITLE_MAX_LENGTH = 60
-
-@Composable
-private fun EditableListTitle(
-    title: String,
-    onRename: (String) -> Unit,
-    initiallyEditing: Boolean = false,
-    onEditStarted: () -> Unit = {},
-    modifier: Modifier = Modifier,
-) {
-    var isEditing by remember { mutableStateOf(initiallyEditing) }
-
-    if (isEditing) {
-        var fieldValue by remember {
-            mutableStateOf(
-                if (initiallyEditing) {
-                    // A brand-new list opened straight into edit mode: the whole
-                    // placeholder title is selected so the first keystroke replaces it
-                    // outright, rather than appending after it (docs/design-spec-home.md,
-                    // section 4).
-                    TextFieldValue(text = title, selection = TextRange(0, title.length))
-                } else {
-                    TextFieldValue(text = title, selection = TextRange(title.length))
-                },
-            )
-        }
-        // Distinguishes "never focused yet" from "focused, then lost it": onFocusChanged
-        // fires once immediately on composition with isFocused = false, before the
-        // LaunchedEffect below has a chance to actually request focus. Without this,
-        // that first callback would read as the user tapping away and close edit mode
-        // before it ever visibly opened.
-        var hasFocused by remember { mutableStateOf(false) }
-        val focusRequester = remember { FocusRequester() }
-
-        // Guarded by isEditing so the IME "Done" action and a subsequent focus-loss
-        // callback (the field's own node is torn down once isEditing flips to false)
-        // can't both fire onRename — this is what makes saving happen exactly once.
-        fun commit() {
-            if (!isEditing) return
-            val trimmed = fieldValue.text.trim()
-            if (trimmed.isNotEmpty()) {
-                onRename(trimmed)
-            }
-            isEditing = false
-        }
-
-        BasicTextField(
-            value = fieldValue,
-            onValueChange = { newValue ->
-                // The discard latch flips here, on the very first keystroke, rather
-                // than waiting for commit() — a character typed and then deleted back
-                // to nothing never calls onRename, but it must still count as touching
-                // the list (docs/design-spec-home.md, section 12: "the latch has
-                // already flipped").
-                //
-                // Only a change to the text counts. onValueChange also fires when just
-                // the selection moves — tapping into the field, or dragging the caret,
-                // with nothing typed — and that is the same kind of non-event as
-                // opening the search sheet and adding nothing, which section 12 says
-                // explicitly is not a touch.
-                if (newValue.text != fieldValue.text) {
-                    onEditStarted()
-                }
-                if (newValue.text.length <= TITLE_MAX_LENGTH) {
-                    fieldValue = newValue
-                }
-            },
-            modifier = modifier
-                .focusRequester(focusRequester)
-                .onFocusChanged { focusState ->
-                    if (focusState.isFocused) {
-                        hasFocused = true
-                    } else if (hasFocused) {
-                        commit()
-                    }
-                }
-                .testTag(TierDetailTestTags.HEADER_TITLE),
-            textStyle = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-            singleLine = true,
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { commit() }),
-        )
-
-        LaunchedEffect(Unit) { focusRequester.requestFocus() }
-    } else {
-        val editDescription = stringResource(R.string.tier_detail_content_description_edit_title)
-        Text(
-            text = title,
-            modifier = modifier
-                .clickable { isEditing = true }
-                .semantics { contentDescription = editDescription }
-                .testTag(TierDetailTestTags.HEADER_TITLE),
-            style = MaterialTheme.typography.titleLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-    }
-}
-
 @TierYourLifeDevicePreviews
 @Composable
 private fun TierScreenLightPreview() = TierYourLifeTheme(false) {
-    TierDetailScreenContent(state = TierDetailUiState.Success(previewTierList), onBack = {}, onAddClick = {})
+    TierDetailScreenContent(state = TierDetailUiState.Success(previewTierList))
 }
 
 @TierYourLifeDevicePreviews
 @Composable
 private fun TierScreenDarkPreview() = TierYourLifeTheme(true) {
-    TierDetailScreenContent(state = TierDetailUiState.Success(previewTierList), onBack = {}, onAddClick = {})
+    TierDetailScreenContent(state = TierDetailUiState.Success(previewTierList))
 }
 
 @Preview(name = "Loading", device = "id:pixel_9", showBackground = true, showSystemUi = true)
 @Composable
 fun TierScreenLoadingPreview() {
     TierYourLifeTheme {
-        TierDetailScreenContent(state = TierDetailUiState.Loading, onBack = {}, onAddClick = {})
+        TierDetailScreenContent(state = TierDetailUiState.Loading)
     }
 }
 
@@ -837,9 +544,7 @@ fun TierScreenLoadingPreview() {
 fun TierScreenErrorPreview() {
     TierYourLifeTheme {
         TierDetailScreenContent(
-            state = TierDetailUiState.Error(message = "No connection to server"),
-            onBack = {},
-            onAddClick = {},
+            state = TierDetailUiState.Error,
         )
     }
 }

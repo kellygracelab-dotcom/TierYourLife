@@ -25,7 +25,7 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun getAllTierLists(): List<TierList> {
-        return dao.getAllTierLists().map { it.toDomain() }
+        return dao.getAllTierListsWithTiers().map { it.toDomain() }
     }
 
     override suspend fun createTierList(title: String): Long {
@@ -86,13 +86,20 @@ class RoomTierRepository internal constructor(
         dao.updateTierColors(id, colorLight, colorDark)
     }
 
-    override suspend fun deleteTier(id: Long) {
-        val tier = dao.getTierById(id) ?: return
-        // The list must always keep exactly one pool; the pool tier can't be deleted.
-        if (tier.isPool) return
-        dao.deleteTierKeepingTrashedItems(id)
-        // The cascade removed the tier's active item rows silently; sweep their image copies.
-        imageStore.deleteOrphans(dao.getAllImageRefs())
+    override suspend fun deleteTierToPool(id: Long) {
+        dao.deleteTierToPool(id)
+    }
+
+    override suspend fun restoreTier(
+        tierListId: Long,
+        label: String,
+        caption: String?,
+        colorLight: String,
+        colorDark: String,
+        position: Int,
+        itemIds: List<Long>,
+    ) {
+        dao.restoreTier(tierListId, label, caption, colorLight, colorDark, position, itemIds)
     }
 
     override suspend fun reorderTiers(orderedTierIds: List<Long>) {

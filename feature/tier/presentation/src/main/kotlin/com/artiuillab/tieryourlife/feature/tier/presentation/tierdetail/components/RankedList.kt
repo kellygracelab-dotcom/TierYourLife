@@ -39,7 +39,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
+import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -47,10 +47,6 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
-// The FLAT_RANKED mode's own screen: one column, best to worst, no tier rows. Rank
-// number, poster, title and tier badge live here rather than reusing DraggableTile —
-// this row is a different shape entirely (full-width, not a fixed tile), and dragging
-// has no defined meaning for a ranking with no tiers to drop into (see RankedItemRow).
 private data class RankedEntry(val position: Int, val item: TierItem, val tier: Tier)
 
 private fun buildRankedEntries(rankedTiers: List<Tier>): List<RankedEntry> {
@@ -113,12 +109,6 @@ private fun RankedItemRow(entry: RankedEntry, onSelect: (itemId: Long) -> Unit) 
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 64.dp)
-            // No drag here: a flat ranking has no tiers to drop an item into, and the
-            // mock doesn't show or describe a drag affordance for this screen — rather
-            // than invent one, dragging simply isn't wired up. A single tap is free (it
-            // never has to double as "failed drag" the way it does in the other modes),
-            // so it's what opens the chooser here — see TierDetailScreen for how this
-            // differs deliberately from wrap/strip's double-tap.
             .clickable { onSelect(entry.item.id) }
             .semantics(mergeDescendants = true) { contentDescription = description }
             .testTag(TierDetailTestTags.rankedRow(entry.item.id))
@@ -166,13 +156,6 @@ private fun TierBadge(tier: Tier) {
     }
 }
 
-// The pool isn't ranked, so it sits below the ranking in its own panel, collapsed by
-// default. Collapsed is the resting state; tapping the bar reveals the pooled posters
-// so they can actually be reached (and opens the same chooser sheet on a tap), tapping
-// it again puts them away. The mock doesn't draw the expanded state — it shows only the
-// collapsed bar — so the row style below is the ranked rows' own style with the two
-// pieces that don't apply to an unranked poster (rank number, tier badge) left out,
-// rather than inventing a new visual language for it.
 @Composable
 internal fun RankedPoolSection(
     pool: Tier,

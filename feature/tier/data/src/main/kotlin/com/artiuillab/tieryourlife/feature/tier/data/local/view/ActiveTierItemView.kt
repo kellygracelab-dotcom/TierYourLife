@@ -2,8 +2,6 @@ package com.artiuillab.tieryourlife.feature.tier.data.local.view
 
 import androidx.room.DatabaseView
 
-// Read queries and relations go through this view so the soft-delete filter physically
-// cannot be forgotten: items in trash simply do not exist here.
 @DatabaseView(
     viewName = "active_tier_items",
     value = "SELECT * FROM tier_items WHERE deletedAt IS NULL",

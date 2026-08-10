@@ -30,12 +30,6 @@ interface TierDao {
         )
     }
 
-    // All items land in one transaction with consecutive positions appended to the
-    // pool, so an interruption cannot leave a half-inserted batch. Positions are
-    // computed from getAllTierItemsByTierId, which already reads through the active
-    // items view, so a trashed pool item never reserves or collides with a position.
-    // The target list is read through its own active view too, so a bulk add against
-    // a trashed list's pool is silently skipped instead of resurrecting it.
     @Transaction
     suspend fun addItemsToPool(tierListId: Long, items: List<NewPoolItem>) {
         if (getTierListById(tierListId) == null) return
@@ -104,6 +98,10 @@ interface TierDao {
     suspend fun getAllTierLists(): List<TierListEntity>
 
     @Transaction
+    @Query("SELECT * FROM active_tier_lists ORDER BY id ASC")
+    suspend fun getAllTierListsWithTiers(): List<TierListWithTiers>
+
+    @Transaction
     @Query("SELECT * FROM active_tier_lists WHERE id = :id")
     suspend fun getTierListWithTiers(id: Long): TierListWithTiers?
 
@@ -159,11 +157,6 @@ interface TierDao {
     @Query("UPDATE tiers SET position = :position WHERE id = :id")
     suspend fun updateTierPosition(id: Long, position: Int)
 
-    // The caller sends the final sequence of tier ids in one call; positions are
-    // rewritten to the sequence indices inside a single transaction, so no
-    // intermediate state with duplicated positions is ever visible. A stale id for a
-    // tier that no longer exists (already hard-deleted) is dropped before indices are
-    // assigned, so it can't waste a slot and leave a gap in the real tiers' positions.
     @Transaction
     suspend fun reorderTiers(orderedTierIds: List<Long>) {
         val existingIds = orderedTierIds.filter { getTierById(it) != null }
@@ -181,32 +174,25 @@ interface TierDao {
     @Query("DELETE FROM tiers WHERE id = :id")
     suspend fun deleteTierById(id: Long): Int
 
-    // Raw table, unfiltered by soft delete on purpose: this is the one read that has to see
-    // the trashed rows, because they are exactly the ones about to be destroyed.
     @Query("SELECT * FROM tier_items WHERE tierId = :tierId AND deletedAt IS NOT NULL")
     suspend fun getTrashedItemsByTierId(tierId: Long): List<TierItemEntity>
 
     @Query("UPDATE tier_items SET tierId = :toTierId, position = :position WHERE id = :id")
     suspend fun reassignTierItem(id: Long, toTierId: Long, position: Int)
 
-    // tier_items cascades on its tierId foreign key, so deleting a tier destroys every row
-    // that pointed at it — including the ones sitting in the trash, which the user never
-    // agreed to lose. They are moved to the list's pool first, so deleting a tier can still
-    // only ever destroy the tier.
-    //
-    // They land in the pool still trashed, and restoring one later puts it in the pool rather
-    // than in a tier that no longer exists — the only honest place left for it.
     @Transaction
-    suspend fun deleteTierKeepingTrashedItems(tierId: Long) {
+    suspend fun deleteTierToPool(tierId: Long) {
         val tier = getTierById(tierId) ?: return
+        if (tier.isPool) return
         val pool = getAllTiersByTierListId(tier.tierListId).firstOrNull { it.isPool }
+            ?: return
 
-        if (pool != null && pool.id != tierId) {
-            var nextPosition = (getAllTierItemsByTierId(pool.id).maxOfOrNull { it.position } ?: -1) + 1
-            getTrashedItemsByTierId(tierId).forEach { item ->
-                reassignTierItem(id = item.id, toTierId = pool.id, position = nextPosition)
-                nextPosition++
-            }
+        var nextPosition = (getAllTierItemsByTierId(pool.id).maxOfOrNull { it.position } ?: -1) + 1
+        getAllTierItemsByTierId(tierId).forEach { item ->
+            reassignTierItem(id = item.id, toTierId = pool.id, position = nextPosition++)
+        }
+        getTrashedItemsByTierId(tierId).forEach { item ->
+            reassignTierItem(id = item.id, toTierId = pool.id, position = nextPosition++)
         }
 
         deleteTierById(tierId)
@@ -215,8 +201,6 @@ interface TierDao {
     @Query("UPDATE tiers SET position = position + 1 WHERE tierListId = :tierListId AND position >= :fromPosition")
     suspend fun shiftTiersFrom(tierListId: Long, fromPosition: Int)
 
-    // rankedCount is also the pool's current position (it always sits last), so
-    // shifting from there makes room without disturbing the ranked tiers before it.
     @Transaction
     suspend fun addTier(
         tierListId: Long,
@@ -240,6 +224,33 @@ interface TierDao {
         )
     }
 
+    @Transaction
+    suspend fun restoreTier(
+        tierListId: Long,
+        label: String,
+        caption: String?,
+        colorLight: String,
+        colorDark: String,
+        position: Int,
+        itemIds: List<Long>,
+    ): Long {
+        if (getTierListById(tierListId) == null) return 0
+
+        val tierId = addTier(tierListId, label, caption, colorLight, colorDark)
+        val rankedIds = getAllTiersByTierListId(tierListId)
+            .filterNot { it.isPool }
+            .map { it.id }
+            .toMutableList()
+        rankedIds.remove(tierId)
+        rankedIds.add(position.coerceIn(0, rankedIds.size), tierId)
+        reorderTiers(rankedIds)
+
+        itemIds.forEachIndexed { index, itemId ->
+            moveItem(itemId, tierId, index)
+        }
+        return tierId
+    }
+
     @Insert
     suspend fun insertTierItem(tierItem: TierItemEntity): Long
 
@@ -261,14 +272,9 @@ interface TierDao {
     @Query("UPDATE tier_items SET imageUrl = :imageUrl WHERE id = :id")
     suspend fun updateTierItemImage(id: Long, imageUrl: String?)
 
-    // Raw table on purpose: the image of a trashed item must still be found when the
-    // item is deleted for good.
     @Query("SELECT imageUrl FROM tier_items WHERE id = :id")
     suspend fun getTierItemImageById(id: Long): String?
 
-    // Raw table and unfiltered by soft delete on purpose: a trashed item's image copy
-    // is still referenced (and must not be swept as an orphan) until the item itself
-    // is permanently removed.
     @Query("SELECT imageUrl FROM tier_items WHERE imageUrl IS NOT NULL")
     suspend fun getAllImageRefs(): List<String>
 
@@ -297,12 +303,8 @@ interface TierDao {
     @Query("UPDATE tier_items SET position = position + 1 WHERE tierId = :tierId AND position >= :fromPosition")
     suspend fun shiftTierPositionsFrom(tierId: Long, fromPosition: Int)
 
-    // Relies on (tierId, position) having no unique index: the UPDATE below briefly gives two
-    // rows the same position mid-statement. Adding that index would break every non-append insert.
     @Transaction
     suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
-        // Both reads go through the active views, so a deleted item or a tier whose
-        // list is trashed cancels the move here instead of relocating it.
         val item = getTierItemById(itemId) ?: return
         val targetTier = getTierById(toTierId) ?: return
         if (getTierListById(targetTier.tierListId) == null) return

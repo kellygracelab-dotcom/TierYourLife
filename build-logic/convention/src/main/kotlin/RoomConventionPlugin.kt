@@ -21,9 +21,6 @@ class RoomConventionPlugin : Plugin<Project> {
             add("androidTestImplementation", libs.findLibrary("androidx-room-testing").get())
         }
 
-        // Exported schemas let MigrationTestHelper open a database "as" an old
-        // version and verify a real migration, instead of trusting an in-memory
-        // recreate to prove the upgrade path works.
         extensions.configure<KspExtension> {
             arg("room.schemaLocation", "$projectDir/schemas")
         }

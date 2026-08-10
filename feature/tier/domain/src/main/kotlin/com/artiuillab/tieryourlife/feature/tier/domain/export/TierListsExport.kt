@@ -2,14 +2,6 @@ package com.artiuillab.tieryourlife.feature.tier.domain.export
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
-// Every already-resolved piece of text the formatter needs, supplied by the caller
-// (presentation, via stringResource/pluralStringResource) so this function stays pure
-// Kotlin and never touches an Android resource itself (docs/design-spec-home.md,
-// section 8 — "Getting the strings into a pure domain function without dragging Android
-// resources into the domain module"). The two counting lambdas exist because plurals
-// can only be resolved once the count is known, and the counts themselves (totals across
-// every list, and per list) are only known once this function has already walked the
-// data — the caller can't precompute them.
 data class TierListsExportStrings(
     val header: String,
     val exportedOn: String,
@@ -52,8 +44,6 @@ fun buildTierListsExport(lists: List<TierList>, strings: TierListsExportStrings)
             } ?: String.format(strings.tierPlainFormat, tier.label)
             lines += heading
 
-            // Included even when empty, with a placeholder instead of silently vanishing —
-            // a tier the user made and left empty is information the file shouldn't drop.
             if (tier.items.isEmpty()) {
                 lines += "  ${strings.tierEmptyLabel}"
             } else {
