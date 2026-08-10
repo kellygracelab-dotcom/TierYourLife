@@ -36,8 +36,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
+import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R

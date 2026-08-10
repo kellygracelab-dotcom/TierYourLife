@@ -32,7 +32,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import kotlin.math.roundToInt

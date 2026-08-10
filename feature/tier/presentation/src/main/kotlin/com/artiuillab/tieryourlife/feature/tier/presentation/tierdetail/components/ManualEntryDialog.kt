@@ -41,7 +41,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
+import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.dashedBorder
