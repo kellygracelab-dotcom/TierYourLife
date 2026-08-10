@@ -3,7 +3,7 @@ package com.artiuillab.tieryourlife
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ThemeChoice
+import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 
 @Composable
 fun AppRoot(

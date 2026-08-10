@@ -4,9 +4,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Type roles the design uses that have no matching Material 3 slot — decorative or small
-// text tied to this app's own tier-band/chip/tab vocabulary, not general UI copy. Unlike
-// the colour roles, these do not vary with the theme, so no CompositionLocal behind them.
+// App-specific type roles with no Material 3 equivalent.
 data class TierYourLifeExtraType(
     val tierBandLetter: TextStyle,
     val tierBandCaption: TextStyle,

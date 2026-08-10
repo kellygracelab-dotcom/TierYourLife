@@ -49,8 +49,11 @@
     <string name="home_empty_title">Noch keine Listen</string>
     <string name="home_empty_body">Tippe auf +, um etwas einzustufen.</string>
     <string name="cd_new_list">Neue Liste</string>
+    <string name="default_tier_list_title">Unbenannte Liste</string>
+    <string name="tier_lists_load_error">Listen konnten nicht geladen werden.</string>
 
     <string name="tier_detail_add">Hinzufügen</string>
+    <string name="tier_detail_not_found">Liste wurde nicht gefunden.</string>
     <string name="tier_detail_content_description_back">Zurück</string>
     <string name="tier_detail_content_description_manual_add">Element manuell hinzufügen</string>
     <string name="tier_detail_content_description_more">Weitere Optionen</string>
@@ -192,6 +195,7 @@
     <string name="cd_settings_back">Zurück</string>
 
     <string name="trash_title">Papierkorb</string>
+    <string name="trash_load_error">Papierkorb konnte nicht geladen werden.</string>
     <string name="trash_subtitle">Gelöschte Listen und Elemente bleiben hier, bis du sie entfernst.</string>
     <string name="trash_row_list_meta">Liste · %1$s · gelöscht %2$s</string>
     <string name="trash_row_item_meta">Element · aus %1$s · gelöscht %2$s</string>

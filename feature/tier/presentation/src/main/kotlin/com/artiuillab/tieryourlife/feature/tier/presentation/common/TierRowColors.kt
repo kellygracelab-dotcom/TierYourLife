@@ -6,7 +6,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 
-// Design-system rule: a row fill is the band color at 12% over the surface.
 private const val ROW_TINT_ALPHA = 0.12f
 
 internal const val ROW_HOVER_TINT_ALPHA = 0.24f

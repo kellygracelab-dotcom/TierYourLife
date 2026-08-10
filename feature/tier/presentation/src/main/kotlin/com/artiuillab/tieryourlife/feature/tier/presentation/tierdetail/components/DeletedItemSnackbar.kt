@@ -12,10 +12,6 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
-// Mock-literal colors: the app's inverseSurface/inverseOnSurface are the stock M3
-// baseline tones (close enough to pass for them), but inversePrimary is stock purple,
-// not this app's own primary — the mock's action colour is this app's primary from
-// the *other* theme, which isn't a role this app's ColorScheme actually wires up.
 private val ContainerLight = Color(0xFF303036)
 private val ContainerDark = Color(0xFFE4E1E9)
 private val ContentLight = Color(0xFFF3F0F7)

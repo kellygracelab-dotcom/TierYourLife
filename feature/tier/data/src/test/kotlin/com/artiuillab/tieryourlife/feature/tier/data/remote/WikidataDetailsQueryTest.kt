@@ -17,8 +17,6 @@ class WikidataDetailsQueryTest {
         assertTrue(query.contains("wdt:P4947"))
     }
 
-    // Both are OPTIONAL so that an item with neither an image nor a TMDB id still comes back as
-    // a row. Without that it would silently vanish from the results the user sees.
     @Test
     fun query_asksForBothPropertiesOptionally() {
         val query = wikidataDetailsQuery(listOf("Q11788"))
@@ -26,7 +24,6 @@ class WikidataDetailsQueryTest {
         assertEquals(2, Regex("OPTIONAL").findAll(query).count())
     }
 
-    // One malformed token would fail the whole request and take twenty good results with it.
     @Test
     fun query_dropsAnythingThatIsNotAQid() {
         val query = wikidataDetailsQuery(listOf("Q11788", "P31", "} DROP ALL {", "Q1"))
@@ -42,8 +39,6 @@ class WikidataDetailsQueryTest {
         assertEquals("Q11788", qidFromEntityUri("http://www.wikidata.org/entity/Q11788"))
     }
 
-    // The Query Service answers with http, and this app has no cleartext-traffic permission, so
-    // an un-upgraded URL is one Coil silently refuses to load.
     @Test
     fun thumbnailUrl_upgradesHttpToHttps() {
         val url = commonsThumbnailUrl("http://commons.wikimedia.org/wiki/Special:FilePath/Bear.jpg")
@@ -59,8 +54,6 @@ class WikidataDetailsQueryTest {
         assertEquals("https://commons.wikimedia.org/wiki/Special:FilePath/Bear.jpg?width=500", url)
     }
 
-    // The service percent-encodes the filename itself. Re-encoding it here is what produced a
-    // literal "+" in a URL path and a silent 404 before.
     @Test
     fun thumbnailUrl_leavesTheServicesOwnEncodingAlone() {
         val url = commonsThumbnailUrl(

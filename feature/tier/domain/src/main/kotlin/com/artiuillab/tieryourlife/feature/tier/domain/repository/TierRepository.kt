@@ -37,10 +37,18 @@ interface TierRepository {
 
     suspend fun updateTierColors(id: Long, colorLight: String, colorDark: String)
 
-    // No-ops if the target is the list's pool: exactly one pool must always remain.
-    suspend fun deleteTier(id: Long)
+    suspend fun deleteTierToPool(id: Long)
 
-    // Accepts the whole final order at once so no intermediate state has duplicate positions.
+    suspend fun restoreTier(
+        tierListId: Long,
+        label: String,
+        caption: String?,
+        colorLight: String,
+        colorDark: String,
+        position: Int,
+        itemIds: List<Long>,
+    )
+
     suspend fun reorderTiers(orderedTierIds: List<Long>)
 
     suspend fun deleteTierLists(ids: List<Long>)

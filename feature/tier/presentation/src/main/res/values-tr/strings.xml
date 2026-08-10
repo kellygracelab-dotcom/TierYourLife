@@ -49,8 +49,11 @@
     <string name="home_empty_title">Henüz liste yok</string>
     <string name="home_empty_body">Bir şey sıralamak için + öğesine dokun.</string>
     <string name="cd_new_list">Yeni liste</string>
+    <string name="default_tier_list_title">Başlıksız liste</string>
+    <string name="tier_lists_load_error">Listeler yüklenemedi.</string>
 
     <string name="tier_detail_add">Ekle</string>
+    <string name="tier_detail_not_found">Liste bulunamadı.</string>
     <string name="tier_detail_content_description_back">Geri git</string>
     <string name="tier_detail_content_description_manual_add">Öğeyi elle ekle</string>
     <string name="tier_detail_content_description_more">Diğer seçenekler</string>
@@ -114,7 +117,7 @@
     <string name="tier_editor_label_field">Etiket</string>
     <string name="tier_editor_caption_field">Alt yazı</string>
     <string name="tier_editor_color_section_title">Renk</string>
-    <string name="tier_editor_color_section_caption">Özel · açık ve koyu rengi ayrı ayrı ayarla</string>
+    <string name="tier_editor_color_section_caption">Özel · açık ve koyu renkleri bağımsız olarak ayarla</string>
     <string name="tier_editor_theme_light">Açık</string>
     <string name="tier_editor_theme_dark">Koyu</string>
     <string name="tier_editor_hue_label">Ton</string>
@@ -192,6 +195,7 @@
     <string name="cd_settings_back">Geri git</string>
 
     <string name="trash_title">Çöp kutusu</string>
+    <string name="trash_load_error">Çöp kutusu yüklenemedi.</string>
     <string name="trash_subtitle">Silinen listeler ve öğeler, sen kaldırana kadar burada kalır.</string>
     <string name="trash_row_list_meta">Liste · %1$s · silindi %2$s</string>
     <string name="trash_row_item_meta">Öğe · %1$s içinden · silindi %2$s</string>

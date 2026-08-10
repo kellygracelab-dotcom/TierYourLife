@@ -39,9 +39,6 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
-// Mock-literal colors with no matching theme role (verified against the app's Material3
-// defaults and the unmodified error/errorContainer roles), hardcoded per the design's
-// light/dark pair rather than approximated from an unrelated token.
 private val CurrentTierTintLight = Color(0xFFEDEBFA)
 private val CurrentTierTintDark = Color(0xFF2E2F45)
 private val RemoveCircleLight = Color(0xFFF9DEDC)
@@ -176,9 +173,6 @@ private fun MoveSheetTierRow(tier: Tier, isCurrent: Boolean, onClick: (() -> Uni
                 if (onClick != null) {
                     Modifier.clickable(onClick = onClick)
                 } else {
-                    // Not clickable, but still one accessible unit: without this, a screen
-                    // reader would announce the swatch letter, caption, and "Currently here"
-                    // as three disconnected nodes instead of one row.
                     Modifier.semantics(mergeDescendants = true) {}
                 },
             )

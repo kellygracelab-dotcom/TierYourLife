@@ -2,7 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.catalogue
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.artiuillab.tieryourlife.feature.tier.domain.repository.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -29,9 +29,6 @@ class CatalogueSearchViewModel @Inject constructor(
 
     private var searchJob: Job? = null
 
-    // Called on every keystroke: debounced, so typing doesn't fire a request per
-    // character. Below MIN_QUERY_LENGTH there is nothing to debounce — the sheet
-    // just shows its own "type more" hint.
     fun onQueryChange(query: String) {
         searchJob?.cancel()
         val trimmed = query.trim()
@@ -71,12 +68,7 @@ class CatalogueSearchViewModel @Inject constructor(
                         )
                     }
                 },
-                onFailure = { exception ->
-                    _state.value = CatalogueSearchUiState.Error(
-                        message = exception.message
-                            ?: "Search failed",
-                    )
-                },
+                onFailure = { _state.value = CatalogueSearchUiState.Error },
             )
     }
 }

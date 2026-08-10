@@ -54,9 +54,6 @@ internal fun PoolPanel(
         dragController.registerItemsRowMeta(pool.id, listState, pool.items.map { it.id })
     }
 
-    // The pool doesn't actually leave composition in practice (exactly one always
-    // exists), but it registers bounds the same way every other target does, so it
-    // unregisters the same way too rather than being a silent exception to the rule.
     DisposableEffect(pool.id) {
         onDispose {
             dragController.unregisterRowBounds(pool.id)

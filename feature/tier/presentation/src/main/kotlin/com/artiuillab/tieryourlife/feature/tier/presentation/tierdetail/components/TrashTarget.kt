@@ -32,8 +32,6 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import kotlin.math.roundToInt
 
-// Mock-literal colors with no matching theme role (same error/errorContainer mismatch
-// already hardcoded for the move sheet's "Remove from list" row).
 private val RestingBgLight = Color(0xFFF9DEDC)
 private val RestingBgDark = Color(0xFF601410)
 private val RestingIconLight = Color(0xFF8C1D18)
@@ -53,18 +51,12 @@ internal fun TrashTarget(
     val isDark = TierYourLifeMedia.current.isDark
     val haptic = LocalHapticFeedback.current
     val label = stringResource(R.string.tier_detail_trash_target_label)
-    // The pool applies its own navigationBarsPadding, so anchoring to its actual
-    // registered top (rather than a fixed dp guess) keeps the 16dp gap correct on
-    // every device instead of drifting into an overlap under a taller inset.
     val poolTop = poolTierId?.let { dragController.tierBounds(it)?.top }
 
     LaunchedEffect(isHovering) {
         if (isHovering) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
     }
 
-    // Only ever composed mid-drag, so this always fires between one drag and the next —
-    // registering fresh every time rather than leaving behind a stale rect that a later
-    // drag's very first hover check could read before this drag's own registration runs.
     DisposableEffect(Unit) {
         onDispose { dragController.unregisterTrashBounds() }
     }

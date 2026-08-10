@@ -4,19 +4,7 @@ import android.content.Context
 import androidx.core.os.ConfigurationCompat
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 
-// One row per language the chooser offers (docs/design-spec-home.md, section 7,
-// subsection "2 - Language"), in the owner's own order — not alphabetical, not by
-// speaker count. `nativeName` is deliberately a Kotlin literal, not a string resource:
-// "The language names shown in the chooser are not translated - each language is
-// written in its own script in every locale." Only the trailing English name
-// (`englishNameRes`) and the "Default"/"Arabic - right-to-left" labels are resources,
-// so they translate along with everything else in strings.xml.
 internal data class LanguageOption(
-    // Value persisted by AppPreferences.setLanguageTag and read back by languageTag().
-    // Null only for the first entry: choosing it means "follow the system", not "force
-    // English" - the spec gives English no separate "follow system" affordance the way
-    // Theme has a third segment, so the row already at the top of the list (English,
-    // because it is the default resource set) is the natural place to hang that meaning.
     val persistTag: String?,
     val matchTag: String,
     val nativeName: String,

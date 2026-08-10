@@ -19,11 +19,6 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.view.ActiveTierListVi
         ActiveTierListView::class,
         ActiveTierItemView::class,
     ],
-    // Version 1, and there has never been another. The schema went through four versions
-    // during development and carried hand-written migrations between them, but the app has
-    // never shipped, so those migrated from states that only ever existed on the machines
-    // that built them. Squashed before release — see the commit that did it if you want to
-    // read them; the next migration this project writes will be a real one.
     version = 1,
     exportSchema = true,
 )

@@ -4,9 +4,6 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.WikidataSearchRe
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-// Bound to a Retrofit instance whose baseUrl is https://www.wikidata.org/w/ (see NetworkModule).
-// Only the free-text search lives here; the per-item details come from the Query Service on its
-// own host — see WikidataSparqlApi for why.
 interface WikidataApi {
 
     @GET("api.php")

@@ -47,8 +47,6 @@ class RelativeTimeTest {
         )
     }
 
-    // A clock moved backwards between the delete and this read would otherwise produce a
-    // negative elapsed time and a row reading "-1 days ago".
     @Test
     fun deletedInTheFuture_readsAsJustNow() {
         assertEquals(

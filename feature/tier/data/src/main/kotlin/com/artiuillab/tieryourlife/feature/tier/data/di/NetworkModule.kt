@@ -49,10 +49,6 @@ object NetworkModule {
         return WikimediaUserAgentInterceptor(userAgent = WIKIMEDIA_USER_AGENT)
     }
 
-    // One client for both TMDB and Wikimedia hosts: TmdbAuthInterceptor and
-    // WikimediaUserAgentInterceptor are each host-gated (only touching api.themoviedb.org and
-    // www.wikidata.org/commons.wikimedia.org respectively), so sharing a client here cannot
-    // leak the TMDB bearer token to Wikimedia or vice versa.
     @Provides
     @Singleton
     fun provideOkHttpClient(

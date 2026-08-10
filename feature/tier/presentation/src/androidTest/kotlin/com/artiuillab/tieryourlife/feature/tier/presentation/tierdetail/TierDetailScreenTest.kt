@@ -111,9 +111,9 @@ class TierDetailScreenTest {
 
     @Test
     fun errorState_displaysErrorMessage() {
-        setScreen(TierDetailUiState.Error("Tier list not found"))
+        setScreen(TierDetailUiState.Error)
 
-        composeRule.onNodeWithText("Tier list not found").assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.tier_detail_not_found)).assertIsDisplayed()
     }
 
     @Test
@@ -174,9 +174,6 @@ class TierDetailScreenTest {
         }
     }
 
-    // The first keystroke has to flip the latch even though a cleared field never
-    // calls onRenameList at all — otherwise typing then deleting a character would
-    // leave the cross showing, which the spec explicitly rules out.
     @Test
     fun typingInTheTitleField_touchesTheListOnTheFirstKeystroke_evenIfClearedAfterward() {
         var touchedCalls = 0
@@ -193,10 +190,6 @@ class TierDetailScreenTest {
         composeRule.runOnIdle { assertTrue(touchedCalls > 0) }
     }
 
-    // onValueChange also fires when only the selection moves, so without the text
-    // comparison guarding it, putting a caret in the field would count as touching the
-    // list — the same non-event as opening the search sheet and adding nothing, which
-    // the spec says explicitly does not count (docs/design-spec-home.md, section 12).
     @Test
     fun movingTheCaretInTheTitleField_withoutTyping_doesNotTouchTheList() {
         var touchedCalls = 0
@@ -232,9 +225,6 @@ class TierDetailScreenTest {
         var moved: Triple<Long, Long, Int>? = null
         setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
 
-        // Target the whole row, not the (empty, degenerate-bounds) items area directly —
-        // same reason as the empty-pool case below: an empty FlowRow reports a zero-size
-        // rect from fetchSemanticsNode, which isn't a reliable point to aim a test at.
         dragTile(sourceTag = TierDetailTestTags.tile(100), targetTag = TierDetailTestTags.tierRow(1), horizontalBias = 0.1f)
 
         composeRule.runOnIdle { assertEquals(Triple(100L, 1L, 0), moved) }
@@ -249,9 +239,6 @@ class TierDetailScreenTest {
         var moved: Triple<Long, Long, Int>? = null
         setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
 
-        // Target the whole pool panel, not the (empty, zero-height) items row directly: an
-        // empty LazyRow reports degenerate bounds, which is harmless for the real hover
-        // hit-test (it uses the panel's own bounds) but not a reliable point to aim a test at.
         dragTile(sourceTag = TierDetailTestTags.tile(200), targetTag = TierDetailTestTags.POOL_PANEL, horizontalBias = 0.5f)
 
         composeRule.runOnIdle { assertEquals(Triple(200L, 6L, 0), moved) }
@@ -273,9 +260,6 @@ class TierDetailScreenTest {
 
     @Test
     fun dragItem_withinSameTier_leftToRight_landsOnRequestedIndex() {
-        // Regression for the off-by-one that only shows up moving forward: toPosition is an
-        // index into the row WITHOUT the dragged item, so dropping item 401 past item 402's
-        // midpoint must land it at index 1 (right after 402), not index 2 or back at index 0.
         val list = listOf(
             tier(id = 1, label = "S", items = listOf(item(401, "First"), item(402, "Second"))),
         ).asTierList()
@@ -807,11 +791,8 @@ class TierDetailScreenTest {
     }
 
     @Test
-    fun droppingATierRow_intoTheTrash_removesTheTier_andMovesItsItemsToThePool() {
+    fun droppingATierRow_intoTheTrash_requestsAnAtomicTierDeletion() {
         var deletedTierId: Long? = null
-        var deletedPoolId: Long? = null
-        var deletedPoolSize: Int? = null
-        var deletedItemIds: List<Long>? = null
         val list = listOf(
             tier(id = 1, label = "S", items = List(2) { tierItem(it) }),
             tier(id = 2, label = "A", items = emptyList()),
@@ -819,21 +800,13 @@ class TierDetailScreenTest {
         ).asTierList()
         setScreen(
             TierDetailUiState.Success(list),
-            onDeleteTierToPool = { tierId, poolId, poolSize, itemIds ->
-                deletedTierId = tierId
-                deletedPoolId = poolId
-                deletedPoolSize = poolSize
-                deletedItemIds = itemIds
-            },
+            onDeleteTierToPool = { tierId -> deletedTierId = tierId },
         )
 
         dragTileIntoTrash(TierDetailTestTags.tierBand(1))
 
         composeRule.runOnIdle {
             assertEquals(1L, deletedTierId)
-            assertEquals(6L, deletedPoolId)
-            assertEquals(3, deletedPoolSize)
-            assertEquals(listOf(0L, 1L), deletedItemIds)
         }
     }
 
@@ -883,12 +856,6 @@ class TierDetailScreenTest {
         }
     }
 
-    // Regression for a stale drag-target rectangle: S starts big enough that, once it's
-    // gone, A and B shift up into space its own (unremoved) ghost rect would otherwise
-    // still claim — the defect this task fixes doesn't show up on a small ghost. Wires
-    // onDeleteTierToPool back into local state (unlike the other tier-drag tests above,
-    // which only capture the callback) because the bug only exists once the row has
-    // actually left composition, not merely once a callback fired.
     @Test
     fun afterDeletingALargeTier_droppingATile_landsInEachRemainingRow_notInTheDeletedTiersGhost() {
         var moved: Pair<Long, Long>? = null
@@ -906,17 +873,18 @@ class TierDetailScreenTest {
             TierYourLifeTheme {
                 TierDetailScreenContent(
                     state = TierDetailUiState.Success(list),
-                    onBack = {},
-                    onAddClick = {},
-                    onMoveItem = { itemId, toTierId, _ -> moved = itemId to toTierId },
-                    onDeleteTierToPool = { tierId, poolId, _, _ ->
-                        val removedTier = list.tiers.first { it.id == tierId }
-                        list = list.copy(
-                            tiers = list.tiers
-                                .filterNot { it.id == tierId }
-                                .map { t -> if (t.id == poolId) t.copy(items = t.items + removedTier.items) else t },
-                        )
-                    },
+                    actions = TierDetailActions(
+                        onMoveItem = { itemId, toTierId, _ -> moved = itemId to toTierId },
+                        onDeleteTierToPool = { tierId ->
+                            val removedTier = list.tiers.first { it.id == tierId }
+                            val poolId = list.tiers.first { it.isPool }.id
+                            list = list.copy(
+                                tiers = list.tiers
+                                    .filterNot { it.id == tierId }
+                                    .map { t -> if (t.id == poolId) t.copy(items = t.items + removedTier.items) else t },
+                            )
+                        },
+                    ),
                 )
             }
         }
@@ -932,9 +900,6 @@ class TierDetailScreenTest {
         composeRule.runOnIdle { assertEquals(100L to 3L, moved) }
     }
 
-    // Same class of regression, at tile scale: deleting the middle tile of a row would
-    // otherwise leave a ghost entry that skews insertionIndexInGrid's grouping for a
-    // later drop into that exact row.
     @Test
     fun afterDeletingATile_insertionIndexInItsFormerRow_staysCorrect() {
         var lastPosition: Int? = null
@@ -950,14 +915,14 @@ class TierDetailScreenTest {
             TierYourLifeTheme {
                 TierDetailScreenContent(
                     state = TierDetailUiState.Success(list),
-                    onBack = {},
-                    onAddClick = {},
-                    onMoveItem = { _, _, toPosition -> lastPosition = toPosition },
-                    onDeleteItem = { deletedId ->
-                        list = list.copy(
-                            tiers = list.tiers.map { t -> t.copy(items = t.items.filterNot { it.id == deletedId }) },
-                        )
-                    },
+                    actions = TierDetailActions(
+                        onMoveItem = { _, _, toPosition -> lastPosition = toPosition },
+                        onDeleteItem = { deletedId ->
+                            list = list.copy(
+                                tiers = list.tiers.map { t -> t.copy(items = t.items.filterNot { it.id == deletedId }) },
+                            )
+                        },
+                    ),
                 )
             }
         }
@@ -966,8 +931,6 @@ class TierDetailScreenTest {
         composeRule.waitForIdle()
         composeRule.onNodeWithTag(TierDetailTestTags.tile(101)).assertDoesNotExist()
 
-        // Row S now holds just [100, 102]. Dropping onto 102's left edge must land right
-        // before it, at index 1 — not shifted by a stale ghost of 101's old bounds.
         dragTile(TierDetailTestTags.tile(200), TierDetailTestTags.tile(102), horizontalBias = 0.0f)
 
         composeRule.runOnIdle { assertEquals(1, lastPosition) }
@@ -1065,9 +1028,7 @@ class TierDetailScreenTest {
             TierYourLifeTheme {
                 TierDetailScreenContent(
                     state = TierDetailUiState.Success(defaultList()),
-                    onBack = {},
-                    onAddClick = {},
-                    onManualAddClick = { manualEntryVisible = true },
+                    actions = TierDetailActions(onManualAddClick = { manualEntryVisible = true }),
                 )
                 if (manualEntryVisible) {
                     ManualEntryDialog(
@@ -1430,9 +1391,9 @@ class TierDetailScreenTest {
             TierYourLifeTheme {
                 TierDetailScreenContent(
                     state = TierDetailUiState.Success(listState.value),
-                    onBack = {},
-                    onAddClick = {},
-                    onSetDisplayMode = { mode -> listState.value = listState.value.copy(displayMode = mode) },
+                    actions = TierDetailActions(
+                        onSetDisplayMode = { mode -> listState.value = listState.value.copy(displayMode = mode) },
+                    ),
                 )
             }
         }
@@ -1584,12 +1545,6 @@ class TierDetailScreenTest {
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("Z")
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).performClick()
 
-        // Revealing the custom panel pushes the sliders below the fold of the sheet's
-        // scrolling content (TierEditorSheet.kt), so scroll the Hue slider into view first
-        // — performTouchInput acts on a node's on-screen bounds and silently no-ops outside
-        // them. The gesture also has to stay off the track's extreme edge: a touch at the
-        // very first/last pixel falls just outside Slider's own hit-tested range and never
-        // reaches onValueChange, confirmed by probing values from the track's edge inward.
         val hueSlider = composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HUE_SLIDER)
         hueSlider.performScrollTo()
         hueSlider.performTouchInput {
@@ -1614,8 +1569,6 @@ class TierDetailScreenTest {
         openTierEditor()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).performClick()
 
-        // Slider merges its descendants' semantics into its own node, so the track/thumb
-        // sub-tags are only visible via the unmerged tree.
         val trackTag = TierDetailTestTags.sliderTrack(TierDetailTestTags.TIER_EDITOR_HUE_SLIDER)
         val thumbTag = TierDetailTestTags.sliderThumb(TierDetailTestTags.TIER_EDITOR_HUE_SLIDER)
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HUE_SLIDER).performScrollTo()
@@ -1654,17 +1607,11 @@ class TierDetailScreenTest {
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).assertTextContains("S")
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CAPTION_FIELD).assertTextContains("Masterpiece")
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).assertIsSelected()
-        // Scrolled to first: the editor is taller than a phone screen of ordinary height, so
-        // the live preview sits below the fold until the sheet is scrolled — exactly as a user
-        // reaches it. Asserting it visible straight away only held on a tall device.
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_PREVIEW_LIGHT).performScrollTo()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_PREVIEW_LIGHT).assertIsDisplayed()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_PREVIEW_DARK).assertIsDisplayed()
     }
 
-    // The pool never reaches TierRow through the real screen (rankedTiers filters it out
-    // before rows are built), so this mounts TierRow directly with a pool-flagged tier to
-    // exercise the guard itself, rather than a path production code never takes anyway.
     @Test
     fun doubleTapTierBand_onThePool_doesNotOpenEditor() {
         var editedId: Long? = null
@@ -1821,7 +1768,7 @@ class TierDetailScreenTest {
             val baseDensity = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(density = baseDensity.density, fontScale = 2f)) {
                 TierYourLifeTheme {
-                    TierDetailScreenContent(state = TierDetailUiState.Success(list), onBack = {}, onAddClick = {})
+                    TierDetailScreenContent(state = TierDetailUiState.Success(list))
                 }
             }
         }
@@ -1912,8 +1859,6 @@ class TierDetailScreenTest {
             composeRule.mainClock.advanceTimeBy(50)
             val tierAtMidBefore = tierIdAtPoint(midTarget, allIds)
 
-            // Hold well past any reasonable single-frame settling delay; if autoscroll
-            // hadn't actually stopped, whatever is at midTarget would keep changing.
             composeRule.mainClock.advanceTimeBy(1500)
             val tierAtMidAfter = tierIdAtPoint(midTarget, allIds)
 
@@ -1934,8 +1879,6 @@ class TierDetailScreenTest {
         bounds != null && pointInRoot.y >= bounds.top && pointInRoot.y <= bounds.bottom
     }
 
-    // Line capacity depends on the test device's actual screen width, so this reads
-    // the real rendered geometry instead of assuming how many items fit per line.
     private fun secondLineFirstItemId(items: List<TierItem>): Long {
         val boundsById = items.associate { it.id to tileBounds(it.id) }
         val lines = boundsById.entries.groupBy { it.value.top }.toSortedMap().values.toList()
@@ -1951,12 +1894,6 @@ class TierDetailScreenTest {
 
     private fun dragTile(sourceTag: String, targetTag: String, horizontalBias: Float) {
         val targetBounds = composeRule.onNodeWithTag(targetTag).fetchSemanticsNode().boundsInRoot
-        // An empty items row (e.g. an empty pool) has zero height, unlike a tier row whose
-        // outer height is fixed regardless of content. Fall back to a small offset from the
-        // top so the drop point still lands unambiguously inside it instead of exactly on its
-        // degenerate (zero-height) edge. When targeting a tile, biasing above its exact
-        // vertical centre (rather than sitting exactly on it) keeps the point strictly inside
-        // that tile's own line instead of exactly on the line-vs-line boundary.
         val verticalOffset = if (targetBounds.height > 0f) targetBounds.height * 0.3f else 8f
         val target = Offset(
             x = targetBounds.left + targetBounds.width * horizontalBias,
@@ -1982,10 +1919,6 @@ class TierDetailScreenTest {
         composeRule.waitForIdle()
     }
 
-    // Starts a drag and leaves the pointer down, without picking a drop target yet. The
-    // trash only enters the tree once dragging starts, so its own bounds aren't known
-    // until after this — and after a recomposition, hence the separate performTouchInput
-    // call below rather than folding the nudge into a single block like dragTileToRoot.
     private fun beginDrag(sourceTag: String) {
         val sourceBounds = composeRule.onNodeWithTag(sourceTag).fetchSemanticsNode().boundsInRoot
         val start = Offset(sourceBounds.width / 2f, sourceBounds.height / 2f)
@@ -2036,8 +1969,7 @@ class TierDetailScreenTest {
         onDeleteItem: (itemId: Long) -> Unit = {},
         onRestoreItem: (itemId: Long) -> Unit = {},
         onReorderTiers: (orderedTierIds: List<Long>) -> Unit = {},
-        onDeleteTierToPool: (tierId: Long, poolId: Long, poolSize: Int, itemIds: List<Long>) -> Unit =
-            { _, _, _, _ -> },
+        onDeleteTierToPool: (tierId: Long) -> Unit = {},
         onRestoreTier: (
             label: String,
             caption: String?,
@@ -2056,22 +1988,24 @@ class TierDetailScreenTest {
             TierYourLifeTheme {
                 TierDetailScreenContent(
                     state = state,
-                    onBack = onBack,
                     startInTitleEdit = startInTitleEdit,
                     canDiscard = canDiscard,
-                    onDiscard = onDiscard,
-                    onTitleEditStarted = onTitleEditStarted,
-                    onAddClick = onAddClick,
-                    onMoveItem = onMoveItem,
-                    onDeleteItem = onDeleteItem,
-                    onRestoreItem = onRestoreItem,
-                    onReorderTiers = onReorderTiers,
-                    onDeleteTierToPool = onDeleteTierToPool,
-                    onRestoreTier = onRestoreTier,
-                    onAddTier = onAddTier,
-                    onEditTier = onEditTier,
-                    onSetDisplayMode = onSetDisplayMode,
-                    onRenameList = onRenameList,
+                    actions = TierDetailActions(
+                        onBack = onBack,
+                        onDiscard = onDiscard,
+                        onTitleEditStarted = onTitleEditStarted,
+                        onAddClick = onAddClick,
+                        onMoveItem = onMoveItem,
+                        onDeleteItem = onDeleteItem,
+                        onRestoreItem = onRestoreItem,
+                        onReorderTiers = onReorderTiers,
+                        onDeleteTierToPool = onDeleteTierToPool,
+                        onRestoreTier = onRestoreTier,
+                        onAddTier = onAddTier,
+                        onEditTier = onEditTier,
+                        onSetDisplayMode = onSetDisplayMode,
+                        onRenameList = onRenameList,
+                    ),
                 )
             }
         }

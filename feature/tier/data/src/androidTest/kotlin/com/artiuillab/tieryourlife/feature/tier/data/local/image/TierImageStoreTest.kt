@@ -47,7 +47,6 @@ class TierImageStoreTest {
         )
     }
 
-    // A small picture must not be re-encoded into something bigger than it started.
     @Test
     fun anAlreadySmallPicture_isNeverGrownByBeingStored() {
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
@@ -59,8 +58,6 @@ class TierImageStoreTest {
         assertTrue(File(storedPath).length() <= original.size.toLong())
     }
 
-    // Bytes this cannot decode are still the user's file: they are stored verbatim rather
-    // than rejected. Several other tests in this module rely on that by feeding plain text.
     @Test
     fun undecodableBytes_areStoredExactlyAsTheyArrived() {
         val original = "not an image at all".toByteArray()
@@ -81,8 +78,6 @@ class TierImageStoreTest {
 
     private fun jpegBytes(width: Int, height: Int): ByteArray {
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        // A flat fill compresses to almost nothing, which would make the size assertions
-        // meaningless; noise keeps the encoded original genuinely large.
         val pixels = IntArray(width * height) { (it * 2654435761u.toInt()) or 0xFF000000.toInt() }
         bitmap.setPixels(pixels, 0, width, 0, 0, width, height)
         return ByteArrayOutputStream().use { out ->

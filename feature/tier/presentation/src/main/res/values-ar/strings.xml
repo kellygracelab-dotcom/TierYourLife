@@ -77,8 +77,11 @@
     <string name="home_empty_title">لا توجد قوائم بعد</string>
     <string name="home_empty_body">اضغط على + لتصنيف شيء ما.</string>
     <string name="cd_new_list">قائمة جديدة</string>
+    <string name="default_tier_list_title">قائمة بلا عنوان</string>
+    <string name="tier_lists_load_error">تعذّر تحميل القوائم.</string>
 
     <string name="tier_detail_add">إضافة</string>
+    <string name="tier_detail_not_found">تعذّر العثور على القائمة.</string>
     <string name="tier_detail_content_description_back">رجوع</string>
     <string name="tier_detail_content_description_manual_add">إضافة عنصر يدويًا</string>
     <string name="tier_detail_content_description_more">خيارات أخرى</string>
@@ -260,6 +263,7 @@
     <string name="cd_settings_back">رجوع</string>
 
     <string name="trash_title">سلة المهملات</string>
+    <string name="trash_load_error">تعذّر تحميل سلة المهملات.</string>
     <string name="trash_subtitle">تبقى القوائم والعناصر المحذوفة هنا حتى تزيلها.</string>
     <string name="trash_row_list_meta">قائمة · %1$s · حُذفت %2$s</string>
     <string name="trash_row_item_meta">عنصر · من %1$s · حُذف %2$s</string>
