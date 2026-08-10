@@ -33,6 +33,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -72,17 +73,11 @@ import kotlin.math.roundToInt
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 
-// FlowRow (unlike the old LazyRow) supports intrinsic measurement, so
-// IntrinsicSize.Min below can stretch the band to match its wrapped height.
-// Also the collapsed row height: "the same as a one-line row of posters now" (see the
-// task this shipped with) is exactly this value, not a second constant.
 private val MIN_TIER_ROW_HEIGHT = 84.dp
 
 private val MIN_TIER_BAND_WIDTH = 56.dp
 private const val MAX_TIER_BAND_FRACTION = 1f / 3f
 
-// docs/design-spec-turns-8-9.md, section 3: "The caption disappears entirely at a
-// system font scale of >=1.5x. The large tier letter always stays."
 internal const val CAPTION_HIDDEN_FONT_SCALE = 1.5f
 
 @Composable
@@ -103,22 +98,12 @@ internal fun TierRow(
     val surface = MaterialTheme.colorScheme.surface
     val rowBackground = if (isHovered) rowTintFor(colors.band, surface, ROW_HOVER_TINT_ALPHA) else colors.rowTint
 
-    // A deleted (or reordered-away) tier's registered bounds would otherwise sit in
-    // TierDragController's map forever, marking a rectangle for a row that no longer
-    // exists — this is what removes it the moment this composable actually leaves.
     DisposableEffect(tier.id) {
         onDispose { dragController.unregisterRowBounds(tier.id) }
     }
 
-    // Collapsing is triggered by any tier being lifted, not just this one — every ranked
-    // row (including the one under the finger) collapses to the same uniform height, per
-    // the task: with everything one height, the drop index is a plain position compare,
-    // no auto-scroll needed.
     val collapsed = dragController.isDraggingTier
 
-    // A horizontally-scrolling child has unbounded intrinsic width, which IntrinsicSize.Min
-    // can't resolve cleanly — its height is already fixed, so it doesn't need an intrinsic
-    // pass at all; collapsed content (a line of text) is fixed-height for the same reason.
     val rowHeightModifier = if (collapsed || displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
         Modifier.height(MIN_TIER_ROW_HEIGHT)
     } else {
@@ -126,7 +111,7 @@ internal fun TierRow(
     }
 
     var bandRootPosition by remember { mutableStateOf(Offset.Zero) }
-    var bandWidthPx by remember { mutableStateOf(0f) }
+    var bandWidthPx by remember { mutableFloatStateOf(0f) }
     val baseViewConfiguration = LocalViewConfiguration.current
     val dragViewConfiguration = remember(baseViewConfiguration) {
         ShortLongPressViewConfiguration(baseViewConfiguration, DRAG_LONG_PRESS_TIMEOUT_MILLIS)
@@ -165,12 +150,6 @@ internal fun TierRow(
                                     bandRootPosition = coordinates.positionInRoot()
                                     bandWidthPx = coordinates.size.width.toFloat()
                                 }
-                                // Independent pointerInput from the double-tap one below, same
-                                // reasoning DraggableTile's own two recognizers rely on: a quick
-                                // tap never reaches onDragStart (long-press-gated), so it can't
-                                // steal a real double-tap, and a genuine long-press's consumed
-                                // move events fall outside detectTapGestures' up-without-movement
-                                // check — the two can't both fire for the same gesture.
                                 .pointerInput(tier.id, rankedTierIds) {
                                     detectDragGesturesAfterLongPress(
                                         onDragStart = { offsetInBand ->
@@ -195,10 +174,6 @@ internal fun TierRow(
                                         onDragCancel = { dragController.cancelTierDrag() },
                                     )
                                 }
-                                // A separate pointerInput from both the drag above and the tiles
-                                // below, so this gesture can only ever claim touches that land on
-                                // the band itself — the tiles keep their own drag/double-tap
-                                // recognizers exactly as before, untouched by this one.
                                 .pointerInput(tier.id) {
                                     detectTapGestures(onDoubleTap = { onEditTier(tier.id) })
                                 }
@@ -320,10 +295,6 @@ internal fun ItemTile(item: TierItem, width: Dp, height: Dp) {
                 contentScale = ContentScale.Crop,
             )
         } else {
-            // docs/design-spec-turns-8-9.md, section 10.4: "Missing artwork falls back to
-            // the title, centred, ellipsised, up to 2 lines" — the real fallback the
-            // design settled on, not a 6-letter uppercase abbreviation. Type role is
-            // section 2's "caption on a poster placeholder" (bodySmall, 12sp/16sp).
             Text(
                 text = item.title,
                 modifier = Modifier.padding(horizontal = 4.dp),
@@ -343,11 +314,6 @@ internal fun FloatingDragRow(dragController: TierDragController, tier: Tier?) {
     val position = dragController.tierPointerPositionInRoot
     val density = LocalDensity.current
     val colors = tierRowColors(tier.colorLight, tier.colorDark)
-    // Half of the dragged tier's own band width, captured live at drag start (TierRow's
-    // onGloballyPositioned -> beginTierDrag) rather than half of a fixed column width —
-    // the band is wrap-content between MIN_TIER_BAND_WIDTH and MAX_TIER_BAND_FRACTION of
-    // the row (see those constants above), so its width depends on this tier's own
-    // caption length and can no longer be assumed to be a constant 66dp.
     val halfWidthPx = dragController.draggedTierBandWidthPx / 2f
     val halfHeightPx = with(density) { (MIN_TIER_ROW_HEIGHT / 2).toPx() }
     val shape = RoundedCornerShape(12.dp)
@@ -355,9 +321,6 @@ internal fun FloatingDragRow(dragController: TierDragController, tier: Tier?) {
     val readingDirection = LocalLayoutDirection.current
     val rightToLeft = readingDirection == LayoutDirection.Rtl
 
-    // Placed from a root coordinate, so its own placement must not follow the reading
-    // direction — see ForcedLeftToRightOverlay. The row's contents are drawn back in the real
-    // direction inside, so the band still sits on the correct side.
     ForcedLeftToRightOverlay {
       CompositionLocalProvider(LocalLayoutDirection provides readingDirection) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
@@ -366,11 +329,6 @@ internal fun FloatingDragRow(dragController: TierDragController, tier: Tier?) {
         Row(
             modifier = Modifier
                 .absoluteOffset {
-                    // The finger is holding the coloured band, and the row is dragged by it,
-                    // so the offset has to put the band under the pointer — not the row's
-                    // left edge. The band is drawn at the row's leading edge, which is the
-                    // right-hand end in Arabic, so a full-width row placed from its left edge
-                    // there would hang the band off the screen entirely.
                     val left = if (rightToLeft) {
                         position.x + halfWidthPx - rowWidthPx
                     } else {

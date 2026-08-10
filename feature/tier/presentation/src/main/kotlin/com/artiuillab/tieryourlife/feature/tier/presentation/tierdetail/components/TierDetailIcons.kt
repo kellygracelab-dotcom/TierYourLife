@@ -151,8 +151,6 @@ internal fun ExpandLessIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) {
     drawLine(color, Offset(12f * scale, 9f * scale), Offset(18f * scale, 15f * scale), stroke, StrokeCap.Round)
 }
 
-// A generic picture placeholder — frame, a sun, a mountain — for the empty photo slot
-// in the manual-entry dialog.
 @Composable
 internal fun ImagePlaceholderIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     val stroke = 1.5f * scale
@@ -170,7 +168,6 @@ internal fun ImagePlaceholderIcon(iconSize: Dp, color: Color) = VectorIcon(iconS
     drawLine(color, Offset(19f * scale, 9.5f * scale), Offset(21f * scale, 12f * scale), stroke, StrokeCap.Round)
 }
 
-// Two overlapping frames — the "choose from photos" glyph on the assist chip.
 @Composable
 internal fun PhotoLibraryIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
     val stroke = 1.4f * scale

@@ -14,9 +14,6 @@ internal data class WikidataItemDetails(
     val linkedTmdbId: Long? = null,
 )
 
-// The Query Service answers with one row per item, keyed by its full entity URI. An item with
-// several images produces several rows; the first is kept, which is the same choice the old
-// first-claim reading made.
 internal fun WikidataSparqlResponseDto.toDetailsByQid(): Map<String, WikidataItemDetails> {
     val detailsByQid = mutableMapOf<String, WikidataItemDetails>()
 
@@ -34,9 +31,6 @@ internal fun WikidataSparqlResponseDto.toDetailsByQid(): Map<String, WikidataIte
     return detailsByQid
 }
 
-// details is null when the query returned no row for this item, which also covers the details
-// call having failed outright. A result with no picture is still a usable result, so everything
-// coming from it degrades to null rather than throwing.
 internal fun WikidataSearchItemDto.toDomain(details: WikidataItemDetails?): WikidataCandidate =
     WikidataCandidate(
         item = CatalogueItem(

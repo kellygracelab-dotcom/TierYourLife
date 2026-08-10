@@ -2,8 +2,6 @@ package com.artiuillab.tieryourlife.core.theme.color
 
 import androidx.compose.ui.graphics.Color
 
-// Values come from the project design system (screen 2a), named after Material 3 roles.
-
 internal val PrimaryLight = Color(0xFF4A5BAA)
 internal val OnPrimaryLight = Color(0xFFFFFFFF)
 internal val PrimaryContainerLight = Color(0xFFDEE0FF)

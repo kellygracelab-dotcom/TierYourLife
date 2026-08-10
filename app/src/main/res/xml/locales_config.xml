@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Every locale the in-app language chooser offers (docs/design-spec-home.md, section 7,
-     subsection "2 - Language"), so Android's own per-app-language system settings lists
-     this app with the same eleven choices. Order here does not matter to Android; the
-     chooser's own order is defined in LanguageOptions.kt. -->
 <locale-config xmlns:android="http://schemas.android.com/apk/res/android">
     <locale android:name="en" />
     <locale android:name="uk" />

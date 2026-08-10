@@ -4,6 +4,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
@@ -42,6 +43,7 @@ private data class ItemsRowInfo(
 
 private data class TileRecord(val tierId: Long, val index: Int, val bounds: Rect)
 
+// Keeps drag geometry outside composables and ignores bounds for stale item IDs.
 @Stable
 internal class TierDragController {
     var draggedPayload by mutableStateOf<DragPayload?>(null)
@@ -51,21 +53,12 @@ internal class TierDragController {
     var hoveredTarget by mutableStateOf<DragTarget?>(null)
         private set
 
-    // A tier row being dragged, separate from draggedPayload (an item) above — the two
-    // never happen at once, since one starts from a tile and the other from a band, but
-    // they share this same controller instance, hoveredTarget and the trash's bounds
-    // rather than each tracking their own, so there is exactly one drag state per screen.
     var draggedTierId by mutableStateOf<Long?>(null)
         private set
     var tierPointerPositionInRoot by mutableStateOf(Offset.Zero)
         private set
 
-    // The dragged tier's own band width in px, captured once at drag start from the
-    // band's actual measured size (TierRow's onGloballyPositioned). The band is
-    // wrap-content between MIN_TIER_BAND_WIDTH and MAX_TIER_BAND_FRACTION of the row, so
-    // there is no fixed width to derive this from — FloatingDragRow needs the real one to
-    // center its copy the same way regardless of this tier's caption length.
-    var draggedTierBandWidthPx by mutableStateOf(0f)
+    var draggedTierBandWidthPx by mutableFloatStateOf(0f)
         private set
     private var rankedTierIdsAtDragStart: List<Long> = emptyList()
 
@@ -80,12 +73,6 @@ internal class TierDragController {
 
     private val tileBounds = mutableStateMapOf<Long, TileRecord>()
 
-    // The second layer: whatever the screen is actually showing right now, refreshed every
-    // recomposition (see setValidTargets). Registration below only ever adds bounds and
-    // never sees a tier or item get deleted — a row/tile that leaves composition is
-    // supposed to unregister itself (see the unregister* functions), but nothing here
-    // should have to trust that happened. A target whose id isn't in these sets is never
-    // chosen, whatever its bounds map still says.
     private var rightToLeft: Boolean = false
     private var validTierIds: Set<Long> = emptySet()
     private var validItemIds: Set<Long> = emptySet()
@@ -128,13 +115,6 @@ internal class TierDragController {
         tileBounds.remove(itemId)
     }
 
-    // Called every recomposition (see TierScreenBody) with the TierList actually on
-    // screen. Plain fields, not Compose state: nothing observes them reactively, they're
-    // Every insertion index below is "how many tiles has the pointer passed", and passing
-    // runs the other way in Arabic: FlowRow puts index 0 at the right edge, and LazyRow
-    // measures its offsets from the right edge too. Told from the screen, which is the only
-    // place that knows — this is a plain class, not a composable, so it cannot read
-    // LocalLayoutDirection itself.
     fun setValidTargets(
         tierIds: Collection<Long>,
         itemIds: Collection<Long>,
@@ -174,8 +154,6 @@ internal class TierDragController {
 
     private fun recomputeHover() {
         val position = pointerPositionInRoot
-        // The trash floats above the pool, so their rects can overlap; it must win
-        // outright rather than being picked by map iteration order — one target, not two.
         hoveredTarget = if (rowBounds[DragTarget.Trash]?.contains(position) == true) {
             DragTarget.Trash
         } else {
@@ -229,11 +207,6 @@ internal class TierDragController {
         val tierId = draggedTierId ?: return null
         if (hoveredTarget is DragTarget.Trash) return TierDropOutcome.Delete(tierId)
 
-        // Every *other* ranked row keeps reporting its own (now collapsed, uniform-height)
-        // bounds throughout the drag via the same registerRowBounds every row already
-        // calls unconditionally — so the insertion point is just "which of those bounds
-        // is the pointer's Y still above", the same midpoint-comparison idea insertionIndexInRow
-        // already uses for tiles, just against registered rects instead of lazy layout info.
         val others = rankedTierIdsAtDragStart
             .filter { it != tierId && it in validTierIds }
             .mapNotNull { id -> rowBounds[DragTarget.Tier(id)]?.let { id to it } }
@@ -292,8 +265,6 @@ private fun insertionIndexInRow(state: LazyListState, localX: Float, excludedFul
     return translate(visible.last().index + 1, excludedFullIndex)
 }
 
-// Reading order: the line whose vertical midpoint the pointer is still above, then the tile
-// within that line the pointer has not yet passed.
 private fun insertionIndexInGrid(
     tiles: List<TileRecord>,
     pointer: Offset,
@@ -314,8 +285,6 @@ private fun insertionIndexInGrid(
     return translate(columnIndex(lines.last(), pointer.x, rightToLeft), excludedFullIndex)
 }
 
-// In reading order, not screen order: the first tile the pointer has not yet passed. Reading
-// order is right to left in Arabic, so both the sort and the comparison flip with it.
 private fun columnIndex(line: List<TileRecord>, pointerX: Float, rightToLeft: Boolean): Int {
     val sorted = if (rightToLeft) {
         line.sortedByDescending { it.bounds.right }

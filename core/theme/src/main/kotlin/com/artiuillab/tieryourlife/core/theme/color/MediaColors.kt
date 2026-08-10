@@ -4,8 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-// Separate from ColorScheme: these colors have no Material 3 roles, and using
-// unused roles such as tertiary for them would misrepresent their meaning.
+// App-specific colors with no Material 3 equivalent.
 data class TierYourLifeMediaColors(
     val isDark: Boolean,
     val tilePlaceholder: Color,

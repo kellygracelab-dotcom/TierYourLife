@@ -10,7 +10,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ThemeChoice
+import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -39,9 +39,6 @@ class SettingsScreenTest {
 
     @Test
     fun languageRow_defaultTag_showsEnglishAsSubtitle() {
-        // No stored tag and no androidTest-configured device locale override: the
-        // instrumentation target runs in English, so "follow system" resolves to the
-        // English/"Default" option (docs/design-spec-home.md, section 7).
         setScreen(languageTag = null)
 
         composeRule.onNodeWithText("English").assertIsDisplayed()
@@ -101,11 +98,6 @@ class SettingsScreenTest {
     }
 
 
-    // Three labels side by side is a bet on their length, and eleven languages plus a
-    // system font scale that goes past 2x is enough to lose it: "System" in English is
-    // "Zgodnie z systemem" in Polish. The control measures instead of assuming, so the
-    // test drives the measurement rather than the wording — at the default scale the
-    // three choices sit on one line, and at 2x they stack.
     @Test
     fun themeControl_atDefaultFontScale_laysTheThreeChoicesOutSideBySide() {
         setScreen(languageTag = null)

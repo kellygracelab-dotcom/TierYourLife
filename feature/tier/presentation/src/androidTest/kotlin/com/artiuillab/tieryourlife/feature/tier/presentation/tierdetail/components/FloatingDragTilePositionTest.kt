@@ -21,10 +21,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.math.abs
 
-// The copy that follows a lifted poster is placed from a root coordinate, and root coordinates
-// do not flip for Arabic. Modifier.offset does — it is reading-direction aware — which left the
-// copy mirrored across the screen from the finger holding it. Both directions are rendered
-// here because the bug is invisible in English.
 @RunWith(AndroidJUnit4::class)
 class FloatingDragTilePositionTest {
 
@@ -72,7 +68,6 @@ class FloatingDragTilePositionTest {
     }
 
     private companion object {
-        // Well off-centre, so a mirrored placement lands somewhere obviously different.
         const val POINTER_X = 700f
     }
 }

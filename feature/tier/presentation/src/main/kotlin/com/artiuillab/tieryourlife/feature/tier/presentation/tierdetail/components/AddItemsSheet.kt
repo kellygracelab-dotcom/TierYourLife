@@ -5,13 +5,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.CatalogueSearchScreenContent
@@ -25,15 +25,9 @@ internal fun AddItemsSheet(
     onItemsConfirmed: (List<PoolItemDraft>) -> Unit,
     searchViewModel: CatalogueSearchViewModel = hiltViewModel(),
 ) {
-    val searchState by searchViewModel.state.collectAsState()
+    val searchState by searchViewModel.state.collectAsStateWithLifecycle()
     var query by rememberSaveable { mutableStateOf("") }
 
-    // Owned here, one level above CatalogueSearchScreenContent, so it's unaffected by that
-    // composable cycling through Initial/Loading/Success/Empty/Error on every search —
-    // this composable itself is mounted once for the sheet's whole lifetime, not
-    // recreated per state. A Map, not a Set<String>: confirming needs each marked item's
-    // title/imageUrl to build its PoolItemDraft, and a later search's result list no
-    // longer contains the earlier marked item to read that data back from.
     var selectedItems by remember { mutableStateOf<Map<String, CatalogueItem>>(emptyMap()) }
 
     ModalBottomSheet(

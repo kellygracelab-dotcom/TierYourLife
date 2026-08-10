@@ -8,9 +8,6 @@ import java.io.IOException
 
 class CatalogueSearchMergerTest {
 
-    // An image by default, because a result without one is filtered out and would make every
-    // other assertion in this file vacuously pass. The tests that are about the filter pass
-    // imageUrl = null explicitly.
     private fun tmdb(id: Long, title: String, imageUrl: String? = "https://example.test/$id.jpg") =
         CatalogueItem(id = "tmdb:$id", title = title, subtitle = null, imageUrl = imageUrl)
 
@@ -50,8 +47,6 @@ class CatalogueSearchMergerTest {
         assertEquals(emptyList<String>(), result.getOrThrow().map { it.id })
     }
 
-    // Everything filtered out is still a successful search that found nothing — the screen says
-    // "nothing found" rather than reporting an error that did not happen.
     @Test
     fun `is still a success when every result was filtered out`() {
         val tmdbResult = Result.success(listOf(tmdb(1, "No poster", imageUrl = null)))
@@ -118,8 +113,6 @@ class CatalogueSearchMergerTest {
 
     @Test
     fun `round-robin interleaves the two sources before ranking so ties stay a fair mix`() {
-        // Every item ties at the same score (none of them match the query), so the final
-        // order is purely the round-robin interleave preserved by the stable sort.
         val tmdbResult = Result.success(listOf(tmdb(1, "T1"), tmdb(2, "T2"), tmdb(3, "T3")))
         val wikidataResult = Result.success(listOf(wikidata("Q1", "W1"), wikidata("Q2", "W2")))
 

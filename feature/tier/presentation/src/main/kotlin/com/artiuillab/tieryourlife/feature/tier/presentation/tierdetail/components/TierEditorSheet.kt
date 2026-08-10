@@ -43,11 +43,6 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
-// One sheet, two modes: passing initialTier is the only difference between adding a
-// new tier and editing an existing one — the fields it opens with, not a second sheet.
-// The title does branch on it, though: "Edit tier" is the mock's own text and stays
-// exactly as-is for edit mode, but showing that same text while adding a tier would
-// mislabel the action, so add mode gets its own string.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TierEditorSheet(

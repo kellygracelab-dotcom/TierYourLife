@@ -84,12 +84,6 @@ internal fun defaultTierColorSelection(): TierColorSelection = TierColorSelectio
     colorDark = TIER_COLOR_PRESETS[0].colorDark,
 )
 
-// For editing an existing tier: marks the matching preset selected when the tier's
-// stored pair happens to equal one exactly, so a tier created from a preset still
-// shows that preset picked rather than falling into the custom picker unasked. A
-// tier whose colors don't match any preset — the seeded S–D defaults included, since
-// those were never guaranteed to line up with this picker's own eight — opens as a
-// custom color carrying its exact value, not the nearest preset.
 internal fun tierColorSelectionFor(colorLight: String, colorDark: String): TierColorSelection {
     val light = colorLight.removePrefix("#")
     val dark = colorDark.removePrefix("#")
@@ -278,12 +272,6 @@ private fun CustomColorPanel(
 
         Column(
             modifier = Modifier.padding(16.dp),
-            // Each slider's own honest height (32dp, driven by its 32dp-tall thumb) is 8dp
-            // taller than its 24dp track, split as a 4dp inset above and below the track — see
-            // SLIDER_VERTICAL_COMPENSATION. Trimming that same 4dp off the shared inter-item
-            // gap keeps the visible gap from a track's bottom edge to the next label exactly
-            // what it was before (matches the mock), without the slider claiming to be smaller
-            // than what it draws.
             verticalArrangement = Arrangement.spacedBy(12.dp - SLIDER_VERTICAL_COMPENSATION),
         ) {
             SliderField(
@@ -396,20 +384,8 @@ private val SLIDER_TRACK_HEIGHT = 24.dp
 private val SLIDER_THUMB_WIDTH = 8.dp
 private val SLIDER_THUMB_HEIGHT = 32.dp
 
-// Slider centers the track and thumb slots against each other within max(trackHeight,
-// thumbHeight); since the thumb (32dp) is taller than the track (24dp), Slider's own honest
-// height is 32dp, split as a 4dp inset above and below the 24dp track. The mock's spacing
-// assumes a tighter 24dp slot per slider, so that same 4dp is trimmed back out of the *already
-// existing* positive paddings around each slider (the label's bottom padding, and the gap to
-// the next item) — not by making the slider claim a size smaller than what it draws.
 private val SLIDER_VERTICAL_COMPENSATION = (SLIDER_THUMB_HEIGHT - SLIDER_TRACK_HEIGHT) / 2
 
-// Slider measures its track with the thumb's own width subtracted (so the thumb's center can
-// reach the track's edges), which would inset our track by half the thumb's width on each
-// side. reportZeroWidthToParent reports zero width so the track stays edge-to-edge — the same
-// look the hand-rolled version had — but keeps the thumb's real height, so Slider's own
-// vertical centering math (which operates on the honest track/thumb heights) lines the thumb
-// up with the track correctly on its own, with no separate offset trick needed.
 private fun Modifier.reportZeroWidthToParent(): Modifier = layout { measurable, constraints ->
     val placeable = measurable.measure(constraints)
     layout(0, placeable.height) {
@@ -426,10 +402,6 @@ private fun GradientSlider(
     testTag: String,
     label: String,
 ) {
-    // Slider's own minimumInteractiveComponentSize() pads the whole control up to a 48dp touch
-    // target regardless of what's actually drawn, so its reported size stops matching its
-    // visual size — turning it off keeps Slider's measured height honestly equal to what it
-    // draws, same as everything else here.
     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
         Slider(
             value = fraction,
@@ -480,10 +452,6 @@ private fun HexField(hex: String, onHexCommitted: (String) -> Unit, modifier: Mo
     )
 }
 
-// Wrapped in the tab's own forced theme so the contrast readout always checks the
-// theme being edited, independent of the device's actual current theme — the same
-// dual-theme trick the live preview below uses, and tierRowColors() is the same
-// fill calculation the rest of the app uses, not a second one.
 @Composable
 private fun ContrastReadout(isDark: Boolean, colorLight: String, colorDark: String) {
     TierYourLifeTheme(darkTheme = isDark) {

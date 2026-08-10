@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,32 +20,23 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -57,19 +46,16 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeleteOutlineIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.FormatListBulletedIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchOffIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SettingsIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.TierListCard
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.previewTierLists
 import kotlinx.coroutines.launch
@@ -97,7 +83,8 @@ fun TierListsScreen(
     onNewListCreated: (Long) -> Unit,
     viewModel: TierListsViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val defaultListTitle = stringResource(R.string.default_tier_list_title)
     OnResumeEffect(onResume = viewModel::loadTierLists)
 
     TierListsScreenContent(
@@ -112,23 +99,10 @@ fun TierListsScreen(
         onCloseSelection = viewModel::exitSelection,
         onDeleteLists = viewModel::deleteTierLists,
         onUndoDelete = viewModel::restoreTierLists,
-        onCreateList = { viewModel.createTierList(onNewListCreated) },
+        onCreateList = { viewModel.createTierList(defaultListTitle, onNewListCreated) },
     )
 }
 
-// Reads happen here, not in the view model's init: the view model survives both a
-// round trip to the detail screen and a configuration change, so an init-time load
-// only ever covers the very first appearance — renaming, deleting, restoring or
-// changing the display mode on the detail screen would never be reflected back here.
-//
-// LocalLifecycleOwner inside a navigation-compose destination is the back stack
-// entry's own lifecycle, not the activity's: it pauses while another destination is
-// on top and resumes when this one is back on top, which is exactly "returned to
-// this screen" — recomposition alone never toggles it, so an unrelated state change
-// elsewhere on the screen can't trigger a second read. Lifecycle.addObserver also
-// delivers a catch-up ON_RESUME the moment it is registered on an already-resumed
-// lifecycle, which is what covers the very first appearance without a second,
-// separate trigger for it.
 @Composable
 internal fun OnResumeEffect(onResume: () -> Unit) {
     val currentOnResume by rememberUpdatedState(onResume)
@@ -166,9 +140,6 @@ internal fun TierListsScreenContent(
     val totalListCount = success?.totalListCount ?: 0
     val rankedCount = success?.rankedCount ?: 0
 
-    // System back leaves search or selection rather than the screen (docs/design-spec-home.md,
-    // sections 2 and 3) — only enabled while one of those two modes is active, so plain
-    // browsing still lets an ordinary back press pop this destination as usual.
     BackHandler(enabled = mode !is HomeMode.Browsing) {
         when (mode) {
             is HomeMode.Searching -> onCloseSearch()
@@ -177,7 +148,7 @@ internal fun TierListsScreenContent(
         }
     }
 
-    val context = LocalContext.current
+    val resources = LocalResources.current
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val undoLabel = stringResource(R.string.action_undo)
@@ -186,7 +157,7 @@ internal fun TierListsScreenContent(
         onDeleteLists(ids)
         snackbarHostState.currentSnackbarData?.dismiss()
         coroutineScope.launch {
-            val message = context.resources.getQuantityString(R.plurals.snack_lists_deleted, ids.size, ids.size)
+            val message = resources.getQuantityString(R.plurals.snack_lists_deleted, ids.size, ids.size)
             val result = snackbarHostState.showSnackbar(
                 message = message,
                 actionLabel = undoLabel,
@@ -220,13 +191,6 @@ internal fun TierListsScreenContent(
                     )
                 }
 
-                // The heading and its summary line stay put while selecting, and only
-                // the bar above them changes. The design had them collapse away, which
-                // meant entering the mode yanked the whole list upward under the
-                // finger that was still resting on the card it had just long-pressed —
-                // and left the first card flush against the bar with nothing between
-                // them. Search is different: there the field replaces the bar and the
-                // heading really is redundant beside it.
                 if (mode !is HomeMode.Searching) {
                     HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
                 }
@@ -239,8 +203,8 @@ internal fun TierListsScreenContent(
                         CircularProgressIndicator(Modifier.testTag(TierListsTestTags.LOADING))
                     }
 
-                    is TierListsUiState.Error -> Text(
-                        text = state.message,
+                    TierListsUiState.Error -> Text(
+                        text = stringResource(R.string.tier_lists_load_error),
                         modifier = Modifier.padding(16.dp),
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -298,169 +262,6 @@ internal fun TierListsScreenContent(
 }
 
 @Composable
-private fun HomeHeader(totalListCount: Int, rankedCount: Int) {
-    Column(
-        modifier = Modifier.padding(
-            start = 16.dp,
-            top = 8.dp,
-            end = 16.dp,
-            bottom = 16.dp,
-        ),
-    ) {
-        Text(
-            text = stringResource(R.string.tier_lists_title),
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        if (totalListCount > 0) {
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = stringResource(
-                    R.string.tier_lists_summary,
-                    pluralStringResource(R.plurals.tier_lists_count, totalListCount, totalListCount),
-                    pluralStringResource(R.plurals.tier_lists_rankings_count, rankedCount, rankedCount),
-                    stringResource(R.string.tier_lists_private),
-                ),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
-
-@Composable
-private fun HomeTopBar(onSearchClick: () -> Unit, onSettingsClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp)
-            .padding(horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Spacer(Modifier.weight(1f))
-        HomeIconButton(stringResource(R.string.tier_lists_content_description_search), onSearchClick) {
-            SearchIcon()
-        }
-        HomeIconButton(
-            stringResource(R.string.tier_lists_content_description_settings),
-            onSettingsClick,
-        ) { SettingsIcon() }
-    }
-}
-
-@Composable
-private fun SearchTopBar(query: String, onQueryChange: (String) -> Unit, onClose: () -> Unit) {
-    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
-    val closeDescription = stringResource(R.string.cd_close_search)
-    val clearDescription = stringResource(R.string.cd_clear_query)
-    val focusRequester = remember { FocusRequester() }
-
-    TextField(
-        value = query,
-        onValueChange = onQueryChange,
-        placeholder = { Text(stringResource(R.string.home_search_hint)) },
-        singleLine = true,
-        shape = RoundedCornerShape(28.dp),
-        leadingIcon = {
-            IconButton(
-                onClick = onClose,
-                modifier = Modifier
-                    .semantics { contentDescription = closeDescription }
-                    .testTag(TierListsTestTags.SEARCH_CLOSE),
-            ) { BackIcon() }
-        },
-        trailingIcon = {
-            if (query.isNotEmpty()) {
-                IconButton(
-                    onClick = { onQueryChange("") },
-                    modifier = Modifier
-                        .semantics { contentDescription = clearDescription }
-                        .testTag(TierListsTestTags.SEARCH_CLEAR),
-                ) { ClearIcon(20.dp, onSurfaceVariant) }
-            }
-        },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent,
-            cursorColor = MaterialTheme.colorScheme.primary,
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 4.dp)
-            .height(56.dp)
-            .focusRequester(focusRequester)
-            .testTag(TierListsTestTags.SEARCH_FIELD),
-    )
-
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
-}
-
-@Composable
-private fun SelectionTopBar(count: Int, onClose: () -> Unit, onDelete: () -> Unit) {
-    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceContainerLow),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .height(56.dp)
-                .padding(horizontal = 4.dp)
-                .testTag(TierListsTestTags.SELECTION_BAR),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            HomeIconButton(
-                stringResource(R.string.cd_close_selection),
-                onClose,
-                TierListsTestTags.SELECTION_CLOSE,
-            ) { ClearIcon(24.dp, onSurfaceVariant) }
-            Text(
-                text = pluralStringResource(R.plurals.selection_count, count, count),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 4.dp),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            val deleteDescription = stringResource(
-                R.string.cd_delete_selected,
-                pluralStringResource(R.plurals.tier_lists_count, count, count),
-            )
-            HomeIconButton(
-                deleteDescription,
-                onDelete,
-                TierListsTestTags.SELECTION_DELETE,
-            ) { DeleteOutlineIcon(24.dp, onSurfaceVariant) }
-        }
-    }
-}
-
-@Composable
-private fun HomeIconButton(
-    contentDescription: String,
-    onClick: () -> Unit,
-    testTag: String? = null,
-    content: @Composable () -> Unit,
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = Modifier
-            .size(48.dp)
-            .semantics { this.contentDescription = contentDescription }
-            .let { if (testTag != null) it.testTag(testTag) else it },
-    ) { content() }
-}
-
-@Composable
 private fun HomeContent(
     lists: List<TierList>,
     mode: HomeMode,
@@ -479,11 +280,6 @@ private fun HomeContent(
     ) {
         items(lists, key = { it.id }) { list ->
             val isSelected = list.id in selectedIds
-            // No tint behind the selected card. It was a full-width square-cornered band
-            // sitting behind a 16dp-rounded card, so it read as something showing through
-            // from underneath rather than as a state of the card — and the checkbox says
-            // the same thing without ambiguity. See the "Decided against the design"
-            // section of docs/design-spec-home.md.
             Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 TierListCard(
                     list = list,
@@ -493,11 +289,6 @@ private fun HomeContent(
                     onLongClick = {
                         if (!isSelecting) onLongPressCard(list.id)
                     },
-                    // Driven purely by isSelecting, which is shared by every card in
-                    // this LazyColumn — that's what makes every unselected card grow its
-                    // empty checkbox on the same frame the long-pressed one fills,
-                    // rather than staggering in one at a time (docs/design-spec-home.md,
-                    // section 11).
                     selectionMode = isSelecting,
                     selected = isSelected,
                 )

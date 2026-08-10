@@ -6,9 +6,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Only the slots whose design value differs from the Material 3 default are declared.
-// The rest of the design's roles match M3 exactly and are read straight from
-// MaterialTheme.typography; those with no M3 slot at all live in TierYourLifeExtraType.
+// Only roles that differ from Material 3 defaults are overridden.
 internal val Typography = Typography(
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,

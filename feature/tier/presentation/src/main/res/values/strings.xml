@@ -49,14 +49,15 @@
     <string name="home_empty_title">No lists yet</string>
     <string name="home_empty_body">Tap + to rank something.</string>
     <string name="cd_new_list">New list</string>
+    <string name="default_tier_list_title">Untitled list</string>
+    <string name="tier_lists_load_error">Couldn’t load your lists.</string>
 
     <string name="tier_detail_add">Add</string>
+    <string name="tier_detail_not_found">Tier list not found.</string>
     <string name="tier_detail_content_description_back">Navigate back</string>
     <string name="tier_detail_content_description_manual_add">Add an item by hand</string>
     <string name="tier_detail_content_description_more">More options</string>
     <string name="tier_detail_content_description_edit_title">Edit list name</string>
-    <!-- The leading control on a brand-new, untouched list (docs/design-spec-home.md,
-         section 12) — not drawn in the design, so this is our own copy. -->
     <string name="tier_detail_content_description_discard">Discard this list</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Pool · %d unranked</item>
@@ -194,6 +195,7 @@
     <string name="cd_settings_back">Navigate back</string>
 
     <string name="trash_title">Trash</string>
+    <string name="trash_load_error">Couldn’t load the trash.</string>
     <string name="trash_subtitle">Deleted lists and items stay here until you remove them.</string>
     <string name="trash_row_list_meta">List · %1$s · deleted %2$s</string>
     <string name="trash_row_item_meta">Item · from %1$s · deleted %2$s</string>
@@ -201,7 +203,6 @@
         <item quantity="one">%1$d item</item>
         <item quantity="other">%1$d items</item>
     </plurals>
-    <!-- Coarse provenance for a trashed row: nothing in the app acts on these. -->
     <string name="trash_time_just_now">just now</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">%1$d min ago</item>

@@ -16,13 +16,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-// Icons used by more than one screen. Screen-specific icons stay next to their screen.
 
-// autoMirror is opt-in, per icon, because most must not flip: a plus, a trash can or a
-// checkmark mean the same thing in either direction, and mirroring them just makes them look
-// hand-made. Only glyphs that point somewhere horizontally take it. Compose mirrors layout and
-// Painter-backed icons on its own but never raw Canvas commands, which is what every icon in
-// this project is — so this is the one place that can do it.
 @Composable
 internal fun VectorIcon(
     iconSize: Dp,
@@ -72,7 +66,6 @@ internal fun ClearIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scal
     drawLine(color, Offset(17f * scale, 7f * scale), Offset(7f * scale, 17f * scale), stroke, StrokeCap.Round)
 }
 
-// A trash can with two motion lines above it — "empty the trash" in the Trash screen's menu.
 @Composable
 internal fun DeleteSweepIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
     val stroke = 1.6f * scale
@@ -92,7 +85,6 @@ internal fun DeleteSweepIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, 
     drawLine(color, Offset(16f * scale, 17f * scale), Offset(20f * scale, 17f * scale), stroke, StrokeCap.Round)
 }
 
-// A tray with a downward arrow into it — "export data" in Settings.
 @Composable
 internal fun FileDownloadIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     val stroke = 1.6f * scale

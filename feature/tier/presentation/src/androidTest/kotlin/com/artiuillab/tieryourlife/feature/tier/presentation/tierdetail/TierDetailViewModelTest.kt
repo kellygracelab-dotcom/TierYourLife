@@ -17,9 +17,7 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
 
-// Runs as an instrumented test, not a plain JVM unit test: TierDetailViewModel uses
-// viewModelScope, which needs a real Main dispatcher — available on the device, not
-// in a bare JVM test without adding kotlinx-coroutines-test as a dependency.
+// Instrumented because viewModelScope needs Android's main dispatcher.
 @RunWith(AndroidJUnit4::class)
 class TierDetailViewModelTest {
 
@@ -39,10 +37,6 @@ class TierDetailViewModelTest {
         assertEquals(emptyList<String>(), repository.attachedSources)
     }
 
-    // The point of this test: the picked gallery reference must leave the view model
-    // only through attachImageToItem (which copies the source into internal storage —
-    // already proven by RoomTierRepositoryImageTest), never as addItemToPool's own
-    // imageUrl argument, which would store the raw, unstable gallery Uri as-is.
     @Test
     fun addManualItem_withAPhoto_sendsTheGalleryUriOnlyToAttachImageToItem() = runBlocking {
         val repository = FakeTierRepository(pool())
@@ -74,15 +68,10 @@ class TierDetailViewModelTest {
         viewModel.markTouched()
         assertEquals(false, viewModel.canDiscard.value)
 
-        // One-way: a second call (standing in for "typed a character, then deleted it
-        // again") must not flip it back.
         viewModel.markTouched()
         assertEquals(false, viewModel.canDiscard.value)
     }
 
-    // Several photos are several items, one each — not one item that somehow holds five
-    // pictures. The title is dropped in that case because the dialog stops offering the field
-    // when more than one photo is picked, so there is nothing left for it to name.
     @Test
     fun addManualItem_withSeveralPhotos_addsOneItemPerPhoto() = runBlocking {
         val repository = FakeTierRepository(pool())
@@ -112,10 +101,6 @@ class TierDetailViewModelTest {
     fun discardList_whenUntouched_deletesPermanentlyAndInvokesCallback() = runBlocking {
         val repository = FakeTierRepository(pool())
         val viewModel = TierDetailViewModel(repository, savedStateHandle(startInTitleEdit = true))
-        // discardList runs repository.deleteTierListPermanently(...) then onDiscarded()
-        // sequentially on the same coroutine, so awaiting this deferred (completed from
-        // inside onDiscarded) guarantees the delete already happened by the time the
-        // assertions below run — no arbitrary polling needed.
         val discardedSignal = CompletableDeferred<Unit>()
         var discarded = 0
 
@@ -195,7 +180,16 @@ private class FakeTierRepository(initial: TierList) : TierRepository {
 
     override suspend fun renameTier(id: Long, label: String, caption: String?) = unsupported()
     override suspend fun updateTierColors(id: Long, colorLight: String, colorDark: String) = unsupported()
-    override suspend fun deleteTier(id: Long) = unsupported()
+    override suspend fun deleteTierToPool(id: Long) = unsupported()
+    override suspend fun restoreTier(
+        tierListId: Long,
+        label: String,
+        caption: String?,
+        colorLight: String,
+        colorDark: String,
+        position: Int,
+        itemIds: List<Long>,
+    ) = unsupported()
     override suspend fun reorderTiers(orderedTierIds: List<Long>) = unsupported()
     override suspend fun deleteTierLists(ids: List<Long>) = unsupported()
     override suspend fun restoreTierLists(ids: List<Long>) = unsupported()

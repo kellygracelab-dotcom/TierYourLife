@@ -316,8 +316,6 @@ class TierDaoTest {
     @Test
     fun rename_tier_with_null_caption_clears_a_previously_set_one() = runBlocking {
         val listId = dao.createTierListWithDefaultTier(title = "Films")
-        // The default S tier is seeded with a caption ("Masterpiece"); renaming to
-        // null must actually clear it, not silently keep the old value.
         val sTier = dao.getAllTiersByTierListId(listId).first()
 
         dao.renameTier(sTier.id, label = "S+", caption = null)
@@ -365,13 +363,10 @@ class TierDaoTest {
         val survivorIds = rankedTiers.drop(1).map { it.id }
         dao.deleteTierById(doomed.id)
 
-        // A caller working off stale state might still send the deleted tier's id; it
-        // must be dropped rather than crash or steal an index slot from a real tier.
         dao.reorderTiers(listOf(doomed.id) + survivorIds.reversed())
 
         val remaining = dao.getAllTiersByTierListId(listId).filterNot { it.isPool }
         assertEquals(survivorIds.reversed(), remaining.map { it.id })
-        // If the stale id had consumed an index, these would start at 1, not 0.
         assertEquals((0 until remaining.size).toList(), remaining.map { it.position })
     }
 
@@ -407,9 +402,6 @@ class TierDaoTest {
         dao.addItemsToPool(listId, listOf(NewPoolItem(title = "New", imageUrl = null)))
 
         val poolItems = dao.getAllTierItemsByTierId(poolId)
-        // The trashed item is invisible to the active-items read the position count is
-        // based on, so the new item lands right after the one active item — not after
-        // the trashed item's old slot.
         assertEquals(listOf("Active", "New"), poolItems.map { it.title })
         assertEquals(listOf(0, 1), poolItems.map { it.position })
     }
@@ -463,8 +455,6 @@ class TierDaoTest {
 
         val refs = dao.getAllImageRefs()
 
-        // A trashed item's file copy is still referenced (it might be restored) and
-        // must not be reported as orphaned; an item with no image contributes nothing.
         assertEquals(setOf("/path/1", "/path/2"), refs.toSet())
     }
 

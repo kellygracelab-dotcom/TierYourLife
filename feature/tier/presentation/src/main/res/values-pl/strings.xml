@@ -63,8 +63,11 @@
     <string name="home_empty_title">Nie masz jeszcze list</string>
     <string name="home_empty_body">Dotknij +, aby coś ocenić.</string>
     <string name="cd_new_list">Nowa lista</string>
+    <string name="default_tier_list_title">Lista bez tytułu</string>
+    <string name="tier_lists_load_error">Nie udało się wczytać list.</string>
 
     <string name="tier_detail_add">Dodaj</string>
+    <string name="tier_detail_not_found">Nie znaleziono listy.</string>
     <string name="tier_detail_content_description_back">Wstecz</string>
     <string name="tier_detail_content_description_manual_add">Dodaj element ręcznie</string>
     <string name="tier_detail_content_description_more">Więcej opcji</string>
@@ -226,6 +229,7 @@
     <string name="cd_settings_back">Wstecz</string>
 
     <string name="trash_title">Kosz</string>
+    <string name="trash_load_error">Nie udało się wczytać kosza.</string>
     <string name="trash_subtitle">Usunięte listy i elementy pozostają tutaj, dopóki ich nie usuniesz.</string>
     <string name="trash_row_list_meta">Lista · %1$s · usunięto %2$s</string>
     <string name="trash_row_item_meta">Element · z %1$s · usunięto %2$s</string>

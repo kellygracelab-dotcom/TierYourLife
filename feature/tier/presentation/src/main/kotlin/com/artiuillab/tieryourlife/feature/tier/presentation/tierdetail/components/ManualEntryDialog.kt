@@ -72,9 +72,6 @@ internal fun ManualEntryDialog(
     )
 }
 
-// Split from ManualEntryDialog so photo selection is testable without the real system
-// picker: this half owns no state and never touches ActivityResultContracts, so a test
-// can drive `photoUri` itself to exercise "shown before saving, removable" directly.
 @Composable
 internal fun ManualEntryDialogContent(
     title: String,
@@ -85,9 +82,6 @@ internal fun ManualEntryDialogContent(
     onDismiss: () -> Unit,
     onSave: () -> Unit,
 ) {
-    // Several photos become several items, one each, so there is no single thing left for a
-    // name to belong to. The field is taken away rather than ignored — silently dropping
-    // something the user typed is worse than not offering the field at all.
     val isBatch = photoUris.size > 1
     val canSave = title.isNotBlank() || photoUris.isNotEmpty()
     val focusRequester = remember { FocusRequester() }
@@ -200,8 +194,6 @@ internal fun ManualEntryDialogContent(
         },
     )
 
-    // Nothing to focus once the name field is gone, and requesting focus on a detached
-    // requester throws.
     LaunchedEffect(isBatch) { if (!isBatch) focusRequester.requestFocus() }
 }
 

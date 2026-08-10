@@ -26,12 +26,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-// Mirrors AddItemsSheet's own structure: selection is a Map<String, CatalogueItem>
-// owned above CatalogueSearchScreenContent, in the composable that hosts it, so it survives
-// that composable cycling through Initial/Loading/Success/Empty/Error. Testing it any
-// other way (e.g. state re-created fresh per test state value) wouldn't exercise the
-// thing that was actually broken — a selection that lived inside the branch that gets
-// torn down on every new search.
 @RunWith(AndroidJUnit4::class)
 class CatalogueSearchScreenContentTest {
 
@@ -105,8 +99,6 @@ class CatalogueSearchScreenContentTest {
 
     @Test
     fun marksPersist_throughANewSearchAndItsLoadingState() {
-        // The real user flow this bug broke: search, mark, search again (which passes
-        // through Loading before the next Success), mark once more, confirm.
         setContent(CatalogueSearchUiState.Success(listOf(dune)))
         composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).performClick()
 
@@ -126,7 +118,7 @@ class CatalogueSearchScreenContentTest {
         composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).performClick()
 
         composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Empty(query = "zzz") }
-        composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Error(message = "offline") }
+        composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Error }
         composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Success(listOf(dune)) }
 
         composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).assertIsSelected()
@@ -173,9 +165,6 @@ class CatalogueSearchScreenContentTest {
 
     @Test
     fun bottomBar_staysVisible_whenTheResultListDoesNotFitOnScreen() {
-        // A tall list has no weight/bound constraint by default, which is exactly what let
-        // the bar get laid out below the visible sheet area — this reproduces that shape of
-        // bug without needing a real, simulated software keyboard.
         val manyResults = List(40) { index ->
             CatalogueItem(id = "tmdb:$index", title = "Title $index", subtitle = null, imageUrl = null)
         }
@@ -192,9 +181,6 @@ class CatalogueSearchScreenContentTest {
         setContent(CatalogueSearchUiState.Success(manyResults))
 
         val lastTag = TierDetailTestTags.itemSearchResult(manyResults.last().id)
-        // A LazyColumn only composes items near the viewport, so the last row's node
-        // doesn't exist yet to scroll to by its own tag — scroll the list itself to the
-        // index first, which composes the row, then it can be found and asserted on.
         composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_RESULTS_LIST)
             .performScrollToIndex(manyResults.lastIndex)
         composeRule.onNodeWithTag(lastTag).assertIsDisplayed()
