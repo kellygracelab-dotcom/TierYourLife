@@ -30,13 +30,11 @@ class TrashViewModel @Inject constructor(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _state.value = TrashUiState.Error(e.message ?: "Failed to load trash")
+                _state.value = TrashUiState.Error
             }
         }
     }
 
-    // Restore never confirms — the row leaving the trash is the confirmation
-    // (docs/design-spec-home.md, section 6).
     fun restoreList(id: Long) {
         viewModelScope.launch {
             repository.restoreTierLists(listOf(id))

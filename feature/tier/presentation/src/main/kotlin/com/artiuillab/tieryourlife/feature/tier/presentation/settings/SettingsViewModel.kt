@@ -22,9 +22,6 @@ class SettingsViewModel @Inject constructor(
     private val _trashCount = MutableStateFlow(0)
     val trashCount: StateFlow<Int> = _trashCount.asStateFlow()
 
-    // Reload on every resume (see the Settings screen's own OnResumeEffect) so a trip to
-    // Trash and back always shows the up-to-date count — the two screens don't share a
-    // ViewModel, so this is the only way this row ever learns something changed there.
     fun loadTrashCount() {
         viewModelScope.launch {
             _trashCount.value = repository.getTrashEntries().size
@@ -33,8 +30,7 @@ class SettingsViewModel @Inject constructor(
 
     fun exportText(strings: TierListsExportStrings, onResult: (ExportedText) -> Unit) {
         viewModelScope.launch {
-            val overviews = repository.getAllTierLists()
-            val lists = overviews.map { overview -> repository.getTierListById(overview.id) ?: overview }
+            val lists = repository.getAllTierLists()
             onResult(ExportedText(text = buildTierListsExport(lists, strings), listCount = lists.size))
         }
     }

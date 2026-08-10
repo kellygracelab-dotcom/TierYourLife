@@ -66,8 +66,6 @@ class ManualEntryDialogTest {
         composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ENTRY_SAVE).assertIsNotEnabled()
     }
 
-    // A name and a photo are alternatives, not name-required-photo-optional: either one
-    // on its own is enough to identify the item.
     @Test
     fun emptyTitle_withAPhotoChosen_saveIsAvailable_andSavesWithABlankTitle() {
         var savedTitle: String? = "not yet called"
@@ -103,8 +101,6 @@ class ManualEntryDialogTest {
         }
     }
 
-    // Drives photoUri itself rather than the real system photo picker (see
-    // ManualEntryDialog.kt's own comment on why ManualEntryDialogContent is split out).
     @Test
     fun photoPreview_isVisibleBeforeSaving_andCanBeRemoved() {
         composeRule.setContent {
@@ -134,8 +130,6 @@ class ManualEntryDialogTest {
         composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ENTRY_REMOVE_PHOTO).assertDoesNotExist()
     }
 
-    // Naming five pictures with one field is not possible, so the field goes away rather than
-    // quietly discarding whatever was typed into it.
     @Test
     fun severalPhotos_replaceTheNameFieldWithACount() {
         composeRule.setContent {

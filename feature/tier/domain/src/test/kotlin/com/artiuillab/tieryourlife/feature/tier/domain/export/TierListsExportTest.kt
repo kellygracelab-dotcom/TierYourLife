@@ -6,9 +6,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-// Stands in for real Android plurals/resources — deliberately dumb (no real English
-// plural rules) so a test failure can't be masked by the fake accidentally doing the
-// right thing; each assertion below spells out exactly which count reached the fake.
 private val testStrings = TierListsExportStrings(
     header = "TierYourLife",
     exportedOn = "Exported 5 August 2026",
@@ -223,8 +220,6 @@ class TierListsExportTest {
         val output = buildTierListsExport(lists, testStrings)
         val lines = output.lines()
 
-        // "First"'s single item line is immediately followed by one blank line, then
-        // "Second" starts — and the file doesn't end with a trailing blank line.
         val firstIndex = lines.indexOf("First")
         val secondIndex = lines.indexOf("Second")
         assertEquals("", lines[secondIndex - 1])

@@ -63,8 +63,11 @@
     <string name="home_empty_title">Пока нет списков</string>
     <string name="home_empty_body">Нажмите +, чтобы что-то оценить.</string>
     <string name="cd_new_list">Новый список</string>
+    <string name="default_tier_list_title">Список без названия</string>
+    <string name="tier_lists_load_error">Не удалось загрузить списки.</string>
 
     <string name="tier_detail_add">Добавить</string>
+    <string name="tier_detail_not_found">Список не найден.</string>
     <string name="tier_detail_content_description_back">Назад</string>
     <string name="tier_detail_content_description_manual_add">Добавить элемент вручную</string>
     <string name="tier_detail_content_description_more">Больше опций</string>
@@ -226,6 +229,7 @@
     <string name="cd_settings_back">Назад</string>
 
     <string name="trash_title">Корзина</string>
+    <string name="trash_load_error">Не удалось загрузить корзину.</string>
     <string name="trash_subtitle">Удалённые списки и элементы остаются здесь, пока вы их не уберёте.</string>
     <string name="trash_row_list_meta">Список · %1$s · удалён %2$s</string>
     <string name="trash_row_item_meta">Элемент · из %1$s · удалён %2$s</string>

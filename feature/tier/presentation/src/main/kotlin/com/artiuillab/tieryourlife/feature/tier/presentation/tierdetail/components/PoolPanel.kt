@@ -31,7 +31,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
+import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
@@ -54,9 +54,6 @@ internal fun PoolPanel(
         dragController.registerItemsRowMeta(pool.id, listState, pool.items.map { it.id })
     }
 
-    // The pool doesn't actually leave composition in practice (exactly one always
-    // exists), but it registers bounds the same way every other target does, so it
-    // unregisters the same way too rather than being a silent exception to the rule.
     DisposableEffect(pool.id) {
         onDispose {
             dragController.unregisterRowBounds(pool.id)

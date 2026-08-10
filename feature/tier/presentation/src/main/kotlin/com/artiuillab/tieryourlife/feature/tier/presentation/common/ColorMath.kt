@@ -6,8 +6,6 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-// Hue in [0, 360), saturation/lightness in [0, 1] — the custom color picker's
-// source of truth; the hex field and sliders are just views onto this.
 internal data class Hsl(val hue: Float, val saturation: Float, val lightness: Float) {
     fun toColor(): Color {
         if (saturation == 0f) return Color(lightness, lightness, lightness)
@@ -68,7 +66,6 @@ internal fun Color.toHsl(): Hsl {
 
 internal fun hexToHsl(hex: String): Hsl = parseTierColor(hex, fallback = Color.Gray).toHsl()
 
-// WCAG 2.x contrast ratio: (L1 + 0.05) / (L2 + 0.05), L1 the lighter relative luminance.
 internal fun contrastRatio(foreground: Color, background: Color): Double {
     val l1 = relativeLuminance(foreground)
     val l2 = relativeLuminance(background)

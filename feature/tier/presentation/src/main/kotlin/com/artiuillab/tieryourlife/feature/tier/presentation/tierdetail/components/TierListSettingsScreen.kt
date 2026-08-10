@@ -36,16 +36,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
+import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
-// Mock-literal color with no matching theme role (same pair MoveItemSheet already uses
-// for "currently here" — this is the same selection tint reused, not a second one).
 private val DisplayModeSelectedTintLight = Color(0xFFEDEBFA)
 private val DisplayModeSelectedTintDark = Color(0xFF2E2F45)
 
@@ -258,4 +256,3 @@ private fun NewTierRow(tierCount: Int, onClick: () -> Unit) {
         testTag = TierDetailTestTags.NEW_TIER_ROW,
     )
 }
-

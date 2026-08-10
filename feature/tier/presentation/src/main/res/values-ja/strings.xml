@@ -42,8 +42,11 @@
     <string name="home_empty_title">リストはまだありません</string>
     <string name="home_empty_body">+ をタップして何かをランク付けしましょう。</string>
     <string name="cd_new_list">新しいリスト</string>
+    <string name="default_tier_list_title">無題のリスト</string>
+    <string name="tier_lists_load_error">リストを読み込めませんでした。</string>
 
     <string name="tier_detail_add">追加</string>
+    <string name="tier_detail_not_found">リストが見つかりません。</string>
     <string name="tier_detail_content_description_back">戻る</string>
     <string name="tier_detail_content_description_manual_add">手動でアイテムを追加</string>
     <string name="tier_detail_content_description_more">その他のオプション</string>
@@ -175,6 +178,7 @@
     <string name="cd_settings_back">戻る</string>
 
     <string name="trash_title">ゴミ箱</string>
+    <string name="trash_load_error">ゴミ箱を読み込めませんでした。</string>
     <string name="trash_subtitle">削除されたリストとアイテムは、削除するまでここに残ります。</string>
     <string name="trash_row_list_meta">リスト · %1$s · %2$s に削除</string>
     <string name="trash_row_item_meta">アイテム · %1$s から · %2$s に削除</string>

@@ -1,8 +1,8 @@
 package com.artiuillab.tieryourlife
 
 import androidx.lifecycle.ViewModel
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ThemeChoice
-import com.artiuillab.tieryourlife.feature.tier.domain.repository.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,8 +33,7 @@ class AppViewModel @Inject constructor(
         _state.update { it.copy(themeChoice = choice) }
     }
 
-    // Storing only. Handing the tag to AppCompatDelegate stays in MainActivity: the
-    // backport needs an AppCompat activity, and that is the one thing a ViewModel is not.
+    // Applying the locale remains an AppCompat side effect owned by MainActivity.
     fun setLanguageTag(tag: String?) {
         appPreferences.setLanguageTag(tag)
         _state.update { it.copy(languageTag = tag) }

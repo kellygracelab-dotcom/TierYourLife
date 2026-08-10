@@ -25,16 +25,8 @@ class TierListsViewModel @Inject constructor(
 
     private var lastLoadedLists: List<TierList> = emptyList()
 
-    // Lives here rather than in the composable so it survives a configuration change.
-    // Search, selection and browsing are mutually exclusive by the HomeMode type itself
-    // (see TierListsUiState.kt) — there is exactly one value here at any time.
     private var mode: HomeMode = HomeMode.Browsing
 
-    // No init-time load here on purpose: the screen's own resume effect (see
-    // OnResumeEffect in TierListsScreen.kt) is the single trigger for every load,
-    // including the first one — its catch-up dispatch fires on initial mount too.
-    // Loading here as well would mean the first appearance reads the repository
-    // twice.
 
     fun loadTierLists() {
         viewModelScope.launch {
@@ -43,10 +35,6 @@ class TierListsViewModel @Inject constructor(
     }
 
     private suspend fun loadTierListsInternal() = loadMutex.withLock {
-        // Loading only replaces what's on screen when there's nothing there to protect
-        // yet, i.e. the very first read. Every later read — triggered by returning to
-        // this screen — leaves the current list showing right up until the new one is
-        // ready, so a background refresh never blinks the screen empty.
         val hasVisibleList = _state.value is TierListsUiState.Success
 
         if (!hasVisibleList) {
@@ -54,18 +42,13 @@ class TierListsViewModel @Inject constructor(
         }
 
         try {
-            lastLoadedLists = repository.loadTierListsForPresentation()
+            lastLoadedLists = repository.getAllTierLists()
             emitSuccess()
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            // A failed re-read must not erase a list that's already visible — that
-            // would trade the blink this change fixes for something worse, an error
-            // screen replacing real data over a transient failure. So a repeat read
-            // that fails is swallowed and the stale list stays exactly as it was; only
-            // the first read, which has nothing to protect, surfaces the failure.
             if (!hasVisibleList) {
-                _state.value = TierListsUiState.Error(e.message ?: "Failed to load lists")
+                _state.value = TierListsUiState.Error
             }
         }
     }
@@ -88,11 +71,6 @@ class TierListsViewModel @Inject constructor(
         )
     }
 
-    // Mode changes are synchronous and never touch the repository, so they're applied
-    // directly rather than through viewModelScope.launch — typing in the search field
-    // must never wait on a coroutine dispatch. Only takes effect once a first load has
-    // actually produced a Success: search/selection UI only exists once lists are on
-    // screen, so a mode change before that can't happen from a real user action.
     private fun setMode(newMode: HomeMode) {
         mode = newMode
         if (_state.value is TierListsUiState.Success) {
@@ -131,19 +109,11 @@ class TierListsViewModel @Inject constructor(
         }
     }
 
-    fun createTierList(onCreated: (Long) -> Unit) {
+    fun createTierList(title: String, onCreated: (Long) -> Unit) {
         viewModelScope.launch {
-            val id = repository.createTierList("Untitled list")
+            val id = repository.createTierList(title)
             onCreated(id)
             loadTierListsInternal()
         }
     }
 }
-
-// getAllTierLists returns each list without its tiers; the cards need the tiers to
-// count what's ranked and to draw the distribution bar, so each one is re-read in full.
-//
-// Nothing is created here when the database is empty. An empty library is a legitimate
-// state, and seeding one would make the seeded lists impossible to delete.
-internal suspend fun TierRepository.loadTierListsForPresentation(): List<TierList> =
-    getAllTierLists().map { overview -> getTierListById(overview.id) ?: overview }

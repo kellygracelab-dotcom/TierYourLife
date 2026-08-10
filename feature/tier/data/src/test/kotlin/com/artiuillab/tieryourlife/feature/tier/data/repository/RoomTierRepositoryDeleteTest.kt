@@ -74,6 +74,7 @@ private class RecordingTierDao : TierDao {
     override suspend fun insertTierList(tierList: TierListEntity): Long = 0L
     override suspend fun getTierListById(id: Long): TierListEntity? = null
     override suspend fun getAllTierLists(): List<TierListEntity> = emptyList()
+    override suspend fun getAllTierListsWithTiers(): List<TierListWithTiers> = emptyList()
     override suspend fun getTierListWithTiers(id: Long): TierListWithTiers? = null
     override suspend fun restoreTierLists(ids: List<Long>) = Unit
     override suspend fun updateTierListDisplayMode(id: Long, displayMode: String) = Unit

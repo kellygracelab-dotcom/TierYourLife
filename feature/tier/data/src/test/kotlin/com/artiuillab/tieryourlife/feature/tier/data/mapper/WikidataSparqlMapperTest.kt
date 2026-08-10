@@ -6,7 +6,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-// The JSON here is the real shape returned by query.wikidata.org, captured from a live request.
 class WikidataSparqlMapperTest {
 
     private fun parse(json: String): WikidataSparqlResponseDto =
@@ -30,7 +29,6 @@ class WikidataSparqlMapperTest {
         assertNull(details.getValue("Q11788").linkedTmdbId)
     }
 
-    // Most items have no picture. That must be an item without a picture, not a failure.
     @Test
     fun binding_withNoImage_leavesTheUrlNull() {
         val details = parse(
@@ -54,7 +52,6 @@ class WikidataSparqlMapperTest {
         assertEquals(157336L, details.getValue("Q13417189").linkedTmdbId)
     }
 
-    // An item with several images produces several rows for the same entity.
     @Test
     fun severalRowsForOneItem_keepTheFirstImage() {
         val details = parse(

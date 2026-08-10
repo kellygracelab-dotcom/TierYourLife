@@ -43,8 +43,6 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
         val resolvedLanguage = languageTag ?: Locale.getDefault().toLanguageTag()
 
         return coroutineScope {
-            // Parallel, not sequential — a per-source timeout below means one slow source
-            // can never hold up the other.
             val tmdbDeferred = async { fetchTmdb(normalizedQuery, resolvedLanguage) }
             val wikidataDeferred = async { fetchWikidata(normalizedQuery, resolvedLanguage) }
 
@@ -84,9 +82,6 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
     }
 
     private suspend fun fetchWikidataCandidates(query: String, language: String): List<WikidataCandidate> {
-        // Wikidata's own language codes, not the BCP-47 tag Android hands us — it rejects an
-        // unrecognised one outright rather than falling back, which would take the whole source
-        // down silently. See wikidataLanguageCode.
         val wikidataLanguage = wikidataLanguageCode(language)
         val searchItems = wikidataApi.searchEntities(
             search = query,

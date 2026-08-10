@@ -16,7 +16,5 @@ sealed interface CatalogueSearchUiState {
         val items: List<CatalogueItem>,
     ) : CatalogueSearchUiState
 
-    data class Error(
-        val message: String,
-    ) : CatalogueSearchUiState
+    data object Error : CatalogueSearchUiState
 }

@@ -120,6 +120,17 @@ class RoomTierRepositoryTest {
     }
 
     @Test
+    fun get_all_tier_lists_returns_complete_tiers_and_items() = runBlocking {
+        val listId = repository.createTierList("Films")
+        repository.addItemToPool(listId, "Interstellar", imageUrl = null)
+
+        val list = repository.getAllTierLists().single { it.id == listId }
+
+        assertEquals(6, list.tiers.size)
+        assertEquals(listOf("Interstellar"), list.tiers.single { it.isPool }.items.map { it.title })
+    }
+
+    @Test
     fun unrecognized_stored_display_mode_reads_back_as_wrap_by_id_and_in_overview() = runBlocking {
         val id = dao.insertTierList(TierListEntity(title = "Films", displayMode = "SOME_FUTURE_MODE"))
 
@@ -170,20 +181,20 @@ class RoomTierRepositoryTest {
     }
 
     @Test
-    fun delete_tier_removes_it_and_cascades_its_items() = runBlocking {
+    fun delete_tier_removes_it_and_moves_its_items_to_the_pool() = runBlocking {
         val listId = repository.createTierList("Films")
-        val sTierId = requireNotNull(repository.getTierListById(listId)).tiers.single { it.label == "S" }.id
+        val before = requireNotNull(repository.getTierListById(listId))
+        val sTierId = before.tiers.single { it.label == "S" }.id
+        val poolTierId = before.tiers.single { it.isPool }.id
         dao.insertTierItem(TierItemEntity(tierId = sTierId, position = 0, title = "Doomed", imageUrl = null))
 
-        repository.deleteTier(sTierId)
+        repository.deleteTierToPool(sTierId)
 
         val list = requireNotNull(repository.getTierListById(listId))
         assertNull(list.tiers.find { it.id == sTierId })
+        assertEquals(listOf("Doomed"), list.tiers.single { it.id == poolTierId }.items.map { it.title })
     }
 
-    // tier_items cascades on tierId, so deleting a tier used to destroy the rows in the trash
-    // that had belonged to it — the user deleted a tier and silently lost a poster they had
-    // never agreed to remove for good, and it vanished from the trash with no trace.
     @Test
     fun delete_tier_keeps_its_trashed_items_by_moving_them_to_the_pool() = runBlocking {
         val listId = repository.createTierList("Films")
@@ -195,14 +206,12 @@ class RoomTierRepositoryTest {
         )
         repository.deleteTierItem(trashedId)
 
-        repository.deleteTier(sTierId)
+        repository.deleteTierToPool(sTierId)
 
         val entry = repository.getTrashEntries()
             .filterIsInstance<TrashEntry.DeletedItem>()
             .singleOrNull { it.id == trashedId }
         assertNotNull("the trashed item was destroyed with its tier", entry)
-        // Restored, it has to land somewhere that still exists — the pool is the only
-        // honest place once its own tier is gone.
         repository.restoreTierItem(trashedId)
         val after = requireNotNull(repository.getTierListById(listId))
         assertEquals(
@@ -211,17 +220,19 @@ class RoomTierRepositoryTest {
         )
     }
 
-    // The tier's own live items are still cascaded away: only the trash is protected.
     @Test
-    fun delete_tier_still_removes_the_items_that_were_in_it() = runBlocking {
+    fun delete_tier_keeps_every_active_item_in_its_original_order() = runBlocking {
         val listId = repository.createTierList("Films")
-        val sTierId = requireNotNull(repository.getTierListById(listId)).tiers.single { it.label == "S" }.id
-        dao.insertTierItem(TierItemEntity(tierId = sTierId, position = 0, title = "Doomed", imageUrl = null))
+        val before = requireNotNull(repository.getTierListById(listId))
+        val sTierId = before.tiers.single { it.label == "S" }.id
+        val poolTierId = before.tiers.single { it.isPool }.id
+        dao.insertTierItem(TierItemEntity(tierId = sTierId, position = 0, title = "First", imageUrl = null))
+        dao.insertTierItem(TierItemEntity(tierId = sTierId, position = 1, title = "Second", imageUrl = null))
 
-        repository.deleteTier(sTierId)
+        repository.deleteTierToPool(sTierId)
 
         val list = requireNotNull(repository.getTierListById(listId))
-        assertEquals(emptyList<String>(), list.tiers.flatMap { it.items }.map { it.title })
+        assertEquals(listOf("First", "Second"), list.tiers.single { it.id == poolTierId }.items.map { it.title })
     }
 
     @Test
@@ -229,11 +240,39 @@ class RoomTierRepositoryTest {
         val listId = repository.createTierList("Films")
         val poolTierId = requireNotNull(repository.getTierListById(listId)).tiers.single { it.isPool }.id
 
-        repository.deleteTier(poolTierId)
+        repository.deleteTierToPool(poolTierId)
 
         val list = requireNotNull(repository.getTierListById(listId))
         assertEquals(1, list.tiers.count { it.isPool })
         assertEquals(poolTierId, list.tiers.single { it.isPool }.id)
+    }
+
+    @Test
+    fun restore_tier_recreates_its_position_and_returns_its_items_from_the_pool() = runBlocking {
+        val listId = repository.createTierList("Films")
+        val before = requireNotNull(repository.getTierListById(listId))
+        val tier = before.tiers.first { it.label == "A" }
+        val itemId = dao.insertTierItem(
+            TierItemEntity(tierId = tier.id, position = 0, title = "Arrival", imageUrl = null),
+        )
+        val originalPosition = before.tiers.filterNot { it.isPool }.indexOfFirst { it.id == tier.id }
+
+        repository.deleteTierToPool(tier.id)
+        repository.restoreTier(
+            tierListId = listId,
+            label = tier.label,
+            caption = tier.caption,
+            colorLight = tier.colorLight,
+            colorDark = tier.colorDark,
+            position = originalPosition,
+            itemIds = listOf(itemId),
+        )
+
+        val restored = requireNotNull(repository.getTierListById(listId))
+        val restoredTier = restored.tiers.filterNot { it.isPool }[originalPosition]
+        assertEquals("A", restoredTier.label)
+        assertEquals(listOf("Arrival"), restoredTier.items.map { it.title })
+        assertEquals(emptyList<String>(), restored.tiers.single { it.isPool }.items.map { it.title })
     }
 
     @Test
