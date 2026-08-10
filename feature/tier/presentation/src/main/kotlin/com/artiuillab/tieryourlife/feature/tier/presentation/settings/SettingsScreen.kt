@@ -60,8 +60,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeMedia
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeType
+import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.export.TierListsExportStrings
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ThemeChoice
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
