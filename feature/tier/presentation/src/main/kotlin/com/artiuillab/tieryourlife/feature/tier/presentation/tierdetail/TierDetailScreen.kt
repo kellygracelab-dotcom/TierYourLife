@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -399,7 +401,7 @@ private fun TierScreenBody(
                 }
             } else {
                 val visualTierOrder = dragController.visualTierOrder
-                val displayedTiers = if (dragController.isDraggingTier && visualTierOrder.isNotEmpty()) {
+                val displayedTiers = if ((dragController.isDraggingTier || dragController.isSettlingTier) && visualTierOrder.isNotEmpty()) {
                     val indexById = visualTierOrder.withIndex().associate { (index, id) -> id to index }
                     rankedTiers.sortedBy { indexById[it.id] ?: Int.MAX_VALUE }
                 } else {
@@ -416,17 +418,33 @@ private fun TierScreenBody(
                     verticalArrangement = Arrangement.spacedBy(TIER_LIST_ITEM_SPACING),
                 ) {
                     items(displayedTiers, key = { it.id }) { tier ->
-                        val itemModifier = if (tier.id == dragController.draggedTierId) {
-                            Modifier
-                                .zIndex(1f)
-                                .graphicsLayer {
-                                    translationY = dragController.draggedTierOffsetYPx
-                                    scaleX = 1.02f
-                                    scaleY = 1.02f
+                        val itemModifier = when (tier.id) {
+                            dragController.draggedTierId -> {
+                                Modifier
+                                    .zIndex(1f)
+                                    .graphicsLayer {
+                                        translationY = dragController.draggedTierOffsetYPx
+                                        scaleX = 1.02f
+                                        scaleY = 1.02f
+                                    }
+                                    .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                            }
+
+                            dragController.settlingTierId -> {
+                                val settleOffset = remember(dragController.settlingTierId) {
+                                    Animatable(dragController.draggedTierOffsetYPx)
                                 }
-                                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                        } else {
-                            Modifier.animateItem()
+                                LaunchedEffect(dragController.settlingTierId) {
+                                    settleOffset.animateTo(0f, tween(durationMillis = 150))
+                                    dragController.finishSettling()
+                                }
+                                Modifier
+                                    .zIndex(1f)
+                                    .graphicsLayer { translationY = settleOffset.value }
+                                    .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                            }
+
+                            else -> Modifier.animateItem()
                         }
                         TierRow(
                             tier = tier,

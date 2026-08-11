@@ -128,6 +128,25 @@ class TierDetailViewModelTest {
         assertEquals(0, discarded)
     }
 
+    @Test
+    fun reorderTiers_emitsTheNewOrderSynchronously_beforeTheRepositoryResponds() = runBlocking {
+        val repository = FakeTierRepository(rankedList())
+        val viewModel = TierDetailViewModel(repository, savedStateHandle())
+        viewModel.state.first { it is TierDetailUiState.Success }
+
+        viewModel.reorderTiers(listOf(20L, 10L))
+
+        val optimistic = viewModel.state.value as TierDetailUiState.Success
+        assertEquals(listOf(20L, 10L, 30L), optimistic.list.tiers.map { it.id })
+
+        repository.reorderStarted.await()
+        assertEquals(listOf(20L, 10L), repository.lastReorderedIds)
+        val stillOptimistic = viewModel.state.value as TierDetailUiState.Success
+        assertEquals(listOf(20L, 10L, 30L), stillOptimistic.list.tiers.map { it.id })
+
+        repository.releaseReorder()
+    }
+
     private fun savedStateHandle(startInTitleEdit: Boolean = false): SavedStateHandle =
         SavedStateHandle(mapOf("tierListId" to 1L, "startInTitleEdit" to startInTitleEdit))
 
@@ -136,6 +155,16 @@ class TierDetailViewModelTest {
         title = "Sci-fi films",
         tiers = listOf(
             Tier(id = 10, label = "Pool", colorLight = "#000000", colorDark = "#000000", items = emptyList(), isPool = true),
+        ),
+    )
+
+    private fun rankedList(): TierList = TierList(
+        id = 1,
+        title = "Sci-fi films",
+        tiers = listOf(
+            Tier(id = 10, label = "S", colorLight = "#000000", colorDark = "#000000", items = emptyList()),
+            Tier(id = 20, label = "A", colorLight = "#000000", colorDark = "#000000", items = emptyList()),
+            Tier(id = 30, label = "Pool", colorLight = "#000000", colorDark = "#000000", items = emptyList(), isPool = true),
         ),
     )
 }
@@ -148,6 +177,14 @@ private class FakeTierRepository(initial: TierList) : TierRepository {
         private set
     val attachedSources = mutableListOf<String>()
     val permanentlyDeletedIds = mutableListOf<Long>()
+    var lastReorderedIds: List<Long>? = null
+        private set
+    val reorderStarted = CompletableDeferred<Unit>()
+    private val reorderGate = CompletableDeferred<Unit>()
+
+    fun releaseReorder() {
+        reorderGate.complete(Unit)
+    }
 
     override suspend fun getTierListById(id: Long): TierList? = list
 
@@ -196,7 +233,15 @@ private class FakeTierRepository(initial: TierList) : TierRepository {
         position: Int,
         itemIds: List<Long>,
     ) = unsupported()
-    override suspend fun reorderTiers(orderedTierIds: List<Long>) = unsupported()
+    override suspend fun reorderTiers(orderedTierIds: List<Long>) {
+        lastReorderedIds = orderedTierIds
+        reorderStarted.complete(Unit)
+        reorderGate.await()
+        val orderedSet = orderedTierIds.toSet()
+        val byId = list.tiers.associateBy { it.id }
+        val queue = ArrayDeque(orderedTierIds.mapNotNull { byId[it] })
+        list = list.copy(tiers = list.tiers.map { tier -> if (tier.id in orderedSet) queue.removeFirst() else tier })
+    }
     override suspend fun deleteTierLists(ids: List<Long>) = unsupported()
     override suspend fun restoreTierLists(ids: List<Long>) = unsupported()
     override suspend fun deleteTierItem(id: Long) = unsupported()

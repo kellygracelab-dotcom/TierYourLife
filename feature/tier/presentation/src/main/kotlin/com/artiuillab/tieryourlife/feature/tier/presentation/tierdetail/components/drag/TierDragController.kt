@@ -58,6 +58,8 @@ internal class TierDragController {
 
     var draggedTierId by mutableStateOf<Long?>(null)
         private set
+    var settlingTierId by mutableStateOf<Long?>(null)
+        private set
     var tierPointerPositionInRoot by mutableStateOf(Offset.Zero)
         private set
 
@@ -72,6 +74,7 @@ internal class TierDragController {
 
     val isDragging: Boolean get() = draggedPayload != null || draggedTierId != null
     val isDraggingTier: Boolean get() = draggedTierId != null
+    val isSettlingTier: Boolean get() = settlingTierId != null
     val hoveredTierId: Long? get() = (hoveredTarget as? DragTarget.Tier)?.tierId
     val isHoveringTrash: Boolean get() = hoveredTarget is DragTarget.Trash
 
@@ -172,6 +175,7 @@ internal class TierDragController {
     }
 
     fun beginTierDrag(tierId: Long, rankedTierIds: List<Long>, rootPosition: Offset, bandWidthPx: Float, slotHeightPx: Float) {
+        if (settlingTierId != null) finishSettling()
         draggedTierId = tierId
         rankedTierIdsAtDragStart = rankedTierIds
         tierPointerPositionInRoot = rootPosition
@@ -204,8 +208,13 @@ internal class TierDragController {
     }
 
     fun endTierDrag(): TierDropOutcome? {
+        val tierId = draggedTierId
         val drop = computeTierDrop()
-        clearTierDrag()
+        if (drop is TierDropOutcome.Delete) {
+            clearTierDrag()
+        } else {
+            settleTierDrag(tierId)
+        }
         return drop
     }
 
@@ -213,8 +222,24 @@ internal class TierDragController {
         clearTierDrag()
     }
 
+    fun finishSettling() {
+        settlingTierId = null
+        visualTierOrder = emptyList()
+        draggedTierOffsetYPx = 0f
+    }
+
+    private fun settleTierDrag(tierId: Long?) {
+        settlingTierId = tierId
+        draggedTierId = null
+        hoveredTarget = null
+        rankedTierIdsAtDragStart = emptyList()
+        draggedTierBandWidthPx = 0f
+        tierSlotHeightPx = 0f
+    }
+
     private fun clearTierDrag() {
         draggedTierId = null
+        settlingTierId = null
         hoveredTarget = null
         rankedTierIdsAtDragStart = emptyList()
         draggedTierBandWidthPx = 0f

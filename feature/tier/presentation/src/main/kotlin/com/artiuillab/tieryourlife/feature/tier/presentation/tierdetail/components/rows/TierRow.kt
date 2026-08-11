@@ -97,7 +97,7 @@ internal fun TierRow(
         onDispose { dragController.unregisterRowBounds(tier.id) }
     }
 
-    val collapsed = dragController.isDraggingTier
+    val collapsed = dragController.isDraggingTier || dragController.isSettlingTier
 
     val rowHeightModifier = if (collapsed || displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
         Modifier.height(MIN_TIER_ROW_HEIGHT)
