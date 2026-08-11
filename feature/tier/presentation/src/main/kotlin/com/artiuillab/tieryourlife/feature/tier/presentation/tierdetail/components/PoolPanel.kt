@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,7 +34,9 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -183,4 +186,30 @@ internal fun GenerateChip(onClick: () -> Unit) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PoolPanelLightPreview() = TierYourLifeTheme(false) {
+    PoolPanel(
+        pool = previewTierList.tiers.first { it.isPool },
+        onAddClick = {},
+        onGenerateClick = {},
+        dragController = remember { TierDragController() },
+        onMoveItem = { _, _, _ -> },
+        onDeleteItem = {},
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PoolPanelDarkPreview() = TierYourLifeTheme(true) {
+    PoolPanel(
+        pool = previewTierList.tiers.first { it.isPool },
+        onAddClick = {},
+        onGenerateClick = {},
+        dragController = remember { TierDragController() },
+        onMoveItem = { _, _, _ -> },
+        onDeleteItem = {},
+    )
 }

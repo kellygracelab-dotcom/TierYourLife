@@ -19,7 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 
 @Composable
@@ -57,4 +59,16 @@ internal fun ErrorCard(testTag: String, onTryAgain: () -> Unit, modifier: Modifi
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ErrorCardLightPreview() = TierYourLifeTheme(false) {
+    ErrorCard(testTag = "error_card_preview", onTryAgain = {})
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ErrorCardDarkPreview() = TierYourLifeTheme(true) {
+    ErrorCard(testTag = "error_card_preview", onTryAgain = {})
 }

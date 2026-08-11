@@ -36,7 +36,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
@@ -254,5 +256,27 @@ private fun NewTierRow(tierCount: Int, onClick: () -> Unit) {
         subtitle = pluralStringResource(R.plurals.tier_list_settings_tier_count, tierCount, tierCount),
         onClick = onClick,
         testTag = TierDetailTestTags.NEW_TIER_ROW,
+    )
+}
+
+@TierYourLifeDevicePreviews
+@Composable
+private fun TierListSettingsScreenLightPreview() = TierYourLifeTheme(false) {
+    TierListSettingsScreenContent(
+        list = previewTierList,
+        onBack = {},
+        onAddTier = { _, _, _, _ -> },
+        onSetDisplayMode = {},
+    )
+}
+
+@TierYourLifeDevicePreviews
+@Composable
+private fun TierListSettingsScreenDarkPreview() = TierYourLifeTheme(true) {
+    TierListSettingsScreenContent(
+        list = previewTierList,
+        onBack = {},
+        onAddTier = { _, _, _, _ -> },
+        onSetDisplayMode = {},
     )
 }

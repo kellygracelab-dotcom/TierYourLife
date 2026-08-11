@@ -22,8 +22,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.aistudio.domain.model.GeneratedCardImage
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 
@@ -84,4 +86,26 @@ internal fun ResultCard(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ResultCardLightPreview() = TierYourLifeTheme(false) {
+    ResultCard(
+        image = GeneratedCardImage(prompt = "A neon-lit Tokyo street in the rain", imageUri = ""),
+        testTag = "result_card_preview",
+        onAddToList = {},
+        onRegenerate = {},
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ResultCardDarkPreview() = TierYourLifeTheme(true) {
+    ResultCard(
+        image = GeneratedCardImage(prompt = "A neon-lit Tokyo street in the rain", imageUri = ""),
+        testTag = "result_card_preview",
+        onAddToList = {},
+        onRegenerate = {},
+    )
 }

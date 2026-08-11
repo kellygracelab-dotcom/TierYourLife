@@ -35,6 +35,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
@@ -50,6 +51,21 @@ internal fun TierEditorSheet(
     onDismiss: () -> Unit,
     onSave: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
 ) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+    ) {
+        TierEditorSheetContent(initialTier = initialTier, onDismiss = onDismiss, onSave = onSave)
+    }
+}
+
+@Composable
+internal fun TierEditorSheetContent(
+    initialTier: Tier? = null,
+    onDismiss: () -> Unit,
+    onSave: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
+) {
     var label by rememberSaveable { mutableStateOf(initialTier?.label ?: "") }
     var caption by rememberSaveable { mutableStateOf(initialTier?.caption ?: "") }
     var colorSelection by remember {
@@ -59,12 +75,7 @@ internal fun TierEditorSheet(
     }
     val isLabelValid = label.isNotBlank()
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-    ) {
-        Column(Modifier.testTag(TierDetailTestTags.TIER_EDITOR_SHEET)) {
+    Column(Modifier.testTag(TierDetailTestTags.TIER_EDITOR_SHEET)) {
             Text(
                 text = stringResource(
                     if (initialTier == null) R.string.tier_editor_add_title else R.string.tier_editor_title,
@@ -172,7 +183,6 @@ internal fun TierEditorSheet(
             }
         }
     }
-}
 
 @Composable
 private fun LivePreviewRow(label: String, caption: String?, colorLight: String, colorDark: String) {
@@ -257,4 +267,16 @@ private fun LivePreviewCard(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TierEditorSheetLightPreview() = TierYourLifeTheme(false) {
+    TierEditorSheetContent(initialTier = previewTierList.tiers.first(), onDismiss = {}, onSave = { _, _, _, _ -> })
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TierEditorSheetDarkPreview() = TierYourLifeTheme(true) {
+    TierEditorSheetContent(initialTier = previewTierList.tiers.first(), onDismiss = {}, onSave = { _, _, _, _ -> })
 }

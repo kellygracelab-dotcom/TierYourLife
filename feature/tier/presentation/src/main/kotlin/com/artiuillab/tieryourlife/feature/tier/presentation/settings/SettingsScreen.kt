@@ -45,6 +45,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.export.TierListsExportStrings
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
@@ -329,4 +331,34 @@ internal fun SettingsRow(
         }
         ChevronRightIcon(20.dp, MaterialTheme.colorScheme.outline)
     }
+}
+
+@TierYourLifeDevicePreviews
+@Composable
+private fun SettingsScreenLightPreview() = TierYourLifeTheme(false) {
+    SettingsScreenContent(
+        themeChoice = ThemeChoice.SYSTEM,
+        onThemeChoiceChange = {},
+        languageTag = null,
+        onLanguageTagChange = {},
+        trashCount = 3,
+        onBack = {},
+        onTrashClick = {},
+        onExportClick = {},
+    )
+}
+
+@TierYourLifeDevicePreviews
+@Composable
+private fun SettingsScreenDarkPreview() = TierYourLifeTheme(true) {
+    SettingsScreenContent(
+        themeChoice = ThemeChoice.SYSTEM,
+        onThemeChoiceChange = {},
+        languageTag = null,
+        onLanguageTagChange = {},
+        trashCount = 3,
+        onBack = {},
+        onTrashClick = {},
+        onExportClick = {},
+    )
 }

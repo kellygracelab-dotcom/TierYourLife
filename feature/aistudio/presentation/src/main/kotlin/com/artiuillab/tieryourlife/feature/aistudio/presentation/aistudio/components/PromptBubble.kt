@@ -13,7 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 
 @Composable
 internal fun PromptBubble(prompt: String, testTag: String, modifier: Modifier = Modifier) {
@@ -38,4 +40,16 @@ internal fun PromptBubble(prompt: String, testTag: String, modifier: Modifier = 
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PromptBubbleLightPreview() = TierYourLifeTheme(false) {
+    PromptBubble(prompt = "A neon-lit Tokyo street in the rain", testTag = "prompt_bubble_preview")
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PromptBubbleDarkPreview() = TierYourLifeTheme(true) {
+    PromptBubble(prompt = "A neon-lit Tokyo street in the rain", testTag = "prompt_bubble_preview")
 }

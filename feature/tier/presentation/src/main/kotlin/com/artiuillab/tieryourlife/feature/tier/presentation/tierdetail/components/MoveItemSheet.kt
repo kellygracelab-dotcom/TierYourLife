@@ -28,9 +28,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -64,44 +66,63 @@ internal fun MoveItemSheet(
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
     ) {
-        Column(Modifier.testTag(TierDetailTestTags.MOVE_SHEET)) {
-            MoveSheetHeader(item)
-            Column(Modifier.padding(top = 8.dp)) {
-                rankedTiers.forEach { tier ->
-                    val isCurrent = tier.id == currentTierId
-                    MoveSheetTierRow(
-                        tier = tier,
-                        isCurrent = isCurrent,
-                        onClick = if (isCurrent) null else ({ onMoveToTier(tier.id, tier.items.size) }),
-                    )
-                }
+        MoveItemSheetContent(
+            item = item,
+            currentTierId = currentTierId,
+            rankedTiers = rankedTiers,
+            pool = pool,
+            onMoveToTier = onMoveToTier,
+            onRemove = onRemove,
+        )
+    }
+}
 
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp))
-
-                val isDark = TierYourLifeMedia.current.isDark
-                MoveSheetActionRow(
-                    testTag = TierDetailTestTags.MOVE_SHEET_REMOVE,
-                    iconCircleColor = if (isDark) RemoveCircleDark else RemoveCircleLight,
-                    icon = { DeleteOutlineIcon(22.dp, if (isDark) RemoveIconDark else RemoveIconLight) },
-                    title = stringResource(R.string.tier_detail_move_sheet_remove_title),
-                    titleColor = if (isDark) RemoveTitleDark else RemoveTitleLight,
-                    subtitle = stringResource(R.string.tier_detail_move_sheet_remove_subtitle),
-                    onClick = onRemove,
-                    bottomPadding = 10.dp,
+@Composable
+internal fun MoveItemSheetContent(
+    item: TierItem,
+    currentTierId: Long,
+    rankedTiers: List<Tier>,
+    pool: Tier?,
+    onMoveToTier: (tierId: Long, toPosition: Int) -> Unit,
+    onRemove: () -> Unit,
+) {
+    Column(Modifier.testTag(TierDetailTestTags.MOVE_SHEET)) {
+        MoveSheetHeader(item)
+        Column(Modifier.padding(top = 8.dp)) {
+            rankedTiers.forEach { tier ->
+                val isCurrent = tier.id == currentTierId
+                MoveSheetTierRow(
+                    tier = tier,
+                    isCurrent = isCurrent,
+                    onClick = if (isCurrent) null else ({ onMoveToTier(tier.id, tier.items.size) }),
                 )
+            }
 
-                if (pool != null && pool.id != currentTierId) {
-                    MoveSheetActionRow(
-                        testTag = TierDetailTestTags.MOVE_SHEET_POOL,
-                        iconCircleColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                        icon = { SouthIcon(22.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
-                        title = stringResource(R.string.tier_detail_move_sheet_pool_title),
-                        titleColor = MaterialTheme.colorScheme.onSurface,
-                        subtitle = stringResource(R.string.tier_detail_move_sheet_pool_subtitle),
-                        onClick = { onMoveToTier(pool.id, pool.items.size) },
-                        bottomPadding = 12.dp,
-                    )
-                }
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp))
+
+            val isDark = TierYourLifeMedia.current.isDark
+            MoveSheetActionRow(
+                testTag = TierDetailTestTags.MOVE_SHEET_REMOVE,
+                iconCircleColor = if (isDark) RemoveCircleDark else RemoveCircleLight,
+                icon = { DeleteOutlineIcon(22.dp, if (isDark) RemoveIconDark else RemoveIconLight) },
+                title = stringResource(R.string.tier_detail_move_sheet_remove_title),
+                titleColor = if (isDark) RemoveTitleDark else RemoveTitleLight,
+                subtitle = stringResource(R.string.tier_detail_move_sheet_remove_subtitle),
+                onClick = onRemove,
+                bottomPadding = 10.dp,
+            )
+
+            if (pool != null && pool.id != currentTierId) {
+                MoveSheetActionRow(
+                    testTag = TierDetailTestTags.MOVE_SHEET_POOL,
+                    iconCircleColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                    icon = { SouthIcon(22.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+                    title = stringResource(R.string.tier_detail_move_sheet_pool_title),
+                    titleColor = MaterialTheme.colorScheme.onSurface,
+                    subtitle = stringResource(R.string.tier_detail_move_sheet_pool_subtitle),
+                    onClick = { onMoveToTier(pool.id, pool.items.size) },
+                    bottomPadding = 12.dp,
+                )
             }
         }
     }
@@ -251,4 +272,32 @@ private fun MoveSheetActionRow(
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MoveItemSheetLightPreview() = TierYourLifeTheme(false) {
+    val rankedTiers = previewTierList.tiers.filterNot { it.isPool }
+    MoveItemSheetContent(
+        item = rankedTiers.first().items.first(),
+        currentTierId = rankedTiers.first().id,
+        rankedTiers = rankedTiers,
+        pool = previewTierList.tiers.first { it.isPool },
+        onMoveToTier = { _, _ -> },
+        onRemove = {},
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MoveItemSheetDarkPreview() = TierYourLifeTheme(true) {
+    val rankedTiers = previewTierList.tiers.filterNot { it.isPool }
+    MoveItemSheetContent(
+        item = rankedTiers.first().items.first(),
+        currentTierId = rankedTiers.first().id,
+        rankedTiers = rankedTiers,
+        pool = previewTierList.tiers.first { it.isPool },
+        onMoveToTier = { _, _ -> },
+        onRemove = {},
+    )
 }

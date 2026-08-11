@@ -26,7 +26,9 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 
 private val EaseInOut = CubicBezierEasing(0.42f, 0f, 0.58f, 1f)
@@ -80,4 +82,16 @@ private fun ShimmerBlock(modifier: Modifier = Modifier) {
         label = "ai_shimmer_progress",
     )
     Box(modifier = modifier.background(lerp(highest, high, progress)))
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun GeneratingCardLightPreview() = TierYourLifeTheme(false) {
+    GeneratingCard(testTag = "generating_card_preview")
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun GeneratingCardDarkPreview() = TierYourLifeTheme(true) {
+    GeneratingCard(testTag = "generating_card_preview")
 }
