@@ -76,6 +76,14 @@
     <string name="tier_detail_item_moved_to_trash">%1$s wurde in den Papierkorb verschoben</string>
     <string name="tier_detail_tier_moved_to_trash">Stufe %1$s wurde in den Papierkorb verschoben</string>
     <string name="tier_detail_snackbar_undo">Rückgängig</string>
+    <plurals name="tier_detail_items_added_to_pool">
+        <item quantity="one">%1$d Element zum Pool hinzugefügt</item>
+        <item quantity="other">%1$d Elemente zum Pool hinzugefügt</item>
+    </plurals>
+
+    <string name="ai_chip">Generieren</string>
+    <string name="cd_ai_chip">Ein Bild mit KI generieren</string>
+    <string name="cd_ai_badge">Mit KI generiert</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d Element</item>

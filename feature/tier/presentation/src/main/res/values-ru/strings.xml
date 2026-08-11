@@ -92,6 +92,16 @@
     <string name="tier_detail_item_moved_to_trash">«%1$s» перемещён в корзину</string>
     <string name="tier_detail_tier_moved_to_trash">Уровень %1$s перемещён в корзину</string>
     <string name="tier_detail_snackbar_undo">Отменить</string>
+    <plurals name="tier_detail_items_added_to_pool">
+        <item quantity="one">%1$d элемент добавлен в пул</item>
+        <item quantity="few">%1$d элемента добавлено в пул</item>
+        <item quantity="many">%1$d элементов добавлено в пул</item>
+        <item quantity="other">%1$d элемента добавлено в пул</item>
+    </plurals>
+
+    <string name="ai_chip">Сгенерировать</string>
+    <string name="cd_ai_chip">Сгенерировать изображение с помощью ИИ</string>
+    <string name="cd_ai_badge">Сгенерировано ИИ</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d элемент</item>

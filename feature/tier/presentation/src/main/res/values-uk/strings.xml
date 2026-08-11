@@ -92,6 +92,16 @@
     <string name="tier_detail_item_moved_to_trash">«%1$s» переміщено в кошик</string>
     <string name="tier_detail_tier_moved_to_trash">Рівень %1$s переміщено в кошик</string>
     <string name="tier_detail_snackbar_undo">Скасувати</string>
+    <plurals name="tier_detail_items_added_to_pool">
+        <item quantity="one">%1$d елемент додано до пулу</item>
+        <item quantity="few">%1$d елементи додано до пулу</item>
+        <item quantity="many">%1$d елементів додано до пулу</item>
+        <item quantity="other">%1$d елемента додано до пулу</item>
+    </plurals>
+
+    <string name="ai_chip">Згенерувати</string>
+    <string name="cd_ai_chip">Згенерувати зображення за допомогою ШІ</string>
+    <string name="cd_ai_badge">Згенеровано ШІ</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d елемент</item>

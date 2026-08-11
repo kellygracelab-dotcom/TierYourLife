@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TierDetailViewModel @Inject constructor(
     private val repository: TierRepository,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val route = savedStateHandle.toRoute<Route.TierDetail>()
@@ -29,6 +29,8 @@ class TierDetailViewModel @Inject constructor(
 
     private val _canDiscard = MutableStateFlow(route.startInTitleEdit)
     val canDiscard: StateFlow<Boolean> = _canDiscard.asStateFlow()
+
+    val addedItemId: StateFlow<Long?> = savedStateHandle.getStateFlow(ADDED_ITEM_KEY, null)
 
     init {
         loadTierList()
@@ -176,5 +178,22 @@ class TierDetailViewModel @Inject constructor(
             repository.renameTierList(tierListId, title)
             loadTierList()
         }
+    }
+
+    fun consumeAddedItem() {
+        if (addedItemId.value == null) return
+        savedStateHandle[ADDED_ITEM_KEY] = null
+        loadTierList()
+    }
+
+    fun removeAddedItem(itemId: Long) {
+        viewModelScope.launch {
+            repository.deleteTierItemPermanently(itemId)
+            loadTierList()
+        }
+    }
+
+    private companion object {
+        const val ADDED_ITEM_KEY = "ai_added_item_id"
     }
 }

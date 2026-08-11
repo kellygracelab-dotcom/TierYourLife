@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.repository
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
@@ -17,7 +18,12 @@ interface TierRepository {
 
     suspend fun renameTierList(id: Long, title: String)
 
-    suspend fun addItemToPool(tierListId: Long, title: String, imageUrl: String?): Long
+    suspend fun addItemToPool(
+        tierListId: Long,
+        title: String,
+        imageUrl: String?,
+        source: TierItemSource = TierItemSource.MANUAL,
+    ): Long
 
     suspend fun addItemsToPool(tierListId: Long, items: List<PoolItemDraft>)
 

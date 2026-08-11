@@ -92,6 +92,16 @@
     <string name="tier_detail_item_moved_to_trash">%1$s przeniesiono do kosza</string>
     <string name="tier_detail_tier_moved_to_trash">Poziom %1$s przeniesiono do kosza</string>
     <string name="tier_detail_snackbar_undo">Cofnij</string>
+    <plurals name="tier_detail_items_added_to_pool">
+        <item quantity="one">%1$d element dodany do puli</item>
+        <item quantity="few">%1$d elementy dodane do puli</item>
+        <item quantity="many">%1$d elementów dodanych do puli</item>
+        <item quantity="other">%1$d elementu dodanego do puli</item>
+    </plurals>
+
+    <string name="ai_chip">Generuj</string>
+    <string name="cd_ai_chip">Wygeneruj obraz za pomocą AI</string>
+    <string name="cd_ai_badge">Wygenerowane przez AI</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d element</item>

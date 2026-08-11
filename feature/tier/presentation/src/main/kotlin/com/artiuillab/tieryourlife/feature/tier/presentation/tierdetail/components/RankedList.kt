@@ -160,6 +160,7 @@ private fun TierBadge(tier: Tier) {
 internal fun RankedPoolSection(
     pool: Tier,
     onAddClick: () -> Unit,
+    onGenerateClick: () -> Unit,
     onSelect: (itemId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -215,6 +216,8 @@ internal fun RankedPoolSection(
                 color = MaterialTheme.colorScheme.onSurface,
             )
             CollapsedPoolAddChip(onClick = onAddClick)
+            Spacer(Modifier.width(8.dp))
+            GenerateChip(onClick = onGenerateClick)
         }
 
         if (expanded) {

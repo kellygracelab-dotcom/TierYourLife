@@ -14,18 +14,24 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWith
 interface TierDao {
 
     @Transaction
-    suspend fun addItemToPool(tierListId: Long, title: String, imageUrl: String?): Long {
+    suspend fun addItemToPool(tierListId: Long, title: String, imageUrl: String?, source: String = "MANUAL"): Long {
         val poolTier = getAllTiersByTierListId(tierListId).first { it.isPool }
 
-        val lastPosition = getAllTierItemsByTierId(poolTier.id).maxOfOrNull { it.position }
-        val nextPosition = (lastPosition ?: -1) + 1
+        val position = if (source == "GENERATED") {
+            shiftTierPositionsFrom(poolTier.id, 0)
+            0
+        } else {
+            val lastPosition = getAllTierItemsByTierId(poolTier.id).maxOfOrNull { it.position }
+            (lastPosition ?: -1) + 1
+        }
 
         return insertTierItem(
             tierItem = TierItemEntity(
                 tierId = poolTier.id,
-                position = nextPosition,
+                position = position,
                 title = title,
                 imageUrl = imageUrl,
+                source = source,
             ),
         )
     }
@@ -43,6 +49,7 @@ interface TierDao {
                     position = nextPosition++,
                     title = item.title,
                     imageUrl = item.imageUrl,
+                    source = "TMDB",
                 ),
             )
         }
