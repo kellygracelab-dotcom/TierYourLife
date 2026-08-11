@@ -28,6 +28,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.trash.components.Re
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.components.TrashEmptyState
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.components.TrashList
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.components.TrashTopBar
+import com.artiuillab.tieryourlife.feature.tier.presentation.trash.components.previewTrashEntries
 
 @Composable
 fun TrashScreen(

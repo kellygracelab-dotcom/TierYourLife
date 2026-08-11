@@ -12,6 +12,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.LanguageOptions
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

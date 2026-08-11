@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.trash
+package com.artiuillab.tieryourlife.feature.tier.presentation.trash.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource

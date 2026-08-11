@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -34,8 +34,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeleteOutlineIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SettingsIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
 @Composable
 internal fun HomeHeader(totalListCount: Int, rankedCount: Int) {

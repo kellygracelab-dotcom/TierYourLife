@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.settings
+package com.artiuillab.tieryourlife.feature.tier.presentation.settings.components
 
 import android.content.Context
 import androidx.core.os.ConfigurationCompat
