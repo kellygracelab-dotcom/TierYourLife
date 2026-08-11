@@ -5,15 +5,18 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
+import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.aiStudioScreen
+import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.navigateToAiStudio
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
-import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToSettings
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTierDetail
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTrash
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.settingsScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierListsScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.trashScreen
 
 @Composable
 fun AppNavHost(
@@ -31,34 +34,30 @@ fun AppNavHost(
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None },
     ) {
-        composable<Route.TierLists> {
-            TierListsScreen(
-                onTierListClick = { id -> navController.navigate(Route.TierDetail(id)) },
-                onSettingsClick = { navController.navigate(Route.Settings) },
-                onNewListCreated = { id ->
-                    navController.navigate(Route.TierDetail(id, startInTitleEdit = true))
-                },
-            )
-        }
-        composable<Route.TierDetail> { backStackEntry ->
-            val route = backStackEntry.toRoute<Route.TierDetail>()
-            TierDetailScreen(
-                onBack = { navController.popBackStack() },
-                startInTitleEdit = route.startInTitleEdit,
-            )
-        }
-        composable<Route.Settings> {
-            SettingsScreen(
-                onBack = { navController.popBackStack() },
-                onTrashClick = { navController.navigate(Route.Trash) },
-                themeChoice = state.themeChoice,
-                onThemeChoiceChange = onThemeChoiceChange,
-                languageTag = state.languageTag,
-                onLanguageTagChange = onLanguageTagChange,
-            )
-        }
-        composable<Route.Trash> {
-            TrashScreen(onBack = { navController.popBackStack() })
-        }
+        tierListsScreen(
+            onTierListClick = { id -> navController.navigateToTierDetail(id) },
+            onSettingsClick = { navController.navigateToSettings() },
+            onNewListCreated = { id -> navController.navigateToTierDetail(id, startInTitleEdit = true) },
+        )
+        tierDetailScreen(
+            onBack = { navController.popBackStack() },
+            onOpenAiStudio = { tierListId, listTitle -> navController.navigateToAiStudio(tierListId, listTitle) },
+        )
+        settingsScreen(
+            onBack = { navController.popBackStack() },
+            onTrashClick = { navController.navigateToTrash() },
+            themeChoice = state.themeChoice,
+            onThemeChoiceChange = onThemeChoiceChange,
+            languageTag = state.languageTag,
+            onLanguageTagChange = onLanguageTagChange,
+        )
+        trashScreen(onBack = { navController.popBackStack() })
+        aiStudioScreen(
+            onBack = { navController.popBackStack() },
+            onCardAdded = { itemId ->
+                navController.previousBackStackEntry?.savedStateHandle?.set("ai_added_item_id", itemId)
+                navController.popBackStack()
+            },
+        )
     }
 }
