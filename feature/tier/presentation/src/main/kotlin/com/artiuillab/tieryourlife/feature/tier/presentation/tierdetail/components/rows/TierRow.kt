@@ -3,7 +3,6 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.compone
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -39,10 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -53,10 +48,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
-import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
@@ -69,13 +62,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDeta
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.DRAG_LONG_PRESS_TIMEOUT_MILLIS
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.DraggableTile
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.ForcedLeftToRightOverlay
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TIER_LIST_ITEM_SPACING
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.ShortLongPressViewConfiguration
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TierDropOutcome
-import kotlin.math.roundToInt
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.LayoutDirection
 
 private val MIN_TIER_ROW_HEIGHT = 84.dp
 
@@ -94,6 +84,7 @@ internal fun TierRow(
     onDeleteItem: (itemId: Long) -> Unit,
     onReorderTiers: (List<Long>) -> Unit,
     onDeleteTier: (tierId: Long) -> Unit,
+    modifier: Modifier = Modifier,
     onDoubleTap: (itemId: Long) -> Unit = {},
     onEditTier: (tierId: Long) -> Unit = {},
 ) {
@@ -120,8 +111,10 @@ internal fun TierRow(
     val dragViewConfiguration = remember(baseViewConfiguration) {
         ShortLongPressViewConfiguration(baseViewConfiguration, DRAG_LONG_PRESS_TIMEOUT_MILLIS)
     }
+    val density = LocalDensity.current
+    val slotHeightPx = with(density) { (MIN_TIER_ROW_HEIGHT + TIER_LIST_ITEM_SPACING).toPx() }
 
-    BoxWithConstraints(Modifier.fillMaxWidth()) {
+    BoxWithConstraints(modifier.fillMaxWidth()) {
         val bandMaxWidth = maxWidth * MAX_TIER_BAND_FRACTION
         Row(
             modifier = Modifier
@@ -162,6 +155,7 @@ internal fun TierRow(
                                                 rankedTierIds = rankedTierIds,
                                                 rootPosition = bandRootPosition + offsetInBand,
                                                 bandWidthPx = bandWidthPx,
+                                                slotHeightPx = slotHeightPx,
                                             )
                                         },
                                         onDrag = { change, dragAmount ->
@@ -277,81 +271,6 @@ private fun CollapsedItemCount(count: Int, modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-    }
-}
-
-@Composable
-internal fun FloatingDragRow(dragController: TierDragController, tier: Tier?) {
-    if (tier == null) return
-    val position = dragController.tierPointerPositionInRoot
-    val density = LocalDensity.current
-    val colors = tierRowColors(tier.colorLight, tier.colorDark)
-    val halfWidthPx = dragController.draggedTierBandWidthPx / 2f
-    val halfHeightPx = with(density) { (MIN_TIER_ROW_HEIGHT / 2).toPx() }
-    val shape = RoundedCornerShape(12.dp)
-
-    val readingDirection = LocalLayoutDirection.current
-    val rightToLeft = readingDirection == LayoutDirection.Rtl
-
-    ForcedLeftToRightOverlay {
-      CompositionLocalProvider(LocalLayoutDirection provides readingDirection) {
-        BoxWithConstraints(Modifier.fillMaxWidth()) {
-        val bandMaxWidth = maxWidth * MAX_TIER_BAND_FRACTION
-        val rowWidthPx = with(density) { maxWidth.toPx() }
-        Row(
-            modifier = Modifier
-                .absoluteOffset {
-                    val left = if (rightToLeft) {
-                        position.x + halfWidthPx - rowWidthPx
-                    } else {
-                        position.x - halfWidthPx
-                    }
-                    IntOffset(
-                        x = left.roundToInt(),
-                        y = (position.y - halfHeightPx).roundToInt(),
-                    )
-                }
-                .fillMaxWidth()
-                .height(MIN_TIER_ROW_HEIGHT)
-                .graphicsLayer {
-                    scaleX = 1.02f
-                    scaleY = 1.02f
-                }
-                .shadow(elevation = 8.dp, shape = shape)
-                .clip(shape)
-                .background(colors.rowTint)
-                .border(1.dp, Color.White.copy(alpha = if (TierYourLifeMedia.current.isDark) 0.14f else 0.6f), shape),
-        ) {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .widthIn(min = MIN_TIER_BAND_WIDTH, max = bandMaxWidth)
-                .background(colors.band)
-                .padding(top = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
-        ) {
-            Text(
-                text = tier.label,
-                style = TierYourLifeType.current.tierBandLetter,
-                color = colors.onBand,
-            )
-            tier.caption?.let { caption ->
-                if (LocalDensity.current.fontScale < CAPTION_HIDDEN_FONT_SCALE) {
-                    Text(
-                        text = caption,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = TierYourLifeType.current.tierBandCaption,
-                        color = colors.onBand.copy(alpha = 0.7f),
-                    )
-                }
-            }
-        }
-        CollapsedItemCount(count = tier.items.size, modifier = Modifier.weight(1f).fillMaxHeight())
-            }
-        }
-      }
     }
 }
 

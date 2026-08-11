@@ -10,6 +10,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+
+internal val TIER_LIST_ITEM_SPACING = 8.dp
 
 internal data class DragPayload(
     val itemId: Long,
@@ -60,6 +63,11 @@ internal class TierDragController {
 
     var draggedTierBandWidthPx by mutableFloatStateOf(0f)
         private set
+    var visualTierOrder by mutableStateOf<List<Long>>(emptyList())
+        private set
+    var draggedTierOffsetYPx by mutableFloatStateOf(0f)
+        private set
+    private var tierSlotHeightPx: Float = 0f
     private var rankedTierIdsAtDragStart: List<Long> = emptyList()
 
     val isDragging: Boolean get() = draggedPayload != null || draggedTierId != null
@@ -163,17 +171,35 @@ internal class TierDragController {
         }
     }
 
-    fun beginTierDrag(tierId: Long, rankedTierIds: List<Long>, rootPosition: Offset, bandWidthPx: Float) {
+    fun beginTierDrag(tierId: Long, rankedTierIds: List<Long>, rootPosition: Offset, bandWidthPx: Float, slotHeightPx: Float) {
         draggedTierId = tierId
         rankedTierIdsAtDragStart = rankedTierIds
         tierPointerPositionInRoot = rootPosition
         draggedTierBandWidthPx = bandWidthPx
+        tierSlotHeightPx = slotHeightPx
+        visualTierOrder = rankedTierIds
+        draggedTierOffsetYPx = 0f
         recomputeTierHover()
     }
 
     fun updateTierDrag(delta: Offset) {
-        if (draggedTierId == null) return
+        val tierId = draggedTierId ?: return
         tierPointerPositionInRoot += delta
+        draggedTierOffsetYPx += delta.y
+        val halfSlot = tierSlotHeightPx / 2f
+        var order = visualTierOrder
+        var index = order.indexOf(tierId)
+        while (draggedTierOffsetYPx > halfSlot && index >= 0 && index < order.size - 1) {
+            order = order.toMutableList().apply { add(index, removeAt(index + 1)) }
+            draggedTierOffsetYPx -= tierSlotHeightPx
+            index += 1
+        }
+        while (draggedTierOffsetYPx < -halfSlot && index > 0) {
+            order = order.toMutableList().apply { add(index, removeAt(index - 1)) }
+            draggedTierOffsetYPx += tierSlotHeightPx
+            index -= 1
+        }
+        visualTierOrder = order
         recomputeTierHover()
     }
 
@@ -192,6 +218,9 @@ internal class TierDragController {
         hoveredTarget = null
         rankedTierIdsAtDragStart = emptyList()
         draggedTierBandWidthPx = 0f
+        visualTierOrder = emptyList()
+        draggedTierOffsetYPx = 0f
+        tierSlotHeightPx = 0f
     }
 
     private fun recomputeTierHover() {
@@ -206,17 +235,11 @@ internal class TierDragController {
     private fun computeTierDrop(): TierDropOutcome? {
         val tierId = draggedTierId ?: return null
         if (hoveredTarget is DragTarget.Trash) return TierDropOutcome.Delete(tierId)
-
-        val others = rankedTierIdsAtDragStart
-            .filter { it != tierId && it in validTierIds }
-            .mapNotNull { id -> rowBounds[DragTarget.Tier(id)]?.let { id to it } }
-            .sortedBy { (_, rect) -> rect.top }
-        val pointerY = tierPointerPositionInRoot.y
-        val insertAt = others.indexOfFirst { (_, rect) -> pointerY < (rect.top + rect.bottom) / 2f }
-            .let { if (it < 0) others.size else it }
-        val newOrder = others.map { it.first }.toMutableList()
-        newOrder.add(insertAt.coerceIn(0, newOrder.size), tierId)
-        return TierDropOutcome.Reorder(newOrder)
+        return if (visualTierOrder != rankedTierIdsAtDragStart) {
+            TierDropOutcome.Reorder(visualTierOrder)
+        } else {
+            null
+        }
     }
 
     private fun computeDrop(): DropOutcome? {
