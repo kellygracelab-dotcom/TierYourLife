@@ -25,7 +25,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.AiStudioTestTags
 
@@ -108,4 +110,16 @@ private fun HintRow(text: String, testTag: String, onClick: () -> Unit) {
             color = MaterialTheme.colorScheme.onSurface,
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun EmptyStateLightPreview() = TierYourLifeTheme(false) {
+    EmptyState(onHintClick = {})
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun EmptyStateDarkPreview() = TierYourLifeTheme(true) {
+    EmptyState(onHintClick = {})
 }

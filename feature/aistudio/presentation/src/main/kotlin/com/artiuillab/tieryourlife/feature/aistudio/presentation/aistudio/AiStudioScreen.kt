@@ -33,9 +33,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.AiComposer
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.BackIcon
@@ -45,6 +48,9 @@ import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.compon
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.NamingDialog
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.PromptBubble
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.ResultCard
+import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioConversationState
+import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioEmptyState
+import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioFailedState
 
 internal object AiStudioTestTags {
     const val SCREEN = "ai_studio_screen"
@@ -226,4 +232,72 @@ private fun AiStudioTopBar(onBack: () -> Unit) {
             color = MaterialTheme.colorScheme.onSurface,
         )
     }
+}
+
+@TierYourLifeDevicePreviews
+@Composable
+private fun AiStudioScreenLightPreview() = TierYourLifeTheme(false) {
+    AiStudioScreenContent(
+        state = previewAiStudioConversationState,
+        listTitle = "Sci-fi films",
+        fieldText = "",
+        onFieldTextChange = {},
+        onBack = {},
+        onSend = {},
+        onHintClick = {},
+        onRetry = {},
+        onRegenerate = {},
+        onSaveCard = { _, _ -> },
+    )
+}
+
+@TierYourLifeDevicePreviews
+@Composable
+private fun AiStudioScreenDarkPreview() = TierYourLifeTheme(true) {
+    AiStudioScreenContent(
+        state = previewAiStudioConversationState,
+        listTitle = "Sci-fi films",
+        fieldText = "",
+        onFieldTextChange = {},
+        onBack = {},
+        onSend = {},
+        onHintClick = {},
+        onRetry = {},
+        onRegenerate = {},
+        onSaveCard = { _, _ -> },
+    )
+}
+
+@Preview(name = "Empty", device = "id:pixel_9", showBackground = true, showSystemUi = true)
+@Composable
+private fun AiStudioScreenEmptyPreview() = TierYourLifeTheme {
+    AiStudioScreenContent(
+        state = previewAiStudioEmptyState,
+        listTitle = "Sci-fi films",
+        fieldText = "",
+        onFieldTextChange = {},
+        onBack = {},
+        onSend = {},
+        onHintClick = {},
+        onRetry = {},
+        onRegenerate = {},
+        onSaveCard = { _, _ -> },
+    )
+}
+
+@Preview(name = "Error", device = "id:pixel_9", showBackground = true, showSystemUi = true)
+@Composable
+private fun AiStudioScreenErrorPreview() = TierYourLifeTheme {
+    AiStudioScreenContent(
+        state = previewAiStudioFailedState,
+        listTitle = "Sci-fi films",
+        fieldText = "",
+        onFieldTextChange = {},
+        onBack = {},
+        onSend = {},
+        onHintClick = {},
+        onRetry = {},
+        onRegenerate = {},
+        onSaveCard = { _, _ -> },
+    )
 }

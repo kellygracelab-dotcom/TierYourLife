@@ -38,7 +38,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -285,4 +287,38 @@ private fun CollapsedPoolAddChip(onClick: () -> Unit) {
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RankedListLightPreview() = TierYourLifeTheme(false) {
+    RankedList(rankedTiers = previewTierList.tiers.filterNot { it.isPool }, onSelect = {})
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RankedListDarkPreview() = TierYourLifeTheme(true) {
+    RankedList(rankedTiers = previewTierList.tiers.filterNot { it.isPool }, onSelect = {})
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RankedPoolSectionLightPreview() = TierYourLifeTheme(false) {
+    RankedPoolSection(
+        pool = previewTierList.tiers.first { it.isPool },
+        onAddClick = {},
+        onGenerateClick = {},
+        onSelect = {},
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RankedPoolSectionDarkPreview() = TierYourLifeTheme(true) {
+    RankedPoolSection(
+        pool = previewTierList.tiers.first { it.isPool },
+        onAddClick = {},
+        onGenerateClick = {},
+        onSelect = {},
+    )
 }

@@ -49,7 +49,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.DeleteSweepIcon
@@ -500,4 +502,22 @@ private fun TrashEmptyState() {
             )
         }
     }
+}
+
+@TierYourLifeDevicePreviews
+@Composable
+private fun TrashScreenLightPreview() = TierYourLifeTheme(false) {
+    TrashScreenContent(
+        state = TrashUiState.Success(previewTrashEntries),
+        onBack = {},
+    )
+}
+
+@TierYourLifeDevicePreviews
+@Composable
+private fun TrashScreenDarkPreview() = TierYourLifeTheme(true) {
+    TrashScreenContent(
+        state = TrashUiState.Success(previewTrashEntries),
+        onBack = {},
+    )
 }
