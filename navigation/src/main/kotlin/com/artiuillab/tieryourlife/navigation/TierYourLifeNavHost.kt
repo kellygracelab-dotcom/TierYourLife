@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife
+package com.artiuillab.tieryourlife.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -19,9 +19,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.trashScreen
 
 @Composable
-fun AppNavHost(
-    state: AppUiState,
+fun TierYourLifeNavHost(
+    themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
+    languageTag: String?,
     onLanguageTagChange: (String?) -> Unit,
     navController: NavHostController = rememberNavController(),
 ) {
@@ -46,9 +47,9 @@ fun AppNavHost(
         settingsScreen(
             onBack = { navController.popBackStack() },
             onTrashClick = { navController.navigateToTrash() },
-            themeChoice = state.themeChoice,
+            themeChoice = themeChoice,
             onThemeChoiceChange = onThemeChoiceChange,
-            languageTag = state.languageTag,
+            languageTag = languageTag,
             onLanguageTagChange = onLanguageTagChange,
         )
         trashScreen(onBack = { navController.popBackStack() })
