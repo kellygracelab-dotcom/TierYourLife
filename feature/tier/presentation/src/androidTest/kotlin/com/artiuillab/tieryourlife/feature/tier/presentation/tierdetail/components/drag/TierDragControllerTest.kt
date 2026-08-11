@@ -118,6 +118,7 @@ class TierDragControllerTest {
 
         assertEquals(listOf(2L, 1L, 3L), controller.visualTierOrder)
         assertEquals(TierDropOutcome.Reorder(listOf(2L, 1L, 3L)), controller.endTierDrag())
+        assertEquals(listOf(2L, 1L, 3L), controller.visualTierOrder)
     }
 
     @Test
@@ -190,6 +191,8 @@ class TierDragControllerTest {
 
         assertEquals(listOf(1L, 2L, 3L), controller.visualTierOrder)
         assertNull(controller.endTierDrag())
+        assertEquals(true, controller.isSettlingTier)
+        assertEquals(listOf(1L, 2L, 3L), controller.visualTierOrder)
     }
 
     @Test
@@ -208,6 +211,8 @@ class TierDragControllerTest {
         controller.updateTierDrag(Offset(850f, 60f))
 
         assertEquals(TierDropOutcome.Delete(1L), controller.endTierDrag())
+        assertEquals(false, controller.isSettlingTier)
+        assertEquals(emptyList<Long>(), controller.visualTierOrder)
     }
 
     @Test
@@ -226,6 +231,104 @@ class TierDragControllerTest {
         controller.updateTierDrag(Offset(850f, 5f))
 
         assertEquals(TierDropOutcome.Delete(1L), controller.endTierDrag())
+    }
+
+    @Test
+    fun endTierDragWithReorder_entersSettleAndKeepsTheVisualOrderAndOffset() {
+        val controller = TierDragController()
+        controller.setValidTargets(tierIds = listOf(1L, 2L, 3L), itemIds = emptyList())
+        controller.beginTierDrag(
+            tierId = 1L,
+            rankedTierIds = listOf(1L, 2L, 3L),
+            rootPosition = Offset(100f, 100f),
+            bandWidthPx = 80f,
+            slotHeightPx = 100f,
+        )
+
+        controller.updateTierDrag(Offset(0f, 60f))
+        val outcome = controller.endTierDrag()
+
+        assertEquals(TierDropOutcome.Reorder(listOf(2L, 1L, 3L)), outcome)
+        assertEquals(1L, controller.settlingTierId)
+        assertEquals(true, controller.isSettlingTier)
+        assertNull(controller.draggedTierId)
+        assertEquals(false, controller.isDraggingTier)
+        assertEquals(listOf(2L, 1L, 3L), controller.visualTierOrder)
+    }
+
+    @Test
+    fun finishSettling_clearsSettleStateCompletely() {
+        val controller = TierDragController()
+        controller.setValidTargets(tierIds = listOf(1L, 2L, 3L), itemIds = emptyList())
+        controller.beginTierDrag(
+            tierId = 1L,
+            rankedTierIds = listOf(1L, 2L, 3L),
+            rootPosition = Offset(100f, 100f),
+            bandWidthPx = 80f,
+            slotHeightPx = 100f,
+        )
+        controller.updateTierDrag(Offset(0f, 60f))
+        controller.endTierDrag()
+
+        controller.finishSettling()
+
+        assertNull(controller.settlingTierId)
+        assertEquals(false, controller.isSettlingTier)
+        assertEquals(emptyList<Long>(), controller.visualTierOrder)
+        assertEquals(0f, controller.draggedTierOffsetYPx)
+    }
+
+    @Test
+    fun beginningANewTierDrag_whileStillSettling_resetsTheOldSettleFirst() {
+        val controller = TierDragController()
+        controller.setValidTargets(tierIds = listOf(1L, 2L, 3L), itemIds = emptyList())
+        controller.beginTierDrag(
+            tierId = 1L,
+            rankedTierIds = listOf(1L, 2L, 3L),
+            rootPosition = Offset(100f, 100f),
+            bandWidthPx = 80f,
+            slotHeightPx = 100f,
+        )
+        controller.updateTierDrag(Offset(0f, 60f))
+        controller.endTierDrag()
+        assertEquals(true, controller.isSettlingTier)
+
+        controller.beginTierDrag(
+            tierId = 3L,
+            rankedTierIds = listOf(2L, 1L, 3L),
+            rootPosition = Offset(100f, 300f),
+            bandWidthPx = 80f,
+            slotHeightPx = 100f,
+        )
+
+        assertNull(controller.settlingTierId)
+        assertEquals(false, controller.isSettlingTier)
+        assertEquals(3L, controller.draggedTierId)
+        assertEquals(listOf(2L, 1L, 3L), controller.visualTierOrder)
+        assertEquals(0f, controller.draggedTierOffsetYPx)
+    }
+
+    @Test
+    fun endTierDragWithDelete_skipsSettleAndClearsEverythingImmediately() {
+        val controller = TierDragController()
+        controller.setValidTargets(tierIds = listOf(1L, 2L, 3L), itemIds = emptyList())
+        controller.registerTrashBounds(Rect(900f, 0f, 1000f, 5000f))
+        controller.beginTierDrag(
+            tierId = 1L,
+            rankedTierIds = listOf(1L, 2L, 3L),
+            rootPosition = Offset(100f, 100f),
+            bandWidthPx = 80f,
+            slotHeightPx = 100f,
+        )
+
+        controller.updateTierDrag(Offset(850f, 60f))
+        val outcome = controller.endTierDrag()
+
+        assertEquals(TierDropOutcome.Delete(1L), outcome)
+        assertNull(controller.settlingTierId)
+        assertEquals(false, controller.isSettlingTier)
+        assertEquals(emptyList<Long>(), controller.visualTierOrder)
+        assertEquals(0f, controller.draggedTierOffsetYPx)
     }
 
     private fun dragged() = DragPayload(

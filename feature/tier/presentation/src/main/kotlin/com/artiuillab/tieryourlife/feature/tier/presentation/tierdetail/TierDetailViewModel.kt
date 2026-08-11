@@ -102,6 +102,16 @@ class TierDetailViewModel @Inject constructor(
 
     fun reorderTiers(orderedTierIds: List<Long>) {
         markTouched()
+        val current = _state.value
+        if (current is TierDetailUiState.Success) {
+            val orderedSet = orderedTierIds.toSet()
+            val byId = current.list.tiers.associateBy { it.id }
+            val queue = ArrayDeque(orderedTierIds.mapNotNull { byId[it] })
+            val reorderedTiers = current.list.tiers.map { tier ->
+                if (tier.id in orderedSet) queue.removeFirst() else tier
+            }
+            _state.value = TierDetailUiState.Success(current.list.copy(tiers = reorderedTiers))
+        }
         viewModelScope.launch {
             repository.reorderTiers(orderedTierIds)
             loadTierList()
