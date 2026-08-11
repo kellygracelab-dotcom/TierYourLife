@@ -199,29 +199,39 @@ internal fun RankedPoolSection(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { expanded = !expanded }
-                .semantics(mergeDescendants = true) { contentDescription = description }
-                .testTag(TierDetailTestTags.RANKED_POOL_COLLAPSED)
                 .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Box(Modifier.rotate(if (expanded) 180f else 0f)) {
-                ExpandLessIcon(20.dp, MaterialTheme.colorScheme.onSurfaceVariant)
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { expanded = !expanded }
+                    .semantics(mergeDescendants = true) { contentDescription = description }
+                    .testTag(TierDetailTestTags.RANKED_POOL_COLLAPSED),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Box(Modifier.rotate(if (expanded) 180f else 0f)) {
+                    ExpandLessIcon(20.dp, MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Text(
+                    text = pluralStringResource(
+                        R.plurals.tier_detail_pool_unranked_count,
+                        pool.items.size,
+                        pool.items.size,
+                    ),
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
             }
-            Text(
-                text = pluralStringResource(
-                    R.plurals.tier_detail_pool_unranked_count,
-                    pool.items.size,
-                    pool.items.size,
-                ),
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            CollapsedPoolAddChip(onClick = onAddClick)
-            Spacer(Modifier.width(8.dp))
-            GenerateChip(onClick = onGenerateClick)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                CollapsedPoolAddChip(onClick = onAddClick)
+                GenerateChip(onClick = onGenerateClick)
+            }
         }
 
         if (expanded) {
