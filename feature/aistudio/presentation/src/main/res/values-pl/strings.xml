@@ -1,0 +1,27 @@
+<resources>
+    <string name="ai_title">Generuj obraz</string>
+    <string name="ai_caption">Nowe karty trafiają do puli „%1$s”.</string>
+    <string name="ai_empty_title">Opisz obraz</string>
+    <string name="ai_empty_body">AI go narysuje. Te, które Ci się spodobają, zachowaj jako karty.</string>
+    <string name="ai_hints_label">Wypróbuj jedną z tych podpowiedzi</string>
+    <string name="ai_hint_1">Rozświetlona neonami ulica Tokio w deszczu</string>
+    <string name="ai_hint_2">Samotna postać na czerwonej pustynnej planecie</string>
+    <string name="ai_hint_3">Okładka w stylu retro VHS z pogrubioną czcionką</string>
+    <string name="ai_field_hint">Opisz obraz</string>
+    <string name="ai_generating">Generowanie…</string>
+    <string name="ai_not_saved">Jeszcze nie zapisano</string>
+    <string name="action_add_to_list">Dodaj do listy</string>
+    <string name="action_regenerate">Wygeneruj ponownie</string>
+    <string name="ai_error_title">Nie udało się wygenerować obrazu</string>
+    <string name="ai_error_body">Sprawdź połączenie lub spróbuj innego opisu.</string>
+    <string name="ai_name_title">Nazwij tę kartę</string>
+    <string name="ai_name_body">Trafia do puli. Później możesz przeciągnąć ją na poziom.</string>
+    <string name="ai_name_photo_note">Wygenerowany obraz stanie się zdjęciem karty.</string>
+    <string name="ai_name_field">Nazwa</string>
+    <string name="action_add">Dodaj</string>
+    <string name="action_cancel">Anuluj</string>
+    <string name="action_try_again">Spróbuj ponownie</string>
+    <string name="cd_ai_send">Generuj</string>
+    <string name="cd_back">Wstecz</string>
+    <string name="cd_ai_badge">Wygenerowane przez AI</string>
+</resources>

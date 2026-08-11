@@ -19,7 +19,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.view.ActiveTierListVi
         ActiveTierListView::class,
         ActiveTierItemView::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 abstract class TierDatabase : RoomDatabase() {

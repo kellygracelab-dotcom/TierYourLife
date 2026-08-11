@@ -1,0 +1,27 @@
+<resources>
+    <string name="ai_title">Generate an image</string>
+    <string name="ai_caption">New cards go into the “%1$s” pool.</string>
+    <string name="ai_empty_title">Describe an image</string>
+    <string name="ai_empty_body">The AI draws it. Keep the ones you like as cards.</string>
+    <string name="ai_hints_label">Try one of these</string>
+    <string name="ai_hint_1">A neon-lit Tokyo street in the rain</string>
+    <string name="ai_hint_2">A lone figure on a red desert planet</string>
+    <string name="ai_hint_3">A retro VHS cover with bold type</string>
+    <string name="ai_field_hint">Describe an image</string>
+    <string name="ai_generating">Generating…</string>
+    <string name="ai_not_saved">Not saved yet</string>
+    <string name="action_add_to_list">Add to list</string>
+    <string name="action_regenerate">Regenerate</string>
+    <string name="ai_error_title">Couldn\'t generate that image</string>
+    <string name="ai_error_body">Check your connection, or try a different description.</string>
+    <string name="ai_name_title">Name this card</string>
+    <string name="ai_name_body">Goes into the pool. You can drag it into a tier afterwards.</string>
+    <string name="ai_name_photo_note">The generated image becomes the card\'s photo.</string>
+    <string name="ai_name_field">Name</string>
+    <string name="action_add">Add</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_try_again">Try again</string>
+    <string name="cd_ai_send">Generate</string>
+    <string name="cd_back">Navigate back</string>
+    <string name="cd_ai_badge">Generated with AI</string>
+</resources>

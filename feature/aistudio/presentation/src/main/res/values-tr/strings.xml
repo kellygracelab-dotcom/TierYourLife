@@ -1,0 +1,27 @@
+<resources>
+    <string name="ai_title">Görsel oluştur</string>
+    <string name="ai_caption">Yeni kartlar “%1$s” havuzuna eklenir.</string>
+    <string name="ai_empty_title">Bir görsel tanımlayın</string>
+    <string name="ai_empty_body">Yapay zekâ onu çizer. Beğendiklerinizi kart olarak saklayın.</string>
+    <string name="ai_hints_label">Bunlardan birini deneyin</string>
+    <string name="ai_hint_1">Yağmurda neon ışıklı bir Tokyo sokağı</string>
+    <string name="ai_hint_2">Kırmızı bir çöl gezegeninde yalnız bir figür</string>
+    <string name="ai_hint_3">Kalın yazı tipli retro bir VHS kapağı</string>
+    <string name="ai_field_hint">Bir görsel tanımlayın</string>
+    <string name="ai_generating">Oluşturuluyor…</string>
+    <string name="ai_not_saved">Henüz kaydedilmedi</string>
+    <string name="action_add_to_list">Listeye ekle</string>
+    <string name="action_regenerate">Yeniden oluştur</string>
+    <string name="ai_error_title">Bu görsel oluşturulamadı</string>
+    <string name="ai_error_body">Bağlantınızı kontrol edin veya farklı bir açıklama deneyin.</string>
+    <string name="ai_name_title">Bu kartı adlandırın</string>
+    <string name="ai_name_body">Havuza eklenir. Sonra bir seviyeye sürükleyebilirsiniz.</string>
+    <string name="ai_name_photo_note">Oluşturulan görsel, kartın fotoğrafı olur.</string>
+    <string name="ai_name_field">Ad</string>
+    <string name="action_add">Ekle</string>
+    <string name="action_cancel">Vazgeç</string>
+    <string name="action_try_again">Yeniden dene</string>
+    <string name="cd_ai_send">Oluştur</string>
+    <string name="cd_back">Geri</string>
+    <string name="cd_ai_badge">Yapay zekâ ile oluşturuldu</string>
+</resources>

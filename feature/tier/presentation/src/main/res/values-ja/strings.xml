@@ -68,6 +68,13 @@
     <string name="tier_detail_item_moved_to_trash">%1$s をゴミ箱に移動しました</string>
     <string name="tier_detail_tier_moved_to_trash">ティア %1$s をゴミ箱に移動しました</string>
     <string name="tier_detail_snackbar_undo">元に戻す</string>
+    <plurals name="tier_detail_items_added_to_pool">
+        <item quantity="other">%1$d件をプールに追加しました</item>
+    </plurals>
+
+    <string name="ai_chip">生成</string>
+    <string name="cd_ai_chip">AIで画像を生成</string>
+    <string name="cd_ai_badge">AIで生成</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="other">%1$d件</item>

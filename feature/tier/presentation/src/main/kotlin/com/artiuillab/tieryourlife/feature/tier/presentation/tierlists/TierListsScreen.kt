@@ -27,11 +27,9 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
@@ -44,37 +42,23 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.FormatListBulletedIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeHeader
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchOffIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchTopBar
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SelectionTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.TierListCard
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.previewTierLists
 import kotlinx.coroutines.launch
-
-internal object TierListsTestTags {
-    const val LOADING = "tier_lists_loading"
-    const val LISTS = "tier_lists"
-    const val SEARCH_FIELD = "home_search_field"
-    const val SEARCH_CLOSE = "home_search_close"
-    const val SEARCH_CLEAR = "home_search_clear"
-    const val SEARCH_RESULTS_COUNT = "home_search_results_count"
-    const val SEARCH_NO_RESULTS = "home_search_no_results"
-    const val SELECTION_BAR = "home_selection_bar"
-    const val SELECTION_CLOSE = "home_selection_close"
-    const val SELECTION_DELETE = "home_selection_delete"
-    const val FAB = "home_fab"
-    const val EMPTY_STATE = "home_empty_state"
-    fun tierListCard(id: Long): String = "tier_list_card_$id"
-}
 
 @Composable
 fun TierListsScreen(
@@ -101,22 +85,6 @@ fun TierListsScreen(
         onUndoDelete = viewModel::restoreTierLists,
         onCreateList = { viewModel.createTierList(defaultListTitle, onNewListCreated) },
     )
-}
-
-@Composable
-internal fun OnResumeEffect(onResume: () -> Unit) {
-    val currentOnResume by rememberUpdatedState(onResume)
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                currentOnResume()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
 }
 
 @Composable

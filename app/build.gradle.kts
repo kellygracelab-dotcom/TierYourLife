@@ -40,8 +40,9 @@ android {
 dependencies {
     implementation(projects.core.settings)
     implementation(projects.core.theme)
+    implementation(projects.navigation)
     implementation(projects.feature.tier.data)
-    implementation(projects.feature.tier.presentation)
+    implementation(projects.feature.aistudio.data)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)

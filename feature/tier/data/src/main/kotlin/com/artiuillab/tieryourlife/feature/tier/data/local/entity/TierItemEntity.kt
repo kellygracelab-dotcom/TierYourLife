@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.local.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
@@ -27,5 +28,7 @@ data class TierItemEntity(
     val position: Int,
     val title: String,
     val imageUrl: String?,
+    @ColumnInfo(defaultValue = "'MANUAL'")
+    val source: String = "MANUAL",
     val deletedAt: Long? = null,
 )

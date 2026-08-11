@@ -41,9 +41,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ManualEntryDialog
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierDragController
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierRow
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TierDragController
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.TierRow
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets.ManualEntryDialog
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
@@ -204,6 +204,41 @@ class TierDetailScreenTest {
             .performTextInputSelection(TextRange(0))
 
         composeRule.runOnIdle { assertEquals(0, touchedCalls) }
+    }
+
+    @Test
+    fun autoTitleEdit_startInTitleEditTrue_consumesTheFlagOnce() {
+        var consumedCalls = 0
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierDetailScreenContent(
+                    state = TierDetailUiState.Success(defaultList()),
+                    startInTitleEdit = true,
+                    actions = TierDetailActions(onAutoTitleEditConsumed = { consumedCalls++ }),
+                )
+            }
+        }
+
+        composeRule.runOnIdle { assertEquals(1, consumedCalls) }
+    }
+
+    @Test
+    fun autoTitleEdit_startInTitleEditFalse_neverConsumesTheFlagAndTitleStaysAsText() {
+        var consumedCalls = 0
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierDetailScreenContent(
+                    state = TierDetailUiState.Success(defaultList()),
+                    startInTitleEdit = false,
+                    actions = TierDetailActions(onAutoTitleEditConsumed = { consumedCalls++ }),
+                )
+            }
+        }
+
+        composeRule.runOnIdle { assertEquals(0, consumedCalls) }
+        composeRule.onNodeWithContentDescription(
+            string(R.string.tier_detail_content_description_edit_title),
+        ).assertIsDisplayed()
     }
 
     @Test
@@ -684,6 +719,7 @@ class TierDetailScreenTest {
         val list = listOf(
             tier(id = 1, label = "S", items = List(24) { tierItem(it) }),
             tier(id = 2, label = "A", items = List(1) { tierItem(it + 100) }),
+            tier(id = 3, label = "B", items = List(6) { tierItem(it + 200) }),
             tier(id = 6, label = "Pool", items = emptyList(), isPool = true),
         ).asTierList()
         setScreen(TierDetailUiState.Success(list))
@@ -694,9 +730,21 @@ class TierDetailScreenTest {
 
         beginDrag(TierDetailTestTags.tierBand(1))
 
-        val during1 = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot.height
-        val during2 = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(2)).fetchSemanticsNode().boundsInRoot.height
-        assertEquals(during1, during2, 0.5f)
+        val liftedHeight = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot.height
+        val otherHeight1 = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(2)).fetchSemanticsNode().boundsInRoot.height
+        val otherHeight2 = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(3)).fetchSemanticsNode().boundsInRoot.height
+        assertEquals(
+            "every ranked row not being lifted collapses to the same height",
+            otherHeight1,
+            otherHeight2,
+            0.5f,
+        )
+        assertEquals(
+            "the lifted row keeps its pickup scale on top of the shared collapsed height",
+            otherHeight1 * 1.02f,
+            liftedHeight,
+            0.5f,
+        )
 
         cancelDrag(TierDetailTestTags.tierBand(1))
     }
@@ -758,7 +806,7 @@ class TierDetailScreenTest {
 
         composeRule.runOnIdle {
             assertEquals(1, callCount)
-            assertEquals(listOf(2L, 1L, 3L), reorderedIds)
+            assertEquals(listOf(2L, 3L, 1L), reorderedIds)
         }
     }
 
@@ -786,7 +834,7 @@ class TierDetailScreenTest {
         composeRule.waitForIdle()
 
         composeRule.runOnIdle {
-            assertFalse("the pool's id must never appear in a tier reorder", reorderedIds!!.contains(6L))
+            assertFalse("the pool's id must never appear in a tier reorder", reorderedIds.orEmpty().contains(6L))
         }
     }
 

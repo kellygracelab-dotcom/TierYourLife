@@ -1,0 +1,27 @@
+<resources>
+    <string name="ai_title">画像を生成</string>
+    <string name="ai_caption">新しいカードは「%1$s」プールに追加されます。</string>
+    <string name="ai_empty_title">画像を説明してください</string>
+    <string name="ai_empty_body">AIが描きます。気に入ったものはカードとして残せます。</string>
+    <string name="ai_hints_label">こちらをお試しください</string>
+    <string name="ai_hint_1">雨に濡れたネオン輝く東京の街</string>
+    <string name="ai_hint_2">赤い砂漠の惑星にたたずむ孤独な人物</string>
+    <string name="ai_hint_3">太い書体のレトロなVHSカバー</string>
+    <string name="ai_field_hint">画像を説明してください</string>
+    <string name="ai_generating">生成中…</string>
+    <string name="ai_not_saved">まだ保存されていません</string>
+    <string name="action_add_to_list">リストに追加</string>
+    <string name="action_regenerate">再生成</string>
+    <string name="ai_error_title">画像を生成できませんでした</string>
+    <string name="ai_error_body">接続を確認するか、別の説明を試してください。</string>
+    <string name="ai_name_title">カードに名前を付ける</string>
+    <string name="ai_name_body">プールに追加されます。あとでティアにドラッグできます。</string>
+    <string name="ai_name_photo_note">生成された画像がカードの写真になります。</string>
+    <string name="ai_name_field">名前</string>
+    <string name="action_add">追加</string>
+    <string name="action_cancel">キャンセル</string>
+    <string name="action_try_again">再試行</string>
+    <string name="cd_ai_send">生成</string>
+    <string name="cd_back">戻る</string>
+    <string name="cd_ai_badge">AIで生成</string>
+</resources>
