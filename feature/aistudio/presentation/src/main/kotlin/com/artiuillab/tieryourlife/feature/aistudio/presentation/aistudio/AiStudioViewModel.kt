@@ -36,24 +36,28 @@ class AiStudioViewModel @Inject constructor(
         val trimmed = prompt.trim()
         if (trimmed.isEmpty()) return
         val exchangeId = nextExchangeId++
-        _state.update { it.copy(exchanges = it.exchanges + AiExchange(exchangeId, trimmed, AiExchangePhase.Generating)) }
-        launchGeneration(exchangeId, trimmed)
+        _state.update {
+            it.copy(
+                exchanges = it.exchanges + AiExchange(exchangeId, trimmed, AiExchangePhase.Generating),
+                generating = true,
+            )
+        }
+        viewModelScope.launch { completeGeneration(exchangeId, trimmed) }
     }
 
     fun retry(exchangeId: Long) {
         if (_state.value.generating) return
         val exchange = _state.value.exchanges.firstOrNull { it.id == exchangeId } ?: return
-        updatePhase(exchangeId, AiExchangePhase.Generating)
-        launchGeneration(exchangeId, exchange.prompt)
+        startGenerating(exchangeId)
+        viewModelScope.launch { completeGeneration(exchangeId, exchange.prompt) }
     }
 
     fun regenerate(exchangeId: Long) {
         if (_state.value.generating) return
         val exchange = _state.value.exchanges.firstOrNull { it.id == exchangeId } ?: return
         val previousImage = (exchange.phase as? AiExchangePhase.Result)?.image
-        updatePhase(exchangeId, AiExchangePhase.Generating)
+        startGenerating(exchangeId)
         viewModelScope.launch {
-            _state.update { it.copy(generating = true) }
             if (previousImage != null) {
                 generator.discard(previousImage)
             }
@@ -70,27 +74,24 @@ class AiStudioViewModel @Inject constructor(
         }
     }
 
-    private fun launchGeneration(exchangeId: Long, prompt: String) {
-        viewModelScope.launch {
-            _state.update { it.copy(generating = true) }
-            completeGeneration(exchangeId, prompt)
+    private fun startGenerating(exchangeId: Long) {
+        _state.update { current ->
+            current.withPhase(exchangeId, AiExchangePhase.Generating).copy(generating = true)
         }
     }
 
     private suspend fun completeGeneration(exchangeId: Long, prompt: String) {
-        runCatching { generator.generate(prompt) }
-            .onSuccess { image -> updatePhase(exchangeId, AiExchangePhase.Result(image)) }
-            .onFailure { updatePhase(exchangeId, AiExchangePhase.Failed) }
-        _state.update { it.copy(generating = false) }
+        val phase = runCatching { generator.generate(prompt) }.fold(
+            onSuccess = { image -> AiExchangePhase.Result(image) },
+            onFailure = { AiExchangePhase.Failed },
+        )
+        _state.update { current -> current.withPhase(exchangeId, phase).copy(generating = false) }
     }
 
-    private fun updatePhase(exchangeId: Long, phase: AiExchangePhase) {
-        _state.update { current ->
-            current.copy(
-                exchanges = current.exchanges.map { exchange ->
-                    if (exchange.id == exchangeId) exchange.copy(phase = phase) else exchange
-                },
-            )
-        }
-    }
+    private fun AiStudioUiState.withPhase(exchangeId: Long, phase: AiExchangePhase): AiStudioUiState =
+        copy(
+            exchanges = exchanges.map { exchange ->
+                if (exchange.id == exchangeId) exchange.copy(phase = phase) else exchange
+            },
+        )
 }
