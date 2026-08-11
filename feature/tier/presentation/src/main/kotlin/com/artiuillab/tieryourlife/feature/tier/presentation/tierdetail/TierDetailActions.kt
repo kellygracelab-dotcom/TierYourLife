@@ -29,4 +29,5 @@ internal data class TierDetailActions(
     val onOpenAiStudio: (listTitle: String) -> Unit = {},
     val onConsumeAddedItem: () -> Unit = {},
     val onUndoAddedItem: (itemId: Long) -> Unit = {},
+    val onAutoTitleEditConsumed: () -> Unit = {},
 )
