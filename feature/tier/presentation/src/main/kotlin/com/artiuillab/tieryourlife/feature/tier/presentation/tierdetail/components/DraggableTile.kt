@@ -27,7 +27,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalViewConfiguration
-import androidx.compose.ui.platform.ViewConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -36,12 +35,7 @@ import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import kotlin.math.roundToInt
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.LayoutDirection
-
-internal const val DRAG_LONG_PRESS_TIMEOUT_MILLIS = 150L
 
 @Composable
 internal fun DraggableTile(
@@ -117,11 +111,6 @@ internal fun DraggableTile(
     }
 }
 
-internal class ShortLongPressViewConfiguration(
-    base: ViewConfiguration,
-    override val longPressTimeoutMillis: Long,
-) : ViewConfiguration by base
-
 @Composable
 internal fun FloatingDragTile(dragController: TierDragController) {
     val payload = dragController.draggedPayload ?: return
@@ -162,12 +151,5 @@ internal fun FloatingDragTile(dragController: TierDragController) {
                 )
             }
         }
-    }
-}
-
-@Composable
-internal fun ForcedLeftToRightOverlay(content: @Composable BoxScope.() -> Unit) {
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-        Box(Modifier.fillMaxSize(), content = content)
     }
 }

@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
+package com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,10 +13,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 
 @Composable
-internal fun GeneratedBadge(modifier: Modifier = Modifier) {
+internal fun AiBadge(modifier: Modifier = Modifier) {
     val description = stringResource(R.string.cd_ai_badge)
     Box(
         modifier = modifier
