@@ -6,9 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -70,7 +70,8 @@ class AiStudioScreenContentTest {
 
         composeRule.onNodeWithTag(AiStudioTestTags.hint(0)).performClick()
 
-        composeRule.onNodeWithText("A neon-lit Tokyo street in the rain").assertIsDisplayed()
+        composeRule.onNodeWithTag(AiStudioTestTags.FIELD)
+            .assertTextContains("A neon-lit Tokyo street in the rain")
         composeRule.runOnIdle { assertEquals(0, sentCount) }
     }
 

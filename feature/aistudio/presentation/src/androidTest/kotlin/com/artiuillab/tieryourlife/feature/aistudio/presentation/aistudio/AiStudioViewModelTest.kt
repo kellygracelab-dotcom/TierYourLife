@@ -18,14 +18,16 @@ class AiStudioViewModelTest {
 
     @Test
     fun send_showsGeneratingThenResult() = runBlocking {
-        val generator = FakeCardImageGenerator()
+        val generator = FakeCardImageGenerator().apply { armGate() }
         val viewModel = AiStudioViewModel(generator, FakeGeneratedCardSaver(), savedStateHandle())
 
         viewModel.send("A neon street")
+        generator.generateStarted.await()
         val generatingState = viewModel.state.first { it.exchanges.isNotEmpty() }
         assertEquals(AiExchangePhase.Generating, generatingState.exchanges.single().phase)
         assertEquals(true, generatingState.generating)
 
+        generator.releaseGenerate()
         val resultState = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
         assertEquals(false, resultState.generating)
         val image = (resultState.exchanges.single().phase as AiExchangePhase.Result).image
@@ -108,9 +110,21 @@ private class FakeCardImageGenerator : CardImageGenerator {
     var shouldFail = false
     var callCount = 0
     val discarded = mutableListOf<GeneratedCardImage>()
+    val generateStarted = CompletableDeferred<Unit>()
+    private var generateGate: CompletableDeferred<Unit> = CompletableDeferred<Unit>().apply { complete(Unit) }
+
+    fun armGate() {
+        generateGate = CompletableDeferred()
+    }
+
+    fun releaseGenerate() {
+        generateGate.complete(Unit)
+    }
 
     override suspend fun generate(prompt: String): GeneratedCardImage {
         callCount++
+        if (!generateStarted.isCompleted) generateStarted.complete(Unit)
+        generateGate.await()
         if (shouldFail) throw IOException("No active network")
         return GeneratedCardImage(prompt = prompt, imageUri = "file:///cache/aistudio/$callCount.png")
     }
