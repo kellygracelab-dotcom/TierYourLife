@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
@@ -31,7 +32,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -41,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
@@ -50,10 +54,10 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.FloatingDragTile
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TIER_LIST_ITEM_SPACING
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TrashTarget
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.FloatingDragRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.PoolPanel
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.RankedList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.RankedPoolSection
@@ -394,6 +398,14 @@ private fun TierScreenBody(
                     )
                 }
             } else {
+                val visualTierOrder = dragController.visualTierOrder
+                val displayedTiers = if (dragController.isDraggingTier && visualTierOrder.isNotEmpty()) {
+                    val indexById = visualTierOrder.withIndex().associate { (index, id) -> id to index }
+                    rankedTiers.sortedBy { indexById[it.id] ?: Int.MAX_VALUE }
+                } else {
+                    rankedTiers
+                }
+
                 LazyColumn(
                     state = tierListState,
                     modifier = Modifier
@@ -401,11 +413,24 @@ private fun TierScreenBody(
                         .fillMaxWidth()
                         .onGloballyPositioned { coordinates -> tierListBounds = coordinates.boundsInRoot() },
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(TIER_LIST_ITEM_SPACING),
                 ) {
-                    items(rankedTiers, key = { it.id }) { tier ->
+                    items(displayedTiers, key = { it.id }) { tier ->
+                        val itemModifier = if (tier.id == dragController.draggedTierId) {
+                            Modifier
+                                .zIndex(1f)
+                                .graphicsLayer {
+                                    translationY = dragController.draggedTierOffsetYPx
+                                    scaleX = 1.02f
+                                    scaleY = 1.02f
+                                }
+                                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                        } else {
+                            Modifier.animateItem()
+                        }
                         TierRow(
                             tier = tier,
+                            modifier = itemModifier,
                             displayMode = list.displayMode,
                             dragController = dragController,
                             rankedTierIds = rankedTiers.map { it.id },
@@ -440,7 +465,6 @@ private fun TierScreenBody(
                 modifier = Modifier.align(Alignment.TopEnd),
             )
             FloatingDragTile(dragController)
-            FloatingDragRow(dragController, rankedTiers.firstOrNull { it.id == dragController.draggedTierId })
         }
 
         val poolTop = pool?.id?.let { dragController.tierBounds(it)?.top }

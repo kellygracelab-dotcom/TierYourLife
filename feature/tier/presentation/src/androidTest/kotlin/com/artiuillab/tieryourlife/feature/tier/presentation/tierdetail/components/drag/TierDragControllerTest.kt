@@ -102,6 +102,132 @@ class TierDragControllerTest {
         assertEquals(DropOutcome.MoveTo(itemId = 7L, toTierId = 5L, toPosition = 3), arabic.endDrag())
     }
 
+    @Test
+    fun draggingATierDownPastHalfASlot_swapsItWithTheNextTier() {
+        val controller = TierDragController()
+        controller.setValidTargets(tierIds = listOf(1L, 2L, 3L), itemIds = emptyList())
+        controller.beginTierDrag(
+            tierId = 1L,
+            rankedTierIds = listOf(1L, 2L, 3L),
+            rootPosition = Offset(100f, 100f),
+            bandWidthPx = 80f,
+            slotHeightPx = 100f,
+        )
+
+        controller.updateTierDrag(Offset(0f, 60f))
+
+        assertEquals(listOf(2L, 1L, 3L), controller.visualTierOrder)
+        assertEquals(TierDropOutcome.Reorder(listOf(2L, 1L, 3L)), controller.endTierDrag())
+    }
+
+    @Test
+    fun draggingATierDownPastOneAndAHalfSlots_swapsItPastTwoTiers() {
+        val controller = TierDragController()
+        controller.setValidTargets(tierIds = listOf(1L, 2L, 3L), itemIds = emptyList())
+        controller.beginTierDrag(
+            tierId = 1L,
+            rankedTierIds = listOf(1L, 2L, 3L),
+            rootPosition = Offset(100f, 100f),
+            bandWidthPx = 80f,
+            slotHeightPx = 100f,
+        )
+
+        controller.updateTierDrag(Offset(0f, 160f))
+
+        assertEquals(listOf(2L, 3L, 1L), controller.visualTierOrder)
+        assertEquals(TierDropOutcome.Reorder(listOf(2L, 3L, 1L)), controller.endTierDrag())
+    }
+
+    @Test
+    fun draggingAMiddleTierUpPastHalfASlot_swapsItWithThePreviousTier() {
+        val controller = TierDragController()
+        controller.setValidTargets(tierIds = listOf(1L, 2L, 3L), itemIds = emptyList())
+        controller.beginTierDrag(
+            tierId = 2L,
+            rankedTierIds = listOf(1L, 2L, 3L),
+            rootPosition = Offset(100f, 200f),
+            bandWidthPx = 80f,
+            slotHeightPx = 100f,
+        )
+
+        controller.updateTierDrag(Offset(0f, -60f))
+
+        assertEquals(listOf(2L, 1L, 3L), controller.visualTierOrder)
+        assertEquals(TierDropOutcome.Reorder(listOf(2L, 1L, 3L)), controller.endTierDrag())
+    }
+
+    @Test
+    fun draggingTheLastTierUpPastOneAndAHalfSlots_swapsItPastTwoTiers() {
+        val controller = TierDragController()
+        controller.setValidTargets(tierIds = listOf(1L, 2L, 3L, 4L), itemIds = emptyList())
+        controller.beginTierDrag(
+            tierId = 4L,
+            rankedTierIds = listOf(1L, 2L, 3L, 4L),
+            rootPosition = Offset(100f, 400f),
+            bandWidthPx = 80f,
+            slotHeightPx = 100f,
+        )
+
+        controller.updateTierDrag(Offset(0f, -160f))
+
+        assertEquals(listOf(1L, 4L, 2L, 3L), controller.visualTierOrder)
+        assertEquals(TierDropOutcome.Reorder(listOf(1L, 4L, 2L, 3L)), controller.endTierDrag())
+    }
+
+    @Test
+    fun draggingATierWithoutCrossingHalfASlot_dropsAsNoOp() {
+        val controller = TierDragController()
+        controller.setValidTargets(tierIds = listOf(1L, 2L, 3L), itemIds = emptyList())
+        controller.beginTierDrag(
+            tierId = 1L,
+            rankedTierIds = listOf(1L, 2L, 3L),
+            rootPosition = Offset(100f, 100f),
+            bandWidthPx = 80f,
+            slotHeightPx = 100f,
+        )
+
+        controller.updateTierDrag(Offset(0f, 40f))
+
+        assertEquals(listOf(1L, 2L, 3L), controller.visualTierOrder)
+        assertNull(controller.endTierDrag())
+    }
+
+    @Test
+    fun hoveringATierOverTheTrash_alwaysDropsAsDelete() {
+        val controller = TierDragController()
+        controller.setValidTargets(tierIds = listOf(1L, 2L, 3L), itemIds = emptyList())
+        controller.registerTrashBounds(Rect(900f, 0f, 1000f, 5000f))
+        controller.beginTierDrag(
+            tierId = 1L,
+            rankedTierIds = listOf(1L, 2L, 3L),
+            rootPosition = Offset(100f, 100f),
+            bandWidthPx = 80f,
+            slotHeightPx = 100f,
+        )
+
+        controller.updateTierDrag(Offset(850f, 60f))
+
+        assertEquals(TierDropOutcome.Delete(1L), controller.endTierDrag())
+    }
+
+    @Test
+    fun hoveringATierOverTheTrash_dropsAsDelete_evenWithoutCrossingHalfASlot() {
+        val controller = TierDragController()
+        controller.setValidTargets(tierIds = listOf(1L, 2L, 3L), itemIds = emptyList())
+        controller.registerTrashBounds(Rect(900f, 0f, 1000f, 5000f))
+        controller.beginTierDrag(
+            tierId = 1L,
+            rankedTierIds = listOf(1L, 2L, 3L),
+            rootPosition = Offset(100f, 100f),
+            bandWidthPx = 80f,
+            slotHeightPx = 100f,
+        )
+
+        controller.updateTierDrag(Offset(850f, 5f))
+
+        assertEquals(TierDropOutcome.Delete(1L), controller.endTierDrag())
+    }
+
     private fun dragged() = DragPayload(
         itemId = 7L,
         title = "dragged",
