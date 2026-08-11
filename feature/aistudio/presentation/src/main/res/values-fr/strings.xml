@@ -1,0 +1,27 @@
+<resources>
+    <string name="ai_title">Générer une image</string>
+    <string name="ai_caption">Les nouvelles cartes vont dans le réservoir « %1$s ».</string>
+    <string name="ai_empty_title">Décrivez une image</string>
+    <string name="ai_empty_body">L\'IA la dessine. Gardez celles que vous aimez comme cartes.</string>
+    <string name="ai_hints_label">Essayez l\'une de ces idées</string>
+    <string name="ai_hint_1">Une rue de Tokyo illuminée de néons sous la pluie</string>
+    <string name="ai_hint_2">Une silhouette isolée sur une planète désertique rouge</string>
+    <string name="ai_hint_3">Une jaquette VHS rétro avec une typographie audacieuse</string>
+    <string name="ai_field_hint">Décrivez une image</string>
+    <string name="ai_generating">Génération…</string>
+    <string name="ai_not_saved">Pas encore enregistrée</string>
+    <string name="action_add_to_list">Ajouter à la liste</string>
+    <string name="action_regenerate">Régénérer</string>
+    <string name="ai_error_title">Impossible de générer cette image</string>
+    <string name="ai_error_body">Vérifiez votre connexion ou essayez une autre description.</string>
+    <string name="ai_name_title">Nommez cette carte</string>
+    <string name="ai_name_body">Elle va dans le réservoir. Vous pourrez la glisser vers un niveau ensuite.</string>
+    <string name="ai_name_photo_note">L\'image générée devient la photo de la carte.</string>
+    <string name="ai_name_field">Nom</string>
+    <string name="action_add">Ajouter</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_try_again">Réessayer</string>
+    <string name="cd_ai_send">Générer</string>
+    <string name="cd_back">Retour</string>
+    <string name="cd_ai_badge">Généré avec l\'IA</string>
+</resources>
