@@ -9,12 +9,15 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.VectorIcon
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Composable
 internal fun BackIcon() {
@@ -183,4 +186,30 @@ internal fun PhotoLibraryIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize,
     drawCircle(color, radius = 1.3f * scale, center = Offset(7f * scale, 10.5f * scale))
     drawLine(color, Offset(5f * scale, 17f * scale), Offset(9.5f * scale, 12.5f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(9.5f * scale, 12.5f * scale), Offset(16f * scale, 19f * scale), stroke, StrokeCap.Round)
+}
+
+@Composable
+internal fun AutoAwesomeIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    drawSparkle(color, scale)
+}
+
+internal fun DrawScope.drawSparkle(
+    color: Color,
+    scale: Float,
+    centerX: Float = 12f,
+    centerY: Float = 12f,
+    outerRadius: Float = 9f,
+    innerRadius: Float = 3.6f,
+) {
+    val path = Path()
+    for (index in 0 until 8) {
+        val angleDegrees = -90.0 + index * 45.0
+        val radius = if (index % 2 == 0) outerRadius else innerRadius
+        val angleRadians = Math.toRadians(angleDegrees)
+        val x = (centerX + radius * cos(angleRadians)).toFloat() * scale
+        val y = (centerY + radius * sin(angleRadians)).toFloat() * scale
+        if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
+    }
+    path.close()
+    drawPath(path, color)
 }

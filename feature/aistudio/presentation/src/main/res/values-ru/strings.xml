@@ -1,0 +1,27 @@
+<resources>
+    <string name="ai_title">Сгенерировать изображение</string>
+    <string name="ai_caption">Новые карточки попадают в пул «%1$s».</string>
+    <string name="ai_empty_title">Опишите изображение</string>
+    <string name="ai_empty_body">ИИ нарисует его. Понравившиеся сохраняйте как карточки.</string>
+    <string name="ai_hints_label">Попробуйте один из вариантов</string>
+    <string name="ai_hint_1">Неоновая улица Токио под дождём</string>
+    <string name="ai_hint_2">Одинокая фигура на красной пустынной планете</string>
+    <string name="ai_hint_3">Обложка в стиле ретро-VHS с крупным шрифтом</string>
+    <string name="ai_field_hint">Опишите изображение</string>
+    <string name="ai_generating">Генерация…</string>
+    <string name="ai_not_saved">Пока не сохранено</string>
+    <string name="action_add_to_list">Добавить в список</string>
+    <string name="action_regenerate">Сгенерировать заново</string>
+    <string name="ai_error_title">Не удалось сгенерировать изображение</string>
+    <string name="ai_error_body">Проверьте соединение или попробуйте другое описание.</string>
+    <string name="ai_name_title">Назовите карточку</string>
+    <string name="ai_name_body">Попадает в пул. Потом можно перетащить его на уровень.</string>
+    <string name="ai_name_photo_note">Сгенерированное изображение станет фото карточки.</string>
+    <string name="ai_name_field">Название</string>
+    <string name="action_add">Добавить</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_try_again">Повторить</string>
+    <string name="cd_ai_send">Сгенерировать</string>
+    <string name="cd_back">Назад</string>
+    <string name="cd_ai_badge">Сгенерировано ИИ</string>
+</resources>

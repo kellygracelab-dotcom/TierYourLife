@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
@@ -31,15 +34,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
@@ -47,91 +54,27 @@ import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddItemsSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.FloatingDragRow
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.FloatingDragTile
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ManualEntryDialog
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.MoveItemSheet
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PoolPanel
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.RankedList
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.RankedPoolSection
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierDragController
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierEditorSheet
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierListSettingsScreenContent
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierRow
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TrashTarget
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.FloatingDragTile
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TIER_LIST_ITEM_SPACING
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TierDragController
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TrashTarget
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.PoolPanel
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.RankedList
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.RankedPoolSection
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.TierRow
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.TierScreenTopBar
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets.AddItemsSheet
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets.ManualEntryDialog
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets.MoveItemSheet
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets.TierEditorSheet
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets.TierListSettingsScreenContent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
-
-internal object TierDetailTestTags {
-    const val LOADING = "tier_detail_loading"
-    const val HEADER_TITLE = "tier_detail_header_title"
-    const val ADD_CHIP = "tier_detail_add_chip"
-    const val POOL_ITEMS = "tier_detail_pool_items"
-    const val POOL_PANEL = "tier_detail_pool_panel"
-    const val MOVE_SHEET = "tier_detail_move_sheet"
-    const val MOVE_SHEET_REMOVE = "tier_detail_move_sheet_remove"
-    const val MOVE_SHEET_POOL = "tier_detail_move_sheet_pool"
-    const val TRASH_TARGET = "tier_detail_trash_target"
-    const val FLOATING_DRAG_TILE = "tier_detail_floating_drag_tile"
-    const val DELETED_ITEM_SNACKBAR = "tier_detail_deleted_item_snackbar"
-    const val RANKED_LIST = "tier_detail_ranked_list"
-    const val RANKED_HEADER = "tier_detail_ranked_header"
-    const val RANKED_POOL_COLLAPSED = "tier_detail_ranked_pool_collapsed"
-    const val RANKED_POOL_ITEMS = "tier_detail_ranked_pool_items"
-    const val LIST_SETTINGS_SCREEN = "tier_detail_list_settings_screen"
-    const val LIST_SETTINGS_MODE_WRAP = "tier_detail_list_settings_mode_wrap"
-    const val LIST_SETTINGS_MODE_STRIP = "tier_detail_list_settings_mode_strip"
-    const val LIST_SETTINGS_MODE_RANKED = "tier_detail_list_settings_mode_ranked"
-    const val NEW_TIER_ROW = "tier_detail_new_tier_row"
-    const val TIER_EDITOR_SHEET = "tier_detail_tier_editor_sheet"
-    const val TIER_EDITOR_LABEL_FIELD = "tier_detail_tier_editor_label_field"
-    const val TIER_EDITOR_CAPTION_FIELD = "tier_detail_tier_editor_caption_field"
-    const val TIER_EDITOR_CANCEL = "tier_detail_tier_editor_cancel"
-    const val TIER_EDITOR_SAVE = "tier_detail_tier_editor_save"
-    const val TIER_EDITOR_CUSTOM_SWATCH = "tier_detail_tier_editor_custom_swatch"
-    const val TIER_EDITOR_CUSTOM_TAB_LIGHT = "tier_detail_tier_editor_custom_tab_light"
-    const val TIER_EDITOR_CUSTOM_TAB_DARK = "tier_detail_tier_editor_custom_tab_dark"
-    const val TIER_EDITOR_HUE_SLIDER = "tier_detail_tier_editor_hue_slider"
-    const val TIER_EDITOR_SATURATION_SLIDER = "tier_detail_tier_editor_saturation_slider"
-    const val TIER_EDITOR_LIGHTNESS_SLIDER = "tier_detail_tier_editor_lightness_slider"
-    const val TIER_EDITOR_HEX_FIELD = "tier_detail_tier_editor_hex_field"
-    const val TIER_EDITOR_CONTRAST_READOUT = "tier_detail_tier_editor_contrast_readout"
-    const val TIER_EDITOR_PREVIEW_LIGHT = "tier_detail_tier_editor_preview_light"
-    const val TIER_EDITOR_PREVIEW_DARK = "tier_detail_tier_editor_preview_dark"
-    const val ITEM_SEARCH_FIELD = "tier_detail_item_search_field"
-    const val ITEM_SEARCH_CLOSE = "tier_detail_item_search_close"
-    const val ITEM_SEARCH_CLEAR = "tier_detail_item_search_clear"
-    const val ITEM_SEARCH_SELECTED_COUNT = "tier_detail_item_search_selected_count"
-    const val ITEM_SEARCH_CONFIRM = "tier_detail_item_search_confirm"
-    const val ITEM_SEARCH_TRY_AGAIN = "tier_detail_item_search_try_again"
-    const val ITEM_SEARCH_RESULTS_LIST = "tier_detail_item_search_results_list"
-    const val ITEM_SEARCH_BOTTOM_BAR = "tier_detail_item_search_bottom_bar"
-    const val MANUAL_ADD_BUTTON = "tier_detail_manual_add_button"
-    const val MANUAL_ENTRY_DIALOG = "tier_detail_manual_entry_dialog"
-    const val MANUAL_ENTRY_NAME_FIELD = "tier_detail_manual_entry_name_field"
-    const val MANUAL_ENTRY_PHOTO_FRAME = "tier_detail_manual_entry_photo_frame"
-    const val MANUAL_ENTRY_CHOOSE_PHOTO = "tier_detail_manual_entry_choose_photo"
-    const val MANUAL_ENTRY_REMOVE_PHOTO = "tier_detail_manual_entry_remove_photo"
-    const val MANUAL_ENTRY_CANCEL = "tier_detail_manual_entry_cancel"
-    const val MANUAL_ENTRY_SAVE = "tier_detail_manual_entry_save"
-    fun itemSearchResult(id: String): String = "tier_detail_item_search_result_$id"
-    fun tierRow(tierId: Long): String = "tier_detail_row_$tierId"
-    fun tierBand(tierId: Long): String = "tier_detail_band_$tierId"
-    fun rankedRow(itemId: Long): String = "tier_detail_ranked_row_$itemId"
-    fun rankedPoolItem(itemId: Long): String = "tier_detail_ranked_pool_item_$itemId"
-    fun tierItems(tierId: Long): String = "tier_detail_items_$tierId"
-    fun tile(itemId: Long): String = "tier_detail_tile_$itemId"
-    fun moveSheetTierOption(tierId: Long): String = "tier_detail_move_sheet_tier_$tierId"
-    fun tierEditorPresetSwatch(index: Int): String = "tier_detail_tier_editor_preset_swatch_$index"
-    fun sliderTrack(sliderTag: String): String = "${sliderTag}_track"
-    fun sliderThumb(sliderTag: String): String = "${sliderTag}_thumb"
-}
 
 private val TIER_LIST_AUTOSCROLL_EDGE = 72.dp
 private const val TIER_LIST_AUTOSCROLL_MAX_SPEED_DP_PER_SEC = 600
@@ -152,17 +95,21 @@ private fun autoScrollSpeedPx(pointerY: Float, top: Float, bottom: Float, edgePx
 fun TierDetailScreen(
     onBack: () -> Unit,
     startInTitleEdit: Boolean = false,
+    onOpenAiStudio: (listTitle: String) -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val canDiscard by viewModel.canDiscard.collectAsStateWithLifecycle()
+    val addedItemId by viewModel.addedItemId.collectAsStateWithLifecycle()
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
     var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
+    var pendingAutoTitleEdit by rememberSaveable { mutableStateOf(startInTitleEdit) }
 
     TierDetailScreenContent(
         state = state,
-        startInTitleEdit = startInTitleEdit,
+        startInTitleEdit = pendingAutoTitleEdit,
         canDiscard = canDiscard,
+        addedItemId = addedItemId,
         actions = TierDetailActions(
             onBack = onBack,
             onDiscard = { viewModel.discardList(onBack) },
@@ -179,6 +126,10 @@ fun TierDetailScreen(
             onEditTier = viewModel::editTier,
             onSetDisplayMode = viewModel::setDisplayMode,
             onRenameList = viewModel::renameTierList,
+            onOpenAiStudio = onOpenAiStudio,
+            onConsumeAddedItem = viewModel::consumeAddedItem,
+            onUndoAddedItem = viewModel::removeAddedItem,
+            onAutoTitleEditConsumed = { pendingAutoTitleEdit = false },
         ),
     )
 
@@ -210,6 +161,7 @@ internal fun TierDetailScreenContent(
     actions: TierDetailActions = TierDetailActions(),
     startInTitleEdit: Boolean = false,
     canDiscard: Boolean = false,
+    addedItemId: Long? = null,
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -241,6 +193,7 @@ internal fun TierDetailScreenContent(
                     actions = actions,
                     startInTitleEdit = startInTitleEdit,
                     canDiscard = canDiscard,
+                    addedItemId = addedItemId,
                 )
             }
 
@@ -264,6 +217,7 @@ private fun TierScreenBody(
     actions: TierDetailActions,
     startInTitleEdit: Boolean = false,
     canDiscard: Boolean = false,
+    addedItemId: Long? = null,
 ) {
     val onBack = actions.onBack
     val onDiscard = actions.onDiscard
@@ -280,6 +234,8 @@ private fun TierScreenBody(
     val onEditTier = actions.onEditTier
     val onSetDisplayMode = actions.onSetDisplayMode
     val onRenameList = actions.onRenameList
+    val onAutoTitleEditConsumed = actions.onAutoTitleEditConsumed
+    val onGenerateClick = { actions.onOpenAiStudio(list.title) }
     var listSettingsVisible by remember { mutableStateOf(false) }
 
     if (listSettingsVisible) {
@@ -311,6 +267,30 @@ private fun TierScreenBody(
     val coroutineScope = rememberCoroutineScope()
     val deletedMessageTemplate = stringResource(R.string.tier_detail_item_moved_to_trash)
     val undoLabel = stringResource(R.string.tier_detail_snackbar_undo)
+    val itemAddedMessage = pluralStringResource(R.plurals.tier_detail_items_added_to_pool, 1, 1)
+    val onConsumeAddedItem = actions.onConsumeAddedItem
+    val onUndoAddedItem = actions.onUndoAddedItem
+    var pendingAddedItemId by remember { mutableStateOf<Long?>(null) }
+
+    LaunchedEffect(addedItemId) {
+        val itemId = addedItemId ?: return@LaunchedEffect
+        pendingAddedItemId = itemId
+        onConsumeAddedItem()
+    }
+
+    LaunchedEffect(pendingAddedItemId) {
+        val itemId = pendingAddedItemId ?: return@LaunchedEffect
+        snackbarHostState.currentSnackbarData?.dismiss()
+        val result = snackbarHostState.showSnackbar(
+            message = itemAddedMessage,
+            actionLabel = undoLabel,
+            duration = SnackbarDuration.Short,
+        )
+        pendingAddedItemId = null
+        if (result == SnackbarResult.ActionPerformed) {
+            onUndoAddedItem(itemId)
+        }
+    }
 
     val deleteAndAnnounce: (Long) -> Unit = { itemId ->
         val title = list.tiers.flatMap { it.items }.firstOrNull { it.id == itemId }?.title.orEmpty()
@@ -405,6 +385,7 @@ private fun TierScreenBody(
                 canDiscard = canDiscard,
                 onDiscard = onDiscard,
                 onTitleEditStarted = onTitleEditStarted,
+                onAutoTitleEditConsumed = onAutoTitleEditConsumed,
             )
 
             if (list.displayMode == TierListDisplayMode.FLAT_RANKED) {
@@ -418,10 +399,19 @@ private fun TierScreenBody(
                     RankedPoolSection(
                         pool = pool,
                         onAddClick = onAddClick,
+                        onGenerateClick = onGenerateClick,
                         onSelect = { itemId -> chooserItemId = itemId },
                     )
                 }
             } else {
+                val visualTierOrder = dragController.visualTierOrder
+                val displayedTiers = if ((dragController.isDraggingTier || dragController.isSettlingTier) && visualTierOrder.isNotEmpty()) {
+                    val indexById = visualTierOrder.withIndex().associate { (index, id) -> id to index }
+                    rankedTiers.sortedBy { indexById[it.id] ?: Int.MAX_VALUE }
+                } else {
+                    rankedTiers
+                }
+
                 LazyColumn(
                     state = tierListState,
                     modifier = Modifier
@@ -429,11 +419,40 @@ private fun TierScreenBody(
                         .fillMaxWidth()
                         .onGloballyPositioned { coordinates -> tierListBounds = coordinates.boundsInRoot() },
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(TIER_LIST_ITEM_SPACING),
                 ) {
-                    items(rankedTiers, key = { it.id }) { tier ->
+                    items(displayedTiers, key = { it.id }) { tier ->
+                        val itemModifier = when (tier.id) {
+                            dragController.draggedTierId -> {
+                                Modifier
+                                    .zIndex(1f)
+                                    .graphicsLayer {
+                                        translationY = dragController.draggedTierOffsetYPx
+                                        scaleX = 1.02f
+                                        scaleY = 1.02f
+                                    }
+                                    .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                            }
+
+                            dragController.settlingTierId -> {
+                                val settleOffset = remember(dragController.settlingTierId) {
+                                    Animatable(dragController.draggedTierOffsetYPx)
+                                }
+                                LaunchedEffect(dragController.settlingTierId) {
+                                    settleOffset.animateTo(0f, tween(durationMillis = 150))
+                                    dragController.finishSettling()
+                                }
+                                Modifier
+                                    .zIndex(1f)
+                                    .graphicsLayer { translationY = settleOffset.value }
+                                    .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                            }
+
+                            else -> Modifier.animateItem()
+                        }
                         TierRow(
                             tier = tier,
+                            modifier = itemModifier,
                             displayMode = list.displayMode,
                             dragController = dragController,
                             rankedTierIds = rankedTiers.map { it.id },
@@ -451,6 +470,7 @@ private fun TierScreenBody(
                     PoolPanel(
                         pool = pool,
                         onAddClick = onAddClick,
+                        onGenerateClick = onGenerateClick,
                         dragController = dragController,
                         onMoveItem = onMoveItem,
                         onDeleteItem = deleteAndAnnounce,
@@ -467,7 +487,6 @@ private fun TierScreenBody(
                 modifier = Modifier.align(Alignment.TopEnd),
             )
             FloatingDragTile(dragController)
-            FloatingDragRow(dragController, rankedTiers.firstOrNull { it.id == dragController.draggedTierId })
         }
 
         val poolTop = pool?.id?.let { dragController.tierBounds(it)?.top }

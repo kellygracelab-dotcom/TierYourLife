@@ -26,4 +26,8 @@ internal data class TierDetailActions(
         { _, _, _, _, _ -> },
     val onSetDisplayMode: (displayMode: TierListDisplayMode) -> Unit = {},
     val onRenameList: (title: String) -> Unit = {},
+    val onOpenAiStudio: (listTitle: String) -> Unit = {},
+    val onConsumeAddedItem: () -> Unit = {},
+    val onUndoAddedItem: (itemId: Long) -> Unit = {},
+    val onAutoTitleEditConsumed: () -> Unit = {},
 )

@@ -4,6 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
+import com.artiuillab.tieryourlife.navigation.TierYourLifeNavHost
 
 @Composable
 fun AppRoot(
@@ -18,9 +19,10 @@ fun AppRoot(
     }
 
     TierYourLifeTheme(darkTheme = darkTheme) {
-        AppNavHost(
-            state = state,
+        TierYourLifeNavHost(
+            themeChoice = state.themeChoice,
             onThemeChoiceChange = onThemeChoiceChange,
+            languageTag = state.languageTag,
             onLanguageTagChange = onLanguageTagChange,
         )
     }

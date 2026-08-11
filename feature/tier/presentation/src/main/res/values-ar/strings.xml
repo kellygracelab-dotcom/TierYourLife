@@ -108,6 +108,18 @@
     <string name="tier_detail_item_moved_to_trash">تم نقل %1$s إلى سلة المهملات</string>
     <string name="tier_detail_tier_moved_to_trash">تم نقل المستوى %1$s إلى سلة المهملات</string>
     <string name="tier_detail_snackbar_undo">تراجع</string>
+    <plurals name="tier_detail_items_added_to_pool">
+        <item quantity="zero">لم تتم إضافة أي عنصر إلى المجمّع</item>
+        <item quantity="one">تمت إضافة عنصر واحد إلى المجمّع</item>
+        <item quantity="two">تمت إضافة عنصرين إلى المجمّع</item>
+        <item quantity="few">تمت إضافة %1$d عناصر إلى المجمّع</item>
+        <item quantity="many">تمت إضافة %1$d عنصرًا إلى المجمّع</item>
+        <item quantity="other">تمت إضافة %1$d عنصر إلى المجمّع</item>
+    </plurals>
+
+    <string name="ai_chip">توليد</string>
+    <string name="cd_ai_chip">توليد صورة باستخدام الذكاء الاصطناعي</string>
+    <string name="cd_ai_badge">تم إنشاؤه بالذكاء الاصطناعي</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="zero">لا عناصر</item>

@@ -45,34 +45,25 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.export.TierListsExportStrings
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.FileDownloadIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.LanguageRow
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.ThemeSection
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ChevronRightIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeleteOutlineIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.OnResumeEffect
 import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-internal object SettingsTestTags {
-    const val BACK = "settings_back"
-    const val THEME_ROW = "settings_theme_row"
-    const val THEME_LIGHT = "settings_theme_light"
-    const val THEME_DARK = "settings_theme_dark"
-    const val THEME_SYSTEM = "settings_theme_system"
-    const val LANGUAGE_ROW = "settings_language_row"
-    const val LANGUAGE_SHEET = "settings_language_sheet"
-    const val TRASH_ROW = "settings_trash_row"
-    const val EXPORT_ROW = "settings_export_row"
-    fun languageOption(tag: String?) = "settings_language_option_${tag ?: "default"}"
-}
 
 @Composable
 fun SettingsScreen(
@@ -329,4 +320,34 @@ internal fun SettingsRow(
         }
         ChevronRightIcon(20.dp, MaterialTheme.colorScheme.outline)
     }
+}
+
+@TierYourLifeDevicePreviews
+@Composable
+private fun SettingsScreenLightPreview() = TierYourLifeTheme(false) {
+    SettingsScreenContent(
+        themeChoice = ThemeChoice.SYSTEM,
+        onThemeChoiceChange = {},
+        languageTag = null,
+        onLanguageTagChange = {},
+        trashCount = 3,
+        onBack = {},
+        onTrashClick = {},
+        onExportClick = {},
+    )
+}
+
+@TierYourLifeDevicePreviews
+@Composable
+private fun SettingsScreenDarkPreview() = TierYourLifeTheme(true) {
+    SettingsScreenContent(
+        themeChoice = ThemeChoice.SYSTEM,
+        onThemeChoiceChange = {},
+        languageTag = null,
+        onLanguageTagChange = {},
+        trashCount = 3,
+        onBack = {},
+        onTrashClick = {},
+        onExportClick = {},
+    )
 }
