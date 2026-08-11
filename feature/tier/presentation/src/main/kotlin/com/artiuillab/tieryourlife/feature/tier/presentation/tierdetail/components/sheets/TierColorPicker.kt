@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -49,6 +49,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.hexToHsl
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.parseTierColor
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ContrastIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TuneIcon
 
 internal data class TierPreset(val colorLight: String, val colorDark: String)
 

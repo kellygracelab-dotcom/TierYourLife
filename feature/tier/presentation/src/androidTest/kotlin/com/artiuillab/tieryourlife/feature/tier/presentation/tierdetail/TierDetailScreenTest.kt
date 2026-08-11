@@ -41,9 +41,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ManualEntryDialog
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierDragController
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierRow
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TierDragController
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.TierRow
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets.ManualEntryDialog
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals

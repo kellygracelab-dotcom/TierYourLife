@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,6 +40,10 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeleteOutlineIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.SouthIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
 
 private val CurrentTierTintLight = Color(0xFFEDEBFA)
 private val CurrentTierTintDark = Color(0xFF2E2F45)
