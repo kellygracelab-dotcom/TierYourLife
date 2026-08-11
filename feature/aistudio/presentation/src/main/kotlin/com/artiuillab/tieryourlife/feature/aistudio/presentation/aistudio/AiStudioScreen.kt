@@ -51,6 +51,7 @@ import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.compon
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioConversationState
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioEmptyState
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioFailedState
+import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioGeneratingState
 
 internal object AiStudioTestTags {
     const val SCREEN = "ai_studio_screen"
@@ -273,6 +274,23 @@ private fun AiStudioScreenDarkPreview() = TierYourLifeTheme(true) {
 private fun AiStudioScreenEmptyPreview() = TierYourLifeTheme {
     AiStudioScreenContent(
         state = previewAiStudioEmptyState,
+        listTitle = "Sci-fi films",
+        fieldText = "",
+        onFieldTextChange = {},
+        onBack = {},
+        onSend = {},
+        onHintClick = {},
+        onRetry = {},
+        onRegenerate = {},
+        onSaveCard = { _, _ -> },
+    )
+}
+
+@Preview(name = "Generating", device = "id:pixel_9", showBackground = true, showSystemUi = true)
+@Composable
+private fun AiStudioScreenGeneratingPreview() = TierYourLifeTheme {
+    AiStudioScreenContent(
+        state = previewAiStudioGeneratingState,
         listTitle = "Sci-fi films",
         fieldText = "",
         onFieldTextChange = {},
