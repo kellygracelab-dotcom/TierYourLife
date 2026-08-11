@@ -13,7 +13,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
-// Instrumented because viewModelScope needs Android's main dispatcher.
 @RunWith(AndroidJUnit4::class)
 class AiStudioViewModelTest {
 
