@@ -55,6 +55,7 @@ internal fun TierScreenTopBar(
     canDiscard: Boolean = false,
     onDiscard: () -> Unit = {},
     onTitleEditStarted: () -> Unit = {},
+    onAutoTitleEditConsumed: () -> Unit = {},
 ) {
     val backDescription = stringResource(R.string.tier_detail_content_description_back)
     val discardDescription = stringResource(R.string.tier_detail_content_description_discard)
@@ -91,6 +92,7 @@ internal fun TierScreenTopBar(
                 modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
                 initiallyEditing = startInTitleEdit,
                 onEditStarted = onTitleEditStarted,
+                onAutoEditConsumed = onAutoTitleEditConsumed,
             )
         } else {
             Text(
@@ -125,6 +127,7 @@ private fun EditableListTitle(
     modifier: Modifier = Modifier,
     initiallyEditing: Boolean = false,
     onEditStarted: () -> Unit = {},
+    onAutoEditConsumed: () -> Unit = {},
 ) {
     var isEditing by remember { mutableStateOf(initiallyEditing) }
 
@@ -167,7 +170,10 @@ private fun EditableListTitle(
             keyboardActions = KeyboardActions(onDone = { commit() }),
         )
 
-        LaunchedEffect(Unit) { focusRequester.requestFocus() }
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+            onAutoEditConsumed()
+        }
     } else {
         val editDescription = stringResource(R.string.tier_detail_content_description_edit_title)
         Text(

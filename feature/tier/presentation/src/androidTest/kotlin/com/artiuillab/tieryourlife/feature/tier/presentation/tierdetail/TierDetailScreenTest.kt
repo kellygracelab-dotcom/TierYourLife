@@ -207,6 +207,41 @@ class TierDetailScreenTest {
     }
 
     @Test
+    fun autoTitleEdit_startInTitleEditTrue_consumesTheFlagOnce() {
+        var consumedCalls = 0
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierDetailScreenContent(
+                    state = TierDetailUiState.Success(defaultList()),
+                    startInTitleEdit = true,
+                    actions = TierDetailActions(onAutoTitleEditConsumed = { consumedCalls++ }),
+                )
+            }
+        }
+
+        composeRule.runOnIdle { assertEquals(1, consumedCalls) }
+    }
+
+    @Test
+    fun autoTitleEdit_startInTitleEditFalse_neverConsumesTheFlagAndTitleStaysAsText() {
+        var consumedCalls = 0
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierDetailScreenContent(
+                    state = TierDetailUiState.Success(defaultList()),
+                    startInTitleEdit = false,
+                    actions = TierDetailActions(onAutoTitleEditConsumed = { consumedCalls++ }),
+                )
+            }
+        }
+
+        composeRule.runOnIdle { assertEquals(0, consumedCalls) }
+        composeRule.onNodeWithContentDescription(
+            string(R.string.tier_detail_content_description_edit_title),
+        ).assertIsDisplayed()
+    }
+
+    @Test
     fun addChip_clickInvokesOnAddClickOnce() {
         var calls = 0
         setScreen(TierDetailUiState.Success(defaultList()), onAddClick = { calls++ })
