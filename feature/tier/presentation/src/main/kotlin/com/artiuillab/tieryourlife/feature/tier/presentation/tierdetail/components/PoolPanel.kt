@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -42,6 +45,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDeta
 internal fun PoolPanel(
     pool: Tier,
     onAddClick: () -> Unit,
+    onGenerateClick: () -> Unit,
     dragController: TierDragController,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
     onDeleteItem: (itemId: Long) -> Unit,
@@ -108,6 +112,8 @@ internal fun PoolPanel(
                 color = MaterialTheme.colorScheme.onSurface,
             )
             AddChip(onClick = onAddClick)
+            Spacer(Modifier.width(8.dp))
+            GenerateChip(onClick = onGenerateClick)
         }
         LazyRow(
             state = listState,
@@ -151,6 +157,30 @@ private fun AddChip(onClick: () -> Unit) {
             text = stringResource(R.string.tier_detail_add),
             style = TierYourLifeType.current.chipText,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
+    }
+}
+
+@Composable
+internal fun GenerateChip(onClick: () -> Unit) {
+    val description = stringResource(R.string.cd_ai_chip)
+    Row(
+        modifier = Modifier
+            .height(32.dp)
+            .clip(RoundedCornerShape(100.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(100.dp))
+            .clickable(onClick = onClick)
+            .semantics(mergeDescendants = true) { contentDescription = description }
+            .testTag(TierDetailTestTags.GENERATE_CHIP)
+            .padding(start = 10.dp, end = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AutoAwesomeIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.width(6.dp))
+        Text(
+            text = stringResource(R.string.ai_chip),
+            style = TierYourLifeType.current.chipText,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

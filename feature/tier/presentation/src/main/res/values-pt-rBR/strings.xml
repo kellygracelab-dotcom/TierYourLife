@@ -84,6 +84,15 @@
     <string name="tier_detail_item_moved_to_trash">%1$s foi movido para a lixeira</string>
     <string name="tier_detail_tier_moved_to_trash">O nível %1$s foi movido para a lixeira</string>
     <string name="tier_detail_snackbar_undo">Desfazer</string>
+    <plurals name="tier_detail_items_added_to_pool">
+        <item quantity="one">%1$d item adicionado ao grupo</item>
+        <item quantity="many">%1$d itens adicionados ao grupo</item>
+        <item quantity="other">%1$d itens adicionados ao grupo</item>
+    </plurals>
+
+    <string name="ai_chip">Gerar</string>
+    <string name="cd_ai_chip">Gerar uma imagem com IA</string>
+    <string name="cd_ai_badge">Gerado com IA</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d item</item>

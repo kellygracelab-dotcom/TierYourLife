@@ -36,6 +36,7 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -72,6 +73,7 @@ internal object TierDetailTestTags {
     const val LOADING = "tier_detail_loading"
     const val HEADER_TITLE = "tier_detail_header_title"
     const val ADD_CHIP = "tier_detail_add_chip"
+    const val GENERATE_CHIP = "tier_detail_generate_chip"
     const val POOL_ITEMS = "tier_detail_pool_items"
     const val POOL_PANEL = "tier_detail_pool_panel"
     const val MOVE_SHEET = "tier_detail_move_sheet"
@@ -152,10 +154,12 @@ private fun autoScrollSpeedPx(pointerY: Float, top: Float, bottom: Float, edgePx
 fun TierDetailScreen(
     onBack: () -> Unit,
     startInTitleEdit: Boolean = false,
+    onOpenAiStudio: (listTitle: String) -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val canDiscard by viewModel.canDiscard.collectAsStateWithLifecycle()
+    val addedItemId by viewModel.addedItemId.collectAsStateWithLifecycle()
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
     var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -163,6 +167,7 @@ fun TierDetailScreen(
         state = state,
         startInTitleEdit = startInTitleEdit,
         canDiscard = canDiscard,
+        addedItemId = addedItemId,
         actions = TierDetailActions(
             onBack = onBack,
             onDiscard = { viewModel.discardList(onBack) },
@@ -179,6 +184,9 @@ fun TierDetailScreen(
             onEditTier = viewModel::editTier,
             onSetDisplayMode = viewModel::setDisplayMode,
             onRenameList = viewModel::renameTierList,
+            onOpenAiStudio = onOpenAiStudio,
+            onConsumeAddedItem = viewModel::consumeAddedItem,
+            onUndoAddedItem = viewModel::removeAddedItem,
         ),
     )
 
@@ -210,6 +218,7 @@ internal fun TierDetailScreenContent(
     actions: TierDetailActions = TierDetailActions(),
     startInTitleEdit: Boolean = false,
     canDiscard: Boolean = false,
+    addedItemId: Long? = null,
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -241,6 +250,7 @@ internal fun TierDetailScreenContent(
                     actions = actions,
                     startInTitleEdit = startInTitleEdit,
                     canDiscard = canDiscard,
+                    addedItemId = addedItemId,
                 )
             }
 
@@ -264,6 +274,7 @@ private fun TierScreenBody(
     actions: TierDetailActions,
     startInTitleEdit: Boolean = false,
     canDiscard: Boolean = false,
+    addedItemId: Long? = null,
 ) {
     val onBack = actions.onBack
     val onDiscard = actions.onDiscard
@@ -280,6 +291,7 @@ private fun TierScreenBody(
     val onEditTier = actions.onEditTier
     val onSetDisplayMode = actions.onSetDisplayMode
     val onRenameList = actions.onRenameList
+    val onGenerateClick = { actions.onOpenAiStudio(list.title) }
     var listSettingsVisible by remember { mutableStateOf(false) }
 
     if (listSettingsVisible) {
@@ -311,6 +323,30 @@ private fun TierScreenBody(
     val coroutineScope = rememberCoroutineScope()
     val deletedMessageTemplate = stringResource(R.string.tier_detail_item_moved_to_trash)
     val undoLabel = stringResource(R.string.tier_detail_snackbar_undo)
+    val itemAddedMessage = pluralStringResource(R.plurals.tier_detail_items_added_to_pool, 1, 1)
+    val onConsumeAddedItem = actions.onConsumeAddedItem
+    val onUndoAddedItem = actions.onUndoAddedItem
+    var pendingAddedItemId by remember { mutableStateOf<Long?>(null) }
+
+    LaunchedEffect(addedItemId) {
+        val itemId = addedItemId ?: return@LaunchedEffect
+        pendingAddedItemId = itemId
+        onConsumeAddedItem()
+    }
+
+    LaunchedEffect(pendingAddedItemId) {
+        val itemId = pendingAddedItemId ?: return@LaunchedEffect
+        snackbarHostState.currentSnackbarData?.dismiss()
+        val result = snackbarHostState.showSnackbar(
+            message = itemAddedMessage,
+            actionLabel = undoLabel,
+            duration = SnackbarDuration.Short,
+        )
+        pendingAddedItemId = null
+        if (result == SnackbarResult.ActionPerformed) {
+            onUndoAddedItem(itemId)
+        }
+    }
 
     val deleteAndAnnounce: (Long) -> Unit = { itemId ->
         val title = list.tiers.flatMap { it.items }.firstOrNull { it.id == itemId }?.title.orEmpty()
@@ -418,6 +454,7 @@ private fun TierScreenBody(
                     RankedPoolSection(
                         pool = pool,
                         onAddClick = onAddClick,
+                        onGenerateClick = onGenerateClick,
                         onSelect = { itemId -> chooserItemId = itemId },
                     )
                 }
@@ -451,6 +488,7 @@ private fun TierScreenBody(
                     PoolPanel(
                         pool = pool,
                         onAddClick = onAddClick,
+                        onGenerateClick = onGenerateClick,
                         dragController = dragController,
                         onMoveItem = onMoveItem,
                         onDeleteItem = deleteAndAnnounce,

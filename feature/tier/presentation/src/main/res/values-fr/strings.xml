@@ -84,6 +84,15 @@
     <string name="tier_detail_item_moved_to_trash">%1$s a été déplacé vers la corbeille</string>
     <string name="tier_detail_tier_moved_to_trash">Le rang %1$s a été déplacé vers la corbeille</string>
     <string name="tier_detail_snackbar_undo">Annuler</string>
+    <plurals name="tier_detail_items_added_to_pool">
+        <item quantity="one">%1$d élément ajouté au réservoir</item>
+        <item quantity="many">%1$d éléments ajoutés au réservoir</item>
+        <item quantity="other">%1$d éléments ajoutés au réservoir</item>
+    </plurals>
+
+    <string name="ai_chip">Générer</string>
+    <string name="cd_ai_chip">Générer une image avec l\'IA</string>
+    <string name="cd_ai_badge">Généré avec l\'IA</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d élément</item>

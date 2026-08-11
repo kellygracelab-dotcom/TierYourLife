@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
@@ -150,11 +151,16 @@ private class FakeTierRepository(initial: TierList) : TierRepository {
 
     override suspend fun getTierListById(id: Long): TierList? = list
 
-    override suspend fun addItemToPool(tierListId: Long, title: String, imageUrl: String?): Long {
+    override suspend fun addItemToPool(
+        tierListId: Long,
+        title: String,
+        imageUrl: String?,
+        source: TierItemSource,
+    ): Long {
         lastAddedImageUrl = imageUrl
         val id = nextItemId++
         val pool = list.tiers.single { it.isPool }
-        val newItem = TierItem(id = id, title = title, imageUrl = imageUrl)
+        val newItem = TierItem(id = id, title = title, imageUrl = imageUrl, source = source)
         val updatedPool = pool.copy(items = pool.items + newItem)
         list = list.copy(tiers = list.tiers.map { if (it.id == pool.id) updatedPool else it })
         return id
@@ -198,7 +204,12 @@ private class FakeTierRepository(initial: TierList) : TierRepository {
     override suspend fun deleteTierListPermanently(id: Long) {
         permanentlyDeletedIds += id
     }
-    override suspend fun deleteTierItemPermanently(id: Long) = unsupported()
+    override suspend fun deleteTierItemPermanently(id: Long) {
+        permanentlyDeletedIds += id
+        list = list.copy(
+            tiers = list.tiers.map { tier -> tier.copy(items = tier.items.filterNot { it.id == id }) },
+        )
+    }
     override suspend fun emptyTrash() = unsupported()
     override suspend fun getTrashEntries(): List<TrashEntry> = unsupported()
 

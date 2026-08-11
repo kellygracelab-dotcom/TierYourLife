@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWith
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierWithItems
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 
@@ -44,4 +45,8 @@ private fun TierItemEntity.toDomain(): TierItem = TierItem(
     id = id,
     title = title,
     imageUrl = imageUrl,
+    source = source.toTierItemSource(),
 )
+
+private fun String.toTierItemSource(): TierItemSource =
+    TierItemSource.entries.firstOrNull { it.name == this } ?: TierItemSource.MANUAL

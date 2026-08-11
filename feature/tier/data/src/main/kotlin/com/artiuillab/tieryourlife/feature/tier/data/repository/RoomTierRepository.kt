@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
@@ -43,9 +44,10 @@ class RoomTierRepository internal constructor(
     override suspend fun addItemToPool(
         tierListId: Long,
         title: String,
-        imageUrl: String?
+        imageUrl: String?,
+        source: TierItemSource,
     ): Long {
-        return dao.addItemToPool(tierListId, title, imageUrl)
+        return dao.addItemToPool(tierListId, title, imageUrl, source.name)
     }
 
     override suspend fun addItemsToPool(tierListId: Long, items: List<PoolItemDraft>) {
