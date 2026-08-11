@@ -21,6 +21,9 @@ import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import androidx.core.net.toUri
+import androidx.core.graphics.createBitmap
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val GENERATION_DELAY_MILLIS = 1200L
 private const val IMAGE_WIDTH = 768
@@ -41,7 +44,7 @@ class StubCardImageGenerator @Inject constructor(
             throw IOException("No active network")
         }
 
-        delay(GENERATION_DELAY_MILLIS)
+        delay(GENERATION_DELAY_MILLIS.milliseconds)
 
         val callIndex = callCounts.merge(prompt, 1, Int::plus) ?: 1
         val paletteIndex = Math.floorMod(prompt.hashCode() + callIndex, PALETTE_COUNT)
@@ -56,7 +59,7 @@ class StubCardImageGenerator @Inject constructor(
     }
 
     override suspend fun discard(image: GeneratedCardImage): Unit = withContext(Dispatchers.IO) {
-        val path = Uri.parse(image.imageUri).path ?: return@withContext
+        val path = image.imageUri.toUri().path ?: return@withContext
         val file = File(path)
         val directory = File(context.cacheDir, CACHE_SUBDIRECTORY)
         if (file.absoluteFile.parentFile == directory.absoluteFile) {
@@ -66,7 +69,7 @@ class StubCardImageGenerator @Inject constructor(
 }
 
 private fun renderComposition(paletteIndex: Int): Bitmap {
-    val bitmap = Bitmap.createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT, Bitmap.Config.ARGB_8888)
+    val bitmap = createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT)
     val canvas = Canvas(bitmap)
     val palette = PALETTES[paletteIndex]
 
