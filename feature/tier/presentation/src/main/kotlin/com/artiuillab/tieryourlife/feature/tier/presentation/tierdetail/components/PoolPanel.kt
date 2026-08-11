@@ -1,7 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -160,30 +159,6 @@ private fun AddChip(onClick: () -> Unit) {
             text = stringResource(R.string.tier_detail_add),
             style = TierYourLifeType.current.chipText,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
-        )
-    }
-}
-
-@Composable
-internal fun GenerateChip(onClick: () -> Unit) {
-    val description = stringResource(R.string.cd_ai_chip)
-    Row(
-        modifier = Modifier
-            .height(32.dp)
-            .clip(RoundedCornerShape(100.dp))
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(100.dp))
-            .clickable(onClick = onClick)
-            .semantics(mergeDescendants = true) { contentDescription = description }
-            .testTag(TierDetailTestTags.GENERATE_CHIP)
-            .padding(start = 10.dp, end = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        AutoAwesomeIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant)
-        Spacer(Modifier.width(6.dp))
-        Text(
-            text = stringResource(R.string.ai_chip),
-            style = TierYourLifeType.current.chipText,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

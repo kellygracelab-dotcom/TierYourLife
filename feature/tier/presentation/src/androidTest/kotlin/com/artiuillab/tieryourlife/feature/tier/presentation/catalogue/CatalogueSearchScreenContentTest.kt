@@ -19,7 +19,6 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -78,7 +77,7 @@ class CatalogueSearchScreenContentTest {
     @Test
     fun tappingAResult_marksIt_andTappingAgainUnmarksIt() {
         setContent(CatalogueSearchUiState.Success(listOf(dune, arrival)))
-        val row = composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id))
+        val row = composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(dune.id))
 
         row.assertIsNotSelected()
         row.performClick()
@@ -91,22 +90,22 @@ class CatalogueSearchScreenContentTest {
     fun selectedCounter_matchesNumberOfMarkedItems() {
         setContent(CatalogueSearchUiState.Success(listOf(dune, arrival, interstellar)))
 
-        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).performClick()
-        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(arrival.id)).performClick()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(dune.id)).performClick()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(arrival.id)).performClick()
 
-        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_SELECTED_COUNT).assertTextEquals("2 selected")
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_SELECTED_COUNT).assertTextEquals("2 selected")
     }
 
     @Test
     fun marksPersist_throughANewSearchAndItsLoadingState() {
         setContent(CatalogueSearchUiState.Success(listOf(dune)))
-        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).performClick()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(dune.id)).performClick()
 
         composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Loading }
         composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Success(listOf(arrival)) }
-        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(arrival.id)).performClick()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(arrival.id)).performClick()
 
-        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_CONFIRM).performClick()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_CONFIRM).performClick()
         composeRule.runOnIdle {
             assertEquals(setOf(dune, arrival), confirmed?.toSet())
         }
@@ -115,22 +114,22 @@ class CatalogueSearchScreenContentTest {
     @Test
     fun marksPersist_throughAnEmptyResultAndAnErrorInBetween() {
         setContent(CatalogueSearchUiState.Success(listOf(dune)))
-        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).performClick()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(dune.id)).performClick()
 
         composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Empty(query = "zzz") }
         composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Error }
         composeRule.runOnIdle { stateHolder.value = CatalogueSearchUiState.Success(listOf(dune)) }
 
-        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).assertIsSelected()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(dune.id)).assertIsSelected()
     }
 
     @Test
     fun confirming_yieldsExactlyTheMarkedSet_inOneCall() {
         setContent(CatalogueSearchUiState.Success(listOf(dune, arrival, interstellar)))
-        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).performClick()
-        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(interstellar.id)).performClick()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(dune.id)).performClick()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(interstellar.id)).performClick()
 
-        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_CONFIRM).performClick()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_CONFIRM).performClick()
 
         composeRule.runOnIdle {
             assertEquals(setOf(dune, interstellar), confirmed?.toSet())
@@ -141,7 +140,7 @@ class CatalogueSearchScreenContentTest {
     fun emptySelection_confirmIsUnavailable() {
         setContent(CatalogueSearchUiState.Success(listOf(dune)))
 
-        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_CONFIRM).assertHasNoClickAction()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_CONFIRM).assertHasNoClickAction()
     }
 
     @Test
@@ -157,7 +156,7 @@ class CatalogueSearchScreenContentTest {
     fun clearIcon_appearsOnlyWithQuery_andClearsTextWhenTapped() {
         setContent(CatalogueSearchUiState.Initial)
 
-        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_FIELD).performTextInput("Dune")
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_FIELD).performTextInput("Dune")
         composeRule.onNodeWithContentDescription("Clear search").performClick()
 
         composeRule.runOnIdle { assertEquals("", lastQuery) }
@@ -170,7 +169,7 @@ class CatalogueSearchScreenContentTest {
         }
         setContent(CatalogueSearchUiState.Success(manyResults))
 
-        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_BOTTOM_BAR).assertIsDisplayed()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_BOTTOM_BAR).assertIsDisplayed()
     }
 
     @Test
@@ -180,13 +179,13 @@ class CatalogueSearchScreenContentTest {
         }
         setContent(CatalogueSearchUiState.Success(manyResults))
 
-        val lastTag = TierDetailTestTags.itemSearchResult(manyResults.last().id)
-        composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_RESULTS_LIST)
+        val lastTag = CatalogueSearchTestTags.itemSearchResult(manyResults.last().id)
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_RESULTS_LIST)
             .performScrollToIndex(manyResults.lastIndex)
         composeRule.onNodeWithTag(lastTag).assertIsDisplayed()
 
         val lastRowBottom = composeRule.onNodeWithTag(lastTag).fetchSemanticsNode().boundsInRoot.bottom
-        val barTop = composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_BOTTOM_BAR)
+        val barTop = composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_BOTTOM_BAR)
             .fetchSemanticsNode().boundsInRoot.top
 
         assertTrue(
@@ -198,11 +197,11 @@ class CatalogueSearchScreenContentTest {
     @Test
     fun selectedRowTint_spansTheFullRowWidth() {
         setContent(CatalogueSearchUiState.Success(listOf(dune, arrival)))
-        composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id)).performClick()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(dune.id)).performClick()
 
-        val rowWidth = composeRule.onNodeWithTag(TierDetailTestTags.itemSearchResult(dune.id))
+        val rowWidth = composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(dune.id))
             .fetchSemanticsNode().boundsInRoot.width
-        val listWidth = composeRule.onNodeWithTag(TierDetailTestTags.ITEM_SEARCH_RESULTS_LIST)
+        val listWidth = composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_RESULTS_LIST)
             .fetchSemanticsNode().boundsInRoot.width
 
         assertEquals(

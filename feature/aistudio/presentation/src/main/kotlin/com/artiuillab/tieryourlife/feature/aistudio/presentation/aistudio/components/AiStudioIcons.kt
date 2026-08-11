@@ -1,15 +1,9 @@
 package com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -18,13 +12,9 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -91,19 +81,4 @@ private fun DrawScope.drawSparkle(
     }
     path.close()
     drawPath(path, color)
-}
-
-@Composable
-internal fun AiBadge(modifier: Modifier = Modifier) {
-    val description = stringResource(R.string.cd_ai_badge)
-    Box(
-        modifier = modifier
-            .size(16.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .semantics { contentDescription = description },
-        contentAlignment = Alignment.Center,
-    ) {
-        AutoAwesomeIcon(10.dp, MaterialTheme.colorScheme.onPrimaryContainer)
-    }
 }

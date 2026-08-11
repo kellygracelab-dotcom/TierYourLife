@@ -4,17 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,14 +19,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,7 +31,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.AiComposer
-import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.BackIcon
+import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.AiStudioTopBar
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.EmptyState
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.ErrorCard
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.GeneratingCard
@@ -185,38 +175,6 @@ internal fun AiStudioScreenContent(
                 onSaveCard(namingId, title)
                 namingExchangeId = null
             },
-        )
-    }
-}
-
-@Composable
-private fun AiStudioTopBar(onBack: () -> Unit) {
-    val backDescription = stringResource(R.string.cd_back)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp)
-            .padding(horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        IconButton(
-            onClick = onBack,
-            modifier = Modifier
-                .size(48.dp)
-                .semantics { contentDescription = backDescription },
-        ) {
-            BackIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        Text(
-            text = stringResource(R.string.ai_title),
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 4.dp),
-            style = MaterialTheme.typography.titleLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
