@@ -1,0 +1,27 @@
+<resources>
+    <string name="ai_title">Generar una imagen</string>
+    <string name="ai_caption">Las nuevas tarjetas van al montón «%1$s».</string>
+    <string name="ai_empty_title">Describe una imagen</string>
+    <string name="ai_empty_body">La IA la dibuja. Guarda las que te gusten como tarjetas.</string>
+    <string name="ai_hints_label">Prueba una de estas</string>
+    <string name="ai_hint_1">Una calle de Tokio iluminada de neón bajo la lluvia</string>
+    <string name="ai_hint_2">Una figura solitaria en un planeta desértico rojo</string>
+    <string name="ai_hint_3">Una portada retro VHS con tipografía llamativa</string>
+    <string name="ai_field_hint">Describe una imagen</string>
+    <string name="ai_generating">Generando…</string>
+    <string name="ai_not_saved">Aún no guardada</string>
+    <string name="action_add_to_list">Añadir a la lista</string>
+    <string name="action_regenerate">Regenerar</string>
+    <string name="ai_error_title">No se pudo generar esa imagen</string>
+    <string name="ai_error_body">Comprueba tu conexión o prueba otra descripción.</string>
+    <string name="ai_name_title">Nombra esta tarjeta</string>
+    <string name="ai_name_body">Va al montón. Luego puedes arrastrarla a un nivel.</string>
+    <string name="ai_name_photo_note">La imagen generada se convierte en la foto de la tarjeta.</string>
+    <string name="ai_name_field">Nombre</string>
+    <string name="action_add">Añadir</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_try_again">Reintentar</string>
+    <string name="cd_ai_send">Generar</string>
+    <string name="cd_back">Volver</string>
+    <string name="cd_ai_badge">Generado con IA</string>
+</resources>

@@ -1,0 +1,27 @@
+<resources>
+    <string name="ai_title">Gerar uma imagem</string>
+    <string name="ai_caption">Novas cartas vão para o grupo “%1$s”.</string>
+    <string name="ai_empty_title">Descreva uma imagem</string>
+    <string name="ai_empty_body">A IA a desenha. Guarde as que você gostar como cartas.</string>
+    <string name="ai_hints_label">Experimente uma destas</string>
+    <string name="ai_hint_1">Uma rua de Tóquio iluminada por neon na chuva</string>
+    <string name="ai_hint_2">Uma figura solitária em um planeta deserto vermelho</string>
+    <string name="ai_hint_3">Uma capa de VHS retrô com tipografia ousada</string>
+    <string name="ai_field_hint">Descreva uma imagem</string>
+    <string name="ai_generating">Gerando…</string>
+    <string name="ai_not_saved">Ainda não salva</string>
+    <string name="action_add_to_list">Adicionar à lista</string>
+    <string name="action_regenerate">Gerar novamente</string>
+    <string name="ai_error_title">Não foi possível gerar essa imagem</string>
+    <string name="ai_error_body">Verifique sua conexão ou tente outra descrição.</string>
+    <string name="ai_name_title">Nomeie esta carta</string>
+    <string name="ai_name_body">Vai para o grupo. Você pode arrastá-la para um nível depois.</string>
+    <string name="ai_name_photo_note">A imagem gerada se torna a foto da carta.</string>
+    <string name="ai_name_field">Nome</string>
+    <string name="action_add">Adicionar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_try_again">Tentar novamente</string>
+    <string name="cd_ai_send">Gerar</string>
+    <string name="cd_back">Voltar</string>
+    <string name="cd_ai_badge">Gerado com IA</string>
+</resources>

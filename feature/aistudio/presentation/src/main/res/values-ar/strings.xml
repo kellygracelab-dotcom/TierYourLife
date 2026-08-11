@@ -1,0 +1,27 @@
+<resources>
+    <string name="ai_title">توليد صورة</string>
+    <string name="ai_caption">تنتقل البطاقات الجديدة إلى مجمّع «%1$s».</string>
+    <string name="ai_empty_title">صف صورة</string>
+    <string name="ai_empty_body">يرسمها الذكاء الاصطناعي. احتفظ بما يعجبك منها كبطاقات.</string>
+    <string name="ai_hints_label">جرّب أحد هذه</string>
+    <string name="ai_hint_1">شارع في طوكيو مضاء بالنيون تحت المطر</string>
+    <string name="ai_hint_2">شخصية وحيدة على كوكب صحراوي أحمر</string>
+    <string name="ai_hint_3">غلاف VHS كلاسيكي بخط عريض</string>
+    <string name="ai_field_hint">صف صورة</string>
+    <string name="ai_generating">جارٍ التوليد…</string>
+    <string name="ai_not_saved">لم يُحفظ بعد</string>
+    <string name="action_add_to_list">إضافة إلى القائمة</string>
+    <string name="action_regenerate">إعادة التوليد</string>
+    <string name="ai_error_title">تعذّر توليد هذه الصورة</string>
+    <string name="ai_error_body">تحقق من اتصالك، أو جرّب وصفًا مختلفًا.</string>
+    <string name="ai_name_title">سمِّ هذه البطاقة</string>
+    <string name="ai_name_body">تنتقل إلى المجمّع. يمكنك سحبها إلى مستوى لاحقًا.</string>
+    <string name="ai_name_photo_note">تصبح الصورة المولَّدة صورة البطاقة.</string>
+    <string name="ai_name_field">الاسم</string>
+    <string name="action_add">إضافة</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_try_again">إعادة المحاولة</string>
+    <string name="cd_ai_send">توليد</string>
+    <string name="cd_back">رجوع</string>
+    <string name="cd_ai_badge">تم إنشاؤه بالذكاء الاصطناعي</string>
+</resources>
