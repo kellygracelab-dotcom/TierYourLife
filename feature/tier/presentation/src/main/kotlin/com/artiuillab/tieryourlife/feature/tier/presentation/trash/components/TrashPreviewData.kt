@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.trash
+package com.artiuillab.tieryourlife.feature.tier.presentation.trash.components
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 

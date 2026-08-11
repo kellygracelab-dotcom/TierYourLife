@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -37,8 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.NoteAddIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
 private const val TITLE_MAX_LENGTH = 60
 

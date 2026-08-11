@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.settings
+package com.artiuillab.tieryourlife.feature.tier.presentation.settings.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -38,6 +38,8 @@ import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.VectorIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsRow
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsTestTags
 
 private val LanguageOptionSelectedTintLight = Color(0xFFEDEBFA)
 private val LanguageOptionSelectedTintDark = Color(0xFF2E2F45)

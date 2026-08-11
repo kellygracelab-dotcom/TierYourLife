@@ -36,7 +36,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashTestTags
-import com.artiuillab.tieryourlife.feature.tier.presentation.trash.relativeTimeText
 
 @Composable
 internal fun TrashList(

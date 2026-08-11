@@ -61,6 +61,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierEditorSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierListSettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierRow
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TierScreenTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.TrashTarget
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
 import kotlinx.coroutines.delay
