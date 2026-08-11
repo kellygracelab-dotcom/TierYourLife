@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +30,8 @@ import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeleteFilledIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeleteOutlineIcon
 import kotlin.math.roundToInt
 
 private val RestingBgLight = Color(0xFFF9DEDC)

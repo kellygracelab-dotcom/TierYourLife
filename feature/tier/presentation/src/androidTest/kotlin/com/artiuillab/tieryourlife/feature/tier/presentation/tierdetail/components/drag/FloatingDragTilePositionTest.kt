@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

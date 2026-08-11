@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -46,6 +46,8 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.dashedBorder
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ImagePlaceholderIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PhotoLibraryIcon
 
 @Composable
 internal fun ManualEntryDialog(

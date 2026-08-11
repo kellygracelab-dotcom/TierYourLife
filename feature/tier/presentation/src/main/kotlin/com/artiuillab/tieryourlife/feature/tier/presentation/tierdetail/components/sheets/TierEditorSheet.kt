@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,6 +43,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.CAPTION_HIDDEN_FONT_SCALE
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
