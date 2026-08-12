@@ -26,7 +26,7 @@ fun NavGraphBuilder.tierListsScreen(
     }
 }
 
-const val ADDED_ITEM_RESULT_KEY = "ai_added_item_id"
+const val ADDED_ITEMS_RESULT_KEY = "ai_added_item_ids"
 
 fun NavGraphBuilder.tierDetailScreen(
     onBack: () -> Unit,
@@ -34,15 +34,15 @@ fun NavGraphBuilder.tierDetailScreen(
 ) {
     composable<Route.TierDetail> { backStackEntry ->
         val route = backStackEntry.toRoute<Route.TierDetail>()
-        val addedItemId by backStackEntry.savedStateHandle
-            .getStateFlow<Long?>(ADDED_ITEM_RESULT_KEY, null)
+        val addedItemIds by backStackEntry.savedStateHandle
+            .getStateFlow<List<Long>>(ADDED_ITEMS_RESULT_KEY, emptyList())
             .collectAsStateWithLifecycle()
         TierDetailScreen(
             onBack = onBack,
             startInTitleEdit = route.startInTitleEdit,
             onOpenAiStudio = { listTitle -> onOpenAiStudio(route.tierListId, listTitle) },
-            addedItemId = addedItemId,
-            onAddedItemConsumed = { backStackEntry.savedStateHandle[ADDED_ITEM_RESULT_KEY] = null },
+            addedItemIds = addedItemIds,
+            onAddedItemConsumed = { backStackEntry.savedStateHandle[ADDED_ITEMS_RESULT_KEY] = ArrayList<Long>() },
         )
     }
 }

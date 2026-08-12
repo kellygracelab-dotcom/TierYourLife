@@ -12,6 +12,7 @@
     <string name="ai_not_saved">Ще не збережено</string>
     <string name="action_add_to_list">Додати до списку</string>
     <string name="action_regenerate">Згенерувати знову</string>
+    <string name="ai_added">Додано</string>
     <string name="ai_error_title">Не вдалося згенерувати зображення</string>
     <string name="ai_error_body">Перевірте з\'єднання або спробуйте інший опис.</string>
     <string name="ai_name_title">Назвіть картку</string>

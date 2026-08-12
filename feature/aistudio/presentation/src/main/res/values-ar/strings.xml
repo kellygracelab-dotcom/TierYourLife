@@ -12,6 +12,7 @@
     <string name="ai_not_saved">لم يُحفظ بعد</string>
     <string name="action_add_to_list">إضافة إلى القائمة</string>
     <string name="action_regenerate">إعادة التوليد</string>
+    <string name="ai_added">تمت الإضافة</string>
     <string name="ai_error_title">تعذّر توليد هذه الصورة</string>
     <string name="ai_error_body">تحقق من اتصالك، أو جرّب وصفًا مختلفًا.</string>
     <string name="ai_name_title">سمِّ هذه البطاقة</string>

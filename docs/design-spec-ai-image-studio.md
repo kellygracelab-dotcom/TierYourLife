@@ -84,9 +84,11 @@ One message for every failure — no network, timeout, 5xx, safety refusal.
 
 ## 3. State machine
 
-empty → generating → result | error; error → Try again → generating (same prompt); result → Regenerate → generating (replaces the card, does not append; the discarded image file is deleted immediately); result → Add to list → naming dialog → pool landing (+ snackbar, Undo) | Cancel → result. Back leaves at any state; nothing is committed. The studio opens empty every time.
+empty → generating → result | error; error → Try again → generating (same prompt); result → Regenerate → generating (replaces the card, does not append; the discarded image file is deleted immediately); result → Add to list → naming dialog → the card is saved immediately and the result card switches in place to a static "Added" label, replacing its action row — Regenerate is disallowed on a card once it carries an added id | Cancel → result. The studio does not close on Add; the user can keep prompting and adding more cards in the same session. Leaving — via the app bar's `arrow_back` or the system/gesture back button, both wired to the same handler — pops back to TierDetail, which shows one snackbar covering every card added that session ("%d item(s) added to the pool") with a single Undo that removes all of them together. The studio still opens empty every time.
 
-Invariant: one generation in flight at a time; Regenerate replaces its own card and deletes the discarded file.
+Superseded decision: this section previously read "result → Add to list → naming dialog → pool landing (+ snackbar, Undo)", with the studio closing on the first Add. That was reversed after checking the flow on a device — closing after one generation made it impossible to add a second card without reopening the studio and losing the conversation.
+
+Invariant: one generation in flight at a time; Regenerate replaces its own card and deletes the discarded file, and never runs on a card that has already been added.
 
 ## 4. Naming dialog (canvas 14g)
 
@@ -107,7 +109,9 @@ Superseded decision: the field previously opened empty with Add disabled, framed
 
 ## 5. Pool landing (canvas 14h)
 
-The studio closes on Add; the user ends on the tier list. The new tile lands at the front of the pool strip, 52 × 76dp, 8dp radius. Pool count increments. Snackbar (clears the pool sheet): "1 item added to the pool", Undo. Undo deletes the item and its image copy.
+Superseded decision: the studio no longer closes on Add (§3); this section now covers what TierDetail shows once the user leaves the studio, possibly with several cards added in one session, rather than a single-card landing.
+
+Each Add saves its card straight into the pool the list already reads from — the pool strip and count are current the moment the user backs out, even though the studio stayed open in between. The new tile(s) land at the front of the pool strip, 52 × 76dp, 8dp radius, in the order they were added. Snackbar (clears the pool sheet): "%d item(s) added to the pool" (reuses `tier_detail_items_added_to_pool`), Undo. Undo deletes every item added in that session — and their image copies — in one action, not just the most recent one.
 
 ## 6. Provenance badge — designed, then dropped on the device
 

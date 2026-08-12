@@ -11,6 +11,7 @@ data class AiExchange(
     val id: Long,
     val prompt: String,
     val phase: AiExchangePhase,
+    val addedItemId: Long? = null,
 )
 
 sealed interface AiExchangePhase {
