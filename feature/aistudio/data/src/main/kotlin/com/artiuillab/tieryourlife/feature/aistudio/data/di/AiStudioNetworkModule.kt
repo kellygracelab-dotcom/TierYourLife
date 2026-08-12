@@ -11,6 +11,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import java.util.concurrent.TimeUnit
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -45,6 +46,9 @@ object AiStudioNetworkModule {
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(geminiAuthInterceptor)
+            .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .callTimeout(CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .build()
     }
 
@@ -82,4 +86,7 @@ object AiStudioNetworkModule {
 
     private const val GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/"
     private const val JSON_MEDIA_TYPE = "application/json"
+    private const val CONNECT_TIMEOUT_SECONDS = 15L
+    private const val READ_TIMEOUT_SECONDS = 120L
+    private const val CALL_TIMEOUT_SECONDS = 150L
 }
