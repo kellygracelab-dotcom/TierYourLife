@@ -11,5 +11,5 @@ data class ImageResponseFormatDto(
     val imageSize: String,
     val type: String = "image",
     @SerialName("mime_type")
-    val mimeType: String = "image/png",
+    val mimeType: String = "image/jpeg",
 )

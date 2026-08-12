@@ -119,4 +119,56 @@ class InteractionResponseDtoTest {
         assertTrue(response.error.message!!.isNotBlank())
         assertEquals("Resource exhausted", response.error.message)
     }
+
+    @Test
+    fun live_response_shape_with_a_contentless_thought_step_still_yields_the_image() {
+        val json = """
+            {
+              "id": "v1_ChdJUzk4YXUyMko0UzZuc0VQdXR5ZS1RWRIX",
+              "object": "interaction",
+              "model": "gemini-3.1-flash-image",
+              "status": "completed",
+              "created": "2026-08-12T08:30:25Z",
+              "updated": "2026-08-12T08:30:25Z",
+              "service_tier": "standard",
+              "usage": {
+                "total_tokens": 1590,
+                "raw_prompt_token": 452,
+                "output_tokens_by_modality": [ { "modality": "image", "tokens": 1120 } ]
+              },
+              "steps": [
+                { "type": "thought", "signature": "EqGuXQqdrl0BEU0yD" },
+                {
+                  "type": "model_output",
+                  "content": [ { "type": "image", "data": "aGVsbG8=", "mime_type": "image/jpeg" } ]
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val response = networkJson.decodeFromString<InteractionResponseDto>(json)
+        val image = response.steps.flatMap { it.content }.first { it.type == "image" }
+
+        assertEquals(2, response.steps.size)
+        assertTrue(response.steps.first().content.isEmpty())
+        assertEquals("aGVsbG8=", image.data)
+        assertEquals("image/jpeg", image.mimeType)
+    }
+
+    @Test
+    fun the_request_asks_for_jpeg_because_the_api_rejects_png() {
+        val request = InteractionRequestDto(
+            model = "gemini-3.1-flash-image",
+            input = listOf(InteractionInputDto(text = "A neon-lit Tokyo street in the rain")),
+            responseFormat = ImageResponseFormatDto(aspectRatio = "3:4", imageSize = "1K"),
+        )
+
+        val encoded = networkJson.encodeToString(InteractionRequestDto.serializer(), request)
+
+        assertTrue(encoded.contains("\"mime_type\":\"image/jpeg\""))
+        assertTrue(encoded.contains("\"aspect_ratio\":\"3:4\""))
+        assertTrue(encoded.contains("\"image_size\":\"1K\""))
+        assertTrue(encoded.contains("\"type\":\"text\""))
+        assertTrue(encoded.contains("\"type\":\"image\""))
+    }
 }
