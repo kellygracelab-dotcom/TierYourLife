@@ -23,5 +23,4 @@
     <string name="action_try_again">Повторить</string>
     <string name="cd_ai_send">Сгенерировать</string>
     <string name="cd_back">Назад</string>
-    <string name="cd_ai_badge">Сгенерировано ИИ</string>
 </resources>

@@ -83,7 +83,6 @@
 
     <string name="ai_chip">Oluştur</string>
     <string name="cd_ai_chip">Yapay zekâ ile görsel oluştur</string>
-    <string name="cd_ai_badge">Yapay zekâ ile oluşturuldu</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d öğe</item>

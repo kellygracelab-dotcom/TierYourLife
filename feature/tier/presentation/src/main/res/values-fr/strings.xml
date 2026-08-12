@@ -92,7 +92,6 @@
 
     <string name="ai_chip">Générer</string>
     <string name="cd_ai_chip">Générer une image avec l\'IA</string>
-    <string name="cd_ai_badge">Généré avec l\'IA</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d élément</item>

@@ -23,5 +23,4 @@
     <string name="action_try_again">إعادة المحاولة</string>
     <string name="cd_ai_send">توليد</string>
     <string name="cd_back">رجوع</string>
-    <string name="cd_ai_badge">تم إنشاؤه بالذكاء الاصطناعي</string>
 </resources>
