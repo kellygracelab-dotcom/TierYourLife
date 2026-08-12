@@ -92,7 +92,6 @@
 
     <string name="ai_chip">Gerar</string>
     <string name="cd_ai_chip">Gerar uma imagem com IA</string>
-    <string name="cd_ai_badge">Gerado com IA</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d item</item>

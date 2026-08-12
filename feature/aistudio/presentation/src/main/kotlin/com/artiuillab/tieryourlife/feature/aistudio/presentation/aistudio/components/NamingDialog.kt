@@ -106,11 +106,6 @@ internal fun NamingDialogContent(
                     modifier = Modifier.size(width = 52.dp, height = 76.dp),
                     contentScale = ContentScale.Crop,
                 )
-                AiBadge(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = 3.dp, y = (-3).dp),
-                )
             }
             Spacer(Modifier.width(14.dp))
             Text(

@@ -23,5 +23,4 @@
     <string name="action_try_again">Réessayer</string>
     <string name="cd_ai_send">Générer</string>
     <string name="cd_back">Retour</string>
-    <string name="cd_ai_badge">Généré avec l\'IA</string>
 </resources>

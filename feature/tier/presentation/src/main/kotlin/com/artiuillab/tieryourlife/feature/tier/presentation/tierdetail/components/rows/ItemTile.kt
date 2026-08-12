@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 
 @Composable
 internal fun ItemTile(item: TierItem, width: Dp, height: Dp) {
@@ -51,13 +49,6 @@ internal fun ItemTile(item: TierItem, width: Dp, height: Dp) {
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
                 color = media.tileLabel,
-            )
-        }
-        if (item.source == TierItemSource.GENERATED) {
-            GeneratedBadge(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .offset(x = 3.dp, y = (-3).dp),
             )
         }
     }

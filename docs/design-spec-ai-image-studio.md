@@ -98,7 +98,7 @@ The manual-entry dialog with one changed string.
 | Title | headlineSmall — "Name this card" |
 | Supporting | bodySmall in onSurfaceVariant — reused "Goes into the pool. You can drag it into a tier afterwards." |
 | Name field | 56dp, outlined 2dp primary, 4dp radius, label "Name", 20dp below the supporting line |
-| Photo row | 18dp below: 52 × 76dp thumb at 8dp radius (carrying the provenance badge) + note bodySmall in onSurfaceVariant, 14dp gap — "The generated image becomes the card's photo." |
+| Photo row | 18dp below: 52 × 76dp thumb at 8dp radius + note bodySmall in onSurfaceVariant, 14dp gap — "The generated image becomes the card's photo." |
 | Buttons | 18dp below, bottom-right: Cancel then Add, text buttons labelLarge in primary, 8dp apart |
 
 The field opens empty and focused, Add disabled while empty. No "Choose photo" chip.
@@ -107,9 +107,11 @@ The field opens empty and focused, Add disabled while empty. No "Choose photo" c
 
 The studio closes on Add; the user ends on the tier list. The new tile lands at the front of the pool strip, 52 × 76dp, 8dp radius. Pool count increments. Snackbar (clears the pool sheet): "1 item added to the pool", Undo. Undo deletes the item and its image copy.
 
-## 6. Provenance badge
+## 6. Provenance badge — designed, then dropped on the device
 
-16dp circle, primaryContainer fill, 10dp `auto_awesome` in onPrimaryContainer, tile top-right, offset −3dp/−3dp. Applies to pool tiles, ranked tiles, and the naming dialog thumb. Persists forever — backed by a column, not a session flag.
+Designed as a 16dp primaryContainer circle with a 10dp `auto_awesome`, overhanging the tile's top-right corner on pool tiles, ranked tiles, and the naming dialog thumb.
+
+Removed after the first build on hardware: at 52 × 76dp the tile is already the smallest surface in the app, and a badge over its corner reads as clutter rather than information — in a private journal the author remembers which cards they generated. The `source` column stays in the database, so the mark can return, or become a filter, without a migration.
 
 ## 7. Copy
 
