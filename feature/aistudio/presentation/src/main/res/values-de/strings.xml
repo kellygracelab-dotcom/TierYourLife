@@ -23,4 +23,5 @@
     <string name="action_try_again">Erneut versuchen</string>
     <string name="cd_ai_send">Generieren</string>
     <string name="cd_back">Zurück</string>
+    <string name="cd_clear_name">Namen leeren</string>
 </resources>

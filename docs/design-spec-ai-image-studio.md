@@ -97,11 +97,13 @@ The manual-entry dialog with one changed string.
 | Container | M3 alert dialog, 28dp radius, surfaceContainerHigh, 24dp padding, 24dp side inset |
 | Title | headlineSmall — "Name this card" |
 | Supporting | bodySmall in onSurfaceVariant — reused "Goes into the pool. You can drag it into a tier afterwards." |
-| Name field | 56dp, outlined 2dp primary, 4dp radius, label "Name", 20dp below the supporting line |
+| Name field | 56dp, outlined 2dp primary, 4dp radius, label "Name", 20dp below the supporting line, trailing clear button (48dp touch target, 20dp glyph) shown whenever the field is non-empty |
 | Photo row | 18dp below: 52 × 76dp thumb at 8dp radius + note bodySmall in onSurfaceVariant, 14dp gap — "The generated image becomes the card's photo." |
 | Buttons | 18dp below, bottom-right: Cancel then Add, text buttons labelLarge in primary, 8dp apart |
 
-The field opens empty and focused, Add disabled while empty. No "Choose photo" chip.
+The field opens focused and pre-filled with a title suggested from the prompt: whitespace collapsed to single spaces, a leading "a"/"an"/"the" dropped, cut to 40 characters at the last word boundary (a single word longer than 40 is hard-cut), trailing punctuation trimmed, and the first letter capitalized (the rest of the string, including acronyms like "VHS", is left untouched). The cursor lands at the end of the suggestion. The user can edit it in place or clear it with the trailing button, which empties the field and keeps focus there. Add is disabled only when the field is empty; it is enabled the moment the dialog opens because the suggestion is never blank for a non-blank prompt. No "Choose photo" chip.
+
+Superseded decision: the field previously opened empty with Add disabled, framed above as deliberate. That was reversed after checking the flow on a device — retyping the prompt as a title on every single generation added friction the empty-field design hadn't accounted for.
 
 ## 5. Pool landing (canvas 14h)
 
