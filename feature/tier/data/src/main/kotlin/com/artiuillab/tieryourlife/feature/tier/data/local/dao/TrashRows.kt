@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.data.local.dao
 
-
 data class DeletedTierListRow(
     val id: Long,
     val title: String,

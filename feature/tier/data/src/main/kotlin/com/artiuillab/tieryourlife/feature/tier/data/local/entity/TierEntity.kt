@@ -14,11 +14,11 @@ import androidx.room.PrimaryKey
             parentColumns = ["id"],
             childColumns = ["tierListId"],
             onDelete = CASCADE,
-        )
+        ),
     ],
     indices = [
-        Index("tierListId")
-    ]
+        Index("tierListId"),
+    ],
 )
 data class TierEntity(
     @PrimaryKey(autoGenerate = true)

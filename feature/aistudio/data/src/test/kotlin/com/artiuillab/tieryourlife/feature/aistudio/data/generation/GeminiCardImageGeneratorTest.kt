@@ -5,12 +5,12 @@ import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.InteractionC
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.InteractionRequestDto
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.InteractionResponseDto
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.InteractionStepDto
-import java.io.IOException
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
+import java.io.IOException
 
 class GeminiCardImageGeneratorTest {
 

@@ -1,0 +1,36 @@
+root = true
+
+[*.{kt,kts}]
+indent_size = 4
+indent_style = space
+
+# The rules below are disabled because this codebase already has its own
+# consistent formatting conventions that don't match ktlint_official's
+# opinion on line wrapping and declaration spacing (verified by running
+# ktlintCheck against the existing code before adding it to CI: ~2900
+# pre-existing violations, almost all from this rule set). Rather than
+# reformat the whole repository or hide the debt behind a giant baseline
+# file, these are switched off explicitly so ktlintCheck enforces only the
+# rules the code already follows.
+ktlint_standard_function-signature = disabled
+ktlint_standard_class-signature = disabled
+ktlint_standard_parameter-list-wrapping = disabled
+ktlint_standard_argument-list-wrapping = disabled
+ktlint_standard_multiline-expression-wrapping = disabled
+ktlint_standard_multiline-if-else = disabled
+ktlint_standard_if-else-wrapping = disabled
+ktlint_standard_binary-expression-wrapping = disabled
+ktlint_standard_chain-method-continuation = disabled
+ktlint_standard_function-expression-body = disabled
+ktlint_standard_function-literal = disabled
+ktlint_standard_string-template-indent = disabled
+ktlint_standard_annotation = disabled
+ktlint_standard_indent = disabled
+ktlint_standard_max-line-length = disabled
+ktlint_standard_blank-line-before-declaration = disabled
+ktlint_standard_no-empty-first-line-in-class-body = disabled
+ktlint_standard_no-empty-first-line-in-method-block = disabled
+
+# Test method names in this codebase are deliberately snake_case
+# (see feature/tier/data's androidTest sources) instead of camelCase.
+ktlint_standard_function-naming = disabled

@@ -6,11 +6,11 @@ import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.InteractionI
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.InteractionRequestDto
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.domain.model.GeneratedCardImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 private const val GEMINI_MODEL = "gemini-3.1-flash-image"
 private const val ASPECT_RATIO = "3:4"

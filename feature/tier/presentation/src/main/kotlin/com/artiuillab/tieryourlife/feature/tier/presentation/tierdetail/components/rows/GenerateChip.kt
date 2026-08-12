@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row

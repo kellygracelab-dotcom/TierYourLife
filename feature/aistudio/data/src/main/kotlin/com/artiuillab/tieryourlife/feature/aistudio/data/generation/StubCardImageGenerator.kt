@@ -7,18 +7,18 @@ import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Shader
 import android.net.ConnectivityManager
+import androidx.core.graphics.createBitmap
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.domain.model.GeneratedCardImage
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
-import androidx.core.graphics.createBitmap
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val GENERATION_DELAY_MILLIS = 1200L
