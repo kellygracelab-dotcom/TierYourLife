@@ -164,12 +164,12 @@ internal fun AiStudioScreenContent(
     }
 
     val namingId = namingExchangeId
-    val namingImage = namingId?.let { id ->
-        (state.exchanges.firstOrNull { it.id == id }?.phase as? AiExchangePhase.Result)?.image
-    }
-    if (namingId != null && namingImage != null) {
+    val namingExchange = namingId?.let { id -> state.exchanges.firstOrNull { it.id == id } }
+    val namingImage = (namingExchange?.phase as? AiExchangePhase.Result)?.image
+    if (namingId != null && namingExchange != null && namingImage != null) {
         NamingDialog(
             imageUri = namingImage.imageUri,
+            prompt = namingExchange.prompt,
             onDismiss = { namingExchangeId = null },
             onSave = { title ->
                 onSaveCard(namingId, title)

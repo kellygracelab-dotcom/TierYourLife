@@ -23,4 +23,5 @@
     <string name="action_try_again">Yeniden dene</string>
     <string name="cd_ai_send">Oluştur</string>
     <string name="cd_back">Geri</string>
+    <string name="cd_clear_name">Adı temizle</string>
 </resources>

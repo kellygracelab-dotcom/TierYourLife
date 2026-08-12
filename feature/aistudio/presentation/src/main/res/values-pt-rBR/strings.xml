@@ -23,4 +23,5 @@
     <string name="action_try_again">Tentar novamente</string>
     <string name="cd_ai_send">Gerar</string>
     <string name="cd_back">Voltar</string>
+    <string name="cd_clear_name">Limpar nome</string>
 </resources>
