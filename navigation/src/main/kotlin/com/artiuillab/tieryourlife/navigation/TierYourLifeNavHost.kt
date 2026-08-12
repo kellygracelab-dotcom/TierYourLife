@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.aiStudioScreen
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.navigateToAiStudio
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.ADDED_ITEM_RESULT_KEY
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToSettings
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTierDetail
@@ -56,7 +57,7 @@ fun TierYourLifeNavHost(
         aiStudioScreen(
             onBack = { navController.popBackStack() },
             onCardAdded = { itemId ->
-                navController.previousBackStackEntry?.savedStateHandle?.set("ai_added_item_id", itemId)
+                navController.previousBackStackEntry?.savedStateHandle?.set(ADDED_ITEM_RESULT_KEY, itemId)
                 navController.popBackStack()
             },
         )

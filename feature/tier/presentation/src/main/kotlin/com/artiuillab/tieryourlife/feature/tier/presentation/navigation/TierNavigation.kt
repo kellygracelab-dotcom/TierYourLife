@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.navigation
 
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -24,16 +26,23 @@ fun NavGraphBuilder.tierListsScreen(
     }
 }
 
+const val ADDED_ITEM_RESULT_KEY = "ai_added_item_id"
+
 fun NavGraphBuilder.tierDetailScreen(
     onBack: () -> Unit,
     onOpenAiStudio: (tierListId: Long, listTitle: String) -> Unit,
 ) {
     composable<Route.TierDetail> { backStackEntry ->
         val route = backStackEntry.toRoute<Route.TierDetail>()
+        val addedItemId by backStackEntry.savedStateHandle
+            .getStateFlow<Long?>(ADDED_ITEM_RESULT_KEY, null)
+            .collectAsStateWithLifecycle()
         TierDetailScreen(
             onBack = onBack,
             startInTitleEdit = route.startInTitleEdit,
             onOpenAiStudio = { listTitle -> onOpenAiStudio(route.tierListId, listTitle) },
+            addedItemId = addedItemId,
+            onAddedItemConsumed = { backStackEntry.savedStateHandle[ADDED_ITEM_RESULT_KEY] = null },
         )
     }
 }
