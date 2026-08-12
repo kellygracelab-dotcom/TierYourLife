@@ -31,8 +31,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
@@ -42,9 +40,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.dashedBorder
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.DraggableTile
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TierDragController
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
 
 @Composable
 internal fun PoolPanel(

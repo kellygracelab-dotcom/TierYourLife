@@ -52,7 +52,6 @@ class TierDetailViewModelTest {
         assertNull(repository.lastAddedImageUrl)
     }
 
-
     @Test
     fun canDiscard_seededFromStartInTitleEdit() = runBlocking {
         val newListViewModel = TierDetailViewModel(FakeTierRepository(pool()), savedStateHandle(startInTitleEdit = true))

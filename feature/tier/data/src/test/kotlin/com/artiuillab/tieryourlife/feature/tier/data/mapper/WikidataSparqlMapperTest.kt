@@ -1,7 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.data.mapper
 
-import com.artiuillab.tieryourlife.feature.tier.data.remote.networkJson
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.WikidataSparqlResponseDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.networkJson
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

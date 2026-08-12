@@ -30,7 +30,6 @@ class TierListsViewModel @Inject constructor(
 
     private var mode: HomeMode = HomeMode.Browsing
 
-
     fun loadTierLists() {
         viewModelScope.launch {
             loadTierListsInternal()

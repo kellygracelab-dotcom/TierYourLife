@@ -5,13 +5,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.domain.library.GeneratedCardSaver
 import com.artiuillab.tieryourlife.feature.aistudio.domain.model.GeneratedCardImage
-import java.io.IOException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class AiStudioViewModelTest {
