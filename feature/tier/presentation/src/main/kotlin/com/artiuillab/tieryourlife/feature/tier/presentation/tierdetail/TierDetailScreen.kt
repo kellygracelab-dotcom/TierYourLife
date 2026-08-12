@@ -96,11 +96,12 @@ fun TierDetailScreen(
     onBack: () -> Unit,
     startInTitleEdit: Boolean = false,
     onOpenAiStudio: (listTitle: String) -> Unit = {},
+    addedItemId: Long? = null,
+    onAddedItemConsumed: () -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val canDiscard by viewModel.canDiscard.collectAsStateWithLifecycle()
-    val addedItemId by viewModel.addedItemId.collectAsStateWithLifecycle()
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
     var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
     var pendingAutoTitleEdit by rememberSaveable { mutableStateOf(startInTitleEdit) }
@@ -127,7 +128,10 @@ fun TierDetailScreen(
             onSetDisplayMode = viewModel::setDisplayMode,
             onRenameList = viewModel::renameTierList,
             onOpenAiStudio = onOpenAiStudio,
-            onConsumeAddedItem = viewModel::consumeAddedItem,
+            onConsumeAddedItem = {
+                onAddedItemConsumed()
+                viewModel.loadTierList()
+            },
             onUndoAddedItem = viewModel::removeAddedItem,
             onAutoTitleEditConsumed = { pendingAutoTitleEdit = false },
         ),
