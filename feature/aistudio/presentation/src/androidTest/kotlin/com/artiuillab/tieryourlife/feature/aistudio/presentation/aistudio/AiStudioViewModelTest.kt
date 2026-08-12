@@ -35,6 +35,16 @@ class AiStudioViewModelTest {
     }
 
     @Test
+    fun openingTheStudio_sweepsLeftoverGeneratedFiles() = runBlocking {
+        val generator = FakeCardImageGenerator()
+        AiStudioViewModel(generator, FakeGeneratedCardSaver(), savedStateHandle())
+
+        generator.awaitDiscardAll()
+
+        assertEquals(1, generator.discardAllCount)
+    }
+
+    @Test
     fun send_whenGeneratorFails_showsFailed() = runBlocking {
         val generator = FakeCardImageGenerator().apply { shouldFail = true }
         val viewModel = AiStudioViewModel(generator, FakeGeneratedCardSaver(), savedStateHandle())
@@ -175,6 +185,16 @@ private class FakeCardImageGenerator : CardImageGenerator {
     override suspend fun discard(image: GeneratedCardImage) {
         discarded += image
     }
+
+    override suspend fun discardAll() {
+        discardAllCount++
+        discardAllCalled.complete(Unit)
+    }
+
+    suspend fun awaitDiscardAll() = discardAllCalled.await()
+
+    var discardAllCount = 0
+    private val discardAllCalled = CompletableDeferred<Unit>()
 }
 
 private class FakeGeneratedCardSaver : GeneratedCardSaver {

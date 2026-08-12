@@ -5,4 +5,5 @@ import com.artiuillab.tieryourlife.feature.aistudio.domain.model.GeneratedCardIm
 interface CardImageGenerator {
     suspend fun generate(prompt: String): GeneratedCardImage
     suspend fun discard(image: GeneratedCardImage)
+    suspend fun discardAll()
 }
