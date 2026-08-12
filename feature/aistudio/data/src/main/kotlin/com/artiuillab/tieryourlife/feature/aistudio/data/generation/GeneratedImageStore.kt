@@ -18,7 +18,7 @@ class GeneratedImageStore @Inject constructor(
 
     override fun save(bytes: ByteArray): String {
         val directory = File(context.cacheDir, CACHE_SUBDIRECTORY).apply { mkdirs() }
-        val file = File(directory, "${UUID.randomUUID()}.png")
+        val file = File(directory, "${UUID.randomUUID()}.jpg")
         FileOutputStream(file).use { output -> output.write(bytes) }
         return file.absolutePath
     }
