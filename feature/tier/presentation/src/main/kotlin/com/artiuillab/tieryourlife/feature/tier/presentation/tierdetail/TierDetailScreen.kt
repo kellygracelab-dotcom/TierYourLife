@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.scrollBy
@@ -241,6 +242,8 @@ private fun TierScreenBody(
     val onAutoTitleEditConsumed = actions.onAutoTitleEditConsumed
     val onGenerateClick = { actions.onOpenAiStudio(list.title) }
     var listSettingsVisible by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = listSettingsVisible) { listSettingsVisible = false }
 
     if (listSettingsVisible) {
         TierListSettingsScreenContent(
