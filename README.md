@@ -11,6 +11,8 @@
 
 🚧 **Work in progress** — built from scratch, in the open, as a learning flagship. The commit history *is* the story.
 
+📱 **[Install the demo APK](https://github.com/kellygracelab-dotcom/TierYourLife/releases/latest)** — everything works except the two parts that need private keys: image generation falls back to a local stub, and catalogue search uses Wikidata only.
+
 ---
 
 <p align="center">
