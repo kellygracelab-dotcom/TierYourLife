@@ -36,6 +36,7 @@ internal fun ResultCard(
     onAddToList: () -> Unit,
     onRegenerate: () -> Unit,
     modifier: Modifier = Modifier,
+    addedItemId: Long? = null,
 ) {
     Column(
         modifier = modifier
@@ -63,26 +64,34 @@ internal fun ResultCard(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            FilledTonalButton(
-                onClick = onAddToList,
-                shape = RoundedCornerShape(100.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                ),
-                contentPadding = PaddingValues(horizontal = 20.dp),
-                modifier = Modifier.height(40.dp),
-            ) {
-                Text(stringResource(R.string.action_add_to_list))
-            }
-            TextButton(
-                onClick = onRegenerate,
-                shape = RoundedCornerShape(100.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp),
-                modifier = Modifier.height(40.dp),
-            ) {
-                Text(stringResource(R.string.action_regenerate))
+        if (addedItemId != null) {
+            Text(
+                text = stringResource(R.string.ai_added),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        } else {
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                FilledTonalButton(
+                    onClick = onAddToList,
+                    shape = RoundedCornerShape(100.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+                    contentPadding = PaddingValues(horizontal = 20.dp),
+                    modifier = Modifier.height(40.dp),
+                ) {
+                    Text(stringResource(R.string.action_add_to_list))
+                }
+                TextButton(
+                    onClick = onRegenerate,
+                    shape = RoundedCornerShape(100.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp),
+                    modifier = Modifier.height(40.dp),
+                ) {
+                    Text(stringResource(R.string.action_regenerate))
+                }
             }
         }
     }

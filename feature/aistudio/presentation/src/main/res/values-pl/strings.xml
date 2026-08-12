@@ -12,6 +12,7 @@
     <string name="ai_not_saved">Jeszcze nie zapisano</string>
     <string name="action_add_to_list">Dodaj do listy</string>
     <string name="action_regenerate">Wygeneruj ponownie</string>
+    <string name="ai_added">Dodano</string>
     <string name="ai_error_title">Nie udało się wygenerować obrazu</string>
     <string name="ai_error_body">Sprawdź połączenie lub spróbuj innego opisu.</string>
     <string name="ai_name_title">Nazwij tę kartę</string>

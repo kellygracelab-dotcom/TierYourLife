@@ -9,10 +9,12 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.feature.aistudio.domain.model.GeneratedCardImage
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -94,5 +96,25 @@ class AiStudioScreenContentTest {
 
         composeRule.onNodeWithTag(AiStudioTestTags.bubble(1)).assertIsDisplayed()
         composeRule.onNodeWithTag(AiStudioTestTags.result(1)).assertIsDisplayed()
+    }
+
+    @Test
+    fun resultCard_whenAlreadyAdded_showsAddedLabel_andHidesActionButtons() {
+        setContent(
+            AiStudioUiState(
+                exchanges = listOf(
+                    AiExchange(
+                        id = 1,
+                        prompt = "A red desert",
+                        phase = AiExchangePhase.Result(GeneratedCardImage(prompt = "A red desert", imageUri = "")),
+                        addedItemId = 42L,
+                    ),
+                ),
+            ),
+        )
+
+        composeRule.onNodeWithText("Added").assertIsDisplayed()
+        composeRule.onNodeWithText("Add to list").assertDoesNotExist()
+        composeRule.onNodeWithText("Regenerate").assertDoesNotExist()
     }
 }

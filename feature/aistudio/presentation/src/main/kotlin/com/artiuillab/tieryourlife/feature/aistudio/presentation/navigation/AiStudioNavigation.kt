@@ -14,13 +14,11 @@ fun NavController.navigateToAiStudio(tierListId: Long, listTitle: String) {
 }
 
 fun NavGraphBuilder.aiStudioScreen(
-    onBack: () -> Unit,
-    onCardAdded: (Long) -> Unit,
+    onBack: (addedItemIds: List<Long>) -> Unit,
 ) {
     composable<AiStudioRoute> {
         AiStudioScreen(
             onBack = onBack,
-            onCardAdded = onCardAdded,
         )
     }
 }

@@ -34,6 +34,9 @@ class AiStudioViewModel @Inject constructor(
 
     private var nextExchangeId = 1L
 
+    val addedItemIds: List<Long>
+        get() = _state.value.exchanges.mapNotNull { it.addedItemId }
+
     fun send(prompt: String) {
         if (_state.value.generating) return
         val trimmed = prompt.trim()
@@ -58,6 +61,7 @@ class AiStudioViewModel @Inject constructor(
     fun regenerate(exchangeId: Long) {
         if (_state.value.generating) return
         val exchange = _state.value.exchanges.firstOrNull { it.id == exchangeId } ?: return
+        if (exchange.addedItemId != null) return
         val previousImage = (exchange.phase as? AiExchangePhase.Result)?.image
         startGenerating(exchangeId)
         viewModelScope.launch {
@@ -68,12 +72,19 @@ class AiStudioViewModel @Inject constructor(
         }
     }
 
-    fun addToList(exchangeId: Long, title: String, onAdded: (itemId: Long) -> Unit) {
+    fun addToList(exchangeId: Long, title: String) {
         val exchange = _state.value.exchanges.firstOrNull { it.id == exchangeId } ?: return
+        if (exchange.addedItemId != null) return
         val image = (exchange.phase as? AiExchangePhase.Result)?.image ?: return
         viewModelScope.launch {
             val newItemId = saver.save(tierListId, title, image.imageUri)
-            onAdded(newItemId)
+            _state.update { current ->
+                current.copy(
+                    exchanges = current.exchanges.map {
+                        if (it.id == exchangeId) it.copy(addedItemId = newItemId) else it
+                    },
+                )
+            }
         }
     }
 

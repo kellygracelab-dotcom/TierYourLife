@@ -12,6 +12,7 @@
     <string name="ai_not_saved">Aún no guardada</string>
     <string name="action_add_to_list">Añadir a la lista</string>
     <string name="action_regenerate">Regenerar</string>
+    <string name="ai_added">Añadido</string>
     <string name="ai_error_title">No se pudo generar esa imagen</string>
     <string name="ai_error_body">Comprueba tu conexión o prueba otra descripción.</string>
     <string name="ai_name_title">Nombra esta tarjeta</string>

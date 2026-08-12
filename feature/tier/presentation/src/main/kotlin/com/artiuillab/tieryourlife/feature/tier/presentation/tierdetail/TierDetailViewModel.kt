@@ -188,9 +188,9 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    fun removeAddedItem(itemId: Long) {
+    fun removeAddedItems(itemIds: List<Long>) {
         viewModelScope.launch {
-            repository.deleteTierItemPermanently(itemId)
+            itemIds.forEach { itemId -> repository.deleteTierItemPermanently(itemId) }
             loadTierList()
         }
     }
