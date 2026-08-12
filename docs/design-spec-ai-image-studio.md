@@ -122,6 +122,8 @@ Removed after the first build on hardware: at 52 × 76dp the tile is already the
 ## 7. Copy
 
 New keys: ai_chip "Generate"; ai_title "Generate an image"; ai_caption "New cards go into the “%1$s” pool."; ai_empty_title "Describe an image"; ai_empty_body "The AI draws it. Keep the ones you like as cards."; ai_hints_label "Try one of these"; ai_hint_1 "A neon-lit Tokyo street in the rain"; ai_hint_2 "A lone figure on a red desert planet"; ai_hint_3 "A retro VHS cover with bold type"; ai_field_hint "Describe an image"; ai_generating "Generating…"; ai_not_saved "Not saved yet"; action_add_to_list "Add to list"; action_regenerate "Regenerate"; ai_error_title "Couldn't generate that image"; ai_error_body "Check your connection, or try a different description."; ai_name_title "Name this card"; ai_name_photo_note "The generated image becomes the card's photo.".
+ai_added "Added" replaces the action row once a card is saved, and the "Not saved yet" caption disappears with it — the two never show together.
+
 Content descriptions: cd_ai_chip "Generate an image with AI"; cd_ai_send "Generate"; cd_clear_name "Clear name". The badge's cd_ai_badge was removed together with the badge itself (§6).
 Reused: manual dialog body, "Name", "Add", "Cancel", "Try again", "%d item(s) added to the pool", "Undo".
 The three hints are translatable prose, not prompt templates.
