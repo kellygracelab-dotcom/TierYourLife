@@ -21,11 +21,9 @@ android {
     }
 
     defaultConfig {
-        buildConfigField(
-            "String",
-            "GEMINI_API_KEY",
-            "\"${localProperties.getProperty("GEMINI_API_KEY", "")}\"",
-        )
+        val geminiKey = providers.gradleProperty("GEMINI_API_KEY").orNull
+            ?: localProperties.getProperty("GEMINI_API_KEY", "")
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiKey\"")
     }
 }
 
