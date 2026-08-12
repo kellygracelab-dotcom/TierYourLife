@@ -58,12 +58,6 @@ internal fun ResultCard(
             )
         }
         Spacer(Modifier.height(10.dp))
-        Text(
-            text = stringResource(R.string.ai_not_saved),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(Modifier.height(8.dp))
         if (addedItemId != null) {
             Text(
                 text = stringResource(R.string.ai_added),
@@ -71,6 +65,12 @@ internal fun ResultCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         } else {
+            Text(
+                text = stringResource(R.string.ai_not_saved),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 FilledTonalButton(
                     onClick = onAddToList,
