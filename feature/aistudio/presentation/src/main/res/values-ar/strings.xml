@@ -12,6 +12,7 @@
     <string name="ai_not_saved">لم يُحفظ بعد</string>
     <string name="action_add_to_list">إضافة إلى القائمة</string>
     <string name="action_regenerate">إعادة التوليد</string>
+    <string name="ai_added">تمت الإضافة</string>
     <string name="ai_error_title">تعذّر توليد هذه الصورة</string>
     <string name="ai_error_body">تحقق من اتصالك، أو جرّب وصفًا مختلفًا.</string>
     <string name="ai_name_title">سمِّ هذه البطاقة</string>
@@ -23,5 +24,5 @@
     <string name="action_try_again">إعادة المحاولة</string>
     <string name="cd_ai_send">توليد</string>
     <string name="cd_back">رجوع</string>
-    <string name="cd_ai_badge">تم إنشاؤه بالذكاء الاصطناعي</string>
+    <string name="cd_clear_name">مسح الاسم</string>
 </resources>

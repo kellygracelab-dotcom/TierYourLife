@@ -12,6 +12,7 @@
     <string name="ai_not_saved">Пока не сохранено</string>
     <string name="action_add_to_list">Добавить в список</string>
     <string name="action_regenerate">Сгенерировать заново</string>
+    <string name="ai_added">Добавлено</string>
     <string name="ai_error_title">Не удалось сгенерировать изображение</string>
     <string name="ai_error_body">Проверьте соединение или попробуйте другое описание.</string>
     <string name="ai_name_title">Назовите карточку</string>
@@ -23,5 +24,5 @@
     <string name="action_try_again">Повторить</string>
     <string name="cd_ai_send">Сгенерировать</string>
     <string name="cd_back">Назад</string>
-    <string name="cd_ai_badge">Сгенерировано ИИ</string>
+    <string name="cd_clear_name">Очистить название</string>
 </resources>

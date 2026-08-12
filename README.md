@@ -4,19 +4,46 @@
 > board — films, games, restaurants, albums, people's cooking — and keep it. Not a one-off
 > tier-list generator: your boards live on the device, stay editable, and are yours alone.
 
+[![CI](https://github.com/kellygracelab-dotcom/TierYourLife/actions/workflows/ci.yml/badge.svg)](https://github.com/kellygracelab-dotcom/TierYourLife/actions/workflows/ci.yml)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.4-7F52FF?logo=kotlin&logoColor=white)
+![Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)
+![minSdk](https://img.shields.io/badge/minSdk-24-3DDC84?logo=android&logoColor=white)
+
 🚧 **Work in progress** — built from scratch, in the open, as a learning flagship. The commit history *is* the story.
 
 ---
+
+<p align="center">
+  <img src="docs/screenshots/drag.gif" width="300" alt="Dragging a poster into a tier, then reordering the tiers themselves">
+</p>
+
+<p align="center">
+  <sub>Drag an item into a tier, then drag the tier itself — neighbours move out of the way while your finger is still down.</sub>
+</p>
+
+## The app
+
+| Your boards | A board | AI image studio |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/home-light.png" width="240"> | <img src="docs/screenshots/tiers-light.png" width="240"> | <img src="docs/screenshots/ai-studio-light.png" width="240"> |
+
+Light and dark are designed separately — each tier carries two colours, so a band that is readable
+on white is not a glowing slab at night. The theme follows the system or is pinned in settings.
+
+| Light | Dark | Settings |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/tiers-light.png" width="240"> | <img src="docs/screenshots/tiers-dark.png" width="240"> | <img src="docs/screenshots/settings.png" width="240"> |
 
 ## What it does today
 
 - **Boards.** Create lists, rename them, reorder tiers, edit each tier's label, caption and
   colour — light and dark shades set separately, by HSL sliders or hex.
 - **Drag and drop.** Move an item between tiers or within one; the insertion point follows the
-  pointer in reading order, right-to-left included.
-- **Add items three ways.** Search a catalogue, type a name by hand, or pick photos from the
-  gallery — several at once, one item per photo. Gallery images are downscaled on the way in,
-  so a board of 200 items stays inside Android's 25 MB auto-backup quota.
+  pointer in reading order, right-to-left included. Dragging a tier row reorders the board live:
+  the row itself travels with your finger and its neighbours shift as it passes them.
+- **Add items four ways.** Search a catalogue, type a name by hand, pick photos from the
+  gallery, or generate an image with AI. Images are downscaled on the way in, so a board of 200
+  items stays well inside Android's 25 MB auto-backup quota.
 - **Catalogue search.** One field, two sources behind it — TMDB and Wikidata — merged,
   deduplicated and ranked into a single list. If one source is down the other still answers.
 - **Trash, not deletion.** Deleted lists and items go to a trash screen with the time they were
@@ -28,51 +55,84 @@
 - **Light, dark, or follow the system**, applied before the first frame is drawn.
 
 Everything is local. No account, no server, no analytics. The only network calls are the two
-catalogue search sources and the images they point at.
+catalogue search sources, the images they point at, and image generation when you supply a key.
+
+## AI image studio
+
+Some things you want to rank have no poster anywhere — a house rule, a running joke, an idea.
+The studio generates the missing artwork: describe an image, keep the ones you like as cards.
+
+| Describe | Result | Name it |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/ai-studio-dark.png" width="240"> | <img src="docs/screenshots/ai-result.png" width="240"> | <img src="docs/screenshots/ai-naming.png" width="240"> |
+
+The card lands at the front of the pool with a single undo covering everything added that session:
+
+<p align="center">
+  <img src="docs/screenshots/pool-undo.png" width="240">
+</p>
+
+The generator sits behind a port in the domain layer (`CardImageGenerator`), so the app has two
+interchangeable implementations: **Gemini** when a key is present, and a **local stub** that draws
+placeholder art when it is not. Nothing above the data layer knows which one is running — the
+screen, the view model and every test are identical either way.
 
 ## Architecture
 
 ```
-app                     ← Activity, navigation host, theme + locale bootstrap
-core:theme              ← Material 3 colour scheme and typography
-feature:tier:domain     ← models, repository interfaces, pure search-merge logic (no Android)
-feature:tier:data       ← Room, SharedPreferences, Retrofit, image store, Hilt wiring
-feature:tier:presentation ← Compose screens, view models, strings
-build-logic             ← convention plugins: library, compose, hilt, room, network, navigation
+app                          ← Application, Activity, theme + locale bootstrap
+navigation                   ← the NavHost that composes features into one graph
+core:settings                ← theme and language preferences
+core:theme                   ← Material 3 colour scheme and typography
+feature:tier:domain          ← models, repository ports, pure search-merge logic (no Android)
+feature:tier:data            ← Room, Retrofit, image store, Hilt wiring
+feature:tier:presentation    ← Compose screens, view models, strings
+feature:aistudio:domain      ← generation and library ports, generated-image model
+feature:aistudio:data        ← Gemini client, stub generator, shared image store
+feature:aistudio:presentation ← the studio screen and its components
+build-logic                  ← convention plugins: library, compose, hilt, room, network, navigation
 ```
 
 Dependencies point inward: `presentation` and `data` both depend on `domain`, and never on each
-other. Each module's Gradle file is a handful of lines because the repeated setup lives in
-`build-logic` as typed convention plugins rather than in copied blocks.
+other. Features never reference another feature's screens — each owns its routes and offers
+`NavGraphBuilder` extensions, and `navigation` wires them together, so `app` is left with
+bootstrap only. Each module's Gradle file is a handful of lines because the repeated setup lives
+in `build-logic` as typed convention plugins rather than in copied blocks.
+
+Two documents in [`docs/`](docs) carry the reasoning rather than the result: the
+[presentation-layer rules](docs/architecture-presentation.md) every screen follows, and the
+[AI studio design spec](docs/design-spec-ai-image-studio.md), including the decisions that were
+reversed after using the feature on a real phone.
 
 ## Tech stack
 
 - **Language:** Kotlin · Coroutines · Flow
 - **UI:** Jetpack Compose · Material 3 · Navigation Compose (type-safe routes)
-- **Architecture:** clean architecture · multi-module · unidirectional data flow
+- **Architecture:** clean architecture · multi-module · ports and adapters · unidirectional data flow
 - **DI:** Hilt
-- **Data:** Room (entities, views, transactions, exported schemas) · SharedPreferences
-- **Network:** Retrofit · OkHttp · kotlinx.serialization · TMDB · Wikidata SPARQL
+- **Data:** Room (entities, views, transactions, migrations, exported schemas) · SharedPreferences
+- **Network:** Retrofit · OkHttp · kotlinx.serialization · TMDB · Wikidata SPARQL · Gemini
 - **Images:** Coil 3
 - **Build:** Gradle Kotlin DSL · version catalog · convention plugins · KSP
-- **Tests:** JUnit4 · Compose UI tests · Room in-memory and migration tests · hand-written fakes
+- **Tests:** JUnit4 · Compose UI tests · Room in-memory tests · hand-written fakes
 - **CI:** GitHub Actions — build, unit tests and lint, plus the full instrumentation suite on
   emulators at API 24 and 34
 
 ## Tests
 
-313 tests, all of them run on every push:
+Every push runs the whole suite:
 
-| Where | Count | What they cover |
-|---|---|---|
-| JVM | 60 | domain logic, search merging, DTO mapping, repository behaviour against fakes |
-| Instrumented — data | 80 | Room DAOs, transactions, cascades, migrations, the image store |
-| Instrumented — presentation | 171 | Compose screens, view models, drag arithmetic, RTL layout |
-| Instrumented — app | 2 | manifest contract (RTL support, config-change handling) |
+| Where | What they cover |
+|---|---|
+| JVM | domain logic, search merging, title derivation, DTO parsing, repository behaviour against fakes |
+| Instrumented — data | Room DAOs, transactions, cascades, the image store |
+| Instrumented — presentation | Compose screens, view models, drag arithmetic, RTL layout |
+| Instrumented — app | manifest contract (RTL support, config-change handling) |
 
 Some of these exist because a bug got through first: a locale change that quietly broke three
 things visible in no other language, a tier deletion that took recoverable items with it, a
-floating drag preview that ran away from the finger in Arabic.
+floating drag preview that ran away from the finger in Arabic, and a collapsed pool bar whose
+centre tap opened the wrong sheet once a second chip joined it.
 
 ## Building
 
@@ -89,11 +149,24 @@ your own read access token to `local.properties` (which is not in the repository
 TMDB_READ_ACCESS_TOKEN=your_token_here
 ```
 
+The AI image studio works out of the box too, on a built-in stub that draws placeholder art
+locally — no key, no network call. To generate real images with Gemini instead, add your own key
+from [Google AI Studio](https://aistudio.google.com/apikey) to `local.properties`:
+
+```properties
+GEMINI_API_KEY=your_key_here
+```
+
+The key is read into `BuildConfig` at compile time and is never committed. Be aware that it still
+ends up embedded in the built APK — acceptable for a local build or a portfolio artifact you keep
+to yourself, but not something to publish. A published build needs a proxy backend that holds the
+key server-side instead.
+
 ## What's next
 
-- [ ] An AI feature: suggest where an item belongs on a board and explain the reasoning
-- [ ] Screenshots and a short demo recording in this README
 - [ ] Static analysis (detekt / ktlint) in CI
+- [ ] R8 enabled for release builds
+- [ ] A Room migration test built on `MigrationTestHelper`
 
 ---
 

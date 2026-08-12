@@ -12,6 +12,7 @@
     <string name="ai_not_saved">Pas encore enregistrée</string>
     <string name="action_add_to_list">Ajouter à la liste</string>
     <string name="action_regenerate">Régénérer</string>
+    <string name="ai_added">Ajouté</string>
     <string name="ai_error_title">Impossible de générer cette image</string>
     <string name="ai_error_body">Vérifiez votre connexion ou essayez une autre description.</string>
     <string name="ai_name_title">Nommez cette carte</string>
@@ -23,5 +24,5 @@
     <string name="action_try_again">Réessayer</string>
     <string name="cd_ai_send">Générer</string>
     <string name="cd_back">Retour</string>
-    <string name="cd_ai_badge">Généré avec l\'IA</string>
+    <string name="cd_clear_name">Effacer le nom</string>
 </resources>

@@ -2,11 +2,12 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
     branches: [main]
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.event.pull_request.head.sha || github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -29,8 +30,8 @@ jobs:
 
       # assembleDebug is here on purpose: the app module has no unit tests, so
       # `test` alone never compiles it and a broken app module would go unnoticed.
-      - name: Assemble, unit tests, lint
-        run: ./gradlew assembleDebug test lint
+      - name: Assemble, unit tests, static analysis, lint
+        run: ./gradlew assembleDebug test ktlintCheck lint
 
       - name: Upload reports
         if: always()

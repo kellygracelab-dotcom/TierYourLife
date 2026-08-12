@@ -12,6 +12,7 @@
     <string name="ai_not_saved">Noch nicht gespeichert</string>
     <string name="action_add_to_list">Zur Liste hinzufügen</string>
     <string name="action_regenerate">Neu generieren</string>
+    <string name="ai_added">Hinzugefügt</string>
     <string name="ai_error_title">Bild konnte nicht generiert werden</string>
     <string name="ai_error_body">Prüfe deine Verbindung oder versuche eine andere Beschreibung.</string>
     <string name="ai_name_title">Karte benennen</string>
@@ -23,5 +24,5 @@
     <string name="action_try_again">Erneut versuchen</string>
     <string name="cd_ai_send">Generieren</string>
     <string name="cd_back">Zurück</string>
-    <string name="cd_ai_badge">Mit KI generiert</string>
+    <string name="cd_clear_name">Namen leeren</string>
 </resources>

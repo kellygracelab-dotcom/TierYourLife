@@ -5,13 +5,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.domain.library.GeneratedCardSaver
 import com.artiuillab.tieryourlife.feature.aistudio.domain.model.GeneratedCardImage
-import java.io.IOException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class AiStudioViewModelTest {
@@ -32,6 +32,16 @@ class AiStudioViewModelTest {
         assertEquals(false, resultState.generating)
         val image = (resultState.exchanges.single().phase as AiExchangePhase.Result).image
         assertEquals("A neon street", image.prompt)
+    }
+
+    @Test
+    fun openingTheStudio_sweepsLeftoverGeneratedFiles() = runBlocking {
+        val generator = FakeCardImageGenerator()
+        AiStudioViewModel(generator, FakeGeneratedCardSaver(), savedStateHandle())
+
+        generator.awaitDiscardAll()
+
+        assertEquals(1, generator.discardAllCount)
     }
 
     @Test
@@ -85,7 +95,7 @@ class AiStudioViewModelTest {
     }
 
     @Test
-    fun addToList_savesWithTheExchangesPromptImage_andInvokesTheCallback() = runBlocking {
+    fun addToList_marksTheExchangeAsAdded_andDoesNotSaveTwice() = runBlocking {
         val generator = FakeCardImageGenerator()
         val saver = FakeGeneratedCardSaver()
         val viewModel = AiStudioViewModel(generator, saver, savedStateHandle())
@@ -94,12 +104,55 @@ class AiStudioViewModelTest {
         val exchangeId = resultState.exchanges.single().id
         val image = (resultState.exchanges.single().phase as AiExchangePhase.Result).image
 
-        val added = CompletableDeferred<Long>()
-        viewModel.addToList(exchangeId, "My card") { itemId -> added.complete(itemId) }
-        val newItemId = added.await()
+        viewModel.addToList(exchangeId, "My card")
+        val addedState = viewModel.state.first { it.exchanges.single().addedItemId != null }
 
-        assertEquals(1L, newItemId)
+        assertEquals(1L, addedState.exchanges.single().addedItemId)
         assertEquals(listOf(Triple(1L, "My card", image.imageUri)), saver.calls)
+
+        viewModel.addToList(exchangeId, "My card again")
+        assertEquals(1, saver.calls.size)
+    }
+
+    @Test
+    fun addedItemIds_returnsIdsInTheOrderTheyWereAdded() = runBlocking {
+        val generator = FakeCardImageGenerator()
+        val saver = FakeGeneratedCardSaver()
+        val viewModel = AiStudioViewModel(generator, saver, savedStateHandle())
+
+        viewModel.send("First")
+        val firstResult = viewModel.state.first { it.exchanges.singleOrNull()?.phase is AiExchangePhase.Result }
+        val firstId = firstResult.exchanges.single().id
+        viewModel.addToList(firstId, "First card")
+        viewModel.state.first { it.exchanges.single().addedItemId != null }
+
+        viewModel.send("Second")
+        val secondResult = viewModel.state.first {
+            it.exchanges.size == 2 && it.exchanges.last().phase is AiExchangePhase.Result
+        }
+        val secondId = secondResult.exchanges.last().id
+        viewModel.addToList(secondId, "Second card")
+        viewModel.state.first { it.exchanges.last().addedItemId != null }
+
+        assertEquals(listOf(1L, 2L), viewModel.addedItemIds)
+    }
+
+    @Test
+    fun regenerate_onAnAlreadyAddedExchange_isNoOp() = runBlocking {
+        val generator = FakeCardImageGenerator()
+        val saver = FakeGeneratedCardSaver()
+        val viewModel = AiStudioViewModel(generator, saver, savedStateHandle())
+        viewModel.send("A neon street")
+        val resultState = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
+        val exchangeId = resultState.exchanges.single().id
+        viewModel.addToList(exchangeId, "My card")
+        viewModel.state.first { it.exchanges.single().addedItemId != null }
+        val callCountBefore = generator.callCount
+
+        viewModel.regenerate(exchangeId)
+
+        assertEquals(callCountBefore, generator.callCount)
+        assertEquals(1, saver.calls.size)
     }
 
     private fun savedStateHandle(): SavedStateHandle =
@@ -132,6 +185,16 @@ private class FakeCardImageGenerator : CardImageGenerator {
     override suspend fun discard(image: GeneratedCardImage) {
         discarded += image
     }
+
+    override suspend fun discardAll() {
+        discardAllCount++
+        discardAllCalled.complete(Unit)
+    }
+
+    suspend fun awaitDiscardAll() = discardAllCalled.await()
+
+    var discardAllCount = 0
+    private val discardAllCalled = CompletableDeferred<Unit>()
 }
 
 private class FakeGeneratedCardSaver : GeneratedCardSaver {

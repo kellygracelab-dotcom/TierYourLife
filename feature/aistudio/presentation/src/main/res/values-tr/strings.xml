@@ -12,6 +12,7 @@
     <string name="ai_not_saved">Henüz kaydedilmedi</string>
     <string name="action_add_to_list">Listeye ekle</string>
     <string name="action_regenerate">Yeniden oluştur</string>
+    <string name="ai_added">Eklendi</string>
     <string name="ai_error_title">Bu görsel oluşturulamadı</string>
     <string name="ai_error_body">Bağlantınızı kontrol edin veya farklı bir açıklama deneyin.</string>
     <string name="ai_name_title">Bu kartı adlandırın</string>
@@ -23,5 +24,5 @@
     <string name="action_try_again">Yeniden dene</string>
     <string name="cd_ai_send">Oluştur</string>
     <string name="cd_back">Geri</string>
-    <string name="cd_ai_badge">Yapay zekâ ile oluşturuldu</string>
+    <string name="cd_clear_name">Adı temizle</string>
 </resources>

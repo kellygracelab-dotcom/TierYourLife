@@ -1,12 +1,12 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -133,7 +133,6 @@ class TierListsViewModelTest {
         assertEquals("Old title", before.lists.single().title)
         assertEquals("New title", after.lists.single().title)
     }
-
 
     @Test
     fun search_filtersLists_caseInsensitiveAndAnywhereInTheName() = runBlocking {

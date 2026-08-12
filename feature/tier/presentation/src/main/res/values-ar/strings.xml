@@ -119,7 +119,6 @@
 
     <string name="ai_chip">توليد</string>
     <string name="cd_ai_chip">توليد صورة باستخدام الذكاء الاصطناعي</string>
-    <string name="cd_ai_badge">تم إنشاؤه بالذكاء الاصطناعي</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="zero">لا عناصر</item>

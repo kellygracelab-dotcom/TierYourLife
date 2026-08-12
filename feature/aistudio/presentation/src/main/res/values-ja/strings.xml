@@ -12,6 +12,7 @@
     <string name="ai_not_saved">まだ保存されていません</string>
     <string name="action_add_to_list">リストに追加</string>
     <string name="action_regenerate">再生成</string>
+    <string name="ai_added">追加済み</string>
     <string name="ai_error_title">画像を生成できませんでした</string>
     <string name="ai_error_body">接続を確認するか、別の説明を試してください。</string>
     <string name="ai_name_title">カードに名前を付ける</string>
@@ -23,5 +24,5 @@
     <string name="action_try_again">再試行</string>
     <string name="cd_ai_send">生成</string>
     <string name="cd_back">戻る</string>
-    <string name="cd_ai_badge">AIで生成</string>
+    <string name="cd_clear_name">名前をクリア</string>
 </resources>

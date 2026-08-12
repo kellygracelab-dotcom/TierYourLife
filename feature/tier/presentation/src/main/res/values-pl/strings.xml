@@ -101,7 +101,6 @@
 
     <string name="ai_chip">Generuj</string>
     <string name="cd_ai_chip">Wygeneruj obraz za pomocą AI</string>
-    <string name="cd_ai_badge">Wygenerowane przez AI</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d element</item>

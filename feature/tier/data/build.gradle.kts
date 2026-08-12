@@ -22,18 +22,15 @@ android {
     }
 
     defaultConfig {
-        buildConfigField(
-            "String",
-            "TMDB_READ_ACCESS_TOKEN",
-            "\"${localProperties.getProperty("TMDB_READ_ACCESS_TOKEN", "")}\"",
-        )
+        val tmdbToken = providers.gradleProperty("TMDB_READ_ACCESS_TOKEN").orNull
+            ?: localProperties.getProperty("TMDB_READ_ACCESS_TOKEN", "")
+        buildConfigField("String", "TMDB_READ_ACCESS_TOKEN", "\"$tmdbToken\"")
     }
 
     sourceSets {
         getByName("androidTest").assets.srcDirs("$projectDir/schemas")
     }
 }
-
 
 dependencies {
     implementation(projects.feature.tier.domain)

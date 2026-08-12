@@ -12,17 +12,17 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
-import java.io.ByteArrayInputStream
-import java.io.File
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
-import org.junit.Assert.assertNotNull
+import java.io.ByteArrayInputStream
+import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class RoomTierRepositoryTest {
@@ -150,7 +150,7 @@ class RoomTierRepositoryTest {
                 position = 1,
                 label = "S",
                 colorLight = "#B03A32",
-                colorDark = "#F1948C"
+                colorDark = "#F1948C",
             ),
         )
         val targetTierId = dao.insertTier(
@@ -159,7 +159,7 @@ class RoomTierRepositoryTest {
                 position = 2,
                 label = "A",
                 colorLight = "#C06A25",
-                colorDark = "#E9A867"
+                colorDark = "#E9A867",
             ),
         )
         val itemId = dao.insertTierItem(
@@ -167,7 +167,7 @@ class RoomTierRepositoryTest {
                 tierId = sourceTierId,
                 position = 0,
                 title = "Interstellar",
-                imageUrl = null
+                imageUrl = null,
             ),
         )
 

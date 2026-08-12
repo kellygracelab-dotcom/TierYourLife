@@ -6,10 +6,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -17,10 +17,10 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
@@ -102,7 +102,6 @@ class TierListsScreenTest {
         composeRule.onNodeWithText(string(R.string.home_empty_title)).assertIsDisplayed()
     }
 
-
     @Test
     fun search_filtersByTitle_caseInsensitiveAndAnywhereInTheName() {
         val lists = listOf(
@@ -148,7 +147,6 @@ class TierListsScreenTest {
         composeRule.onNodeWithTag(TierListsTestTags.FAB).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.tier_lists_title)).assertIsDisplayed()
     }
-
 
     @Test
     fun longPress_entersSelectionMode_showingTheContextualBarAndHidingTheFab() {
@@ -217,7 +215,6 @@ class TierListsScreenTest {
         composeRule.onNodeWithText(plural(R.plurals.selection_count, 2)).assertIsDisplayed()
         composeRule.runOnIdle { assertEquals(null, openedId) }
     }
-
 
     @Test
     fun delete_removesTheCardsAndShowsTheUndoSnackbar_andUndoRestoresThem() {

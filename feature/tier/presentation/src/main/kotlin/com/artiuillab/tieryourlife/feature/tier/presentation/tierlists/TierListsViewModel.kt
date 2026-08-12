@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -14,6 +15,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
+private const val LOAD_LOG_TAG = "TierLists"
+
 @HiltViewModel
 class TierListsViewModel @Inject constructor(
     private val repository: TierRepository,
@@ -26,7 +29,6 @@ class TierListsViewModel @Inject constructor(
     private var lastLoadedLists: List<TierList> = emptyList()
 
     private var mode: HomeMode = HomeMode.Browsing
-
 
     fun loadTierLists() {
         viewModelScope.launch {
@@ -47,6 +49,7 @@ class TierListsViewModel @Inject constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            Log.w(LOAD_LOG_TAG, "Loading tier lists failed", e)
             if (!hasVisibleList) {
                 _state.value = TierListsUiState.Error
             }

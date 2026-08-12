@@ -84,9 +84,11 @@ One message for every failure — no network, timeout, 5xx, safety refusal.
 
 ## 3. State machine
 
-empty → generating → result | error; error → Try again → generating (same prompt); result → Regenerate → generating (replaces the card, does not append; the discarded image file is deleted immediately); result → Add to list → naming dialog → pool landing (+ snackbar, Undo) | Cancel → result. Back leaves at any state; nothing is committed. The studio opens empty every time.
+empty → generating → result | error; error → Try again → generating (same prompt); result → Regenerate → generating (replaces the card, does not append; the discarded image file is deleted immediately); result → Add to list → naming dialog → the card is saved immediately and the result card switches in place to a static "Added" label, replacing its action row — Regenerate is disallowed on a card once it carries an added id | Cancel → result. The studio does not close on Add; the user can keep prompting and adding more cards in the same session. Leaving — via the app bar's `arrow_back` or the system/gesture back button, both wired to the same handler — pops back to TierDetail, which shows one snackbar covering every card added that session ("%d item(s) added to the pool") with a single Undo that removes all of them together. The studio still opens empty every time.
 
-Invariant: one generation in flight at a time; Regenerate replaces its own card and deletes the discarded file.
+Superseded decision: this section previously read "result → Add to list → naming dialog → pool landing (+ snackbar, Undo)", with the studio closing on the first Add. That was reversed after checking the flow on a device — closing after one generation made it impossible to add a second card without reopening the studio and losing the conversation.
+
+Invariant: one generation in flight at a time; Regenerate replaces its own card and deletes the discarded file, and never runs on a card that has already been added.
 
 ## 4. Naming dialog (canvas 14g)
 
@@ -97,30 +99,40 @@ The manual-entry dialog with one changed string.
 | Container | M3 alert dialog, 28dp radius, surfaceContainerHigh, 24dp padding, 24dp side inset |
 | Title | headlineSmall — "Name this card" |
 | Supporting | bodySmall in onSurfaceVariant — reused "Goes into the pool. You can drag it into a tier afterwards." |
-| Name field | 56dp, outlined 2dp primary, 4dp radius, label "Name", 20dp below the supporting line |
-| Photo row | 18dp below: 52 × 76dp thumb at 8dp radius (carrying the provenance badge) + note bodySmall in onSurfaceVariant, 14dp gap — "The generated image becomes the card's photo." |
+| Name field | 56dp, outlined 2dp primary, 4dp radius, label "Name", 20dp below the supporting line, trailing clear button (48dp touch target, 20dp glyph) shown whenever the field is non-empty |
+| Photo row | 18dp below: 52 × 76dp thumb at 8dp radius + note bodySmall in onSurfaceVariant, 14dp gap — "The generated image becomes the card's photo." |
 | Buttons | 18dp below, bottom-right: Cancel then Add, text buttons labelLarge in primary, 8dp apart |
 
-The field opens empty and focused, Add disabled while empty. No "Choose photo" chip.
+The field opens focused and pre-filled with a title suggested from the prompt: whitespace collapsed to single spaces, a leading "a"/"an"/"the" dropped, cut to 40 characters at the last word boundary (a single word longer than 40 is hard-cut), trailing punctuation trimmed, and the first letter capitalized (the rest of the string, including acronyms like "VHS", is left untouched). The cursor lands at the end of the suggestion. The user can edit it in place or clear it with the trailing button, which empties the field and keeps focus there. Add is disabled only when the field is empty; it is enabled the moment the dialog opens because the suggestion is never blank for a non-blank prompt. No "Choose photo" chip.
+
+Superseded decision: the field previously opened empty with Add disabled, framed above as deliberate. That was reversed after checking the flow on a device — retyping the prompt as a title on every single generation added friction the empty-field design hadn't accounted for.
 
 ## 5. Pool landing (canvas 14h)
 
-The studio closes on Add; the user ends on the tier list. The new tile lands at the front of the pool strip, 52 × 76dp, 8dp radius. Pool count increments. Snackbar (clears the pool sheet): "1 item added to the pool", Undo. Undo deletes the item and its image copy.
+Superseded decision: the studio no longer closes on Add (§3); this section now covers what TierDetail shows once the user leaves the studio, possibly with several cards added in one session, rather than a single-card landing.
 
-## 6. Provenance badge
+Each Add saves its card straight into the pool the list already reads from — the pool strip and count are current the moment the user backs out, even though the studio stayed open in between. The new tile(s) land at the front of the pool strip, 52 × 76dp, 8dp radius, in the order they were added. Snackbar (clears the pool sheet): "%d item(s) added to the pool" (reuses `tier_detail_items_added_to_pool`), Undo. Undo deletes every item added in that session — and their image copies — in one action, not just the most recent one.
 
-16dp circle, primaryContainer fill, 10dp `auto_awesome` in onPrimaryContainer, tile top-right, offset −3dp/−3dp. Applies to pool tiles, ranked tiles, and the naming dialog thumb. Persists forever — backed by a column, not a session flag.
+## 6. Provenance badge — designed, then dropped on the device
+
+Designed as a 16dp primaryContainer circle with a 10dp `auto_awesome`, overhanging the tile's top-right corner on pool tiles, ranked tiles, and the naming dialog thumb.
+
+Removed after the first build on hardware: at 52 × 76dp the tile is already the smallest surface in the app, and a badge over its corner reads as clutter rather than information — in a private journal the author remembers which cards they generated. The `source` column stays in the database, so the mark can return, or become a filter, without a migration.
 
 ## 7. Copy
 
 New keys: ai_chip "Generate"; ai_title "Generate an image"; ai_caption "New cards go into the “%1$s” pool."; ai_empty_title "Describe an image"; ai_empty_body "The AI draws it. Keep the ones you like as cards."; ai_hints_label "Try one of these"; ai_hint_1 "A neon-lit Tokyo street in the rain"; ai_hint_2 "A lone figure on a red desert planet"; ai_hint_3 "A retro VHS cover with bold type"; ai_field_hint "Describe an image"; ai_generating "Generating…"; ai_not_saved "Not saved yet"; action_add_to_list "Add to list"; action_regenerate "Regenerate"; ai_error_title "Couldn't generate that image"; ai_error_body "Check your connection, or try a different description."; ai_name_title "Name this card"; ai_name_photo_note "The generated image becomes the card's photo.".
-Content descriptions: cd_ai_chip "Generate an image with AI"; cd_ai_send "Generate"; cd_ai_badge "Generated with AI".
+ai_added "Added" replaces the action row once a card is saved, and the "Not saved yet" caption disappears with it — the two never show together.
+
+Content descriptions: cd_ai_chip "Generate an image with AI"; cd_ai_send "Generate"; cd_clear_name "Clear name". The badge's cd_ai_badge was removed together with the badge itself (§6).
 Reused: manual dialog body, "Name", "Add", "Cancel", "Try again", "%d item(s) added to the pool", "Undo".
 The three hints are translatable prose, not prompt templates.
 
-## 8. The stub, and the schema (canvas 14k)
+## 8. The generator, the stub fallback, and the schema (canvas 14k)
 
-Request: send → ~1200ms delay → one of three placeholder images, cycled by Regenerate. No network call, no key, no API surface committed. Error path: airplane mode returns the error state — reachable without a debug switch. Storage: the kept image is copied into internal storage exactly like a picked photo. New column: `source: enum(TMDB, MANUAL, GENERATED)` on the item — the only schema change this feature asks for.
+Request: send → Gemini Interactions API (`POST /v1beta/interactions`, model `gemini-3.1-flash-image`, `response_format` image/png at aspect ratio 3:4, size 1K — matching the 192×256dp card) → the first `image` content block across the response's steps, base64-decoded and written to internal storage. A completed response with no image block (safety refusal) is treated the same as a network failure — one error card, no per-cause messaging (§2.5). The request carries the device's own key via `x-goog-api-key`; there is no proxy.
+
+Without a configured key the app falls back to the original stub: ~1200ms delay → one of three placeholder images, cycled by Regenerate, no network call. This keeps the app buildable and demoable with zero setup. Error path (both generator and stub): airplane mode returns the error state — reachable without a debug switch. Storage: the kept image is copied into internal storage exactly like a picked photo, through the same store either generator uses. New column: `source: enum(TMDB, MANUAL, GENERATED)` on the item — the only schema change this feature asks for.
 
 Deliberately not designed yet: editing a prompt; conversation history (the studio opens empty every time); multiple keeps; cost/quota/consent; per-cause error messages.
 

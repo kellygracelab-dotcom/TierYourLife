@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val GENERATION_LOG_TAG = "AiStudio"
 
 @HiltViewModel
 class AiStudioViewModel @Inject constructor(
@@ -30,6 +33,13 @@ class AiStudioViewModel @Inject constructor(
     val state: StateFlow<AiStudioUiState> = _state.asStateFlow()
 
     private var nextExchangeId = 1L
+
+    val addedItemIds: List<Long>
+        get() = _state.value.exchanges.mapNotNull { it.addedItemId }
+
+    init {
+        viewModelScope.launch { generator.discardAll() }
+    }
 
     fun send(prompt: String) {
         if (_state.value.generating) return
@@ -55,6 +65,7 @@ class AiStudioViewModel @Inject constructor(
     fun regenerate(exchangeId: Long) {
         if (_state.value.generating) return
         val exchange = _state.value.exchanges.firstOrNull { it.id == exchangeId } ?: return
+        if (exchange.addedItemId != null) return
         val previousImage = (exchange.phase as? AiExchangePhase.Result)?.image
         startGenerating(exchangeId)
         viewModelScope.launch {
@@ -65,12 +76,19 @@ class AiStudioViewModel @Inject constructor(
         }
     }
 
-    fun addToList(exchangeId: Long, title: String, onAdded: (itemId: Long) -> Unit) {
+    fun addToList(exchangeId: Long, title: String) {
         val exchange = _state.value.exchanges.firstOrNull { it.id == exchangeId } ?: return
+        if (exchange.addedItemId != null) return
         val image = (exchange.phase as? AiExchangePhase.Result)?.image ?: return
         viewModelScope.launch {
             val newItemId = saver.save(tierListId, title, image.imageUri)
-            onAdded(newItemId)
+            _state.update { current ->
+                current.copy(
+                    exchanges = current.exchanges.map {
+                        if (it.id == exchangeId) it.copy(addedItemId = newItemId) else it
+                    },
+                )
+            }
         }
     }
 
@@ -83,7 +101,10 @@ class AiStudioViewModel @Inject constructor(
     private suspend fun completeGeneration(exchangeId: Long, prompt: String) {
         val phase = runCatching { generator.generate(prompt) }.fold(
             onSuccess = { image -> AiExchangePhase.Result(image) },
-            onFailure = { AiExchangePhase.Failed },
+            onFailure = { error ->
+                Log.w(GENERATION_LOG_TAG, "Image generation failed", error)
+                AiExchangePhase.Failed
+            },
         )
         _state.update { current -> current.withPhase(exchangeId, phase).copy(generating = false) }
     }

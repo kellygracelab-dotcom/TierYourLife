@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,20 +46,22 @@ import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.compon
 
 @Composable
 fun AiStudioScreen(
-    onBack: () -> Unit,
-    onCardAdded: (Long) -> Unit,
+    onBack: (addedItemIds: List<Long>) -> Unit,
     viewModel: AiStudioViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var fieldText by rememberSaveable { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
+    val onBackWithAddedItems = { onBack(viewModel.addedItemIds) }
+
+    BackHandler { onBackWithAddedItems() }
 
     AiStudioScreenContent(
         state = state,
         listTitle = viewModel.listTitle,
         fieldText = fieldText,
         onFieldTextChange = { fieldText = it },
-        onBack = onBack,
+        onBack = onBackWithAddedItems,
         onSend = {
             viewModel.send(fieldText)
             fieldText = ""
@@ -66,9 +69,7 @@ fun AiStudioScreen(
         onHintClick = { hint -> fieldText = hint },
         onRetry = viewModel::retry,
         onRegenerate = viewModel::regenerate,
-        onSaveCard = { exchangeId, title ->
-            viewModel.addToList(exchangeId, title, onAdded = onCardAdded)
-        },
+        onSaveCard = { exchangeId, title -> viewModel.addToList(exchangeId, title) },
         fieldFocusRequester = focusRequester,
     )
 }
@@ -141,6 +142,7 @@ internal fun AiStudioScreenContent(
                                         testTag = AiStudioTestTags.result(exchange.id),
                                         onAddToList = { namingExchangeId = exchange.id },
                                         onRegenerate = { onRegenerate(exchange.id) },
+                                        addedItemId = exchange.addedItemId,
                                     )
 
                                     AiExchangePhase.Failed -> ErrorCard(
@@ -164,12 +166,12 @@ internal fun AiStudioScreenContent(
     }
 
     val namingId = namingExchangeId
-    val namingImage = namingId?.let { id ->
-        (state.exchanges.firstOrNull { it.id == id }?.phase as? AiExchangePhase.Result)?.image
-    }
-    if (namingId != null && namingImage != null) {
+    val namingExchange = namingId?.let { id -> state.exchanges.firstOrNull { it.id == id } }
+    val namingImage = (namingExchange?.phase as? AiExchangePhase.Result)?.image
+    if (namingId != null && namingExchange != null && namingImage != null) {
         NamingDialog(
             imageUri = namingImage.imageUri,
+            prompt = namingExchange.prompt,
             onDismiss = { namingExchangeId = null },
             onSave = { title ->
                 onSaveCard(namingId, title)

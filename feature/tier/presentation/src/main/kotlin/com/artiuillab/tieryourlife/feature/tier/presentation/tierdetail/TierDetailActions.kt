@@ -28,6 +28,6 @@ internal data class TierDetailActions(
     val onRenameList: (title: String) -> Unit = {},
     val onOpenAiStudio: (listTitle: String) -> Unit = {},
     val onConsumeAddedItem: () -> Unit = {},
-    val onUndoAddedItem: (itemId: Long) -> Unit = {},
+    val onUndoAddedItem: (itemIds: List<Long>) -> Unit = {},
     val onAutoTitleEditConsumed: () -> Unit = {},
 )

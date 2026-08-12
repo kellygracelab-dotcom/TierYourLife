@@ -11,5 +11,5 @@ data class MovieDto(
     @SerialName("poster_path")
     val posterPath: String?,
     @SerialName("release_date")
-    val releaseDate: String? = null
+    val releaseDate: String? = null,
 )

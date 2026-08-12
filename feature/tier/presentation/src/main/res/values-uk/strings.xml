@@ -101,7 +101,6 @@
 
     <string name="ai_chip">Згенерувати</string>
     <string name="cd_ai_chip">Згенерувати зображення за допомогою ШІ</string>
-    <string name="cd_ai_badge">Згенеровано ШІ</string>
 
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d елемент</item>

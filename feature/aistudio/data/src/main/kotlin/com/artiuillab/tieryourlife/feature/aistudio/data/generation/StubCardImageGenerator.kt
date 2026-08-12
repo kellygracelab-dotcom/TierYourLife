@@ -7,33 +7,29 @@ import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Shader
 import android.net.ConnectivityManager
-import android.net.Uri
+import androidx.core.graphics.createBitmap
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.domain.model.GeneratedCardImage
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import androidx.core.net.toUri
-import androidx.core.graphics.createBitmap
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val GENERATION_DELAY_MILLIS = 1200L
 private const val IMAGE_WIDTH = 768
 private const val IMAGE_HEIGHT = 1024
-private const val CACHE_SUBDIRECTORY = "aistudio"
 private const val PALETTE_COUNT = 3
 
 @Singleton
 class StubCardImageGenerator @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val imageStore: ImageBytesStore,
 ) : CardImageGenerator {
 
     private val callCounts = ConcurrentHashMap<String, Int>()
@@ -50,21 +46,22 @@ class StubCardImageGenerator @Inject constructor(
         val paletteIndex = Math.floorMod(prompt.hashCode() + callIndex, PALETTE_COUNT)
         val bitmap = renderComposition(paletteIndex)
 
-        val directory = File(context.cacheDir, CACHE_SUBDIRECTORY).apply { mkdirs() }
-        val file = File(directory, "${UUID.randomUUID()}.png")
-        FileOutputStream(file).use { output -> bitmap.compress(Bitmap.CompressFormat.PNG, 100, output) }
+        val bytes = ByteArrayOutputStream().use { output ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+            output.toByteArray()
+        }
         bitmap.recycle()
 
-        GeneratedCardImage(prompt = prompt, imageUri = Uri.fromFile(file).toString())
+        val path = imageStore.save(bytes)
+        GeneratedCardImage(prompt = prompt, imageUri = "file://$path")
     }
 
     override suspend fun discard(image: GeneratedCardImage): Unit = withContext(Dispatchers.IO) {
-        val path = image.imageUri.toUri().path ?: return@withContext
-        val file = File(path)
-        val directory = File(context.cacheDir, CACHE_SUBDIRECTORY)
-        if (file.absoluteFile.parentFile == directory.absoluteFile) {
-            file.delete()
-        }
+        imageStore.delete(image.imageUri)
+    }
+
+    override suspend fun discardAll(): Unit = withContext(Dispatchers.IO) {
+        imageStore.clear()
     }
 }
 
