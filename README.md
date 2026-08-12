@@ -89,6 +89,19 @@ your own read access token to `local.properties` (which is not in the repository
 TMDB_READ_ACCESS_TOKEN=your_token_here
 ```
 
+The AI image studio works out of the box too, on a built-in stub that draws placeholder art
+locally — no key, no network call. To generate real images with Gemini instead, add your own key
+from [Google AI Studio](https://aistudio.google.com/apikey) to `local.properties`:
+
+```properties
+GEMINI_API_KEY=your_key_here
+```
+
+The key is read into `BuildConfig` at compile time and is never committed. Be aware that it still
+ends up embedded in the built APK — acceptable for a local build or a portfolio artifact you keep
+to yourself, but not something to publish. A published build needs a proxy backend that holds the
+key server-side instead.
+
 ## What's next
 
 - [ ] An AI feature: suggest where an item belongs on a board and explain the reasoning
