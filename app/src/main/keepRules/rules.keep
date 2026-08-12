@@ -10,3 +10,17 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+# kotlinx.serialization 1.11.0 already ships generic consumer rules that keep
+# every @Serializable class's generated $$serializer and Companion.serializer(),
+# so this app doesn't rely on reflection paths those rules miss. This narrower,
+# package-scoped duplicate is kept as an explicit safety net for our own DTOs
+# (feature/tier/data, feature/aistudio/data) in case that upstream rule set
+# ever narrows or gets excluded.
+-keepclassmembers class com.artiuillab.tieryourlife.** {
+    static ** Companion;
+}
+-keepclasseswithmembers class com.artiuillab.tieryourlife.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+-keep,includedescriptorclasses class com.artiuillab.tieryourlife.**$$serializer { *; }
