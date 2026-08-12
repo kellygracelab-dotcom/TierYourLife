@@ -118,9 +118,11 @@ Content descriptions: cd_ai_chip "Generate an image with AI"; cd_ai_send "Genera
 Reused: manual dialog body, "Name", "Add", "Cancel", "Try again", "%d item(s) added to the pool", "Undo".
 The three hints are translatable prose, not prompt templates.
 
-## 8. The stub, and the schema (canvas 14k)
+## 8. The generator, the stub fallback, and the schema (canvas 14k)
 
-Request: send → ~1200ms delay → one of three placeholder images, cycled by Regenerate. No network call, no key, no API surface committed. Error path: airplane mode returns the error state — reachable without a debug switch. Storage: the kept image is copied into internal storage exactly like a picked photo. New column: `source: enum(TMDB, MANUAL, GENERATED)` on the item — the only schema change this feature asks for.
+Request: send → Gemini Interactions API (`POST /v1beta/interactions`, model `gemini-3.1-flash-image`, `response_format` image/png at aspect ratio 3:4, size 1K — matching the 192×256dp card) → the first `image` content block across the response's steps, base64-decoded and written to internal storage. A completed response with no image block (safety refusal) is treated the same as a network failure — one error card, no per-cause messaging (§2.5). The request carries the device's own key via `x-goog-api-key`; there is no proxy.
+
+Without a configured key the app falls back to the original stub: ~1200ms delay → one of three placeholder images, cycled by Regenerate, no network call. This keeps the app buildable and demoable with zero setup. Error path (both generator and stub): airplane mode returns the error state — reachable without a debug switch. Storage: the kept image is copied into internal storage exactly like a picked photo, through the same store either generator uses. New column: `source: enum(TMDB, MANUAL, GENERATED)` on the item — the only schema change this feature asks for.
 
 Deliberately not designed yet: editing a prompt; conversation history (the studio opens empty every time); multiple keeps; cost/quota/consent; per-cause error messages.
 
