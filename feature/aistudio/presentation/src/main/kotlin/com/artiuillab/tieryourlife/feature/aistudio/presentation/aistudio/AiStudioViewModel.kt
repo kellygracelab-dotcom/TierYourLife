@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val GENERATION_LOG_TAG = "AiStudio"
 
 @HiltViewModel
 class AiStudioViewModel @Inject constructor(
@@ -83,7 +86,10 @@ class AiStudioViewModel @Inject constructor(
     private suspend fun completeGeneration(exchangeId: Long, prompt: String) {
         val phase = runCatching { generator.generate(prompt) }.fold(
             onSuccess = { image -> AiExchangePhase.Result(image) },
-            onFailure = { AiExchangePhase.Failed },
+            onFailure = { error ->
+                Log.w(GENERATION_LOG_TAG, "Image generation failed", error)
+                AiExchangePhase.Failed
+            },
         )
         _state.update { current -> current.withPhase(exchangeId, phase).copy(generating = false) }
     }
