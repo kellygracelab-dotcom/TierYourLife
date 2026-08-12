@@ -107,6 +107,12 @@ private class FakeImageBytesStore(private val savedPath: String) : ImageBytesSto
     override fun delete(uri: String) {
         deletedUris += uri
     }
+
+    override fun clear() {
+        cleared = true
+    }
+
+    var cleared = false
 }
 
 private class FakeBase64Decoder(private val decoded: ByteArray) : Base64Decoder {

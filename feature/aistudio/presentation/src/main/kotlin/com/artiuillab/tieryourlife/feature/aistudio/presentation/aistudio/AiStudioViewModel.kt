@@ -37,6 +37,10 @@ class AiStudioViewModel @Inject constructor(
     val addedItemIds: List<Long>
         get() = _state.value.exchanges.mapNotNull { it.addedItemId }
 
+    init {
+        viewModelScope.launch { generator.discardAll() }
+    }
+
     fun send(prompt: String) {
         if (_state.value.generating) return
         val trimmed = prompt.trim()

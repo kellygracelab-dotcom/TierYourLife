@@ -23,6 +23,10 @@ class GeneratedImageStore @Inject constructor(
         return file.absolutePath
     }
 
+    override fun clear() {
+        File(context.cacheDir, CACHE_SUBDIRECTORY).listFiles()?.forEach { file -> file.delete() }
+    }
+
     override fun delete(uri: String) {
         val path = uri.toUri().path ?: return
         val file = File(path)

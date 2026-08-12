@@ -59,6 +59,10 @@ class StubCardImageGenerator @Inject constructor(
     override suspend fun discard(image: GeneratedCardImage): Unit = withContext(Dispatchers.IO) {
         imageStore.delete(image.imageUri)
     }
+
+    override suspend fun discardAll(): Unit = withContext(Dispatchers.IO) {
+        imageStore.clear()
+    }
 }
 
 private fun renderComposition(paletteIndex: Int): Bitmap {
