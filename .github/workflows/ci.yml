@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.event.pull_request.head.sha || github.sha }}
@@ -86,7 +87,14 @@ jobs:
           arch: x86_64
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: ./gradlew connectedDebugAndroidTest
+          # The default 800M image fills up while installing five test APKs, and a
+          # full disk surfaces as an opaque "Failed to install-write all apks".
+          disk-size: 4096M
+          # The package verifier occasionally holds the install long enough for
+          # ddmlib to give up; nothing here needs verifying.
+          script: |
+            adb shell settings put global verifier_verify_adb_installs 0
+            ./gradlew connectedDebugAndroidTest
 
       - name: Upload reports
         if: always()
