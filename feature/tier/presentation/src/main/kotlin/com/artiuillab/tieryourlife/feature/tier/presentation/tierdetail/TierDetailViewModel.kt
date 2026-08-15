@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import com.artiuillab.tieryourlife.feature.tier.domain.ordering.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -92,6 +93,10 @@ class TierDetailViewModel @Inject constructor(
 
     fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
         markTouched()
+        val current = _state.value
+        if (current is TierDetailUiState.Success) {
+            _state.value = TierDetailUiState.Success(current.list.withItemMoved(itemId, toTierId, toPosition))
+        }
         viewModelScope.launch {
             repository.moveItem(itemId, toTierId, toPosition)
             loadTierList()
