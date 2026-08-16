@@ -146,6 +146,10 @@ specifications. The reasoning behind the decisions lives in [`docs/`](docs) — 
 presentation-layer rules every screen follows, the AI studio design spec, and the choices
 that were reversed after using the feature on a real phone.
 
+The screens were designed before they were built, in a separate design workspace —
+[the canvas is here](https://claude.ai/code/artifact/1a2cee57-91d4-46bd-99fd-ebd54d18b42c)
+if you want the drawings rather than the prose.
+
 Stating it plainly because it is visible in the history either way, and because how a
 codebase was produced is a reasonable thing to want to know.
 
