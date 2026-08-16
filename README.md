@@ -136,6 +136,19 @@ things visible in no other language, a tier deletion that took recoverable items
 floating drag preview that ran away from the finger in Arabic, and a collapsed pool bar whose
 centre tap opened the wrong sheet once a second chip joined it.
 
+## How this was built
+
+AI agents were part of the workflow here, and the commit history reflects that.
+
+The division of labour: specifications, architectural decisions, code review and on-device
+testing are mine; a large share of the code was written by agents against those
+specifications. The reasoning behind the decisions lives in [`docs/`](docs) — the
+presentation-layer rules every screen follows, the AI studio design spec, and the choices
+that were reversed after using the feature on a real phone.
+
+Stating it plainly because it is visible in the history either way, and because how a
+codebase was produced is a reasonable thing to want to know.
+
 ## Building
 
 ```bash
@@ -166,9 +179,9 @@ key server-side instead.
 
 ## What's next
 
-- [ ] Static analysis (detekt / ktlint) in CI
-- [ ] R8 enabled for release builds
-- [ ] A Room migration test built on `MigrationTestHelper`
+- [ ] A proxy backend so a published build never carries the API key
+- [ ] Native-speaker review of the Arabic, Japanese and Turkish translations
+- [ ] Ranking history: what moved between tiers and when
 
 ---
 
