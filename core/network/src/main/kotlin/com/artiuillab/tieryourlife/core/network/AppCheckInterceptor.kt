@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.aistudio.data.remote.api
+package com.artiuillab.tieryourlife.core.network
 
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.appcheck.FirebaseAppCheck

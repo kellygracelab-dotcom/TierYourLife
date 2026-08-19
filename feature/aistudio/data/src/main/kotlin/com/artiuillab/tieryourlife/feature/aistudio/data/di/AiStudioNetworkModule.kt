@@ -1,9 +1,9 @@
 package com.artiuillab.tieryourlife.feature.aistudio.data.di
 
+import com.artiuillab.tieryourlife.core.network.AppCheckInterceptor
 import com.artiuillab.tieryourlife.feature.aistudio.data.BuildConfig
 import com.artiuillab.tieryourlife.feature.aistudio.data.generation.ProxyCardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.data.generation.StubCardImageGenerator
-import com.artiuillab.tieryourlife.feature.aistudio.data.remote.api.AppCheckInterceptor
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.api.CardImageApi
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.networkJson
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
@@ -31,12 +31,6 @@ annotation class ProxyRetrofit
 @Module
 @InstallIn(SingletonComponent::class)
 object AiStudioNetworkModule {
-
-    @Provides
-    @Singleton
-    fun provideAppCheckInterceptor(): AppCheckInterceptor {
-        return AppCheckInterceptor()
-    }
 
     @ProxyOkHttp
     @Provides

@@ -1,8 +1,8 @@
 package com.artiuillab.tieryourlife.feature.tier.data.di
 
+import com.artiuillab.tieryourlife.core.network.AppCheckInterceptor
 import com.artiuillab.tieryourlife.feature.tier.data.BuildConfig
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbApi
-import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbAuthInterceptor
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataSparqlApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikimediaUserAgentInterceptor
@@ -18,6 +18,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class TmdbOkHttp
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -37,14 +41,6 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideTmdbAuthInterceptor(): TmdbAuthInterceptor {
-        return TmdbAuthInterceptor(
-            readAccessToken = BuildConfig.TMDB_READ_ACCESS_TOKEN,
-        )
-    }
-
-    @Provides
-    @Singleton
     fun provideWikimediaUserAgentInterceptor(): WikimediaUserAgentInterceptor {
         return WikimediaUserAgentInterceptor(userAgent = WIKIMEDIA_USER_AGENT)
     }
@@ -52,23 +48,32 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        tmdbAuthInterceptor: TmdbAuthInterceptor,
         wikimediaUserAgentInterceptor: WikimediaUserAgentInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(tmdbAuthInterceptor)
             .addInterceptor(wikimediaUserAgentInterceptor)
+            .build()
+    }
+
+    @TmdbOkHttp
+    @Provides
+    @Singleton
+    fun provideTmdbOkHttpClient(
+        appCheckInterceptor: AppCheckInterceptor,
+    ): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(appCheckInterceptor)
             .build()
     }
 
     @Provides
     @Singleton
     fun provideRetrofit(
-        okHttpClient: OkHttpClient,
+        @TmdbOkHttp okHttpClient: OkHttpClient,
         json: Json,
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(TMDB_BASE_URL)
+            .baseUrl(BuildConfig.PROXY_BASE_URL.ifBlank { PLACEHOLDER_BASE_URL } + TMDB_PATH_PREFIX)
             .client(okHttpClient)
             .addConverterFactory(
                 json.asConverterFactory(
@@ -138,7 +143,8 @@ object NetworkModule {
         return retrofit.create(WikidataSparqlApi::class.java)
     }
 
-    private const val TMDB_BASE_URL = "https://api.themoviedb.org/"
+    private const val PLACEHOLDER_BASE_URL = "https://example.invalid/"
+    private const val TMDB_PATH_PREFIX = "tmdb/"
     private const val WIKIDATA_BASE_URL = "https://www.wikidata.org/w/"
     private const val WIKIDATA_SPARQL_BASE_URL = "https://query.wikidata.org/"
     private const val JSON_MEDIA_TYPE = "application/json"

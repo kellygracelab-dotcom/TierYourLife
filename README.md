@@ -161,12 +161,9 @@ git clone https://github.com/kellygracelab-dotcom/TierYourLife.git
 
 Open in Android Studio and run the `app` configuration. minSdk 24, targetSdk 37, JDK 21.
 
-Catalogue search works out of the box through Wikidata. To enable the TMDB source as well, add
-your own read access token to `local.properties` (which is not in the repository):
-
-```properties
-TMDB_READ_ACCESS_TOKEN=your_token_here
-```
+Catalogue search works out of the box through Wikidata. The TMDB source runs through the same
+proxy as image generation, so the app carries no token for it either — configure the proxy URL
+below and both sources answer.
 
 The AI image studio works out of the box too, on a built-in stub that draws placeholder art
 locally — no key, no network call. To generate real images, point the app at a deployment of the
@@ -183,7 +180,6 @@ being useful to anything other than the released app.
 
 ## What's next
 
-- [ ] Move the TMDB token behind the proxy as well — image generation already went that way
 - [ ] Native-speaker review of the Arabic, Japanese and Turkish translations
 - [ ] Ranking history: what moved between tiers and when
 

@@ -28,10 +28,9 @@ android {
 }
 
 dependencies {
+    api(projects.core.network)
     implementation(projects.feature.aistudio.domain)
     implementation(projects.feature.tier.domain)
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.appcheck)
 }
