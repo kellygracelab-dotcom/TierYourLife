@@ -161,29 +161,25 @@ git clone https://github.com/kellygracelab-dotcom/TierYourLife.git
 
 Open in Android Studio and run the `app` configuration. minSdk 24, targetSdk 37, JDK 21.
 
-Catalogue search works out of the box through Wikidata. To enable the TMDB source as well, add
-your own read access token to `local.properties` (which is not in the repository):
-
-```properties
-TMDB_READ_ACCESS_TOKEN=your_token_here
-```
+Catalogue search works out of the box through Wikidata. The TMDB source runs through the same
+proxy as image generation, so the app carries no token for it either — configure the proxy URL
+below and both sources answer.
 
 The AI image studio works out of the box too, on a built-in stub that draws placeholder art
-locally — no key, no network call. To generate real images with Gemini instead, add your own key
-from [Google AI Studio](https://aistudio.google.com/apikey) to `local.properties`:
+locally — no key, no network call. To generate real images, point the app at a deployment of the
+[proxy backend](https://github.com/kellygracelab-dotcom/tieryourlife-proxy) in `local.properties`:
 
 ```properties
-GEMINI_API_KEY=your_key_here
+PROXY_BASE_URL=https://europe-west1-your-project.cloudfunctions.net/
 ```
 
-The key is read into `BuildConfig` at compile time and is never committed. Be aware that it still
-ends up embedded in the built APK — acceptable for a local build or a portfolio artifact you keep
-to yourself, but not something to publish. A published build needs a proxy backend that holds the
-key server-side instead.
+The app itself holds no Gemini key. It sends the prompt to the proxy, which attaches the key on the
+server and returns the finished JPEG — so nothing extractable ships in the APK, and the phone never
+decodes base64. Requests carry a Firebase App Check token, which is what stops the endpoint from
+being useful to anything other than the released app.
 
 ## What's next
 
-- [ ] A proxy backend so a published build never carries the API key
 - [ ] Native-speaker review of the Arabic, Japanese and Turkish translations
 - [ ] Ranking history: what moved between tiers and when
 

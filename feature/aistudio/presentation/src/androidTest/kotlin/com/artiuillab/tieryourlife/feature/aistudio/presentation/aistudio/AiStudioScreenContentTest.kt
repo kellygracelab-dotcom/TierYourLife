@@ -78,7 +78,7 @@ class AiStudioScreenContentTest {
     }
 
     @Test
-    fun typingAndSending_invokesOnSend_andRenderingAnExchangeShowsItsBubbleAndCard() {
+    fun typingAndSending_invokesOnSend_withTheTextInTheField() {
         setContent(AiStudioUiState())
         composeRule.onNodeWithTag(AiStudioTestTags.FIELD).performTextInput("A red desert")
         composeRule.onNodeWithTag(AiStudioTestTags.SEND).performClick()
@@ -87,12 +87,18 @@ class AiStudioScreenContentTest {
             assertEquals(1, sentCount)
             assertEquals("A red desert", lastFieldTextAtSend)
         }
+    }
 
-        val withExchange = AiStudioUiState(
-            exchanges = listOf(AiExchange(id = 1, prompt = "A red desert", phase = AiExchangePhase.Generating)),
-            generating = true,
+    @Test
+    fun anExchangeInProgress_showsItsBubbleAndCard() {
+        setContent(
+            AiStudioUiState(
+                exchanges = listOf(
+                    AiExchange(id = 1, prompt = "A red desert", phase = AiExchangePhase.Generating),
+                ),
+                generating = true,
+            ),
         )
-        composeRule.runOnIdle { stateHolder.value = withExchange }
 
         composeRule.onNodeWithTag(AiStudioTestTags.bubble(1)).assertIsDisplayed()
         composeRule.onNodeWithTag(AiStudioTestTags.result(1)).assertIsDisplayed()

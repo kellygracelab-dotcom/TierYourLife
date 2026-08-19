@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "709407647012",
+    "project_id": "tieryourlife",
+    "storage_bucket": "tieryourlife.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:709407647012:android:c7662e10e20405ba8e3fb1",
+        "android_client_info": {
+          "package_name": "com.artiuillab.tieryourlife"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDju3J8FjxTdfF_g75jjim90VcCWCGq8Kg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -28,6 +28,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "TierYourLife"
 include(":app")
+include(":core:network")
 include(":core:settings")
 include(":core:theme")
 include(":navigation")

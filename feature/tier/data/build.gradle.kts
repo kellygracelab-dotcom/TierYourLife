@@ -22,9 +22,9 @@ android {
     }
 
     defaultConfig {
-        val tmdbToken = providers.gradleProperty("TMDB_READ_ACCESS_TOKEN").orNull
-            ?: localProperties.getProperty("TMDB_READ_ACCESS_TOKEN", "")
-        buildConfigField("String", "TMDB_READ_ACCESS_TOKEN", "\"$tmdbToken\"")
+        val proxyBaseUrl = providers.gradleProperty("PROXY_BASE_URL").orNull
+            ?: localProperties.getProperty("PROXY_BASE_URL", "")
+        buildConfigField("String", "PROXY_BASE_URL", "\"$proxyBaseUrl\"")
     }
 
     sourceSets {
@@ -33,6 +33,7 @@ android {
 }
 
 dependencies {
+    api(projects.core.network)
     implementation(projects.feature.tier.domain)
     implementation(libs.androidx.core.ktx)
     // Coil shares this module's Wikimedia-aware OkHttpClient.

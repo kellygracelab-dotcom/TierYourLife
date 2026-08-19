@@ -21,13 +21,14 @@ android {
     }
 
     defaultConfig {
-        val geminiKey = providers.gradleProperty("GEMINI_API_KEY").orNull
-            ?: localProperties.getProperty("GEMINI_API_KEY", "")
-        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiKey\"")
+        val proxyBaseUrl = providers.gradleProperty("PROXY_BASE_URL").orNull
+            ?: localProperties.getProperty("PROXY_BASE_URL", "")
+        buildConfigField("String", "PROXY_BASE_URL", "\"$proxyBaseUrl\"")
     }
 }
 
 dependencies {
+    api(projects.core.network)
     implementation(projects.feature.aistudio.domain)
     implementation(projects.feature.tier.domain)
     implementation(libs.androidx.core.ktx)
