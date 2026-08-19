@@ -14,5 +14,10 @@ class TierYourLifeApplication : Application(), SingletonImageLoader.Factory {
     @Inject
     lateinit var imageLoader: ImageLoader
 
+    override fun onCreate() {
+        super.onCreate()
+        AppCheckInstaller.install(this)
+    }
+
     override fun newImageLoader(context: PlatformContext): ImageLoader = imageLoader
 }

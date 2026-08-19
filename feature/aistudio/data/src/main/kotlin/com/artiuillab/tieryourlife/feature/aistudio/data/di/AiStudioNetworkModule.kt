@@ -1,10 +1,10 @@
 package com.artiuillab.tieryourlife.feature.aistudio.data.di
 
 import com.artiuillab.tieryourlife.feature.aistudio.data.BuildConfig
-import com.artiuillab.tieryourlife.feature.aistudio.data.generation.GeminiCardImageGenerator
+import com.artiuillab.tieryourlife.feature.aistudio.data.generation.ProxyCardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.data.generation.StubCardImageGenerator
-import com.artiuillab.tieryourlife.feature.aistudio.data.remote.api.GeminiAuthInterceptor
-import com.artiuillab.tieryourlife.feature.aistudio.data.remote.api.GeminiImageApi
+import com.artiuillab.tieryourlife.feature.aistudio.data.remote.api.AppCheckInterceptor
+import com.artiuillab.tieryourlife.feature.aistudio.data.remote.api.CardImageApi
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.networkJson
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
 import dagger.Module
@@ -22,11 +22,11 @@ import javax.inject.Singleton
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class GeminiOkHttp
+annotation class ProxyOkHttp
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class GeminiRetrofit
+annotation class ProxyRetrofit
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -34,32 +34,32 @@ object AiStudioNetworkModule {
 
     @Provides
     @Singleton
-    fun provideGeminiAuthInterceptor(): GeminiAuthInterceptor {
-        return GeminiAuthInterceptor(apiKey = BuildConfig.GEMINI_API_KEY)
+    fun provideAppCheckInterceptor(): AppCheckInterceptor {
+        return AppCheckInterceptor()
     }
 
-    @GeminiOkHttp
+    @ProxyOkHttp
     @Provides
     @Singleton
-    fun provideGeminiOkHttpClient(
-        geminiAuthInterceptor: GeminiAuthInterceptor,
+    fun provideProxyOkHttpClient(
+        appCheckInterceptor: AppCheckInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(geminiAuthInterceptor)
+            .addInterceptor(appCheckInterceptor)
             .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .callTimeout(CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .build()
     }
 
-    @GeminiRetrofit
+    @ProxyRetrofit
     @Provides
     @Singleton
-    fun provideGeminiRetrofit(
-        @GeminiOkHttp okHttpClient: OkHttpClient,
+    fun provideProxyRetrofit(
+        @ProxyOkHttp okHttpClient: OkHttpClient,
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(GEMINI_BASE_URL)
+            .baseUrl(BuildConfig.PROXY_BASE_URL.ifBlank { PLACEHOLDER_BASE_URL })
             .client(okHttpClient)
             .addConverterFactory(
                 networkJson.asConverterFactory(JSON_MEDIA_TYPE.toMediaType()),
@@ -69,24 +69,24 @@ object AiStudioNetworkModule {
 
     @Provides
     @Singleton
-    fun provideGeminiImageApi(
-        @GeminiRetrofit retrofit: Retrofit,
-    ): GeminiImageApi {
-        return retrofit.create(GeminiImageApi::class.java)
+    fun provideCardImageApi(
+        @ProxyRetrofit retrofit: Retrofit,
+    ): CardImageApi {
+        return retrofit.create(CardImageApi::class.java)
     }
 
     @Provides
     @Singleton
     fun provideCardImageGenerator(
-        gemini: Provider<GeminiCardImageGenerator>,
+        proxy: Provider<ProxyCardImageGenerator>,
         stub: Provider<StubCardImageGenerator>,
     ): CardImageGenerator {
-        return if (BuildConfig.GEMINI_API_KEY.isNotBlank()) gemini.get() else stub.get()
+        return if (BuildConfig.PROXY_BASE_URL.isNotBlank()) proxy.get() else stub.get()
     }
 
-    private const val GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/"
+    private const val PLACEHOLDER_BASE_URL = "https://example.invalid/"
     private const val JSON_MEDIA_TYPE = "application/json"
     private const val CONNECT_TIMEOUT_SECONDS = 15L
-    private const val READ_TIMEOUT_SECONDS = 120L
-    private const val CALL_TIMEOUT_SECONDS = 150L
+    private const val READ_TIMEOUT_SECONDS = 300L
+    private const val CALL_TIMEOUT_SECONDS = 330L
 }
