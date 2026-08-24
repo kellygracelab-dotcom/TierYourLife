@@ -25,4 +25,5 @@
     <string name="cd_ai_send">生成</string>
     <string name="cd_back">戻る</string>
     <string name="cd_clear_name">名前をクリア</string>
+    <string name="snack_action_failed">変更を保存できませんでした</string>
 </resources>

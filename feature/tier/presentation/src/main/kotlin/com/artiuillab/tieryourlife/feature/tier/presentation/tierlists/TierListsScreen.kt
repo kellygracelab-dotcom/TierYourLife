@@ -27,6 +27,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
+import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
@@ -58,6 +60,8 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SelectionTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.TierListCard
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.previewTierLists
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 
 @Composable
@@ -84,6 +88,7 @@ fun TierListsScreen(
         onDeleteLists = viewModel::deleteTierLists,
         onUndoDelete = viewModel::restoreTierLists,
         onCreateList = { viewModel.createTierList(defaultListTitle, onNewListCreated) },
+        userMessages = viewModel.userMessages,
     )
 }
 
@@ -101,6 +106,7 @@ internal fun TierListsScreenContent(
     onDeleteLists: (List<Long>) -> Unit = {},
     onUndoDelete: (List<Long>) -> Unit = {},
     onCreateList: () -> Unit = {},
+    userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val success = state as? TierListsUiState.Success
     val mode = success?.mode ?: HomeMode.Browsing
@@ -120,6 +126,11 @@ internal fun TierListsScreenContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val undoLabel = stringResource(R.string.action_undo)
+    val actionFailedMessage = stringResource(R.string.snack_action_failed)
+
+    LaunchedEffect(Unit) {
+        userMessages.collect { snackbarHostState.showSnackbar(actionFailedMessage) }
+    }
 
     val deleteAndAnnounce: (List<Long>) -> Unit = { ids ->
         onDeleteLists(ids)

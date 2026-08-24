@@ -25,4 +25,5 @@
     <string name="cd_ai_send">Сгенерировать</string>
     <string name="cd_back">Назад</string>
     <string name="cd_clear_name">Очистить название</string>
+    <string name="snack_action_failed">Не удалось сохранить изменение</string>
 </resources>

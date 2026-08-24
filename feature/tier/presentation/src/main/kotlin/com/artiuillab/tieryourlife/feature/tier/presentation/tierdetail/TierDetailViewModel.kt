@@ -1,20 +1,28 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.artiuillab.tieryourlife.core.ui.UserMessage
+import com.artiuillab.tieryourlife.core.ui.UserMessages
+import com.artiuillab.tieryourlife.core.ui.guard
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.ordering.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val LOG_TAG = "TierDetail"
 
 @HiltViewModel
 class TierDetailViewModel @Inject constructor(
@@ -31,6 +39,9 @@ class TierDetailViewModel @Inject constructor(
     private val _canDiscard = MutableStateFlow(route.startInTitleEdit)
     val canDiscard: StateFlow<Boolean> = _canDiscard.asStateFlow()
 
+    private val messages = UserMessages()
+    val userMessages: Flow<UserMessage> = messages.flow
+
     init {
         loadTierList()
     }
@@ -42,42 +53,34 @@ class TierDetailViewModel @Inject constructor(
     fun discardList(onDiscarded: () -> Unit) {
         if (!_canDiscard.value) return
         viewModelScope.launch {
-            repository.deleteTierListPermanently(tierListId)
-            onDiscarded()
+            val deleted = messages.guard("Discarding list") {
+                repository.deleteTierListPermanently(tierListId)
+            }
+            if (deleted) onDiscarded()
         }
     }
 
     fun loadTierList() {
-        viewModelScope.launch {
-            repository.getTierListById(tierListId).let {
-                if (it != null) {
-                    _state.value = TierDetailUiState.Success(it)
-                } else {
-                    _state.value = TierDetailUiState.Error
-                }
-            }
-        }
+        viewModelScope.launch { reloadTierList() }
     }
 
     fun addItemToPool(title: String, imageUrl: String?) {
         markTouched()
-        viewModelScope.launch {
+        mutate("Adding item to pool") {
             repository.addItemToPool(tierListId, title, imageUrl)
-            loadTierList()
         }
     }
 
     fun addItemsToPool(items: List<PoolItemDraft>) {
         markTouched()
-        viewModelScope.launch {
+        mutate("Adding items to pool") {
             repository.addItemsToPool(tierListId, items)
-            loadTierList()
         }
     }
 
     fun addManualItem(title: String, photoUris: List<String>) {
         markTouched()
-        viewModelScope.launch {
+        mutate("Adding a manual item") {
             if (photoUris.isEmpty()) {
                 repository.addItemToPool(tierListId, title, imageUrl = null)
             } else {
@@ -87,7 +90,6 @@ class TierDetailViewModel @Inject constructor(
                     repository.attachImageToItem(newItemId, photoUri)
                 }
             }
-            loadTierList()
         }
     }
 
@@ -97,9 +99,8 @@ class TierDetailViewModel @Inject constructor(
         if (current is TierDetailUiState.Success) {
             _state.value = TierDetailUiState.Success(current.list.withItemMoved(itemId, toTierId, toPosition))
         }
-        viewModelScope.launch {
+        mutate("Moving an item") {
             repository.moveItem(itemId, toTierId, toPosition)
-            loadTierList()
         }
     }
 
@@ -115,17 +116,15 @@ class TierDetailViewModel @Inject constructor(
             }
             _state.value = TierDetailUiState.Success(current.list.copy(tiers = reorderedTiers))
         }
-        viewModelScope.launch {
+        mutate("Reordering tiers") {
             repository.reorderTiers(orderedTierIds)
-            loadTierList()
         }
     }
 
     fun deleteTierToPool(tierId: Long) {
         markTouched()
-        viewModelScope.launch {
+        mutate("Deleting a tier") {
             repository.deleteTierToPool(tierId)
-            loadTierList()
         }
     }
 
@@ -138,65 +137,85 @@ class TierDetailViewModel @Inject constructor(
         itemIds: List<Long>,
     ) {
         markTouched()
-        viewModelScope.launch {
+        mutate("Restoring a tier") {
             repository.restoreTier(tierListId, label, caption, colorLight, colorDark, position, itemIds)
-            loadTierList()
         }
     }
 
     fun deleteItem(itemId: Long) {
         markTouched()
-        viewModelScope.launch {
+        mutate("Deleting an item") {
             repository.deleteTierItem(itemId)
-            loadTierList()
         }
     }
 
     fun restoreItem(itemId: Long) {
         markTouched()
-        viewModelScope.launch {
+        mutate("Restoring an item") {
             repository.restoreTierItem(itemId)
-            loadTierList()
         }
     }
 
     fun addTier(label: String, caption: String?, colorLight: String, colorDark: String) {
         markTouched()
-        viewModelScope.launch {
+        mutate("Adding a tier") {
             repository.addTier(tierListId, label, caption, colorLight, colorDark)
-            loadTierList()
         }
     }
 
     fun editTier(id: Long, label: String, caption: String?, colorLight: String, colorDark: String) {
         markTouched()
-        viewModelScope.launch {
+        mutate("Editing a tier") {
             repository.renameTier(id, label, caption)
             repository.updateTierColors(id, colorLight, colorDark)
-            loadTierList()
         }
     }
 
     fun setDisplayMode(displayMode: TierListDisplayMode) {
         markTouched()
-        viewModelScope.launch {
+        mutate("Changing the display mode") {
             repository.setTierListDisplayMode(tierListId, displayMode)
-            loadTierList()
         }
     }
 
     fun renameTierList(title: String) {
         markTouched()
-        viewModelScope.launch {
+        mutate("Renaming the list") {
             repository.renameTierList(tierListId, title)
-            loadTierList()
         }
     }
 
     fun removeAddedItems(itemIds: List<Long>) {
-        viewModelScope.launch {
+        mutate("Removing added items") {
             itemIds.forEach { itemId -> repository.deleteTierItemPermanently(itemId) }
-            loadTierList()
+        }
+    }
+
+    private fun mutate(operation: String, block: suspend () -> Unit) {
+        viewModelScope.launch {
+            messages.guard(operation) { block() }
+            reloadTierList()
+        }
+    }
+
+    private suspend fun reloadTierList() {
+        val hasVisibleList = _state.value is TierDetailUiState.Success
+        try {
+            val list = repository.getTierListById(tierListId)
+            _state.value = if (list != null) {
+                TierDetailUiState.Success(list)
+            } else {
+                TierDetailUiState.Error
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.w(LOG_TAG, "Loading the tier list failed", e)
+            if (hasVisibleList) {
+                messages.send(UserMessage.ActionFailed)
+            } else {
+                _state.value = TierDetailUiState.Error
+            }
         }
     }
 }

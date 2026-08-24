@@ -365,4 +365,5 @@
     <string name="action_share">مشاركة</string>
     <string name="snack_export_failed">تعذّر حفظ الملف</string>
     <string name="action_try_again">المحاولة مرة أخرى</string>
+    <string name="snack_action_failed">تعذّر حفظ التغيير</string>
 </resources>

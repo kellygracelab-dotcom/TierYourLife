@@ -30,6 +30,7 @@ rootProject.name = "TierYourLife"
 include(":app")
 include(":core:network")
 include(":core:settings")
+include(":core:ui")
 include(":core:theme")
 include(":navigation")
 include(":feature:tier:domain")

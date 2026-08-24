@@ -4,11 +4,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
+import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.components.EmptyTrashDialog
@@ -29,6 +34,8 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.trash.components.Tr
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.components.TrashList
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.components.TrashTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.components.previewTrashEntries
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun TrashScreen(
@@ -45,6 +52,7 @@ fun TrashScreen(
         onRemoveListPermanently = viewModel::removeListPermanently,
         onRemoveItemPermanently = viewModel::removeItemPermanently,
         onEmptyTrash = viewModel::emptyTrash,
+        userMessages = viewModel.userMessages,
     )
 }
 
@@ -57,11 +65,18 @@ internal fun TrashScreenContent(
     onRemoveListPermanently: (Long) -> Unit = {},
     onRemoveItemPermanently: (Long) -> Unit = {},
     onEmptyTrash: () -> Unit = {},
+    userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val entries = (state as? TrashUiState.Success)?.entries.orEmpty()
     var menuExpanded by remember { mutableStateOf(false) }
     var emptyDialogVisible by remember { mutableStateOf(false) }
     var removeTarget by remember { mutableStateOf<TrashEntry?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val actionFailedMessage = stringResource(R.string.snack_action_failed)
+
+    LaunchedEffect(Unit) {
+        userMessages.collect { snackbarHostState.showSnackbar(actionFailedMessage) }
+    }
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         Column(Modifier.fillMaxSize()) {
@@ -100,6 +115,13 @@ internal fun TrashScreenContent(
                 }
             }
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentHeight(Alignment.Bottom),
+        )
     }
 
     val target = removeTarget

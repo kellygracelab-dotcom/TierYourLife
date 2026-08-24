@@ -315,4 +315,5 @@
     <string name="action_share">Поделиться</string>
     <string name="snack_export_failed">Не удалось сохранить файл</string>
     <string name="action_try_again">Повторить</string>
+    <string name="snack_action_failed">Не удалось сохранить изменение</string>
 </resources>

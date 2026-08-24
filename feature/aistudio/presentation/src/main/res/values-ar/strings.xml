@@ -25,4 +25,5 @@
     <string name="cd_ai_send">توليد</string>
     <string name="cd_back">رجوع</string>
     <string name="cd_clear_name">مسح الاسم</string>
+    <string name="snack_action_failed">تعذّر حفظ التغيير</string>
 </resources>

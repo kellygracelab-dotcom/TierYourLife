@@ -290,4 +290,5 @@
     <string name="action_share">Compartir</string>
     <string name="snack_export_failed">No se pudo guardar el archivo</string>
     <string name="action_try_again">Intentar de nuevo</string>
+    <string name="snack_action_failed">No se pudo guardar el cambio</string>
 </resources>

@@ -240,4 +240,5 @@
     <string name="action_share">共有</string>
     <string name="snack_export_failed">ファイルを保存できませんでした</string>
     <string name="action_try_again">もう一度試す</string>
+    <string name="snack_action_failed">変更を保存できませんでした</string>
 </resources>

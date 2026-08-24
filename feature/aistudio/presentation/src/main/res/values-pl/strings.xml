@@ -25,4 +25,5 @@
     <string name="cd_ai_send">Generuj</string>
     <string name="cd_back">Wstecz</string>
     <string name="cd_clear_name">Wyczyść nazwę</string>
+    <string name="snack_action_failed">Nie udało się zapisać zmiany</string>
 </resources>

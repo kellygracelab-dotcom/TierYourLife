@@ -5,10 +5,15 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.artiuillab.tieryourlife.core.ui.UserMessage
+import com.artiuillab.tieryourlife.core.ui.UserMessages
+import com.artiuillab.tieryourlife.core.ui.guard
+import com.artiuillab.tieryourlife.core.ui.logFailures
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.domain.library.GeneratedCardSaver
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.AiStudioRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,13 +37,16 @@ class AiStudioViewModel @Inject constructor(
     private val _state = MutableStateFlow(AiStudioUiState())
     val state: StateFlow<AiStudioUiState> = _state.asStateFlow()
 
+    private val messages = UserMessages()
+    val userMessages: Flow<UserMessage> = messages.flow
+
     private var nextExchangeId = 1L
 
     val addedItemIds: List<Long>
         get() = _state.value.exchanges.mapNotNull { it.addedItemId }
 
     init {
-        viewModelScope.launch { generator.discardAll() }
+        viewModelScope.launch { logFailures("Clearing generated images") { generator.discardAll() } }
     }
 
     fun send(prompt: String) {
@@ -70,7 +78,7 @@ class AiStudioViewModel @Inject constructor(
         startGenerating(exchangeId)
         viewModelScope.launch {
             if (previousImage != null) {
-                generator.discard(previousImage)
+                logFailures("Discarding the previous image") { generator.discard(previousImage) }
             }
             completeGeneration(exchangeId, exchange.prompt)
         }
@@ -81,7 +89,11 @@ class AiStudioViewModel @Inject constructor(
         if (exchange.addedItemId != null) return
         val image = (exchange.phase as? AiExchangePhase.Result)?.image ?: return
         viewModelScope.launch {
-            val newItemId = saver.save(tierListId, title, image.imageUri)
+            var newItemId: Long? = null
+            val saved = messages.guard("Adding a generated card") {
+                newItemId = saver.save(tierListId, title, image.imageUri)
+            }
+            if (!saved) return@launch
             _state.update { current ->
                 current.copy(
                     exchanges = current.exchanges.map {

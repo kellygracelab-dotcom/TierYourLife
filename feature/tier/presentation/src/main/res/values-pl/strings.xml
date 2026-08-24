@@ -315,4 +315,5 @@
     <string name="action_share">Udostępnij</string>
     <string name="snack_export_failed">Nie udało się zapisać pliku</string>
     <string name="action_try_again">Spróbuj ponownie</string>
+    <string name="snack_action_failed">Nie udało się zapisać zmiany</string>
 </resources>
