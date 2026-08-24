@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
@@ -30,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
+import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.AiComposer
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.AiStudioTopBar
@@ -43,6 +48,8 @@ import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.compon
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioEmptyState
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioFailedState
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioGeneratingState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun AiStudioScreen(
@@ -70,6 +77,7 @@ fun AiStudioScreen(
         onRetry = viewModel::retry,
         onRegenerate = viewModel::regenerate,
         onSaveCard = { exchangeId, title -> viewModel.addToList(exchangeId, title) },
+        userMessages = viewModel.userMessages,
         fieldFocusRequester = focusRequester,
     )
 }
@@ -88,8 +96,15 @@ internal fun AiStudioScreenContent(
     onSaveCard: (exchangeId: Long, title: String) -> Unit,
     modifier: Modifier = Modifier,
     fieldFocusRequester: FocusRequester = remember { FocusRequester() },
+    userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     var namingExchangeId by remember { mutableStateOf<Long?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val actionFailedMessage = stringResource(R.string.snack_action_failed)
+
+    LaunchedEffect(Unit) {
+        userMessages.collect { snackbarHostState.showSnackbar(actionFailedMessage) }
+    }
 
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         Column(
@@ -163,6 +178,13 @@ internal fun AiStudioScreenContent(
                 focusRequester = fieldFocusRequester,
             )
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentHeight(Alignment.Bottom),
+        )
     }
 
     val namingId = namingExchangeId

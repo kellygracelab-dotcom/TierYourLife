@@ -27,6 +27,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -79,9 +80,14 @@ fun SettingsScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val failedMessage = stringResource(R.string.snack_export_failed)
+    val actionFailedMessage = stringResource(R.string.snack_action_failed)
     val tryAgainLabel = stringResource(R.string.action_try_again)
     val shareLabel = stringResource(R.string.action_share)
     val exportStrings = buildExportStrings(context)
+
+    LaunchedEffect(Unit) {
+        viewModel.userMessages.collect { snackbarHostState.showSnackbar(actionFailedMessage) }
+    }
 
     val createDocumentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("text/plain"),

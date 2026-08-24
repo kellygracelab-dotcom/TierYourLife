@@ -10,6 +10,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.ui)
     implementation(projects.core.settings)
     implementation(projects.core.theme)
     implementation(projects.feature.tier.domain)

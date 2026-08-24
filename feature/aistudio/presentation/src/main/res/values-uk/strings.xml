@@ -25,4 +25,5 @@
     <string name="cd_ai_send">Згенерувати</string>
     <string name="cd_back">Назад</string>
     <string name="cd_clear_name">Очистити назву</string>
+    <string name="snack_action_failed">Не вдалося зберегти зміну</string>
 </resources>

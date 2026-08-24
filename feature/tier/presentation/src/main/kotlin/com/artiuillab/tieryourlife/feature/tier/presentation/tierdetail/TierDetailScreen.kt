@@ -53,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
+import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -73,6 +74,8 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets.TierEditorSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets.TierListSettingsScreenContent
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
@@ -111,6 +114,7 @@ fun TierDetailScreen(
         startInTitleEdit = pendingAutoTitleEdit,
         canDiscard = canDiscard,
         addedItemIds = addedItemIds,
+        userMessages = viewModel.userMessages,
         actions = TierDetailActions(
             onBack = onBack,
             onDiscard = { viewModel.discardList(onBack) },
@@ -166,6 +170,7 @@ internal fun TierDetailScreenContent(
     startInTitleEdit: Boolean = false,
     canDiscard: Boolean = false,
     addedItemIds: List<Long> = emptyList(),
+    userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -198,6 +203,7 @@ internal fun TierDetailScreenContent(
                     startInTitleEdit = startInTitleEdit,
                     canDiscard = canDiscard,
                     addedItemIds = addedItemIds,
+                    userMessages = userMessages,
                 )
             }
 
@@ -222,6 +228,7 @@ private fun TierScreenBody(
     startInTitleEdit: Boolean = false,
     canDiscard: Boolean = false,
     addedItemIds: List<Long> = emptyList(),
+    userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val onBack = actions.onBack
     val onDiscard = actions.onDiscard
@@ -274,6 +281,11 @@ private fun TierScreenBody(
     val resources = LocalResources.current
     val deletedMessageTemplate = stringResource(R.string.tier_detail_item_moved_to_trash)
     val undoLabel = stringResource(R.string.tier_detail_snackbar_undo)
+    val actionFailedMessage = stringResource(R.string.snack_action_failed)
+
+    LaunchedEffect(Unit) {
+        userMessages.collect { snackbarHostState.showSnackbar(actionFailedMessage) }
+    }
     val onConsumeAddedItem = actions.onConsumeAddedItem
     val onUndoAddedItem = actions.onUndoAddedItem
     var pendingAddedItemIds by remember { mutableStateOf(emptyList<Long>()) }

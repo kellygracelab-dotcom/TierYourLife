@@ -3,10 +3,14 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.ui.UserMessage
+import com.artiuillab.tieryourlife.core.ui.UserMessages
+import com.artiuillab.tieryourlife.core.ui.guard
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +29,9 @@ class TierListsViewModel @Inject constructor(
     private val _state = MutableStateFlow<TierListsUiState>(TierListsUiState.Loading)
     val state: StateFlow<TierListsUiState> = _state.asStateFlow()
     private val loadMutex = Mutex()
+
+    private val messages = UserMessages()
+    val userMessages: Flow<UserMessage> = messages.flow
 
     private var lastLoadedLists: List<TierList> = emptyList()
 
@@ -99,23 +106,25 @@ class TierListsViewModel @Inject constructor(
 
     fun deleteTierLists(ids: List<Long>) {
         setMode(HomeMode.Browsing)
-        viewModelScope.launch {
-            repository.deleteTierLists(ids)
-            loadTierListsInternal()
-        }
+        mutate("Deleting lists") { repository.deleteTierLists(ids) }
     }
 
     fun restoreTierLists(ids: List<Long>) {
-        viewModelScope.launch {
-            repository.restoreTierLists(ids)
-            loadTierListsInternal()
-        }
+        mutate("Restoring lists") { repository.restoreTierLists(ids) }
     }
 
     fun createTierList(title: String, onCreated: (Long) -> Unit) {
         viewModelScope.launch {
-            val id = repository.createTierList(title)
-            onCreated(id)
+            var createdId: Long? = null
+            messages.guard("Creating a list") { createdId = repository.createTierList(title) }
+            loadTierListsInternal()
+            createdId?.let(onCreated)
+        }
+    }
+
+    private fun mutate(operation: String, block: suspend () -> Unit) {
+        viewModelScope.launch {
+            messages.guard(operation) { block() }
             loadTierListsInternal()
         }
     }
