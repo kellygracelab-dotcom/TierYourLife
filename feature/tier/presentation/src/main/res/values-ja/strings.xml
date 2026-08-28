@@ -242,7 +242,12 @@
     <string name="action_try_again">もう一度試す</string>
     <string name="snack_action_failed">変更を保存できませんでした</string>
     <string name="settings_account">アカウント</string>
-    <string name="settings_account_guest">未ログイン · 任意</string>
-    <string name="settings_account_guest_body">なくてもすべて動きます。回数と購入を残すにはログインしてください。</string>
-    <string name="settings_account_sign_out">ログアウト</string>
+    <string name="settings_group_appearance">表示</string>
+    <string name="settings_group_data">データ</string>
+    <string name="settings_account_offer_title">生成回数を残す</string>
+    <string name="settings_account_offer_body">アカウントがなくても全機能が使えます。</string>
+    <string name="settings_account_offer_action">ログイン</string>
+    <string name="settings_account_signed_in">ログイン済み</string>
+    <string name="settings_account_signed_in_credits">ログイン済み · 残り %1$d 回</string>
+    <string name="settings_version">バージョン %1$s</string>
 </resources>

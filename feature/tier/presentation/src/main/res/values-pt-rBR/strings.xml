@@ -292,7 +292,12 @@
     <string name="action_try_again">Tentar novamente</string>
     <string name="snack_action_failed">Não foi possível salvar a alteração</string>
     <string name="settings_account">Conta</string>
-    <string name="settings_account_guest">Sem conta · opcional</string>
-    <string name="settings_account_guest_body">Tudo funciona sem ela. Entre para manter créditos e compras.</string>
-    <string name="settings_account_sign_out">Sair</string>
+    <string name="settings_group_appearance">Aparência</string>
+    <string name="settings_group_data">Seus dados</string>
+    <string name="settings_account_offer_title">Mantenha seus créditos</string>
+    <string name="settings_account_offer_body">O app funciona por completo sem conta.</string>
+    <string name="settings_account_offer_action">Entrar</string>
+    <string name="settings_account_signed_in">Conectado</string>
+    <string name="settings_account_signed_in_credits">Conectado · %1$d créditos</string>
+    <string name="settings_version">Versão %1$s</string>
 </resources>

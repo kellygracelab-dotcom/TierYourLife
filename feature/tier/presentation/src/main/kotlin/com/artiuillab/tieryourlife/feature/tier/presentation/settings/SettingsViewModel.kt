@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.core.ui.guard
 import com.artiuillab.tieryourlife.core.ui.logFailures
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.tier.domain.export.TierListsExportStrings
 import com.artiuillab.tieryourlife.feature.tier.domain.export.buildTierListsExport
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
@@ -27,10 +28,14 @@ data class ExportedText(val text: String, val listCount: Int)
 class SettingsViewModel @Inject constructor(
     private val repository: TierRepository,
     private val accountRepository: AccountRepository,
+    private val generationCredits: GenerationCredits,
 ) : ViewModel() {
 
     val account: StateFlow<Account> = accountRepository.account
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), Account.Guest)
+
+    private val _credits = MutableStateFlow<Int?>(null)
+    val credits: StateFlow<Int?> = _credits.asStateFlow()
 
     private val _trashCount = MutableStateFlow(0)
     val trashCount: StateFlow<Int> = _trashCount.asStateFlow()
@@ -38,9 +43,11 @@ class SettingsViewModel @Inject constructor(
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
 
-    fun signOut() {
+    fun loadCredits() {
         viewModelScope.launch {
-            logFailures("Signing out") { accountRepository.signOut() }
+            logFailures("Reading generation credits") {
+                _credits.value = generationCredits.remaining()
+            }
         }
     }
 

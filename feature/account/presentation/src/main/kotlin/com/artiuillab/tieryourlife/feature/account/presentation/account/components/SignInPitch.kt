@@ -30,12 +30,6 @@ private val REASONS = listOf(
     R.string.account_reason_sync,
 )
 
-/**
- * The case for signing in. The concession comes first, before any of the
- * reasons: someone who does not want an account can stop reading after one
- * line. "Not now" is the same height as the other button so that declining is
- * not made to look like the lesser choice.
- */
 @Composable
 internal fun SignInPitch(
     signingIn: Boolean,

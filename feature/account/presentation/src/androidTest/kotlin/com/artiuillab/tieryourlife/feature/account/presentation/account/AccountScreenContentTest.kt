@@ -21,16 +21,19 @@ class AccountScreenContentTest {
 
     private var closed = 0
     private var signInRequests = 0
+    private var signOuts = 0
 
     private fun setContent(state: AccountUiState) {
         closed = 0
         signInRequests = 0
+        signOuts = 0
         composeRule.setContent {
             TierYourLifeTheme {
                 AccountScreenContent(
                     state = state,
                     onClose = { closed++ },
                     onSignIn = { signInRequests++ },
+                    onSignOut = { signOuts++ },
                 )
             }
         }
@@ -106,6 +109,30 @@ class AccountScreenContentTest {
 
         composeRule.onNodeWithTag(AccountTestTags.CREDITS).assertDoesNotExist()
         composeRule.onNodeWithTag(AccountTestTags.EMAIL).assertIsDisplayed()
+    }
+
+    @Test
+    fun signedIn_offersSignOut_andActsWithoutConfirmation() {
+        setContent(
+            AccountUiState(
+                account = Account.SignedIn(email = "someone@example.com", photoUrl = null),
+                credits = 12,
+            ),
+        )
+
+        composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT).performClick()
+
+        composeRule.runOnIdle {
+            assertEquals(1, signOuts)
+            assertEquals(0, closed)
+        }
+    }
+
+    @Test
+    fun asAGuest_thereIsNothingToSignOutOf() {
+        setContent(AccountUiState())
+
+        composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT).assertDoesNotExist()
     }
 
     @Test

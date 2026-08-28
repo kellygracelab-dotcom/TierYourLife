@@ -317,7 +317,12 @@
     <string name="action_try_again">Повторить</string>
     <string name="snack_action_failed">Не удалось сохранить изменение</string>
     <string name="settings_account">Аккаунт</string>
-    <string name="settings_account_guest">Вход не выполнен · необязательно</string>
-    <string name="settings_account_guest_body">Без него всё работает. Войдите, чтобы сохранить кредиты и покупки.</string>
-    <string name="settings_account_sign_out">Выйти</string>
+    <string name="settings_group_appearance">Оформление</string>
+    <string name="settings_group_data">Ваши данные</string>
+    <string name="settings_account_offer_title">Сохраните свои кредиты</string>
+    <string name="settings_account_offer_body">Приложение полностью работает и без него.</string>
+    <string name="settings_account_offer_action">Войти</string>
+    <string name="settings_account_signed_in">Вход выполнен</string>
+    <string name="settings_account_signed_in_credits">Вход выполнен · %1$d кредитов</string>
+    <string name="settings_version">Версия %1$s</string>
 </resources>

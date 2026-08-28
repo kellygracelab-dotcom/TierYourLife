@@ -10,7 +10,6 @@ data class AccountUiState(
     val notice: AccountNotice? = null,
 )
 
-/** Something worth saying out loud. A cancelled picker is not on this list. */
 enum class AccountNotice {
     SignInFailed,
     NoGoogleAccount,

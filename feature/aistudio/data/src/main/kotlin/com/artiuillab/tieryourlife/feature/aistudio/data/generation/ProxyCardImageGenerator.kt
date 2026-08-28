@@ -23,7 +23,7 @@ class ProxyCardImageGenerator @Inject constructor(
     override suspend fun generate(prompt: String): GenerationOutcome {
         val response = try {
             api.generate(GenerateImageRequestDto(prompt))
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             return GenerationOutcome.Failed
         }
 

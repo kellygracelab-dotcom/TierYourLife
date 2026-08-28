@@ -15,4 +15,6 @@
     <string name="account_error_unavailable">Logowanie jest teraz niedostępne.</string>
     <string name="account_notice_existing_account">To konto Google miało już własne kredyty — i to one są teraz Twoje.</string>
     <string name="account_cd_close">Zamknij</string>
+    <string name="account_action_sign_out">Wyloguj się</string>
+    <string name="account_sign_out_body">Twoje listy zostają na tym telefonie. Kredyty czekają tutaj.</string>
 </resources>

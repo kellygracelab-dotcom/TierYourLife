@@ -267,7 +267,12 @@
     <string name="action_try_again">Try again</string>
     <string name="snack_action_failed">Change not saved</string>
     <string name="settings_account">Account</string>
-    <string name="settings_account_guest">Not signed in · optional</string>
-    <string name="settings_account_guest_body">Everything works without one. Sign in to keep credits and purchases.</string>
-    <string name="settings_account_sign_out">Sign out</string>
+    <string name="settings_group_appearance">Appearance</string>
+    <string name="settings_group_data">Your data</string>
+    <string name="settings_account_offer_title">Keep your credits</string>
+    <string name="settings_account_offer_body">The app works fully without one.</string>
+    <string name="settings_account_offer_action">Sign in</string>
+    <string name="settings_account_signed_in">Signed in</string>
+    <string name="settings_account_signed_in_credits">Signed in · %1$d credits</string>
+    <string name="settings_version">Version %1$s</string>
 </resources>

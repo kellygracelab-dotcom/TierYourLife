@@ -10,11 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,105 +32,129 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 
 private val AVATAR_SIZE = 40.dp
 
-/**
- * Signed out this is an offer, so it opens something; signed in there is
- * nothing left to open, so it stops being tappable and becomes what it says.
- */
 @Composable
 internal fun AccountRow(
     account: Account,
+    credits: Int?,
     onClick: () -> Unit,
-    onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (account) {
-        Account.Guest -> GuestRow(onClick = onClick, modifier = modifier)
-        is Account.SignedIn -> SignedInRow(account = account, onSignOut = onSignOut, modifier = modifier)
+        Account.Guest -> SignInOffer(onClick = onClick, modifier = modifier)
+        is Account.SignedIn -> SignedInRow(
+            account = account,
+            credits = credits,
+            onClick = onClick,
+            modifier = modifier,
+        )
     }
 }
 
 @Composable
-private fun GuestRow(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun SignInOffer(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .testTag(SettingsTestTags.ACCOUNT)
+            .padding(20.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.settings_account_offer_title),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = stringResource(R.string.settings_account_offer_body),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.height(16.dp))
+        FilledTonalButton(
+            onClick = onClick,
+            modifier = Modifier.testTag(SettingsTestTags.ACCOUNT_ACTION),
+        ) {
+            Text(stringResource(R.string.settings_account_offer_action))
+        }
+    }
+}
+
+@Composable
+private fun SignedInRow(
+    account: Account.SignedIn,
+    credits: Int?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val subtitle = if (credits == null) {
+        stringResource(R.string.settings_account_signed_in)
+    } else {
+        String.format(stringResource(R.string.settings_account_signed_in_credits), credits)
+    }
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .testTag(SettingsTestTags.ACCOUNT)
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AvatarPlaceholder()
-        Spacer(Modifier.width(16.dp))
-        Column(Modifier.weight(1f)) {
+        Avatar(account.photoUrl)
+        Column(
+            Modifier
+                .weight(1f)
+                .padding(start = 16.dp),
+        ) {
             Text(
-                text = stringResource(R.string.settings_account_guest),
+                text = account.email ?: stringResource(R.string.settings_account),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
-            Spacer(Modifier.height(2.dp))
             Text(
-                text = stringResource(R.string.settings_account_guest_body),
+                text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Spacer(Modifier.width(8.dp))
         ChevronRightIcon(20.dp, MaterialTheme.colorScheme.outline)
     }
 }
 
 @Composable
-private fun SignedInRow(account: Account.SignedIn, onSignOut: () -> Unit, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag(SettingsTestTags.ACCOUNT)
-            .padding(start = 20.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (account.photoUrl.isNullOrBlank()) {
-            AvatarPlaceholder()
-        } else {
-            AsyncImage(
-                model = account.photoUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(AVATAR_SIZE)
-                    .clip(CircleShape),
-            )
+private fun Avatar(photoUrl: String?) {
+    if (photoUrl.isNullOrBlank()) {
+        Box(
+            modifier = Modifier
+                .size(AVATAR_SIZE)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+            contentAlignment = Alignment.Center,
+        ) {
+            AccountCircleIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Spacer(Modifier.width(16.dp))
-        Text(
-            text = account.email ?: stringResource(R.string.settings_account),
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+    } else {
+        AsyncImage(
+            model = photoUrl,
+            contentDescription = null,
+            modifier = Modifier
+                .size(AVATAR_SIZE)
+                .clip(CircleShape),
         )
-        TextButton(onClick = onSignOut, modifier = Modifier.testTag(SettingsTestTags.SIGN_OUT)) {
-            Text(stringResource(R.string.settings_account_sign_out))
-        }
-    }
-}
-
-@Composable
-private fun AvatarPlaceholder() {
-    Box(
-        modifier = Modifier
-            .size(AVATAR_SIZE)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceVariant),
-        contentAlignment = Alignment.Center,
-    ) {
-        AccountCircleIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun AccountRowGuestPreview() = TierYourLifeTheme(false) {
-    AccountRow(account = Account.Guest, onClick = {}, onSignOut = {})
+    AccountRow(account = Account.Guest, credits = null, onClick = {})
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AccountRowGuestDarkPreview() = TierYourLifeTheme(true) {
+    AccountRow(account = Account.Guest, credits = null, onClick = {})
 }
 
 @Preview(showBackground = true)
@@ -139,8 +162,8 @@ private fun AccountRowGuestPreview() = TierYourLifeTheme(false) {
 private fun AccountRowSignedInPreview() = TierYourLifeTheme(false) {
     AccountRow(
         account = Account.SignedIn(email = "danylo@example.com", photoUrl = null),
+        credits = 12,
         onClick = {},
-        onSignOut = {},
     )
 }
 
@@ -149,7 +172,7 @@ private fun AccountRowSignedInPreview() = TierYourLifeTheme(false) {
 private fun AccountRowSignedInDarkPreview() = TierYourLifeTheme(true) {
     AccountRow(
         account = Account.SignedIn(email = "danylo@example.com", photoUrl = null),
+        credits = 12,
         onClick = {},
-        onSignOut = {},
     )
 }

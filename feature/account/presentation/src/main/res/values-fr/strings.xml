@@ -15,4 +15,6 @@
     <string name="account_error_unavailable">La connexion est indisponible pour le moment.</string>
     <string name="account_notice_existing_account">Ce compte Google avait déjà ses propres crédits — ce sont ceux que vous avez maintenant.</string>
     <string name="account_cd_close">Fermer</string>
+    <string name="account_action_sign_out">Se déconnecter</string>
+    <string name="account_sign_out_body">Vos listes restent sur ce téléphone. Vos crédits vous attendent ici.</string>
 </resources>

@@ -10,8 +10,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.Dp
 
-// Drawn rather than bundled, like every other icon in this app: the set keeps
-// one weight and one cap treatment without shipping a drawable per glyph.
 @Composable
 internal fun VectorIcon(iconSize: Dp, draw: DrawScope.(scale: Float) -> Unit) {
     Canvas(Modifier.size(iconSize)) { draw(size.minDimension / 24f) }

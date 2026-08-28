@@ -137,8 +137,9 @@ class SettingsScreenTest {
             TierYourLifeTheme {
                 SettingsScreenContent(
                     account = Account.Guest,
+                    credits = null,
                     onAccountClick = {},
-                    onSignOut = {},
+                    versionName = "1.0",
                     themeChoice = ThemeChoice.SYSTEM,
                     onThemeChoiceChange = {},
                     languageTag = languageTag,

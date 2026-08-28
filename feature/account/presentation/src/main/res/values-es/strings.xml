@@ -15,4 +15,6 @@
     <string name="account_error_unavailable">Iniciar sesión no está disponible ahora.</string>
     <string name="account_notice_existing_account">Esta cuenta de Google ya tenía sus propios créditos: esos son los que tienes ahora.</string>
     <string name="account_cd_close">Cerrar</string>
+    <string name="account_action_sign_out">Cerrar sesión</string>
+    <string name="account_sign_out_body">Tus listas se quedan en este teléfono. Tus créditos te esperan aquí.</string>
 </resources>

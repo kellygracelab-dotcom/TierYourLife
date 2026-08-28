@@ -292,7 +292,12 @@
     <string name="action_try_again">Intentar de nuevo</string>
     <string name="snack_action_failed">No se pudo guardar el cambio</string>
     <string name="settings_account">Cuenta</string>
-    <string name="settings_account_guest">Sin iniciar sesión · opcional</string>
-    <string name="settings_account_guest_body">Todo funciona sin ella. Inicia sesión para conservar créditos y compras.</string>
-    <string name="settings_account_sign_out">Cerrar sesión</string>
+    <string name="settings_group_appearance">Apariencia</string>
+    <string name="settings_group_data">Tus datos</string>
+    <string name="settings_account_offer_title">Conserva tus créditos</string>
+    <string name="settings_account_offer_body">La app funciona por completo sin cuenta.</string>
+    <string name="settings_account_offer_action">Iniciar sesión</string>
+    <string name="settings_account_signed_in">Sesión iniciada</string>
+    <string name="settings_account_signed_in_credits">Sesión iniciada · %1$d créditos</string>
+    <string name="settings_version">Versión %1$s</string>
 </resources>

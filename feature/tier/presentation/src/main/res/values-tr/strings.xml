@@ -267,7 +267,12 @@
     <string name="action_try_again">Tekrar dene</string>
     <string name="snack_action_failed">Değişiklik kaydedilemedi</string>
     <string name="settings_account">Hesap</string>
-    <string name="settings_account_guest">Oturum açılmadı · isteğe bağlı</string>
-    <string name="settings_account_guest_body">Onsuz da her şey çalışır. Hakları ve satın alımları korumak için oturum aç.</string>
-    <string name="settings_account_sign_out">Oturumu kapat</string>
+    <string name="settings_group_appearance">Görünüm</string>
+    <string name="settings_group_data">Verilerin</string>
+    <string name="settings_account_offer_title">Haklarını koru</string>
+    <string name="settings_account_offer_body">Uygulama hesapsız da tam çalışır.</string>
+    <string name="settings_account_offer_action">Oturum aç</string>
+    <string name="settings_account_signed_in">Oturum açıldı</string>
+    <string name="settings_account_signed_in_credits">Oturum açıldı · %1$d hak</string>
+    <string name="settings_version">Sürüm %1$s</string>
 </resources>

@@ -36,17 +36,12 @@ class AccountViewModel @Inject constructor(
         }
     }
 
-    /**
-     * The context is the activity showing the account picker, and is passed in
-     * rather than held: this view model outlives the screen that opened it.
-     */
     fun signIn(context: Context) {
         if (_state.value.signingIn) return
         _state.update { it.copy(signingIn = true, notice = null) }
         viewModelScope.launch {
             when (val result = googleCredential.request(context)) {
                 is GoogleCredentialResult.Token -> completeSignIn(result.idToken)
-                // Closing the picker is a decision, not a problem to report.
                 GoogleCredentialResult.Cancelled -> _state.update { it.copy(signingIn = false) }
                 GoogleCredentialResult.NoGoogleAccount -> finish(AccountNotice.NoGoogleAccount)
                 GoogleCredentialResult.Unavailable -> finish(AccountNotice.SignInUnavailable)

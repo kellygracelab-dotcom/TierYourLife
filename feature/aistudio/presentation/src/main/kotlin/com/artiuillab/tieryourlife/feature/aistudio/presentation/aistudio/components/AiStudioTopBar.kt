@@ -55,8 +55,6 @@ internal fun AiStudioTopBar(onBack: () -> Unit, credits: Int? = null) {
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        // Absent, not zero, when nothing is counted: the stub build draws its
-        // images on the device and has no balance to show.
         if (credits != null) {
             CreditsBadge(credits)
         }
@@ -65,8 +63,6 @@ internal fun AiStudioTopBar(onBack: () -> Unit, credits: Int? = null) {
 
 @Composable
 private fun CreditsBadge(credits: Int) {
-    // The number carries the meaning visually; the description spells it out
-    // for anyone who cannot see where it sits.
     val description = String.format(stringResource(R.string.ai_credits_label), credits)
     Text(
         text = credits.toString(),

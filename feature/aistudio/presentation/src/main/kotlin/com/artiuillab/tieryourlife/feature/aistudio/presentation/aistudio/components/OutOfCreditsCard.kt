@@ -21,11 +21,6 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 
-/**
- * Deliberately not the error card. Running out is an expected end to a free
- * allowance, not a fault, so it is not painted red and it offers no "try
- * again" — trying again would refuse in exactly the same way.
- */
 @Composable
 internal fun OutOfCreditsCard(testTag: String, modifier: Modifier = Modifier) {
     Column(

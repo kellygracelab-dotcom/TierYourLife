@@ -54,6 +54,7 @@ fun AccountScreen(
         state = state,
         onClose = onClose,
         onSignIn = { viewModel.signIn(context) },
+        onSignOut = viewModel::signOut,
         onNoticeShown = viewModel::dismissNotice,
     )
 }
@@ -63,6 +64,7 @@ internal fun AccountScreenContent(
     state: AccountUiState,
     onClose: () -> Unit,
     onSignIn: () -> Unit,
+    onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
     onNoticeShown: () -> Unit = {},
 ) {
@@ -102,6 +104,7 @@ internal fun AccountScreenContent(
                         photoUrl = account.photoUrl,
                         credits = state.credits,
                         onDone = onClose,
+                        onSignOut = onSignOut,
                     )
                 }
             }
@@ -117,8 +120,6 @@ internal fun AccountScreenContent(
     }
 }
 
-// A cross, not a back arrow: this screen is not on the way anywhere, so leaving
-// it should read as dismissing rather than retreating.
 @Composable
 private fun CloseBar(onClose: () -> Unit) {
     val closeDescription = stringResource(R.string.account_cd_close)
@@ -152,29 +153,29 @@ private fun AccountNotice.messageRes(): Int = when (this) {
 @TierYourLifeDevicePreviews
 @Composable
 private fun AccountScreenGuestLightPreview() = TierYourLifeTheme(false) {
-    AccountScreenContent(state = previewAccountGuestState, onClose = {}, onSignIn = {})
+    AccountScreenContent(state = previewAccountGuestState, onClose = {}, onSignIn = {}, onSignOut = {})
 }
 
 @TierYourLifeDevicePreviews
 @Composable
 private fun AccountScreenGuestDarkPreview() = TierYourLifeTheme(true) {
-    AccountScreenContent(state = previewAccountGuestState, onClose = {}, onSignIn = {})
+    AccountScreenContent(state = previewAccountGuestState, onClose = {}, onSignIn = {}, onSignOut = {})
 }
 
 @Preview(name = "Signed in", device = "id:pixel_9", showBackground = true, showSystemUi = true)
 @Composable
 private fun AccountScreenSignedInPreview() = TierYourLifeTheme {
-    AccountScreenContent(state = previewAccountSignedInState, onClose = {}, onSignIn = {})
+    AccountScreenContent(state = previewAccountSignedInState, onClose = {}, onSignIn = {}, onSignOut = {})
 }
 
 @Preview(name = "Signed in, dark", device = "id:pixel_9", showBackground = true, showSystemUi = true)
 @Composable
 private fun AccountScreenSignedInDarkPreview() = TierYourLifeTheme(true) {
-    AccountScreenContent(state = previewAccountSignedInState, onClose = {}, onSignIn = {})
+    AccountScreenContent(state = previewAccountSignedInState, onClose = {}, onSignIn = {}, onSignOut = {})
 }
 
 @Preview(name = "Signing in", device = "id:pixel_9", showBackground = true, showSystemUi = true)
 @Composable
 private fun AccountScreenSigningInPreview() = TierYourLifeTheme {
-    AccountScreenContent(state = previewAccountSigningInState, onClose = {}, onSignIn = {})
+    AccountScreenContent(state = previewAccountSigningInState, onClose = {}, onSignIn = {}, onSignOut = {})
 }

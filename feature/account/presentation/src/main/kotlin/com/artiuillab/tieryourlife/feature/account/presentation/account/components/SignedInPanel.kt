@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,13 +30,13 @@ import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountT
 private val AVATAR_SIZE = 72.dp
 private val BUTTON_HEIGHT = 52.dp
 
-/** What the account turned out to be worth, said once and then out of the way. */
 @Composable
 internal fun SignedInPanel(
     email: String?,
     photoUrl: String?,
     credits: Int?,
     onDone: () -> Unit,
+    onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -50,8 +52,6 @@ internal fun SignedInPanel(
             color = MaterialTheme.colorScheme.onSurface,
         )
 
-        // Absent rather than zero when nothing is counted — the stub build has
-        // no balance to restore, and a "0" would read as bad news.
         if (credits != null) {
             Spacer(Modifier.height(24.dp))
             Column(
@@ -88,6 +88,27 @@ internal fun SignedInPanel(
         ) {
             Text(stringResource(R.string.account_action_done))
         }
+
+        Spacer(Modifier.height(40.dp))
+        OutlinedButton(
+            onClick = onSignOut,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(BUTTON_HEIGHT)
+                .testTag(AccountTestTags.SIGN_OUT),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.error,
+            ),
+        ) {
+            Text(stringResource(R.string.account_action_sign_out))
+        }
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.account_sign_out_body),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 

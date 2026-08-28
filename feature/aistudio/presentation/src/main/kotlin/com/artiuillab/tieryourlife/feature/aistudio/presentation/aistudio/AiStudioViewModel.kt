@@ -115,9 +115,6 @@ class AiStudioViewModel @Inject constructor(
     }
 
     private suspend fun completeGeneration(exchangeId: Long, prompt: String) {
-        // The generator reports running out of credits as an outcome, not a
-        // failure — the two need different words on screen, and only one of
-        // them is worth trying again.
         val outcome = runCatching { generator.generate(prompt) }
             .onFailure { error -> Log.w(GENERATION_LOG_TAG, "Image generation failed", error) }
             .getOrDefault(GenerationOutcome.Failed)

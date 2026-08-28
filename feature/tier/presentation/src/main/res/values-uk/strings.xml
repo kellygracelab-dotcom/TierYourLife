@@ -317,7 +317,12 @@
     <string name="action_try_again">Спробувати ще раз</string>
     <string name="snack_action_failed">Не вдалося зберегти зміну</string>
     <string name="settings_account">Обліковий запис</string>
-    <string name="settings_account_guest">Вхід не виконано · необов\'язково</string>
-    <string name="settings_account_guest_body">Без нього все працює. Увійдіть, щоб зберегти кредити й покупки.</string>
-    <string name="settings_account_sign_out">Вийти</string>
+    <string name="settings_group_appearance">Вигляд</string>
+    <string name="settings_group_data">Ваші дані</string>
+    <string name="settings_account_offer_title">Збережіть свої кредити</string>
+    <string name="settings_account_offer_body">Застосунок повністю працює й без нього.</string>
+    <string name="settings_account_offer_action">Увійти</string>
+    <string name="settings_account_signed_in">Вхід виконано</string>
+    <string name="settings_account_signed_in_credits">Вхід виконано · %1$d кредитів</string>
+    <string name="settings_version">Версія %1$s</string>
 </resources>

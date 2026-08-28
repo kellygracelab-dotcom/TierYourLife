@@ -7,15 +7,6 @@ import okhttp3.Response
 
 private const val AUTHORIZATION_HEADER = "Authorization"
 
-/**
- * Names the install to the backend, which is what its generation quota is
- * counted against. App Check already proves the request came from this app;
- * it cannot say which copy of it.
- *
- * Signing in happens here rather than at startup so the first network call
- * cannot race the bootstrap. It is anonymous: no screen, no account, nothing
- * asked of the user. Blocking is fine — interceptors never run on the main thread.
- */
 class IdTokenInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {

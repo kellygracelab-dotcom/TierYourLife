@@ -292,7 +292,12 @@
     <string name="action_try_again">Réessayer</string>
     <string name="snack_action_failed">Modification non enregistrée</string>
     <string name="settings_account">Compte</string>
-    <string name="settings_account_guest">Non connecté · facultatif</string>
-    <string name="settings_account_guest_body">Tout fonctionne sans. Connectez-vous pour conserver crédits et achats.</string>
-    <string name="settings_account_sign_out">Se déconnecter</string>
+    <string name="settings_group_appearance">Apparence</string>
+    <string name="settings_group_data">Vos données</string>
+    <string name="settings_account_offer_title">Gardez vos crédits</string>
+    <string name="settings_account_offer_body">L\'application fonctionne entièrement sans compte.</string>
+    <string name="settings_account_offer_action">Se connecter</string>
+    <string name="settings_account_signed_in">Connecté</string>
+    <string name="settings_account_signed_in_credits">Connecté · %1$d crédits</string>
+    <string name="settings_version">Version %1$s</string>
 </resources>

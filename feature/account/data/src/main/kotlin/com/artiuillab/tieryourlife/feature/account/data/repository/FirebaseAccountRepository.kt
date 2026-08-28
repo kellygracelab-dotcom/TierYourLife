@@ -34,17 +34,11 @@ class FirebaseAccountRepository @Inject constructor(
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         val guest = auth.currentUser?.takeIf { it.isAnonymous }
 
-        // Linking keeps the uid, and with it the generation credits already
-        // counted against this install. Replacing the identity would silently
-        // throw them away.
         if (guest != null) {
             try {
                 guest.linkWithCredential(credential).await()
                 return SignInOutcome.Success
             } catch (e: FirebaseAuthUserCollisionException) {
-                // The Google account already belongs to an identity of its own.
-                // Both cannot be kept, and the older one is the one with a
-                // history worth keeping, so the guest credits are given up.
                 Log.i(LOG_TAG, "Google account already in use; signing into it instead", e)
                 return signInToExisting(credential)
             } catch (e: Exception) {
@@ -72,11 +66,6 @@ class FirebaseAccountRepository @Inject constructor(
         SignInOutcome.Failed
     }
 
-    /**
-     * Leaves a guest identity behind rather than none: everything that spends
-     * credits needs someone to count against, and a signed-out app that cannot
-     * generate at all would be a worse answer than a fresh allowance.
-     */
     override suspend fun signOut() {
         auth.signOut()
         runCatching { auth.signInAnonymously().await() }

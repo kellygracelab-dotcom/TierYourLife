@@ -15,4 +15,6 @@
     <string name="account_error_unavailable">Вхід зараз недоступний.</string>
     <string name="account_notice_existing_account">У цього облікового запису Google уже були власні кредити — тепер у вас саме вони.</string>
     <string name="account_cd_close">Закрити</string>
+    <string name="account_action_sign_out">Вийти</string>
+    <string name="account_sign_out_body">Ваші списки залишаються на телефоні. Кредити чекатимуть тут.</string>
 </resources>

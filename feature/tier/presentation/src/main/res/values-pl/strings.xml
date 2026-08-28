@@ -317,7 +317,12 @@
     <string name="action_try_again">Spróbuj ponownie</string>
     <string name="snack_action_failed">Nie udało się zapisać zmiany</string>
     <string name="settings_account">Konto</string>
-    <string name="settings_account_guest">Nie zalogowano · opcjonalnie</string>
-    <string name="settings_account_guest_body">Bez niego wszystko działa. Zaloguj się, aby zachować kredyty i zakupy.</string>
-    <string name="settings_account_sign_out">Wyloguj się</string>
+    <string name="settings_group_appearance">Wygląd</string>
+    <string name="settings_group_data">Twoje dane</string>
+    <string name="settings_account_offer_title">Zachowaj swoje kredyty</string>
+    <string name="settings_account_offer_body">Aplikacja działa w pełni bez niego.</string>
+    <string name="settings_account_offer_action">Zaloguj się</string>
+    <string name="settings_account_signed_in">Zalogowano</string>
+    <string name="settings_account_signed_in_credits">Zalogowano · %1$d kredytów</string>
+    <string name="settings_version">Wersja %1$s</string>
 </resources>

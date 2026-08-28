@@ -64,15 +64,11 @@ private fun DragVectorIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { 
 @Composable
 internal fun SettingsIcon() = SettingsVectorIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
 
-// Teeth joined into one outline, not spokes radiating from a disc — detached
-// rays read as a sun, which is what this icon used to look like.
 private const val GEAR_TEETH = 8
 private const val GEAR_OUTER_RADIUS = 8.1f
 private const val GEAR_ROOT_RADIUS = 5.7f
 private const val GEAR_HOLE_RADIUS = 2.6f
 
-// Half-width of a tooth at its tip, and the angle the flank takes to fall back
-// to the root. Together they leave a visible gap between neighbours.
 private const val GEAR_TIP_HALF_ANGLE = 0.16f
 private const val GEAR_FLANK_ANGLE = 0.11f
 

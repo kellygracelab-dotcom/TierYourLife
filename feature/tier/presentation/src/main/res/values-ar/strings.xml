@@ -367,7 +367,12 @@
     <string name="action_try_again">المحاولة مرة أخرى</string>
     <string name="snack_action_failed">تعذّر حفظ التغيير</string>
     <string name="settings_account">الحساب</string>
-    <string name="settings_account_guest">لم يتم تسجيل الدخول · اختياري</string>
-    <string name="settings_account_guest_body">كل شيء يعمل من دونه. سجّل الدخول للاحتفاظ بالأرصدة والمشتريات.</string>
-    <string name="settings_account_sign_out">تسجيل الخروج</string>
+    <string name="settings_group_appearance">المظهر</string>
+    <string name="settings_group_data">بياناتك</string>
+    <string name="settings_account_offer_title">احتفظ برصيدك</string>
+    <string name="settings_account_offer_body">التطبيق يعمل بالكامل من دون حساب.</string>
+    <string name="settings_account_offer_action">تسجيل الدخول</string>
+    <string name="settings_account_signed_in">تم تسجيل الدخول</string>
+    <string name="settings_account_signed_in_credits">تم تسجيل الدخول · %1$d رصيد</string>
+    <string name="settings_version">الإصدار %1$s</string>
 </resources>
