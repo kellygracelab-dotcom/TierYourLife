@@ -26,4 +26,7 @@
     <string name="cd_back">Geri</string>
     <string name="cd_clear_name">Adı temizle</string>
     <string name="snack_action_failed">Değişiklik kaydedilemedi</string>
+    <string name="ai_credits_label">Kalan üretim hakkı: %1$d</string>
+    <string name="ai_out_of_credits_title">Üretim hakkı kalmadı</string>
+    <string name="ai_out_of_credits_body">Tüm ücretsiz üretim hakkını kullandın. Uygulamanın geri kalanı çalışmaya devam ediyor.</string>
 </resources>

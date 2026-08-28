@@ -4,6 +4,7 @@ internal object AiStudioTestTags {
     const val SCREEN = "ai_studio_screen"
     const val FIELD = "ai_studio_field"
     const val SEND = "ai_studio_send"
+    const val CREDITS = "ai_studio_credits"
     const val DIALOG = "ai_studio_naming_dialog"
     const val NAME_FIELD = "ai_studio_naming_name_field"
     const val CLEAR_NAME = "ai_studio_naming_clear_name"
@@ -13,4 +14,5 @@ internal object AiStudioTestTags {
     fun bubble(id: Long): String = "ai_studio_bubble_$id"
     fun result(id: Long): String = "ai_studio_result_$id"
     fun error(id: Long): String = "ai_studio_error_$id"
+    fun outOfCredits(id: Long): String = "ai_studio_out_of_credits_$id"
 }

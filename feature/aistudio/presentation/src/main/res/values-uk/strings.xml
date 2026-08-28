@@ -26,4 +26,7 @@
     <string name="cd_back">Назад</string>
     <string name="cd_clear_name">Очистити назву</string>
     <string name="snack_action_failed">Не вдалося зберегти зміну</string>
+    <string name="ai_credits_label">Залишилось генерацій: %1$d</string>
+    <string name="ai_out_of_credits_title">Генерації закінчились</string>
+    <string name="ai_out_of_credits_body">Ви використали всі безкоштовні генерації. Решта застосунку працює як раніше.</string>
 </resources>

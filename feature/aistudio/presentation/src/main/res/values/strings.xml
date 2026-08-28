@@ -26,4 +26,7 @@
     <string name="cd_back">Navigate back</string>
     <string name="cd_clear_name">Clear name</string>
     <string name="snack_action_failed">Change not saved</string>
+    <string name="ai_credits_label">Generations left: %1$d</string>
+    <string name="ai_out_of_credits_title">No generations left</string>
+    <string name="ai_out_of_credits_body">You have used every free generation. Everything else in the app keeps working.</string>
 </resources>

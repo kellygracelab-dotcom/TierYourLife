@@ -56,8 +56,10 @@ on white is not a glowing slab at night. The theme follows the system or is pinn
   the old language. Arabic is fully right-to-left: layout, icon mirroring and drag arithmetic.
 - **Light, dark, or follow the system**, applied before the first frame is drawn.
 
-Everything is local. No account, no server, no analytics. The only network calls are the two
-catalogue search sources, the images they point at, and image generation when you supply a key.
+Your boards are local. No sign-in, no analytics, nothing about them leaves the device. The only
+network calls are the two catalogue search sources, the images they point at, and image generation
+— which signs in anonymously, because generating an image costs real money and the server has to
+know whose allowance to count it against. No screen, no email, nothing asked of you.
 
 ## AI image studio
 
@@ -75,9 +77,13 @@ The card lands at the front of the pool with a single undo covering everything a
 </p>
 
 The generator sits behind a port in the domain layer (`CardImageGenerator`), so the app has two
-interchangeable implementations: **Gemini** when a key is present, and a **local stub** that draws
-placeholder art when it is not. Nothing above the data layer knows which one is running — the
+interchangeable implementations: **Gemini** when a proxy is configured, and a **local stub** that
+draws placeholder art when it is not. Nothing above the data layer knows which one is running — the
 screen, the view model and every test are identical either way.
+
+Generation through the proxy is metered: the studio shows what is left, and running out is its own
+state rather than an error, because "no generations left" and "that didn't work" are answered
+differently. The stub counts nothing and shows no number — its images never leave the phone.
 
 ## Architecture
 
@@ -90,7 +96,7 @@ feature:tier:domain          ← models, repository ports, pure search-merge log
 feature:tier:data            ← Room, Retrofit, image store, Hilt wiring
 feature:tier:presentation    ← Compose screens, view models, strings
 feature:aistudio:domain      ← generation and library ports, generated-image model
-feature:aistudio:data        ← Gemini client, stub generator, shared image store
+feature:aistudio:data        ← Gemini client, stub generator, credits, image store
 feature:aistudio:presentation ← the studio screen and its components
 build-logic                  ← convention plugins: library, compose, hilt, room, network, navigation
 ```
@@ -175,8 +181,12 @@ PROXY_BASE_URL=https://europe-west1-your-project.cloudfunctions.net/
 
 The app itself holds no Gemini key. It sends the prompt to the proxy, which attaches the key on the
 server and returns the finished JPEG — so nothing extractable ships in the APK, and the phone never
-decodes base64. Requests carry a Firebase App Check token, which is what stops the endpoint from
-being useful to anything other than the released app.
+decodes base64.
+
+Requests carry two tokens. A Firebase App Check token proves the caller is the released app; an
+anonymous Firebase ID token says which install, which is what the proxy counts the generation
+against. App Check alone cannot meter anything — it is satisfied by every copy of the app equally,
+so with it as the only gate one person could spend without limit.
 
 ## What's next
 

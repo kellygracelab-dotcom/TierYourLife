@@ -27,6 +27,7 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-appcheck = { group = "com.google.firebase", name = "firebase-appcheck" }
 firebase-appcheck-playintegrity = { group = "com.google.firebase", name = "firebase-appcheck-playintegrity" }
 firebase-appcheck-debug = { group = "com.google.firebase", name = "firebase-appcheck-debug" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 google-services-gradlePlugin = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }

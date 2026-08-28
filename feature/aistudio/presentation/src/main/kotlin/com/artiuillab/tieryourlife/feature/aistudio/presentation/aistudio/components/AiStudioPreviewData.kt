@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.AiStud
 internal val previewAiStudioEmptyState = AiStudioUiState()
 
 internal val previewAiStudioConversationState = AiStudioUiState(
+    credits = 7,
     exchanges = listOf(
         AiExchange(
             id = 1,
@@ -38,4 +39,15 @@ internal val previewAiStudioFailedState = AiStudioUiState(
             phase = AiExchangePhase.Failed,
         ),
     ),
+)
+
+internal val previewAiStudioOutOfCreditsState = AiStudioUiState(
+    exchanges = listOf(
+        AiExchange(
+            id = 1,
+            prompt = "A quiet library at midnight",
+            phase = AiExchangePhase.OutOfCredits,
+        ),
+    ),
+    credits = 0,
 )

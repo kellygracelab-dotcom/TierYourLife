@@ -26,4 +26,7 @@
     <string name="cd_back">Zurück</string>
     <string name="cd_clear_name">Namen leeren</string>
     <string name="snack_action_failed">Änderung konnte nicht gespeichert werden</string>
+    <string name="ai_credits_label">Verbleibende Generierungen: %1$d</string>
+    <string name="ai_out_of_credits_title">Keine Generierungen mehr</string>
+    <string name="ai_out_of_credits_body">Du hast alle kostenlosen Generierungen verbraucht. Alles andere funktioniert weiter.</string>
 </resources>

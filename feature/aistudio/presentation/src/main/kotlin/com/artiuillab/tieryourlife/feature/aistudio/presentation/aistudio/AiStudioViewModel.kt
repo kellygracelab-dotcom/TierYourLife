@@ -9,7 +9,9 @@ import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.core.ui.UserMessages
 import com.artiuillab.tieryourlife.core.ui.guard
 import com.artiuillab.tieryourlife.core.ui.logFailures
+import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
+import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.GenerationOutcome
 import com.artiuillab.tieryourlife.feature.aistudio.domain.library.GeneratedCardSaver
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.AiStudioRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +28,7 @@ private const val GENERATION_LOG_TAG = "AiStudio"
 @HiltViewModel
 class AiStudioViewModel @Inject constructor(
     private val generator: CardImageGenerator,
+    private val credits: GenerationCredits,
     private val saver: GeneratedCardSaver,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -47,6 +50,7 @@ class AiStudioViewModel @Inject constructor(
 
     init {
         viewModelScope.launch { logFailures("Clearing generated images") { generator.discardAll() } }
+        refreshCredits()
     }
 
     fun send(prompt: String) {
@@ -111,14 +115,44 @@ class AiStudioViewModel @Inject constructor(
     }
 
     private suspend fun completeGeneration(exchangeId: Long, prompt: String) {
-        val phase = runCatching { generator.generate(prompt) }.fold(
-            onSuccess = { image -> AiExchangePhase.Result(image) },
-            onFailure = { error ->
-                Log.w(GENERATION_LOG_TAG, "Image generation failed", error)
-                AiExchangePhase.Failed
-            },
-        )
-        _state.update { current -> current.withPhase(exchangeId, phase).copy(generating = false) }
+        // The generator reports running out of credits as an outcome, not a
+        // failure — the two need different words on screen, and only one of
+        // them is worth trying again.
+        val outcome = runCatching { generator.generate(prompt) }
+            .onFailure { error -> Log.w(GENERATION_LOG_TAG, "Image generation failed", error) }
+            .getOrDefault(GenerationOutcome.Failed)
+
+        _state.update { current ->
+            val phase = when (outcome) {
+                is GenerationOutcome.Success -> AiExchangePhase.Result(outcome.image)
+                GenerationOutcome.OutOfCredits -> AiExchangePhase.OutOfCredits
+                GenerationOutcome.Failed -> AiExchangePhase.Failed
+            }
+            current.withPhase(exchangeId, phase).copy(
+                generating = false,
+                credits = creditsAfter(outcome, current.credits),
+            )
+        }
+    }
+
+    /**
+     * A successful generation answers with the balance it left, so the count
+     * stays right without a second call. A refusal means empty by definition.
+     * A failure changes nothing: the backend gave the credit back.
+     */
+    private fun creditsAfter(outcome: GenerationOutcome, current: Int?): Int? = when (outcome) {
+        is GenerationOutcome.Success -> outcome.creditsRemaining ?: current
+        GenerationOutcome.OutOfCredits -> 0
+        GenerationOutcome.Failed -> current
+    }
+
+    private fun refreshCredits() {
+        viewModelScope.launch {
+            val remaining = runCatching { credits.remaining() }.getOrNull()
+            if (remaining != null) {
+                _state.update { it.copy(credits = remaining) }
+            }
+        }
     }
 
     private fun AiStudioUiState.withPhase(exchangeId: Long, phase: AiExchangePhase): AiStudioUiState =

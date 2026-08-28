@@ -9,13 +9,13 @@ import android.graphics.Shader
 import android.net.ConnectivityManager
 import androidx.core.graphics.createBitmap
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
+import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.GenerationOutcome
 import com.artiuillab.tieryourlife.feature.aistudio.domain.model.GeneratedCardImage
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -34,10 +34,10 @@ class StubCardImageGenerator @Inject constructor(
 
     private val callCounts = ConcurrentHashMap<String, Int>()
 
-    override suspend fun generate(prompt: String): GeneratedCardImage = withContext(Dispatchers.IO) {
+    override suspend fun generate(prompt: String): GenerationOutcome = withContext(Dispatchers.IO) {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         if (connectivityManager?.activeNetwork == null) {
-            throw IOException("No active network")
+            return@withContext GenerationOutcome.Failed
         }
 
         delay(GENERATION_DELAY_MILLIS.milliseconds)
@@ -53,7 +53,8 @@ class StubCardImageGenerator @Inject constructor(
         bitmap.recycle()
 
         val path = imageStore.save(bytes)
-        GeneratedCardImage(prompt = prompt, imageUri = "file://$path")
+        // Nothing to count: the image never left the device, so it cost nothing.
+        GenerationOutcome.Success(GeneratedCardImage(prompt = prompt, imageUri = "file://$path"))
     }
 
     override suspend fun discard(image: GeneratedCardImage): Unit = withContext(Dispatchers.IO) {
