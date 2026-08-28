@@ -10,6 +10,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.Density
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -121,7 +122,7 @@ class SettingsScreenTest {
         assertEquals(light.left, dark.left)
         assertTrue("dark should sit below light", dark.top > light.top)
         assertTrue("system should sit below dark", system.top > dark.top)
-        composeRule.onNodeWithText(string(R.string.theme_system)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.theme_system)).performScrollTo().assertIsDisplayed()
     }
 
     private fun setScreen(

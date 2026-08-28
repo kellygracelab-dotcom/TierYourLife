@@ -15,6 +15,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.lifecycle.Lifecycle
@@ -275,8 +276,8 @@ class TierListsScreenTest {
         setScreen(TierListsUiState.Success(emptyList(), 0, 0))
 
         composeRule.onNodeWithTag(TierListsTestTags.EMPTY_STATE).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierListsTestTags.suggestion(0)).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierListsTestTags.suggestion(4)).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.suggestion(0)).performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.suggestion(4)).performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -284,7 +285,7 @@ class TierListsScreenTest {
         var created: String? = null
         setScreen(TierListsUiState.Success(emptyList(), 0, 0), onCreateNamedList = { created = it })
 
-        composeRule.onNodeWithTag(TierListsTestTags.suggestion(0)).performClick()
+        composeRule.onNodeWithTag(TierListsTestTags.suggestion(0)).performScrollTo().performClick()
 
         composeRule.runOnIdle { assertEquals(string(R.string.home_suggestion_films), created) }
     }

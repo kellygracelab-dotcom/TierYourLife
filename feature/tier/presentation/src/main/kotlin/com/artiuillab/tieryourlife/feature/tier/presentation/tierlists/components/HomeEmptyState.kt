@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.componen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -10,10 +11,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.MaterialTheme
@@ -67,68 +71,75 @@ private val SUGGESTIONS = listOf(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun HomeEmptyState(onCreateNamedList: (String) -> Unit, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 32.dp)
-            .padding(bottom = 96.dp)
-            .testTag(TierListsTestTags.EMPTY_STATE),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        MiniBoard()
-        Spacer(Modifier.height(28.dp))
-        Text(
-            text = stringResource(R.string.home_empty_title),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Spacer(Modifier.height(8.dp))
-        Text(
-            text = stringResource(R.string.home_empty_body),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-
-        Spacer(Modifier.height(28.dp))
-        Text(
-            text = stringResource(R.string.home_start_with),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            letterSpacing = 0.8.sp,
-        )
-        Spacer(Modifier.height(12.dp))
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+    BoxWithConstraints(modifier.fillMaxSize()) {
+        // Centred while it fits, scrollable once a large font or a short screen
+        // makes it taller than the window.
+        val windowHeight = maxHeight
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .heightIn(min = windowHeight)
+                .padding(horizontal = 32.dp)
+                .padding(bottom = 96.dp)
+                .testTag(TierListsTestTags.EMPTY_STATE),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
-            SUGGESTIONS.forEachIndexed { index, suggestion ->
-                val label = stringResource(suggestion)
-                AssistChip(
-                    onClick = { onCreateNamedList(label) },
-                    label = { Text(label) },
-                    leadingIcon = { PlusIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
-                    modifier = Modifier.testTag(TierListsTestTags.suggestion(index)),
-                    border = AssistChipDefaults.assistChipBorder(enabled = true),
-                )
+            MiniBoard()
+            Spacer(Modifier.height(28.dp))
+            Text(
+                text = stringResource(R.string.home_empty_title),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.home_empty_body),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+
+            Spacer(Modifier.height(28.dp))
+            Text(
+                text = stringResource(R.string.home_start_with),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                letterSpacing = 0.8.sp,
+            )
+            Spacer(Modifier.height(12.dp))
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                SUGGESTIONS.forEachIndexed { index, suggestion ->
+                    val label = stringResource(suggestion)
+                    AssistChip(
+                        onClick = { onCreateNamedList(label) },
+                        label = { Text(label) },
+                        leadingIcon = { PlusIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+                        modifier = Modifier.testTag(TierListsTestTags.suggestion(index)),
+                        border = AssistChipDefaults.assistChipBorder(enabled = true),
+                    )
+                }
             }
+            Spacer(Modifier.height(14.dp))
+            Text(
+                text = stringResource(R.string.home_start_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline,
+                textAlign = TextAlign.Center,
+            )
         }
-        Spacer(Modifier.height(14.dp))
-        Text(
-            text = stringResource(R.string.home_start_hint),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.outline,
-            textAlign = TextAlign.Center,
-        )
     }
 }
 
 @Composable
 private fun MiniBoard() {
-    val dark = MaterialTheme.colorScheme.surface.luminanceIsLow()
-    val colors = if (dark) TIER_DARK else TIER_LIGHT
+    val colors = if (MaterialTheme.colorScheme.surface.isDark()) TIER_DARK else TIER_LIGHT
     Column(
         modifier = Modifier
             .width(BOARD_WIDTH)
@@ -172,7 +183,7 @@ private fun MiniBoard() {
     }
 }
 
-private fun Color.luminanceIsLow(): Boolean = (red * 0.299f + green * 0.587f + blue * 0.114f) < 0.5f
+private fun Color.isDark(): Boolean = (red * 0.299f + green * 0.587f + blue * 0.114f) < 0.5f
 
 @Preview(showBackground = true, heightDp = 700)
 @Composable
