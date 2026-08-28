@@ -1,0 +1,20 @@
+<resources>
+    <string name="account_signed_in">Вхід виконано</string>
+    <string name="account_sign_in_title">Вхід</string>
+    <string name="account_optional">Обліковий запис необов\'язковий. Без нього застосунок працює так само.</string>
+    <string name="account_reason_credits">Кредити на генерацію переживуть перевстановлення й новий телефон.</string>
+    <string name="account_reason_purchases">Покупки повернуться самі.</string>
+    <string name="account_reason_sync">Синхронізація дошок, коли з\'явиться.</string>
+    <string name="account_credits">Генерацій: %1$d</string>
+    <string name="account_credits_note">Відновлено з вашого облікового запису</string>
+    <string name="account_action_sign_in_google">Увійти через Google</string>
+    <string name="account_action_not_now">Не зараз</string>
+    <string name="account_action_done">Готово</string>
+    <string name="account_error_sign_in_failed">Не вдалося увійти. Спробуйте ще раз.</string>
+    <string name="account_error_no_google_account">На цьому телефоні немає облікового запису Google.</string>
+    <string name="account_error_unavailable">Вхід зараз недоступний.</string>
+    <string name="account_notice_existing_account">У цього облікового запису Google уже були власні кредити — тепер у вас саме вони.</string>
+    <string name="account_cd_close">Закрити</string>
+    <string name="account_action_sign_out">Вийти</string>
+    <string name="account_sign_out_body">Ваші списки залишаються на телефоні. Кредити чекатимуть тут.</string>
+</resources>

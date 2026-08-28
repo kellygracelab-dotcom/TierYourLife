@@ -44,6 +44,8 @@ dependencies {
     implementation(projects.core.settings)
     implementation(projects.core.theme)
     implementation(projects.navigation)
+    implementation(projects.feature.account.data)
+    implementation(projects.feature.account.domain)
     implementation(projects.feature.tier.data)
     implementation(projects.feature.aistudio.data)
     implementation(platform(libs.androidx.compose.bom))

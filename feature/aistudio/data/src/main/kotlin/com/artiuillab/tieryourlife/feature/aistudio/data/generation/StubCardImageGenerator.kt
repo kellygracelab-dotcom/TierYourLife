@@ -53,7 +53,6 @@ class StubCardImageGenerator @Inject constructor(
         bitmap.recycle()
 
         val path = imageStore.save(bytes)
-        // Nothing to count: the image never left the device, so it cost nothing.
         GenerationOutcome.Success(GeneratedCardImage(prompt = prompt, imageUri = "file://$path"))
     }
 

@@ -1,0 +1,20 @@
+<resources>
+    <string name="account_signed_in">Zalogowano</string>
+    <string name="account_sign_in_title">Zaloguj się</string>
+    <string name="account_optional">Konto jest opcjonalne. Bez niego aplikacja działa tak samo.</string>
+    <string name="account_reason_credits">Kredyty na generowanie przetrwają ponowną instalację i nowy telefon.</string>
+    <string name="account_reason_purchases">Zakupy wracają same.</string>
+    <string name="account_reason_sync">Synchronizacja tablic, gdy powstanie.</string>
+    <string name="account_credits">Kredyty na generowanie: %1$d</string>
+    <string name="account_credits_note">Przywrócone z Twojego konta</string>
+    <string name="account_action_sign_in_google">Zaloguj się przez Google</string>
+    <string name="account_action_not_now">Nie teraz</string>
+    <string name="account_action_done">Gotowe</string>
+    <string name="account_error_sign_in_failed">Nie udało się zalogować. Spróbuj ponownie.</string>
+    <string name="account_error_no_google_account">Brak konta Google na tym telefonie.</string>
+    <string name="account_error_unavailable">Logowanie jest teraz niedostępne.</string>
+    <string name="account_notice_existing_account">To konto Google miało już własne kredyty — i to one są teraz Twoje.</string>
+    <string name="account_cd_close">Zamknij</string>
+    <string name="account_action_sign_out">Wyloguj się</string>
+    <string name="account_sign_out_body">Twoje listy zostają na tym telefonie. Kredyty czekają tutaj.</string>
+</resources>

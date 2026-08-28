@@ -30,14 +30,10 @@ class TierDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val route = savedStateHandle.toRoute<Route.TierDetail>()
-    private val tierListId = route.tierListId
+    private val tierListId = savedStateHandle.toRoute<Route.TierDetail>().tierListId
 
     private val _state = MutableStateFlow<TierDetailUiState>(TierDetailUiState.Loading)
     val state: StateFlow<TierDetailUiState> = _state.asStateFlow()
-
-    private val _canDiscard = MutableStateFlow(route.startInTitleEdit)
-    val canDiscard: StateFlow<Boolean> = _canDiscard.asStateFlow()
 
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
@@ -46,40 +42,23 @@ class TierDetailViewModel @Inject constructor(
         loadTierList()
     }
 
-    fun markTouched() {
-        if (_canDiscard.value) _canDiscard.value = false
-    }
-
-    fun discardList(onDiscarded: () -> Unit) {
-        if (!_canDiscard.value) return
-        viewModelScope.launch {
-            val deleted = messages.guard("Discarding list") {
-                repository.deleteTierListPermanently(tierListId)
-            }
-            if (deleted) onDiscarded()
-        }
-    }
-
     fun loadTierList() {
         viewModelScope.launch { reloadTierList() }
     }
 
     fun addItemToPool(title: String, imageUrl: String?) {
-        markTouched()
         mutate("Adding item to pool") {
             repository.addItemToPool(tierListId, title, imageUrl)
         }
     }
 
     fun addItemsToPool(items: List<PoolItemDraft>) {
-        markTouched()
         mutate("Adding items to pool") {
             repository.addItemsToPool(tierListId, items)
         }
     }
 
     fun addManualItem(title: String, photoUris: List<String>) {
-        markTouched()
         mutate("Adding a manual item") {
             if (photoUris.isEmpty()) {
                 repository.addItemToPool(tierListId, title, imageUrl = null)
@@ -94,7 +73,6 @@ class TierDetailViewModel @Inject constructor(
     }
 
     fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
-        markTouched()
         val current = _state.value
         if (current is TierDetailUiState.Success) {
             _state.value = TierDetailUiState.Success(current.list.withItemMoved(itemId, toTierId, toPosition))
@@ -105,7 +83,6 @@ class TierDetailViewModel @Inject constructor(
     }
 
     fun reorderTiers(orderedTierIds: List<Long>) {
-        markTouched()
         val current = _state.value
         if (current is TierDetailUiState.Success) {
             val orderedSet = orderedTierIds.toSet()
@@ -122,7 +99,6 @@ class TierDetailViewModel @Inject constructor(
     }
 
     fun deleteTierToPool(tierId: Long) {
-        markTouched()
         mutate("Deleting a tier") {
             repository.deleteTierToPool(tierId)
         }
@@ -136,35 +112,30 @@ class TierDetailViewModel @Inject constructor(
         position: Int,
         itemIds: List<Long>,
     ) {
-        markTouched()
         mutate("Restoring a tier") {
             repository.restoreTier(tierListId, label, caption, colorLight, colorDark, position, itemIds)
         }
     }
 
     fun deleteItem(itemId: Long) {
-        markTouched()
         mutate("Deleting an item") {
             repository.deleteTierItem(itemId)
         }
     }
 
     fun restoreItem(itemId: Long) {
-        markTouched()
         mutate("Restoring an item") {
             repository.restoreTierItem(itemId)
         }
     }
 
     fun addTier(label: String, caption: String?, colorLight: String, colorDark: String) {
-        markTouched()
         mutate("Adding a tier") {
             repository.addTier(tierListId, label, caption, colorLight, colorDark)
         }
     }
 
     fun editTier(id: Long, label: String, caption: String?, colorLight: String, colorDark: String) {
-        markTouched()
         mutate("Editing a tier") {
             repository.renameTier(id, label, caption)
             repository.updateTierColors(id, colorLight, colorDark)
@@ -172,14 +143,12 @@ class TierDetailViewModel @Inject constructor(
     }
 
     fun setDisplayMode(displayMode: TierListDisplayMode) {
-        markTouched()
         mutate("Changing the display mode") {
             repository.setTierListDisplayMode(tierListId, displayMode)
         }
     }
 
     fun renameTierList(title: String) {
-        markTouched()
         mutate("Renaming the list") {
             repository.renameTierList(tierListId, title)
         }

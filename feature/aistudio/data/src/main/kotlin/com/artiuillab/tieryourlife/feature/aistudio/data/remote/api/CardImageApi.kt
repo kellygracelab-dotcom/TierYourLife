@@ -10,8 +10,6 @@ import retrofit2.http.POST
 
 interface CardImageApi {
 
-    // The raw Response is what carries the refusal apart from the bytes: the
-    // proxy answers 402 when the account has nothing left to spend.
     @POST("generate")
     suspend fun generate(
         @Body request: GenerateImageRequestDto,

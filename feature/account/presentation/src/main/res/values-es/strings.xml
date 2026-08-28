@@ -1,0 +1,20 @@
+<resources>
+    <string name="account_signed_in">Sesión iniciada</string>
+    <string name="account_sign_in_title">Iniciar sesión</string>
+    <string name="account_optional">La cuenta es opcional. La app funciona igual sin ella.</string>
+    <string name="account_reason_credits">Tus créditos de generación sobreviven a reinstalar y a cambiar de teléfono.</string>
+    <string name="account_reason_purchases">Las compras vuelven solas.</string>
+    <string name="account_reason_sync">Sincronización de tableros, cuando exista.</string>
+    <string name="account_credits">%1$d créditos de generación</string>
+    <string name="account_credits_note">Restaurados desde tu cuenta</string>
+    <string name="account_action_sign_in_google">Iniciar sesión con Google</string>
+    <string name="account_action_not_now">Ahora no</string>
+    <string name="account_action_done">Listo</string>
+    <string name="account_error_sign_in_failed">No se pudo iniciar sesión. Inténtalo de nuevo.</string>
+    <string name="account_error_no_google_account">No hay ninguna cuenta de Google en este teléfono.</string>
+    <string name="account_error_unavailable">Iniciar sesión no está disponible ahora.</string>
+    <string name="account_notice_existing_account">Esta cuenta de Google ya tenía sus propios créditos: esos son los que tienes ahora.</string>
+    <string name="account_cd_close">Cerrar</string>
+    <string name="account_action_sign_out">Cerrar sesión</string>
+    <string name="account_sign_out_body">Tus listas se quedan en este teléfono. Tus créditos te esperan aquí.</string>
+</resources>

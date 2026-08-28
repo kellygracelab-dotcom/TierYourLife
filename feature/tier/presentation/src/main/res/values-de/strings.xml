@@ -46,8 +46,8 @@
         <item quantity="other">%1$d Listen gelöscht</item>
     </plurals>
     <string name="action_undo">Rückgängig</string>
-    <string name="home_empty_title">Noch keine Listen</string>
-    <string name="home_empty_body">Tippe auf +, um etwas einzustufen.</string>
+    <string name="home_empty_title">Ordne alles ein</string>
+    <string name="home_empty_body">Filme, Spiele, Restaurants, Alben — was du willst. Deine Boards bleiben auf diesem Telefon.</string>
     <string name="cd_new_list">Neue Liste</string>
     <string name="default_tier_list_title">Unbenannte Liste</string>
     <string name="tier_lists_load_error">Listen konnten nicht geladen werden.</string>
@@ -58,7 +58,6 @@
     <string name="tier_detail_content_description_manual_add">Element manuell hinzufügen</string>
     <string name="tier_detail_content_description_more">Weitere Optionen</string>
     <string name="tier_detail_content_description_edit_title">Listennamen bearbeiten</string>
-    <string name="tier_detail_content_description_discard">Diese Liste verwerfen</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Pool · %d nicht eingestuft</item>
         <item quantity="other">Pool · %d nicht eingestuft</item>
@@ -266,4 +265,21 @@
     <string name="snack_export_failed">Datei konnte nicht gespeichert werden</string>
     <string name="action_try_again">Erneut versuchen</string>
     <string name="snack_action_failed">Änderung konnte nicht gespeichert werden</string>
+    <string name="settings_account">Konto</string>
+    <string name="settings_group_appearance">Darstellung</string>
+    <string name="settings_group_data">Deine Daten</string>
+    <string name="settings_account_offer_title">Behalte dein Guthaben</string>
+    <string name="settings_account_offer_body">Die App funktioniert auch ohne vollständig.</string>
+    <string name="settings_account_offer_action">Anmelden</string>
+    <string name="settings_account_signed_in">Angemeldet</string>
+    <string name="settings_account_signed_in_credits">Angemeldet · %1$d Guthaben</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="home_start_with">Beginne mit</string>
+    <string name="home_start_hint">Erstellt das Board sofort. Tippe auf den Titel, um ihn zu ändern.</string>
+    <string name="home_new_list">Neue Liste</string>
+    <string name="home_suggestion_films">Filme</string>
+    <string name="home_suggestion_games">Spiele</string>
+    <string name="home_suggestion_restaurants">Restaurants</string>
+    <string name="home_suggestion_albums">Alben</string>
+    <string name="home_suggestion_books">Bücher</string>
 </resources>

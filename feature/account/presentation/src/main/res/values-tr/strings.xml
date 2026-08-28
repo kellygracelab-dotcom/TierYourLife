@@ -1,0 +1,20 @@
+<resources>
+    <string name="account_signed_in">Oturum açıldı</string>
+    <string name="account_sign_in_title">Oturum aç</string>
+    <string name="account_optional">Hesap isteğe bağlı. Uygulama onsuz da aynı şekilde çalışır.</string>
+    <string name="account_reason_credits">Üretim hakların yeniden kurulumdan ve yeni telefondan sağ çıkar.</string>
+    <string name="account_reason_purchases">Satın alımlar kendiliğinden geri gelir.</string>
+    <string name="account_reason_sync">Pano eşitlemesi, geldiğinde.</string>
+    <string name="account_credits">%1$d üretim hakkı</string>
+    <string name="account_credits_note">Hesabından geri yüklendi</string>
+    <string name="account_action_sign_in_google">Google ile oturum aç</string>
+    <string name="account_action_not_now">Şimdi değil</string>
+    <string name="account_action_done">Tamam</string>
+    <string name="account_error_sign_in_failed">Oturum açılamadı. Tekrar dene.</string>
+    <string name="account_error_no_google_account">Bu telefonda Google hesabı yok.</string>
+    <string name="account_error_unavailable">Oturum açma şu anda kullanılamıyor.</string>
+    <string name="account_notice_existing_account">Bu Google hesabının kendi hakları vardı — artık sende olanlar onlar.</string>
+    <string name="account_cd_close">Kapat</string>
+    <string name="account_action_sign_out">Oturumu kapat</string>
+    <string name="account_sign_out_body">Listelerin bu telefonda kalır. Hakların burada seni bekler.</string>
+</resources>

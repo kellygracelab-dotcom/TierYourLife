@@ -1,0 +1,20 @@
+<resources>
+    <string name="account_signed_in">Connecté</string>
+    <string name="account_sign_in_title">Se connecter</string>
+    <string name="account_optional">Le compte est facultatif. L\'application fonctionne pareil sans.</string>
+    <string name="account_reason_credits">Vos crédits de génération survivent à une réinstallation et à un nouveau téléphone.</string>
+    <string name="account_reason_purchases">Les achats reviennent d\'eux-mêmes.</string>
+    <string name="account_reason_sync">La synchronisation des tableaux, quand elle existera.</string>
+    <string name="account_credits">%1$d crédits de génération</string>
+    <string name="account_credits_note">Restaurés depuis votre compte</string>
+    <string name="account_action_sign_in_google">Se connecter avec Google</string>
+    <string name="account_action_not_now">Pas maintenant</string>
+    <string name="account_action_done">Terminé</string>
+    <string name="account_error_sign_in_failed">Connexion impossible. Réessayez.</string>
+    <string name="account_error_no_google_account">Aucun compte Google sur ce téléphone.</string>
+    <string name="account_error_unavailable">La connexion est indisponible pour le moment.</string>
+    <string name="account_notice_existing_account">Ce compte Google avait déjà ses propres crédits — ce sont ceux que vous avez maintenant.</string>
+    <string name="account_cd_close">Fermer</string>
+    <string name="account_action_sign_out">Se déconnecter</string>
+    <string name="account_sign_out_body">Vos listes restent sur ce téléphone. Vos crédits vous attendent ici.</string>
+</resources>

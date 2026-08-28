@@ -14,6 +14,8 @@ dependencies {
     implementation(projects.core.settings)
     implementation(projects.core.theme)
     implementation(projects.feature.tier.domain)
+    implementation(projects.feature.account.domain)
+    implementation(projects.feature.aistudio.domain)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

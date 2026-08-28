@@ -60,8 +60,8 @@
         <item quantity="other">%1$d списку видалено</item>
     </plurals>
     <string name="action_undo">Скасувати</string>
-    <string name="home_empty_title">Поки немає списків</string>
-    <string name="home_empty_body">Натисніть +, щоб щось оцінити.</string>
+    <string name="home_empty_title">Оцінюй будь-що</string>
+    <string name="home_empty_body">Фільми, ігри, ресторани, альбоми — будь-що. Ваші дошки залишаються на телефоні.</string>
     <string name="cd_new_list">Новий список</string>
     <string name="default_tier_list_title">Список без назви</string>
     <string name="tier_lists_load_error">Не вдалося завантажити списки.</string>
@@ -72,7 +72,6 @@
     <string name="tier_detail_content_description_manual_add">Додати елемент вручну</string>
     <string name="tier_detail_content_description_more">Більше опцій</string>
     <string name="tier_detail_content_description_edit_title">Редагувати назву списку</string>
-    <string name="tier_detail_content_description_discard">Скасувати цей список</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Пул · %d без оцінки</item>
         <item quantity="few">Пул · %d без оцінки</item>
@@ -316,4 +315,21 @@
     <string name="snack_export_failed">Не вдалося зберегти файл</string>
     <string name="action_try_again">Спробувати ще раз</string>
     <string name="snack_action_failed">Не вдалося зберегти зміну</string>
+    <string name="settings_account">Обліковий запис</string>
+    <string name="settings_group_appearance">Вигляд</string>
+    <string name="settings_group_data">Ваші дані</string>
+    <string name="settings_account_offer_title">Збережіть свої кредити</string>
+    <string name="settings_account_offer_body">Застосунок повністю працює й без нього.</string>
+    <string name="settings_account_offer_action">Увійти</string>
+    <string name="settings_account_signed_in">Вхід виконано</string>
+    <string name="settings_account_signed_in_credits">Вхід виконано · %1$d кредитів</string>
+    <string name="settings_version">Версія %1$s</string>
+    <string name="home_start_with">Почніть з</string>
+    <string name="home_start_hint">Дошка створиться одразу. Торкніться назви, щоб перейменувати.</string>
+    <string name="home_new_list">Новий список</string>
+    <string name="home_suggestion_films">Фільми</string>
+    <string name="home_suggestion_games">Ігри</string>
+    <string name="home_suggestion_restaurants">Ресторани</string>
+    <string name="home_suggestion_albums">Альбоми</string>
+    <string name="home_suggestion_books">Книги</string>
 </resources>

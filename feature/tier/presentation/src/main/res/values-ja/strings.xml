@@ -39,8 +39,8 @@
         <item quantity="other">%1$d件のリストを削除しました</item>
     </plurals>
     <string name="action_undo">元に戻す</string>
-    <string name="home_empty_title">リストはまだありません</string>
-    <string name="home_empty_body">+ をタップして何かをランク付けしましょう。</string>
+    <string name="home_empty_title">なんでもランク付け</string>
+    <string name="home_empty_body">映画、ゲーム、レストラン、アルバム、なんでも。ボードはこの端末に残ります。</string>
     <string name="cd_new_list">新しいリスト</string>
     <string name="default_tier_list_title">無題のリスト</string>
     <string name="tier_lists_load_error">リストを読み込めませんでした。</string>
@@ -51,7 +51,6 @@
     <string name="tier_detail_content_description_manual_add">手動でアイテムを追加</string>
     <string name="tier_detail_content_description_more">その他のオプション</string>
     <string name="tier_detail_content_description_edit_title">リスト名を編集</string>
-    <string name="tier_detail_content_description_discard">このリストを破棄</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="other">プール · 未評価%d件</item>
     </plurals>
@@ -241,4 +240,21 @@
     <string name="snack_export_failed">ファイルを保存できませんでした</string>
     <string name="action_try_again">もう一度試す</string>
     <string name="snack_action_failed">変更を保存できませんでした</string>
+    <string name="settings_account">アカウント</string>
+    <string name="settings_group_appearance">表示</string>
+    <string name="settings_group_data">データ</string>
+    <string name="settings_account_offer_title">生成回数を残す</string>
+    <string name="settings_account_offer_body">アカウントがなくても全機能が使えます。</string>
+    <string name="settings_account_offer_action">ログイン</string>
+    <string name="settings_account_signed_in">ログイン済み</string>
+    <string name="settings_account_signed_in_credits">ログイン済み · 残り %1$d 回</string>
+    <string name="settings_version">バージョン %1$s</string>
+    <string name="home_start_with">まずは</string>
+    <string name="home_start_hint">すぐにボードを作ります。名前はタイトルをタップして変更できます。</string>
+    <string name="home_new_list">新しいリスト</string>
+    <string name="home_suggestion_films">映画</string>
+    <string name="home_suggestion_games">ゲーム</string>
+    <string name="home_suggestion_restaurants">レストラン</string>
+    <string name="home_suggestion_albums">アルバム</string>
+    <string name="home_suggestion_books">本</string>
 </resources>

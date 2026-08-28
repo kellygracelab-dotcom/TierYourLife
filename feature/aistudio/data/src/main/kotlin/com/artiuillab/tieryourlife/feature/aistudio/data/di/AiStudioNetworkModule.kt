@@ -75,8 +75,6 @@ object AiStudioNetworkModule {
         return retrofit.create(CardImageApi::class.java)
     }
 
-    // One switch decides both: without a proxy the images are drawn on the
-    // device, and there is nothing on the other side to keep a balance.
     @Provides
     @Singleton
     fun provideCardImageGenerator(

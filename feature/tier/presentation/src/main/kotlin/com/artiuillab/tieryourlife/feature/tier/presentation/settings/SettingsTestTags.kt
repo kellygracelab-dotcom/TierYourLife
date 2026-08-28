@@ -2,6 +2,8 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.settings
 
 internal object SettingsTestTags {
     const val BACK = "settings_back"
+    const val ACCOUNT = "settings_account_row"
+    const val ACCOUNT_ACTION = "settings_account_action"
     const val THEME_ROW = "settings_theme_row"
     const val THEME_LIGHT = "settings_theme_light"
     const val THEME_DARK = "settings_theme_dark"

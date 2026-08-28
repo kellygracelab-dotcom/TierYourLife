@@ -39,7 +39,6 @@ fun NavGraphBuilder.tierDetailScreen(
             .collectAsStateWithLifecycle()
         TierDetailScreen(
             onBack = onBack,
-            startInTitleEdit = route.startInTitleEdit,
             onOpenAiStudio = { listTitle -> onOpenAiStudio(route.tierListId, listTitle) },
             addedItemIds = addedItemIds,
             onAddedItemConsumed = { backStackEntry.savedStateHandle[ADDED_ITEMS_RESULT_KEY] = ArrayList<Long>() },
@@ -50,6 +49,7 @@ fun NavGraphBuilder.tierDetailScreen(
 fun NavGraphBuilder.settingsScreen(
     onBack: () -> Unit,
     onTrashClick: () -> Unit,
+    onAccountClick: () -> Unit,
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
     languageTag: String?,
@@ -59,6 +59,7 @@ fun NavGraphBuilder.settingsScreen(
         SettingsScreen(
             onBack = onBack,
             onTrashClick = onTrashClick,
+            onAccountClick = onAccountClick,
             themeChoice = themeChoice,
             onThemeChoiceChange = onThemeChoiceChange,
             languageTag = languageTag,
@@ -73,8 +74,8 @@ fun NavGraphBuilder.trashScreen(onBack: () -> Unit) {
     }
 }
 
-fun NavController.navigateToTierDetail(id: Long, startInTitleEdit: Boolean = false) {
-    navigate(Route.TierDetail(id, startInTitleEdit))
+fun NavController.navigateToTierDetail(id: Long) {
+    navigate(Route.TierDetail(id))
 }
 
 fun NavController.navigateToSettings() {

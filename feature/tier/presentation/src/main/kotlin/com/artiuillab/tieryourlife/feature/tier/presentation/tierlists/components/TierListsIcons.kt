@@ -4,7 +4,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -62,16 +64,43 @@ private fun DragVectorIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { 
 @Composable
 internal fun SettingsIcon() = SettingsVectorIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
 
+private const val GEAR_TEETH = 8
+private const val GEAR_OUTER_RADIUS = 8.1f
+private const val GEAR_ROOT_RADIUS = 5.7f
+private const val GEAR_HOLE_RADIUS = 2.6f
+
+private const val GEAR_TIP_HALF_ANGLE = 0.16f
+private const val GEAR_FLANK_ANGLE = 0.11f
+
 @Composable
 private fun SettingsVectorIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     val center = Offset(12f * scale, 12f * scale)
-    drawCircle(color, 3.4f * scale, center, style = Stroke(1.7f * scale))
-    repeat(8) { i ->
-        val angle = (i * Math.PI / 4).toFloat()
-        val inner = Offset(center.x + 5.2f * scale * cos(angle), center.y + 5.2f * scale * sin(angle))
-        val outer = Offset(center.x + 8.4f * scale * cos(angle), center.y + 8.4f * scale * sin(angle))
-        drawLine(color, inner, outer, 1.8f * scale, StrokeCap.Round)
+    val stroke = Stroke(1.6f * scale, cap = StrokeCap.Round, join = StrokeJoin.Round)
+
+    drawPath(gearPath(center, scale), color, style = stroke)
+    drawCircle(color, GEAR_HOLE_RADIUS * scale, center, style = stroke)
+}
+
+private fun gearPath(center: Offset, scale: Float): Path = Path().apply {
+    val step = (2 * Math.PI / GEAR_TEETH).toFloat()
+
+    fun pointAt(radius: Float, angle: Float) = Offset(
+        center.x + radius * scale * cos(angle),
+        center.y + radius * scale * sin(angle),
+    )
+
+    repeat(GEAR_TEETH) { tooth ->
+        val axis = tooth * step
+        val vertices = listOf(
+            pointAt(GEAR_ROOT_RADIUS, axis - GEAR_TIP_HALF_ANGLE - GEAR_FLANK_ANGLE),
+            pointAt(GEAR_OUTER_RADIUS, axis - GEAR_TIP_HALF_ANGLE),
+            pointAt(GEAR_OUTER_RADIUS, axis + GEAR_TIP_HALF_ANGLE),
+            pointAt(GEAR_ROOT_RADIUS, axis + GEAR_TIP_HALF_ANGLE + GEAR_FLANK_ANGLE),
+        )
+        if (tooth == 0) moveTo(vertices.first().x, vertices.first().y) else lineTo(vertices.first().x, vertices.first().y)
+        vertices.drop(1).forEach { lineTo(it.x, it.y) }
     }
+    close()
 }
 
 @Composable

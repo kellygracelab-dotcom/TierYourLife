@@ -1,0 +1,20 @@
+<resources>
+    <string name="account_signed_in">Angemeldet</string>
+    <string name="account_sign_in_title">Anmelden</string>
+    <string name="account_optional">Ein Konto ist optional. Die App funktioniert genauso ohne.</string>
+    <string name="account_reason_credits">Dein Guthaben übersteht eine Neuinstallation und ein neues Telefon.</string>
+    <string name="account_reason_purchases">Käufe kommen von selbst zurück.</string>
+    <string name="account_reason_sync">Board-Sync, sobald es ihn gibt.</string>
+    <string name="account_credits">%1$d Generierungen</string>
+    <string name="account_credits_note">Aus deinem Konto wiederhergestellt</string>
+    <string name="account_action_sign_in_google">Mit Google anmelden</string>
+    <string name="account_action_not_now">Jetzt nicht</string>
+    <string name="account_action_done">Fertig</string>
+    <string name="account_error_sign_in_failed">Anmeldung fehlgeschlagen. Versuch es noch einmal.</string>
+    <string name="account_error_no_google_account">Kein Google-Konto auf diesem Telefon.</string>
+    <string name="account_error_unavailable">Anmelden ist gerade nicht möglich.</string>
+    <string name="account_notice_existing_account">Dieses Google-Konto hatte bereits eigenes Guthaben — das hast du jetzt.</string>
+    <string name="account_cd_close">Schließen</string>
+    <string name="account_action_sign_out">Abmelden</string>
+    <string name="account_sign_out_body">Deine Listen bleiben auf diesem Telefon. Dein Guthaben wartet hier.</string>
+</resources>

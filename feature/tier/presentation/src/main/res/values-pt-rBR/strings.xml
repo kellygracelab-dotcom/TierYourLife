@@ -53,8 +53,8 @@
         <item quantity="other">%1$d listas excluídas</item>
     </plurals>
     <string name="action_undo">Desfazer</string>
-    <string name="home_empty_title">Ainda não há listas</string>
-    <string name="home_empty_body">Toque em + para classificar algo.</string>
+    <string name="home_empty_title">Classifique o que quiser</string>
+    <string name="home_empty_body">Filmes, jogos, restaurantes, álbuns — o que quiser. Seus quadros ficam neste telefone.</string>
     <string name="cd_new_list">Nova lista</string>
     <string name="default_tier_list_title">Lista sem título</string>
     <string name="tier_lists_load_error">Não foi possível carregar as listas.</string>
@@ -65,7 +65,6 @@
     <string name="tier_detail_content_description_manual_add">Adicionar um item manualmente</string>
     <string name="tier_detail_content_description_more">Mais opções</string>
     <string name="tier_detail_content_description_edit_title">Editar o nome da lista</string>
-    <string name="tier_detail_content_description_discard">Descartar esta lista</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Grupo · %d sem classificação</item>
         <item quantity="many">Grupo · %d sem classificação</item>
@@ -291,4 +290,21 @@
     <string name="snack_export_failed">Não foi possível salvar o arquivo</string>
     <string name="action_try_again">Tentar novamente</string>
     <string name="snack_action_failed">Não foi possível salvar a alteração</string>
+    <string name="settings_account">Conta</string>
+    <string name="settings_group_appearance">Aparência</string>
+    <string name="settings_group_data">Seus dados</string>
+    <string name="settings_account_offer_title">Mantenha seus créditos</string>
+    <string name="settings_account_offer_body">O app funciona por completo sem conta.</string>
+    <string name="settings_account_offer_action">Entrar</string>
+    <string name="settings_account_signed_in">Conectado</string>
+    <string name="settings_account_signed_in_credits">Conectado · %1$d créditos</string>
+    <string name="settings_version">Versão %1$s</string>
+    <string name="home_start_with">Comece com</string>
+    <string name="home_start_hint">Cria o quadro na hora. Toque no título para renomear.</string>
+    <string name="home_new_list">Nova lista</string>
+    <string name="home_suggestion_films">Filmes</string>
+    <string name="home_suggestion_games">Jogos</string>
+    <string name="home_suggestion_restaurants">Restaurantes</string>
+    <string name="home_suggestion_albums">Álbuns</string>
+    <string name="home_suggestion_books">Livros</string>
 </resources>

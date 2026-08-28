@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
@@ -39,6 +37,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -47,11 +46,15 @@ import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.tier.domain.export.TierListsExportStrings
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.FileDownloadIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.AccountRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.LanguageRow
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.SettingsGroup
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.SettingsGroupDivider
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.ThemeSection
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ChevronRightIcon
@@ -67,6 +70,7 @@ import java.util.Locale
 fun SettingsScreen(
     onBack: () -> Unit,
     onTrashClick: () -> Unit,
+    onAccountClick: () -> Unit,
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
     languageTag: String?,
@@ -74,6 +78,9 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val trashCount by viewModel.trashCount.collectAsStateWithLifecycle()
+    val account by viewModel.account.collectAsStateWithLifecycle()
+    val credits by viewModel.credits.collectAsStateWithLifecycle()
+    OnResumeEffect(onResume = viewModel::loadCredits)
     OnResumeEffect(onResume = viewModel::loadTrashCount)
 
     val context = LocalContext.current
@@ -110,6 +117,10 @@ fun SettingsScreen(
     }
 
     SettingsScreenContent(
+        account = account,
+        credits = credits,
+        onAccountClick = onAccountClick,
+        versionName = versionName(context),
         themeChoice = themeChoice,
         onThemeChoiceChange = onThemeChoiceChange,
         languageTag = languageTag,
@@ -195,6 +206,10 @@ private fun buildExportStrings(context: Context): TierListsExportStrings {
 
 @Composable
 internal fun SettingsScreenContent(
+    account: Account,
+    credits: Int?,
+    onAccountClick: () -> Unit,
+    versionName: String,
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
     languageTag: String?,
@@ -209,14 +224,28 @@ internal fun SettingsScreenContent(
         Box(Modifier.fillMaxSize()) {
             Column(Modifier.fillMaxSize()) {
                 SettingsTopBar(onBack = onBack)
-                Column(Modifier.verticalScroll(rememberScrollState())) {
-                    ThemeSection(themeChoice = themeChoice, onThemeChoiceChange = onThemeChoiceChange)
-                    SettingsDivider()
-                    LanguageRow(languageTag = languageTag, onLanguageTagChange = onLanguageTagChange)
-                    SettingsDivider()
-                    TrashRow(trashCount = trashCount, onClick = onTrashClick)
-                    SettingsDivider()
-                    ExportRow(onClick = onExportClick)
+                Column(
+                    Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(bottom = 32.dp),
+                ) {
+                    SettingsGroup(
+                        title = stringResource(R.string.settings_account),
+                        outlined = account is Account.Guest,
+                    ) {
+                        AccountRow(account = account, credits = credits, onClick = onAccountClick)
+                    }
+                    SettingsGroup(title = stringResource(R.string.settings_group_appearance)) {
+                        ThemeSection(themeChoice = themeChoice, onThemeChoiceChange = onThemeChoiceChange)
+                        SettingsGroupDivider()
+                        LanguageRow(languageTag = languageTag, onLanguageTagChange = onLanguageTagChange)
+                    }
+                    SettingsGroup(title = stringResource(R.string.settings_group_data)) {
+                        TrashRow(trashCount = trashCount, onClick = onTrashClick)
+                        SettingsGroupDivider()
+                        ExportRow(onClick = onExportClick)
+                    }
+                    VersionLine(versionName)
                 }
             }
 
@@ -259,15 +288,22 @@ private fun SettingsTopBar(onBack: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SettingsDivider() {
-    HorizontalDivider(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        color = MaterialTheme.colorScheme.outlineVariant,
-        thickness = 1.dp,
+private fun VersionLine(versionName: String) {
+    Text(
+        text = String.format(stringResource(R.string.settings_version), versionName),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 32.dp),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.outline,
+        textAlign = TextAlign.Center,
     )
 }
+
+private fun versionName(context: Context): String = runCatching {
+    context.packageManager.getPackageInfo(context.packageName, 0).versionName
+}.getOrNull().orEmpty()
 
 @Composable
 private fun TrashRow(trashCount: Int, onClick: () -> Unit) {
@@ -329,6 +365,10 @@ internal fun SettingsRow(
 @Composable
 private fun SettingsScreenLightPreview() = TierYourLifeTheme(false) {
     SettingsScreenContent(
+        account = Account.Guest,
+        credits = null,
+        onAccountClick = {},
+        versionName = "1.0",
         themeChoice = ThemeChoice.SYSTEM,
         onThemeChoiceChange = {},
         languageTag = null,
@@ -344,6 +384,10 @@ private fun SettingsScreenLightPreview() = TierYourLifeTheme(false) {
 @Composable
 private fun SettingsScreenDarkPreview() = TierYourLifeTheme(true) {
     SettingsScreenContent(
+        account = Account.Guest,
+        credits = null,
+        onAccountClick = {},
+        versionName = "1.0",
         themeChoice = ThemeChoice.SYSTEM,
         onThemeChoiceChange = {},
         languageTag = null,

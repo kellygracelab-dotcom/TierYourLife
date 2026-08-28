@@ -46,8 +46,8 @@
         <item quantity="other">%1$d liste silindi</item>
     </plurals>
     <string name="action_undo">Geri al</string>
-    <string name="home_empty_title">Henüz liste yok</string>
-    <string name="home_empty_body">Bir şey sıralamak için + öğesine dokun.</string>
+    <string name="home_empty_title">Her şeyi sırala</string>
+    <string name="home_empty_body">Filmler, oyunlar, restoranlar, albümler — ne olursa. Panoların bu telefonda kalır.</string>
     <string name="cd_new_list">Yeni liste</string>
     <string name="default_tier_list_title">Başlıksız liste</string>
     <string name="tier_lists_load_error">Listeler yüklenemedi.</string>
@@ -58,7 +58,6 @@
     <string name="tier_detail_content_description_manual_add">Öğeyi elle ekle</string>
     <string name="tier_detail_content_description_more">Diğer seçenekler</string>
     <string name="tier_detail_content_description_edit_title">Liste adını düzenle</string>
-    <string name="tier_detail_content_description_discard">Bu listeyi iptal et</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Havuz · %d sıralanmadı</item>
         <item quantity="other">Havuz · %d sıralanmadı</item>
@@ -266,4 +265,21 @@
     <string name="snack_export_failed">Dosya kaydedilemedi</string>
     <string name="action_try_again">Tekrar dene</string>
     <string name="snack_action_failed">Değişiklik kaydedilemedi</string>
+    <string name="settings_account">Hesap</string>
+    <string name="settings_group_appearance">Görünüm</string>
+    <string name="settings_group_data">Verilerin</string>
+    <string name="settings_account_offer_title">Haklarını koru</string>
+    <string name="settings_account_offer_body">Uygulama hesapsız da tam çalışır.</string>
+    <string name="settings_account_offer_action">Oturum aç</string>
+    <string name="settings_account_signed_in">Oturum açıldı</string>
+    <string name="settings_account_signed_in_credits">Oturum açıldı · %1$d hak</string>
+    <string name="settings_version">Sürüm %1$s</string>
+    <string name="home_start_with">Şununla başla</string>
+    <string name="home_start_hint">Panoyu hemen oluşturur. Adını değiştirmek için başlığa dokun.</string>
+    <string name="home_new_list">Yeni liste</string>
+    <string name="home_suggestion_films">Filmler</string>
+    <string name="home_suggestion_games">Oyunlar</string>
+    <string name="home_suggestion_restaurants">Restoranlar</string>
+    <string name="home_suggestion_albums">Albümler</string>
+    <string name="home_suggestion_books">Kitaplar</string>
 </resources>

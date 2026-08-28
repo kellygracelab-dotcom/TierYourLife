@@ -60,8 +60,8 @@
         <item quantity="other">%1$d listy usunięto</item>
     </plurals>
     <string name="action_undo">Cofnij</string>
-    <string name="home_empty_title">Nie masz jeszcze list</string>
-    <string name="home_empty_body">Dotknij +, aby coś ocenić.</string>
+    <string name="home_empty_title">Oceniaj cokolwiek</string>
+    <string name="home_empty_body">Filmy, gry, restauracje, albumy — cokolwiek. Twoje tablice zostają na tym telefonie.</string>
     <string name="cd_new_list">Nowa lista</string>
     <string name="default_tier_list_title">Lista bez tytułu</string>
     <string name="tier_lists_load_error">Nie udało się wczytać list.</string>
@@ -72,7 +72,6 @@
     <string name="tier_detail_content_description_manual_add">Dodaj element ręcznie</string>
     <string name="tier_detail_content_description_more">Więcej opcji</string>
     <string name="tier_detail_content_description_edit_title">Edytuj nazwę listy</string>
-    <string name="tier_detail_content_description_discard">Odrzuć tę listę</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Pula · %d nieocenione</item>
         <item quantity="few">Pula · %d nieocenione</item>
@@ -316,4 +315,21 @@
     <string name="snack_export_failed">Nie udało się zapisać pliku</string>
     <string name="action_try_again">Spróbuj ponownie</string>
     <string name="snack_action_failed">Nie udało się zapisać zmiany</string>
+    <string name="settings_account">Konto</string>
+    <string name="settings_group_appearance">Wygląd</string>
+    <string name="settings_group_data">Twoje dane</string>
+    <string name="settings_account_offer_title">Zachowaj swoje kredyty</string>
+    <string name="settings_account_offer_body">Aplikacja działa w pełni bez niego.</string>
+    <string name="settings_account_offer_action">Zaloguj się</string>
+    <string name="settings_account_signed_in">Zalogowano</string>
+    <string name="settings_account_signed_in_credits">Zalogowano · %1$d kredytów</string>
+    <string name="settings_version">Wersja %1$s</string>
+    <string name="home_start_with">Zacznij od</string>
+    <string name="home_start_hint">Tablica powstaje od razu. Dotknij tytułu, aby zmienić nazwę.</string>
+    <string name="home_new_list">Nowa lista</string>
+    <string name="home_suggestion_films">Filmy</string>
+    <string name="home_suggestion_games">Gry</string>
+    <string name="home_suggestion_restaurants">Restauracje</string>
+    <string name="home_suggestion_albums">Albumy</string>
+    <string name="home_suggestion_books">Książki</string>
 </resources>

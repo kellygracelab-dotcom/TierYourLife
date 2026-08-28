@@ -53,26 +53,6 @@ class TierDetailViewModelTest {
     }
 
     @Test
-    fun canDiscard_seededFromStartInTitleEdit() = runBlocking {
-        val newListViewModel = TierDetailViewModel(FakeTierRepository(pool()), savedStateHandle(startInTitleEdit = true))
-        val existingListViewModel = TierDetailViewModel(FakeTierRepository(pool()), savedStateHandle(startInTitleEdit = false))
-
-        assertEquals(true, newListViewModel.canDiscard.first())
-        assertEquals(false, existingListViewModel.canDiscard.first())
-    }
-
-    @Test
-    fun markTouched_flipsCanDiscardToFalse_andItStaysFalse() {
-        val viewModel = TierDetailViewModel(FakeTierRepository(pool()), savedStateHandle(startInTitleEdit = true))
-
-        viewModel.markTouched()
-        assertEquals(false, viewModel.canDiscard.value)
-
-        viewModel.markTouched()
-        assertEquals(false, viewModel.canDiscard.value)
-    }
-
-    @Test
     fun addManualItem_withSeveralPhotos_addsOneItemPerPhoto() = runBlocking {
         val repository = FakeTierRepository(pool())
         val viewModel = TierDetailViewModel(repository, savedStateHandle())
@@ -86,45 +66,6 @@ class TierDetailViewModelTest {
         assertEquals(picked, repository.attachedSources)
         assertEquals(listOf("", "", ""), state.list.tiers.single().items.map { it.title })
         assertNull(repository.lastAddedImageUrl)
-    }
-
-    @Test
-    fun addManualItem_touchesTheList() {
-        val viewModel = TierDetailViewModel(FakeTierRepository(pool()), savedStateHandle(startInTitleEdit = true))
-
-        viewModel.addManualItem("Dune", photoUris = emptyList())
-
-        assertEquals(false, viewModel.canDiscard.value)
-    }
-
-    @Test
-    fun discardList_whenUntouched_deletesPermanentlyAndInvokesCallback() = runBlocking {
-        val repository = FakeTierRepository(pool())
-        val viewModel = TierDetailViewModel(repository, savedStateHandle(startInTitleEdit = true))
-        val discardedSignal = CompletableDeferred<Unit>()
-        var discarded = 0
-
-        viewModel.discardList {
-            discarded++
-            discardedSignal.complete(Unit)
-        }
-        discardedSignal.await()
-
-        assertEquals(listOf(1L), repository.permanentlyDeletedIds)
-        assertEquals(1, discarded)
-    }
-
-    @Test
-    fun discardList_onceTouched_doesNothing() {
-        val repository = FakeTierRepository(pool())
-        val viewModel = TierDetailViewModel(repository, savedStateHandle(startInTitleEdit = true))
-        var discarded = 0
-
-        viewModel.markTouched()
-        viewModel.discardList { discarded++ }
-
-        assertEquals(emptyList<Long>(), repository.permanentlyDeletedIds)
-        assertEquals(0, discarded)
     }
 
     @Test

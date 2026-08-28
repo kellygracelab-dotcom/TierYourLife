@@ -1,0 +1,20 @@
+<resources>
+    <string name="account_signed_in">Signed in</string>
+    <string name="account_sign_in_title">Sign in</string>
+    <string name="account_optional">An account is optional. The app works the same without one.</string>
+    <string name="account_reason_credits">Your generation credits survive reinstalling and a new phone.</string>
+    <string name="account_reason_purchases">Purchases come back on their own.</string>
+    <string name="account_reason_sync">Board sync, once it exists.</string>
+    <string name="account_credits">%1$d generation credits</string>
+    <string name="account_credits_note">Restored from your account</string>
+    <string name="account_action_sign_in_google">Sign in with Google</string>
+    <string name="account_action_not_now">Not now</string>
+    <string name="account_action_done">Done</string>
+    <string name="account_error_sign_in_failed">Could not sign in. Try again.</string>
+    <string name="account_error_no_google_account">No Google account on this phone.</string>
+    <string name="account_error_unavailable">Signing in is unavailable right now.</string>
+    <string name="account_notice_existing_account">This Google account already had credits of its own — those are what you have now.</string>
+    <string name="account_cd_close">Close</string>
+    <string name="account_action_sign_out">Sign out</string>
+    <string name="account_sign_out_body">Your lists stay on this phone. Your credits wait here for you.</string>
+</resources>

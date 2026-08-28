@@ -60,8 +60,8 @@
         <item quantity="other">%1$d списка удалено</item>
     </plurals>
     <string name="action_undo">Отменить</string>
-    <string name="home_empty_title">Пока нет списков</string>
-    <string name="home_empty_body">Нажмите +, чтобы что-то оценить.</string>
+    <string name="home_empty_title">Ранжируй что угодно</string>
+    <string name="home_empty_body">Фильмы, игры, рестораны, альбомы — что угодно. Ваши доски остаются на телефоне.</string>
     <string name="cd_new_list">Новый список</string>
     <string name="default_tier_list_title">Список без названия</string>
     <string name="tier_lists_load_error">Не удалось загрузить списки.</string>
@@ -72,7 +72,6 @@
     <string name="tier_detail_content_description_manual_add">Добавить элемент вручную</string>
     <string name="tier_detail_content_description_more">Больше опций</string>
     <string name="tier_detail_content_description_edit_title">Изменить название списка</string>
-    <string name="tier_detail_content_description_discard">Отменить создание списка</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Пул · %d без оценки</item>
         <item quantity="few">Пул · %d без оценки</item>
@@ -316,4 +315,21 @@
     <string name="snack_export_failed">Не удалось сохранить файл</string>
     <string name="action_try_again">Повторить</string>
     <string name="snack_action_failed">Не удалось сохранить изменение</string>
+    <string name="settings_account">Аккаунт</string>
+    <string name="settings_group_appearance">Оформление</string>
+    <string name="settings_group_data">Ваши данные</string>
+    <string name="settings_account_offer_title">Сохраните свои кредиты</string>
+    <string name="settings_account_offer_body">Приложение полностью работает и без него.</string>
+    <string name="settings_account_offer_action">Войти</string>
+    <string name="settings_account_signed_in">Вход выполнен</string>
+    <string name="settings_account_signed_in_credits">Вход выполнен · %1$d кредитов</string>
+    <string name="settings_version">Версия %1$s</string>
+    <string name="home_start_with">Начните с</string>
+    <string name="home_start_hint">Доска создастся сразу. Коснитесь названия, чтобы переименовать.</string>
+    <string name="home_new_list">Новый список</string>
+    <string name="home_suggestion_films">Фильмы</string>
+    <string name="home_suggestion_games">Игры</string>
+    <string name="home_suggestion_restaurants">Рестораны</string>
+    <string name="home_suggestion_albums">Альбомы</string>
+    <string name="home_suggestion_books">Книги</string>
 </resources>

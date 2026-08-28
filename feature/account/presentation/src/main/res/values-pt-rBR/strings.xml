@@ -1,0 +1,20 @@
+<resources>
+    <string name="account_signed_in">Conectado</string>
+    <string name="account_sign_in_title">Entrar</string>
+    <string name="account_optional">A conta é opcional. O app funciona igual sem ela.</string>
+    <string name="account_reason_credits">Seus créditos de geração sobrevivem a reinstalar e trocar de telefone.</string>
+    <string name="account_reason_purchases">As compras voltam sozinhas.</string>
+    <string name="account_reason_sync">Sincronização de quadros, quando existir.</string>
+    <string name="account_credits">%1$d créditos de geração</string>
+    <string name="account_credits_note">Restaurados da sua conta</string>
+    <string name="account_action_sign_in_google">Entrar com o Google</string>
+    <string name="account_action_not_now">Agora não</string>
+    <string name="account_action_done">Pronto</string>
+    <string name="account_error_sign_in_failed">Não foi possível entrar. Tente de novo.</string>
+    <string name="account_error_no_google_account">Nenhuma conta do Google neste telefone.</string>
+    <string name="account_error_unavailable">Entrar está indisponível agora.</string>
+    <string name="account_notice_existing_account">Esta conta do Google já tinha créditos próprios — são esses que você tem agora.</string>
+    <string name="account_cd_close">Fechar</string>
+    <string name="account_action_sign_out">Sair</string>
+    <string name="account_sign_out_body">Suas listas ficam neste telefone. Seus créditos esperam por você aqui.</string>
+</resources>

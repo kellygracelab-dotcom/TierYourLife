@@ -35,7 +35,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
@@ -51,14 +50,8 @@ internal fun TierScreenTopBar(
     onMoreClick: () -> Unit = {},
     onRenameList: (String) -> Unit = {},
     titleEditable: Boolean = false,
-    startInTitleEdit: Boolean = false,
-    canDiscard: Boolean = false,
-    onDiscard: () -> Unit = {},
-    onTitleEditStarted: () -> Unit = {},
-    onAutoTitleEditConsumed: () -> Unit = {},
 ) {
     val backDescription = stringResource(R.string.tier_detail_content_description_back)
-    val discardDescription = stringResource(R.string.tier_detail_content_description_discard)
     val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
     val moreDescription = stringResource(R.string.tier_detail_content_description_more)
 
@@ -70,29 +63,17 @@ internal fun TierScreenTopBar(
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (canDiscard) {
-            IconButton(
-                onClick = onDiscard,
-                modifier = Modifier
-                    .size(48.dp)
-                    .semantics { contentDescription = discardDescription },
-            ) { ClearIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) }
-        } else {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .size(48.dp)
-                    .semantics { contentDescription = backDescription },
-            ) { BackIcon() }
-        }
+        IconButton(
+            onClick = onBack,
+            modifier = Modifier
+                .size(48.dp)
+                .semantics { contentDescription = backDescription },
+        ) { BackIcon() }
         if (titleEditable) {
             EditableListTitle(
                 title = title,
                 onRename = onRenameList,
                 modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
-                initiallyEditing = startInTitleEdit,
-                onEditStarted = onTitleEditStarted,
-                onAutoEditConsumed = onAutoTitleEditConsumed,
             )
         } else {
             Text(
@@ -125,21 +106,12 @@ private fun EditableListTitle(
     title: String,
     onRename: (String) -> Unit,
     modifier: Modifier = Modifier,
-    initiallyEditing: Boolean = false,
-    onEditStarted: () -> Unit = {},
-    onAutoEditConsumed: () -> Unit = {},
 ) {
-    var isEditing by remember { mutableStateOf(initiallyEditing) }
+    var isEditing by remember { mutableStateOf(false) }
 
     if (isEditing) {
         var fieldValue by remember {
-            mutableStateOf(
-                if (initiallyEditing) {
-                    TextFieldValue(text = title, selection = TextRange(0, title.length))
-                } else {
-                    TextFieldValue(text = title, selection = TextRange(title.length))
-                },
-            )
+            mutableStateOf(TextFieldValue(text = title, selection = TextRange(title.length)))
         }
         var hasFocused by remember { mutableStateOf(false) }
         val focusRequester = remember { FocusRequester() }
@@ -154,7 +126,6 @@ private fun EditableListTitle(
         BasicTextField(
             value = fieldValue,
             onValueChange = { newValue ->
-                if (newValue.text != fieldValue.text) onEditStarted()
                 if (newValue.text.length <= TITLE_MAX_LENGTH) fieldValue = newValue
             },
             modifier = modifier
@@ -170,10 +141,7 @@ private fun EditableListTitle(
             keyboardActions = KeyboardActions(onDone = { commit() }),
         )
 
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-            onAutoEditConsumed()
-        }
+        LaunchedEffect(Unit) { focusRequester.requestFocus() }
     } else {
         val editDescription = stringResource(R.string.tier_detail_content_description_edit_title)
         Text(

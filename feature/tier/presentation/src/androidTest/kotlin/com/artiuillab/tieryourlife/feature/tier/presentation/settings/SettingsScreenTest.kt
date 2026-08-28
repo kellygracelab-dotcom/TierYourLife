@@ -10,11 +10,13 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.Density
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.LanguageOptions
 import org.junit.Assert.assertEquals
@@ -120,7 +122,7 @@ class SettingsScreenTest {
         assertEquals(light.left, dark.left)
         assertTrue("dark should sit below light", dark.top > light.top)
         assertTrue("system should sit below dark", system.top > dark.top)
-        composeRule.onNodeWithText(string(R.string.theme_system)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.theme_system)).performScrollTo().assertIsDisplayed()
     }
 
     private fun setScreen(
@@ -135,6 +137,10 @@ class SettingsScreenTest {
             ) {
             TierYourLifeTheme {
                 SettingsScreenContent(
+                    account = Account.Guest,
+                    credits = null,
+                    onAccountClick = {},
+                    versionName = "1.0",
                     themeChoice = ThemeChoice.SYSTEM,
                     onThemeChoiceChange = {},
                     languageTag = languageTag,
