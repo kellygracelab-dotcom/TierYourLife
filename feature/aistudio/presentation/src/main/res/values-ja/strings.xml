@@ -26,4 +26,7 @@
     <string name="cd_back">戻る</string>
     <string name="cd_clear_name">名前をクリア</string>
     <string name="snack_action_failed">変更を保存できませんでした</string>
+    <string name="ai_credits_label">残りの生成回数: %1$d</string>
+    <string name="ai_out_of_credits_title">生成回数がなくなりました</string>
+    <string name="ai_out_of_credits_body">無料の生成回数をすべて使いました。ほかの機能はこれまでどおり使えます。</string>
 </resources>

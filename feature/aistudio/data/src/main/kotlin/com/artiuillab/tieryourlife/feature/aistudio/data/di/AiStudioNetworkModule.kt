@@ -1,11 +1,15 @@
 package com.artiuillab.tieryourlife.feature.aistudio.data.di
 
 import com.artiuillab.tieryourlife.core.network.AppCheckInterceptor
+import com.artiuillab.tieryourlife.core.network.IdTokenInterceptor
 import com.artiuillab.tieryourlife.feature.aistudio.data.BuildConfig
+import com.artiuillab.tieryourlife.feature.aistudio.data.credits.ProxyGenerationCredits
+import com.artiuillab.tieryourlife.feature.aistudio.data.credits.UnmeteredGenerationCredits
 import com.artiuillab.tieryourlife.feature.aistudio.data.generation.ProxyCardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.data.generation.StubCardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.api.CardImageApi
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.networkJson
+import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
 import dagger.Module
 import dagger.Provides
@@ -37,9 +41,11 @@ object AiStudioNetworkModule {
     @Singleton
     fun provideProxyOkHttpClient(
         appCheckInterceptor: AppCheckInterceptor,
+        idTokenInterceptor: IdTokenInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(appCheckInterceptor)
+            .addInterceptor(idTokenInterceptor)
             .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .callTimeout(CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -69,6 +75,8 @@ object AiStudioNetworkModule {
         return retrofit.create(CardImageApi::class.java)
     }
 
+    // One switch decides both: without a proxy the images are drawn on the
+    // device, and there is nothing on the other side to keep a balance.
     @Provides
     @Singleton
     fun provideCardImageGenerator(
@@ -76,6 +84,15 @@ object AiStudioNetworkModule {
         stub: Provider<StubCardImageGenerator>,
     ): CardImageGenerator {
         return if (BuildConfig.PROXY_BASE_URL.isNotBlank()) proxy.get() else stub.get()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGenerationCredits(
+        metered: Provider<ProxyGenerationCredits>,
+        unmetered: Provider<UnmeteredGenerationCredits>,
+    ): GenerationCredits {
+        return if (BuildConfig.PROXY_BASE_URL.isNotBlank()) metered.get() else unmetered.get()
     }
 
     private const val PLACEHOLDER_BASE_URL = "https://example.invalid/"

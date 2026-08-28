@@ -26,4 +26,7 @@
     <string name="cd_back">Retour</string>
     <string name="cd_clear_name">Effacer le nom</string>
     <string name="snack_action_failed">Modification non enregistrée</string>
+    <string name="ai_credits_label">Générations restantes : %1$d</string>
+    <string name="ai_out_of_credits_title">Plus de générations</string>
+    <string name="ai_out_of_credits_body">Vous avez utilisé toutes vos générations gratuites. Le reste de l\'application fonctionne normalement.</string>
 </resources>

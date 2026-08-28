@@ -42,12 +42,14 @@ import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.compon
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.ErrorCard
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.GeneratingCard
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.NamingDialog
+import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.OutOfCreditsCard
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.PromptBubble
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.ResultCard
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioConversationState
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioEmptyState
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioFailedState
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioGeneratingState
+import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components.previewAiStudioOutOfCreditsState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -112,7 +114,7 @@ internal fun AiStudioScreenContent(
                 .fillMaxSize()
                 .testTag(AiStudioTestTags.SCREEN),
         ) {
-            AiStudioTopBar(onBack = onBack)
+            AiStudioTopBar(onBack = onBack, credits = state.credits)
             Text(
                 text = String.format(stringResource(R.string.ai_caption), listTitle),
                 modifier = Modifier
@@ -163,6 +165,10 @@ internal fun AiStudioScreenContent(
                                     AiExchangePhase.Failed -> ErrorCard(
                                         testTag = AiStudioTestTags.error(exchange.id),
                                         onTryAgain = { onRetry(exchange.id) },
+                                    )
+
+                                    AiExchangePhase.OutOfCredits -> OutOfCreditsCard(
+                                        testTag = AiStudioTestTags.outOfCredits(exchange.id),
                                     )
                                 }
                             }
@@ -276,6 +282,23 @@ private fun AiStudioScreenGeneratingPreview() = TierYourLifeTheme {
 private fun AiStudioScreenErrorPreview() = TierYourLifeTheme {
     AiStudioScreenContent(
         state = previewAiStudioFailedState,
+        listTitle = "Sci-fi films",
+        fieldText = "",
+        onFieldTextChange = {},
+        onBack = {},
+        onSend = {},
+        onHintClick = {},
+        onRetry = {},
+        onRegenerate = {},
+        onSaveCard = { _, _ -> },
+    )
+}
+
+@Preview(name = "Out of credits", device = "id:pixel_9", showBackground = true, showSystemUi = true)
+@Composable
+private fun AiStudioScreenOutOfCreditsPreview() = TierYourLifeTheme {
+    AiStudioScreenContent(
+        state = previewAiStudioOutOfCreditsState,
         listTitle = "Sci-fi films",
         fieldText = "",
         onFieldTextChange = {},

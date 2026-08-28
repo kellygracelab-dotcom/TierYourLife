@@ -2,16 +2,18 @@ package com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
+import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.GenerationOutcome
 import com.artiuillab.tieryourlife.feature.aistudio.domain.library.GeneratedCardSaver
 import com.artiuillab.tieryourlife.feature.aistudio.domain.model.GeneratedCardImage
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class AiStudioViewModelTest {
@@ -19,7 +21,7 @@ class AiStudioViewModelTest {
     @Test
     fun send_showsGeneratingThenResult() = runBlocking {
         val generator = FakeCardImageGenerator().apply { armGate() }
-        val viewModel = AiStudioViewModel(generator, FakeGeneratedCardSaver(), savedStateHandle())
+        val viewModel = viewModel(generator)
 
         viewModel.send("A neon street")
         generator.generateStarted.await()
@@ -37,7 +39,7 @@ class AiStudioViewModelTest {
     @Test
     fun openingTheStudio_sweepsLeftoverGeneratedFiles() = runBlocking {
         val generator = FakeCardImageGenerator()
-        AiStudioViewModel(generator, FakeGeneratedCardSaver(), savedStateHandle())
+        viewModel(generator)
 
         generator.awaitDiscardAll()
 
@@ -47,7 +49,7 @@ class AiStudioViewModelTest {
     @Test
     fun send_whenGeneratorFails_showsFailed() = runBlocking {
         val generator = FakeCardImageGenerator().apply { shouldFail = true }
-        val viewModel = AiStudioViewModel(generator, FakeGeneratedCardSaver(), savedStateHandle())
+        val viewModel = viewModel(generator)
 
         viewModel.send("A neon street")
         val state = viewModel.state.first { it.exchanges.singleOrNull()?.phase == AiExchangePhase.Failed }
@@ -58,7 +60,7 @@ class AiStudioViewModelTest {
     @Test
     fun retry_afterFailure_succeedsWithTheSamePrompt() = runBlocking {
         val generator = FakeCardImageGenerator().apply { shouldFail = true }
-        val viewModel = AiStudioViewModel(generator, FakeGeneratedCardSaver(), savedStateHandle())
+        val viewModel = viewModel(generator)
         viewModel.send("A neon street")
         val failedState = viewModel.state.first { it.exchanges.singleOrNull()?.phase == AiExchangePhase.Failed }
         val exchangeId = failedState.exchanges.single().id
@@ -77,7 +79,7 @@ class AiStudioViewModelTest {
     @Test
     fun regenerate_discardsThePreviousImage_andReplacesTheSameCard() = runBlocking {
         val generator = FakeCardImageGenerator()
-        val viewModel = AiStudioViewModel(generator, FakeGeneratedCardSaver(), savedStateHandle())
+        val viewModel = viewModel(generator)
         viewModel.send("A neon street")
         val firstResult = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
         val exchangeId = firstResult.exchanges.single().id
@@ -98,7 +100,7 @@ class AiStudioViewModelTest {
     fun addToList_marksTheExchangeAsAdded_andDoesNotSaveTwice() = runBlocking {
         val generator = FakeCardImageGenerator()
         val saver = FakeGeneratedCardSaver()
-        val viewModel = AiStudioViewModel(generator, saver, savedStateHandle())
+        val viewModel = viewModel(generator, saver)
         viewModel.send("A neon street")
         val resultState = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
         val exchangeId = resultState.exchanges.single().id
@@ -118,7 +120,7 @@ class AiStudioViewModelTest {
     fun addedItemIds_returnsIdsInTheOrderTheyWereAdded() = runBlocking {
         val generator = FakeCardImageGenerator()
         val saver = FakeGeneratedCardSaver()
-        val viewModel = AiStudioViewModel(generator, saver, savedStateHandle())
+        val viewModel = viewModel(generator, saver)
 
         viewModel.send("First")
         val firstResult = viewModel.state.first { it.exchanges.singleOrNull()?.phase is AiExchangePhase.Result }
@@ -141,7 +143,7 @@ class AiStudioViewModelTest {
     fun regenerate_onAnAlreadyAddedExchange_isNoOp() = runBlocking {
         val generator = FakeCardImageGenerator()
         val saver = FakeGeneratedCardSaver()
-        val viewModel = AiStudioViewModel(generator, saver, savedStateHandle())
+        val viewModel = viewModel(generator, saver)
         viewModel.send("A neon street")
         val resultState = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
         val exchangeId = resultState.exchanges.single().id
@@ -155,15 +157,101 @@ class AiStudioViewModelTest {
         assertEquals(1, saver.calls.size)
     }
 
+    @Test
+    fun openingTheStudio_showsTheBalanceItReads() = runBlocking {
+        val viewModel = viewModel(credits = FakeGenerationCredits(balance = 7))
+
+        val state = viewModel.state.first { it.credits != null }
+
+        assertEquals(7, state.credits)
+    }
+
+    // The stub build draws its images locally and counts nothing, so the top
+    // bar must show no number at all rather than a zero.
+    @Test
+    fun whenNothingIsCounted_theBalanceStaysAbsent() = runBlocking {
+        val generator = FakeCardImageGenerator()
+        val viewModel = viewModel(generator, credits = FakeGenerationCredits(balance = null))
+
+        viewModel.send("A neon street")
+        val state = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
+
+        assertNull(state.credits)
+    }
+
+    @Test
+    fun send_takesTheNewBalanceFromTheGenerationItself() = runBlocking {
+        val generator = FakeCardImageGenerator().apply { creditsRemaining = 4 }
+        val viewModel = viewModel(generator, credits = FakeGenerationCredits(balance = 5))
+        viewModel.state.first { it.credits == 5 }
+
+        viewModel.send("A neon street")
+        val state = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
+
+        assertEquals(4, state.credits)
+    }
+
+    @Test
+    fun send_whenOutOfCredits_showsItsOwnCardAndAnEmptyBalance() = runBlocking {
+        val generator = FakeCardImageGenerator().apply { outcome = GenerationOutcome.OutOfCredits }
+        val viewModel = viewModel(generator, credits = FakeGenerationCredits(balance = 1))
+
+        viewModel.send("A neon street")
+        val state = viewModel.state.first {
+            it.exchanges.singleOrNull()?.phase == AiExchangePhase.OutOfCredits
+        }
+
+        assertEquals(0, state.credits)
+        assertEquals(false, state.generating)
+    }
+
+    // A refused generation is not a failed one: the backend never charged for
+    // it, so the retry path must not be offered in its place.
+    @Test
+    fun outOfCredits_isNotReportedAsAFailure() = runBlocking {
+        val generator = FakeCardImageGenerator().apply { outcome = GenerationOutcome.OutOfCredits }
+        val viewModel = viewModel(generator)
+
+        viewModel.send("A neon street")
+        val state = viewModel.state.first { it.exchanges.singleOrNull()?.phase != AiExchangePhase.Generating }
+
+        assertEquals(AiExchangePhase.OutOfCredits, state.exchanges.single().phase)
+    }
+
+    // The backend hands the credit back when generation fails, so the number
+    // on screen must not drop for something nobody was charged for.
+    @Test
+    fun aFailedGeneration_leavesTheBalanceAlone() = runBlocking {
+        val generator = FakeCardImageGenerator().apply { shouldFail = true }
+        val viewModel = viewModel(generator, credits = FakeGenerationCredits(balance = 3))
+        viewModel.state.first { it.credits == 3 }
+
+        viewModel.send("A neon street")
+        val state = viewModel.state.first { it.exchanges.singleOrNull()?.phase == AiExchangePhase.Failed }
+
+        assertEquals(3, state.credits)
+    }
+
+    private fun viewModel(
+        generator: CardImageGenerator = FakeCardImageGenerator(),
+        saver: GeneratedCardSaver = FakeGeneratedCardSaver(),
+        credits: GenerationCredits = FakeGenerationCredits(),
+    ): AiStudioViewModel = AiStudioViewModel(generator, credits, saver, savedStateHandle())
+
     private fun savedStateHandle(): SavedStateHandle =
         SavedStateHandle(mapOf("tierListId" to 1L, "listTitle" to "Sci-fi films"))
 }
 
 private class FakeCardImageGenerator : CardImageGenerator {
     var shouldFail = false
+    var outcome: GenerationOutcome? = null
+    var creditsRemaining: Int? = null
     var callCount = 0
+    var discardAllCount = 0
     val discarded = mutableListOf<GeneratedCardImage>()
     val generateStarted = CompletableDeferred<Unit>()
+
+    private val discardAllCalled = CompletableDeferred<Unit>()
     private var generateGate: CompletableDeferred<Unit> = CompletableDeferred<Unit>().apply { complete(Unit) }
 
     fun armGate() {
@@ -174,12 +262,16 @@ private class FakeCardImageGenerator : CardImageGenerator {
         generateGate.complete(Unit)
     }
 
-    override suspend fun generate(prompt: String): GeneratedCardImage {
+    override suspend fun generate(prompt: String): GenerationOutcome {
         callCount++
         if (!generateStarted.isCompleted) generateStarted.complete(Unit)
         generateGate.await()
-        if (shouldFail) throw IOException("No active network")
-        return GeneratedCardImage(prompt = prompt, imageUri = "file:///cache/aistudio/$callCount.png")
+        outcome?.let { return it }
+        if (shouldFail) return GenerationOutcome.Failed
+        return GenerationOutcome.Success(
+            image = GeneratedCardImage(prompt = prompt, imageUri = "file:///cache/aistudio/$callCount.png"),
+            creditsRemaining = creditsRemaining,
+        )
     }
 
     override suspend fun discard(image: GeneratedCardImage) {
@@ -192,9 +284,10 @@ private class FakeCardImageGenerator : CardImageGenerator {
     }
 
     suspend fun awaitDiscardAll() = discardAllCalled.await()
+}
 
-    var discardAllCount = 0
-    private val discardAllCalled = CompletableDeferred<Unit>()
+private class FakeGenerationCredits(private val balance: Int? = null) : GenerationCredits {
+    override suspend fun remaining(): Int? = balance
 }
 
 private class FakeGeneratedCardSaver : GeneratedCardSaver {

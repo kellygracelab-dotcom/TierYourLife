@@ -26,4 +26,7 @@
     <string name="cd_back">Wstecz</string>
     <string name="cd_clear_name">Wyczyść nazwę</string>
     <string name="snack_action_failed">Nie udało się zapisać zmiany</string>
+    <string name="ai_credits_label">Pozostałe generacje: %1$d</string>
+    <string name="ai_out_of_credits_title">Nie ma już generacji</string>
+    <string name="ai_out_of_credits_body">Wszystkie darmowe generacje zostały wykorzystane. Reszta aplikacji działa jak wcześniej.</string>
 </resources>

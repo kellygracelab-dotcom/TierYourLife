@@ -26,4 +26,7 @@
     <string name="cd_back">Volver</string>
     <string name="cd_clear_name">Borrar nombre</string>
     <string name="snack_action_failed">No se pudo guardar el cambio</string>
+    <string name="ai_credits_label">Generaciones restantes: %1$d</string>
+    <string name="ai_out_of_credits_title">No quedan generaciones</string>
+    <string name="ai_out_of_credits_body">Has usado todas las generaciones gratuitas. El resto de la aplicación sigue funcionando.</string>
 </resources>

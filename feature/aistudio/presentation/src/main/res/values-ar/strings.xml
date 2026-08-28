@@ -26,4 +26,7 @@
     <string name="cd_back">رجوع</string>
     <string name="cd_clear_name">مسح الاسم</string>
     <string name="snack_action_failed">تعذّر حفظ التغيير</string>
+    <string name="ai_credits_label">عمليات التوليد المتبقية: %1$d</string>
+    <string name="ai_out_of_credits_title">لم تتبقَّ عمليات توليد</string>
+    <string name="ai_out_of_credits_body">لقد استخدمت جميع عمليات التوليد المجانية. بقية التطبيق يعمل كالمعتاد.</string>
 </resources>

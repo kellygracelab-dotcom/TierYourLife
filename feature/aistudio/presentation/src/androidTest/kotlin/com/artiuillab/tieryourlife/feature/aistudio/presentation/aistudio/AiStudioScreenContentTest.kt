@@ -123,4 +123,39 @@ class AiStudioScreenContentTest {
         composeRule.onNodeWithText("Add to list").assertDoesNotExist()
         composeRule.onNodeWithText("Regenerate").assertDoesNotExist()
     }
+
+    // Running out is answered by a different card with no retry: pressing one
+    // would be refused in exactly the same way.
+    @Test
+    fun outOfCredits_showsItsOwnCard_withNothingToRetry() {
+        setContent(
+            AiStudioUiState(
+                exchanges = listOf(
+                    AiExchange(id = 1, prompt = "A red desert", phase = AiExchangePhase.OutOfCredits),
+                ),
+                credits = 0,
+            ),
+        )
+
+        composeRule.onNodeWithTag(AiStudioTestTags.outOfCredits(1)).assertIsDisplayed()
+        composeRule.onNodeWithTag(AiStudioTestTags.error(1)).assertDoesNotExist()
+        composeRule.onNodeWithText("Try again").assertDoesNotExist()
+    }
+
+    @Test
+    fun theBalance_isShownWhileGenerationIsCounted() {
+        setContent(AiStudioUiState(credits = 3))
+
+        composeRule.onNodeWithTag(AiStudioTestTags.CREDITS).assertIsDisplayed()
+        composeRule.onNodeWithTag(AiStudioTestTags.CREDITS).assertTextContains("3")
+    }
+
+    // The stub build counts nothing, and an empty top bar is the honest answer
+    // there — a zero would read as "you have run out".
+    @Test
+    fun theBalance_isAbsentWhenNothingIsCounted() {
+        setContent(AiStudioUiState(credits = null))
+
+        composeRule.onNodeWithTag(AiStudioTestTags.CREDITS).assertDoesNotExist()
+    }
 }
