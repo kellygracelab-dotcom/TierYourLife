@@ -60,8 +60,8 @@
         <item quantity="other">%1$d listy usunięto</item>
     </plurals>
     <string name="action_undo">Cofnij</string>
-    <string name="home_empty_title">Nie masz jeszcze list</string>
-    <string name="home_empty_body">Dotknij +, aby coś ocenić.</string>
+    <string name="home_empty_title">Oceniaj cokolwiek</string>
+    <string name="home_empty_body">Filmy, gry, restauracje, albumy — cokolwiek. Twoje tablice zostają na tym telefonie.</string>
     <string name="cd_new_list">Nowa lista</string>
     <string name="default_tier_list_title">Lista bez tytułu</string>
     <string name="tier_lists_load_error">Nie udało się wczytać list.</string>
@@ -324,4 +324,12 @@
     <string name="settings_account_signed_in">Zalogowano</string>
     <string name="settings_account_signed_in_credits">Zalogowano · %1$d kredytów</string>
     <string name="settings_version">Wersja %1$s</string>
+    <string name="home_start_with">Zacznij od</string>
+    <string name="home_start_hint">Tablica powstaje od razu. Dotknij tytułu, aby zmienić nazwę.</string>
+    <string name="home_new_list">Nowa lista</string>
+    <string name="home_suggestion_films">Filmy</string>
+    <string name="home_suggestion_games">Gry</string>
+    <string name="home_suggestion_restaurants">Restauracje</string>
+    <string name="home_suggestion_albums">Albumy</string>
+    <string name="home_suggestion_books">Książki</string>
 </resources>

@@ -46,8 +46,8 @@
         <item quantity="other">%1$d Listen gelöscht</item>
     </plurals>
     <string name="action_undo">Rückgängig</string>
-    <string name="home_empty_title">Noch keine Listen</string>
-    <string name="home_empty_body">Tippe auf +, um etwas einzustufen.</string>
+    <string name="home_empty_title">Ordne alles ein</string>
+    <string name="home_empty_body">Filme, Spiele, Restaurants, Alben — was du willst. Deine Boards bleiben auf diesem Telefon.</string>
     <string name="cd_new_list">Neue Liste</string>
     <string name="default_tier_list_title">Unbenannte Liste</string>
     <string name="tier_lists_load_error">Listen konnten nicht geladen werden.</string>
@@ -274,4 +274,12 @@
     <string name="settings_account_signed_in">Angemeldet</string>
     <string name="settings_account_signed_in_credits">Angemeldet · %1$d Guthaben</string>
     <string name="settings_version">Version %1$s</string>
+    <string name="home_start_with">Beginne mit</string>
+    <string name="home_start_hint">Erstellt das Board sofort. Tippe auf den Titel, um ihn zu ändern.</string>
+    <string name="home_new_list">Neue Liste</string>
+    <string name="home_suggestion_films">Filme</string>
+    <string name="home_suggestion_games">Spiele</string>
+    <string name="home_suggestion_restaurants">Restaurants</string>
+    <string name="home_suggestion_albums">Alben</string>
+    <string name="home_suggestion_books">Bücher</string>
 </resources>

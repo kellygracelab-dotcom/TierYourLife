@@ -53,8 +53,8 @@
         <item quantity="other">%1$d listas eliminadas</item>
     </plurals>
     <string name="action_undo">Deshacer</string>
-    <string name="home_empty_title">Aún no hay listas</string>
-    <string name="home_empty_body">Toca + para clasificar algo.</string>
+    <string name="home_empty_title">Clasifica lo que quieras</string>
+    <string name="home_empty_body">Películas, juegos, restaurantes, álbumes: lo que sea. Tus tableros se quedan en este teléfono.</string>
     <string name="cd_new_list">Nueva lista</string>
     <string name="default_tier_list_title">Lista sin título</string>
     <string name="tier_lists_load_error">No se pudieron cargar las listas.</string>
@@ -299,4 +299,12 @@
     <string name="settings_account_signed_in">Sesión iniciada</string>
     <string name="settings_account_signed_in_credits">Sesión iniciada · %1$d créditos</string>
     <string name="settings_version">Versión %1$s</string>
+    <string name="home_start_with">Empieza con</string>
+    <string name="home_start_hint">Crea el tablero al instante. Toca su título para cambiarlo.</string>
+    <string name="home_new_list">Nueva lista</string>
+    <string name="home_suggestion_films">Películas</string>
+    <string name="home_suggestion_games">Juegos</string>
+    <string name="home_suggestion_restaurants">Restaurantes</string>
+    <string name="home_suggestion_albums">Álbumes</string>
+    <string name="home_suggestion_books">Libros</string>
 </resources>

@@ -74,8 +74,8 @@
         <item quantity="other">تم حذف %1$d قائمة</item>
     </plurals>
     <string name="action_undo">تراجع</string>
-    <string name="home_empty_title">لا توجد قوائم بعد</string>
-    <string name="home_empty_body">اضغط على + لتصنيف شيء ما.</string>
+    <string name="home_empty_title">رتّب أي شيء</string>
+    <string name="home_empty_body">أفلام، ألعاب، مطاعم، ألبومات — أي شيء. لوحاتك تبقى على هذا الهاتف.</string>
     <string name="cd_new_list">قائمة جديدة</string>
     <string name="default_tier_list_title">قائمة بلا عنوان</string>
     <string name="tier_lists_load_error">تعذّر تحميل القوائم.</string>
@@ -374,4 +374,12 @@
     <string name="settings_account_signed_in">تم تسجيل الدخول</string>
     <string name="settings_account_signed_in_credits">تم تسجيل الدخول · %1$d رصيد</string>
     <string name="settings_version">الإصدار %1$s</string>
+    <string name="home_start_with">ابدأ بـ</string>
+    <string name="home_start_hint">تُنشئ اللوحة فورًا. اضغط على العنوان لتغيير الاسم.</string>
+    <string name="home_new_list">قائمة جديدة</string>
+    <string name="home_suggestion_films">أفلام</string>
+    <string name="home_suggestion_games">ألعاب</string>
+    <string name="home_suggestion_restaurants">مطاعم</string>
+    <string name="home_suggestion_albums">ألبومات</string>
+    <string name="home_suggestion_books">كتب</string>
 </resources>

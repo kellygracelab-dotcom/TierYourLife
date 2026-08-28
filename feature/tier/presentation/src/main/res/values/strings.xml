@@ -46,8 +46,8 @@
         <item quantity="other">%1$d lists deleted</item>
     </plurals>
     <string name="action_undo">Undo</string>
-    <string name="home_empty_title">No lists yet</string>
-    <string name="home_empty_body">Tap + to rank something.</string>
+    <string name="home_empty_title">Rank anything</string>
+    <string name="home_empty_body">Films, games, restaurants, albums — anything at all. Your boards stay on this phone.</string>
     <string name="cd_new_list">New list</string>
     <string name="default_tier_list_title">Untitled list</string>
     <string name="tier_lists_load_error">Couldn’t load your lists.</string>
@@ -274,4 +274,12 @@
     <string name="settings_account_signed_in">Signed in</string>
     <string name="settings_account_signed_in_credits">Signed in · %1$d credits</string>
     <string name="settings_version">Version %1$s</string>
+    <string name="home_start_with">Start with</string>
+    <string name="home_start_hint">Creates a board straight away. Tap its title to rename.</string>
+    <string name="home_new_list">New list</string>
+    <string name="home_suggestion_films">Films</string>
+    <string name="home_suggestion_games">Games</string>
+    <string name="home_suggestion_restaurants">Restaurants</string>
+    <string name="home_suggestion_albums">Albums</string>
+    <string name="home_suggestion_books">Books</string>
 </resources>

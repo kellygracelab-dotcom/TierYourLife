@@ -39,8 +39,8 @@
         <item quantity="other">%1$d件のリストを削除しました</item>
     </plurals>
     <string name="action_undo">元に戻す</string>
-    <string name="home_empty_title">リストはまだありません</string>
-    <string name="home_empty_body">+ をタップして何かをランク付けしましょう。</string>
+    <string name="home_empty_title">なんでもランク付け</string>
+    <string name="home_empty_body">映画、ゲーム、レストラン、アルバム、なんでも。ボードはこの端末に残ります。</string>
     <string name="cd_new_list">新しいリスト</string>
     <string name="default_tier_list_title">無題のリスト</string>
     <string name="tier_lists_load_error">リストを読み込めませんでした。</string>
@@ -249,4 +249,12 @@
     <string name="settings_account_signed_in">ログイン済み</string>
     <string name="settings_account_signed_in_credits">ログイン済み · 残り %1$d 回</string>
     <string name="settings_version">バージョン %1$s</string>
+    <string name="home_start_with">まずは</string>
+    <string name="home_start_hint">すぐにボードを作ります。名前はタイトルをタップして変更できます。</string>
+    <string name="home_new_list">新しいリスト</string>
+    <string name="home_suggestion_films">映画</string>
+    <string name="home_suggestion_games">ゲーム</string>
+    <string name="home_suggestion_restaurants">レストラン</string>
+    <string name="home_suggestion_albums">アルバム</string>
+    <string name="home_suggestion_books">本</string>
 </resources>

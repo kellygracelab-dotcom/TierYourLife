@@ -60,8 +60,8 @@
         <item quantity="other">%1$d списка удалено</item>
     </plurals>
     <string name="action_undo">Отменить</string>
-    <string name="home_empty_title">Пока нет списков</string>
-    <string name="home_empty_body">Нажмите +, чтобы что-то оценить.</string>
+    <string name="home_empty_title">Ранжируй что угодно</string>
+    <string name="home_empty_body">Фильмы, игры, рестораны, альбомы — что угодно. Ваши доски остаются на телефоне.</string>
     <string name="cd_new_list">Новый список</string>
     <string name="default_tier_list_title">Список без названия</string>
     <string name="tier_lists_load_error">Не удалось загрузить списки.</string>
@@ -324,4 +324,12 @@
     <string name="settings_account_signed_in">Вход выполнен</string>
     <string name="settings_account_signed_in_credits">Вход выполнен · %1$d кредитов</string>
     <string name="settings_version">Версия %1$s</string>
+    <string name="home_start_with">Начните с</string>
+    <string name="home_start_hint">Доска создастся сразу. Коснитесь названия, чтобы переименовать.</string>
+    <string name="home_new_list">Новый список</string>
+    <string name="home_suggestion_films">Фильмы</string>
+    <string name="home_suggestion_games">Игры</string>
+    <string name="home_suggestion_restaurants">Рестораны</string>
+    <string name="home_suggestion_albums">Альбомы</string>
+    <string name="home_suggestion_books">Книги</string>
 </resources>

@@ -270,10 +270,38 @@ class TierListsScreenTest {
         composeRule.runOnIdle { assertEquals(2, resumeCount) }
     }
 
+    @Test
+    fun emptyState_offersStartingPointsRatherThanJustSayingItIsEmpty() {
+        setScreen(TierListsUiState.Success(emptyList(), 0, 0))
+
+        composeRule.onNodeWithTag(TierListsTestTags.EMPTY_STATE).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.suggestion(0)).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.suggestion(4)).assertIsDisplayed()
+    }
+
+    @Test
+    fun emptyState_aSuggestionCreatesTheBoardUnderItsOwnName() {
+        var created: String? = null
+        setScreen(TierListsUiState.Success(emptyList(), 0, 0), onCreateNamedList = { created = it })
+
+        composeRule.onNodeWithTag(TierListsTestTags.suggestion(0)).performClick()
+
+        composeRule.runOnIdle { assertEquals(string(R.string.home_suggestion_films), created) }
+    }
+
+    @Test
+    fun withLists_theSuggestionsAreGone() {
+        setScreen(TierListsUiState.Success(listOf(tierList(1, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 0))), 1, 1))
+
+        composeRule.onNodeWithTag(TierListsTestTags.EMPTY_STATE).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierListsTestTags.suggestion(0)).assertDoesNotExist()
+    }
+
     private fun setScreen(
         state: TierListsUiState,
         onTierListClick: (Long) -> Unit = {},
         onSettingsClick: () -> Unit = {},
+        onCreateNamedList: (String) -> Unit = {},
     ) {
         composeRule.setContent {
             TierYourLifeTheme {
@@ -281,6 +309,7 @@ class TierListsScreenTest {
                     state = state,
                     onTierListClick = onTierListClick,
                     onSettingsClick = onSettingsClick,
+                    onCreateNamedList = onCreateNamedList,
                 )
             }
         }

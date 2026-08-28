@@ -60,8 +60,8 @@
         <item quantity="other">%1$d списку видалено</item>
     </plurals>
     <string name="action_undo">Скасувати</string>
-    <string name="home_empty_title">Поки немає списків</string>
-    <string name="home_empty_body">Натисніть +, щоб щось оцінити.</string>
+    <string name="home_empty_title">Оцінюй будь-що</string>
+    <string name="home_empty_body">Фільми, ігри, ресторани, альбоми — будь-що. Ваші дошки залишаються на телефоні.</string>
     <string name="cd_new_list">Новий список</string>
     <string name="default_tier_list_title">Список без назви</string>
     <string name="tier_lists_load_error">Не вдалося завантажити списки.</string>
@@ -324,4 +324,12 @@
     <string name="settings_account_signed_in">Вхід виконано</string>
     <string name="settings_account_signed_in_credits">Вхід виконано · %1$d кредитів</string>
     <string name="settings_version">Версія %1$s</string>
+    <string name="home_start_with">Почніть з</string>
+    <string name="home_start_hint">Дошка створиться одразу. Торкніться назви, щоб перейменувати.</string>
+    <string name="home_new_list">Новий список</string>
+    <string name="home_suggestion_films">Фільми</string>
+    <string name="home_suggestion_games">Ігри</string>
+    <string name="home_suggestion_restaurants">Ресторани</string>
+    <string name="home_suggestion_albums">Альбоми</string>
+    <string name="home_suggestion_books">Книги</string>
 </resources>

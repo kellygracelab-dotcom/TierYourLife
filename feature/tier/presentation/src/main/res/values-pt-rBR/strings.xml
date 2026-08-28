@@ -53,8 +53,8 @@
         <item quantity="other">%1$d listas excluídas</item>
     </plurals>
     <string name="action_undo">Desfazer</string>
-    <string name="home_empty_title">Ainda não há listas</string>
-    <string name="home_empty_body">Toque em + para classificar algo.</string>
+    <string name="home_empty_title">Classifique o que quiser</string>
+    <string name="home_empty_body">Filmes, jogos, restaurantes, álbuns — o que quiser. Seus quadros ficam neste telefone.</string>
     <string name="cd_new_list">Nova lista</string>
     <string name="default_tier_list_title">Lista sem título</string>
     <string name="tier_lists_load_error">Não foi possível carregar as listas.</string>
@@ -299,4 +299,12 @@
     <string name="settings_account_signed_in">Conectado</string>
     <string name="settings_account_signed_in_credits">Conectado · %1$d créditos</string>
     <string name="settings_version">Versão %1$s</string>
+    <string name="home_start_with">Comece com</string>
+    <string name="home_start_hint">Cria o quadro na hora. Toque no título para renomear.</string>
+    <string name="home_new_list">Nova lista</string>
+    <string name="home_suggestion_films">Filmes</string>
+    <string name="home_suggestion_games">Jogos</string>
+    <string name="home_suggestion_restaurants">Restaurantes</string>
+    <string name="home_suggestion_albums">Álbuns</string>
+    <string name="home_suggestion_books">Livros</string>
 </resources>

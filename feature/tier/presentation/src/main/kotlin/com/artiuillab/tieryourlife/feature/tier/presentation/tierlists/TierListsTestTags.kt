@@ -14,4 +14,5 @@ internal object TierListsTestTags {
     const val FAB = "home_fab"
     const val EMPTY_STATE = "home_empty_state"
     fun tierListCard(id: Long): String = "tier_list_card_$id"
+    fun suggestion(index: Int): String = "home_suggestion_$index"
 }

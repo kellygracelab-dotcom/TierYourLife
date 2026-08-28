@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
@@ -52,7 +53,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.FormatListBulletedIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeEmptyState
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeHeader
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchOffIcon
@@ -88,6 +89,7 @@ fun TierListsScreen(
         onDeleteLists = viewModel::deleteTierLists,
         onUndoDelete = viewModel::restoreTierLists,
         onCreateList = { viewModel.createTierList(defaultListTitle, onNewListCreated) },
+        onCreateNamedList = { title -> viewModel.createTierList(title, onNewListCreated) },
         userMessages = viewModel.userMessages,
     )
 }
@@ -106,6 +108,7 @@ internal fun TierListsScreenContent(
     onDeleteLists: (List<Long>) -> Unit = {},
     onUndoDelete: (List<Long>) -> Unit = {},
     onCreateList: () -> Unit = {},
+    onCreateNamedList: (String) -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val success = state as? TierListsUiState.Success
@@ -147,6 +150,10 @@ internal fun TierListsScreenContent(
             }
         }
     }
+
+    val showsEmptyState = state is TierListsUiState.Success &&
+        mode !is HomeMode.Searching &&
+        totalListCount == 0
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -196,7 +203,7 @@ internal fun TierListsScreenContent(
                         )
 
                         else -> if (totalListCount == 0) {
-                            HomeEmptyState()
+                            HomeEmptyState(onCreateNamedList = onCreateNamedList)
                         } else {
                             HomeContent(
                                 lists = lists,
@@ -212,20 +219,35 @@ internal fun TierListsScreenContent(
 
             if (mode == HomeMode.Browsing) {
                 val newListDescription = stringResource(R.string.cd_new_list)
-                FloatingActionButton(
-                    onClick = onCreateList,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .navigationBarsPadding()
-                        .padding(16.dp)
-                        .size(56.dp)
-                        .semantics { contentDescription = newListDescription }
-                        .testTag(TierListsTestTags.FAB),
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    shape = RoundedCornerShape(16.dp),
-                ) {
-                    PlusIcon(24.dp, MaterialTheme.colorScheme.onPrimaryContainer)
+                val fabModifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .navigationBarsPadding()
+                    .padding(16.dp)
+                    .semantics { contentDescription = newListDescription }
+                    .testTag(TierListsTestTags.FAB)
+
+                // A bare plus has nothing to take its meaning from until the
+                // first board exists.
+                if (showsEmptyState) {
+                    ExtendedFloatingActionButton(
+                        onClick = onCreateList,
+                        modifier = fabModifier,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        shape = RoundedCornerShape(16.dp),
+                        icon = { PlusIcon(24.dp, MaterialTheme.colorScheme.onPrimaryContainer) },
+                        text = { Text(stringResource(R.string.home_new_list)) },
+                    )
+                } else {
+                    FloatingActionButton(
+                        onClick = onCreateList,
+                        modifier = fabModifier.size(56.dp),
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        shape = RoundedCornerShape(16.dp),
+                    ) {
+                        PlusIcon(24.dp, MaterialTheme.colorScheme.onPrimaryContainer)
+                    }
                 }
             }
 
@@ -308,17 +330,6 @@ private fun SearchResults(lists: List<TierList>, query: String, onTierListClick:
             }
         }
     }
-}
-
-@Composable
-private fun HomeEmptyState() {
-    HomeEmptyStateLayout(
-        icon = { FormatListBulletedIcon(28.dp, MaterialTheme.colorScheme.outline) },
-        title = stringResource(R.string.home_empty_title),
-        body = stringResource(R.string.home_empty_body),
-        bottomOffset = 80.dp,
-        testTag = TierListsTestTags.EMPTY_STATE,
-    )
 }
 
 @Composable
