@@ -72,7 +72,6 @@
     <string name="tier_detail_content_description_manual_add">Додати елемент вручну</string>
     <string name="tier_detail_content_description_more">Більше опцій</string>
     <string name="tier_detail_content_description_edit_title">Редагувати назву списку</string>
-    <string name="tier_detail_content_description_discard">Скасувати цей список</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Пул · %d без оцінки</item>
         <item quantity="few">Пул · %d без оцінки</item>

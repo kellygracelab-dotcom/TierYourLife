@@ -97,28 +97,21 @@ private fun autoScrollSpeedPx(pointerY: Float, top: Float, bottom: Float, edgePx
 @Composable
 fun TierDetailScreen(
     onBack: () -> Unit,
-    startInTitleEdit: Boolean = false,
     onOpenAiStudio: (listTitle: String) -> Unit = {},
     addedItemIds: List<Long> = emptyList(),
     onAddedItemConsumed: () -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val canDiscard by viewModel.canDiscard.collectAsStateWithLifecycle()
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
     var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
-    var pendingAutoTitleEdit by rememberSaveable { mutableStateOf(startInTitleEdit) }
 
     TierDetailScreenContent(
         state = state,
-        startInTitleEdit = pendingAutoTitleEdit,
-        canDiscard = canDiscard,
         addedItemIds = addedItemIds,
         userMessages = viewModel.userMessages,
         actions = TierDetailActions(
             onBack = onBack,
-            onDiscard = { viewModel.discardList(onBack) },
-            onTitleEditStarted = viewModel::markTouched,
             onAddClick = { addSheetVisible = true },
             onManualAddClick = { manualEntryVisible = true },
             onMoveItem = viewModel::moveItem,
@@ -137,7 +130,6 @@ fun TierDetailScreen(
                 viewModel.loadTierList()
             },
             onUndoAddedItem = viewModel::removeAddedItems,
-            onAutoTitleEditConsumed = { pendingAutoTitleEdit = false },
         ),
     )
 
@@ -167,8 +159,6 @@ fun TierDetailScreen(
 internal fun TierDetailScreenContent(
     state: TierDetailUiState,
     actions: TierDetailActions = TierDetailActions(),
-    startInTitleEdit: Boolean = false,
-    canDiscard: Boolean = false,
     addedItemIds: List<Long> = emptyList(),
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
@@ -200,8 +190,6 @@ internal fun TierDetailScreenContent(
                 TierScreenBody(
                     list = state.list,
                     actions = actions,
-                    startInTitleEdit = startInTitleEdit,
-                    canDiscard = canDiscard,
                     addedItemIds = addedItemIds,
                     userMessages = userMessages,
                 )
@@ -225,14 +213,10 @@ internal fun TierDetailScreenContent(
 private fun TierScreenBody(
     list: TierList,
     actions: TierDetailActions,
-    startInTitleEdit: Boolean = false,
-    canDiscard: Boolean = false,
     addedItemIds: List<Long> = emptyList(),
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val onBack = actions.onBack
-    val onDiscard = actions.onDiscard
-    val onTitleEditStarted = actions.onTitleEditStarted
     val onAddClick = actions.onAddClick
     val onManualAddClick = actions.onManualAddClick
     val onMoveItem = actions.onMoveItem
@@ -245,7 +229,6 @@ private fun TierScreenBody(
     val onEditTier = actions.onEditTier
     val onSetDisplayMode = actions.onSetDisplayMode
     val onRenameList = actions.onRenameList
-    val onAutoTitleEditConsumed = actions.onAutoTitleEditConsumed
     val onGenerateClick = { actions.onOpenAiStudio(list.title) }
     var listSettingsVisible by remember { mutableStateOf(false) }
 
@@ -401,11 +384,6 @@ private fun TierScreenBody(
                 onMoreClick = { listSettingsVisible = true },
                 onRenameList = onRenameList,
                 titleEditable = true,
-                startInTitleEdit = startInTitleEdit,
-                canDiscard = canDiscard,
-                onDiscard = onDiscard,
-                onTitleEditStarted = onTitleEditStarted,
-                onAutoTitleEditConsumed = onAutoTitleEditConsumed,
             )
 
             if (list.displayMode == TierListDisplayMode.FLAT_RANKED) {

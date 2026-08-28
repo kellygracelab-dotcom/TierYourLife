@@ -72,7 +72,6 @@
     <string name="tier_detail_content_description_manual_add">Dodaj element ręcznie</string>
     <string name="tier_detail_content_description_more">Więcej opcji</string>
     <string name="tier_detail_content_description_edit_title">Edytuj nazwę listy</string>
-    <string name="tier_detail_content_description_discard">Odrzuć tę listę</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Pula · %d nieocenione</item>
         <item quantity="few">Pula · %d nieocenione</item>

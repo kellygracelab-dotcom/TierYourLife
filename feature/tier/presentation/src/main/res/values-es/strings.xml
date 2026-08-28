@@ -65,7 +65,6 @@
     <string name="tier_detail_content_description_manual_add">Añadir un elemento manualmente</string>
     <string name="tier_detail_content_description_more">Más opciones</string>
     <string name="tier_detail_content_description_edit_title">Editar el nombre de la lista</string>
-    <string name="tier_detail_content_description_discard">Descartar esta lista</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Montón · %d sin clasificar</item>
         <item quantity="many">Montón · %d sin clasificar</item>

@@ -51,7 +51,6 @@
     <string name="tier_detail_content_description_manual_add">手動でアイテムを追加</string>
     <string name="tier_detail_content_description_more">その他のオプション</string>
     <string name="tier_detail_content_description_edit_title">リスト名を編集</string>
-    <string name="tier_detail_content_description_discard">このリストを破棄</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="other">プール · 未評価%d件</item>
     </plurals>

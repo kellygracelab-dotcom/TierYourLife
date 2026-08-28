@@ -86,7 +86,6 @@
     <string name="tier_detail_content_description_manual_add">إضافة عنصر يدويًا</string>
     <string name="tier_detail_content_description_more">خيارات أخرى</string>
     <string name="tier_detail_content_description_edit_title">تعديل اسم القائمة</string>
-    <string name="tier_detail_content_description_discard">تجاهل هذه القائمة</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="zero">المجمّع · لا شيء غير مصنَّف</item>
         <item quantity="one">المجمّع · عنصر واحد غير مصنَّف</item>

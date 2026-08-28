@@ -41,7 +41,7 @@ fun TierYourLifeNavHost(
         tierListsScreen(
             onTierListClick = { id -> navController.navigateToTierDetail(id) },
             onSettingsClick = { navController.navigateToSettings() },
-            onNewListCreated = { id -> navController.navigateToTierDetail(id, startInTitleEdit = true) },
+            onNewListCreated = { id -> navController.navigateToTierDetail(id) },
         )
         tierDetailScreen(
             onBack = { navController.popBackStack() },

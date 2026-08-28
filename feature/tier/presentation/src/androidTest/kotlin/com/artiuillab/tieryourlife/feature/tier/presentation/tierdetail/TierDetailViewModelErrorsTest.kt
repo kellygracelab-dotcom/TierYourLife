@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -54,19 +53,6 @@ class TierDetailViewModelErrorsTest {
 
         val state = withTimeout(AWAIT_TIMEOUT_MILLIS) { viewModel.state.first { it is TierDetailUiState.Success } }
         assertTrue(state is TierDetailUiState.Success)
-    }
-
-    @Test
-    fun aFailingDiscardKeepsTheUserOnTheScreen() = runBlocking {
-        val repository = FailingTierRepository(twoTiers())
-        val viewModel = TierDetailViewModel(repository, savedStateHandle(startInTitleEdit = true))
-        awaitSuccess(viewModel)
-
-        var discarded = false
-        viewModel.discardList { discarded = true }
-        withTimeout(AWAIT_TIMEOUT_MILLIS) { viewModel.userMessages.first() }
-
-        assertFalse(discarded)
     }
 
     @Test

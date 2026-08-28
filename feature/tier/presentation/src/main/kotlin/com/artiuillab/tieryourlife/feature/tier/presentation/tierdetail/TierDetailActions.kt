@@ -4,8 +4,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 
 internal data class TierDetailActions(
     val onBack: () -> Unit = {},
-    val onDiscard: () -> Unit = {},
-    val onTitleEditStarted: () -> Unit = {},
     val onAddClick: () -> Unit = {},
     val onManualAddClick: () -> Unit = {},
     val onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
@@ -29,5 +27,4 @@ internal data class TierDetailActions(
     val onOpenAiStudio: (listTitle: String) -> Unit = {},
     val onConsumeAddedItem: () -> Unit = {},
     val onUndoAddedItem: (itemIds: List<Long>) -> Unit = {},
-    val onAutoTitleEditConsumed: () -> Unit = {},
 )

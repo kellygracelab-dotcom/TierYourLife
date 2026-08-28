@@ -72,7 +72,6 @@
     <string name="tier_detail_content_description_manual_add">Добавить элемент вручную</string>
     <string name="tier_detail_content_description_more">Больше опций</string>
     <string name="tier_detail_content_description_edit_title">Изменить название списка</string>
-    <string name="tier_detail_content_description_discard">Отменить создание списка</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Пул · %d без оценки</item>
         <item quantity="few">Пул · %d без оценки</item>

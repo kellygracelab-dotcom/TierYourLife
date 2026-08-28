@@ -28,9 +28,7 @@ import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -117,6 +115,22 @@ class TierDetailScreenTest {
     }
 
     @Test
+    fun openingAList_leavesTheTitleAsText_soNoKeyboardAppears() {
+        setScreen(TierDetailUiState.Success(defaultList()))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).assert(hasSetTextAction().not())
+    }
+
+    @Test
+    fun tappingTheTitle_isWhatOpensTheEditor() {
+        setScreen(TierDetailUiState.Success(defaultList()))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performClick()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).assert(hasSetTextAction())
+    }
+
+    @Test
     fun backButton_clickInvokesOnBackOnce() {
         var calls = 0
         setScreen(TierDetailUiState.Success(defaultList()), onBack = { calls++ })
@@ -126,118 +140,6 @@ class TierDetailScreenTest {
         ).performClick()
 
         composeRule.runOnIdle { assertEquals(1, calls) }
-    }
-
-    @Test
-    fun newUntouchedList_showsADiscardCross_notTheBackArrow() {
-        setScreen(TierDetailUiState.Success(defaultList()), canDiscard = true)
-
-        composeRule.onNodeWithContentDescription(
-            string(R.string.tier_detail_content_description_discard),
-        ).assertIsDisplayed()
-        composeRule.onNodeWithContentDescription(
-            string(R.string.tier_detail_content_description_back),
-        ).assertDoesNotExist()
-    }
-
-    @Test
-    fun touchedList_showsTheBackArrow_notTheDiscardCross() {
-        setScreen(TierDetailUiState.Success(defaultList()), canDiscard = false)
-
-        composeRule.onNodeWithContentDescription(
-            string(R.string.tier_detail_content_description_back),
-        ).assertIsDisplayed()
-        composeRule.onNodeWithContentDescription(
-            string(R.string.tier_detail_content_description_discard),
-        ).assertDoesNotExist()
-    }
-
-    @Test
-    fun discardCross_clickInvokesOnDiscardOnce_notOnBack() {
-        var discardCalls = 0
-        var backCalls = 0
-        setScreen(
-            TierDetailUiState.Success(defaultList()),
-            onBack = { backCalls++ },
-            canDiscard = true,
-            onDiscard = { discardCalls++ },
-        )
-
-        composeRule.onNodeWithContentDescription(
-            string(R.string.tier_detail_content_description_discard),
-        ).performClick()
-
-        composeRule.runOnIdle {
-            assertEquals(1, discardCalls)
-            assertEquals(0, backCalls)
-        }
-    }
-
-    @Test
-    fun typingInTheTitleField_touchesTheListOnTheFirstKeystroke_evenIfClearedAfterward() {
-        var touchedCalls = 0
-        setScreen(
-            TierDetailUiState.Success(defaultList()),
-            startInTitleEdit = true,
-            canDiscard = true,
-            onTitleEditStarted = { touchedCalls++ },
-        )
-
-        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performTextInput("X")
-        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE).performTextClearance()
-
-        composeRule.runOnIdle { assertTrue(touchedCalls > 0) }
-    }
-
-    @Test
-    fun movingTheCaretInTheTitleField_withoutTyping_doesNotTouchTheList() {
-        var touchedCalls = 0
-        setScreen(
-            TierDetailUiState.Success(defaultList()),
-            startInTitleEdit = true,
-            canDiscard = true,
-            onTitleEditStarted = { touchedCalls++ },
-        )
-
-        composeRule.onNodeWithTag(TierDetailTestTags.HEADER_TITLE)
-            .performTextInputSelection(TextRange(0))
-
-        composeRule.runOnIdle { assertEquals(0, touchedCalls) }
-    }
-
-    @Test
-    fun autoTitleEdit_startInTitleEditTrue_consumesTheFlagOnce() {
-        var consumedCalls = 0
-        composeRule.setContent {
-            TierYourLifeTheme {
-                TierDetailScreenContent(
-                    state = TierDetailUiState.Success(defaultList()),
-                    startInTitleEdit = true,
-                    actions = TierDetailActions(onAutoTitleEditConsumed = { consumedCalls++ }),
-                )
-            }
-        }
-
-        composeRule.runOnIdle { assertEquals(1, consumedCalls) }
-    }
-
-    @Test
-    fun autoTitleEdit_startInTitleEditFalse_neverConsumesTheFlagAndTitleStaysAsText() {
-        var consumedCalls = 0
-        composeRule.setContent {
-            TierYourLifeTheme {
-                TierDetailScreenContent(
-                    state = TierDetailUiState.Success(defaultList()),
-                    startInTitleEdit = false,
-                    actions = TierDetailActions(onAutoTitleEditConsumed = { consumedCalls++ }),
-                )
-            }
-        }
-
-        composeRule.runOnIdle { assertEquals(0, consumedCalls) }
-        composeRule.onNodeWithContentDescription(
-            string(R.string.tier_detail_content_description_edit_title),
-        ).assertIsDisplayed()
     }
 
     @Test
@@ -2007,10 +1909,6 @@ class TierDetailScreenTest {
     private fun setScreen(
         state: TierDetailUiState,
         onBack: () -> Unit = {},
-        startInTitleEdit: Boolean = false,
-        canDiscard: Boolean = false,
-        onDiscard: () -> Unit = {},
-        onTitleEditStarted: () -> Unit = {},
         onAddClick: () -> Unit = {},
         onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
         onDeleteItem: (itemId: Long) -> Unit = {},
@@ -2035,12 +1933,8 @@ class TierDetailScreenTest {
             TierYourLifeTheme {
                 TierDetailScreenContent(
                     state = state,
-                    startInTitleEdit = startInTitleEdit,
-                    canDiscard = canDiscard,
                     actions = TierDetailActions(
                         onBack = onBack,
-                        onDiscard = onDiscard,
-                        onTitleEditStarted = onTitleEditStarted,
                         onAddClick = onAddClick,
                         onMoveItem = onMoveItem,
                         onDeleteItem = onDeleteItem,

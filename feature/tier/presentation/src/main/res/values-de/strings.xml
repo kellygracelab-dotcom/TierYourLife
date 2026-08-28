@@ -58,7 +58,6 @@
     <string name="tier_detail_content_description_manual_add">Element manuell hinzufügen</string>
     <string name="tier_detail_content_description_more">Weitere Optionen</string>
     <string name="tier_detail_content_description_edit_title">Listennamen bearbeiten</string>
-    <string name="tier_detail_content_description_discard">Diese Liste verwerfen</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Pool · %d nicht eingestuft</item>
         <item quantity="other">Pool · %d nicht eingestuft</item>

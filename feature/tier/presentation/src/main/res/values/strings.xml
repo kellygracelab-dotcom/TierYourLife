@@ -58,7 +58,6 @@
     <string name="tier_detail_content_description_manual_add">Add an item by hand</string>
     <string name="tier_detail_content_description_more">More options</string>
     <string name="tier_detail_content_description_edit_title">Edit list name</string>
-    <string name="tier_detail_content_description_discard">Discard this list</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Pool · %d unranked</item>
         <item quantity="other">Pool · %d unranked</item>

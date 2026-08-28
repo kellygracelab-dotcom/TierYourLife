@@ -58,7 +58,6 @@
     <string name="tier_detail_content_description_manual_add">Öğeyi elle ekle</string>
     <string name="tier_detail_content_description_more">Diğer seçenekler</string>
     <string name="tier_detail_content_description_edit_title">Liste adını düzenle</string>
-    <string name="tier_detail_content_description_discard">Bu listeyi iptal et</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Havuz · %d sıralanmadı</item>
         <item quantity="other">Havuz · %d sıralanmadı</item>
