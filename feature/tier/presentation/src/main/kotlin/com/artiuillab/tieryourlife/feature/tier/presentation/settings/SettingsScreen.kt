@@ -47,10 +47,12 @@ import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.tier.domain.export.TierListsExportStrings
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.FileDownloadIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.AccountRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.LanguageRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.ThemeSection
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
@@ -67,6 +69,7 @@ import java.util.Locale
 fun SettingsScreen(
     onBack: () -> Unit,
     onTrashClick: () -> Unit,
+    onAccountClick: () -> Unit,
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
     languageTag: String?,
@@ -74,6 +77,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val trashCount by viewModel.trashCount.collectAsStateWithLifecycle()
+    val account by viewModel.account.collectAsStateWithLifecycle()
     OnResumeEffect(onResume = viewModel::loadTrashCount)
 
     val context = LocalContext.current
@@ -110,6 +114,9 @@ fun SettingsScreen(
     }
 
     SettingsScreenContent(
+        account = account,
+        onAccountClick = onAccountClick,
+        onSignOut = viewModel::signOut,
         themeChoice = themeChoice,
         onThemeChoiceChange = onThemeChoiceChange,
         languageTag = languageTag,
@@ -195,6 +202,9 @@ private fun buildExportStrings(context: Context): TierListsExportStrings {
 
 @Composable
 internal fun SettingsScreenContent(
+    account: Account,
+    onAccountClick: () -> Unit,
+    onSignOut: () -> Unit,
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
     languageTag: String?,
@@ -210,6 +220,10 @@ internal fun SettingsScreenContent(
             Column(Modifier.fillMaxSize()) {
                 SettingsTopBar(onBack = onBack)
                 Column(Modifier.verticalScroll(rememberScrollState())) {
+                    // First on the screen, because it is the only row that says
+                    // anything about what is at stake if the phone is lost.
+                    AccountRow(account = account, onClick = onAccountClick, onSignOut = onSignOut)
+                    SettingsDivider()
                     ThemeSection(themeChoice = themeChoice, onThemeChoiceChange = onThemeChoiceChange)
                     SettingsDivider()
                     LanguageRow(languageTag = languageTag, onLanguageTagChange = onLanguageTagChange)
@@ -329,6 +343,9 @@ internal fun SettingsRow(
 @Composable
 private fun SettingsScreenLightPreview() = TierYourLifeTheme(false) {
     SettingsScreenContent(
+        account = Account.Guest,
+        onAccountClick = {},
+        onSignOut = {},
         themeChoice = ThemeChoice.SYSTEM,
         onThemeChoiceChange = {},
         languageTag = null,
@@ -344,6 +361,9 @@ private fun SettingsScreenLightPreview() = TierYourLifeTheme(false) {
 @Composable
 private fun SettingsScreenDarkPreview() = TierYourLifeTheme(true) {
     SettingsScreenContent(
+        account = Account.Guest,
+        onAccountClick = {},
+        onSignOut = {},
         themeChoice = ThemeChoice.SYSTEM,
         onThemeChoiceChange = {},
         languageTag = null,

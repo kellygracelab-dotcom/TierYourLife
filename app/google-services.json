@@ -12,7 +12,12 @@
           "package_name": "com.artiuillab.tieryourlife"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "709407647012-0ioe1vc7fcat4kn15tu81p093nk0vds2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDju3J8FjxTdfF_g75jjim90VcCWCGq8Kg"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "709407647012-0ioe1vc7fcat4kn15tu81p093nk0vds2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

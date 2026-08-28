@@ -291,4 +291,8 @@
     <string name="snack_export_failed">Impossible d\'enregistrer le fichier</string>
     <string name="action_try_again">Réessayer</string>
     <string name="snack_action_failed">Modification non enregistrée</string>
+    <string name="settings_account">Compte</string>
+    <string name="settings_account_guest">Non connecté · facultatif</string>
+    <string name="settings_account_guest_body">Tout fonctionne sans. Connectez-vous pour conserver crédits et achats.</string>
+    <string name="settings_account_sign_out">Se déconnecter</string>
 </resources>

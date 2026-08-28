@@ -366,4 +366,8 @@
     <string name="snack_export_failed">تعذّر حفظ الملف</string>
     <string name="action_try_again">المحاولة مرة أخرى</string>
     <string name="snack_action_failed">تعذّر حفظ التغيير</string>
+    <string name="settings_account">الحساب</string>
+    <string name="settings_account_guest">لم يتم تسجيل الدخول · اختياري</string>
+    <string name="settings_account_guest_body">كل شيء يعمل من دونه. سجّل الدخول للاحتفاظ بالأرصدة والمشتريات.</string>
+    <string name="settings_account_sign_out">تسجيل الخروج</string>
 </resources>

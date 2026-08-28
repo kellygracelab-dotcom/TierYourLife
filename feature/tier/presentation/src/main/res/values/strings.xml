@@ -266,4 +266,8 @@
     <string name="snack_export_failed">Couldn\'t save the file</string>
     <string name="action_try_again">Try again</string>
     <string name="snack_action_failed">Change not saved</string>
+    <string name="settings_account">Account</string>
+    <string name="settings_account_guest">Not signed in · optional</string>
+    <string name="settings_account_guest_body">Everything works without one. Sign in to keep credits and purchases.</string>
+    <string name="settings_account_sign_out">Sign out</string>
 </resources>

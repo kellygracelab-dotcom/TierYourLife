@@ -15,6 +15,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.LanguageOptions
 import org.junit.Assert.assertEquals
@@ -135,6 +136,9 @@ class SettingsScreenTest {
             ) {
             TierYourLifeTheme {
                 SettingsScreenContent(
+                    account = Account.Guest,
+                    onAccountClick = {},
+                    onSignOut = {},
                     themeChoice = ThemeChoice.SYSTEM,
                     onThemeChoiceChange = {},
                     languageTag = languageTag,

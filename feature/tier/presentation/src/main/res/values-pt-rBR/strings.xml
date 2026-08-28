@@ -291,4 +291,8 @@
     <string name="snack_export_failed">Não foi possível salvar o arquivo</string>
     <string name="action_try_again">Tentar novamente</string>
     <string name="snack_action_failed">Não foi possível salvar a alteração</string>
+    <string name="settings_account">Conta</string>
+    <string name="settings_account_guest">Sem conta · opcional</string>
+    <string name="settings_account_guest_body">Tudo funciona sem ela. Entre para manter créditos e compras.</string>
+    <string name="settings_account_sign_out">Sair</string>
 </resources>

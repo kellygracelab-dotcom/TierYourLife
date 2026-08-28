@@ -7,6 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
+import com.artiuillab.tieryourlife.feature.account.presentation.navigation.accountScreen
+import com.artiuillab.tieryourlife.feature.account.presentation.navigation.navigateToAccount
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.aiStudioScreen
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.navigateToAiStudio
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.ADDED_ITEMS_RESULT_KEY
@@ -48,12 +50,14 @@ fun TierYourLifeNavHost(
         settingsScreen(
             onBack = { navController.popBackStack() },
             onTrashClick = { navController.navigateToTrash() },
+            onAccountClick = { navController.navigateToAccount() },
             themeChoice = themeChoice,
             onThemeChoiceChange = onThemeChoiceChange,
             languageTag = languageTag,
             onLanguageTagChange = onLanguageTagChange,
         )
         trashScreen(onBack = { navController.popBackStack() })
+        accountScreen(onClose = { navController.popBackStack() })
         aiStudioScreen(
             onBack = { ids ->
                 if (ids.isNotEmpty()) {

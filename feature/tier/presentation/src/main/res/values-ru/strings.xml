@@ -316,4 +316,8 @@
     <string name="snack_export_failed">Не удалось сохранить файл</string>
     <string name="action_try_again">Повторить</string>
     <string name="snack_action_failed">Не удалось сохранить изменение</string>
+    <string name="settings_account">Аккаунт</string>
+    <string name="settings_account_guest">Вход не выполнен · необязательно</string>
+    <string name="settings_account_guest_body">Без него всё работает. Войдите, чтобы сохранить кредиты и покупки.</string>
+    <string name="settings_account_sign_out">Выйти</string>
 </resources>

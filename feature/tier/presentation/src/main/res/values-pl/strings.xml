@@ -316,4 +316,8 @@
     <string name="snack_export_failed">Nie udało się zapisać pliku</string>
     <string name="action_try_again">Spróbuj ponownie</string>
     <string name="snack_action_failed">Nie udało się zapisać zmiany</string>
+    <string name="settings_account">Konto</string>
+    <string name="settings_account_guest">Nie zalogowano · opcjonalnie</string>
+    <string name="settings_account_guest_body">Bez niego wszystko działa. Zaloguj się, aby zachować kredyty i zakupy.</string>
+    <string name="settings_account_sign_out">Wyloguj się</string>
 </resources>

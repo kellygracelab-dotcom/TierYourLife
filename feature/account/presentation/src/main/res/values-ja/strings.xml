@@ -1,0 +1,18 @@
+<resources>
+    <string name="account_signed_in">ログイン済み</string>
+    <string name="account_sign_in_title">ログイン</string>
+    <string name="account_optional">アカウントは任意です。なくてもアプリは同じように使えます。</string>
+    <string name="account_reason_credits">生成回数は再インストールしても新しい端末でも残ります。</string>
+    <string name="account_reason_purchases">購入は自動で復元されます。</string>
+    <string name="account_reason_sync">ボードの同期は、できたときに。</string>
+    <string name="account_credits">生成回数 %1$d 回</string>
+    <string name="account_credits_note">アカウントから復元しました</string>
+    <string name="account_action_sign_in_google">Google でログイン</string>
+    <string name="account_action_not_now">今はしない</string>
+    <string name="account_action_done">完了</string>
+    <string name="account_error_sign_in_failed">ログインできませんでした。もう一度お試しください。</string>
+    <string name="account_error_no_google_account">この端末に Google アカウントがありません。</string>
+    <string name="account_error_unavailable">現在ログインできません。</string>
+    <string name="account_notice_existing_account">この Google アカウントにはすでに回数があり、今はそれが使われます。</string>
+    <string name="account_cd_close">閉じる</string>
+</resources>

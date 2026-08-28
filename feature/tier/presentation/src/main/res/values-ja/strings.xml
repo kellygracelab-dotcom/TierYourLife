@@ -241,4 +241,8 @@
     <string name="snack_export_failed">ファイルを保存できませんでした</string>
     <string name="action_try_again">もう一度試す</string>
     <string name="snack_action_failed">変更を保存できませんでした</string>
+    <string name="settings_account">アカウント</string>
+    <string name="settings_account_guest">未ログイン · 任意</string>
+    <string name="settings_account_guest_body">なくてもすべて動きます。回数と購入を残すにはログインしてください。</string>
+    <string name="settings_account_sign_out">ログアウト</string>
 </resources>

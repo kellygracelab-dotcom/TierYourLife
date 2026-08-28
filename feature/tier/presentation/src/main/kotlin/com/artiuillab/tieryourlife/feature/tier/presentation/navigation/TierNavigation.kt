@@ -50,6 +50,7 @@ fun NavGraphBuilder.tierDetailScreen(
 fun NavGraphBuilder.settingsScreen(
     onBack: () -> Unit,
     onTrashClick: () -> Unit,
+    onAccountClick: () -> Unit,
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
     languageTag: String?,
@@ -59,6 +60,7 @@ fun NavGraphBuilder.settingsScreen(
         SettingsScreen(
             onBack = onBack,
             onTrashClick = onTrashClick,
+            onAccountClick = onAccountClick,
             themeChoice = themeChoice,
             onThemeChoiceChange = onThemeChoiceChange,
             languageTag = languageTag,

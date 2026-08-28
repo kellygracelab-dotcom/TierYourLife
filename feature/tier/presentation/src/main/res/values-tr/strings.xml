@@ -266,4 +266,8 @@
     <string name="snack_export_failed">Dosya kaydedilemedi</string>
     <string name="action_try_again">Tekrar dene</string>
     <string name="snack_action_failed">Değişiklik kaydedilemedi</string>
+    <string name="settings_account">Hesap</string>
+    <string name="settings_account_guest">Oturum açılmadı · isteğe bağlı</string>
+    <string name="settings_account_guest_body">Onsuz da her şey çalışır. Hakları ve satın alımları korumak için oturum aç.</string>
+    <string name="settings_account_sign_out">Oturumu kapat</string>
 </resources>

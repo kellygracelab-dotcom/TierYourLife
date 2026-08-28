@@ -1,0 +1,18 @@
+<resources>
+    <string name="account_signed_in">تم تسجيل الدخول</string>
+    <string name="account_sign_in_title">تسجيل الدخول</string>
+    <string name="account_optional">الحساب اختياري. التطبيق يعمل كما هو من دونه.</string>
+    <string name="account_reason_credits">أرصدة التوليد تبقى بعد إعادة التثبيت وعند تغيير الهاتف.</string>
+    <string name="account_reason_purchases">المشتريات تعود من تلقاء نفسها.</string>
+    <string name="account_reason_sync">مزامنة اللوحات، عندما تتوفر.</string>
+    <string name="account_credits">%1$d عمليات توليد</string>
+    <string name="account_credits_note">استُعيدت من حسابك</string>
+    <string name="account_action_sign_in_google">تسجيل الدخول بحساب Google</string>
+    <string name="account_action_not_now">ليس الآن</string>
+    <string name="account_action_done">تم</string>
+    <string name="account_error_sign_in_failed">تعذّر تسجيل الدخول. حاول مرة أخرى.</string>
+    <string name="account_error_no_google_account">لا يوجد حساب Google على هذا الهاتف.</string>
+    <string name="account_error_unavailable">تسجيل الدخول غير متاح حاليًا.</string>
+    <string name="account_notice_existing_account">هذا الحساب كان له رصيده الخاص — وهو ما لديك الآن.</string>
+    <string name="account_cd_close">إغلاق</string>
+</resources>

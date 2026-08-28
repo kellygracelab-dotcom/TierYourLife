@@ -266,4 +266,8 @@
     <string name="snack_export_failed">Datei konnte nicht gespeichert werden</string>
     <string name="action_try_again">Erneut versuchen</string>
     <string name="snack_action_failed">Änderung konnte nicht gespeichert werden</string>
+    <string name="settings_account">Konto</string>
+    <string name="settings_account_guest">Nicht angemeldet · optional</string>
+    <string name="settings_account_guest_body">Alles funktioniert auch ohne. Melde dich an, um Guthaben und Käufe zu behalten.</string>
+    <string name="settings_account_sign_out">Abmelden</string>
 </resources>

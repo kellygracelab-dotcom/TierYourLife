@@ -291,4 +291,8 @@
     <string name="snack_export_failed">No se pudo guardar el archivo</string>
     <string name="action_try_again">Intentar de nuevo</string>
     <string name="snack_action_failed">No se pudo guardar el cambio</string>
+    <string name="settings_account">Cuenta</string>
+    <string name="settings_account_guest">Sin iniciar sesión · opcional</string>
+    <string name="settings_account_guest_body">Todo funciona sin ella. Inicia sesión para conservar créditos y compras.</string>
+    <string name="settings_account_sign_out">Cerrar sesión</string>
 </resources>
