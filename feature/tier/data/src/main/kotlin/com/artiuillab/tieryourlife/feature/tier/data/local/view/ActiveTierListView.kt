@@ -11,4 +11,6 @@ data class ActiveTierListView(
     val title: String,
     val deletedAt: Long?,
     val displayMode: String,
+    val publishedId: String?,
+    val authorName: String?,
 )

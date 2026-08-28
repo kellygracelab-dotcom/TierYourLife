@@ -1,6 +1,8 @@
 package com.artiuillab.tieryourlife.feature.aistudio.data.library
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
@@ -32,6 +34,16 @@ class PoolGeneratedCardSaverTest {
 private data class AddCall(val tierListId: Long, val title: String, val imageUrl: String?, val source: TierItemSource)
 
 private class FakeTierRepository : TierRepository {
+
+    override suspend fun createFromTemplate(
+        title: String,
+        authorName: String,
+        tiers: List<Tier>,
+        items: List<TierItem>,
+    ): Long = 0
+
+    override suspend fun setPublishedId(id: Long, publishedId: String?) = Unit
+
     val addCalls = mutableListOf<AddCall>()
     val attachCalls = mutableListOf<Pair<Long, String>>()
     val addedItemId = 42L

@@ -106,6 +106,15 @@ private class FailingTierRepository(
     private val failReads: Boolean = false,
 ) : TierRepository {
 
+    override suspend fun createFromTemplate(
+        title: String,
+        authorName: String,
+        tiers: List<Tier>,
+        items: List<TierItem>,
+    ): Long = 0
+
+    override suspend fun setPublishedId(id: Long, publishedId: String?) = Unit
+
     override suspend fun getTierListById(id: Long): TierList? {
         if (failReads) throw IllegalStateException("read failed")
         return stored

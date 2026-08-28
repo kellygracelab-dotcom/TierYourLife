@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 sealed interface TierListsUiState {
@@ -10,6 +11,8 @@ sealed interface TierListsUiState {
         val totalListCount: Int,
         val rankedCount: Int,
         val mode: HomeMode = HomeMode.Browsing,
+        val tab: HomeTab = HomeTab.Mine,
+        val community: CommunityFeed = CommunityFeed.Loading,
     ) : TierListsUiState
 
     data object Error : TierListsUiState
@@ -19,4 +22,12 @@ sealed interface HomeMode {
     data object Browsing : HomeMode
     data class Searching(val query: String) : HomeMode
     data class Selecting(val selectedIds: Set<Long>) : HomeMode
+}
+
+enum class HomeTab { Mine, Community }
+
+sealed interface CommunityFeed {
+    data object Loading : CommunityFeed
+    data class Ready(val lists: List<PublishedListSummary>) : CommunityFeed
+    data object Failed : CommunityFeed
 }

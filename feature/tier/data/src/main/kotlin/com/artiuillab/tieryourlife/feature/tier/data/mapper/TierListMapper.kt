@@ -15,6 +15,8 @@ internal fun TierListEntity.toDomain(): TierList = TierList(
     title = title,
     tiers = emptyList(),
     displayMode = displayMode.toDisplayMode(),
+    publishedId = publishedId,
+    authorName = authorName,
 )
 
 internal fun TierListWithTiers.toDomain(): TierList = TierList(
@@ -24,6 +26,8 @@ internal fun TierListWithTiers.toDomain(): TierList = TierList(
         .sortedBy { it.tier.position }
         .map { it.toDomain() },
     displayMode = tierList.displayMode.toDisplayMode(),
+    publishedId = tierList.publishedId,
+    authorName = tierList.authorName,
 )
 
 private fun String.toDisplayMode(): TierListDisplayMode =

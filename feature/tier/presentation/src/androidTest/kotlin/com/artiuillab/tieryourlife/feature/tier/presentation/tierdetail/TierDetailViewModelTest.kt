@@ -111,6 +111,15 @@ class TierDetailViewModelTest {
 
 private class FakeTierRepository(initial: TierList) : TierRepository {
 
+    override suspend fun createFromTemplate(
+        title: String,
+        authorName: String,
+        tiers: List<Tier>,
+        items: List<TierItem>,
+    ): Long = 0
+
+    override suspend fun setPublishedId(id: Long, publishedId: String?) = Unit
+
     private var list = initial
     private var nextItemId = 1L
     var lastAddedImageUrl: String? = "not yet called"

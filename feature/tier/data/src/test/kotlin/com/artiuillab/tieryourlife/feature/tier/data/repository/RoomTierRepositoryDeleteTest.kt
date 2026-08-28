@@ -48,6 +48,8 @@ class RoomTierRepositoryDeleteTest {
 }
 
 private class RecordingTierDao : TierDao {
+
+    override suspend fun setPublishedId(id: Long, publishedId: String?) = Unit
     val markedListDeletes = mutableListOf<Pair<List<Long>, Long>>()
     val markedItemDeletes = mutableListOf<Pair<Long, Long>>()
     val permanentlyDeletedListIds = mutableListOf<Long>()

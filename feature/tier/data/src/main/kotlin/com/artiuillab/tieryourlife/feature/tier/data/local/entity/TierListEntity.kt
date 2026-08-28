@@ -12,4 +12,8 @@ data class TierListEntity(
     val deletedAt: Long? = null,
     @ColumnInfo(defaultValue = "'WRAP'")
     val displayMode: String = "WRAP",
+    /** Set once this list has been published; the id the server keeps it under. */
+    val publishedId: String? = null,
+    /** Set on a copy taken from someone else's published list. */
+    val authorName: String? = null,
 )

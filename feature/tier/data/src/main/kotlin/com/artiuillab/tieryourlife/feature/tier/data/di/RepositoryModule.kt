@@ -1,8 +1,10 @@
 package com.artiuillab.tieryourlife.feature.tier.data.di
 
 import com.artiuillab.tieryourlife.feature.tier.data.repository.CatalogueSearchRepositoryImpl
+import com.artiuillab.tieryourlife.feature.tier.data.repository.RetrofitCommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.Binds
 import dagger.Module
@@ -19,6 +21,12 @@ abstract class RepositoryModule {
     abstract fun bindTierRepository(
         implementation: RoomTierRepository,
     ): TierRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCommunityRepository(
+        implementation: RetrofitCommunityRepository,
+    ): CommunityRepository
 
     @Binds
     @Singleton
