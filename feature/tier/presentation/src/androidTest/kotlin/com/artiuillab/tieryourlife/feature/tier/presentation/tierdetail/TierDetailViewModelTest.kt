@@ -130,11 +130,14 @@ class TierDetailViewModelTest {
         repository.readsAreHeld = true
 
         viewModel.setPublic(true)
-        viewModel.publishing.first { !it }
+        // Waiting on the pending flag itself rather than on `publishing`: those
+        // are two writes one after the other, and waking between them made this
+        // fail on a slow emulator for a reason that had nothing to do with the
+        // thing being tested.
+        viewModel.publicPending.first { it == null }
 
         val shown = (viewModel.state.value as TierDetailUiState.Success).list
         assertEquals("published-1", shown.publishedId)
-        assertNull(viewModel.publicPending.value)
     }
 
     @Test
