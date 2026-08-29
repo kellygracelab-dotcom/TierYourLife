@@ -362,7 +362,6 @@
     <string name="category_other">Другое</string>
     <string name="list_settings_category">Категория</string>
     <string name="list_settings_category_none">Пока не выбрана</string>
-    <string name="list_settings_public_needs_category">Выберите категорию, прежде чем публиковать список.</string>
     <string name="list_settings_cover">Обложка</string>
     <string name="list_settings_cover_none_set">Нет</string>
     <string name="list_settings_cover_set">Выбрана</string>

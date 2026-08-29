@@ -191,7 +191,11 @@ internal fun TierRow(
                             Modifier
                         },
                     )
-                    .padding(top = 10.dp),
+                    // The band grows to fit its caption, so the padding is what
+                    // keeps a long one off both edges instead of kissing them.
+                    // The editor's preview of a tier already has it; the tier
+                    // itself did not, which made the preview a small lie.
+                    .padding(top = 10.dp, start = 6.dp, end = 6.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top,
             ) {

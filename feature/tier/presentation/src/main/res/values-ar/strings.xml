@@ -412,7 +412,6 @@
     <string name="category_other">أخرى</string>
     <string name="list_settings_category">الفئة</string>
     <string name="list_settings_category_none">لم تُختر بعد</string>
-    <string name="list_settings_public_needs_category">اختر فئة قبل نشر القائمة.</string>
     <string name="list_settings_cover">الغلاف</string>
     <string name="list_settings_cover_none_set">لا يوجد</string>
     <string name="list_settings_cover_set">مُختار</string>
