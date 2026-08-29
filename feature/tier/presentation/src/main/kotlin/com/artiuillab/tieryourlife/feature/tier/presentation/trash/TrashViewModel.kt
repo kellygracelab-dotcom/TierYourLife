@@ -102,6 +102,7 @@ class TrashViewModel @Inject constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            Timber.w(e, "Loading the trash failed")
             _state.value = TrashUiState.Error
         }
     }

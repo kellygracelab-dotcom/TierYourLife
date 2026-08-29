@@ -30,6 +30,7 @@ android {
 dependencies {
     implementation(projects.core.settings)
     api(projects.core.network)
+    implementation(projects.core.logging)
     implementation(projects.feature.aistudio.domain)
     implementation(projects.feature.tier.domain)
     implementation(libs.androidx.core.ktx)

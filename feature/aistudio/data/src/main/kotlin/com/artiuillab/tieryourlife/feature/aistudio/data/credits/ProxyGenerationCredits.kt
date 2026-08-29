@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.api.CardImageApi
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import retrofit2.HttpException
+import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,9 +21,11 @@ class ProxyGenerationCredits @Inject constructor(
 
     override suspend fun remaining(): Int? = try {
         api.credits().credits.also { preferences.setLastKnownCredits(it) }
-    } catch (_: IOException) {
+    } catch (e: IOException) {
+        Timber.d(e, "Could not read the credit balance")
         null
-    } catch (_: HttpException) {
+    } catch (e: HttpException) {
+        Timber.d(e, "The server would not say how many credits are left")
         null
     }
 
