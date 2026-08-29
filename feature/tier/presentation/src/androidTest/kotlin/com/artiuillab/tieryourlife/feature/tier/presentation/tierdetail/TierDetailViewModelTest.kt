@@ -238,7 +238,9 @@ class TierDetailViewModelTest {
         viewModel.setPublic(true)
 
         viewModel.setCategory(ListCategory.Food)
-        viewModel.publicPending.first { it == null }
+        // Waiting for the published id rather than for the pending flag to
+        // clear: the flag has not been raised yet when setCategory returns.
+        viewModel.state.first { (it as? TierDetailUiState.Success)?.list?.publishedId != null }
 
         assertEquals(ListCategory.Food, community.published.single().category)
         assertFalse(viewModel.categoryWanted.value)
