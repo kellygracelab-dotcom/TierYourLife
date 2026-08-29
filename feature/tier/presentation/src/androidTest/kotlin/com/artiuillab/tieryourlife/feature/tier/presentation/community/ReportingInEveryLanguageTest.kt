@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.community
 
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.os.Build
 import android.text.TextUtils
 import android.view.View
 import androidx.compose.runtime.Composable
@@ -40,8 +41,8 @@ private val SURFACES = listOf("report", "list-actions", "author-actions")
  * an unescaped apostrophe -- which is a real and recurring way to break a
  * screen nobody on the team reads.
  *
- * It also writes each one out, because whether long wording *fits* is a
- * question only looking answers. Mirroring is not among them: a bottom sheet
+ * On API 28 and up it also writes each one out, because whether long wording
+ * *fits* is a question only looking answers. Mirroring is not among them: a bottom sheet
  * lives in its own window and takes its direction from the activity, which
  * this harness cannot swap, so RTL has to be judged on a device set to it.
  */
@@ -66,10 +67,13 @@ class ReportingInEveryLanguageTest {
         for (next in shots) {
             composeRule.runOnUiThread { shot = next }
             composeRule.waitForIdle()
-            save(
-                name = "${next.first}-${next.second}",
-                bitmap = composeRule.onNode(isDialog()).captureToImage().asAndroidBitmap(),
-            )
+            val surface = composeRule.onNode(isDialog())
+            surface.assertExists()
+            // Capturing a dialog needs API 28. Older devices still walk every
+            // string, which is the part that can actually throw.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                save("${next.first}-${next.second}", surface.captureToImage().asAndroidBitmap())
+            }
         }
     }
 
