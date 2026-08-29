@@ -48,6 +48,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.SectionLabel
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
@@ -181,11 +182,9 @@ private fun DisplayModeSection(
     onSelect: (TierListDisplayMode) -> Unit,
 ) {
     Column {
-        Text(
+        SectionLabel(
             text = stringResource(R.string.tier_list_settings_display_section),
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary,
         )
         Text(
             text = stringResource(R.string.tier_list_settings_display_section_caption),

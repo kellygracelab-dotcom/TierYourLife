@@ -467,7 +467,7 @@
     <string name="hidden_lists">القوائم</string>
     <string name="hidden_people">الأشخاص</string>
     <string name="action_show_again">إظهار مجددًا</string>
-    <string name="hidden_empty_title">لا شيء مخفي</string>
+    <string name="hidden_empty_title">كل شيء ظاهر</string>
     <string name="hidden_empty_body">تنتظر هنا القوائم والأشخاص الذين أخفيتهم في المجتمع، في حال غيّرت رأيك.</string>
     <string name="hidden_unnamed_list">قائمة أخفيتها</string>
     <string name="hidden_unnamed_person">شخص أخفيته</string>

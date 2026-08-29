@@ -413,7 +413,7 @@
     <string name="hidden_lists">СПИСКИ</string>
     <string name="hidden_people">ЛЮДИ</string>
     <string name="action_show_again">Показать снова</string>
-    <string name="hidden_empty_title">Ничего не скрыто</string>
+    <string name="hidden_empty_title">Всё на виду</string>
     <string name="hidden_empty_body">Списки и люди, которых вы скроете в сообществе, будут ждать здесь — вдруг передумаете.</string>
     <string name="hidden_unnamed_list">Список, который вы скрыли</string>
     <string name="hidden_unnamed_person">Кто-то, кого вы скрыли</string>

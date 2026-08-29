@@ -332,7 +332,7 @@
     <string name="hidden_lists">リスト</string>
     <string name="hidden_people">ユーザー</string>
     <string name="action_show_again">再表示</string>
-    <string name="hidden_empty_title">非表示はありません</string>
+    <string name="hidden_empty_title">すべて表示されています</string>
     <string name="hidden_empty_body">コミュニティで非表示にしたリストと人は、気が変わったときのためにここに残ります。</string>
     <string name="hidden_unnamed_list">非表示にしたリスト</string>
     <string name="hidden_unnamed_person">非表示にした人</string>
