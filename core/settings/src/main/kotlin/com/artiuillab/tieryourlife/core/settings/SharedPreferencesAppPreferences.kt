@@ -13,9 +13,6 @@ private const val KEY_LAST_KNOWN_CREDITS = "last_known_credits"
 private const val KEY_HIDDEN_LISTS = "hidden_list_ids"
 private const val KEY_HIDDEN_AUTHORS = "hidden_author_uids"
 
-// Unit separator: a title can hold anything a person can type, but not this.
-private const val SEPARATOR = ''
-
 @Singleton
 class SharedPreferencesAppPreferences @Inject constructor(
     @ApplicationContext context: Context,
@@ -73,22 +70,15 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     private fun stored(key: String): Set<String> = prefs.getStringSet(key, emptySet()).orEmpty()
 
-    private fun idsIn(key: String): Set<String> = stored(key).mapTo(mutableSetOf()) { it.substringBefore(SEPARATOR) }
+    private fun idsIn(key: String): Set<String> = HiddenRecords.ids(stored(key))
 
-    // Entries written before hiding could be undone are bare ids with no name.
-    // An empty label says so; the id itself is not something anyone can act on.
-    private fun entriesIn(key: String): List<HiddenEntry> = stored(key)
-        .map { HiddenEntry(it.substringBefore(SEPARATOR), it.substringAfter(SEPARATOR, "")) }
-        .sortedBy { it.label.lowercase() }
+    private fun entriesIn(key: String): List<HiddenEntry> = HiddenRecords.entries(stored(key))
 
     private fun hide(key: String, id: String, label: String) {
-        prefs.edit { putStringSet(key, withoutId(key, id) + "$id$SEPARATOR$label") }
+        prefs.edit { putStringSet(key, HiddenRecords.with(stored(key), id, label)) }
     }
 
     private fun unhide(key: String, id: String) {
-        prefs.edit { putStringSet(key, withoutId(key, id)) }
+        prefs.edit { putStringSet(key, HiddenRecords.without(stored(key), id)) }
     }
-
-    private fun withoutId(key: String, id: String): Set<String> =
-        stored(key).filterNot { it.substringBefore(SEPARATOR) == id }.toSet()
 }
