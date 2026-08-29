@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -37,6 +38,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 
 private const val COVER_ASPECT = 3f / 4f
+private val CANDIDATE_GRID_MAX_HEIGHT = 320.dp
 
 /**
  * A cover taken from the list's own cards is a web address, so it travels with
@@ -90,7 +92,9 @@ internal fun CoverSheet(
                     columns = GridCells.Adaptive(84.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = CANDIDATE_GRID_MAX_HEIGHT),
                 ) {
                     items(candidates) { url ->
                         CoverCandidate(
