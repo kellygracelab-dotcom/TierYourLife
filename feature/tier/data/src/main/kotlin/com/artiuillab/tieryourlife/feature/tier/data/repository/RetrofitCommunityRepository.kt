@@ -21,6 +21,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import retrofit2.HttpException
+import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,16 +36,16 @@ class RetrofitCommunityRepository @Inject constructor(
         query: String?,
         author: String?,
         after: String?,
-    ): Result<CommunityPage> = runCatching {
+    ): Result<CommunityPage> = attempt("Reading the community feed") {
         val page = api.feed(category?.id, query?.takeIf { it.isNotBlank() }, author, after)
         CommunityPage(lists = page.lists.map { it.toSummary() }, nextCursor = page.nextCursor)
     }
 
-    override suspend fun myPublished(): Result<List<PublishedListSummary>> = runCatching {
+    override suspend fun myPublished(): Result<List<PublishedListSummary>> = attempt("Reading what this account has published") {
         api.myPublished().lists.map { it.toSummary() }
     }
 
-    override suspend fun open(id: String): Result<PublishedList> = runCatching {
+    override suspend fun open(id: String): Result<PublishedList> = attempt("Opening a published list") {
         api.open(id).toDomain()
     }
 
@@ -53,32 +54,33 @@ class RetrofitCommunityRepository @Inject constructor(
         val existing = list.publishedId
         Result.success(if (existing == null) api.publish(request).id else api.republish(existing, request).id)
     } catch (e: Exception) {
+        Timber.w(e, "Publishing failed")
         Result.failure(PublishRefused(e.asPublishError()))
     }
 
-    override suspend fun unpublish(publishedId: String): Result<Unit> = runCatching {
+    override suspend fun unpublish(publishedId: String): Result<Unit> = attempt("Taking a list back down") {
         api.unpublish(publishedId)
     }
 
-    override suspend fun refreshAuthor(): Result<Unit> = runCatching { api.refreshAuthor() }
+    override suspend fun refreshAuthor(): Result<Unit> = attempt("Refreshing the author on published lists") { api.refreshAuthor() }
 
     override suspend fun report(
         publishedId: String,
         reason: ReportReason,
         note: String?,
-    ): Result<Unit> = runCatching {
+    ): Result<Unit> = attempt("Filing a report") {
         api.report(publishedId, ReportRequestDto(reason.id, note?.takeIf { it.isNotBlank() }))
     }
 
-    override suspend fun reports(): Result<List<ModerationReport>> = runCatching {
+    override suspend fun reports(): Result<List<ModerationReport>> = attempt("Reading the report queue") {
         api.reports().reports.map { it.toDomain() }
     }
 
-    override suspend fun takeDown(publishedId: String): Result<Unit> = runCatching {
+    override suspend fun takeDown(publishedId: String): Result<Unit> = attempt("Taking a reported list down") {
         api.takeDown(publishedId)
     }
 
-    override suspend fun dismissReports(publishedId: String): Result<Unit> = runCatching {
+    override suspend fun dismissReports(publishedId: String): Result<Unit> = attempt("Dismissing the reports on a list") {
         api.dismissReports(publishedId)
     }
 
@@ -92,6 +94,15 @@ class RetrofitCommunityRepository @Inject constructor(
         createdAtMillis = createdAt,
     )
 }
+
+/**
+ * Every call here answers with a Result the screen turns into a sentence, and
+ * that sentence never says which of the ten it was or why. One line in the log
+ * is the difference between "the community is broken" and "App Check refused
+ * the token", which is a real evening this cost.
+ */
+private inline fun <T> attempt(what: String, block: () -> T): Result<T> =
+    runCatching(block).onFailure { Timber.w(it, "%s failed", what) }
 
 private fun Throwable.asPublishError(): PublishError = when {
     this is HttpException -> when (code()) {

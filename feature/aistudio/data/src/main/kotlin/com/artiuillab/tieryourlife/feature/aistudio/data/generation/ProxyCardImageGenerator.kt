@@ -7,6 +7,7 @@ import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.Generation
 import com.artiuillab.tieryourlife.feature.aistudio.domain.model.GeneratedCardImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,7 +24,8 @@ class ProxyCardImageGenerator @Inject constructor(
     override suspend fun generate(prompt: String): GenerationOutcome {
         val response = try {
             api.generate(GenerateImageRequestDto(prompt))
-        } catch (_: IOException) {
+        } catch (e: IOException) {
+            Timber.w(e, "Could not reach the server to generate a card")
             return GenerationOutcome.Failed
         }
 
@@ -32,12 +34,18 @@ class ProxyCardImageGenerator @Inject constructor(
             return if (response.code() == HTTP_PAYMENT_REQUIRED) {
                 GenerationOutcome.OutOfCredits
             } else {
+                Timber.w("Generating a card was refused with %d", response.code())
                 GenerationOutcome.Failed
             }
         }
 
-        val bytes = response.body()?.use { it.bytes() } ?: return GenerationOutcome.Failed
-        if (bytes.isEmpty()) return GenerationOutcome.Failed
+        // A credit is spent by the time we get here, so an answer that arrives
+        // empty is worth naming rather than folding into the same Failed.
+        val bytes = response.body()?.use { it.bytes() }
+        if (bytes == null || bytes.isEmpty()) {
+            Timber.w("The server accepted the generation and sent back no image")
+            return GenerationOutcome.Failed
+        }
 
         val path = withContext(Dispatchers.IO) { imageStore.save(bytes) }
         return GenerationOutcome.Success(

@@ -34,6 +34,7 @@ android {
 
 dependencies {
     api(projects.core.network)
+    implementation(projects.core.logging)
     implementation(projects.feature.tier.domain)
     implementation(libs.androidx.core.ktx)
     // Coil shares this module's Wikimedia-aware OkHttpClient.
