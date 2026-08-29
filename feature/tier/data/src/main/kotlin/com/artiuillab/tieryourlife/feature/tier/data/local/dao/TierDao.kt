@@ -103,6 +103,9 @@ interface TierDao {
         return tierListId
     }
 
+    @Query("SELECT COUNT(*) FROM tier_lists WHERE publishedId IS NOT NULL AND deletedAt IS NULL")
+    suspend fun countPublishedLists(): Int
+
     @Query("UPDATE tier_lists SET publishedId = :publishedId WHERE id = :id")
     suspend fun setPublishedId(id: Long, publishedId: String?)
 

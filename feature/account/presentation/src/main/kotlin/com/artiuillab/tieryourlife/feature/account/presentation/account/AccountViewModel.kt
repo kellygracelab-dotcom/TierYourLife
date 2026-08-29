@@ -9,12 +9,14 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedLists
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,6 +24,7 @@ class AccountViewModel @Inject constructor(
     private val repository: AccountRepository,
     private val googleCredential: GoogleCredential,
     private val credits: GenerationCredits,
+    private val publishedLists: PublishedLists,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AccountUiState())
@@ -32,6 +35,7 @@ class AccountViewModel @Inject constructor(
             repository.account.collect { account ->
                 _state.update { it.copy(account = account) }
                 refreshCredits()
+                refreshPublicListCount()
             }
         }
     }
@@ -45,6 +49,18 @@ class AccountViewModel @Inject constructor(
                 GoogleCredentialResult.Cancelled -> _state.update { it.copy(signingIn = false) }
                 GoogleCredentialResult.NoGoogleAccount -> finish(AccountNotice.NoGoogleAccount)
                 GoogleCredentialResult.Unavailable -> finish(AccountNotice.SignInUnavailable)
+            }
+        }
+    }
+
+    fun setDisplayName(name: String) {
+        if (_state.value.savingName) return
+        _state.update { it.copy(savingName = true) }
+        viewModelScope.launch {
+            val saved = repository.setDisplayName(name)
+            if (!saved) Timber.w("Renaming the account did not stick")
+            _state.update {
+                it.copy(savingName = false, notice = if (saved) null else AccountNotice.NameNotSaved)
             }
         }
     }
@@ -75,6 +91,14 @@ class AccountViewModel @Inject constructor(
 
     private fun finish(notice: AccountNotice?) {
         _state.update { it.copy(signingIn = false, notice = notice) }
+    }
+
+    private suspend fun refreshPublicListCount() {
+        if (_state.value.account !is Account.SignedIn) return
+        val count = runCatching { publishedLists.count() }
+            .onFailure { Timber.w(it, "Counting published lists failed") }
+            .getOrDefault(0)
+        _state.update { it.copy(publicListCount = count) }
     }
 
     private suspend fun refreshCredits() {

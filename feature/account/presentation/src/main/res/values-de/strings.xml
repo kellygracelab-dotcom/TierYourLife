@@ -17,4 +17,18 @@
     <string name="account_cd_close">Schließen</string>
     <string name="account_action_sign_out">Abmelden</string>
     <string name="account_sign_out_body">Deine Listen bleiben auf diesem Telefon. Dein Guthaben wartet hier.</string>
+    <string name="account_community_section">IN DER COMMUNITY</string>
+    <string name="account_community_note">So erscheinst du auf Listen, die du veröffentlichst. Deine E-Mail wird nie gezeigt.</string>
+    <string name="account_nickname_title">Dein Name</string>
+    <string name="account_nickname_body">Erscheint als Autor auf Listen, die du veröffentlichst.</string>
+    <string name="account_nickname_field">Name</string>
+    <string name="account_nickname_counter">%1$d/%2$d</string>
+    <string name="account_nickname_snapshot_note">Bereits veröffentlichte Listen zeigen weiter den Namen, mit dem sie veröffentlicht wurden, bis du sie aktualisierst.</string>
+    <string name="account_action_save">Speichern</string>
+    <string name="account_action_cancel">Abbrechen</string>
+    <string name="account_error_name_not_saved">Der Name konnte nicht gespeichert werden. Versuche es erneut.</string>
+    <plurals name="account_community_lists">
+        <item quantity="one">%1$d öffentliche Liste</item>
+        <item quantity="other">%1$d öffentliche Listen</item>
+    </plurals>
 </resources>

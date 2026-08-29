@@ -3,6 +3,8 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
@@ -89,7 +91,7 @@ class TierDetailViewModelTest {
 
     @Test
     fun setPublic_publishesTheListAndRemembersWhereItLanded() = runBlocking {
-        val repository = FakeTierRepository(pool())
+        val repository = FakeTierRepository(listWithOneCard())
         val community = FakeCommunityRepositoryForDetail()
         val viewModel = TierDetailViewModel(
             repository,
@@ -106,11 +108,50 @@ class TierDetailViewModelTest {
         assertEquals("published-1", repository.publishedIds.single().second)
     }
 
+    // The server refuses a list with nothing in it. Finding that out over the
+    // network spends a round trip to end in a switch that springs back with no
+    // explanation, so the screen answers first.
+    @Test
+    fun setPublic_onAnEmptyList_explainsRatherThanAskingTheServer() = runBlocking {
+        val community = FakeCommunityRepositoryForDetail()
+        val viewModel = TierDetailViewModel(
+            FakeTierRepository(pool()),
+            community,
+            FakeAccountRepositoryForDetail(signedIn = true),
+            savedStateHandle(),
+        )
+        viewModel.state.first { it is TierDetailUiState.Success }
+
+        viewModel.setPublic(true)
+
+        assertEquals(PublishError.NothingToPublish, viewModel.publishError.value)
+        assertEquals(0, community.published.size)
+    }
+
+    @Test
+    fun setPublic_whenTheServerRefuses_keepsTheReasonOnScreen() = runBlocking {
+        val community = FakeCommunityRepositoryForDetail(
+            publishResult = Result.failure(PublishRefused(PublishError.TooManyLists)),
+        )
+        val viewModel = TierDetailViewModel(
+            FakeTierRepository(listWithOneCard()),
+            community,
+            FakeAccountRepositoryForDetail(signedIn = true),
+            savedStateHandle(),
+        )
+        viewModel.state.first { it is TierDetailUiState.Success }
+
+        viewModel.setPublic(true)
+        viewModel.publishing.first { !it }
+
+        assertEquals(PublishError.TooManyLists, viewModel.publishError.value)
+    }
+
     // Turning it off has to reach the server as well: a list that vanishes only
     // from the phone would stay in the feed for everyone else.
     @Test
     fun setPublic_false_takesTheSnapshotDownAndForgetsItsId() = runBlocking {
-        val repository = FakeTierRepository(pool(), publishedId = "published-1")
+        val repository = FakeTierRepository(listWithOneCard(), publishedId = "published-1")
         val community = FakeCommunityRepositoryForDetail()
         val viewModel = TierDetailViewModel(
             repository,
@@ -135,6 +176,21 @@ class TierDetailViewModelTest {
         title = "Sci-fi films",
         tiers = listOf(
             Tier(id = 10, label = "Pool", colorLight = "#000000", colorDark = "#000000", items = emptyList(), isPool = true),
+        ),
+    )
+
+    private fun listWithOneCard(): TierList = TierList(
+        id = 1,
+        title = "Sci-fi films",
+        tiers = listOf(
+            Tier(
+                id = 10,
+                label = "Pool",
+                colorLight = "#000000",
+                colorDark = "#000000",
+                items = listOf(TierItem(id = 100, title = "Arrival", imageUrl = null)),
+                isPool = true,
+            ),
         ),
     )
 

@@ -17,4 +17,18 @@
     <string name="account_cd_close">Kapat</string>
     <string name="account_action_sign_out">Oturumu kapat</string>
     <string name="account_sign_out_body">Listelerin bu telefonda kalır. Hakların burada seni bekler.</string>
+    <string name="account_community_section">TOPLULUKTA</string>
+    <string name="account_community_note">Yayımladığınız listelerde böyle görünürsünüz. E-postanız asla gösterilmez.</string>
+    <string name="account_nickname_title">Adınız</string>
+    <string name="account_nickname_body">Yayımladığınız listelerde yazar olarak görünür.</string>
+    <string name="account_nickname_field">Ad</string>
+    <string name="account_nickname_counter">%1$d/%2$d</string>
+    <string name="account_nickname_snapshot_note">Zaten yayımlanmış listeler, siz güncelleyene kadar yayımlandıkları adı göstermeyi sürdürür.</string>
+    <string name="account_action_save">Kaydet</string>
+    <string name="account_action_cancel">İptal</string>
+    <string name="account_error_name_not_saved">Bu ad kaydedilemedi. Yeniden deneyin.</string>
+    <plurals name="account_community_lists">
+        <item quantity="one">%1$d herkese açık liste</item>
+        <item quantity="other">%1$d herkese açık liste</item>
+    </plurals>
 </resources>

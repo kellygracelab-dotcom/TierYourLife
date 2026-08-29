@@ -1,11 +1,13 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 
 internal data class TierDetailActions(
     val onBack: () -> Unit = {},
     val signedIn: Boolean = false,
     val publishing: Boolean = false,
+    val publishError: PublishError? = null,
     val onSetPublic: (Boolean) -> Unit = {},
     val onAddClick: () -> Unit = {},
     val onManualAddClick: () -> Unit = {},

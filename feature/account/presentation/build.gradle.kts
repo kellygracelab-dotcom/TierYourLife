@@ -10,12 +10,16 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.logging)
     implementation(projects.core.theme)
     implementation(projects.feature.account.domain)
     // The confirmation panel reports the balance the account restored, which is
     // the studio's port — a read across features at the domain layer, as with
     // the generated-card saver.
     implementation(projects.feature.aistudio.domain)
+    // The community block counts the lists this phone has published, which the
+    // tier side owns — the same domain-layer read across features.
+    implementation(projects.feature.tier.domain)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

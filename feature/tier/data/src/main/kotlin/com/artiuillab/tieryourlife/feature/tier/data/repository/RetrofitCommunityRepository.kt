@@ -5,12 +5,16 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishListReque
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedTierDto
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
+import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,15 +33,28 @@ class RetrofitCommunityRepository @Inject constructor(
         api.open(id).toDomain()
     }
 
-    override suspend fun publish(list: TierList): Result<String> = runCatching {
+    override suspend fun publish(list: TierList): Result<String> = try {
         val request = list.toRequest()
         val existing = list.publishedId
-        if (existing == null) api.publish(request).id else api.republish(existing, request).id
+        Result.success(if (existing == null) api.publish(request).id else api.republish(existing, request).id)
+    } catch (e: Exception) {
+        Result.failure(PublishRefused(e.asPublishError()))
     }
 
     override suspend fun unpublish(publishedId: String): Result<Unit> = runCatching {
         api.unpublish(publishedId)
     }
+}
+
+private fun Throwable.asPublishError(): PublishError = when {
+    this is HttpException -> when (code()) {
+        403 -> PublishError.NotSignedIn
+        409 -> PublishError.TooManyLists
+        else -> PublishError.Unknown
+    }
+
+    this is IOException -> PublishError.Offline
+    else -> PublishError.Unknown
 }
 
 private fun PublishedListDto.toDomain() = PublishedList(

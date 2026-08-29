@@ -17,4 +17,22 @@
     <string name="account_cd_close">إغلاق</string>
     <string name="account_action_sign_out">تسجيل الخروج</string>
     <string name="account_sign_out_body">قوائمك تبقى على هذا الهاتف، ورصيدك ينتظرك هنا.</string>
+    <string name="account_community_section">في المجتمع</string>
+    <string name="account_community_note">هكذا تظهر في القوائم التي تنشرها. لا يُعرض بريدك الإلكتروني أبدًا.</string>
+    <string name="account_nickname_title">اسمك</string>
+    <string name="account_nickname_body">يظهر كمؤلف في القوائم التي تنشرها.</string>
+    <string name="account_nickname_field">الاسم</string>
+    <string name="account_nickname_counter">%1$d/%2$d</string>
+    <string name="account_nickname_snapshot_note">تظل القوائم المنشورة تعرض الاسم الذي نُشرت به حتى تقوم بتحديثها.</string>
+    <string name="account_action_save">حفظ</string>
+    <string name="account_action_cancel">إلغاء</string>
+    <string name="account_error_name_not_saved">تعذّر حفظ هذا الاسم. أعد المحاولة.</string>
+    <plurals name="account_community_lists">
+        <item quantity="zero">لا قوائم عامة</item>
+        <item quantity="one">قائمة عامة واحدة</item>
+        <item quantity="two">قائمتان عامتان</item>
+        <item quantity="few">%1$d قوائم عامة</item>
+        <item quantity="many">%1$d قائمة عامة</item>
+        <item quantity="other">%1$d قائمة عامة</item>
+    </plurals>
 </resources>

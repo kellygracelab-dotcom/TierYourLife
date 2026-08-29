@@ -10,6 +10,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.logging)
     implementation(projects.core.ui)
     implementation(projects.core.theme)
     implementation(projects.feature.aistudio.domain)

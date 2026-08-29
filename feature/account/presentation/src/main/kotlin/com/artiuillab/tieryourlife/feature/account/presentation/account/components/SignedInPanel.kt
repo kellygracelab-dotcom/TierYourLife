@@ -1,14 +1,14 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -20,37 +20,69 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.feature.account.presentation.R
 import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountTestTags
 
-private val AVATAR_SIZE = 72.dp
 private val BUTTON_HEIGHT = 52.dp
+private val AVATAR_IN_ROW = 40.dp
 
 @Composable
 internal fun SignedInPanel(
     email: String?,
     photoUrl: String?,
+    displayName: String?,
+    publicListCount: Int,
     credits: Int?,
+    onEditName: () -> Unit,
     onDone: () -> Unit,
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val name = displayName?.takeIf { it.isNotBlank() } ?: stringResource(R.string.account_signed_in)
+
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Avatar(photoUrl)
+        ProfileAvatar(photoUrl = photoUrl, name = displayName)
         Spacer(Modifier.height(16.dp))
-        Text(
-            text = email ?: stringResource(R.string.account_signed_in),
-            modifier = Modifier.testTag(AccountTestTags.EMAIL),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
+
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(onClick = onEditName)
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .testTag(AccountTestTags.EDIT_NAME),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = name,
+                modifier = Modifier.testTag(AccountTestTags.NAME),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(Modifier.width(8.dp))
+            PencilIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+
+        if (email != null) {
+            Text(
+                text = email,
+                modifier = Modifier.testTag(AccountTestTags.EMAIL),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
+        Spacer(Modifier.height(28.dp))
+        CommunitySection(name = name, photoUrl = photoUrl, publicListCount = publicListCount)
 
         if (credits != null) {
             Spacer(Modifier.height(24.dp))
@@ -64,7 +96,7 @@ internal fun SignedInPanel(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = String.format(stringResource(R.string.account_credits), credits),
+                    text = stringResource(R.string.account_credits, credits),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
@@ -112,25 +144,51 @@ internal fun SignedInPanel(
     }
 }
 
+/** Shows the author row exactly as the community sees it, email left out of it. */
 @Composable
-private fun Avatar(photoUrl: String?) {
-    Box(
-        modifier = Modifier
-            .size(AVATAR_SIZE)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primaryContainer),
-        contentAlignment = Alignment.Center,
-    ) {
-        if (photoUrl.isNullOrBlank()) {
-            CheckIcon(32.dp, MaterialTheme.colorScheme.onPrimaryContainer)
-        } else {
-            AsyncImage(
-                model = photoUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(AVATAR_SIZE)
-                    .clip(CircleShape),
-            )
+private fun CommunitySection(name: String, photoUrl: String?, publicListCount: Int) {
+    Column(Modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(R.string.account_community_section),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(Modifier.height(12.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                .padding(16.dp)
+                .testTag(AccountTestTags.COMMUNITY_ROW),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Avatar(photoUrl = photoUrl, name = name, size = AVATAR_IN_ROW)
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = pluralStringResource(
+                        R.plurals.account_community_lists,
+                        publicListCount,
+                        publicListCount,
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.account_community_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
     }
 }

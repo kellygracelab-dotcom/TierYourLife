@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedLists
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -151,7 +152,12 @@ class AccountViewModelTest {
         repository: AccountRepository = FakeAccountRepository(),
         credential: GoogleCredential = FakeGoogleCredential(GoogleCredentialResult.Cancelled),
         credits: GenerationCredits = FakeGenerationCredits(),
-    ) = AccountViewModel(repository, credential, credits)
+        publishedLists: PublishedLists = FakePublishedLists(),
+    ) = AccountViewModel(repository, credential, credits, publishedLists)
+}
+
+private class FakePublishedLists(private val published: Int = 0) : PublishedLists {
+    override suspend fun count(): Int = published
 }
 
 private class FakeAccountRepository(
@@ -171,6 +177,8 @@ private class FakeAccountRepository(
         }
         return outcome
     }
+
+    override suspend fun setDisplayName(name: String): Boolean = true
 
     override suspend fun signOut() {
         state.value = Account.Guest

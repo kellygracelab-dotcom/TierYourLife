@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.tieryourlife.hilt)
     alias(libs.plugins.tieryourlife.navigation)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -23,11 +24,20 @@ android {
     }
 
     buildTypes {
+        debug {
+            configure<com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension> {
+                mappingFileUploadEnabled = false
+            }
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             optimization {
                 enable = false
+            }
+            // Release stacks arrive obfuscated without it.
+            configure<com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension> {
+                mappingFileUploadEnabled = true
             }
         }
     }
@@ -37,10 +47,12 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
 dependencies {
+    implementation(projects.core.logging)
     implementation(projects.core.settings)
     implementation(projects.core.theme)
     implementation(projects.navigation)
@@ -58,6 +70,8 @@ dependencies {
     implementation(libs.coil.core)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.appcheck)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.auth)
     implementation(libs.firebase.appcheck.playintegrity)
     debugImplementation(libs.firebase.appcheck.debug)
     testImplementation(libs.junit)

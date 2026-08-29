@@ -42,6 +42,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -65,6 +66,7 @@ internal fun TierListSettingsScreenContent(
     onSetDisplayMode: (displayMode: TierListDisplayMode) -> Unit,
     signedIn: Boolean = false,
     publishing: Boolean = false,
+    publishError: PublishError? = null,
     onSetPublic: (Boolean) -> Unit = {},
 ) {
     var tierEditorVisible by remember { mutableStateOf(false) }
@@ -76,7 +78,9 @@ internal fun TierListSettingsScreenContent(
         PublishSection(
             published = list.publishedId != null,
             signedIn = signedIn,
+            hasItems = list.tiers.any { it.items.isNotEmpty() },
             busy = publishing,
+            error = publishError,
             onSetPublic = onSetPublic,
         )
 
@@ -303,9 +307,17 @@ private fun TierListSettingsScreenDarkPreview() = TierYourLifeTheme(true) {
 private fun PublishSection(
     published: Boolean,
     signedIn: Boolean,
+    hasItems: Boolean,
     busy: Boolean,
+    error: PublishError?,
     onSetPublic: (Boolean) -> Unit,
 ) {
+    val caption = when {
+        !signedIn -> R.string.list_settings_public_needs_account
+        !hasItems -> R.string.list_settings_public_needs_items
+        else -> R.string.list_settings_public_body
+    }
+
     Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
@@ -315,9 +327,7 @@ private fun PublishSection(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = stringResource(
-                        if (signedIn) R.string.list_settings_public_body else R.string.list_settings_public_needs_account,
-                    ),
+                    text = stringResource(caption),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -325,8 +335,17 @@ private fun PublishSection(
             Switch(
                 checked = published,
                 onCheckedChange = onSetPublic,
-                enabled = signedIn && !busy,
+                enabled = signedIn && (published || hasItems) && !busy,
                 modifier = Modifier.testTag(TierDetailTestTags.PUBLIC_SWITCH),
+            )
+        }
+        if (error != null) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = stringResource(error.messageRes()),
+                modifier = Modifier.testTag(TierDetailTestTags.PUBLISH_ERROR),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
             )
         }
         if (published) {
@@ -338,4 +357,12 @@ private fun PublishSection(
             )
         }
     }
+}
+
+private fun PublishError.messageRes(): Int = when (this) {
+    PublishError.NotSignedIn -> R.string.list_settings_public_needs_account
+    PublishError.NothingToPublish -> R.string.list_settings_public_needs_items
+    PublishError.TooManyLists -> R.string.list_settings_public_too_many
+    PublishError.Offline -> R.string.list_settings_public_offline
+    PublishError.Unknown -> R.string.list_settings_public_failed
 }

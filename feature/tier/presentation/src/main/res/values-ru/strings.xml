@@ -348,4 +348,8 @@
     <string name="list_settings_public_body">Любой сможет открыть этот список и разложить его по-своему.</string>
     <string name="list_settings_public_needs_account">Войдите через Google, чтобы публиковать. Читать и сохранять чужие можно без аккаунта.</string>
     <string name="list_settings_public_images">Едут только изображения, которые уже лежат в сети. Фото и сгенерированное остаются на телефоне.</string>
+    <string name="list_settings_public_needs_items">Добавьте хотя бы одну карточку, прежде чем публиковать список.</string>
+    <string name="list_settings_public_too_many">Опубликовано максимальное число списков. Снимите один с публикации, чтобы освободить место.</string>
+    <string name="list_settings_public_offline">Нет соединения. Попробуйте снова, когда сеть вернётся.</string>
+    <string name="list_settings_public_failed">Не удалось опубликовать список. Попробуйте ещё раз.</string>
 </resources>

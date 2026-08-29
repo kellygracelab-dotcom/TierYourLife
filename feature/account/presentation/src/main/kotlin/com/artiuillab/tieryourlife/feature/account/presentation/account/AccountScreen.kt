@@ -19,7 +19,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +39,7 @@ import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.presentation.R
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.CloseIcon
+import com.artiuillab.tieryourlife.feature.account.presentation.account.components.NicknameDialog
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.SignInPitch
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.SignedInPanel
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.previewAccountGuestState
@@ -55,6 +59,7 @@ fun AccountScreen(
         onClose = onClose,
         onSignIn = { viewModel.signIn(context) },
         onSignOut = viewModel::signOut,
+        onSetName = viewModel::setDisplayName,
         onNoticeShown = viewModel::dismissNotice,
     )
 }
@@ -66,9 +71,11 @@ internal fun AccountScreenContent(
     onSignIn: () -> Unit,
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
+    onSetName: (String) -> Unit = {},
     onNoticeShown: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    var nicknameDialogVisible by rememberSaveable { mutableStateOf(false) }
     val noticeText = state.notice?.let { stringResource(it.messageRes()) }
 
     LaunchedEffect(state.notice) {
@@ -102,12 +109,27 @@ internal fun AccountScreenContent(
                     is Account.SignedIn -> SignedInPanel(
                         email = account.email,
                         photoUrl = account.photoUrl,
+                        displayName = account.displayName,
+                        publicListCount = state.publicListCount,
                         credits = state.credits,
+                        onEditName = { nicknameDialogVisible = true },
                         onDone = onClose,
                         onSignOut = onSignOut,
                     )
                 }
             }
+        }
+
+        val signedIn = state.account as? Account.SignedIn
+        if (nicknameDialogVisible && signedIn != null) {
+            NicknameDialog(
+                current = signedIn.displayName.orEmpty(),
+                onDismiss = { nicknameDialogVisible = false },
+                onSave = {
+                    onSetName(it)
+                    nicknameDialogVisible = false
+                },
+            )
         }
 
         SnackbarHost(
@@ -148,6 +170,7 @@ private fun AccountNotice.messageRes(): Int = when (this) {
     AccountNotice.NoGoogleAccount -> R.string.account_error_no_google_account
     AccountNotice.SignInUnavailable -> R.string.account_error_unavailable
     AccountNotice.SignedInToExistingAccount -> R.string.account_notice_existing_account
+    AccountNotice.NameNotSaved -> R.string.account_error_name_not_saved
 }
 
 @TierYourLifeDevicePreviews

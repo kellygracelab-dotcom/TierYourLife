@@ -8,6 +8,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.logging)
     implementation(projects.feature.account.domain)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.play.services)

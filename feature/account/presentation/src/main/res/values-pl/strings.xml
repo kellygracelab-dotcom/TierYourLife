@@ -17,4 +17,20 @@
     <string name="account_cd_close">Zamknij</string>
     <string name="account_action_sign_out">Wyloguj się</string>
     <string name="account_sign_out_body">Twoje listy zostają na tym telefonie. Kredyty czekają tutaj.</string>
+    <string name="account_community_section">W SPOŁECZNOŚCI</string>
+    <string name="account_community_note">Tak wyglądasz na listach, które publikujesz. Twój e-mail nigdy nie jest pokazywany.</string>
+    <string name="account_nickname_title">Twoja nazwa</string>
+    <string name="account_nickname_body">Pokazywana jako autor na listach, które publikujesz.</string>
+    <string name="account_nickname_field">Nazwa</string>
+    <string name="account_nickname_counter">%1$d/%2$d</string>
+    <string name="account_nickname_snapshot_note">Już opublikowane listy nadal pokazują nazwę, z którą je opublikowano, dopóki ich nie zaktualizujesz.</string>
+    <string name="account_action_save">Zapisz</string>
+    <string name="account_action_cancel">Anuluj</string>
+    <string name="account_error_name_not_saved">Nie udało się zapisać tej nazwy. Spróbuj ponownie.</string>
+    <plurals name="account_community_lists">
+        <item quantity="one">%1$d lista publiczna</item>
+        <item quantity="few">%1$d listy publiczne</item>
+        <item quantity="many">%1$d list publicznych</item>
+        <item quantity="other">%1$d listy publicznej</item>
+    </plurals>
 </resources>

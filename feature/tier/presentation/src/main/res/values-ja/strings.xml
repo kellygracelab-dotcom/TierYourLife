@@ -273,4 +273,8 @@
     <string name="list_settings_public_body">誰でもこのリストを開いて、自分で並べられます。</string>
     <string name="list_settings_public_needs_account">公開するには Google でログインしてください。読むことと保存はアカウントなしでできます。</string>
     <string name="list_settings_public_images">すでにウェブ上にある画像だけが一緒に届きます。写真と生成画像はこの端末に残ります。</string>
+    <string name="list_settings_public_needs_items">リストを公開する前に、カードを1枚以上追加してください。</string>
+    <string name="list_settings_public_too_many">公開できるリストの上限に達しました。公開を1つ取り消すと空きができます。</string>
+    <string name="list_settings_public_offline">接続がありません。オンラインに戻ってからもう一度お試しください。</string>
+    <string name="list_settings_public_failed">このリストを公開できませんでした。もう一度お試しください。</string>
 </resources>

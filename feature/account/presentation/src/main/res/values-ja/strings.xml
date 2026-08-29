@@ -17,4 +17,17 @@
     <string name="account_cd_close">閉じる</string>
     <string name="account_action_sign_out">ログアウト</string>
     <string name="account_sign_out_body">リストはこの端末に残ります。生成回数はここで待っています。</string>
+    <string name="account_community_section">コミュニティでの表示</string>
+    <string name="account_community_note">公開したリストでの表示です。メールアドレスが表示されることはありません。</string>
+    <string name="account_nickname_title">表示名</string>
+    <string name="account_nickname_body">公開したリストの作者として表示されます。</string>
+    <string name="account_nickname_field">名前</string>
+    <string name="account_nickname_counter">%1$d/%2$d</string>
+    <string name="account_nickname_snapshot_note">公開済みのリストは、更新するまで公開時の名前を表示し続けます。</string>
+    <string name="account_action_save">保存</string>
+    <string name="account_action_cancel">キャンセル</string>
+    <string name="account_error_name_not_saved">この名前を保存できませんでした。もう一度お試しください。</string>
+    <plurals name="account_community_lists">
+        <item quantity="other">公開リスト %1$d 件</item>
+    </plurals>
 </resources>

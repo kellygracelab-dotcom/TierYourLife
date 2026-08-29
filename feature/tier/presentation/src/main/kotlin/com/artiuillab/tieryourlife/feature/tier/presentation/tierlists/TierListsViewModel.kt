@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.ui.UserMessage
@@ -18,9 +17,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import timber.log.Timber
 import javax.inject.Inject
-
-private const val LOAD_LOG_TAG = "TierLists"
 
 @HiltViewModel
 class TierListsViewModel @Inject constructor(
@@ -60,7 +58,7 @@ class TierListsViewModel @Inject constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(LOAD_LOG_TAG, "Loading tier lists failed", e)
+            Timber.w(e, "Loading tier lists failed")
             if (!hasVisibleList) {
                 _state.value = TierListsUiState.Error
             }
@@ -99,7 +97,7 @@ class TierListsViewModel @Inject constructor(
             communityFeed = community.feed().fold(
                 onSuccess = { CommunityFeed.Ready(it) },
                 onFailure = { error ->
-                    Log.w(LOAD_LOG_TAG, "Loading the community feed failed", error)
+                    Timber.w(error, "Loading the community feed failed")
                     CommunityFeed.Failed
                 },
             )

@@ -4,6 +4,7 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import okhttp3.Interceptor
 import okhttp3.Response
+import timber.log.Timber
 
 private const val AUTHORIZATION_HEADER = "Authorization"
 
@@ -14,7 +15,7 @@ class IdTokenInterceptor : Interceptor {
             val auth = FirebaseAuth.getInstance()
             val user = auth.currentUser ?: Tasks.await(auth.signInAnonymously()).user
             user?.let { Tasks.await(it.getIdToken(false)).token }
-        }.getOrNull()
+        }.onFailure { Timber.w(it, "ID token unavailable") }.getOrNull()
 
         val request = if (token.isNullOrEmpty()) {
             chain.request()
