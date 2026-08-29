@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity(
     tableName = "tier_items",
@@ -19,6 +20,7 @@ import androidx.room.PrimaryKey
     ],
     indices = [
         Index("tierId"),
+        Index(value = ["uid"], unique = true),
     ],
 )
 data class TierItemEntity(
@@ -31,4 +33,10 @@ data class TierItemEntity(
     @ColumnInfo(defaultValue = "'MANUAL'")
     val source: String = "MANUAL",
     val deletedAt: Long? = null,
+    /**
+     * Stable across devices, unlike [id], which is this database's own
+     * counter and would collide the moment two phones are involved.
+     */
+    @ColumnInfo(defaultValue = "''")
+    val uid: String = UUID.randomUUID().toString(),
 )

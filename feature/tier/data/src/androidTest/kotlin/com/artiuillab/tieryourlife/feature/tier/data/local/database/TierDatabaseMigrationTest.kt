@@ -4,6 +4,7 @@ import androidx.room.testing.MigrationTestHelper
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -110,6 +111,54 @@ class TierDatabaseMigrationTest {
             assertEquals("Danylo K.", it.getString(2))
             assertEquals(true, it.isNull(3))
             assertEquals(true, it.isNull(4))
+        }
+    }
+
+    @Test
+    fun migrate_4_to_5_gives_every_row_its_own_stable_id_and_keeps_the_data() {
+        helper.createDatabase(TEST_DB, 4).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, authorName, " +
+                    "category, coverImageUrl) VALUES (1, 'Films', NULL, 'WRAP', NULL, NULL, NULL, NULL)",
+            )
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, authorName, " +
+                    "category, coverImageUrl) VALUES (2, 'Games', NULL, 'WRAP', NULL, NULL, NULL, NULL)",
+            )
+            execSQL(
+                "INSERT INTO tiers (id, tierListId, position, label, colorLight, colorDark, isPool, caption) " +
+                    "VALUES (1, 1, 0, 'S', '#B03A32', '#F1948C', 0, NULL)",
+            )
+            execSQL(
+                "INSERT INTO tier_items (id, tierId, position, title, imageUrl, source, deletedAt) " +
+                    "VALUES (1, 1, 0, 'Arrival', NULL, 'MANUAL', NULL)",
+            )
+            execSQL(
+                "INSERT INTO tier_items (id, tierId, position, title, imageUrl, source, deletedAt) " +
+                    "VALUES (2, 1, 1, 'Moonlight', NULL, 'MANUAL', NULL)",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 5, true, MIGRATION_4_5)
+
+        // The titles are still there: this only adds a name, it moves nothing.
+        migratedDb.query("SELECT title FROM tier_lists ORDER BY id").use {
+            check(it.moveToFirst())
+            assertEquals("Films", it.getString(0))
+            check(it.moveToNext())
+            assertEquals("Games", it.getString(0))
+        }
+
+        listOf("tier_lists" to 2, "tiers" to 1, "tier_items" to 2).forEach { (table, rows) ->
+            val ids = migratedDb.query("SELECT uid FROM $table").use { cursor ->
+                generateSequence { if (cursor.moveToNext()) cursor else null }
+                    .map { it.getString(0) }
+                    .toList()
+            }
+            assertEquals("$table should have kept its rows", rows, ids.size)
+            assertTrue("$table left a row without an id", ids.none { it.isEmpty() })
+            assertEquals("$table handed out the same id twice", ids.size, ids.distinct().size)
         }
     }
 
