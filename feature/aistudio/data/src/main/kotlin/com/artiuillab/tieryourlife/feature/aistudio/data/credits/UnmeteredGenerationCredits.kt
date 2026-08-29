@@ -9,4 +9,6 @@ import javax.inject.Singleton
 class UnmeteredGenerationCredits @Inject constructor() : GenerationCredits {
 
     override suspend fun remaining(): Int? = null
+
+    override fun lastKnown(): Int? = null
 }

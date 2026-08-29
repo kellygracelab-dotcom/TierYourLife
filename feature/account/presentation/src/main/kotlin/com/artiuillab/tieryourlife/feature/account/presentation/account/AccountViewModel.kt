@@ -27,7 +27,7 @@ class AccountViewModel @Inject constructor(
     private val publishedLists: PublishedLists,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AccountUiState())
+    private val _state = MutableStateFlow(AccountUiState(credits = credits.lastKnown()))
     val state: StateFlow<AccountUiState> = _state.asStateFlow()
 
     init {

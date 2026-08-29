@@ -28,6 +28,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.settings)
     api(projects.core.network)
     implementation(projects.feature.aistudio.domain)
     implementation(projects.feature.tier.domain)

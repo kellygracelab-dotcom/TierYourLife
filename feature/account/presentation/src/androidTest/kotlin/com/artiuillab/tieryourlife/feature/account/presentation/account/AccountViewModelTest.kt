@@ -195,6 +195,8 @@ private class FakeGoogleCredential(private val result: GoogleCredentialResult) :
 }
 
 private class FakeGenerationCredits(private val balance: Int? = null) : GenerationCredits {
+    override fun lastKnown(): Int? = null
+
     var reads = 0
 
     override suspend fun remaining(): Int? {

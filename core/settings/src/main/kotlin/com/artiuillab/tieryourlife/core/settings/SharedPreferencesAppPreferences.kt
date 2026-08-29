@@ -8,6 +8,7 @@ import javax.inject.Singleton
 private const val PREFS_NAME = "tier_your_life_prefs"
 private const val KEY_THEME_CHOICE = "theme_choice"
 private const val KEY_LANGUAGE_TAG = "language_tag"
+private const val KEY_LAST_KNOWN_CREDITS = "last_known_credits"
 
 @Singleton
 class SharedPreferencesAppPreferences @Inject constructor(
@@ -29,5 +30,14 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun setLanguageTag(tag: String?) {
         prefs.edit().putString(KEY_LANGUAGE_TAG, tag).apply()
+    }
+
+    override fun lastKnownCredits(): Int? =
+        prefs.getInt(KEY_LAST_KNOWN_CREDITS, -1).takeIf { it >= 0 }
+
+    override fun setLastKnownCredits(credits: Int?) {
+        prefs.edit().apply {
+            if (credits == null) remove(KEY_LAST_KNOWN_CREDITS) else putInt(KEY_LAST_KNOWN_CREDITS, credits)
+        }.apply()
     }
 }

@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.settings.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,6 +42,7 @@ internal fun AccountRow(
     modifier: Modifier = Modifier,
 ) {
     when (account) {
+        Account.Unknown -> AccountPlaceholder(modifier = modifier)
         Account.Guest -> SignInOffer(onClick = onClick, modifier = modifier)
         is Account.SignedIn -> SignedInRow(
             account = account,
@@ -47,6 +50,32 @@ internal fun AccountRow(
             onClick = onClick,
             modifier = modifier,
         )
+    }
+}
+
+/**
+ * Holds the signed-in row's exact height while Firebase is still answering, so
+ * the card neither flashes the sign-in offer nor resizes underneath a finger.
+ */
+@Composable
+private fun AccountPlaceholder(modifier: Modifier = Modifier) {
+    val tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.size(AVATAR_SIZE).clip(CircleShape).background(tint))
+        Column(
+            Modifier
+                .weight(1f)
+                .padding(start = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Box(Modifier.fillMaxWidth(0.55f).height(14.dp).clip(RoundedCornerShape(4.dp)).background(tint))
+            Box(Modifier.fillMaxWidth(0.32f).height(11.dp).clip(RoundedCornerShape(4.dp)).background(tint))
+        }
     }
 }
 

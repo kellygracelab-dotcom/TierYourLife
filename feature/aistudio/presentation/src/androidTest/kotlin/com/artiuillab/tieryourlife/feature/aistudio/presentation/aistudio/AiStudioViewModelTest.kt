@@ -287,6 +287,8 @@ private class FakeCardImageGenerator : CardImageGenerator {
 }
 
 private class FakeGenerationCredits(private val balance: Int? = null) : GenerationCredits {
+    override fun lastKnown(): Int? = null
+
     override suspend fun remaining(): Int? = balance
 }
 

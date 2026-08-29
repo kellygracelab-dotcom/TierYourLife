@@ -32,9 +32,9 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
 
     val account: StateFlow<Account> = accountRepository.account
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), Account.Guest)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), Account.Unknown)
 
-    private val _credits = MutableStateFlow<Int?>(null)
+    private val _credits = MutableStateFlow(generationCredits.lastKnown())
     val credits: StateFlow<Int?> = _credits.asStateFlow()
 
     private val _trashCount = MutableStateFlow(0)

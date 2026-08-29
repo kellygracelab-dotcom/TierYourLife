@@ -100,6 +100,10 @@ internal fun AccountScreenContent(
                     .padding(top = 8.dp, bottom = 32.dp),
             ) {
                 when (val account = state.account) {
+                    // Painting either panel before Firebase answers means
+                    // painting the wrong one and swapping it a frame later.
+                    Account.Unknown -> Unit
+
                     Account.Guest -> SignInPitch(
                         signingIn = state.signingIn,
                         onSignIn = onSignIn,
