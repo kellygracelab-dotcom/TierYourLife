@@ -32,6 +32,18 @@ class ManifestContractTest {
         )
     }
 
+    // A tier board is a column of rows. Sideways it is a column of rows with
+    // the rows cut short, which is worse on every screen, so there is no size
+    // at which turning the phone helps.
+    @Test
+    fun mainActivity_isPortraitOnEverySize() {
+        val declared = context.packageManager
+            .getActivityInfo(ComponentName(context, MainActivity::class.java), 0)
+            .screenOrientation
+
+        assertEquals(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, declared)
+    }
+
     @Test
     fun theApp_supportsRightToLeft_becauseItShipsARightToLeftLanguage() {
         val flags = context.packageManager
