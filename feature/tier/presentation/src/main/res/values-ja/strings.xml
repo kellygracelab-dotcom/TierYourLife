@@ -300,4 +300,5 @@
     <plurals name="community_item_count">
         <item quantity="other">カード %1$d 枚</item>
     </plurals>
+    <string name="snack_published_list_still_public">削除せず残しました。公開コピーを取り下げられませんでした。オンラインのときにもう一度お試しください。</string>
 </resources>

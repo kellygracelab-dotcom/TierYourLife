@@ -145,9 +145,17 @@ internal fun TierListsScreenContent(
     val coroutineScope = rememberCoroutineScope()
     val undoLabel = stringResource(R.string.action_undo)
     val actionFailedMessage = stringResource(R.string.snack_action_failed)
+    val stillPublicMessage = stringResource(R.string.snack_published_list_still_public)
 
     LaunchedEffect(Unit) {
-        userMessages.collect { snackbarHostState.showSnackbar(actionFailedMessage) }
+        userMessages.collect { message ->
+            snackbarHostState.showSnackbar(
+                when (message) {
+                    UserMessage.ActionFailed -> actionFailedMessage
+                    UserMessage.PublishedListStillPublic -> stillPublicMessage
+                },
+            )
+        }
     }
 
     val deleteAndAnnounce: (List<Long>) -> Unit = { ids ->

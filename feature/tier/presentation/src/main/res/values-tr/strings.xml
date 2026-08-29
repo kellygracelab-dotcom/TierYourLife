@@ -326,4 +326,5 @@
         <item quantity="one">%1$d kart</item>
         <item quantity="other">%1$d kart</item>
     </plurals>
+    <string name="snack_published_list_still_public">Silinmedi, korundu: herkese açık kopyası kaldırılamadı. Çevrimiçi olduğunuzda yeniden deneyin.</string>
 </resources>

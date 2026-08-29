@@ -378,4 +378,5 @@
         <item quantity="many">%1$d kart</item>
         <item quantity="other">%1$d karty</item>
     </plurals>
+    <string name="snack_published_list_still_public">Zachowana, nie usunięta: nie udało się wycofać jej publicznej kopii. Spróbuj ponownie, gdy będziesz online.</string>
 </resources>

@@ -8,6 +8,12 @@ import timber.log.Timber
 
 enum class UserMessage {
     ActionFailed,
+
+    /**
+     * A published list was left alone rather than deleted, because the copy in
+     * the community could not be taken down.
+     */
+    PublishedListStillPublic,
 }
 
 class UserMessages {

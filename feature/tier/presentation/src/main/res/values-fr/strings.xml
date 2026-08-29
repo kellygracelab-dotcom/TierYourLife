@@ -351,4 +351,5 @@
         <item quantity="one">%1$d carte</item>
         <item quantity="other">%1$d cartes</item>
     </plurals>
+    <string name="snack_published_list_still_public">Conservée, pas supprimée : sa copie publique n\'a pas pu être retirée. Réessayez une fois en ligne.</string>
 </resources>

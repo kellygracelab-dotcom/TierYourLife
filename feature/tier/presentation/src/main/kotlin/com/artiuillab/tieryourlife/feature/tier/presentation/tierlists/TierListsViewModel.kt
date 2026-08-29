@@ -139,9 +139,43 @@ class TierListsViewModel @Inject constructor(
 
     fun exitSelection() = setMode(HomeMode.Browsing)
 
+    /**
+     * A published snapshot that outlives the list it came from is one its owner
+     * believes they deleted, so the community copy comes down first. If it
+     * cannot, the list stays where it is: a delete that leaves the thing public
+     * is worse than a delete that did not happen.
+     */
     fun deleteTierLists(ids: List<Long>) {
         setMode(HomeMode.Browsing)
-        mutate("Deleting lists") { repository.deleteTierLists(ids) }
+        viewModelScope.launch {
+            val stillPublic = takeDownPublished(ids)
+            val deletable = ids - stillPublic
+            if (deletable.isNotEmpty()) {
+                messages.guard("Deleting lists") { repository.deleteTierLists(deletable) }
+            }
+            if (stillPublic.isNotEmpty()) {
+                messages.send(UserMessage.PublishedListStillPublic)
+            }
+            loadTierListsInternal()
+        }
+    }
+
+    /** Answers with the ids that could not be taken out of the community. */
+    private suspend fun takeDownPublished(ids: List<Long>): Set<Long> {
+        val published = lastLoadedLists.filter { it.id in ids && it.publishedId != null }
+        return published.mapNotNull { list ->
+            val publishedId = list.publishedId ?: return@mapNotNull null
+            community.unpublish(publishedId).fold(
+                onSuccess = {
+                    repository.setPublishedId(list.id, null)
+                    null
+                },
+                onFailure = { error ->
+                    Timber.w(error, "Could not take a deleted list out of the community")
+                    list.id
+                },
+            )
+        }.toSet()
     }
 
     fun restoreTierLists(ids: List<Long>) {

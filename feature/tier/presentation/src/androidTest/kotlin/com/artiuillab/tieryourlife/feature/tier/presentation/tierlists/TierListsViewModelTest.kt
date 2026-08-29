@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
@@ -16,6 +17,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -227,7 +229,46 @@ class TierListsViewModelTest {
         assertEquals(listOf(1L, 2L), afterRestore.lists.map { it.id }.sorted())
     }
 
-    private fun fakeList(id: Long, title: String): TierList = TierList(id = id, title = title, tiers = emptyList())
+    // A snapshot that outlives the list it came from is one its owner believes
+    // they deleted.
+    @Test
+    fun deletingAPublishedList_takesItOutOfTheCommunityFirst() = runBlocking {
+        val repository = FakeTierRepository(
+            initial = listOf(fakeList(id = 1, title = "Films", publishedId = "published-1")),
+        )
+        val community = FakeCommunityRepository()
+        val viewModel = TierListsViewModel(repository, community)
+        viewModel.loadTierLists()
+        viewModel.state.first { it is TierListsUiState.Success }
+
+        viewModel.deleteTierLists(listOf(1L))
+        viewModel.state.first { it is TierListsUiState.Success && it.lists.isEmpty() }
+
+        assertEquals(listOf("published-1"), community.takenDown)
+    }
+
+    // Deleting a list that stays visible to everyone is worse than a delete
+    // that did not happen, so the list is kept and the reason is said out loud.
+    @Test
+    fun whenTheCommunityCopyWillNotComeDown_theListIsKept() = runBlocking {
+        val repository = FakeTierRepository(
+            initial = listOf(fakeList(id = 1, title = "Films", publishedId = "published-1")),
+        )
+        val community = FakeCommunityRepository(unpublishResult = Result.failure(IllegalStateException()))
+        val viewModel = TierListsViewModel(repository, community)
+        viewModel.loadTierLists()
+        viewModel.state.first { it is TierListsUiState.Success }
+
+        val message = async { viewModel.userMessages.first() }
+        viewModel.deleteTierLists(listOf(1L))
+
+        assertEquals(UserMessage.PublishedListStillPublic, message.await())
+        val state = viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success
+        assertEquals(listOf(1L), state.lists.map { it.id })
+    }
+
+    private fun fakeList(id: Long, title: String, publishedId: String? = null): TierList =
+        TierList(id = id, title = title, tiers = emptyList(), publishedId = publishedId)
 
     private class RecordedStates(val values: MutableList<TierListsUiState>, val job: Job) {
         suspend fun awaitUntil(predicate: (TierListsUiState) -> Boolean) {
@@ -343,10 +384,15 @@ private class FakeTierRepository(initial: List<TierList>) : TierRepository {
 
 private class FakeCommunityRepository(
     private val feed: List<PublishedListSummary> = emptyList(),
+    private val unpublishResult: Result<Unit> = Result.success(Unit),
 ) : CommunityRepository {
+    val takenDown = mutableListOf<String>()
     override suspend fun feed(category: ListCategory?): Result<List<PublishedListSummary>> = Result.success(feed)
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
     override suspend fun publish(list: com.artiuillab.tieryourlife.feature.tier.domain.model.TierList): Result<String> =
         Result.failure(IllegalStateException())
-    override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun unpublish(publishedId: String): Result<Unit> {
+        takenDown += publishedId
+        return unpublishResult
+    }
 }

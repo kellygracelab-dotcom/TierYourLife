@@ -378,4 +378,5 @@
         <item quantity="many">%1$d карточек</item>
         <item quantity="other">%1$d карточки</item>
     </plurals>
+    <string name="snack_published_list_still_public">Список оставлен, а не удалён: публичную копию не удалось снять. Попробуйте снова, когда будет сеть.</string>
 </resources>

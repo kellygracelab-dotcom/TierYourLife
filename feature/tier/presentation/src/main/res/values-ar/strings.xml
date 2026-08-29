@@ -430,4 +430,5 @@
         <item quantity="many">%1$d بطاقة</item>
         <item quantity="other">%1$d بطاقة</item>
     </plurals>
+    <string name="snack_published_list_still_public">أُبقيت ولم تُحذف: تعذّر سحب نسختها العامة. أعد المحاولة عند الاتصال بالإنترنت.</string>
 </resources>
