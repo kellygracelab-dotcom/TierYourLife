@@ -79,14 +79,41 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      # Booting a cold emulator costs more than running the tests on it. The
+      # snapshot is built once per image and restored on every run after.
+      - name: Cache the emulator snapshot
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}-x86_64-4096M
+
+      - name: Build the snapshot when there is nothing to restore
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.api-level >= 30 && 'google_apis' || 'default' }}
+          arch: x86_64
+          force-avd-creation: false
+          disable-animations: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disk-size: 4096M
+          script: echo "Snapshot written."
+
       - name: Run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
           target: ${{ matrix.api-level >= 30 && 'google_apis' || 'default' }}
           arch: x86_64
+          force-avd-creation: false
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          # -no-snapshot-save so a run cannot leave its own leftovers in the
+          # cached image and change what the next one starts from.
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           # The default 800M image fills up while installing five test APKs, and a
           # full disk surfaces as an opaque "Failed to install-write all apks".
           disk-size: 4096M
