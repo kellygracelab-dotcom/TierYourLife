@@ -336,4 +336,20 @@
         <item quantity="other">%1$d public lists</item>
     </plurals>
     <string name="list_settings_public_too_large">This list is too big to publish: at most 1000 cards and 20 tiers.</string>
+    <string name="community_action_view_author">View %1$s</string>
+    <string name="community_action_hide">Hide this list</string>
+    <string name="community_action_report">Report this list</string>
+    <string name="report_title">Report this list</string>
+    <string name="report_reason_sexual">Sexual content</string>
+    <string name="report_reason_violence">Violence or shocking content</string>
+    <string name="report_reason_hate">Hate or harassment</string>
+    <string name="report_reason_spam">Spam or advertising</string>
+    <string name="report_reason_other">Something else</string>
+    <string name="report_note_label">Anything to add (optional)</string>
+    <string name="report_by_hand">A person reads every report. Nothing is taken down automatically.</string>
+    <string name="report_action_send">Report</string>
+    <string name="report_sent_title">Reported, and hidden for you</string>
+    <string name="report_sent_body">One person reviews reports by hand, so it may stay up for other people until then.</string>
+    <string name="report_hide_author">Also hide everything from %1$s</string>
+    <string name="community_hidden">Hidden</string>
 </resources>

@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -116,6 +117,12 @@ private class FakeCommunityRepository : CommunityRepository {
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
+
+    override suspend fun report(
+        publishedId: String,
+        reason: ReportReason,
+        note: String?,
+    ): Result<Unit> = Result.success(Unit)
 }
 
 private class FailingCommunityRepository : CommunityRepository {
@@ -129,4 +136,10 @@ private class FailingCommunityRepository : CommunityRepository {
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
+
+    override suspend fun report(
+        publishedId: String,
+        reason: ReportReason,
+        note: String?,
+    ): Result<Unit> = Result.success(Unit)
 }

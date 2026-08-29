@@ -30,8 +30,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
@@ -49,10 +51,15 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ListActionsSheet
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportDialog
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.CommunityFeedList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeEmptyState
@@ -100,6 +107,9 @@ fun TierListsScreen(
         onOpenCommunityList = onCommunityListClick,
         onRetryCommunity = viewModel::loadCommunityFeed,
         onSelectCommunityCategory = viewModel::selectCommunityCategory,
+        onHideCommunityList = viewModel::hideCommunityList,
+        onHideCommunityAuthor = viewModel::hideCommunityAuthor,
+        onReportCommunityList = viewModel::reportCommunityList,
         userMessages = viewModel.userMessages,
     )
 }
@@ -124,6 +134,9 @@ internal fun TierListsScreenContent(
     onOpenCommunityList: (String) -> Unit = {},
     onRetryCommunity: () -> Unit = {},
     onSelectCommunityCategory: (ListCategory?) -> Unit = {},
+    onHideCommunityList: (String) -> Unit = {},
+    onHideCommunityAuthor: (String) -> Unit = {},
+    onReportCommunityList: (String, ReportReason, String?) -> Unit = { _, _, _ -> },
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val success = state as? TierListsUiState.Success
@@ -134,6 +147,9 @@ internal fun TierListsScreenContent(
     val tab = success?.tab ?: HomeTab.Mine
     val communityFeed = success?.community ?: CommunityFeed.Loading
     val communityCategory = success?.communityCategory
+    var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
+    var reportFor by remember { mutableStateOf<PublishedListSummary?>(null) }
+    var reportedFrom by remember { mutableStateOf<PublishedListSummary?>(null) }
 
     BackHandler(enabled = mode !is HomeMode.Browsing) {
         when (mode) {
@@ -236,6 +252,7 @@ internal fun TierListsScreenContent(
                             onSelectCategory = onSelectCommunityCategory,
                             onOpen = onOpenCommunityList,
                             onRetry = onRetryCommunity,
+                            onLongPress = { actionsFor = it },
                             onOpenAuthor = { uid ->
                                 val summary = (communityFeed as? CommunityFeed.Ready)
                                     ?.lists
@@ -297,6 +314,49 @@ internal fun TierListsScreenContent(
                         PlusIcon(24.dp, MaterialTheme.colorScheme.onPrimaryContainer)
                     }
                 }
+            }
+
+            actionsFor?.let { summary ->
+                ListActionsSheet(
+                    title = summary.title,
+                    authorName = summary.authorName,
+                    authorPhotoUrl = summary.authorPhotoUrl,
+                    onDismiss = { actionsFor = null },
+                    onOpenAuthor = {
+                        actionsFor = null
+                        onAuthorClick(summary.authorUid, summary.authorName, summary.authorPhotoUrl)
+                    },
+                    onHide = {
+                        actionsFor = null
+                        onHideCommunityList(summary.id)
+                    },
+                    onReport = {
+                        actionsFor = null
+                        reportFor = summary
+                    },
+                )
+            }
+
+            reportFor?.let { summary ->
+                ReportDialog(
+                    onDismiss = { reportFor = null },
+                    onSend = { reason, note ->
+                        reportFor = null
+                        onReportCommunityList(summary.id, reason, note)
+                        reportedFrom = summary
+                    },
+                )
+            }
+
+            reportedFrom?.let { summary ->
+                ReportSentDialog(
+                    authorName = summary.authorName,
+                    onDismiss = { reportedFrom = null },
+                    onHideAuthor = {
+                        reportedFrom = null
+                        onHideCommunityAuthor(summary.authorUid)
+                    },
+                )
             }
 
             DeletedItemSnackbarHost(

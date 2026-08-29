@@ -1,7 +1,8 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,6 +56,7 @@ internal fun CommunityFeedList(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     onOpenAuthor: ((String) -> Unit)? = null,
+    onLongPress: ((PublishedListSummary) -> Unit)? = null,
     showCategories: Boolean = true,
     showAuthor: Boolean = true,
 ) {
@@ -100,6 +102,7 @@ internal fun CommunityFeedList(
                         CommunityCard(
                             summary = summary,
                             onClick = { onOpen(summary.id) },
+                            onLongClick = onLongPress?.let { press -> { press(summary) } },
                             showAuthor = showAuthor,
                             onAuthorClick = onOpenAuthor?.let { open ->
                                 { open(summary.authorUid) }
@@ -112,10 +115,12 @@ internal fun CommunityFeedList(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CommunityCard(
     summary: PublishedListSummary,
     onClick: () -> Unit,
+    onLongClick: (() -> Unit)?,
     showAuthor: Boolean,
     onAuthorClick: (() -> Unit)?,
 ) {
@@ -123,7 +128,7 @@ private fun CommunityCard(
         Modifier
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
-            .clickable(onClick = onClick)
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .testTag(TierListsTestTags.communityCard(summary.id)),
     ) {
         Box(

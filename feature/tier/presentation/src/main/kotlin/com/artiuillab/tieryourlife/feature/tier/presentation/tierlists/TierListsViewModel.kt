@@ -2,10 +2,13 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.core.ui.UserMessages
 import com.artiuillab.tieryourlife.core.ui.guard
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
@@ -29,6 +32,7 @@ private const val COMMUNITY_SEARCH_DELAY_MILLIS = 300L
 class TierListsViewModel @Inject constructor(
     private val repository: TierRepository,
     private val community: CommunityRepository,
+    private val preferences: AppPreferences,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<TierListsUiState>(TierListsUiState.Loading)
@@ -129,12 +133,44 @@ class TierListsViewModel @Inject constructor(
 
     private suspend fun loadCommunityFeedNow(query: String?) {
         communityFeed = community.feed(communityCategory, query).fold(
-                onSuccess = { CommunityFeed.Ready(it) },
+                onSuccess = { CommunityFeed.Ready(it.filterNot(::isHidden)) },
                 onFailure = { error ->
                     Timber.w(error, "Loading the community feed failed")
                     CommunityFeed.Failed
                 },
         )
+        emitSuccess()
+    }
+
+    /** Hiding is local and silent: the author is never told. */
+    private fun isHidden(summary: PublishedListSummary): Boolean =
+        summary.id in preferences.hiddenListIds() || summary.authorUid in preferences.hiddenAuthorUids()
+
+    fun hideCommunityList(publishedId: String) {
+        preferences.hideList(publishedId)
+        dropFromFeed { it.id == publishedId }
+    }
+
+    fun hideCommunityAuthor(authorUid: String) {
+        preferences.hideAuthor(authorUid)
+        dropFromFeed { it.authorUid == authorUid }
+    }
+
+    /**
+     * Reporting hides the list here at once. Taking it down for everyone is a
+     * person's decision, and the screen says so rather than pretending.
+     */
+    fun reportCommunityList(publishedId: String, reason: ReportReason, note: String?) {
+        hideCommunityList(publishedId)
+        viewModelScope.launch {
+            community.report(publishedId, reason, note)
+                .onFailure { Timber.w(it, "Could not file the report") }
+        }
+    }
+
+    private fun dropFromFeed(matching: (PublishedListSummary) -> Boolean) {
+        val current = communityFeed as? CommunityFeed.Ready ?: return
+        communityFeed = CommunityFeed.Ready(current.lists.filterNot(matching))
         emitSuccess()
     }
 

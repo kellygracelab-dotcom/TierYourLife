@@ -335,4 +335,20 @@
         <item quantity="other">%1$d öffentliche Listen</item>
     </plurals>
     <string name="list_settings_public_too_large">Diese Liste ist zu groß zum Veröffentlichen: höchstens 1000 Karten und 20 Stufen.</string>
+    <string name="community_action_view_author">%1$s ansehen</string>
+    <string name="community_action_hide">Diese Liste ausblenden</string>
+    <string name="community_action_report">Diese Liste melden</string>
+    <string name="report_title">Diese Liste melden</string>
+    <string name="report_reason_sexual">Sexuelle Inhalte</string>
+    <string name="report_reason_violence">Gewalt oder verstörende Inhalte</string>
+    <string name="report_reason_hate">Hass oder Belästigung</string>
+    <string name="report_reason_spam">Spam oder Werbung</string>
+    <string name="report_reason_other">Etwas anderes</string>
+    <string name="report_note_label">Etwas hinzufügen (optional)</string>
+    <string name="report_by_hand">Jede Meldung liest ein Mensch. Nichts wird automatisch entfernt.</string>
+    <string name="report_action_send">Melden</string>
+    <string name="report_sent_title">Gemeldet und für dich ausgeblendet</string>
+    <string name="report_sent_body">Eine Person prüft Meldungen von Hand, bis dahin bleibt sie für andere sichtbar.</string>
+    <string name="report_hide_author">Auch alles von %1$s ausblenden</string>
+    <string name="community_hidden">Ausgeblendet</string>
 </resources>

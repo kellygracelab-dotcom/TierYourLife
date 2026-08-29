@@ -389,4 +389,20 @@
         <item quantity="other">%1$d публичного списка</item>
     </plurals>
     <string name="list_settings_public_too_large">Список слишком большой для публикации: не больше 1000 карточек и 20 тиров.</string>
+    <string name="community_action_view_author">Профиль %1$s</string>
+    <string name="community_action_hide">Скрыть этот список</string>
+    <string name="community_action_report">Пожаловаться на список</string>
+    <string name="report_title">Пожаловаться на список</string>
+    <string name="report_reason_sexual">Сексуальный контент</string>
+    <string name="report_reason_violence">Насилие или шокирующий контент</string>
+    <string name="report_reason_hate">Ненависть или травля</string>
+    <string name="report_reason_spam">Спам или реклама</string>
+    <string name="report_reason_other">Что-то другое</string>
+    <string name="report_note_label">Что-то добавить (необязательно)</string>
+    <string name="report_by_hand">Каждую жалобу читает человек. Автоматически ничего не удаляется.</string>
+    <string name="report_action_send">Пожаловаться</string>
+    <string name="report_sent_title">Жалоба отправлена, список скрыт</string>
+    <string name="report_sent_body">Жалобы разбирает один человек вручную, поэтому для других список пока останется.</string>
+    <string name="report_hide_author">Скрыть вообще всё от %1$s</string>
+    <string name="community_hidden">Скрыто</string>
 </resources>

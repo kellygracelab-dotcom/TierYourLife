@@ -360,4 +360,20 @@
         <item quantity="other">%1$d listes publiques</item>
     </plurals>
     <string name="list_settings_public_too_large">Cette liste est trop grande pour être publiée : 1000 cartes et 20 rangs au maximum.</string>
+    <string name="community_action_view_author">Voir %1$s</string>
+    <string name="community_action_hide">Masquer cette liste</string>
+    <string name="community_action_report">Signaler cette liste</string>
+    <string name="report_title">Signaler cette liste</string>
+    <string name="report_reason_sexual">Contenu sexuel</string>
+    <string name="report_reason_violence">Violence ou contenu choquant</string>
+    <string name="report_reason_hate">Haine ou harcèlement</string>
+    <string name="report_reason_spam">Spam ou publicité</string>
+    <string name="report_reason_other">Autre chose</string>
+    <string name="report_note_label">Quelque chose à ajouter (facultatif)</string>
+    <string name="report_by_hand">Une personne lit chaque signalement. Rien n\'est retiré automatiquement.</string>
+    <string name="report_action_send">Signaler</string>
+    <string name="report_sent_title">Signalée et masquée pour vous</string>
+    <string name="report_sent_body">Une seule personne examine les signalements à la main : elle peut rester visible pour les autres.</string>
+    <string name="report_hide_author">Masquer aussi tout de %1$s</string>
+    <string name="community_hidden">Masquée</string>
 </resources>

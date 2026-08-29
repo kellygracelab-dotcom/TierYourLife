@@ -66,3 +66,9 @@ data class PublishListRequestDto(
 data class PublishedIdDto(
     val id: String,
 )
+
+@Serializable
+data class ReportRequestDto(
+    val reason: String,
+    val note: String? = null,
+)

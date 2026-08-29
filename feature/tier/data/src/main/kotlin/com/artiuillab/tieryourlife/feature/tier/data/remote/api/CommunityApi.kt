@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishListReque
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedFeedDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedIdDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ReportRequestDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -35,4 +36,7 @@ interface CommunityApi {
 
     @PATCH("lists")
     suspend fun refreshAuthor()
+
+    @POST("lists/{id}/report")
+    suspend fun report(@Path("id") id: String, @Body request: ReportRequestDto)
 }

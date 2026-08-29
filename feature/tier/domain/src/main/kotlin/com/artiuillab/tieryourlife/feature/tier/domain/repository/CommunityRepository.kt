@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.domain.repository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 interface CommunityRepository {
@@ -32,4 +33,7 @@ interface CommunityRepository {
      * date. A snapshot freezes what was ranked, not who ranked it.
      */
     suspend fun refreshAuthor(): Result<Unit>
+
+    /** Files a complaint for a person to read. Nothing comes down on its own. */
+    suspend fun report(publishedId: String, reason: ReportReason, note: String?): Result<Unit>
 }

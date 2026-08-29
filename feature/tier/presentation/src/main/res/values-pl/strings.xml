@@ -389,4 +389,20 @@
         <item quantity="other">%1$d listy publicznej</item>
     </plurals>
     <string name="list_settings_public_too_large">Ta lista jest za duża, by ją opublikować: najwyżej 1000 kart i 20 poziomów.</string>
+    <string name="community_action_view_author">Zobacz %1$s</string>
+    <string name="community_action_hide">Ukryj tę listę</string>
+    <string name="community_action_report">Zgłoś tę listę</string>
+    <string name="report_title">Zgłoś tę listę</string>
+    <string name="report_reason_sexual">Treści seksualne</string>
+    <string name="report_reason_violence">Przemoc lub drastyczne treści</string>
+    <string name="report_reason_hate">Nienawiść lub nękanie</string>
+    <string name="report_reason_spam">Spam lub reklama</string>
+    <string name="report_reason_other">Coś innego</string>
+    <string name="report_note_label">Coś do dodania (opcjonalnie)</string>
+    <string name="report_by_hand">Każde zgłoszenie czyta człowiek. Nic nie znika automatycznie.</string>
+    <string name="report_action_send">Zgłoś</string>
+    <string name="report_sent_title">Zgłoszono i ukryto dla ciebie</string>
+    <string name="report_sent_body">Zgłoszenia sprawdza ręcznie jedna osoba, więc dla innych lista może pozostać.</string>
+    <string name="report_hide_author">Ukryj też wszystko od %1$s</string>
+    <string name="community_hidden">Ukryto</string>
 </resources>

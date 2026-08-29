@@ -6,11 +6,13 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListSummaryDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedTierDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ReportRequestDto
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -50,6 +52,14 @@ class RetrofitCommunityRepository @Inject constructor(
     }
 
     override suspend fun refreshAuthor(): Result<Unit> = runCatching { api.refreshAuthor() }
+
+    override suspend fun report(
+        publishedId: String,
+        reason: ReportReason,
+        note: String?,
+    ): Result<Unit> = runCatching {
+        api.report(publishedId, ReportRequestDto(reason.id, note?.takeIf { it.isNotBlank() }))
+    }
 }
 
 private fun Throwable.asPublishError(): PublishError = when {

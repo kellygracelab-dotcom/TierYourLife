@@ -1,11 +1,14 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
@@ -39,7 +42,7 @@ class TierListsViewModelTest {
                 fakeList(id = 2, title = "Another list"),
             ),
         )
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
 
         viewModel.loadTierLists()
         val state = viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success
@@ -52,7 +55,7 @@ class TierListsViewModelTest {
     @Test
     fun loadTierLists_onAnEmptyRepository_staysEmpty_andCreatesNothing() = runBlocking {
         val repository = FakeTierRepository(initial = emptyList())
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
 
         viewModel.loadTierLists()
         val state = viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success
@@ -64,7 +67,7 @@ class TierListsViewModelTest {
     @Test
     fun secondLoad_afterARenameOnTheRepository_showsTheNewTitle() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -87,7 +90,7 @@ class TierListsViewModelTest {
                 fakeList(id = 2, title = "Gets deleted"),
             ),
         )
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -105,7 +108,7 @@ class TierListsViewModelTest {
     @Test
     fun firstLoad_passesThroughLoadingState() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Existing")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
 
         val collected = recordStates(viewModel)
 
@@ -120,7 +123,7 @@ class TierListsViewModelTest {
     @Test
     fun secondLoad_neverShowsLoading_andReplacesTheListInOneStep() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -147,7 +150,7 @@ class TierListsViewModelTest {
         val repository = FakeTierRepository(
             initial = listOf(fakeList(id = 1, title = "Pizza in Lisbon"), fakeList(id = 2, title = "Sushi tour")),
         )
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -166,7 +169,7 @@ class TierListsViewModelTest {
     @Test
     fun exitSearch_returnsToBrowsingWithEveryListVisibleAgain() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Pizza in Lisbon")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -185,7 +188,7 @@ class TierListsViewModelTest {
     @Test
     fun toggleSelection_deselectingTheLastId_returnsToBrowsingMode() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Only list")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -208,7 +211,7 @@ class TierListsViewModelTest {
         val repository = FakeTierRepository(
             initial = listOf(fakeList(id = 1, title = "Keeps existing"), fakeList(id = 2, title = "Gets deleted")),
         )
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -237,7 +240,7 @@ class TierListsViewModelTest {
             initial = listOf(fakeList(id = 1, title = "Films", publishedId = "published-1")),
         )
         val community = FakeCommunityRepository()
-        val viewModel = TierListsViewModel(repository, community)
+        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences())
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
 
@@ -255,7 +258,7 @@ class TierListsViewModelTest {
             initial = listOf(fakeList(id = 1, title = "Films", publishedId = "published-1")),
         )
         val community = FakeCommunityRepository(unpublishResult = Result.failure(IllegalStateException()))
-        val viewModel = TierListsViewModel(repository, community)
+        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences())
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
 
@@ -401,4 +404,31 @@ private class FakeCommunityRepository(
     }
 
     override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
+
+    override suspend fun report(
+        publishedId: String,
+        reason: ReportReason,
+        note: String?,
+    ): Result<Unit> = Result.success(Unit)
+}
+
+private class FakeAppPreferences : AppPreferences {
+    private val hiddenLists = mutableSetOf<String>()
+    private val hiddenAuthors = mutableSetOf<String>()
+
+    override fun themeChoice(): ThemeChoice = ThemeChoice.SYSTEM
+    override fun setThemeChoice(choice: ThemeChoice) = Unit
+    override fun languageTag(): String? = null
+    override fun setLanguageTag(tag: String?) = Unit
+    override fun lastKnownCredits(): Int? = null
+    override fun setLastKnownCredits(credits: Int?) = Unit
+    override fun hiddenListIds(): Set<String> = hiddenLists
+    override fun hideList(publishedId: String) {
+        hiddenLists += publishedId
+    }
+
+    override fun hiddenAuthorUids(): Set<String> = hiddenAuthors
+    override fun hideAuthor(authorUid: String) {
+        hiddenAuthors += authorUid
+    }
 }

@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +37,12 @@ internal class FakeCommunityRepositoryForDetail(
     }
 
     override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
+
+    override suspend fun report(
+        publishedId: String,
+        reason: ReportReason,
+        note: String?,
+    ): Result<Unit> = Result.success(Unit)
 }
 
 internal class FakeAccountRepositoryForDetail(signedIn: Boolean = false) : AccountRepository {
