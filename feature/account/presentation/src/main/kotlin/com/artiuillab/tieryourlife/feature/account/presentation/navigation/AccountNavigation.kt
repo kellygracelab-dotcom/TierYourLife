@@ -13,8 +13,8 @@ fun NavController.navigateToAccount() {
     navigate(AccountRoute)
 }
 
-fun NavGraphBuilder.accountScreen(onClose: () -> Unit) {
+fun NavGraphBuilder.accountScreen(onClose: () -> Unit, onOpenPublished: () -> Unit) {
     composable<AccountRoute> {
-        AccountScreen(onClose = onClose)
+        AccountScreen(onClose = onClose, onOpenPublished = onOpenPublished)
     }
 }

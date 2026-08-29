@@ -24,6 +24,9 @@ interface CommunityApi {
         @Query("after") after: String? = null,
     ): PublishedFeedDto
 
+    @GET("lists/mine")
+    suspend fun myPublished(): PublishedFeedDto
+
     @GET("lists/reports")
     suspend fun reports(): ModerationQueueDto
 

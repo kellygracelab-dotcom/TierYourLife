@@ -348,4 +348,10 @@
     <plurals name="moderation_waiting">
         <item quantity="other">%d件が未対応</item>
     </plurals>
+    <string name="my_published_title">公開中のリスト</string>
+    <string name="my_published_subtitle">どの端末から公開したかによらず、コミュニティにあるものすべて。</string>
+    <string name="my_published_empty_title">公開中のものはありません</string>
+    <string name="my_published_empty_body">公開にしたリストがここに並びます。</string>
+    <string name="my_published_failed">公開中のリストを読み込めませんでした</string>
+    <string name="my_published_action_open">開く</string>
 </resources>

@@ -50,6 +50,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.account.componen
 @Composable
 fun AccountScreen(
     onClose: () -> Unit,
+    onOpenPublished: () -> Unit,
     viewModel: AccountViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -57,6 +58,7 @@ fun AccountScreen(
 
     AccountScreenContent(
         state = state,
+        onOpenPublished = onOpenPublished,
         onClose = onClose,
         onSignIn = { viewModel.signIn(context) },
         onSignOut = viewModel::signOut,
@@ -76,6 +78,7 @@ internal fun AccountScreenContent(
     onSetName: (String) -> Unit = {},
     onSetPhoto: (String?) -> Unit = {},
     onNoticeShown: () -> Unit = {},
+    onOpenPublished: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var nicknameDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -122,6 +125,7 @@ internal fun AccountScreenContent(
                         credits = state.credits,
                         onEditName = { nicknameDialogVisible = true },
                         onEditFace = { faceSheetVisible = true },
+                        onOpenPublished = onOpenPublished,
                         onDone = onClose,
                         onSignOut = onSignOut,
                     )

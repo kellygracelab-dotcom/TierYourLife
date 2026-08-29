@@ -432,4 +432,10 @@
         <item quantity="many">%d жалоб ждут</item>
         <item quantity="other">%d жалобы ждут</item>
     </plurals>
+    <string name="my_published_title">Твои публичные списки</string>
+    <string name="my_published_subtitle">Всё, что у тебя есть в сообществе, откуда бы ты это ни опубликовал.</string>
+    <string name="my_published_empty_title">Ничего не опубликовано</string>
+    <string name="my_published_empty_body">Списки, которые ты сделаешь публичными, появятся здесь.</string>
+    <string name="my_published_failed">Не удалось загрузить твои публичные списки</string>
+    <string name="my_published_action_open">Открыть</string>
 </resources>

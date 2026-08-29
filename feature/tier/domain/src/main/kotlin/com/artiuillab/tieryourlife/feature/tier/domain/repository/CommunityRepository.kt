@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
@@ -20,6 +21,13 @@ interface CommunityRepository {
         author: String? = null,
         after: String? = null,
     ): Result<CommunityPage>
+
+    /**
+     * Everything this person has in the community, as the server has it. Not
+     * the same as what this phone remembers publishing: a list survives the
+     * phone that published it.
+     */
+    suspend fun myPublished(): Result<List<PublishedListSummary>>
 
     suspend fun open(id: String): Result<PublishedList>
 

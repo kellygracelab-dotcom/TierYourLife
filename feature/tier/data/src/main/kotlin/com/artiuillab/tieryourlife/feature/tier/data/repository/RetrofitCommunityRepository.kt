@@ -40,6 +40,10 @@ class RetrofitCommunityRepository @Inject constructor(
         CommunityPage(lists = page.lists.map { it.toSummary() }, nextCursor = page.nextCursor)
     }
 
+    override suspend fun myPublished(): Result<List<PublishedListSummary>> = runCatching {
+        api.myPublished().lists.map { it.toSummary() }
+    }
+
     override suspend fun open(id: String): Result<PublishedList> = runCatching {
         api.open(id).toDomain()
     }

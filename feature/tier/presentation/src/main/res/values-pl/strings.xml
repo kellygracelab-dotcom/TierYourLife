@@ -432,4 +432,10 @@
         <item quantity="many">%d zgłoszeń czeka</item>
         <item quantity="other">%d zgłoszenia czeka</item>
     </plurals>
+    <string name="my_published_title">Twoje publiczne listy</string>
+    <string name="my_published_subtitle">Wszystko, co masz w społeczności, niezależnie skąd to opublikowano.</string>
+    <string name="my_published_empty_title">Nic nie opublikowano</string>
+    <string name="my_published_empty_body">Listy, które upublicznisz, pojawią się tutaj.</string>
+    <string name="my_published_failed">Nie udało się wczytać twoich publicznych list</string>
+    <string name="my_published_action_open">Otwórz</string>
 </resources>
