@@ -43,10 +43,11 @@ private val INDICATOR_SHAPE = RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp)
 /**
  * Written out rather than taken from [androidx.compose.material3.PrimaryTabRow]
  * for one reason: the indicator has to be as wide as the label. Material's own
- * asks for that too, but it reads the tab's intrinsic width, which comes back
- * short here and leaves the 24dp floor -- a stub under a word three times its
- * length. The label is the only thing in this bar whose size a translation
- * changes, so it is measured rather than guessed.
+ * asks for that too, but it takes the tab's intrinsic width and subtracts 32dp
+ * for padding a tab whose content is a bare Text does not have. That leaves
+ * 34dp under "Community" and hits the 24dp floor under "Your lists" -- a stub
+ * centred beneath a word three times its length. The label is the only thing
+ * in this bar whose size a translation changes, so it is measured.
  */
 @Composable
 internal fun HomeTabs(selected: HomeTab, onSelect: (HomeTab) -> Unit, modifier: Modifier = Modifier) {
