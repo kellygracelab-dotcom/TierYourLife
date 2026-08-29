@@ -1903,6 +1903,31 @@ class TierDetailScreenTest {
 
     private fun item(id: Long, title: String): TierItem = TierItem(id = id, title = title, imageUrl = null)
 
+    // Someone else's pool is material to rank, not somewhere to add to, and the
+    // trash would offer to destroy cards the reader does not own.
+    @Test
+    fun aReadOnlyBoard_offersNothingThatWouldChangeSomeoneElsesList() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList()),
+            tier(id = 6, label = "Pool", items = List(2) { tierItem(it + 100) }, isPool = true),
+        ).asTierList()
+
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierDetailScreenContent(
+                    state = TierDetailUiState.Success(list),
+                    actions = TierDetailActions(),
+                    readOnly = true,
+                    subtitle = "by Danylo K.",
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(TierDetailTestTags.ADD_CHIP).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.GENERATE_CHIP).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertIsDisplayed()
+    }
+
     private fun List<Tier>.asTierList(displayMode: TierListDisplayMode = TierListDisplayMode.WRAP): TierList =
         TierList(id = 1, title = "Sci-fi films", tiers = this, displayMode = displayMode)
 

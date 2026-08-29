@@ -167,6 +167,7 @@ internal fun RankedPoolSection(
     onGenerateClick: () -> Unit,
     onSelect: (itemId: Long) -> Unit,
     modifier: Modifier = Modifier,
+    readOnly: Boolean = false,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val description = pluralStringResource(
@@ -229,8 +230,10 @@ internal fun RankedPoolSection(
                 )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                CollapsedPoolAddChip(onClick = onAddClick)
-                GenerateChip(onClick = onGenerateClick)
+                if (!readOnly) {
+                    CollapsedPoolAddChip(onClick = onAddClick)
+                    GenerateChip(onClick = onGenerateClick)
+                }
             }
         }
 

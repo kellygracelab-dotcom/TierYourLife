@@ -53,6 +53,7 @@ internal fun PoolPanel(
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
     onDeleteItem: (itemId: Long) -> Unit,
     onDoubleTap: (itemId: Long) -> Unit = {},
+    readOnly: Boolean = false,
 ) {
     val listState = rememberLazyListState()
     val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
@@ -114,9 +115,12 @@ internal fun PoolPanel(
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            AddChip(onClick = onAddClick)
-            Spacer(Modifier.width(8.dp))
-            GenerateChip(onClick = onGenerateClick)
+            // Someone else's pool is material to rank, not a place to add to.
+            if (!readOnly) {
+                AddChip(onClick = onAddClick)
+                Spacer(Modifier.width(8.dp))
+                GenerateChip(onClick = onGenerateClick)
+            }
         }
         LazyRow(
             state = listState,

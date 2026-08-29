@@ -422,6 +422,7 @@ private fun TierScreenBody(
                         onAddClick = onAddClick,
                         onGenerateClick = onGenerateClick,
                         onSelect = { itemId -> chooserItemId = itemId },
+                        readOnly = readOnly,
                     )
                 }
             } else {
@@ -496,17 +497,20 @@ private fun TierScreenBody(
                         onMoveItem = onMoveItem,
                         onDeleteItem = deleteAndAnnounce,
                         onDoubleTap = { itemId -> chooserItemId = itemId },
+                        readOnly = readOnly,
                     )
                 }
             }
         }
 
         if (dragController.isDragging) {
-            TrashTarget(
-                dragController = dragController,
-                poolTierId = pool?.id,
-                modifier = Modifier.align(Alignment.TopEnd),
-            )
+            if (!readOnly) {
+                TrashTarget(
+                    dragController = dragController,
+                    poolTierId = pool?.id,
+                    modifier = Modifier.align(Alignment.TopEnd),
+                )
+            }
             FloatingDragTile(dragController)
         }
 
