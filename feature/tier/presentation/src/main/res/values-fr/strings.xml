@@ -407,4 +407,6 @@
     <string name="my_published_empty_body">Les listes que vous rendez publiques apparaissent ici.</string>
     <string name="my_published_failed">Impossible de charger vos listes publiques</string>
     <string name="my_published_action_open">Ouvrir</string>
+    <string name="community_tile_hidden">Masqué pour vous</string>
+    <string name="community_tile_reported">Signalé. Une personne va regarder.</string>
 </resources>

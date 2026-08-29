@@ -354,4 +354,6 @@
     <string name="my_published_empty_body">公開にしたリストがここに並びます。</string>
     <string name="my_published_failed">公開中のリストを読み込めませんでした</string>
     <string name="my_published_action_open">開く</string>
+    <string name="community_tile_hidden">あなたには非表示</string>
+    <string name="community_tile_reported">報告しました。人が確認します。</string>
 </resources>

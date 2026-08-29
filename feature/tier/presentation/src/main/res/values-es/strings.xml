@@ -407,4 +407,6 @@
     <string name="my_published_empty_body">Las listas que hagas públicas aparecen aquí.</string>
     <string name="my_published_failed">No se pudieron cargar tus listas públicas</string>
     <string name="my_published_action_open">Abrir</string>
+    <string name="community_tile_hidden">Oculto para ti</string>
+    <string name="community_tile_reported">Denunciado. Una persona lo revisará.</string>
 </resources>

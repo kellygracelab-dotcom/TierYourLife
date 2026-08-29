@@ -34,6 +34,13 @@ sealed interface CommunityFeed {
         val lists: List<PublishedListSummary>,
         val canLoadMore: Boolean = false,
         val loadingMore: Boolean = false,
+        /**
+         * Put away in this sitting, id to whether it was also reported.
+         * Their cards become a quiet note rather than vanishing: silence
+         * reads as "deleted", which is not what happened. The notes are
+         * gone by the next load, so the feed keeps no scars.
+         */
+        val justHidden: Map<String, Boolean> = emptyMap(),
     ) : CommunityFeed
     data object Failed : CommunityFeed
 }

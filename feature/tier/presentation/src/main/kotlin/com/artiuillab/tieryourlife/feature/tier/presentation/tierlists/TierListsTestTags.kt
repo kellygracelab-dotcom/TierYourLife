@@ -20,6 +20,7 @@ internal object TierListsTestTags {
     const val COMMUNITY_FAILED = "home_community_failed"
     const val COMMUNITY_EMPTY = "home_community_empty"
     const val COMMUNITY_LOADING_MORE = "home_community_loading_more"
+    const val COMMUNITY_HIDDEN_TILE = "home_community_hidden_tile"
     const val CATEGORY_FILTERS = "home_category_filters"
     const val LIST_ACTIONS_SHEET = "community_list_actions"
     const val ACTION_VIEW_AUTHOR = "community_action_view_author"

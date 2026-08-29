@@ -382,4 +382,6 @@
     <string name="my_published_empty_body">Listen, die du öffentlich machst, erscheinen hier.</string>
     <string name="my_published_failed">Deine öffentlichen Listen konnten nicht geladen werden</string>
     <string name="my_published_action_open">Öffnen</string>
+    <string name="community_tile_hidden">Für dich ausgeblendet</string>
+    <string name="community_tile_reported">Gemeldet. Ein Mensch sieht es sich an.</string>
 </resources>

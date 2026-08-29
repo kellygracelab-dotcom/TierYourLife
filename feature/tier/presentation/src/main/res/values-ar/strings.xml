@@ -494,4 +494,6 @@
     <string name="my_published_empty_body">تظهر هنا القوائم التي تجعلها عامة.</string>
     <string name="my_published_failed">تعذّر تحميل قوائمك العامة</string>
     <string name="my_published_action_open">فتح</string>
+    <string name="community_tile_hidden">مخفي عنك</string>
+    <string name="community_tile_reported">تم الإبلاغ. سيطّلع عليه شخص.</string>
 </resources>
