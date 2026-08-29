@@ -1,8 +1,9 @@
 # TierYourLife
 
-> A private ranking journal for Android. Put anything you care about on an **S / A / B / C / D**
+> A ranking journal for Android. Put anything you care about on an **S / A / B / C / D**
 > board — films, games, restaurants, albums, people's cooking — and keep it. Not a one-off
-> tier-list generator: your boards live on the device, stay editable, and are yours alone.
+> tier-list generator: your boards live on the device and stay editable. Private by default,
+> and any one of them can be published for other people to rank for themselves.
 
 [![CI](https://github.com/kellygracelab-dotcom/TierYourLife/actions/workflows/ci.yml/badge.svg)](https://github.com/kellygracelab-dotcom/TierYourLife/actions/workflows/ci.yml)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.4-7F52FF?logo=kotlin&logoColor=white)
@@ -36,6 +37,28 @@ on white is not a glowing slab at night. The theme follows the system or is pinn
 |:---:|:---:|:---:|
 | <img src="docs/screenshots/tiers-light.png" width="240"> | <img src="docs/screenshots/tiers-dark.png" width="240"> | <img src="docs/screenshots/settings.png" width="240"> |
 
+## The community
+
+A board you publish becomes something other people can open and rank themselves. They get your
+cards and your tiers, and an empty board to fill: the ranking is the part you do not hand over.
+
+| The feed | Long-press a card | Reporting one |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/community-feed.png" width="240"> | <img src="docs/screenshots/community-actions.png" width="240"> | <img src="docs/screenshots/report.png" width="240"> |
+
+A card shows a cover if the author set one, otherwise a mosaic of the list's own artwork,
+otherwise the author's tier palette — three kinds of card in one grid, each saying as much
+about the list as it can.
+
+Nothing is moderated automatically. Reports go to one person who reads them by hand, and the
+app says so before the button is pressed rather than implying a moderation team. Hiding sits
+next to reporting because most of the time "I would rather not see this" is not an accusation,
+and both can be undone from Settings.
+
+| Hidden, and put back | The report queue | What you have published |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/hidden.png" width="240"> | <img src="docs/screenshots/moderation.png" width="240"> | <img src="docs/screenshots/my-published.png" width="240"> |
+
 ## What it does today
 
 - **Boards.** Create lists, rename them, reorder tiers, edit each tier's label, caption and
@@ -50,16 +73,28 @@ on white is not a glowing slab at night. The theme follows the system or is pinn
   deduplicated and ranked into a single list. If one source is down the other still answers.
 - **Trash, not deletion.** Deleted lists and items go to a trash screen with the time they were
   removed and a one-tap restore. Deleting a tier does not take its trashed items with it.
+- **Publish a board.** Make one public and it joins the community feed under a category, with a
+  cover you choose. Deleting your list takes it down; a copy someone already saved stays theirs.
+- **The community.** Browse by category, search across it, open anyone's profile and see
+  everything they have published, and save a copy of any board into your own library.
+- **Report or hide.** Long-press a card, or use the overflow inside a list or on a profile.
+  Reporting hides it for you at once and files a complaint for a person to read; hiding does the
+  first half without the accusation. Both are listed in Settings and can be undone.
 - **Export.** Any list to a text file, then share it through the system sheet.
 - **Eleven languages** — English, Ukrainian, Russian, Spanish, Portuguese (BR), German, French,
   Polish, Turkish, Japanese, Arabic — switchable inside the app without a restart or a flash of
   the old language. Arabic is fully right-to-left: layout, icon mirroring and drag arithmetic.
 - **Light, dark, or follow the system**, applied before the first frame is drawn.
 
-Your boards are local. No sign-in, no analytics, nothing about them leaves the device. The only
-network calls are the two catalogue search sources, the images they point at, and image generation
-— which signs in anonymously, because generating an image costs real money and the server has to
-know whose allowance to count it against. No screen, no email, nothing asked of you.
+Your boards are local and private until you say otherwise. Publishing one is the only thing that
+sends a board anywhere, and it sends a snapshot: the cards and the tier definitions, never the
+ranking. Everything else stays on the phone, including photos from your gallery and generated
+artwork — a published list shows its web-hosted pictures and nothing else.
+
+Signing in is only needed to publish, and it is Google or nothing: no password to store, no
+email shown to anyone. Reading the community, saving a copy and reporting all work without an
+account. Everything metered — image generation, publishing — runs through a proxy that never
+sees a list it was not given, and the app's own keys never ship inside it.
 
 ## AI image studio
 
@@ -90,11 +125,17 @@ differently. The stub counts nothing and shows no number — its images never le
 ```
 app                          ← Application, Activity, theme + locale bootstrap
 navigation                   ← the NavHost that composes features into one graph
-core:settings                ← theme and language preferences
+core:settings                ← theme, language, and what this phone has hidden
 core:theme                   ← Material 3 colour scheme and typography
+core:logging                 ← Timber, and the only module that knows a crash reporter exists
+core:network                 ← App Check and ID-token interceptors shared by every caller
+core:ui                      ← the pieces more than one feature draws
 feature:tier:domain          ← models, repository ports, pure search-merge logic (no Android)
 feature:tier:data            ← Room, Retrofit, image store, Hilt wiring
 feature:tier:presentation    ← Compose screens, view models, strings
+feature:account:domain       ← who is signed in, as three states rather than a nullable user
+feature:account:data         ← Firebase Auth, Google linking, the author's name and face
+feature:account:presentation ← the account screen and its sheets
 feature:aistudio:domain      ← generation and library ports, generated-image model
 feature:aistudio:data        ← Gemini client, stub generator, credits, image store
 feature:aistudio:presentation ← the studio screen and its components
@@ -120,6 +161,10 @@ reversed after using the feature on a real phone.
 - **DI:** Hilt
 - **Data:** Room (entities, views, transactions, migrations, exported schemas) · SharedPreferences
 - **Network:** Retrofit · OkHttp · kotlinx.serialization · TMDB · Wikidata SPARQL · Gemini
+- **Backend:** Firebase — Auth, App Check (Play Integrity), Crashlytics, and Cloud Functions in
+  front of Firestore, in a [separate repository](https://github.com/kellygracelab-dotcom/tieryourlife-proxy)
+- **Logging:** Timber, with one tree for logcat in debug and one that turns warnings carrying an
+  exception into non-fatal Crashlytics reports
 - **Images:** Coil 3
 - **Build:** Gradle Kotlin DSL · version catalog · convention plugins · KSP
 - **Tests:** JUnit4 · Compose UI tests · Room in-memory tests · hand-written fakes
@@ -135,7 +180,8 @@ Every push runs the whole suite:
 | JVM | domain logic, search merging, title derivation, DTO parsing, repository behaviour against fakes |
 | Instrumented — data | Room DAOs, transactions, cascades, the image store |
 | Instrumented — presentation | Compose screens, view models, drag arithmetic, RTL layout |
-| Instrumented — app | manifest contract (RTL support, config-change handling) |
+| Instrumented — app | manifest contract (RTL support, portrait, config-change handling) |
+| Instrumented — every language | every screen rendered in all eleven, and written out to look at |
 
 Some of these exist because a bug got through first: a locale change that quietly broke three
 things visible in no other language, a tier deletion that took recoverable items with it, a
@@ -190,8 +236,11 @@ so with it as the only gate one person could spend without limit.
 
 ## What's next
 
+- [ ] **Boards that follow you.** Everything is on one phone today, so a new phone starts empty.
+      The row ids that make syncing possible are already in the schema; the sync itself is not.
 - [ ] Native-speaker review of the Arabic, Japanese and Turkish translations
 - [ ] Ranking history: what moved between tiers and when
+- [ ] Share a board as an image
 
 ---
 
