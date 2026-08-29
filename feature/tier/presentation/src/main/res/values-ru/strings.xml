@@ -406,4 +406,16 @@
     <string name="report_hide_author">Скрыть вообще всё от %1$s</string>
     <string name="community_action_hide_author">Скрыть всё от %1$s</string>
     <string name="action_done">Готово</string>
+    <string name="settings_hidden">Скрытое</string>
+    <string name="settings_hidden_sub">Списки и люди, которых вы перестали видеть</string>
+    <string name="settings_hidden_none">Ничего не скрыто</string>
+    <string name="hidden_title">Скрытое</string>
+    <string name="hidden_subtitle">Скрыто только у вас. Никому об этом не сообщали.</string>
+    <string name="hidden_lists">СПИСКИ</string>
+    <string name="hidden_people">ЛЮДИ</string>
+    <string name="action_show_again">Показать снова</string>
+    <string name="hidden_empty_title">Ничего не скрыто</string>
+    <string name="hidden_empty_body">Списки и люди, которых вы скроете в сообществе, будут ждать здесь — вдруг передумаете.</string>
+    <string name="hidden_unnamed_list">Список, который вы скрыли</string>
+    <string name="hidden_unnamed_person">Кто-то, кого вы скрыли</string>
 </resources>

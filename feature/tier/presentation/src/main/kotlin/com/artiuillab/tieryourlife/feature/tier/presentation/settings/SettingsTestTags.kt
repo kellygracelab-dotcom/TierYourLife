@@ -11,6 +11,7 @@ internal object SettingsTestTags {
     const val LANGUAGE_ROW = "settings_language_row"
     const val LANGUAGE_SHEET = "settings_language_sheet"
     const val TRASH_ROW = "settings_trash_row"
+    const val HIDDEN_ROW = "settings_hidden_row"
     const val EXPORT_ROW = "settings_export_row"
     fun languageOption(tag: String?) = "settings_language_option_${tag ?: "default"}"
 }

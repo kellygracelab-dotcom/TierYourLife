@@ -148,6 +148,7 @@ class SettingsScreenTest {
                     trashCount = 0,
                     onBack = {},
                     onTrashClick = {},
+            onHiddenClick = {},
                     onExportClick = {},
                 )
             }

@@ -51,6 +51,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.export.TierListsExportStr
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.FileDownloadIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.HideIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.AccountRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.LanguageRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.SettingsGroup
@@ -71,6 +72,7 @@ import java.util.Locale
 fun SettingsScreen(
     onBack: () -> Unit,
     onTrashClick: () -> Unit,
+    onHiddenClick: () -> Unit,
     onAccountClick: () -> Unit,
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
@@ -129,6 +131,7 @@ fun SettingsScreen(
         trashCount = trashCount,
         onBack = onBack,
         onTrashClick = onTrashClick,
+        onHiddenClick = onHiddenClick,
         onExportClick = { createDocumentLauncher.launch(defaultExportFileName(context)) },
         snackbarHostState = snackbarHostState,
     )
@@ -218,6 +221,7 @@ internal fun SettingsScreenContent(
     trashCount: Int,
     onBack: () -> Unit,
     onTrashClick: () -> Unit,
+    onHiddenClick: () -> Unit,
     onExportClick: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
@@ -243,6 +247,8 @@ internal fun SettingsScreenContent(
                     }
                     SettingsGroup(title = stringResource(R.string.settings_group_data)) {
                         TrashRow(trashCount = trashCount, onClick = onTrashClick)
+                        SettingsGroupDivider()
+                        HiddenRow(onClick = onHiddenClick)
                         SettingsGroupDivider()
                         ExportRow(onClick = onExportClick)
                     }
@@ -323,6 +329,17 @@ private fun TrashRow(trashCount: Int, onClick: () -> Unit) {
 }
 
 @Composable
+private fun HiddenRow(onClick: () -> Unit) {
+    SettingsRow(
+        icon = { HideIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = stringResource(R.string.settings_hidden),
+        subtitle = stringResource(R.string.settings_hidden_sub),
+        onClick = onClick,
+        testTag = SettingsTestTags.HIDDEN_ROW,
+    )
+}
+
+@Composable
 private fun ExportRow(onClick: () -> Unit) {
     SettingsRow(
         icon = { FileDownloadIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
@@ -377,6 +394,7 @@ private fun SettingsScreenLightPreview() = TierYourLifeTheme(false) {
         trashCount = 3,
         onBack = {},
         onTrashClick = {},
+        onHiddenClick = {},
         onExportClick = {},
     )
 }
@@ -396,6 +414,7 @@ private fun SettingsScreenDarkPreview() = TierYourLifeTheme(true) {
         trashCount = 3,
         onBack = {},
         onTrashClick = {},
+        onHiddenClick = {},
         onExportClick = {},
     )
 }

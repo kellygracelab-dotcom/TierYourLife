@@ -460,4 +460,16 @@
     <string name="report_hide_author">إخفاء كل شيء من %1$s أيضًا</string>
     <string name="community_action_hide_author">إخفاء كل شيء من %1$s</string>
     <string name="action_done">تم</string>
+    <string name="settings_hidden">المخفي</string>
+    <string name="settings_hidden_sub">قوائم وأشخاص لم تعد تراهم</string>
+    <string name="settings_hidden_none">لا شيء مخفي</string>
+    <string name="hidden_title">المخفي</string>
+    <string name="hidden_subtitle">مخفي عنك وحدك. لم يُبلَّغ أحد.</string>
+    <string name="hidden_lists">القوائم</string>
+    <string name="hidden_people">الأشخاص</string>
+    <string name="action_show_again">إظهار مجددًا</string>
+    <string name="hidden_empty_title">لا شيء مخفي</string>
+    <string name="hidden_empty_body">تنتظر هنا القوائم والأشخاص الذين أخفيتهم في المجتمع، في حال غيّرت رأيك.</string>
+    <string name="hidden_unnamed_list">قائمة أخفيتها</string>
+    <string name="hidden_unnamed_person">شخص أخفيته</string>
 </resources>

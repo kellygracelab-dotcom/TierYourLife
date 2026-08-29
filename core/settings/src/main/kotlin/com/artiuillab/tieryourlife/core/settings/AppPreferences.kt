@@ -22,13 +22,22 @@ interface AppPreferences {
     /**
      * Community lists this phone has hidden, and authors it has hidden
      * entirely. Both are local: nobody is told they were hidden, and hiding is
-     * not an accusation.
+     * not an accusation. Both can be undone, which is why a name is kept
+     * alongside the id.
      */
     fun hiddenListIds(): Set<String>
 
-    fun hideList(publishedId: String)
+    fun hiddenLists(): List<HiddenEntry>
+
+    fun hideList(publishedId: String, title: String)
+
+    fun unhideList(publishedId: String)
 
     fun hiddenAuthorUids(): Set<String>
 
-    fun hideAuthor(authorUid: String)
+    fun hiddenAuthors(): List<HiddenEntry>
+
+    fun hideAuthor(authorUid: String, name: String)
+
+    fun unhideAuthor(authorUid: String)
 }

@@ -88,7 +88,7 @@ fun TierListsScreen(
     val defaultListTitle = stringResource(R.string.default_tier_list_title)
     OnResumeEffect {
         viewModel.loadTierLists()
-        viewModel.dropHiddenFromFeed()
+        viewModel.refreshHidden()
     }
 
     TierListsScreenContent(
@@ -137,9 +137,9 @@ internal fun TierListsScreenContent(
     onOpenCommunityList: (String) -> Unit = {},
     onRetryCommunity: () -> Unit = {},
     onSelectCommunityCategory: (ListCategory?) -> Unit = {},
-    onHideCommunityList: (String) -> Unit = {},
-    onHideCommunityAuthor: (String) -> Unit = {},
-    onReportCommunityList: (String, ReportReason, String?) -> Unit = { _, _, _ -> },
+    onHideCommunityList: (PublishedListSummary) -> Unit = {},
+    onHideCommunityAuthor: (uid: String, name: String) -> Unit = { _, _ -> },
+    onReportCommunityList: (PublishedListSummary, ReportReason, String?) -> Unit = { _, _, _ -> },
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val success = state as? TierListsUiState.Success
@@ -331,7 +331,7 @@ internal fun TierListsScreenContent(
                     },
                     onHide = {
                         actionsFor = null
-                        onHideCommunityList(summary.id)
+                        onHideCommunityList(summary)
                     },
                     onReport = {
                         actionsFor = null
@@ -345,7 +345,7 @@ internal fun TierListsScreenContent(
                     onDismiss = { reportFor = null },
                     onSend = { reason, note ->
                         reportFor = null
-                        onReportCommunityList(summary.id, reason, note)
+                        onReportCommunityList(summary, reason, note)
                         reportedFrom = summary
                     },
                 )
@@ -357,7 +357,7 @@ internal fun TierListsScreenContent(
                     onDismiss = { reportedFrom = null },
                     onHideAuthor = {
                         reportedFrom = null
-                        onHideCommunityAuthor(summary.authorUid)
+                        onHideCommunityAuthor(summary.authorUid, summary.authorName)
                     },
                 )
             }

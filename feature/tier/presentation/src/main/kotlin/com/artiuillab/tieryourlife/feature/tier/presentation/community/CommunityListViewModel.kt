@@ -105,11 +105,12 @@ class CommunityListViewModel @Inject constructor(
     }
 
     fun hide() {
-        preferences.hideList(publishedId)
+        val current = _state.value as? CommunityListUiState.Success ?: return
+        preferences.hideList(publishedId, current.list.title)
     }
 
-    fun hideAuthor(authorUid: String) {
-        preferences.hideAuthor(authorUid)
+    fun hideAuthor(authorUid: String, name: String) {
+        preferences.hideAuthor(authorUid, name)
     }
 
     /**

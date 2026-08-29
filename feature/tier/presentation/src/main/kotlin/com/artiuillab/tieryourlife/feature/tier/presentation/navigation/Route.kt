@@ -25,4 +25,7 @@ sealed interface Route {
 
     @Serializable
     data object Trash : Route
+
+    @Serializable
+    data object Hidden : Route
 }

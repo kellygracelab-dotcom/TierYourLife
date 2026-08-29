@@ -280,8 +280,8 @@ class TierListsViewModelTest {
         viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
 
         // What opening the list and hiding it from in there leaves behind.
-        preferences.hideList("a")
-        viewModel.dropHiddenFromFeed()
+        preferences.hideList("a", "Sci-fi films")
+        viewModel.refreshHidden()
 
         val feed = (viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success)
             .community as CommunityFeed.Ready
@@ -295,12 +295,39 @@ class TierListsViewModelTest {
         viewModel.selectTab(HomeTab.Community)
         viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
 
-        viewModel.dropHiddenFromFeed()
+        viewModel.refreshHidden()
 
         val feed = (viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success)
             .community as CommunityFeed.Ready
         assertEquals(listOf("a"), feed.lists.map { it.id })
     }
+
+    // Undoing a hide happens in Settings, where the feed is not on screen and
+    // what we hold has already had the card taken out of it.
+    @Test
+    fun aListPutBack_returnsToTheFeed() = runBlocking {
+        val preferences = FakeAppPreferences()
+        val community = FakeCommunityRepository(
+            feed = listOf(published("a", "Sci-fi films"), published("b", "Every A24 film")),
+        )
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences)
+        viewModel.selectTab(HomeTab.Community)
+        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
+
+        preferences.hideList("a", "Sci-fi films")
+        viewModel.refreshHidden()
+        assertEquals(listOf("b"), shownIds(viewModel))
+
+        preferences.unhideList("a")
+        viewModel.refreshHidden()
+        val back = viewModel.state.first {
+            ((it as? TierListsUiState.Success)?.community as? CommunityFeed.Ready)?.lists?.size == 2
+        }
+        assertEquals(listOf("a", "b"), ((back as TierListsUiState.Success).community as CommunityFeed.Ready).lists.map { it.id })
+    }
+
+    private fun shownIds(viewModel: TierListsViewModel): List<String> =
+        ((viewModel.state.value as TierListsUiState.Success).community as CommunityFeed.Ready).lists.map { it.id }
 
     private fun published(id: String, title: String) = PublishedListSummary(
         id = id,

@@ -15,8 +15,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.ADDED_IT
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.authorScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.communityListScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.hiddenScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToAuthor
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToCommunityList
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToHidden
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToSettings
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTierDetail
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTrash
@@ -56,6 +58,7 @@ fun TierYourLifeNavHost(
         settingsScreen(
             onBack = { navController.popBackStack() },
             onTrashClick = { navController.navigateToTrash() },
+            onHiddenClick = { navController.navigateToHidden() },
             onAccountClick = { navController.navigateToAccount() },
             themeChoice = themeChoice,
             onThemeChoiceChange = onThemeChoiceChange,
@@ -63,6 +66,7 @@ fun TierYourLifeNavHost(
             onLanguageTagChange = onLanguageTagChange,
         )
         trashScreen(onBack = { navController.popBackStack() })
+        hiddenScreen(onBack = { navController.popBackStack() })
         accountScreen(onClose = { navController.popBackStack() })
         authorScreen(
             onBack = { navController.popBackStack() },

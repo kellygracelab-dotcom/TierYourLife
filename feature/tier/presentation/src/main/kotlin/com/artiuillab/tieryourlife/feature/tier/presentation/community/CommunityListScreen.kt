@@ -69,8 +69,8 @@ fun CommunityListScreen(
             viewModel.hide()
             onBack()
         },
-        onHideAuthor = { uid ->
-            viewModel.hideAuthor(uid)
+        onHideAuthor = { uid, name ->
+            viewModel.hideAuthor(uid, name)
             onBack()
         },
         onReport = viewModel::report,
@@ -87,7 +87,7 @@ internal fun CommunityListScreenContent(
     modifier: Modifier = Modifier,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit = { _, _, _ -> },
     onHide: () -> Unit = {},
-    onHideAuthor: (String) -> Unit = {},
+    onHideAuthor: (uid: String, name: String) -> Unit = { _, _ -> },
     onReport: (ReportReason, String?) -> Unit = { _, _ -> },
 ) {
     var actionsVisible by remember { mutableStateOf(false) }
@@ -183,7 +183,7 @@ internal fun CommunityListScreenContent(
                     },
                     onHideAuthor = {
                         reportedFrom = false
-                        onHideAuthor(loaded.authorUid)
+                        onHideAuthor(loaded.authorUid, loaded.authorName)
                     },
                 )
             }
