@@ -130,11 +130,14 @@ class TierDetailViewModelTest {
         repository.readsAreHeld = true
 
         viewModel.setPublic(true)
-        viewModel.publishing.first { !it }
+        // Waiting on the pending flag itself rather than on `publishing`: those
+        // are two writes one after the other, and waking between them made this
+        // fail on a slow emulator for a reason that had nothing to do with the
+        // thing being tested.
+        viewModel.publicPending.first { it == null }
 
         val shown = (viewModel.state.value as TierDetailUiState.Success).list
         assertEquals("published-1", shown.publishedId)
-        assertNull(viewModel.publicPending.value)
     }
 
     @Test
@@ -197,6 +200,48 @@ class TierDetailViewModelTest {
         viewModel.publishing.first { !it }
 
         assertEquals(ListCategory.Food, community.published.single().category)
+    }
+
+    // A line that tells you to choose a category has to stop saying it once you
+    // have. Leaving it up reads as "that did not work".
+    @Test
+    fun setCategory_afterBeingAskedFor_takesTheAskBackDown() = runBlocking {
+        val viewModel = TierDetailViewModel(
+            FakeTierRepository(listWithOneCard().copy(category = null)),
+            FakeCommunityRepositoryForDetail(),
+            FakeAccountRepositoryForDetail(signedIn = true),
+            savedStateHandle(),
+        )
+        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.setPublic(true)
+        assertEquals(PublishError.NoCategory, viewModel.publishError.value)
+
+        viewModel.setCategory(ListCategory.Food)
+        viewModel.state.first { (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food }
+
+        assertNull(viewModel.publishError.value)
+    }
+
+    // A refusal from the server is not something an unrelated edit answers, so
+    // it has to survive the reload that follows one.
+    @Test
+    fun aServerRefusal_survivesTheNextEdit() = runBlocking {
+        val viewModel = TierDetailViewModel(
+            FakeTierRepository(listWithOneCard()),
+            FakeCommunityRepositoryForDetail(
+                publishResult = Result.failure(PublishRefused(PublishError.TooManyLists)),
+            ),
+            FakeAccountRepositoryForDetail(signedIn = true),
+            savedStateHandle(),
+        )
+        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.setPublic(true)
+        viewModel.publishing.first { !it }
+
+        viewModel.setCoverImageUrl("https://example.test/cover.jpg")
+        viewModel.state.first { (it as? TierDetailUiState.Success)?.list?.coverImageUrl != null }
+
+        assertEquals(PublishError.TooManyLists, viewModel.publishError.value)
     }
 
     // The server refuses a list with nothing in it. Finding that out over the
