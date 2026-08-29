@@ -195,7 +195,11 @@ internal fun TierListsScreenContent(
 
                 if (mode !is HomeMode.Searching) {
                     HomeTabs(selected = tab, onSelect = onSelectTab)
-                    HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
+                    // The counters describe this phone's lists, which says
+                    // nothing about the feed the Community tab is showing.
+                    if (tab == HomeTab.Mine) {
+                        HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
+                    }
                 }
 
                 when (state) {
