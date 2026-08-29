@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishRefused
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.ordering.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
@@ -243,6 +244,20 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
+    /**
+     * "Choose a category before you publish this list" has to stop saying that
+     * once a category is chosen. Only the two the list itself can answer are
+     * dropped; a refusal from the server stands until the next attempt.
+     */
+    private fun dropSettledPublishError(list: TierList) {
+        val settled = when (_publishError.value) {
+            PublishError.NoCategory -> list.category != null
+            PublishError.NothingToPublish -> list.tiers.any { it.items.isNotEmpty() }
+            else -> false
+        }
+        if (settled) _publishError.value = null
+    }
+
     private fun mutate(operation: String, block: suspend () -> Unit) {
         viewModelScope.launch {
             messages.guard(operation) { block() }
@@ -255,6 +270,7 @@ class TierDetailViewModel @Inject constructor(
         try {
             val list = repository.getTierListById(tierListId)
             _state.value = if (list != null) {
+                dropSettledPublishError(list)
                 TierDetailUiState.Success(list)
             } else {
                 TierDetailUiState.Error
