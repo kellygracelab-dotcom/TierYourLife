@@ -269,6 +269,49 @@ class TierListsViewModelTest {
         assertEquals(listOf(1L), state.lists.map { it.id })
     }
 
+    @Test
+    fun aListHiddenOnAnotherScreen_isGoneWhenTheFeedComesBackIntoView() = runBlocking {
+        val preferences = FakeAppPreferences()
+        val community = FakeCommunityRepository(
+            feed = listOf(published("a", "Sci-fi films"), published("b", "Every A24 film")),
+        )
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences)
+        viewModel.selectTab(HomeTab.Community)
+        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
+
+        // What opening the list and hiding it from in there leaves behind.
+        preferences.hideList("a")
+        viewModel.dropHiddenFromFeed()
+
+        val feed = (viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success)
+            .community as CommunityFeed.Ready
+        assertEquals(listOf("b"), feed.lists.map { it.id })
+    }
+
+    @Test
+    fun comingBackWithNothingHidden_leavesTheFeedAlone() = runBlocking {
+        val community = FakeCommunityRepository(feed = listOf(published("a", "Sci-fi films")))
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences())
+        viewModel.selectTab(HomeTab.Community)
+        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
+
+        viewModel.dropHiddenFromFeed()
+
+        val feed = (viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success)
+            .community as CommunityFeed.Ready
+        assertEquals(listOf("a"), feed.lists.map { it.id })
+    }
+
+    private fun published(id: String, title: String) = PublishedListSummary(
+        id = id,
+        title = title,
+        authorUid = "author-$id",
+        authorName = "Danylo K.",
+        category = ListCategory.FilmTv,
+        itemCount = 12,
+        updatedAtMillis = 0,
+    )
+
     private fun fakeList(id: Long, title: String, publishedId: String? = null): TierList =
         TierList(id = id, title = title, tiers = emptyList(), publishedId = publishedId)
 

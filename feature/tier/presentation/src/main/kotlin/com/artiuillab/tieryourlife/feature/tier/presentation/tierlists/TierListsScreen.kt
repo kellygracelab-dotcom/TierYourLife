@@ -86,7 +86,10 @@ fun TierListsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val defaultListTitle = stringResource(R.string.default_tier_list_title)
-    OnResumeEffect(onResume = viewModel::loadTierLists)
+    OnResumeEffect {
+        viewModel.loadTierLists()
+        viewModel.dropHiddenFromFeed()
+    }
 
     TierListsScreenContent(
         state = state,

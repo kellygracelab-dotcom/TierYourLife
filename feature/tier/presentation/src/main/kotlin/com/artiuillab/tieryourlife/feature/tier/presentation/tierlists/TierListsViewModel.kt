@@ -146,6 +146,16 @@ class TierListsViewModel @Inject constructor(
     private fun isHidden(summary: PublishedListSummary): Boolean =
         summary.id in preferences.hiddenListIds() || summary.authorUid in preferences.hiddenAuthorUids()
 
+    /**
+     * Hiding can happen on another screen -- inside a list, or on its
+     * author's profile -- and the feed here is already loaded. Re-reading
+     * the local hidden set costs nothing and beats coming back to a card
+     * you just put away.
+     */
+    fun dropHiddenFromFeed() {
+        dropFromFeed(::isHidden)
+    }
+
     fun hideCommunityList(publishedId: String) {
         preferences.hideList(publishedId)
         dropFromFeed { it.id == publishedId }
@@ -170,7 +180,9 @@ class TierListsViewModel @Inject constructor(
 
     private fun dropFromFeed(matching: (PublishedListSummary) -> Boolean) {
         val current = communityFeed as? CommunityFeed.Ready ?: return
-        communityFeed = CommunityFeed.Ready(current.lists.filterNot(matching))
+        val kept = current.lists.filterNot(matching)
+        if (kept.size == current.lists.size) return
+        communityFeed = CommunityFeed.Ready(kept)
         emitSuccess()
     }
 
