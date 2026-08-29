@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -63,16 +64,17 @@ class CommunityListViewModelTest {
         val viewModel = viewModel(tiers = tiers)
         viewModel.state.first { it is CommunityListUiState.Success }
 
-        var savedId: Long? = null
-        viewModel.saveToMyLists { savedId = it }
-        viewModel.state.first { (it as? CommunityListUiState.Success)?.saving == false }
+        // The view model clears `saving` before it calls back, so waiting on the
+        // flag can win the race against the id it is waiting for.
+        val savedId = CompletableDeferred<Long>()
+        viewModel.saveToMyLists { savedId.complete(it) }
+        assertEquals(7L, savedId.await())
 
         val template = tiers.templates.single()
         assertEquals("Every A24 film", template.title)
         assertEquals("Danylo K.", template.authorName)
         assertEquals(2, template.items.size)
         assertEquals(2, template.tiers.size)
-        assertEquals(7L, savedId)
     }
 
     @Test
