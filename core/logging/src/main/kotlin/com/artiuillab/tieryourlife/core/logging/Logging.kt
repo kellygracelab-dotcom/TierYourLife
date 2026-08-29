@@ -6,14 +6,22 @@ import timber.log.Timber
 /**
  * Every module logs through Timber; only this one knows a crash reporter exists.
  *
- * Debug builds print and report nothing — a crash on a developer's phone is not
- * news, and mixing the two makes release numbers meaningless.
+ * Both builds report. The usual rule is to keep development crashes out of
+ * release figures, but nothing is released yet, so the only runs that exist are
+ * the ones on our own phones — silencing those would mean collecting nothing at
+ * all. Revisit at release: the debug build should stop reporting the moment
+ * real users start.
+ *
+ * A debug build also prints, which a release build never does.
  */
 object Logging {
 
     fun install(debug: Boolean) {
-        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = !debug
-        Timber.plant(if (debug) Timber.DebugTree() else CrashlyticsTree(FirebaseCrashReporter))
+        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
+        if (debug) {
+            Timber.plant(Timber.DebugTree())
+        }
+        Timber.plant(CrashlyticsTree(FirebaseCrashReporter))
     }
 
     /**
