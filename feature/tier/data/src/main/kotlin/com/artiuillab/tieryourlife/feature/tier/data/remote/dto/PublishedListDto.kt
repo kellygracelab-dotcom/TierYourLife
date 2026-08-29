@@ -20,6 +20,7 @@ data class PublishedListSummaryDto(
 @Serializable
 data class PublishedFeedDto(
     val lists: List<PublishedListSummaryDto> = emptyList(),
+    val nextCursor: String? = null,
 )
 
 @Serializable

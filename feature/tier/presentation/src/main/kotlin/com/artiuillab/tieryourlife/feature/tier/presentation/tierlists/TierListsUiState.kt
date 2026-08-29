@@ -30,6 +30,10 @@ enum class HomeTab { Mine, Community }
 
 sealed interface CommunityFeed {
     data object Loading : CommunityFeed
-    data class Ready(val lists: List<PublishedListSummary>) : CommunityFeed
+    data class Ready(
+        val lists: List<PublishedListSummary>,
+        val canLoadMore: Boolean = false,
+        val loadingMore: Boolean = false,
+    ) : CommunityFeed
     data object Failed : CommunityFeed
 }

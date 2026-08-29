@@ -51,7 +51,9 @@ class AuthorViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = AuthorUiState.Loading
             _state.value = community.feed(author = route.authorUid).fold(
-                onSuccess = { all ->
+                onSuccess = { page ->
+                    // An author may publish twenty lists, which is one page.
+                    val all = page.lists
                     // A list hidden from the feed stays hidden here; the
                     // profile is another way to the same shelf.
                     val hidden = preferences.hiddenListIds()

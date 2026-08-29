@@ -20,6 +20,7 @@ interface CommunityApi {
         @Query("category") category: String? = null,
         @Query("q") query: String? = null,
         @Query("author") author: String? = null,
+        @Query("after") after: String? = null,
     ): PublishedFeedDto
 
     @GET("lists/{id}")

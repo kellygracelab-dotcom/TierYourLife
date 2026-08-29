@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.core.ui.UserMessages
 import com.artiuillab.tieryourlife.core.ui.guard
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
@@ -49,6 +50,10 @@ class TierListsViewModel @Inject constructor(
 
     /** What the feed on screen was already filtered against. */
     private var appliedHidden: Set<String> = emptySet()
+
+    /** What to ask for to get the page after the one on screen. */
+    private var communityCursor: String? = null
+    private var moreJob: Job? = null
     private var communityFeed: CommunityFeed = CommunityFeed.Loading
     private var communityCategory: ListCategory? = null
     private var communitySearch: Job? = null
@@ -135,14 +140,59 @@ class TierListsViewModel @Inject constructor(
     }
 
     private suspend fun loadCommunityFeedNow(query: String?) {
+        moreJob?.cancel()
         appliedHidden = preferences.hiddenListIds() + preferences.hiddenAuthorUids()
         communityFeed = community.feed(communityCategory, query).fold(
-                onSuccess = { CommunityFeed.Ready(it.filterNot(::isHidden)) },
-                onFailure = { error ->
-                    Timber.w(error, "Loading the community feed failed")
-                    CommunityFeed.Failed
-                },
+            onSuccess = { page ->
+                communityCursor = page.nextCursor
+                CommunityFeed.Ready(
+                    lists = page.lists.filterNot(::isHidden),
+                    canLoadMore = page.nextCursor != null,
+                )
+            },
+            onFailure = { error ->
+                Timber.w(error, "Loading the community feed failed")
+                communityCursor = null
+                CommunityFeed.Failed
+            },
         )
+        emitSuccess()
+    }
+
+    fun loadMoreCommunity() {
+        val shown = communityFeed as? CommunityFeed.Ready ?: return
+        val cursor = communityCursor ?: return
+        if (shown.loadingMore) return
+
+        communityFeed = shown.copy(loadingMore = true)
+        emitSuccess()
+        moreJob = viewModelScope.launch {
+            community.feed(communityCategory, (mode as? HomeMode.Searching)?.query, after = cursor)
+                .onSuccess { page -> appendPage(page) }
+                // A page that never arrived is no reason to take away the
+                // ones that did. The next scroll asks again.
+                .onFailure { error ->
+                    Timber.w(error, "Loading another page of the community feed failed")
+                    stopWaitingForMore()
+                }
+        }
+    }
+
+    private fun appendPage(page: CommunityPage) {
+        val shown = communityFeed as? CommunityFeed.Ready ?: return
+        communityCursor = page.nextCursor
+        val alreadyShown = shown.lists.mapTo(mutableSetOf()) { it.id }
+        communityFeed = shown.copy(
+            lists = shown.lists + page.lists.filterNot { it.id in alreadyShown || isHidden(it) },
+            canLoadMore = page.nextCursor != null,
+            loadingMore = false,
+        )
+        emitSuccess()
+    }
+
+    private fun stopWaitingForMore() {
+        val shown = communityFeed as? CommunityFeed.Ready ?: return
+        communityFeed = shown.copy(loadingMore = false)
         emitSuccess()
     }
 
@@ -192,7 +242,7 @@ class TierListsViewModel @Inject constructor(
         val current = communityFeed as? CommunityFeed.Ready ?: return
         val kept = current.lists.filterNot(matching)
         if (kept.size == current.lists.size) return
-        communityFeed = CommunityFeed.Ready(kept)
+        communityFeed = current.copy(lists = kept)
         emitSuccess()
     }
 
