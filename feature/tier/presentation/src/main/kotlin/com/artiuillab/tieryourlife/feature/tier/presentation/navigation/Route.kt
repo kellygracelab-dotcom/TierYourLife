@@ -28,4 +28,7 @@ sealed interface Route {
 
     @Serializable
     data object Hidden : Route
+
+    @Serializable
+    data object Moderation : Route
 }

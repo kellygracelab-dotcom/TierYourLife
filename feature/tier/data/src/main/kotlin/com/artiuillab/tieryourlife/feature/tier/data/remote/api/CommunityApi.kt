@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.remote.api
 
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ModerationQueueDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedFeedDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedIdDto
@@ -22,6 +23,15 @@ interface CommunityApi {
         @Query("author") author: String? = null,
         @Query("after") after: String? = null,
     ): PublishedFeedDto
+
+    @GET("lists/reports")
+    suspend fun reports(): ModerationQueueDto
+
+    @POST("lists/{id}/takedown")
+    suspend fun takeDown(@Path("id") id: String)
+
+    @POST("lists/{id}/dismiss")
+    suspend fun dismissReports(@Path("id") id: String)
 
     @GET("lists/{id}")
     suspend fun open(@Path("id") id: String): PublishedListDto

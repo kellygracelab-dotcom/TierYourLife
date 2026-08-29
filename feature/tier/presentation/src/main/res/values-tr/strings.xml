@@ -364,4 +364,16 @@
     <string name="hidden_empty_body">Toplulukta gizlediğiniz listeler ve kişiler, fikrinizi değiştirirsiniz diye burada bekler.</string>
     <string name="hidden_unnamed_list">Gizlediğiniz bir liste</string>
     <string name="hidden_unnamed_person">Gizlediğiniz biri</string>
+    <string name="moderation_title">Bildirimler</string>
+    <string name="moderation_failed">Bildirimler yüklenemedi</string>
+    <string name="moderation_empty_title">İncelenecek bir şey yok</string>
+    <string name="moderation_empty_body">Topluluk listeleriyle ilgili bildirimler buraya gelir.</string>
+    <string name="moderation_action_take_down">Kaldır</string>
+    <string name="moderation_action_keep">Bırak</string>
+    <string name="settings_moderation">Bildirimler</string>
+    <string name="settings_moderation_none">Bekleyen yok</string>
+    <plurals name="moderation_waiting">
+        <item quantity="one">%d bekliyor</item>
+        <item quantity="other">%d bekliyor</item>
+    </plurals>
 </resources>

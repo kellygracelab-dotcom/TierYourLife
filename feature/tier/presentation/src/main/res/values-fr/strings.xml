@@ -389,4 +389,16 @@
     <string name="hidden_empty_body">Les listes et les personnes que vous masquez dans la communauté attendent ici, au cas où vous changeriez d\'avis.</string>
     <string name="hidden_unnamed_list">Une liste que vous avez masquée</string>
     <string name="hidden_unnamed_person">Quelqu’un que vous avez masqué</string>
+    <string name="moderation_title">Signalements</string>
+    <string name="moderation_failed">Impossible de charger les signalements</string>
+    <string name="moderation_empty_title">Rien à examiner</string>
+    <string name="moderation_empty_body">Les signalements de listes de la communauté arrivent ici.</string>
+    <string name="moderation_action_take_down">Retirer</string>
+    <string name="moderation_action_keep">Laisser</string>
+    <string name="settings_moderation">Signalements</string>
+    <string name="settings_moderation_none">Rien en attente</string>
+    <plurals name="moderation_waiting">
+        <item quantity="one">%d en attente</item>
+        <item quantity="other">%d en attente</item>
+    </plurals>
 </resources>

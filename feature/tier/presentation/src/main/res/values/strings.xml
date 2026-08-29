@@ -365,4 +365,16 @@
     <string name="hidden_empty_body">Lists and people you hide in the community wait here, in case you change your mind.</string>
     <string name="hidden_unnamed_list">A list you hid</string>
     <string name="hidden_unnamed_person">Someone you hid</string>
+    <string name="moderation_title">Reports</string>
+    <string name="moderation_failed">Could not load the reports</string>
+    <string name="moderation_empty_title">Nothing to review</string>
+    <string name="moderation_empty_body">Complaints about community lists arrive here.</string>
+    <string name="moderation_action_take_down">Take it down</string>
+    <string name="moderation_action_keep">Leave it up</string>
+    <string name="settings_moderation">Reports</string>
+    <string name="settings_moderation_none">Nothing waiting</string>
+    <plurals name="moderation_waiting">
+        <item quantity="one">%d waiting</item>
+        <item quantity="other">%d waiting</item>
+    </plurals>
 </resources>

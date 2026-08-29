@@ -472,4 +472,20 @@
     <string name="hidden_empty_body">تنتظر هنا القوائم والأشخاص الذين أخفيتهم في المجتمع، في حال غيّرت رأيك.</string>
     <string name="hidden_unnamed_list">قائمة أخفيتها</string>
     <string name="hidden_unnamed_person">شخص أخفيته</string>
+    <string name="moderation_title">البلاغات</string>
+    <string name="moderation_failed">تعذّر تحميل البلاغات</string>
+    <string name="moderation_empty_title">لا شيء للمراجعة</string>
+    <string name="moderation_empty_body">تصل هنا الشكاوى بشأن قوائم المجتمع.</string>
+    <string name="moderation_action_take_down">إزالة</string>
+    <string name="moderation_action_keep">إبقاء</string>
+    <string name="settings_moderation">البلاغات</string>
+    <string name="settings_moderation_none">لا شيء في الانتظار</string>
+    <plurals name="moderation_waiting">
+        <item quantity="zero">لا بلاغات</item>
+        <item quantity="one">بلاغ واحد ينتظر</item>
+        <item quantity="two">بلاغان ينتظران</item>
+        <item quantity="few">%d بلاغات تنتظر</item>
+        <item quantity="many">%d بلاغًا تنتظر</item>
+        <item quantity="other">%d بلاغ ينتظر</item>
+    </plurals>
 </resources>
