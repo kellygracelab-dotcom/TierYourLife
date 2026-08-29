@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -50,6 +51,9 @@ internal fun TierScreenTopBar(
     onMoreClick: () -> Unit = {},
     onRenameList: (String) -> Unit = {},
     titleEditable: Boolean = false,
+    /** Someone else's list: nothing here is editable, so nothing offers to edit. */
+    readOnly: Boolean = false,
+    subtitle: String? = null,
 ) {
     val backDescription = stringResource(R.string.tier_detail_content_description_back)
     val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
@@ -76,28 +80,40 @@ internal fun TierScreenTopBar(
                 modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
             )
         } else {
-            Text(
-                text = title,
-                modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
-                style = MaterialTheme.typography.titleLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+            Column(Modifier.weight(1f).padding(horizontal = 4.dp)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
         }
-        IconButton(
-            onClick = onManualAdd,
-            modifier = Modifier
-                .size(48.dp)
-                .semantics { contentDescription = manualAddDescription }
-                .testTag(TierDetailTestTags.MANUAL_ADD_BUTTON),
-        ) { NoteAddIcon() }
-        IconButton(
-            onClick = onMoreClick,
-            modifier = Modifier
-                .size(48.dp)
-                .semantics { contentDescription = moreDescription },
-        ) { MoreIcon() }
+        if (!readOnly) {
+            IconButton(
+                onClick = onManualAdd,
+                modifier = Modifier
+                    .size(48.dp)
+                    .semantics { contentDescription = manualAddDescription }
+                    .testTag(TierDetailTestTags.MANUAL_ADD_BUTTON),
+            ) { NoteAddIcon() }
+            IconButton(
+                onClick = onMoreClick,
+                modifier = Modifier
+                    .size(48.dp)
+                    .semantics { contentDescription = moreDescription },
+            ) { MoreIcon() }
+        }
     }
 }
 

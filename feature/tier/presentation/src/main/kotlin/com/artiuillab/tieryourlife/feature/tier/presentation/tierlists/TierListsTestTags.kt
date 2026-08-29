@@ -13,6 +13,11 @@ internal object TierListsTestTags {
     const val SELECTION_DELETE = "home_selection_delete"
     const val FAB = "home_fab"
     const val EMPTY_STATE = "home_empty_state"
+    const val COMMUNITY_LOADING = "home_community_loading"
+    const val COMMUNITY_FAILED = "home_community_failed"
+    const val COMMUNITY_EMPTY = "home_community_empty"
     fun tierListCard(id: Long): String = "tier_list_card_$id"
+    fun communityCard(id: String): String = "community_card_$id"
+    fun tab(tab: HomeTab): String = "home_tab_${tab.name.lowercase()}"
     fun suggestion(index: Int): String = "home_suggestion_$index"
 }

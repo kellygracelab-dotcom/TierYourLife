@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,15 +38,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierLists
 @Composable
 internal fun HomeHeader(totalListCount: Int, rankedCount: Int) {
     Column(
-        modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp),
+        modifier = Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
     ) {
-        Text(
-            text = stringResource(R.string.tier_lists_title),
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
         if (totalListCount > 0) {
-            Spacer(Modifier.height(4.dp))
             Text(
                 text = stringResource(
                     R.string.tier_lists_summary,
@@ -72,7 +65,14 @@ internal fun HomeTopBar(onSearchClick: () -> Unit, onSettingsClick: () -> Unit) 
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Spacer(Modifier.weight(1f))
+        Text(
+            text = stringResource(R.string.app_name_display),
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 12.dp),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
         HomeIconButton(stringResource(R.string.tier_lists_content_description_search), onSearchClick) {
             SearchIcon()
         }

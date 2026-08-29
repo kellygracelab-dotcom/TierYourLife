@@ -282,4 +282,21 @@
     <string name="home_suggestion_restaurants">Restaurants</string>
     <string name="home_suggestion_albums">Albums</string>
     <string name="home_suggestion_books">Books</string>
+    <string name="app_name_display" translatable="false">TierYourLife</string>
+    <string name="home_tab_mine">Your lists</string>
+    <string name="home_tab_community">Community</string>
+    <string name="home_community_empty">Nothing published yet</string>
+    <string name="home_community_empty_body">Lists people make public show up here.</string>
+    <string name="home_community_failed">Could not load the community</string>
+    <string name="home_community_failed_body">Check your connection.</string>
+    <string name="community_by_author">by %1$s</string>
+    <string name="community_save_to_my_lists">Save to my lists</string>
+    <string name="community_someone_elses">Someone else\'s list. Rank it however you like.</string>
+    <string name="community_not_saved_yet">Your arrangement isn\'t saved yet.</string>
+    <string name="community_open_failed">Could not open this list</string>
+    <string name="community_saved">Saved to your lists</string>
+    <string name="list_settings_public">Public</string>
+    <string name="list_settings_public_body">Anyone can open this list and rank it themselves.</string>
+    <string name="list_settings_public_needs_account">Sign in with Google to publish. Reading and saving others’ lists needs no account.</string>
+    <string name="list_settings_public_images">Only pictures that already live on the web travel. Photos and generated art stay on this phone.</string>
 </resources>

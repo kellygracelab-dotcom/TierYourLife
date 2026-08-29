@@ -17,6 +17,7 @@ internal object TierDetailTestTags {
     const val RANKED_HEADER = "tier_detail_ranked_header"
     const val RANKED_POOL_COLLAPSED = "tier_detail_ranked_pool_collapsed"
     const val RANKED_POOL_ITEMS = "tier_detail_ranked_pool_items"
+    const val PUBLIC_SWITCH = "tier_detail_public_switch"
     const val LIST_SETTINGS_SCREEN = "tier_detail_list_settings_screen"
     const val LIST_SETTINGS_MODE_WRAP = "tier_detail_list_settings_mode_wrap"
     const val LIST_SETTINGS_MODE_STRIP = "tier_detail_list_settings_mode_strip"

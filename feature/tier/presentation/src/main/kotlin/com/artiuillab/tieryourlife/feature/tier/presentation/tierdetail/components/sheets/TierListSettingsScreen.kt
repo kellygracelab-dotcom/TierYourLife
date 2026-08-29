@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -61,12 +63,22 @@ internal fun TierListSettingsScreenContent(
     onBack: () -> Unit,
     onAddTier: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
     onSetDisplayMode: (displayMode: TierListDisplayMode) -> Unit,
+    signedIn: Boolean = false,
+    publishing: Boolean = false,
+    onSetPublic: (Boolean) -> Unit = {},
 ) {
     var tierEditorVisible by remember { mutableStateOf(false) }
     val rankedTierCount = list.tiers.count { !it.isPool }
 
     Column(Modifier.fillMaxSize().testTag(TierDetailTestTags.LIST_SETTINGS_SCREEN)) {
         ListSettingsTopBar(onBack = onBack)
+
+        PublishSection(
+            published = list.publishedId != null,
+            signedIn = signedIn,
+            busy = publishing,
+            onSetPublic = onSetPublic,
+        )
 
         DisplayModeSection(selected = list.displayMode, onSelect = onSetDisplayMode)
 
@@ -285,4 +297,45 @@ private fun TierListSettingsScreenDarkPreview() = TierYourLifeTheme(true) {
         onAddTier = { _, _, _, _ -> },
         onSetDisplayMode = {},
     )
+}
+
+@Composable
+private fun PublishSection(
+    published: Boolean,
+    signedIn: Boolean,
+    busy: Boolean,
+    onSetPublic: (Boolean) -> Unit,
+) {
+    Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.list_settings_public),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = stringResource(
+                        if (signedIn) R.string.list_settings_public_body else R.string.list_settings_public_needs_account,
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Switch(
+                checked = published,
+                onCheckedChange = onSetPublic,
+                enabled = signedIn && !busy,
+                modifier = Modifier.testTag(TierDetailTestTags.PUBLIC_SWITCH),
+            )
+        }
+        if (published) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.list_settings_public_images),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
+        }
+    }
 }

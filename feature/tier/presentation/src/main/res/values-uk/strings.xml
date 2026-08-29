@@ -332,4 +332,20 @@
     <string name="home_suggestion_restaurants">Ресторани</string>
     <string name="home_suggestion_albums">Альбоми</string>
     <string name="home_suggestion_books">Книги</string>
+    <string name="home_tab_mine">Ваші списки</string>
+    <string name="home_tab_community">Спільнота</string>
+    <string name="home_community_empty">Поки нічого не опубліковано</string>
+    <string name="home_community_empty_body">Тут з’являються списки, які люди зробили публічними.</string>
+    <string name="home_community_failed">Не вдалося завантажити спільноту</string>
+    <string name="home_community_failed_body">Перевірте з\'єднання.</string>
+    <string name="community_by_author">від %1$s</string>
+    <string name="community_save_to_my_lists">Зберегти собі</string>
+    <string name="community_someone_elses">Чужий список. Розкладіть його як забажаєте.</string>
+    <string name="community_not_saved_yet">Ваша розкладка ще не збережена.</string>
+    <string name="community_open_failed">Не вдалося відкрити цей список</string>
+    <string name="community_saved">Збережено до ваших списків</string>
+    <string name="list_settings_public">Публічний</string>
+    <string name="list_settings_public_body">Будь-хто зможе відкрити цей список і розкласти його по-своєму.</string>
+    <string name="list_settings_public_needs_account">Увійдіть через Google, щоб публікувати. Читати й зберігати чужі можна без облікового запису.</string>
+    <string name="list_settings_public_images">Їдуть лише зображення, які вже лежать у мережі. Фото й згенероване залишаються на телефоні.</string>
 </resources>

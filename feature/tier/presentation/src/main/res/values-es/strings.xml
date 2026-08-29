@@ -307,4 +307,20 @@
     <string name="home_suggestion_restaurants">Restaurantes</string>
     <string name="home_suggestion_albums">Álbumes</string>
     <string name="home_suggestion_books">Libros</string>
+    <string name="home_tab_mine">Tus listas</string>
+    <string name="home_tab_community">Comunidad</string>
+    <string name="home_community_empty">Todavía no hay nada publicado</string>
+    <string name="home_community_empty_body">Aquí aparecen las listas que la gente hace públicas.</string>
+    <string name="home_community_failed">No se pudo cargar la comunidad</string>
+    <string name="home_community_failed_body">Comprueba tu conexión.</string>
+    <string name="community_by_author">de %1$s</string>
+    <string name="community_save_to_my_lists">Guardar en mis listas</string>
+    <string name="community_someone_elses">Lista de otra persona. Ordénala como quieras.</string>
+    <string name="community_not_saved_yet">Tu orden todavía no está guardado.</string>
+    <string name="community_open_failed">No se pudo abrir esta lista</string>
+    <string name="community_saved">Guardada en tus listas</string>
+    <string name="list_settings_public">Pública</string>
+    <string name="list_settings_public_body">Cualquiera puede abrir esta lista y ordenarla a su manera.</string>
+    <string name="list_settings_public_needs_account">Inicia sesión con Google para publicar. Leer y guardar las de otros no necesita cuenta.</string>
+    <string name="list_settings_public_images">Solo viajan las imágenes que ya están en la web. Las fotos y el arte generado se quedan en este teléfono.</string>
 </resources>
