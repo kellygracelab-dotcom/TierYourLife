@@ -372,7 +372,6 @@
     <string name="settings_account_offer_body">التطبيق يعمل بالكامل من دون حساب.</string>
     <string name="settings_account_offer_action">تسجيل الدخول</string>
     <string name="settings_account_signed_in">تم تسجيل الدخول</string>
-    <string name="settings_account_signed_in_credits">تم تسجيل الدخول · %1$d رصيد</string>
     <string name="settings_version">الإصدار %1$s</string>
     <string name="home_start_with">ابدأ بـ</string>
     <string name="home_start_hint">تُنشئ اللوحة فورًا. اضغط على العنوان لتغيير الاسم.</string>
@@ -496,4 +495,12 @@
     <string name="my_published_action_open">فتح</string>
     <string name="community_tile_hidden">مخفي عنك</string>
     <string name="community_tile_reported">تم الإبلاغ. سيطّلع عليه شخص.</string>
+    <plurals name="settings_account_signed_in_credits">
+        <item quantity="zero">تم تسجيل الدخول · لا أرصدة</item>
+        <item quantity="one">تم تسجيل الدخول · رصيد واحد</item>
+        <item quantity="two">تم تسجيل الدخول · رصيدان</item>
+        <item quantity="few">تم تسجيل الدخول · %1$d أرصدة</item>
+        <item quantity="many">تم تسجيل الدخول · %1$d رصيدًا</item>
+        <item quantity="other">تم تسجيل الدخول · %1$d رصيد</item>
+    </plurals>
 </resources>

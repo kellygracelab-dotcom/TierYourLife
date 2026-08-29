@@ -5,7 +5,6 @@
     <string name="account_reason_credits">Seus créditos de geração sobrevivem a reinstalar e trocar de telefone.</string>
     <string name="account_reason_purchases">As compras voltam sozinhas.</string>
     <string name="account_reason_sync">Sincronização de quadros, quando existir.</string>
-    <string name="account_credits">%1$d créditos de geração</string>
     <string name="account_credits_note">Restaurados da sua conta</string>
     <string name="account_action_sign_in_google">Entrar com o Google</string>
     <string name="account_action_not_now">Agora não</string>
@@ -30,6 +29,7 @@
     <plurals name="account_community_lists">
         <item quantity="one">%1$d lista pública</item>
         <item quantity="other">%1$d listas públicas</item>
+        <item quantity="many">%1$d listas públicas</item>
     </plurals>
     <string name="account_face_title">Sua imagem</string>
     <string name="account_face_body">Escolha um card das suas listas.</string>
@@ -38,4 +38,9 @@
     <string name="account_face_letter">Apenas a letra</string>
     <string name="account_face_note">Nada é enviado. A imagem fica onde já está na web.</string>
     <string name="account_cd_change_face">Alterar a imagem</string>
+    <plurals name="account_credits">
+        <item quantity="one">%1$d geração</item>
+        <item quantity="many">%1$d gerações</item>
+        <item quantity="other">%1$d gerações</item>
+    </plurals>
 </resources>

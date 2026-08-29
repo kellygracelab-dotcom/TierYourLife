@@ -5,7 +5,6 @@
     <string name="account_reason_credits">Your generation credits survive reinstalling and a new phone.</string>
     <string name="account_reason_purchases">Purchases come back on their own.</string>
     <string name="account_reason_sync">Board sync, once it exists.</string>
-    <string name="account_credits">%1$d generation credits</string>
     <string name="account_credits_note">Restored from your account</string>
     <string name="account_action_sign_in_google">Sign in with Google</string>
     <string name="account_action_not_now">Not now</string>
@@ -38,4 +37,8 @@
     <string name="account_face_letter">Just the letter</string>
     <string name="account_face_note">Nothing is uploaded. The picture stays where it already lives on the web.</string>
     <string name="account_cd_change_face">Change your picture</string>
+    <plurals name="account_credits">
+        <item quantity="one">%1$d generation credit</item>
+        <item quantity="other">%1$d generation credits</item>
+    </plurals>
 </resources>

@@ -322,7 +322,6 @@
     <string name="settings_account_offer_body">Застосунок повністю працює й без нього.</string>
     <string name="settings_account_offer_action">Увійти</string>
     <string name="settings_account_signed_in">Вхід виконано</string>
-    <string name="settings_account_signed_in_credits">Вхід виконано · %1$d кредитів</string>
     <string name="settings_version">Версія %1$s</string>
     <string name="home_start_with">Почніть з</string>
     <string name="home_start_hint">Дошка створиться одразу. Торкніться назви, щоб перейменувати.</string>
@@ -440,4 +439,10 @@
     <string name="my_published_action_open">Відкрити</string>
     <string name="community_tile_hidden">Сховано в тебе</string>
     <string name="community_tile_reported">Скаргу надіслано. Людина подивиться.</string>
+    <plurals name="settings_account_signed_in_credits">
+        <item quantity="one">Вхід виконано · %1$d кредит</item>
+        <item quantity="few">Вхід виконано · %1$d кредити</item>
+        <item quantity="many">Вхід виконано · %1$d кредитів</item>
+        <item quantity="other">Вхід виконано · %1$d кредиту</item>
+    </plurals>
 </resources>

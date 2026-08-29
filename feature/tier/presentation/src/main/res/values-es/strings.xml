@@ -297,7 +297,6 @@
     <string name="settings_account_offer_body">La app funciona por completo sin cuenta.</string>
     <string name="settings_account_offer_action">Iniciar sesión</string>
     <string name="settings_account_signed_in">Sesión iniciada</string>
-    <string name="settings_account_signed_in_credits">Sesión iniciada · %1$d créditos</string>
     <string name="settings_version">Versión %1$s</string>
     <string name="home_start_with">Empieza con</string>
     <string name="home_start_hint">Crea el tablero al instante. Toca su título para cambiarlo.</string>
@@ -350,6 +349,7 @@
     <plurals name="community_item_count">
         <item quantity="one">%1$d tarjeta</item>
         <item quantity="other">%1$d tarjetas</item>
+        <item quantity="many">%1$d tarjetas</item>
     </plurals>
     <string name="snack_published_list_still_public">Se conservó en vez de borrarse: no se pudo retirar su copia pública. Inténtalo de nuevo cuando estés en línea.</string>
     <string name="author_failed">No se pudo abrir este perfil.</string>
@@ -358,6 +358,7 @@
     <plurals name="author_public_lists">
         <item quantity="one">%1$d lista pública</item>
         <item quantity="other">%1$d listas públicas</item>
+        <item quantity="many">%1$d listas públicas</item>
     </plurals>
     <string name="list_settings_public_too_large">Esta lista es demasiado grande para publicarse: como máximo 1000 tarjetas y 20 niveles.</string>
     <string name="community_action_view_author">Ver a %1$s</string>
@@ -400,6 +401,7 @@
     <plurals name="moderation_waiting">
         <item quantity="one">%d pendiente</item>
         <item quantity="other">%d pendientes</item>
+        <item quantity="many">%d pendientes</item>
     </plurals>
     <string name="my_published_title">Tus listas públicas</string>
     <string name="my_published_subtitle">Todo lo que tienes en la comunidad, desde donde sea que lo publicaste.</string>
@@ -409,4 +411,9 @@
     <string name="my_published_action_open">Abrir</string>
     <string name="community_tile_hidden">Oculto para ti</string>
     <string name="community_tile_reported">Denunciado. Una persona lo revisará.</string>
+    <plurals name="settings_account_signed_in_credits">
+        <item quantity="one">Sesión iniciada · %1$d crédito</item>
+        <item quantity="many">Sesión iniciada · %1$d créditos</item>
+        <item quantity="other">Sesión iniciada · %1$d créditos</item>
+    </plurals>
 </resources>

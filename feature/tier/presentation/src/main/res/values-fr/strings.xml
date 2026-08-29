@@ -297,7 +297,6 @@
     <string name="settings_account_offer_body">L\'application fonctionne entièrement sans compte.</string>
     <string name="settings_account_offer_action">Se connecter</string>
     <string name="settings_account_signed_in">Connecté</string>
-    <string name="settings_account_signed_in_credits">Connecté · %1$d crédits</string>
     <string name="settings_version">Version %1$s</string>
     <string name="home_start_with">Commencez par</string>
     <string name="home_start_hint">Crée le tableau tout de suite. Touchez son titre pour le renommer.</string>
@@ -350,6 +349,7 @@
     <plurals name="community_item_count">
         <item quantity="one">%1$d carte</item>
         <item quantity="other">%1$d cartes</item>
+        <item quantity="many">%1$d cartes</item>
     </plurals>
     <string name="snack_published_list_still_public">Conservée, pas supprimée : sa copie publique n\'a pas pu être retirée. Réessayez une fois en ligne.</string>
     <string name="author_failed">Impossible d\'ouvrir ce profil.</string>
@@ -358,6 +358,7 @@
     <plurals name="author_public_lists">
         <item quantity="one">%1$d liste publique</item>
         <item quantity="other">%1$d listes publiques</item>
+        <item quantity="many">%1$d listes publiques</item>
     </plurals>
     <string name="list_settings_public_too_large">Cette liste est trop grande pour être publiée : 1000 cartes et 20 rangs au maximum.</string>
     <string name="community_action_view_author">Voir %1$s</string>
@@ -400,6 +401,7 @@
     <plurals name="moderation_waiting">
         <item quantity="one">%d en attente</item>
         <item quantity="other">%d en attente</item>
+        <item quantity="many">%d en attente</item>
     </plurals>
     <string name="my_published_title">Vos listes publiques</string>
     <string name="my_published_subtitle">Tout ce que vous avez dans la communauté, quel que soit l’appareil.</string>
@@ -409,4 +411,9 @@
     <string name="my_published_action_open">Ouvrir</string>
     <string name="community_tile_hidden">Masqué pour vous</string>
     <string name="community_tile_reported">Signalé. Une personne va regarder.</string>
+    <plurals name="settings_account_signed_in_credits">
+        <item quantity="one">Connecté · %1$d crédit</item>
+        <item quantity="many">Connecté · %1$d crédits</item>
+        <item quantity="other">Connecté · %1$d crédits</item>
+    </plurals>
 </resources>

@@ -5,7 +5,6 @@
     <string name="account_reason_credits">Kredyty na generowanie przetrwają ponowną instalację i nowy telefon.</string>
     <string name="account_reason_purchases">Zakupy wracają same.</string>
     <string name="account_reason_sync">Synchronizacja tablic, gdy powstanie.</string>
-    <string name="account_credits">Kredyty na generowanie: %1$d</string>
     <string name="account_credits_note">Przywrócone z Twojego konta</string>
     <string name="account_action_sign_in_google">Zaloguj się przez Google</string>
     <string name="account_action_not_now">Nie teraz</string>
@@ -40,4 +39,10 @@
     <string name="account_face_letter">Tylko litera</string>
     <string name="account_face_note">Nic nie jest przesyłane. Obraz zostaje tam, gdzie już jest w sieci.</string>
     <string name="account_cd_change_face">Zmień zdjęcie</string>
+    <plurals name="account_credits">
+        <item quantity="one">%1$d generacja</item>
+        <item quantity="few">%1$d generacje</item>
+        <item quantity="many">%1$d generacji</item>
+        <item quantity="other">%1$d generacji</item>
+    </plurals>
 </resources>

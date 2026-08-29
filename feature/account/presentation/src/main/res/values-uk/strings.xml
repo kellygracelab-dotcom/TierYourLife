@@ -5,7 +5,6 @@
     <string name="account_reason_credits">Кредити на генерацію переживуть перевстановлення й новий телефон.</string>
     <string name="account_reason_purchases">Покупки повернуться самі.</string>
     <string name="account_reason_sync">Синхронізація дошок, коли з\'явиться.</string>
-    <string name="account_credits">Генерацій: %1$d</string>
     <string name="account_credits_note">Відновлено з вашого облікового запису</string>
     <string name="account_action_sign_in_google">Увійти через Google</string>
     <string name="account_action_not_now">Не зараз</string>
@@ -40,4 +39,10 @@
     <string name="account_face_letter">Тільки літера</string>
     <string name="account_face_note">Нічого не завантажується. Зображення залишається там, де воно вже є в мережі.</string>
     <string name="account_cd_change_face">Змінити аватар</string>
+    <plurals name="account_credits">
+        <item quantity="one">%1$d генерація</item>
+        <item quantity="few">%1$d генерації</item>
+        <item quantity="many">%1$d генерацій</item>
+        <item quantity="other">%1$d генерації</item>
+    </plurals>
 </resources>

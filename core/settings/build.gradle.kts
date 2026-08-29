@@ -6,3 +6,7 @@ plugins {
 android {
     namespace = "com.artiuillab.tieryourlife.core.settings"
 }
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+}
