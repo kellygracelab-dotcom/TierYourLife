@@ -406,4 +406,16 @@
     <string name="report_hide_author">Сховати взагалі все від %1$s</string>
     <string name="community_action_hide_author">Сховати все від %1$s</string>
     <string name="action_done">Готово</string>
+    <string name="settings_hidden">Сховане</string>
+    <string name="settings_hidden_sub">Списки й люди, яких ви перестали бачити</string>
+    <string name="settings_hidden_none">Нічого не сховано</string>
+    <string name="hidden_title">Сховане</string>
+    <string name="hidden_subtitle">Сховано лише у вас. Нікому про це не повідомляли.</string>
+    <string name="hidden_lists">СПИСКИ</string>
+    <string name="hidden_people">ЛЮДИ</string>
+    <string name="action_show_again">Показати знову</string>
+    <string name="hidden_empty_title">Нічого не сховано</string>
+    <string name="hidden_empty_body">Списки й люди, яких ви сховаєте у спільноті, чекатимуть тут — раптом передумаєте.</string>
+    <string name="hidden_unnamed_list">Список, який ви сховали</string>
+    <string name="hidden_unnamed_person">Хтось, кого ви сховали</string>
 </resources>

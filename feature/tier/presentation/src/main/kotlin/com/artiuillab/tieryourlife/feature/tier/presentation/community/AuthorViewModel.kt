@@ -72,8 +72,8 @@ class AuthorViewModel @Inject constructor(
         }
     }
 
-    fun hideList(publishedId: String) {
-        preferences.hideList(publishedId)
+    fun hideList(publishedId: String, title: String) {
+        preferences.hideList(publishedId, title)
         _state.update { current ->
             if (current !is AuthorUiState.Ready) return@update current
             current.copy(lists = current.lists.filterNot { it.id == publishedId })
@@ -81,11 +81,12 @@ class AuthorViewModel @Inject constructor(
     }
 
     fun hideAuthor() {
-        preferences.hideAuthor(route.authorUid)
+        val shown = (_state.value as? AuthorUiState.Ready)?.name ?: route.authorName
+        preferences.hideAuthor(route.authorUid, shown)
     }
 
-    fun report(publishedId: String, reason: ReportReason, note: String?) {
-        hideList(publishedId)
+    fun report(publishedId: String, title: String, reason: ReportReason, note: String?) {
+        hideList(publishedId, title)
         viewModelScope.launch {
             community.report(publishedId, reason, note)
                 .onFailure { Timber.w(it, "Could not file the report") }

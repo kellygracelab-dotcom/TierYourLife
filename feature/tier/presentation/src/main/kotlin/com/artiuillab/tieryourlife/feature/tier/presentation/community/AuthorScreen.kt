@@ -80,9 +80,9 @@ internal fun AuthorScreenContent(
     onOpenList: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
-    onHideList: (String) -> Unit = {},
+    onHideList: (id: String, title: String) -> Unit = { _, _ -> },
     onHideAuthor: () -> Unit = {},
-    onReport: (String, ReportReason, String?) -> Unit = { _, _, _ -> },
+    onReport: (id: String, title: String, ReportReason, String?) -> Unit = { _, _, _, _ -> },
 ) {
     var authorActionsVisible by remember { mutableStateOf(false) }
     var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
@@ -162,7 +162,7 @@ internal fun AuthorScreenContent(
                 onOpenAuthor = null,
                 onHide = {
                     actionsFor = null
-                    onHideList(summary.id)
+                    onHideList(summary.id, summary.title)
                 },
                 onReport = {
                     actionsFor = null
@@ -176,7 +176,7 @@ internal fun AuthorScreenContent(
                 onDismiss = { reportFor = null },
                 onSend = { reason, note ->
                     reportFor = null
-                    onReport(summary.id, reason, note)
+                    onReport(summary.id, summary.title, reason, note)
                     reportedFrom = summary
                 },
             )

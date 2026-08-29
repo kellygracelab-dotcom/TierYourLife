@@ -325,4 +325,16 @@
     <string name="report_hide_author">%1$s の投稿をすべて非表示にする</string>
     <string name="community_action_hide_author">%1$s の投稿をすべて非表示</string>
     <string name="action_done">完了</string>
+    <string name="settings_hidden">非表示にしたもの</string>
+    <string name="settings_hidden_sub">表示しなくしたリストと人</string>
+    <string name="settings_hidden_none">非表示はありません</string>
+    <string name="hidden_title">非表示にしたもの</string>
+    <string name="hidden_subtitle">あなたにだけ非表示です。誰にも通知されていません。</string>
+    <string name="hidden_lists">リスト</string>
+    <string name="hidden_people">ユーザー</string>
+    <string name="action_show_again">再表示</string>
+    <string name="hidden_empty_title">非表示はありません</string>
+    <string name="hidden_empty_body">コミュニティで非表示にしたリストと人は、気が変わったときのためにここに残ります。</string>
+    <string name="hidden_unnamed_list">非表示にしたリスト</string>
+    <string name="hidden_unnamed_person">非表示にした人</string>
 </resources>

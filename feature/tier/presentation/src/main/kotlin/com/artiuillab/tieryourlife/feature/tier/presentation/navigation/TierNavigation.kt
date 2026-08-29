@@ -9,6 +9,7 @@ import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.AuthorScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.HiddenScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreen
@@ -82,6 +83,7 @@ fun NavGraphBuilder.tierDetailScreen(
 fun NavGraphBuilder.settingsScreen(
     onBack: () -> Unit,
     onTrashClick: () -> Unit,
+    onHiddenClick: () -> Unit,
     onAccountClick: () -> Unit,
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
@@ -92,6 +94,7 @@ fun NavGraphBuilder.settingsScreen(
         SettingsScreen(
             onBack = onBack,
             onTrashClick = onTrashClick,
+            onHiddenClick = onHiddenClick,
             onAccountClick = onAccountClick,
             themeChoice = themeChoice,
             onThemeChoiceChange = onThemeChoiceChange,
@@ -99,6 +102,16 @@ fun NavGraphBuilder.settingsScreen(
             onLanguageTagChange = onLanguageTagChange,
         )
     }
+}
+
+fun NavGraphBuilder.hiddenScreen(onBack: () -> Unit) {
+    composable<Route.Hidden> {
+        HiddenScreen(onBack = onBack)
+    }
+}
+
+fun NavController.navigateToHidden() {
+    navigate(Route.Hidden)
 }
 
 fun NavGraphBuilder.trashScreen(onBack: () -> Unit) {

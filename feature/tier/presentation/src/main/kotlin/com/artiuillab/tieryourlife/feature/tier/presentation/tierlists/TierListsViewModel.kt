@@ -46,6 +46,9 @@ class TierListsViewModel @Inject constructor(
 
     private var mode: HomeMode = HomeMode.Browsing
     private var tab: HomeTab = HomeTab.Mine
+
+    /** What the feed on screen was already filtered against. */
+    private var appliedHidden: Set<String> = emptySet()
     private var communityFeed: CommunityFeed = CommunityFeed.Loading
     private var communityCategory: ListCategory? = null
     private var communitySearch: Job? = null
@@ -132,6 +135,7 @@ class TierListsViewModel @Inject constructor(
     }
 
     private suspend fun loadCommunityFeedNow(query: String?) {
+        appliedHidden = preferences.hiddenListIds() + preferences.hiddenAuthorUids()
         communityFeed = community.feed(communityCategory, query).fold(
                 onSuccess = { CommunityFeed.Ready(it.filterNot(::isHidden)) },
                 onFailure = { error ->
@@ -147,22 +151,28 @@ class TierListsViewModel @Inject constructor(
         summary.id in preferences.hiddenListIds() || summary.authorUid in preferences.hiddenAuthorUids()
 
     /**
-     * Hiding can happen on another screen -- inside a list, or on its
-     * author's profile -- and the feed here is already loaded. Re-reading
-     * the local hidden set costs nothing and beats coming back to a card
-     * you just put away.
+     * Hiding and unhiding both happen on other screens -- inside a list, on an
+     * author's profile, in Settings -- while the feed here is already loaded.
+     * Something newly hidden can be dropped from what we hold; something
+     * unhidden is not in it to put back, so that costs a fetch.
      */
-    fun dropHiddenFromFeed() {
+    fun refreshHidden() {
+        val hiddenNow = preferences.hiddenListIds() + preferences.hiddenAuthorUids()
+        if ((appliedHidden - hiddenNow).isNotEmpty()) {
+            loadCommunityFeed()
+            return
+        }
+        appliedHidden = hiddenNow
         dropFromFeed(::isHidden)
     }
 
-    fun hideCommunityList(publishedId: String) {
-        preferences.hideList(publishedId)
-        dropFromFeed { it.id == publishedId }
+    fun hideCommunityList(summary: PublishedListSummary) {
+        preferences.hideList(summary.id, summary.title)
+        dropFromFeed { it.id == summary.id }
     }
 
-    fun hideCommunityAuthor(authorUid: String) {
-        preferences.hideAuthor(authorUid)
+    fun hideCommunityAuthor(authorUid: String, name: String) {
+        preferences.hideAuthor(authorUid, name)
         dropFromFeed { it.authorUid == authorUid }
     }
 
@@ -170,10 +180,10 @@ class TierListsViewModel @Inject constructor(
      * Reporting hides the list here at once. Taking it down for everyone is a
      * person's decision, and the screen says so rather than pretending.
      */
-    fun reportCommunityList(publishedId: String, reason: ReportReason, note: String?) {
-        hideCommunityList(publishedId)
+    fun reportCommunityList(summary: PublishedListSummary, reason: ReportReason, note: String?) {
+        hideCommunityList(summary)
         viewModelScope.launch {
-            community.report(publishedId, reason, note)
+            community.report(summary.id, reason, note)
                 .onFailure { Timber.w(it, "Could not file the report") }
         }
     }

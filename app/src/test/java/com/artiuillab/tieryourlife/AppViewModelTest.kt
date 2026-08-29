@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife
 
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -69,11 +70,19 @@ private class FakeAppPreferences(
 ) : AppPreferences {
     override fun hiddenListIds(): Set<String> = emptySet()
 
-    override fun hideList(publishedId: String) = Unit
+    override fun hiddenLists(): List<HiddenEntry> = emptyList()
+
+    override fun hideList(publishedId: String, title: String) = Unit
+
+    override fun unhideList(publishedId: String) = Unit
 
     override fun hiddenAuthorUids(): Set<String> = emptySet()
 
-    override fun hideAuthor(authorUid: String) = Unit
+    override fun hiddenAuthors(): List<HiddenEntry> = emptyList()
+
+    override fun hideAuthor(authorUid: String, name: String) = Unit
+
+    override fun unhideAuthor(authorUid: String) = Unit
 
     override fun lastKnownCredits(): Int? = null
 

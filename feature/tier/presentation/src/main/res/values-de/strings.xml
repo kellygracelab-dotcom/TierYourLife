@@ -352,4 +352,16 @@
     <string name="report_hide_author">Auch alles von %1$s ausblenden</string>
     <string name="community_action_hide_author">Alles von %1$s ausblenden</string>
     <string name="action_done">Fertig</string>
+    <string name="settings_hidden">Ausgeblendet</string>
+    <string name="settings_hidden_sub">Listen und Menschen, die du nicht mehr siehst</string>
+    <string name="settings_hidden_none">Nichts ausgeblendet</string>
+    <string name="hidden_title">Ausgeblendet</string>
+    <string name="hidden_subtitle">Nur für dich ausgeblendet. Niemand wurde benachrichtigt.</string>
+    <string name="hidden_lists">LISTEN</string>
+    <string name="hidden_people">MENSCHEN</string>
+    <string name="action_show_again">Wieder anzeigen</string>
+    <string name="hidden_empty_title">Nichts ausgeblendet</string>
+    <string name="hidden_empty_body">Listen und Menschen, die du in der Community ausblendest, warten hier, falls du es dir anders überlegst.</string>
+    <string name="hidden_unnamed_list">Eine Liste, die du ausgeblendet hast</string>
+    <string name="hidden_unnamed_person">Jemand, den du ausgeblendet hast</string>
 </resources>

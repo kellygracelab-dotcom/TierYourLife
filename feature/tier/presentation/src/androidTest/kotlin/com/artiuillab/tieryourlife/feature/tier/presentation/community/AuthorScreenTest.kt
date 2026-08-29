@@ -72,7 +72,7 @@ class AuthorScreenTest {
     @Test
     fun reportingOneOfTheirLists_sendsThatListsId() {
         var reportedId: String? = null
-        setScreen(onReport = { id, _, _ -> reportedId = id })
+        setScreen(onReport = { id, _, _, _ -> reportedId = id })
 
         composeRule.onNodeWithTag(TierListsTestTags.communityCard("1"))
             .performTouchInput { longClick() }
@@ -85,7 +85,7 @@ class AuthorScreenTest {
 
     private fun setScreen(
         onHideAuthor: () -> Unit = {},
-        onReport: (String, ReportReason, String?) -> Unit = { _, _, _ -> },
+        onReport: (String, String, ReportReason, String?) -> Unit = { _, _, _, _ -> },
     ) {
         composeRule.setContent {
             TierYourLifeTheme {
