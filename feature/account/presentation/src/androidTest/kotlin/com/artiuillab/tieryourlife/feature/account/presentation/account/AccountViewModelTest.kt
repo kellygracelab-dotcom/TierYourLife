@@ -11,6 +11,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCre
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -169,6 +170,12 @@ private class FakeCommunityForAccount : CommunityRepository {
         author: String?,
         after: String?,
     ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
+
+    override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
+
+    override suspend fun takeDown(publishedId: String): Result<Unit> = Result.success(Unit)
+
+    override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
 
