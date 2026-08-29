@@ -97,11 +97,23 @@ class TierDetailScreenTest {
         composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1L)).assertHeightIsEqualTo(84.dp)
     }
 
+    // A bar with an empty title appeared and then filled in, which is what a
+    // freshly created list flickered. The screen waits instead. A list that
+    // cannot be loaded still draws its own bar, so back is never truly gone.
     @Test
-    fun loadingState_showsIndicatorAndTopBarTogether() {
+    fun loadingState_showsTheIndicatorWithoutAHalfDrawnTopBar() {
         setScreen(TierDetailUiState.Loading)
 
         composeRule.onNodeWithTag(TierDetailTestTags.LOADING).assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(
+            string(R.string.tier_detail_content_description_back),
+        ).assertDoesNotExist()
+    }
+
+    @Test
+    fun errorState_stillOffersAWayBack() {
+        setScreen(TierDetailUiState.Error)
+
         composeRule.onNodeWithContentDescription(
             string(R.string.tier_detail_content_description_back),
         ).assertIsDisplayed()
