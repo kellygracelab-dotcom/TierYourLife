@@ -67,6 +67,17 @@ private class FakeAppPreferences(
     private var themeChoice: ThemeChoice = ThemeChoice.SYSTEM,
     private var languageTag: String? = null,
 ) : AppPreferences {
+    override fun hiddenListIds(): Set<String> = emptySet()
+
+    override fun hideList(publishedId: String) = Unit
+
+    override fun hiddenAuthorUids(): Set<String> = emptySet()
+
+    override fun hideAuthor(authorUid: String) = Unit
+
+    override fun lastKnownCredits(): Int? = null
+
+    override fun setLastKnownCredits(credits: Int?) = Unit
 
     val storedThemeChoices = mutableListOf<ThemeChoice>()
     val storedLanguageTags = mutableListOf<String?>()

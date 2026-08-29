@@ -2,15 +2,20 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.core.ui.UserMessages
 import com.artiuillab.tieryourlife.core.ui.guard
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,10 +26,13 @@ import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 import javax.inject.Inject
 
+private const val COMMUNITY_SEARCH_DELAY_MILLIS = 300L
+
 @HiltViewModel
 class TierListsViewModel @Inject constructor(
     private val repository: TierRepository,
     private val community: CommunityRepository,
+    private val preferences: AppPreferences,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<TierListsUiState>(TierListsUiState.Loading)
@@ -40,6 +48,7 @@ class TierListsViewModel @Inject constructor(
     private var tab: HomeTab = HomeTab.Mine
     private var communityFeed: CommunityFeed = CommunityFeed.Loading
     private var communityCategory: ListCategory? = null
+    private var communitySearch: Job? = null
 
     fun loadTierLists() {
         viewModelScope.launch {
@@ -95,6 +104,20 @@ class TierListsViewModel @Inject constructor(
         if (selected == HomeTab.Community) loadCommunityFeed()
     }
 
+    /**
+     * Searching the community is a request, not a filter over what is already
+     * on screen, so it waits for the typing to settle first.
+     */
+    private fun searchCommunity(query: String) {
+        communitySearch?.cancel()
+        communityFeed = CommunityFeed.Loading
+        emitSuccess()
+        communitySearch = viewModelScope.launch {
+            delay(COMMUNITY_SEARCH_DELAY_MILLIS)
+            loadCommunityFeedNow(query)
+        }
+    }
+
     fun selectCommunityCategory(category: ListCategory?) {
         if (communityCategory == category) return
         communityCategory = category
@@ -104,16 +127,63 @@ class TierListsViewModel @Inject constructor(
     }
 
     fun loadCommunityFeed() {
-        viewModelScope.launch {
-            communityFeed = community.feed(communityCategory).fold(
-                onSuccess = { CommunityFeed.Ready(it) },
+        communitySearch?.cancel()
+        viewModelScope.launch { loadCommunityFeedNow((mode as? HomeMode.Searching)?.query) }
+    }
+
+    private suspend fun loadCommunityFeedNow(query: String?) {
+        communityFeed = community.feed(communityCategory, query).fold(
+                onSuccess = { CommunityFeed.Ready(it.filterNot(::isHidden)) },
                 onFailure = { error ->
                     Timber.w(error, "Loading the community feed failed")
                     CommunityFeed.Failed
                 },
-            )
-            emitSuccess()
+        )
+        emitSuccess()
+    }
+
+    /** Hiding is local and silent: the author is never told. */
+    private fun isHidden(summary: PublishedListSummary): Boolean =
+        summary.id in preferences.hiddenListIds() || summary.authorUid in preferences.hiddenAuthorUids()
+
+    /**
+     * Hiding can happen on another screen -- inside a list, or on its
+     * author's profile -- and the feed here is already loaded. Re-reading
+     * the local hidden set costs nothing and beats coming back to a card
+     * you just put away.
+     */
+    fun dropHiddenFromFeed() {
+        dropFromFeed(::isHidden)
+    }
+
+    fun hideCommunityList(publishedId: String) {
+        preferences.hideList(publishedId)
+        dropFromFeed { it.id == publishedId }
+    }
+
+    fun hideCommunityAuthor(authorUid: String) {
+        preferences.hideAuthor(authorUid)
+        dropFromFeed { it.authorUid == authorUid }
+    }
+
+    /**
+     * Reporting hides the list here at once. Taking it down for everyone is a
+     * person's decision, and the screen says so rather than pretending.
+     */
+    fun reportCommunityList(publishedId: String, reason: ReportReason, note: String?) {
+        hideCommunityList(publishedId)
+        viewModelScope.launch {
+            community.report(publishedId, reason, note)
+                .onFailure { Timber.w(it, "Could not file the report") }
         }
+    }
+
+    private fun dropFromFeed(matching: (PublishedListSummary) -> Boolean) {
+        val current = communityFeed as? CommunityFeed.Ready ?: return
+        val kept = current.lists.filterNot(matching)
+        if (kept.size == current.lists.size) return
+        communityFeed = CommunityFeed.Ready(kept)
+        emitSuccess()
     }
 
     private fun setMode(newMode: HomeMode) {
@@ -125,7 +195,10 @@ class TierListsViewModel @Inject constructor(
 
     fun enterSearch() = setMode(HomeMode.Searching(""))
 
-    fun updateSearchQuery(query: String) = setMode(HomeMode.Searching(query))
+    fun updateSearchQuery(query: String) {
+        setMode(HomeMode.Searching(query))
+        if (tab == HomeTab.Community) searchCommunity(query)
+    }
 
     fun exitSearch() = setMode(HomeMode.Browsing)
 
@@ -139,9 +212,43 @@ class TierListsViewModel @Inject constructor(
 
     fun exitSelection() = setMode(HomeMode.Browsing)
 
+    /**
+     * A published snapshot that outlives the list it came from is one its owner
+     * believes they deleted, so the community copy comes down first. If it
+     * cannot, the list stays where it is: a delete that leaves the thing public
+     * is worse than a delete that did not happen.
+     */
     fun deleteTierLists(ids: List<Long>) {
         setMode(HomeMode.Browsing)
-        mutate("Deleting lists") { repository.deleteTierLists(ids) }
+        viewModelScope.launch {
+            val stillPublic = takeDownPublished(ids)
+            val deletable = ids - stillPublic
+            if (deletable.isNotEmpty()) {
+                messages.guard("Deleting lists") { repository.deleteTierLists(deletable) }
+            }
+            if (stillPublic.isNotEmpty()) {
+                messages.send(UserMessage.PublishedListStillPublic)
+            }
+            loadTierListsInternal()
+        }
+    }
+
+    /** Answers with the ids that could not be taken out of the community. */
+    private suspend fun takeDownPublished(ids: List<Long>): Set<Long> {
+        val published = lastLoadedLists.filter { it.id in ids && it.publishedId != null }
+        return published.mapNotNull { list ->
+            val publishedId = list.publishedId ?: return@mapNotNull null
+            community.unpublish(publishedId).fold(
+                onSuccess = {
+                    repository.setPublishedId(list.id, null)
+                    null
+                },
+                onFailure = { error ->
+                    Timber.w(error, "Could not take a deleted list out of the community")
+                    list.id
+                },
+            )
+        }.toSet()
     }
 
     fun restoreTierLists(ids: List<Long>) {

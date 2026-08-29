@@ -30,4 +30,11 @@
     <plurals name="account_community_lists">
         <item quantity="other">公開リスト %1$d 件</item>
     </plurals>
+    <string name="account_face_title">アイコン</string>
+    <string name="account_face_body">自分のリストのカードから選べます。</string>
+    <string name="account_face_no_cards">カタログの画像が付いたカードはまだありません。</string>
+    <string name="account_face_google">Google の写真を使う</string>
+    <string name="account_face_letter">頭文字だけ</string>
+    <string name="account_face_note">アップロードはしません。画像はウェブ上の元の場所に置かれたままです。</string>
+    <string name="account_cd_change_face">アイコンを変更</string>
 </resources>

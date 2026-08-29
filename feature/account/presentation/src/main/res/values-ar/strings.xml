@@ -35,4 +35,11 @@
         <item quantity="many">%1$d قائمة عامة</item>
         <item quantity="other">%1$d قائمة عامة</item>
     </plurals>
+    <string name="account_face_title">صورتك</string>
+    <string name="account_face_body">اختر بطاقة من قوائمك.</string>
+    <string name="account_face_no_cards">لا تحتوي أي من بطاقاتك على صورة من الفهرس بعد.</string>
+    <string name="account_face_google">استخدام صورتي من Google</string>
+    <string name="account_face_letter">الحرف فقط</string>
+    <string name="account_face_note">لا يتم رفع أي شيء. تبقى الصورة حيث هي على الويب.</string>
+    <string name="account_cd_change_face">تغيير الصورة</string>
 </resources>

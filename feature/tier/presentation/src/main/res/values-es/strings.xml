@@ -351,4 +351,30 @@
         <item quantity="one">%1$d tarjeta</item>
         <item quantity="other">%1$d tarjetas</item>
     </plurals>
+    <string name="snack_published_list_still_public">Se conservó en vez de borrarse: no se pudo retirar su copia pública. Inténtalo de nuevo cuando estés en línea.</string>
+    <string name="author_failed">No se pudo abrir este perfil.</string>
+    <string name="author_no_public_lists">Sin listas públicas</string>
+    <string name="author_no_public_lists_body">Las copias que ya guardaste son tuyas y se quedan donde están.</string>
+    <plurals name="author_public_lists">
+        <item quantity="one">%1$d lista pública</item>
+        <item quantity="other">%1$d listas públicas</item>
+    </plurals>
+    <string name="list_settings_public_too_large">Esta lista es demasiado grande para publicarse: como máximo 1000 tarjetas y 20 niveles.</string>
+    <string name="community_action_view_author">Ver a %1$s</string>
+    <string name="community_action_hide">Ocultar esta lista</string>
+    <string name="community_action_report">Denunciar esta lista</string>
+    <string name="report_title">Denunciar esta lista</string>
+    <string name="report_reason_sexual">Contenido sexual</string>
+    <string name="report_reason_violence">Violencia o contenido perturbador</string>
+    <string name="report_reason_hate">Odio o acoso</string>
+    <string name="report_reason_spam">Spam o publicidad</string>
+    <string name="report_reason_other">Otra cosa</string>
+    <string name="report_note_label">Algo que añadir (opcional)</string>
+    <string name="report_by_hand">Una persona lee cada denuncia. No se retira nada automáticamente.</string>
+    <string name="report_action_send">Denunciar</string>
+    <string name="report_sent_title">Denunciada y oculta para ti</string>
+    <string name="report_sent_body">Una sola persona revisa las denuncias a mano, así que puede seguir visible para los demás.</string>
+    <string name="report_hide_author">Ocultar también todo de %1$s</string>
+    <string name="community_hidden">Oculta</string>
+    <string name="community_action_hide_author">Ocultar todo de %1$s</string>
 </resources>

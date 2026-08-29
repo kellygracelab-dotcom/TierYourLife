@@ -290,7 +290,7 @@
     <string name="home_community_failed_body">Prüfe deine Verbindung.</string>
     <string name="community_by_author">von %1$s</string>
     <string name="community_save_to_my_lists">In meine Listen speichern</string>
-    <string name="community_someone_elses">Die Liste von jemand anderem. Ordne sie, wie du magst.</string>
+    <string name="community_someone_elses">Die Liste von jemand anderem. Ordne sie frei.</string>
     <string name="community_not_saved_yet">Deine Anordnung ist noch nicht gespeichert.</string>
     <string name="community_open_failed">Diese Liste ließ sich nicht öffnen</string>
     <string name="community_saved">In deinen Listen gespeichert</string>
@@ -326,4 +326,30 @@
         <item quantity="one">%1$d Karte</item>
         <item quantity="other">%1$d Karten</item>
     </plurals>
+    <string name="snack_published_list_still_public">Behalten statt gelöscht: Die öffentliche Kopie ließ sich nicht entfernen. Versuche es erneut, sobald du online bist.</string>
+    <string name="author_failed">Dieses Profil konnte nicht geladen werden.</string>
+    <string name="author_no_public_lists">Keine öffentlichen Listen</string>
+    <string name="author_no_public_lists_body">Kopien, die du bereits gespeichert hast, gehören dir und bleiben, wo sie sind.</string>
+    <plurals name="author_public_lists">
+        <item quantity="one">%1$d öffentliche Liste</item>
+        <item quantity="other">%1$d öffentliche Listen</item>
+    </plurals>
+    <string name="list_settings_public_too_large">Diese Liste ist zu groß zum Veröffentlichen: höchstens 1000 Karten und 20 Stufen.</string>
+    <string name="community_action_view_author">%1$s ansehen</string>
+    <string name="community_action_hide">Diese Liste ausblenden</string>
+    <string name="community_action_report">Diese Liste melden</string>
+    <string name="report_title">Diese Liste melden</string>
+    <string name="report_reason_sexual">Sexuelle Inhalte</string>
+    <string name="report_reason_violence">Gewalt oder verstörende Inhalte</string>
+    <string name="report_reason_hate">Hass oder Belästigung</string>
+    <string name="report_reason_spam">Spam oder Werbung</string>
+    <string name="report_reason_other">Etwas anderes</string>
+    <string name="report_note_label">Etwas hinzufügen (optional)</string>
+    <string name="report_by_hand">Jede Meldung liest ein Mensch. Nichts wird automatisch entfernt.</string>
+    <string name="report_action_send">Melden</string>
+    <string name="report_sent_title">Gemeldet und für dich ausgeblendet</string>
+    <string name="report_sent_body">Eine Person prüft Meldungen von Hand, bis dahin bleibt sie für andere sichtbar.</string>
+    <string name="report_hide_author">Auch alles von %1$s ausblenden</string>
+    <string name="community_hidden">Ausgeblendet</string>
+    <string name="community_action_hide_author">Alles von %1$s ausblenden</string>
 </resources>

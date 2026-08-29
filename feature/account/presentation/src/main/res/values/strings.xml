@@ -31,4 +31,11 @@
         <item quantity="one">%1$d public list</item>
         <item quantity="other">%1$d public lists</item>
     </plurals>
+    <string name="account_face_title">Your face</string>
+    <string name="account_face_body">Pick a card from your own lists.</string>
+    <string name="account_face_no_cards">None of your cards have a picture from a catalogue yet.</string>
+    <string name="account_face_google">Use my Google photo</string>
+    <string name="account_face_letter">Just the letter</string>
+    <string name="account_face_note">Nothing is uploaded. The picture stays where it already lives on the web.</string>
+    <string name="account_cd_change_face">Change your picture</string>
 </resources>

@@ -6,11 +6,13 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListSummaryDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedTierDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ReportRequestDto
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -25,8 +27,12 @@ class RetrofitCommunityRepository @Inject constructor(
     private val api: CommunityApi,
 ) : CommunityRepository {
 
-    override suspend fun feed(category: ListCategory?): Result<List<PublishedListSummary>> = runCatching {
-        api.feed(category?.id).lists.map { it.toSummary() }
+    override suspend fun feed(
+        category: ListCategory?,
+        query: String?,
+        author: String?,
+    ): Result<List<PublishedListSummary>> = runCatching {
+        api.feed(category?.id, query?.takeIf { it.isNotBlank() }, author).lists.map { it.toSummary() }
     }
 
     override suspend fun open(id: String): Result<PublishedList> = runCatching {
@@ -44,12 +50,23 @@ class RetrofitCommunityRepository @Inject constructor(
     override suspend fun unpublish(publishedId: String): Result<Unit> = runCatching {
         api.unpublish(publishedId)
     }
+
+    override suspend fun refreshAuthor(): Result<Unit> = runCatching { api.refreshAuthor() }
+
+    override suspend fun report(
+        publishedId: String,
+        reason: ReportReason,
+        note: String?,
+    ): Result<Unit> = runCatching {
+        api.report(publishedId, ReportRequestDto(reason.id, note?.takeIf { it.isNotBlank() }))
+    }
 }
 
 private fun Throwable.asPublishError(): PublishError = when {
     this is HttpException -> when (code()) {
         403 -> PublishError.NotSignedIn
         409 -> PublishError.TooManyLists
+        413 -> PublishError.TooLarge
         else -> PublishError.Unknown
     }
 
@@ -60,7 +77,9 @@ private fun Throwable.asPublishError(): PublishError = when {
 private fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     id = id,
     title = title,
+    authorUid = authorUid,
     authorName = authorName,
+    authorPhotoUrl = authorPhotoUrl,
     category = ListCategory.fromId(category) ?: ListCategory.Other,
     itemCount = itemCount,
     coverImageUrl = coverImageUrl,
@@ -73,7 +92,9 @@ private fun PublishedListDto.toDomain() = PublishedList(
     summary = PublishedListSummary(
         id = id,
         title = title,
+        authorUid = authorUid,
         authorName = authorName,
+        authorPhotoUrl = authorPhotoUrl,
         category = ListCategory.fromId(category) ?: ListCategory.Other,
         itemCount = itemCount,
         coverImageUrl = coverImageUrl,

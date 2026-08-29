@@ -9,6 +9,7 @@ internal data class TierDetailActions(
     val signedIn: Boolean = false,
     val publishing: Boolean = false,
     val publishError: PublishError? = null,
+    val publicPending: Boolean? = null,
     val onSetPublic: (Boolean) -> Unit = {},
     val onSetCategory: (ListCategory) -> Unit = {},
     val onSetCover: (String?) -> Unit = {},

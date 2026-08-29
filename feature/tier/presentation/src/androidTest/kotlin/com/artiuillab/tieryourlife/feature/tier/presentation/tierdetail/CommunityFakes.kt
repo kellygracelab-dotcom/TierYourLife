@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +18,11 @@ internal class FakeCommunityRepositoryForDetail(
     val published = mutableListOf<TierList>()
     val unpublished = mutableListOf<String>()
 
-    override suspend fun feed(category: ListCategory?): Result<List<PublishedListSummary>> = Result.success(emptyList())
+    override suspend fun feed(
+        category: ListCategory?,
+        query: String?,
+        author: String?,
+    ): Result<List<PublishedListSummary>> = Result.success(emptyList())
 
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
 
@@ -30,6 +35,14 @@ internal class FakeCommunityRepositoryForDetail(
         unpublished += publishedId
         return Result.success(Unit)
     }
+
+    override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
+
+    override suspend fun report(
+        publishedId: String,
+        reason: ReportReason,
+        note: String?,
+    ): Result<Unit> = Result.success(Unit)
 }
 
 internal class FakeAccountRepositoryForDetail(signedIn: Boolean = false) : AccountRepository {
@@ -39,6 +52,10 @@ internal class FakeAccountRepositoryForDetail(signedIn: Boolean = false) : Accou
     override suspend fun signInWithGoogle(idToken: String): SignInOutcome = SignInOutcome.Success
 
     override suspend fun setDisplayName(name: String): Boolean = true
+
+    override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
+
+    override fun googlePhotoUrl(): String? = null
 
     override suspend fun signOut() = Unit
 }

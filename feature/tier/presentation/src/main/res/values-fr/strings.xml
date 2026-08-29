@@ -315,7 +315,7 @@
     <string name="home_community_failed_body">Vérifiez votre connexion.</string>
     <string name="community_by_author">de %1$s</string>
     <string name="community_save_to_my_lists">Enregistrer dans mes listes</string>
-    <string name="community_someone_elses">La liste de quelqu\'un d\'autre. Classez-la comme vous voulez.</string>
+    <string name="community_someone_elses">Liste de quelqu\'un d\'autre. Classez-la librement.</string>
     <string name="community_not_saved_yet">Votre classement n\'est pas encore enregistré.</string>
     <string name="community_open_failed">Impossible d\'ouvrir cette liste</string>
     <string name="community_saved">Enregistrée dans vos listes</string>
@@ -351,4 +351,30 @@
         <item quantity="one">%1$d carte</item>
         <item quantity="other">%1$d cartes</item>
     </plurals>
+    <string name="snack_published_list_still_public">Conservée, pas supprimée : sa copie publique n\'a pas pu être retirée. Réessayez une fois en ligne.</string>
+    <string name="author_failed">Impossible d\'ouvrir ce profil.</string>
+    <string name="author_no_public_lists">Aucune liste publique</string>
+    <string name="author_no_public_lists_body">Les copies que vous avez déjà enregistrées sont à vous et restent où elles sont.</string>
+    <plurals name="author_public_lists">
+        <item quantity="one">%1$d liste publique</item>
+        <item quantity="other">%1$d listes publiques</item>
+    </plurals>
+    <string name="list_settings_public_too_large">Cette liste est trop grande pour être publiée : 1000 cartes et 20 rangs au maximum.</string>
+    <string name="community_action_view_author">Voir %1$s</string>
+    <string name="community_action_hide">Masquer cette liste</string>
+    <string name="community_action_report">Signaler cette liste</string>
+    <string name="report_title">Signaler cette liste</string>
+    <string name="report_reason_sexual">Contenu sexuel</string>
+    <string name="report_reason_violence">Violence ou contenu choquant</string>
+    <string name="report_reason_hate">Haine ou harcèlement</string>
+    <string name="report_reason_spam">Spam ou publicité</string>
+    <string name="report_reason_other">Autre chose</string>
+    <string name="report_note_label">Quelque chose à ajouter (facultatif)</string>
+    <string name="report_by_hand">Une personne lit chaque signalement. Rien n\'est retiré automatiquement.</string>
+    <string name="report_action_send">Signaler</string>
+    <string name="report_sent_title">Signalée et masquée pour vous</string>
+    <string name="report_sent_body">Une seule personne examine les signalements à la main : elle peut rester visible pour les autres.</string>
+    <string name="report_hide_author">Masquer aussi tout de %1$s</string>
+    <string name="community_hidden">Masquée</string>
+    <string name="community_action_hide_author">Masquer tout de %1$s</string>
 </resources>

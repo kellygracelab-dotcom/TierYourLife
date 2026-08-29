@@ -378,4 +378,32 @@
         <item quantity="many">%1$d kart</item>
         <item quantity="other">%1$d karty</item>
     </plurals>
+    <string name="snack_published_list_still_public">Zachowana, nie usunięta: nie udało się wycofać jej publicznej kopii. Spróbuj ponownie, gdy będziesz online.</string>
+    <string name="author_failed">Nie udało się otworzyć tego profilu.</string>
+    <string name="author_no_public_lists">Brak list publicznych</string>
+    <string name="author_no_public_lists_body">Kopie, które już zapisałeś, są twoje i zostają na miejscu.</string>
+    <plurals name="author_public_lists">
+        <item quantity="one">%1$d lista publiczna</item>
+        <item quantity="few">%1$d listy publiczne</item>
+        <item quantity="many">%1$d list publicznych</item>
+        <item quantity="other">%1$d listy publicznej</item>
+    </plurals>
+    <string name="list_settings_public_too_large">Ta lista jest za duża, by ją opublikować: najwyżej 1000 kart i 20 poziomów.</string>
+    <string name="community_action_view_author">Zobacz %1$s</string>
+    <string name="community_action_hide">Ukryj tę listę</string>
+    <string name="community_action_report">Zgłoś tę listę</string>
+    <string name="report_title">Zgłoś tę listę</string>
+    <string name="report_reason_sexual">Treści seksualne</string>
+    <string name="report_reason_violence">Przemoc lub drastyczne treści</string>
+    <string name="report_reason_hate">Nienawiść lub nękanie</string>
+    <string name="report_reason_spam">Spam lub reklama</string>
+    <string name="report_reason_other">Coś innego</string>
+    <string name="report_note_label">Coś do dodania (opcjonalnie)</string>
+    <string name="report_by_hand">Każde zgłoszenie czyta człowiek. Nic nie znika automatycznie.</string>
+    <string name="report_action_send">Zgłoś</string>
+    <string name="report_sent_title">Zgłoszono i ukryto dla ciebie</string>
+    <string name="report_sent_body">Zgłoszenia sprawdza ręcznie jedna osoba, więc dla innych lista może pozostać.</string>
+    <string name="report_hide_author">Ukryj też wszystko od %1$s</string>
+    <string name="community_hidden">Ukryto</string>
+    <string name="community_action_hide_author">Ukryj wszystko od %1$s</string>
 </resources>

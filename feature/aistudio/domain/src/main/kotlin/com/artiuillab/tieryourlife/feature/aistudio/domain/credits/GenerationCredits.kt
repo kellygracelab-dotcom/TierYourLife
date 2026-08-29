@@ -8,4 +8,7 @@ interface GenerationCredits {
 
     /** Null when generation is not metered, or when the count could not be read. */
     suspend fun remaining(): Int?
+
+    /** The last balance seen, with no round trip. Null if none has been seen. */
+    fun lastKnown(): Int?
 }

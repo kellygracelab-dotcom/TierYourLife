@@ -378,4 +378,32 @@
         <item quantity="many">%1$d карток</item>
         <item quantity="other">%1$d картки</item>
     </plurals>
+    <string name="snack_published_list_still_public">Список залишено, а не видалено: публічну копію не вдалося зняти. Спробуйте знову, коли буде мережа.</string>
+    <string name="author_failed">Не вдалося відкрити профіль.</string>
+    <string name="author_no_public_lists">Публічних списків немає</string>
+    <string name="author_no_public_lists_body">Копії, які ви вже зберегли, ваші й нікуди не подінуться.</string>
+    <plurals name="author_public_lists">
+        <item quantity="one">%1$d публічний список</item>
+        <item quantity="few">%1$d публічних списки</item>
+        <item quantity="many">%1$d публічних списків</item>
+        <item quantity="other">%1$d публічного списку</item>
+    </plurals>
+    <string name="list_settings_public_too_large">Список завеликий для публікації: не більше 1000 карток і 20 тирів.</string>
+    <string name="community_action_view_author">Профіль %1$s</string>
+    <string name="community_action_hide">Сховати цей список</string>
+    <string name="community_action_report">Поскаржитися на список</string>
+    <string name="report_title">Поскаржитися на список</string>
+    <string name="report_reason_sexual">Сексуальний контент</string>
+    <string name="report_reason_violence">Насильство або шокуючий контент</string>
+    <string name="report_reason_hate">Ненависть або цькування</string>
+    <string name="report_reason_spam">Спам або реклама</string>
+    <string name="report_reason_other">Щось інше</string>
+    <string name="report_note_label">Щось додати (необовʼязково)</string>
+    <string name="report_by_hand">Кожну скаргу читає людина. Автоматично нічого не видаляється.</string>
+    <string name="report_action_send">Поскаржитися</string>
+    <string name="report_sent_title">Скаргу надіслано, список сховано</string>
+    <string name="report_sent_body">Скарги розбирає одна людина вручну, тому для інших список поки залишиться.</string>
+    <string name="report_hide_author">Сховати взагалі все від %1$s</string>
+    <string name="community_hidden">Сховано</string>
+    <string name="community_action_hide_author">Сховати все від %1$s</string>
 </resources>

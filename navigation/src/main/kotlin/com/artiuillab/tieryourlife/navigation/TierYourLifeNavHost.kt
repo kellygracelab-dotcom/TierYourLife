@@ -13,7 +13,9 @@ import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.aiSt
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.navigateToAiStudio
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.ADDED_ITEMS_RESULT_KEY
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.authorScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.communityListScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToAuthor
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToCommunityList
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToSettings
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTierDetail
@@ -43,6 +45,7 @@ fun TierYourLifeNavHost(
         tierListsScreen(
             onTierListClick = { id -> navController.navigateToTierDetail(id) },
             onCommunityListClick = { id -> navController.navigateToCommunityList(id) },
+            onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
             onSettingsClick = { navController.navigateToSettings() },
             onNewListCreated = { id -> navController.navigateToTierDetail(id) },
         )
@@ -61,12 +64,17 @@ fun TierYourLifeNavHost(
         )
         trashScreen(onBack = { navController.popBackStack() })
         accountScreen(onClose = { navController.popBackStack() })
+        authorScreen(
+            onBack = { navController.popBackStack() },
+            onOpenList = { id -> navController.navigateToCommunityList(id) },
+        )
         communityListScreen(
             onBack = { navController.popBackStack() },
             onSaved = { id ->
                 navController.popBackStack()
                 navController.navigateToTierDetail(id)
             },
+            onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
         )
         aiStudioScreen(
             onBack = { ids ->

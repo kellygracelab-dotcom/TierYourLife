@@ -31,4 +31,11 @@
         <item quantity="one">%1$d öffentliche Liste</item>
         <item quantity="other">%1$d öffentliche Listen</item>
     </plurals>
+    <string name="account_face_title">Dein Bild</string>
+    <string name="account_face_body">Wähle eine Karte aus deinen Listen.</string>
+    <string name="account_face_no_cards">Noch keine deiner Karten hat ein Bild aus einem Katalog.</string>
+    <string name="account_face_google">Google-Foto verwenden</string>
+    <string name="account_face_letter">Nur der Buchstabe</string>
+    <string name="account_face_note">Nichts wird hochgeladen. Das Bild bleibt dort, wo es im Netz schon liegt.</string>
+    <string name="account_cd_change_face">Bild ändern</string>
 </resources>

@@ -3,7 +3,9 @@ package com.artiuillab.tieryourlife.feature.tier.domain.model
 data class PublishedListSummary(
     val id: String,
     val title: String,
+    val authorUid: String,
     val authorName: String,
+    val authorPhotoUrl: String? = null,
     val category: ListCategory,
     val itemCount: Int,
     val coverImageUrl: String? = null,

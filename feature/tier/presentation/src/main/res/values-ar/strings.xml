@@ -430,4 +430,34 @@
         <item quantity="many">%1$d بطاقة</item>
         <item quantity="other">%1$d بطاقة</item>
     </plurals>
+    <string name="snack_published_list_still_public">أُبقيت ولم تُحذف: تعذّر سحب نسختها العامة. أعد المحاولة عند الاتصال بالإنترنت.</string>
+    <string name="author_failed">تعذّر فتح هذا الملف الشخصي.</string>
+    <string name="author_no_public_lists">لا توجد قوائم عامة</string>
+    <string name="author_no_public_lists_body">النسخ التي حفظتها بالفعل ملكك وتبقى في مكانها.</string>
+    <plurals name="author_public_lists">
+        <item quantity="zero">لا قوائم عامة</item>
+        <item quantity="one">قائمة عامة واحدة</item>
+        <item quantity="two">قائمتان عامتان</item>
+        <item quantity="few">%1$d قوائم عامة</item>
+        <item quantity="many">%1$d قائمة عامة</item>
+        <item quantity="other">%1$d قائمة عامة</item>
+    </plurals>
+    <string name="list_settings_public_too_large">هذه القائمة أكبر من أن تُنشر: 1000 بطاقة و20 مستوى كحد أقصى.</string>
+    <string name="community_action_view_author">عرض %1$s</string>
+    <string name="community_action_hide">إخفاء هذه القائمة</string>
+    <string name="community_action_report">الإبلاغ عن هذه القائمة</string>
+    <string name="report_title">الإبلاغ عن هذه القائمة</string>
+    <string name="report_reason_sexual">محتوى جنسي</string>
+    <string name="report_reason_violence">عنف أو محتوى صادم</string>
+    <string name="report_reason_hate">كراهية أو تحرّش</string>
+    <string name="report_reason_spam">رسائل مزعجة أو إعلانات</string>
+    <string name="report_reason_other">شيء آخر</string>
+    <string name="report_note_label">أي إضافة (اختياري)</string>
+    <string name="report_by_hand">يقرأ شخص كل بلاغ. لا يُحذف أي شيء تلقائيًا.</string>
+    <string name="report_action_send">إبلاغ</string>
+    <string name="report_sent_title">تم الإبلاغ وأُخفيت عنك</string>
+    <string name="report_sent_body">يراجع شخص واحد البلاغات يدويًا، لذا قد تظل ظاهرة للآخرين حتى ذلك الحين.</string>
+    <string name="report_hide_author">إخفاء كل شيء من %1$s أيضًا</string>
+    <string name="community_hidden">أُخفيت</string>
+    <string name="community_action_hide_author">إخفاء كل شيء من %1$s</string>
 </resources>

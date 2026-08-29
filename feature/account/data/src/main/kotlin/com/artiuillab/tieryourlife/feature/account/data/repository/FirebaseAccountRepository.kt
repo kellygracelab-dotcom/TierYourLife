@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.account.data.repository
 
+import androidx.core.net.toUri
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
@@ -11,8 +12,11 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
@@ -25,11 +29,21 @@ class FirebaseAccountRepository @Inject constructor(
     private val auth: FirebaseAuth,
 ) : AccountRepository {
 
-    override val account: Flow<Account> = callbackFlow {
-        val listener = FirebaseAuth.AuthStateListener { trySend(it.currentUser.toAccount()) }
-        auth.addAuthStateListener(listener)
-        awaitClose { auth.removeAuthStateListener(listener) }
-    }.distinctUntilChanged()
+    /**
+     * Renaming or changing the picture leaves the auth state alone, so a screen
+     * watching only Firebase would keep showing the old face. Those edits say so
+     * here instead.
+     */
+    private val profileEdits = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    override val account: Flow<Account> = merge(
+        callbackFlow {
+            val listener = FirebaseAuth.AuthStateListener { trySend(Unit) }
+            auth.addAuthStateListener(listener)
+            awaitClose { auth.removeAuthStateListener(listener) }
+        },
+        profileEdits,
+    ).map { auth.currentUser.toAccount() }.distinctUntilChanged()
 
     override suspend fun signInWithGoogle(idToken: String): SignInOutcome {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
@@ -80,12 +94,38 @@ class FirebaseAccountRepository @Inject constructor(
             // The published author comes off the ID token, which only carries the
             // new name once Firebase mints a fresh one.
             user.getIdToken(true).await()
+            profileEdits.tryEmit(Unit)
             true
         } catch (e: Exception) {
             Timber.w(e, "Could not save the display name")
             false
         }
     }
+
+    /**
+     * The chosen face lives in the Firebase profile, so it reaches the proxy in
+     * the ID token and needs no storage of ours.
+     */
+    override suspend fun setPhotoUrl(photoUrl: String?): Boolean {
+        val user = auth.currentUser ?: return false
+        val uri = photoUrl?.takeIf { it.startsWith("https://") }?.toUri()
+
+        return try {
+            user.updateProfile(UserProfileChangeRequest.Builder().setPhotoUri(uri).build()).await()
+            user.getIdToken(true).await()
+            profileEdits.tryEmit(Unit)
+            true
+        } catch (e: Exception) {
+            Timber.w(e, "Could not save the profile photo")
+            false
+        }
+    }
+
+    override fun googlePhotoUrl(): String? = auth.currentUser
+        ?.providerData
+        ?.firstOrNull { it.providerId == GOOGLE_PROVIDER }
+        ?.photoUrl
+        ?.toString()
 
     override suspend fun signOut() {
         auth.signOut()
@@ -114,6 +154,7 @@ class FirebaseAccountRepository @Inject constructor(
                     .build(),
             ).await()
             user.getIdToken(true).await()
+            profileEdits.tryEmit(Unit)
         } catch (e: Exception) {
             Timber.w(e, "Could not copy the Google profile across")
         }

@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 
 internal object TierListsTestTags {
     const val LOADING = "tier_lists_loading"
@@ -19,10 +20,21 @@ internal object TierListsTestTags {
     const val COMMUNITY_FAILED = "home_community_failed"
     const val COMMUNITY_EMPTY = "home_community_empty"
     const val CATEGORY_FILTERS = "home_category_filters"
+    const val LIST_ACTIONS_SHEET = "community_list_actions"
+    const val ACTION_VIEW_AUTHOR = "community_action_view_author"
+    const val ACTION_HIDE = "community_action_hide"
+    const val ACTION_REPORT = "community_action_report"
+    const val REPORT_DIALOG = "community_report_dialog"
+    const val REPORT_NOTE = "community_report_note"
+    const val REPORT_SEND = "community_report_send"
     fun tierListCard(id: Long): String = "tier_list_card_$id"
     fun communityCard(id: String): String = "community_card_$id"
+
+    fun communityCardAuthor(id: String): String = "community_card_author_$id"
 
     fun categoryFilter(category: ListCategory?): String = "home_category_${category?.id ?: "all"}"
     fun tab(tab: HomeTab): String = "home_tab_${tab.name.lowercase()}"
     fun suggestion(index: Int): String = "home_suggestion_$index"
+
+    fun reportReason(reason: ReportReason): String = "community_report_reason_${reason.id}"
 }

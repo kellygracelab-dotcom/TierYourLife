@@ -4,9 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.core.ui.UserMessages
 import com.artiuillab.tieryourlife.core.ui.guard
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.ordering.withItemMoved
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 private const val POOL_TIER_ID = -1L
@@ -28,6 +31,7 @@ private const val POOL_TIER_ID = -1L
 class CommunityListViewModel @Inject constructor(
     private val community: CommunityRepository,
     private val tiers: TierRepository,
+    private val preferences: AppPreferences,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -56,6 +60,8 @@ class CommunityListViewModel @Inject constructor(
                             authorName = published.summary.authorName,
                         ),
                         authorName = published.summary.authorName,
+                        authorUid = published.summary.authorUid,
+                        authorPhotoUrl = published.summary.authorPhotoUrl,
                     )
                 },
                 onFailure = { CommunityListUiState.Error },
@@ -95,6 +101,26 @@ class CommunityListViewModel @Inject constructor(
             }
             _state.update { (it as CommunityListUiState.Success).copy(saving = false) }
             if (saved) newId?.let(onSaved)
+        }
+    }
+
+    fun hide() {
+        preferences.hideList(publishedId)
+    }
+
+    fun hideAuthor(authorUid: String) {
+        preferences.hideAuthor(authorUid)
+    }
+
+    /**
+     * Same bargain as the feed: it goes off this reader's screen at once,
+     * and whether it comes down for everyone is a person's decision.
+     */
+    fun report(reason: ReportReason, note: String?) {
+        hide()
+        viewModelScope.launch {
+            community.report(publishedId, reason, note)
+                .onFailure { Timber.w(it, "Could not file the report") }
         }
     }
 

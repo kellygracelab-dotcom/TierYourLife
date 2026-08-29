@@ -300,4 +300,29 @@
     <plurals name="community_item_count">
         <item quantity="other">カード %1$d 枚</item>
     </plurals>
+    <string name="snack_published_list_still_public">削除せず残しました。公開コピーを取り下げられませんでした。オンラインのときにもう一度お試しください。</string>
+    <string name="author_failed">このプロフィールを開けませんでした。</string>
+    <string name="author_no_public_lists">公開リストはありません</string>
+    <string name="author_no_public_lists_body">すでに保存したコピーはあなたのもので、そのまま残ります。</string>
+    <plurals name="author_public_lists">
+        <item quantity="other">公開リスト %1$d 件</item>
+    </plurals>
+    <string name="list_settings_public_too_large">このリストは公開するには大きすぎます。カードは1000枚、ティアは20段までです。</string>
+    <string name="community_action_view_author">%1$s のプロフィール</string>
+    <string name="community_action_hide">このリストを非表示</string>
+    <string name="community_action_report">このリストを報告</string>
+    <string name="report_title">このリストを報告</string>
+    <string name="report_reason_sexual">性的なコンテンツ</string>
+    <string name="report_reason_violence">暴力的・衝撃的なコンテンツ</string>
+    <string name="report_reason_hate">ヘイトや嫌がらせ</string>
+    <string name="report_reason_spam">スパムや広告</string>
+    <string name="report_reason_other">その他</string>
+    <string name="report_note_label">補足があれば（任意）</string>
+    <string name="report_by_hand">報告はすべて人が読みます。自動的に削除されることはありません。</string>
+    <string name="report_action_send">報告する</string>
+    <string name="report_sent_title">報告しました。あなたには非表示になります</string>
+    <string name="report_sent_body">報告は一人が手作業で確認します。それまで他の人には表示され続けることがあります。</string>
+    <string name="report_hide_author">%1$s の投稿をすべて非表示にする</string>
+    <string name="community_hidden">非表示にしました</string>
+    <string name="community_action_hide_author">%1$s の投稿をすべて非表示</string>
 </resources>

@@ -106,6 +106,19 @@ interface TierDao {
     @Query("SELECT COUNT(*) FROM tier_lists WHERE publishedId IS NOT NULL AND deletedAt IS NULL")
     suspend fun countPublishedLists(): Int
 
+    @Query(
+        """
+        SELECT DISTINCT i.imageUrl FROM tier_items i
+            JOIN tiers t ON i.tierId = t.id
+            JOIN tier_lists l ON t.tierListId = l.id
+        WHERE i.imageUrl LIKE 'https://%'
+            AND i.deletedAt IS NULL
+            AND l.deletedAt IS NULL
+        LIMIT :limit
+        """,
+    )
+    suspend fun cardImageUrls(limit: Int): List<String>
+
     @Query("UPDATE tier_lists SET publishedId = :publishedId WHERE id = :id")
     suspend fun setPublishedId(id: Long, publishedId: String?)
 
@@ -189,7 +202,7 @@ interface TierDao {
 
     @Query(
         """
-        SELECT l.id AS id, l.title AS title, l.deletedAt AS deletedAt,
+        SELECT l.id AS id, l.title AS title, l.deletedAt AS deletedAt, l.publishedId AS publishedId,
             (SELECT COUNT(*) FROM tier_items i
                 JOIN tiers t ON i.tierId = t.id
                 WHERE t.tierListId = l.id AND i.deletedAt IS NULL) AS itemCount

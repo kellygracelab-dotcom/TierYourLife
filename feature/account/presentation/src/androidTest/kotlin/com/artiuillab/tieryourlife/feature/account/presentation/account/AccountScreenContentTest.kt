@@ -46,6 +46,9 @@ class AccountScreenContentTest {
         }
     }
 
+    private fun guest(signingIn: Boolean = false) =
+        AccountUiState(account = Account.Guest, signingIn = signingIn)
+
     private fun signedIn(
         displayName: String? = "Danylo K.",
         credits: Int? = 12,
@@ -62,7 +65,7 @@ class AccountScreenContentTest {
 
     @Test
     fun asAGuest_theOfferAndItsThreeReasonsAreShown() {
-        setContent(AccountUiState())
+        setContent(guest())
 
         composeRule.onNodeWithTag(AccountTestTags.SIGN_IN).assertIsDisplayed()
         composeRule.onNodeWithTag(AccountTestTags.reason(0)).assertIsDisplayed()
@@ -74,7 +77,7 @@ class AccountScreenContentTest {
     // asking anything further.
     @Test
     fun notNow_closesTheScreen_withoutSigningIn() {
-        setContent(AccountUiState())
+        setContent(guest())
 
         composeRule.onNodeWithTag(AccountTestTags.NOT_NOW).performClick()
 
@@ -86,7 +89,7 @@ class AccountScreenContentTest {
 
     @Test
     fun signIn_asksOnce() {
-        setContent(AccountUiState())
+        setContent(guest())
 
         composeRule.onNodeWithTag(AccountTestTags.SIGN_IN).performClick()
 
@@ -97,7 +100,7 @@ class AccountScreenContentTest {
     // second one.
     @Test
     fun signIn_isDisabledWhileThePickerIsOpen() {
-        setContent(AccountUiState(signingIn = true))
+        setContent(guest(signingIn = true))
 
         composeRule.onNodeWithTag(AccountTestTags.SIGN_IN).assertIsNotEnabled()
     }
@@ -136,7 +139,7 @@ class AccountScreenContentTest {
 
     @Test
     fun asAGuest_thereIsNothingToSignOutOf() {
-        setContent(AccountUiState())
+        setContent(guest())
 
         composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT).assertDoesNotExist()
     }
@@ -177,9 +180,20 @@ class AccountScreenContentTest {
         composeRule.onNodeWithTag(AccountTestTags.NICKNAME_SAVE).assertIsNotEnabled()
     }
 
+    // Neither panel is right until Firebase answers, and picking one to show
+    // meanwhile means showing the wrong one and swapping it.
+    @Test
+    fun beforeFirebaseAnswers_neitherPanelIsShown() {
+        setContent(AccountUiState())
+
+        composeRule.onNodeWithTag(AccountTestTags.SIGN_IN).assertDoesNotExist()
+        composeRule.onNodeWithTag(AccountTestTags.EMAIL).assertDoesNotExist()
+        composeRule.onNodeWithTag(AccountTestTags.CLOSE).assertIsDisplayed()
+    }
+
     @Test
     fun theCross_closesTheScreen() {
-        setContent(AccountUiState())
+        setContent(guest())
 
         composeRule.onNodeWithTag(AccountTestTags.CLOSE).performClick()
 

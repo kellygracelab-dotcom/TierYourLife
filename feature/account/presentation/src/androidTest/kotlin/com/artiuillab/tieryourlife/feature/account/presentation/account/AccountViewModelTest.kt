@@ -9,7 +9,13 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
-import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedLists
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -152,12 +158,36 @@ class AccountViewModelTest {
         repository: AccountRepository = FakeAccountRepository(),
         credential: GoogleCredential = FakeGoogleCredential(GoogleCredentialResult.Cancelled),
         credits: GenerationCredits = FakeGenerationCredits(),
-        publishedLists: PublishedLists = FakePublishedLists(),
-    ) = AccountViewModel(repository, credential, credits, publishedLists)
+        publishedLists: OwnLists = FakeOwnLists(),
+    ) = AccountViewModel(repository, credential, credits, publishedLists, FakeCommunityForAccount())
 }
 
-private class FakePublishedLists(private val published: Int = 0) : PublishedLists {
-    override suspend fun count(): Int = published
+private class FakeCommunityForAccount : CommunityRepository {
+    override suspend fun feed(
+        category: ListCategory?,
+        query: String?,
+        author: String?,
+    ): Result<List<PublishedListSummary>> = Result.success(emptyList())
+
+    override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
+
+    override suspend fun publish(list: TierList): Result<String> = Result.failure(IllegalStateException())
+
+    override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
+
+    override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
+
+    override suspend fun report(
+        publishedId: String,
+        reason: ReportReason,
+        note: String?,
+    ): Result<Unit> = Result.success(Unit)
+}
+
+private class FakeOwnLists(private val published: Int = 0) : OwnLists {
+    override suspend fun publishedCount(): Int = published
+
+    override suspend fun cardImages(limit: Int): List<String> = emptyList()
 }
 
 private class FakeAccountRepository(
@@ -180,6 +210,10 @@ private class FakeAccountRepository(
 
     override suspend fun setDisplayName(name: String): Boolean = true
 
+    override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
+
+    override fun googlePhotoUrl(): String? = null
+
     override suspend fun signOut() {
         state.value = Account.Guest
     }
@@ -195,6 +229,8 @@ private class FakeGoogleCredential(private val result: GoogleCredentialResult) :
 }
 
 private class FakeGenerationCredits(private val balance: Int? = null) : GenerationCredits {
+    override fun lastKnown(): Int? = null
+
     var reads = 0
 
     override suspend fun remaining(): Int? {
