@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -36,6 +35,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
@@ -44,11 +44,16 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.BAND_CAPTION_PADDING
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.CAPTION_HIDDEN_FONT_SCALE
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.rememberBandContentWidth
+
+private val PREVIEW_MIN_BAND_WIDTH = 52.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TierEditorSheet(
+    otherCaptions: List<String>,
     initialTier: Tier? = null,
     onDismiss: () -> Unit,
     onSave: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
@@ -58,12 +63,18 @@ internal fun TierEditorSheet(
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
     ) {
-        TierEditorSheetContent(initialTier = initialTier, onDismiss = onDismiss, onSave = onSave)
+        TierEditorSheetContent(
+            otherCaptions = otherCaptions,
+            initialTier = initialTier,
+            onDismiss = onDismiss,
+            onSave = onSave,
+        )
     }
 }
 
 @Composable
 internal fun TierEditorSheetContent(
+    otherCaptions: List<String> = emptyList(),
     initialTier: Tier? = null,
     onDismiss: () -> Unit,
     onSave: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
@@ -76,6 +87,14 @@ internal fun TierEditorSheetContent(
         )
     }
     val isLabelValid = label.isNotBlank()
+
+    // The preview draws the band at the width it will have on the board, not
+    // at the width of what is being typed: otherwise it promises one size and
+    // saving delivers another.
+    val allCaptions = remember(otherCaptions, caption) {
+        if (caption.isBlank()) otherCaptions else otherCaptions + caption
+    }
+    val bandContentWidth = rememberBandContentWidth(allCaptions)
 
     Column(Modifier.testTag(TierDetailTestTags.TIER_EDITOR_SHEET)) {
             Text(
@@ -120,6 +139,7 @@ internal fun TierEditorSheetContent(
                 LivePreviewRow(
                     label = label,
                     caption = caption.ifBlank { null },
+                    bandContentWidth = bandContentWidth,
                     colorLight = colorSelection.colorLight,
                     colorDark = colorSelection.colorDark,
                 )
@@ -187,13 +207,20 @@ internal fun TierEditorSheetContent(
     }
 
 @Composable
-private fun LivePreviewRow(label: String, caption: String?, colorLight: String, colorDark: String) {
+private fun LivePreviewRow(
+    label: String,
+    caption: String?,
+    bandContentWidth: Dp,
+    colorLight: String,
+    colorDark: String,
+) {
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         TierYourLifeTheme(darkTheme = false) {
             LivePreviewCard(
                 themeLabel = stringResource(R.string.tier_editor_theme_light),
                 label = label,
                 caption = caption,
+                bandContentWidth = bandContentWidth,
                 colorLight = colorLight,
                 colorDark = colorDark,
                 modifier = Modifier
@@ -206,6 +233,7 @@ private fun LivePreviewRow(label: String, caption: String?, colorLight: String, 
                 themeLabel = stringResource(R.string.tier_editor_theme_dark),
                 label = label,
                 caption = caption,
+                bandContentWidth = bandContentWidth,
                 colorLight = colorLight,
                 colorDark = colorDark,
                 modifier = Modifier
@@ -221,6 +249,7 @@ private fun LivePreviewCard(
     themeLabel: String,
     label: String,
     caption: String?,
+    bandContentWidth: Dp,
     colorLight: String,
     colorDark: String,
     modifier: Modifier = Modifier,
@@ -248,9 +277,9 @@ private fun LivePreviewCard(
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .widthIn(min = 52.dp)
+                        .width(maxOf(PREVIEW_MIN_BAND_WIDTH, bandContentWidth))
                         .background(colors.band)
-                        .padding(6.dp),
+                        .padding(BAND_CAPTION_PADDING),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {

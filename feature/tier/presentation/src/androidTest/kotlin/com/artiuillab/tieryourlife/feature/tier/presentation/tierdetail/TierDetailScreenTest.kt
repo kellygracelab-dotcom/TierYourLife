@@ -1589,6 +1589,7 @@ class TierDetailScreenTest {
                 val dragController = remember { TierDragController() }
                 TierRow(
                     tier = pool,
+                    bandContentWidth = 64.dp,
                     displayMode = TierListDisplayMode.WRAP,
                     dragController = dragController,
                     rankedTierIds = emptyList(),
@@ -1702,8 +1703,26 @@ class TierDetailScreenTest {
         composeRule.runOnIdle { assertEquals(0, callCount) }
     }
 
+    // The letters are the spine of the board, so they have to sit in a column:
+    // one width for every band, taken from the longest caption among them.
     @Test
-    fun tierBandColumn_widthTracksCaptionLength_andNeverExceedsAThirdOfTheRow() {
+    fun everyTierBand_isAsWideAsTheLongestCaptionOnTheBoard() {
+        val list = listOf(
+            tier(id = 1, label = "S", items = emptyList(), caption = "X"),
+            tier(id = 2, label = "A", items = emptyList(), caption = "Watchable"),
+        ).asTierList()
+        setScreen(TierDetailUiState.Success(list))
+
+        val shortBandWidth = composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).fetchSemanticsNode().boundsInRoot.width
+        val longBandWidth = composeRule.onNodeWithTag(TierDetailTestTags.tierBand(2)).fetchSemanticsNode().boundsInRoot.width
+        val minWidthPx = with(composeRule.density) { 56.dp.toPx() }
+
+        assertEquals("both bands must be one width", longBandWidth, shortBandWidth, 1f)
+        assertTrue("that width must clear the 56dp floor", shortBandWidth >= minWidthPx - 1f)
+    }
+
+    @Test
+    fun aCaptionTooLongForTheRow_stopsAtAThirdOfIt() {
         val list = listOf(
             tier(id = 1, label = "S", items = emptyList(), caption = "X"),
             tier(
@@ -1718,11 +1737,9 @@ class TierDetailScreenTest {
         val rowWidth = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot.width
         val shortBandWidth = composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).fetchSemanticsNode().boundsInRoot.width
         val longBandWidth = composeRule.onNodeWithTag(TierDetailTestTags.tierBand(2)).fetchSemanticsNode().boundsInRoot.width
-        val minWidthPx = with(composeRule.density) { 56.dp.toPx() }
 
-        assertTrue("a short caption's band must be narrower than a long caption's", shortBandWidth < longBandWidth)
-        assertTrue("band must never go below the 56dp floor", shortBandWidth >= minWidthPx - 1f)
-        assertTrue("band must never exceed a third of the row", longBandWidth <= rowWidth / 3f + 1f)
+        assertEquals("both bands must still be one width", longBandWidth, shortBandWidth, 1f)
+        assertTrue("and that width stops at a third of the row", longBandWidth <= rowWidth / 3f + 1f)
     }
 
     @Test

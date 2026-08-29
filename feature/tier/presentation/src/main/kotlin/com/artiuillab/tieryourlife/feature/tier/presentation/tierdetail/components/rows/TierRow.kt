@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -46,12 +46,17 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ROW_HOVER_TINT_ALPHA
@@ -71,12 +76,55 @@ private val MIN_TIER_ROW_HEIGHT = 84.dp
 
 private val MIN_TIER_BAND_WIDTH = 56.dp
 private const val MAX_TIER_BAND_FRACTION = 1f / 3f
+internal val BAND_CAPTION_PADDING = 6.dp
 
 internal const val CAPTION_HIDDEN_FONT_SCALE = 1.5f
+
+/**
+ * The captions the band width is measured from, leaving out the tier being
+ * edited: its caption comes from the field rather than from the board.
+ */
+internal fun TierList.captionsExcept(tierId: Long?): List<String> = tiers
+    .filterNot { it.isPool || it.id == tierId }
+    .mapNotNull { it.caption?.takeIf(String::isNotBlank) }
+
+/**
+ * One width for every band on a board, from the longest caption among them.
+ *
+ * The letters down the left are the spine of a tier list: they are what the
+ * eye runs along, and they only work as a column if they sit in one. Letting
+ * each band hug its own caption puts a saw down that edge, and the varying
+ * width means nothing -- it is the length of a word, not a quantity. A caption
+ * is the subordinate element here, so it does not get to move the main one.
+ *
+ * The answer is different in Arabic than in English because the longest word
+ * is different. That is fine: what has to agree is one board, not two
+ * translations of it.
+ */
+@Composable
+internal fun rememberBandContentWidth(tiers: List<Tier>): Dp =
+    rememberBandContentWidth(tiers.filterNot { it.isPool }.mapNotNull { it.caption?.takeIf(String::isNotBlank) })
+
+@Composable
+internal fun rememberBandContentWidth(
+    captions: List<String>,
+    measurer: TextMeasurer = rememberTextMeasurer(),
+    style: TextStyle = TierYourLifeType.current.tierBandCaption,
+): Dp {
+    val density = LocalDensity.current
+    // Density and fontScale are read rather than passed: a caption measured at
+    // one text size is the wrong answer at another, and both can change while
+    // the board is open.
+    return remember(captions, style, density.density, density.fontScale) {
+        val widest = captions.maxOfOrNull { measurer.measure(it, style, maxLines = 1).size.width } ?: 0
+        with(density) { widest.toDp() } + BAND_CAPTION_PADDING * 2
+    }
+}
 
 @Composable
 internal fun TierRow(
     tier: Tier,
+    bandContentWidth: Dp,
     displayMode: TierListDisplayMode,
     dragController: TierDragController,
     rankedTierIds: List<Long>,
@@ -127,7 +175,12 @@ internal fun TierRow(
     val slotHeightPx = with(density) { (MIN_TIER_ROW_HEIGHT + TIER_LIST_ITEM_SPACING).toPx() }
 
     BoxWithConstraints(modifier.fillMaxWidth()) {
-        val bandMaxWidth = maxWidth * MAX_TIER_BAND_FRACTION
+        // A caption longer than a third of the row is the one that wraps; the
+        // rest take the same width rather than following it out.
+        val bandWidth = minOf(
+            maxOf(MIN_TIER_BAND_WIDTH, bandContentWidth),
+            maxWidth * MAX_TIER_BAND_FRACTION,
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -149,7 +202,7 @@ internal fun TierRow(
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .widthIn(min = MIN_TIER_BAND_WIDTH, max = bandMaxWidth)
+                    .width(bandWidth)
                     .background(colors.band)
                     .testTag(TierDetailTestTags.tierBand(tier.id))
                     .then(
@@ -191,11 +244,7 @@ internal fun TierRow(
                             Modifier
                         },
                     )
-                    // The band grows to fit its caption, so the padding is what
-                    // keeps a long one off both edges instead of kissing them.
-                    // The editor's preview of a tier already has it; the tier
-                    // itself did not, which made the preview a small lie.
-                    .padding(top = 10.dp, start = 6.dp, end = 6.dp),
+                    .padding(start = BAND_CAPTION_PADDING, end = BAND_CAPTION_PADDING, top = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top,
             ) {
@@ -299,6 +348,7 @@ private fun CollapsedItemCount(count: Int, modifier: Modifier = Modifier) {
 @Composable
 private fun TierRowLightPreview() = TierYourLifeTheme(false) {
     TierRow(
+        bandContentWidth = 64.dp,
         tier = previewTierList.tiers.first(),
         displayMode = TierListDisplayMode.WRAP,
         dragController = remember { TierDragController() },
@@ -314,6 +364,7 @@ private fun TierRowLightPreview() = TierYourLifeTheme(false) {
 @Composable
 private fun TierRowDarkPreview() = TierYourLifeTheme(true) {
     TierRow(
+        bandContentWidth = 64.dp,
         tier = previewTierList.tiers.first(),
         displayMode = TierListDisplayMode.WRAP,
         dragController = remember { TierDragController() },
