@@ -89,11 +89,18 @@ internal fun HomeTabs(selected: HomeTab, onSelect: (HomeTab) -> Unit, modifier: 
                         }
                     }
                 }
-                Indicator(
-                    width = labelWidths[selectedIndex],
-                    start = tabWidth * selectedIndex + (tabWidth - labelWidths[selectedIndex]) / 2,
-                    modifier = Modifier.align(Alignment.BottomStart),
-                )
+                // Held back until the label has been measured. Composed at zero
+                // and then animated, it grew out from the middle of the tab on
+                // every entry to the screen -- a flourish nobody asked for,
+                // where the point is that the bar is simply already there.
+                val selectedWidth = labelWidths[selectedIndex]
+                if (selectedWidth > 0.dp) {
+                    Indicator(
+                        width = selectedWidth,
+                        start = tabWidth * selectedIndex + (tabWidth - selectedWidth) / 2,
+                        modifier = Modifier.align(Alignment.BottomStart),
+                    )
+                }
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         }
