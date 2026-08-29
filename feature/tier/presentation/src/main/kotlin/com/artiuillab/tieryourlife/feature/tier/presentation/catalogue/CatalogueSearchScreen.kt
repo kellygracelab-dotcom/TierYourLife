@@ -40,6 +40,7 @@ fun CatalogueSearchScreenContent(
     selectedIds: Set<String> = emptySet(),
     onToggleSelection: (CatalogueItem) -> Unit = {},
     onConfirmSelection: () -> Unit = {},
+    onLoadMore: () -> Unit = {},
 ) {
     val isDark = TierYourLifeMedia.current.isDark
     val fieldFill = if (isDark) FieldFillDark else FieldFillLight
@@ -90,6 +91,8 @@ fun CatalogueSearchScreenContent(
                         selectedIds = selectedIds,
                         selectedTint = if (isDark) SelectedRowTintDark else SelectedRowTintLight,
                         onToggle = onToggleSelection,
+                        loadingMore = state.loadingMore,
+                        onNearEnd = onLoadMore,
                     )
                 }
 

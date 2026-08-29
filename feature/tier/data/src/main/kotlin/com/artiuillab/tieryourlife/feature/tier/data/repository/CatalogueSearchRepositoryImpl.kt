@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataSparqlAp
 import com.artiuillab.tieryourlife.feature.tier.data.remote.wikidataDetailsQuery
 import com.artiuillab.tieryourlife.feature.tier.data.remote.wikidataLanguageCode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueSearchPage
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.search.CatalogueSearchMerger
 import com.artiuillab.tieryourlife.feature.tier.domain.search.WikidataCandidate
@@ -24,6 +25,11 @@ private const val SEARCH_TIMEOUT_MILLIS = 5_000L
 
 private const val MAX_DETAIL_IDS = 50
 
+private const val FIRST_PAGE = 1
+
+// TMDB answers with an error past its five hundredth page, whatever total_pages says.
+private const val LAST_TMDB_PAGE = 500
+
 class CatalogueSearchRepositoryImpl @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val wikidataApi: WikidataApi,
@@ -33,32 +39,53 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
     override suspend fun search(
         query: String,
         languageTag: String?,
-    ): Result<List<CatalogueItem>> {
+        page: Int,
+    ): Result<CatalogueSearchPage> {
         val normalizedQuery = query.trim()
 
         if (normalizedQuery.isEmpty()) {
-            return Result.success(emptyList())
+            return Result.success(CatalogueSearchPage(items = emptyList(), hasMore = false))
         }
 
         val resolvedLanguage = languageTag ?: Locale.getDefault().toLanguageTag()
 
+        // Wikidata hands over everything it has on the first ask, so a later
+        // page is TMDB alone rather than the same candidates a second time.
+        if (page > FIRST_PAGE) {
+            return fetchTmdb(normalizedQuery, resolvedLanguage, page).map { tmdb ->
+                CatalogueSearchPage(
+                    items = CatalogueSearchMerger.rank(normalizedQuery, tmdb.items),
+                    hasMore = tmdb.hasMore,
+                )
+            }
+        }
+
         return coroutineScope {
-            val tmdbDeferred = async { fetchTmdb(normalizedQuery, resolvedLanguage) }
+            val tmdbDeferred = async { fetchTmdb(normalizedQuery, resolvedLanguage, page) }
             val wikidataDeferred = async { fetchWikidata(normalizedQuery, resolvedLanguage) }
+
+            val tmdb = tmdbDeferred.await()
 
             CatalogueSearchMerger.merge(
                 query = normalizedQuery,
-                tmdbResult = tmdbDeferred.await(),
+                tmdbResult = tmdb.map { it.items },
                 wikidataResult = wikidataDeferred.await(),
-            )
+            ).map { items ->
+                CatalogueSearchPage(items = items, hasMore = tmdb.getOrNull()?.hasMore == true)
+            }
         }
     }
 
-    private suspend fun fetchTmdb(query: String, language: String): Result<List<CatalogueItem>> {
+    private suspend fun fetchTmdb(query: String, language: String, page: Int): Result<TmdbPage> {
         val timedOut = withTimeoutOrNull(SEARCH_TIMEOUT_MILLIS) {
             try {
-                val response = tmdbApi.searchMovies(query = query, language = language)
-                Result.success(response.results.map { it.toDomain() })
+                val response = tmdbApi.searchMovies(query = query, language = language, page = page)
+                Result.success(
+                    TmdbPage(
+                        items = response.results.map { it.toDomain() },
+                        hasMore = response.page < minOf(response.totalPages, LAST_TMDB_PAGE),
+                    ),
+                )
             } catch (exception: IOException) {
                 Result.failure(exception)
             } catch (exception: HttpException) {
@@ -99,3 +126,8 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
         return searchItems.map { item -> item.toDomain(detailsByQid[item.id]) }
     }
 }
+
+private data class TmdbPage(
+    val items: List<CatalogueItem>,
+    val hasMore: Boolean,
+)

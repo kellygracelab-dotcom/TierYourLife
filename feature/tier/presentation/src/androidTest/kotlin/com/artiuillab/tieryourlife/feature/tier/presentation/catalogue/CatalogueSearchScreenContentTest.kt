@@ -39,11 +39,13 @@ class CatalogueSearchScreenContentTest {
     private var confirmed: List<CatalogueItem>? = null
     private var closed = false
     private var lastQuery = ""
+    private var loadMoreCalls = 0
 
     private fun setContent(initial: CatalogueSearchUiState) {
         confirmed = null
         closed = false
         lastQuery = ""
+        loadMoreCalls = 0
         stateHolder = mutableStateOf(initial)
         composeRule.setContent {
             val state by stateHolder
@@ -69,9 +71,60 @@ class CatalogueSearchScreenContentTest {
                         }
                     },
                     onConfirmSelection = { confirmed = selectedItems.values.toList() },
+                    onLoadMore = { loadMoreCalls++ },
                 )
             }
         }
+    }
+
+    private fun resultRows(count: Int) = List(count) { index ->
+        CatalogueItem(id = "tmdb:$index", title = "Title $index", subtitle = null, imageUrl = null)
+    }
+
+    private fun topOf(id: String): Float =
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(id)).fetchSemanticsNode().boundsInRoot.top
+
+    @Test
+    fun reachingTheEndOfTheResults_asksForTheNextPage() {
+        val results = resultRows(40)
+        setContent(CatalogueSearchUiState.Success(results, canLoadMore = true))
+        composeRule.runOnIdle { assertEquals(0, loadMoreCalls) }
+
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_RESULTS_LIST)
+            .performScrollToIndex(results.lastIndex)
+
+        composeRule.runOnIdle { assertTrue("scrolling to the end should ask for more", loadMoreCalls > 0) }
+    }
+
+    // The reader ticks films as they read down the list, so a page arriving
+    // underneath must not move or forget the rows they have already been over.
+    @Test
+    fun aPageArriving_leavesTheTicksAndTheOrderAboveItAlone() {
+        val alreadyThere = listOf(dune, arrival, interstellar)
+        setContent(CatalogueSearchUiState.Success(alreadyThere, canLoadMore = true))
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(arrival.id)).performClick()
+        val orderBefore = alreadyThere.map { topOf(it.id) }
+
+        val nextPage = CatalogueItem(id = "tmdb:335984", title = "Blade Runner 2049", subtitle = "2017", imageUrl = null)
+        composeRule.runOnIdle {
+            stateHolder.value = CatalogueSearchUiState.Success(alreadyThere + nextPage, canLoadMore = false)
+        }
+
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(arrival.id)).assertIsSelected()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(dune.id)).assertIsNotSelected()
+        assertEquals(orderBefore, alreadyThere.map { topOf(it.id) })
+        assertTrue("the new film belongs below the ones already read", topOf(nextPage.id) > orderBefore.last())
+    }
+
+    @Test
+    fun whileTheNextPageIsOnItsWay_theFootOfTheListSaysSo() {
+        val results = resultRows(40)
+        setContent(CatalogueSearchUiState.Success(results, canLoadMore = true, loadingMore = true))
+
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_RESULTS_LIST)
+            .performScrollToIndex(results.size)
+
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_LOADING_MORE).assertIsDisplayed()
     }
 
     @Test

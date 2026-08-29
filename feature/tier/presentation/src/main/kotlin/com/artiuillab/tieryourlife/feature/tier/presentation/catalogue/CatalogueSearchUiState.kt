@@ -14,6 +14,8 @@ sealed interface CatalogueSearchUiState {
 
     data class Success(
         val items: List<CatalogueItem>,
+        val canLoadMore: Boolean = false,
+        val loadingMore: Boolean = false,
     ) : CatalogueSearchUiState
 
     data object Error : CatalogueSearchUiState

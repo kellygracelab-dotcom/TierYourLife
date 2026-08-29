@@ -8,6 +8,7 @@ internal object CatalogueSearchTestTags {
     const val ITEM_SEARCH_CONFIRM = "tier_detail_item_search_confirm"
     const val ITEM_SEARCH_TRY_AGAIN = "tier_detail_item_search_try_again"
     const val ITEM_SEARCH_RESULTS_LIST = "tier_detail_item_search_results_list"
+    const val ITEM_SEARCH_LOADING_MORE = "tier_detail_item_search_loading_more"
     const val ITEM_SEARCH_BOTTOM_BAR = "tier_detail_item_search_bottom_bar"
     fun itemSearchResult(id: String): String = "tier_detail_item_search_result_$id"
 }

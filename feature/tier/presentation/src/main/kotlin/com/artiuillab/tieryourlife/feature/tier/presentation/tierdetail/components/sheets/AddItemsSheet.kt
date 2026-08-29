@@ -56,6 +56,7 @@ internal fun AddItemsSheet(
             onConfirmSelection = {
                 onItemsConfirmed(selectedItems.values.map { PoolItemDraft(title = it.title, imageUrl = it.imageUrl) })
             },
+            onLoadMore = searchViewModel::loadMore,
         )
     }
 }

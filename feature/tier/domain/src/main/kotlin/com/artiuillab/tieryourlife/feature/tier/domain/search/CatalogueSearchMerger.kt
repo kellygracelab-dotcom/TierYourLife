@@ -32,10 +32,17 @@ object CatalogueSearchMerger {
             .filter { it.linkedTmdbId == null || it.linkedTmdbId !in presentTmdbIds }
             .map { it.item }
 
-        val interleaved = interleave(tmdbItems, wikidataItems)
+        return Result.success(rank(query, interleave(tmdbItems, wikidataItems)))
+    }
 
+    /**
+     * Which of these are worth showing, best match first. A later page is
+     * ranked on its own and appended, so the rows already under the reader's
+     * finger keep their order and their ticks.
+     */
+    fun rank(query: String, items: List<CatalogueItem>): List<CatalogueItem> {
         val trimmedQuery = query.trim()
-        return Result.success(interleaved.sortedBy { score(it.title, trimmedQuery) })
+        return items.filter { it.hasImage() }.sortedBy { score(it.title, trimmedQuery) }
     }
 
     private fun CatalogueItem.hasImage(): Boolean = !imageUrl.isNullOrBlank()
