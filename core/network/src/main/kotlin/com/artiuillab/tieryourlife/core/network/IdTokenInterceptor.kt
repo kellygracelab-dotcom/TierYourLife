@@ -1,27 +1,22 @@
 package com.artiuillab.tieryourlife.core.network
 
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.auth.FirebaseAuth
 import okhttp3.Interceptor
 import okhttp3.Response
-import timber.log.Timber
 
-private const val AUTHORIZATION_HEADER = "Authorization"
+internal const val AUTHORIZATION_HEADER = "Authorization"
 
-class IdTokenInterceptor : Interceptor {
+/**
+ * Who is calling, for the endpoints that meter or write. [token] is a
+ * parameter for the same reason as in [AppCheckInterceptor]: so the rule can
+ * be tested without Firebase.
+ */
+class IdTokenInterceptor(private val token: () -> String?) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val token = runCatching {
-            val auth = FirebaseAuth.getInstance()
-            val user = auth.currentUser ?: Tasks.await(auth.signInAnonymously()).user
-            user?.let { Tasks.await(it.getIdToken(false)).token }
-        }.onFailure { Timber.w(it, "ID token unavailable") }.getOrNull()
-
-        val request = if (token.isNullOrEmpty()) {
-            chain.request()
-        } else {
-            chain.request().newBuilder().header(AUTHORIZATION_HEADER, "Bearer $token").build()
-        }
+        val request = token()
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { chain.request().newBuilder().header(AUTHORIZATION_HEADER, "Bearer $it").build() }
+            ?: chain.request()
         return chain.proceed(request)
     }
 }
