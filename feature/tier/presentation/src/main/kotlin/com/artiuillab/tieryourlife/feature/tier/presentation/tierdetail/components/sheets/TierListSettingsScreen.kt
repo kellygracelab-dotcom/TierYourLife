@@ -92,12 +92,11 @@ internal fun TierListSettingsScreenContent(
             onSetPublic = onSetPublic,
         )
 
-        // Both belong to publishing, so they arrive with the switch rather than
-        // waiting behind a wizard the user has already committed to.
-        if (signedIn) {
-            CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
-            CoverRow(coverImageUrl = list.coverImageUrl, onClick = { coverSheetVisible = true })
-        }
+        // Both sit with the switch rather than inside a publishing wizard, and
+        // both stay available to a guest: a cover is what their own card shows,
+        // and a category chosen now is one less thing in the way later.
+        CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
+        CoverRow(coverImageUrl = list.coverImageUrl, onClick = { coverSheetVisible = true })
 
         DisplayModeSection(selected = list.displayMode, onSelect = onSetDisplayMode)
 
