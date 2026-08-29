@@ -272,7 +272,6 @@
     <string name="settings_account_offer_body">Uygulama hesapsız da tam çalışır.</string>
     <string name="settings_account_offer_action">Oturum aç</string>
     <string name="settings_account_signed_in">Oturum açıldı</string>
-    <string name="settings_account_signed_in_credits">Oturum açıldı · %1$d hak</string>
     <string name="settings_version">Sürüm %1$s</string>
     <string name="home_start_with">Şununla başla</string>
     <string name="home_start_hint">Panoyu hemen oluşturur. Adını değiştirmek için başlığa dokun.</string>
@@ -384,4 +383,8 @@
     <string name="my_published_action_open">Aç</string>
     <string name="community_tile_hidden">Sizin için gizlendi</string>
     <string name="community_tile_reported">Bildirildi. Bir kişi inceleyecek.</string>
+    <plurals name="settings_account_signed_in_credits">
+        <item quantity="one">Giriş yapıldı · %1$d kredi</item>
+        <item quantity="other">Giriş yapıldı · %1$d kredi</item>
+    </plurals>
 </resources>

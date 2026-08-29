@@ -322,7 +322,6 @@
     <string name="settings_account_offer_body">Приложение полностью работает и без него.</string>
     <string name="settings_account_offer_action">Войти</string>
     <string name="settings_account_signed_in">Вход выполнен</string>
-    <string name="settings_account_signed_in_credits">Вход выполнен · %1$d кредитов</string>
     <string name="settings_version">Версия %1$s</string>
     <string name="home_start_with">Начните с</string>
     <string name="home_start_hint">Доска создастся сразу. Коснитесь названия, чтобы переименовать.</string>
@@ -440,4 +439,10 @@
     <string name="my_published_action_open">Открыть</string>
     <string name="community_tile_hidden">Скрыто у тебя</string>
     <string name="community_tile_reported">Жалоба отправлена. Человек посмотрит.</string>
+    <plurals name="settings_account_signed_in_credits">
+        <item quantity="one">Вход выполнен · %1$d кредит</item>
+        <item quantity="few">Вход выполнен · %1$d кредита</item>
+        <item quantity="many">Вход выполнен · %1$d кредитов</item>
+        <item quantity="other">Вход выполнен · %1$d кредита</item>
+    </plurals>
 </resources>

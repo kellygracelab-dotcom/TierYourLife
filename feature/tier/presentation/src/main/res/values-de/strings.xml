@@ -272,7 +272,6 @@
     <string name="settings_account_offer_body">Die App funktioniert auch ohne vollständig.</string>
     <string name="settings_account_offer_action">Anmelden</string>
     <string name="settings_account_signed_in">Angemeldet</string>
-    <string name="settings_account_signed_in_credits">Angemeldet · %1$d Guthaben</string>
     <string name="settings_version">Version %1$s</string>
     <string name="home_start_with">Beginne mit</string>
     <string name="home_start_hint">Erstellt das Board sofort. Tippe auf den Titel, um ihn zu ändern.</string>
@@ -384,4 +383,8 @@
     <string name="my_published_action_open">Öffnen</string>
     <string name="community_tile_hidden">Für dich ausgeblendet</string>
     <string name="community_tile_reported">Gemeldet. Ein Mensch sieht es sich an.</string>
+    <plurals name="settings_account_signed_in_credits">
+        <item quantity="one">Angemeldet · %1$d Guthaben</item>
+        <item quantity="other">Angemeldet · %1$d Guthaben</item>
+    </plurals>
 </resources>

@@ -5,7 +5,6 @@
     <string name="account_reason_credits">生成回数は再インストールしても新しい端末でも残ります。</string>
     <string name="account_reason_purchases">購入は自動で復元されます。</string>
     <string name="account_reason_sync">ボードの同期は、できたときに。</string>
-    <string name="account_credits">生成回数 %1$d 回</string>
     <string name="account_credits_note">アカウントから復元しました</string>
     <string name="account_action_sign_in_google">Google でログイン</string>
     <string name="account_action_not_now">今はしない</string>
@@ -37,4 +36,7 @@
     <string name="account_face_letter">頭文字だけ</string>
     <string name="account_face_note">アップロードはしません。画像はウェブ上の元の場所に置かれたままです。</string>
     <string name="account_cd_change_face">アイコンを変更</string>
+    <plurals name="account_credits">
+        <item quantity="other">%1$d 回の生成</item>
+    </plurals>
 </resources>

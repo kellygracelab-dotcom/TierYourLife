@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -118,7 +119,7 @@ private fun SignedInRow(
     val subtitle = if (credits == null) {
         stringResource(R.string.settings_account_signed_in)
     } else {
-        String.format(stringResource(R.string.settings_account_signed_in_credits), credits)
+        pluralStringResource(R.plurals.settings_account_signed_in_credits, credits, credits)
     }
     Row(
         modifier = modifier

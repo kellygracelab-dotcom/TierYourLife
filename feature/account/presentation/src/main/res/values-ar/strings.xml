@@ -5,7 +5,6 @@
     <string name="account_reason_credits">أرصدة التوليد تبقى بعد إعادة التثبيت وعند تغيير الهاتف.</string>
     <string name="account_reason_purchases">المشتريات تعود من تلقاء نفسها.</string>
     <string name="account_reason_sync">مزامنة اللوحات، عندما تتوفر.</string>
-    <string name="account_credits">%1$d عمليات توليد</string>
     <string name="account_credits_note">استُعيدت من حسابك</string>
     <string name="account_action_sign_in_google">تسجيل الدخول بحساب Google</string>
     <string name="account_action_not_now">ليس الآن</string>
@@ -42,4 +41,12 @@
     <string name="account_face_letter">الحرف فقط</string>
     <string name="account_face_note">لا يتم رفع أي شيء. تبقى الصورة حيث هي على الويب.</string>
     <string name="account_cd_change_face">تغيير الصورة</string>
+    <plurals name="account_credits">
+        <item quantity="zero">لا عمليات توليد</item>
+        <item quantity="one">عملية توليد واحدة</item>
+        <item quantity="two">عمليتا توليد</item>
+        <item quantity="few">%1$d عمليات توليد</item>
+        <item quantity="many">%1$d عملية توليد</item>
+        <item quantity="other">%1$d عملية توليد</item>
+    </plurals>
 </resources>

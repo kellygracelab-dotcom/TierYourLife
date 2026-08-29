@@ -247,7 +247,6 @@
     <string name="settings_account_offer_body">アカウントがなくても全機能が使えます。</string>
     <string name="settings_account_offer_action">ログイン</string>
     <string name="settings_account_signed_in">ログイン済み</string>
-    <string name="settings_account_signed_in_credits">ログイン済み · 残り %1$d 回</string>
     <string name="settings_version">バージョン %1$s</string>
     <string name="home_start_with">まずは</string>
     <string name="home_start_hint">すぐにボードを作ります。名前はタイトルをタップして変更できます。</string>
@@ -356,4 +355,7 @@
     <string name="my_published_action_open">開く</string>
     <string name="community_tile_hidden">あなたには非表示</string>
     <string name="community_tile_reported">報告しました。人が確認します。</string>
+    <plurals name="settings_account_signed_in_credits">
+        <item quantity="other">ログイン済み · %1$d クレジット</item>
+    </plurals>
 </resources>

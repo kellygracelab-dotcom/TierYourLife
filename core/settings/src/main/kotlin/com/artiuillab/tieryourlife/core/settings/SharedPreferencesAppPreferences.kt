@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.core.settings
 
 import android.content.Context
+import androidx.core.content.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,22 +29,22 @@ class SharedPreferencesAppPreferences @Inject constructor(
     }
 
     override fun setThemeChoice(choice: ThemeChoice) {
-        prefs.edit().putString(KEY_THEME_CHOICE, choice.name).apply()
+        prefs.edit { putString(KEY_THEME_CHOICE, choice.name) }
     }
 
     override fun languageTag(): String? = prefs.getString(KEY_LANGUAGE_TAG, null)
 
     override fun setLanguageTag(tag: String?) {
-        prefs.edit().putString(KEY_LANGUAGE_TAG, tag).apply()
+        prefs.edit { putString(KEY_LANGUAGE_TAG, tag) }
     }
 
     override fun lastKnownCredits(): Int? =
         prefs.getInt(KEY_LAST_KNOWN_CREDITS, -1).takeIf { it >= 0 }
 
     override fun setLastKnownCredits(credits: Int?) {
-        prefs.edit().apply {
+        prefs.edit {
             if (credits == null) remove(KEY_LAST_KNOWN_CREDITS) else putInt(KEY_LAST_KNOWN_CREDITS, credits)
-        }.apply()
+        }
     }
 
     override fun hiddenListIds(): Set<String> = idsIn(KEY_HIDDEN_LISTS)
@@ -81,11 +82,11 @@ class SharedPreferencesAppPreferences @Inject constructor(
         .sortedBy { it.label.lowercase() }
 
     private fun hide(key: String, id: String, label: String) {
-        prefs.edit().putStringSet(key, withoutId(key, id) + "$id$SEPARATOR$label").apply()
+        prefs.edit { putStringSet(key, withoutId(key, id) + "$id$SEPARATOR$label") }
     }
 
     private fun unhide(key: String, id: String) {
-        prefs.edit().putStringSet(key, withoutId(key, id)).apply()
+        prefs.edit { putStringSet(key, withoutId(key, id)) }
     }
 
     private fun withoutId(key: String, id: String): Set<String> =

@@ -322,7 +322,6 @@
     <string name="settings_account_offer_body">Aplikacja działa w pełni bez niego.</string>
     <string name="settings_account_offer_action">Zaloguj się</string>
     <string name="settings_account_signed_in">Zalogowano</string>
-    <string name="settings_account_signed_in_credits">Zalogowano · %1$d kredytów</string>
     <string name="settings_version">Wersja %1$s</string>
     <string name="home_start_with">Zacznij od</string>
     <string name="home_start_hint">Tablica powstaje od razu. Dotknij tytułu, aby zmienić nazwę.</string>
@@ -440,4 +439,10 @@
     <string name="my_published_action_open">Otwórz</string>
     <string name="community_tile_hidden">Ukryte u ciebie</string>
     <string name="community_tile_reported">Zgłoszono. Człowiek to sprawdzi.</string>
+    <plurals name="settings_account_signed_in_credits">
+        <item quantity="one">Zalogowano · %1$d kredyt</item>
+        <item quantity="few">Zalogowano · %1$d kredyty</item>
+        <item quantity="many">Zalogowano · %1$d kredytów</item>
+        <item quantity="other">Zalogowano · %1$d kredytu</item>
+    </plurals>
 </resources>

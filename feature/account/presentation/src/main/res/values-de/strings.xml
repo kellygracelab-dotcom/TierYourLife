@@ -5,7 +5,6 @@
     <string name="account_reason_credits">Dein Guthaben übersteht eine Neuinstallation und ein neues Telefon.</string>
     <string name="account_reason_purchases">Käufe kommen von selbst zurück.</string>
     <string name="account_reason_sync">Board-Sync, sobald es ihn gibt.</string>
-    <string name="account_credits">%1$d Generierungen</string>
     <string name="account_credits_note">Aus deinem Konto wiederhergestellt</string>
     <string name="account_action_sign_in_google">Mit Google anmelden</string>
     <string name="account_action_not_now">Jetzt nicht</string>
@@ -38,4 +37,8 @@
     <string name="account_face_letter">Nur der Buchstabe</string>
     <string name="account_face_note">Nichts wird hochgeladen. Das Bild bleibt dort, wo es im Netz schon liegt.</string>
     <string name="account_cd_change_face">Bild ändern</string>
+    <plurals name="account_credits">
+        <item quantity="one">%1$d Generierung</item>
+        <item quantity="other">%1$d Generierungen</item>
+    </plurals>
 </resources>

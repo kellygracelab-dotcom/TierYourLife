@@ -272,7 +272,6 @@
     <string name="settings_account_offer_body">The app works fully without one.</string>
     <string name="settings_account_offer_action">Sign in</string>
     <string name="settings_account_signed_in">Signed in</string>
-    <string name="settings_account_signed_in_credits">Signed in · %1$d credits</string>
     <string name="settings_version">Version %1$s</string>
     <string name="home_start_with">Start with</string>
     <string name="home_start_hint">Creates a board straight away. Tap its title to rename.</string>
@@ -385,4 +384,8 @@
     <string name="my_published_action_open">Open</string>
     <string name="community_tile_hidden">Hidden for you</string>
     <string name="community_tile_reported">Reported. A person will look at it.</string>
+    <plurals name="settings_account_signed_in_credits">
+        <item quantity="one">Signed in · %1$d credit</item>
+        <item quantity="other">Signed in · %1$d credits</item>
+    </plurals>
 </resources>

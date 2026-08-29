@@ -5,7 +5,6 @@
     <string name="account_reason_credits">Üretim hakların yeniden kurulumdan ve yeni telefondan sağ çıkar.</string>
     <string name="account_reason_purchases">Satın alımlar kendiliğinden geri gelir.</string>
     <string name="account_reason_sync">Pano eşitlemesi, geldiğinde.</string>
-    <string name="account_credits">%1$d üretim hakkı</string>
     <string name="account_credits_note">Hesabından geri yüklendi</string>
     <string name="account_action_sign_in_google">Google ile oturum aç</string>
     <string name="account_action_not_now">Şimdi değil</string>
@@ -38,4 +37,8 @@
     <string name="account_face_letter">Sadece harf</string>
     <string name="account_face_note">Hiçbir şey yüklenmez. Görsel internette zaten bulunduğu yerde kalır.</string>
     <string name="account_cd_change_face">Resmi değiştir</string>
+    <plurals name="account_credits">
+        <item quantity="one">%1$d üretim</item>
+        <item quantity="other">%1$d üretim</item>
+    </plurals>
 </resources>

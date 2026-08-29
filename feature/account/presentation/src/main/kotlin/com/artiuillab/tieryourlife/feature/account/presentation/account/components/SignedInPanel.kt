@@ -103,7 +103,7 @@ internal fun SignedInPanel(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = stringResource(R.string.account_credits, credits),
+                    text = pluralStringResource(R.plurals.account_credits, credits, credits),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                 )

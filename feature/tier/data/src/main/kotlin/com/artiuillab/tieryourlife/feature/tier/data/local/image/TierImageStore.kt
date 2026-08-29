@@ -3,8 +3,8 @@ package com.artiuillab.tieryourlife.feature.tier.data.local.image
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
-import android.net.Uri
 import android.os.Build
+import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.IOException
@@ -25,7 +25,7 @@ class TierImageStore internal constructor(
 
     @Inject constructor(@ApplicationContext context: Context) : this(
         directory = File(context.filesDir, "tier_images"),
-        openSource = { uri -> context.contentResolver.openInputStream(Uri.parse(uri)) },
+        openSource = { uri -> context.contentResolver.openInputStream(uri.toUri()) },
     )
 
     fun copyToInternalStorage(sourceUri: String): String {
