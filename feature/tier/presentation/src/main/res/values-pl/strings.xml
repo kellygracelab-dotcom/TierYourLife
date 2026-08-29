@@ -405,4 +405,5 @@
     <string name="report_sent_body">Zgłoszenia sprawdza ręcznie jedna osoba, więc dla innych lista może pozostać.</string>
     <string name="report_hide_author">Ukryj też wszystko od %1$s</string>
     <string name="community_hidden">Ukryto</string>
+    <string name="community_action_hide_author">Ukryj wszystko od %1$s</string>
 </resources>

@@ -4,13 +4,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -31,6 +34,7 @@ sealed interface AuthorUiState {
 @HiltViewModel
 class AuthorViewModel @Inject constructor(
     private val community: CommunityRepository,
+    private val preferences: AppPreferences,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -47,12 +51,16 @@ class AuthorViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = AuthorUiState.Loading
             _state.value = community.feed(author = route.authorUid).fold(
-                onSuccess = { lists ->
+                onSuccess = { all ->
+                    // A list hidden from the feed stays hidden here; the
+                    // profile is another way to the same shelf.
+                    val hidden = preferences.hiddenListIds()
+                    val lists = all.filterNot { it.id in hidden }
                     AuthorUiState.Ready(
                         // Their own lists carry a fresher name and face than the
                         // card the reader tapped, so prefer those when there are any.
-                        name = lists.firstOrNull()?.authorName ?: route.authorName,
-                        photoUrl = lists.firstOrNull()?.authorPhotoUrl ?: route.authorPhotoUrl,
+                        name = all.firstOrNull()?.authorName ?: route.authorName,
+                        photoUrl = all.firstOrNull()?.authorPhotoUrl ?: route.authorPhotoUrl,
                         lists = lists,
                     )
                 },
@@ -61,6 +69,26 @@ class AuthorViewModel @Inject constructor(
                     AuthorUiState.Failed
                 },
             )
+        }
+    }
+
+    fun hideList(publishedId: String) {
+        preferences.hideList(publishedId)
+        _state.update { current ->
+            if (current !is AuthorUiState.Ready) return@update current
+            current.copy(lists = current.lists.filterNot { it.id == publishedId })
+        }
+    }
+
+    fun hideAuthor() {
+        preferences.hideAuthor(route.authorUid)
+    }
+
+    fun report(publishedId: String, reason: ReportReason, note: String?) {
+        hideList(publishedId)
+        viewModelScope.launch {
+            community.report(publishedId, reason, note)
+                .onFailure { Timber.w(it, "Could not file the report") }
         }
     }
 }

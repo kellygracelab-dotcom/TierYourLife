@@ -17,9 +17,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashScreen
 fun NavGraphBuilder.communityListScreen(
     onBack: () -> Unit,
     onSaved: (Long) -> Unit,
+    onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
 ) {
     composable<Route.CommunityList> {
-        CommunityListScreen(onBack = onBack, onSaved = onSaved)
+        CommunityListScreen(onBack = onBack, onSaved = onSaved, onAuthorClick = onAuthorClick)
     }
 }
 

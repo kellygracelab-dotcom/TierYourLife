@@ -20,6 +20,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -31,10 +34,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ListActionsSheet
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportDialog
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailUiState
@@ -46,6 +53,7 @@ private val SAVE_BUTTON_MAX_WIDTH = 180.dp
 fun CommunityListScreen(
     onBack: () -> Unit,
     onSaved: (Long) -> Unit,
+    onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     viewModel: CommunityListViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -56,6 +64,16 @@ fun CommunityListScreen(
         onMoveItem = viewModel::moveItem,
         onSave = { viewModel.saveToMyLists(onSaved) },
         onRetry = viewModel::load,
+        onAuthorClick = onAuthorClick,
+        onHide = {
+            viewModel.hide()
+            onBack()
+        },
+        onHideAuthor = { uid ->
+            viewModel.hideAuthor(uid)
+            onBack()
+        },
+        onReport = viewModel::report,
     )
 }
 
@@ -67,7 +85,15 @@ internal fun CommunityListScreenContent(
     onSave: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit = { _, _, _ -> },
+    onHide: () -> Unit = {},
+    onHideAuthor: (String) -> Unit = {},
+    onReport: (ReportReason, String?) -> Unit = { _, _ -> },
 ) {
+    var actionsVisible by remember { mutableStateOf(false) }
+    var reportVisible by remember { mutableStateOf(false) }
+    var reportedFrom by remember { mutableStateOf(false) }
+
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
             CommunityListUiState.Loading -> TierDetailScreenContent(
@@ -105,9 +131,61 @@ internal fun CommunityListScreenContent(
                         actions = TierDetailActions(onBack = onBack, onMoveItem = onMoveItem),
                         readOnly = true,
                         subtitle = stringResource(R.string.community_by_author, state.authorName),
+                        onReaderMoreClick = { actionsVisible = true },
                     )
                 }
                 SaveBar(arranged = state.arranged, saving = state.saving, onSave = onSave)
+            }
+        }
+
+        val loaded = state as? CommunityListUiState.Success
+        if (loaded != null) {
+            if (actionsVisible) {
+                ListActionsSheet(
+                    title = loaded.list.title,
+                    authorName = loaded.authorName,
+                    authorPhotoUrl = loaded.authorPhotoUrl,
+                    onDismiss = { actionsVisible = false },
+                    onOpenAuthor = {
+                        actionsVisible = false
+                        onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl)
+                    },
+                    onHide = {
+                        actionsVisible = false
+                        onHide()
+                    },
+                    onReport = {
+                        actionsVisible = false
+                        reportVisible = true
+                    },
+                )
+            }
+
+            if (reportVisible) {
+                ReportDialog(
+                    onDismiss = { reportVisible = false },
+                    onSend = { reason, note ->
+                        reportVisible = false
+                        onReport(reason, note)
+                        reportedFrom = true
+                    },
+                )
+            }
+
+            // Backing out only once the reader has read it: the list is already
+            // gone from their feed, and leaving first would say so silently.
+            if (reportedFrom) {
+                ReportSentDialog(
+                    authorName = loaded.authorName,
+                    onDismiss = {
+                        reportedFrom = false
+                        onBack()
+                    },
+                    onHideAuthor = {
+                        reportedFrom = false
+                        onHideAuthor(loaded.authorUid)
+                    },
+                )
             }
         }
     }

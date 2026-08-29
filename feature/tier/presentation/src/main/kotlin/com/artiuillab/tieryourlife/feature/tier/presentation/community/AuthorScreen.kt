@@ -19,6 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -35,8 +38,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.AuthorActionsSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.AuthorFace
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ListActionsSheet
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportDialog
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.CommunityFeed
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.CommunityFeedList
@@ -50,7 +59,18 @@ fun AuthorScreen(
     viewModel: AuthorViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    AuthorScreenContent(state = state, onBack = onBack, onOpenList = onOpenList, onRetry = viewModel::load)
+    AuthorScreenContent(
+        state = state,
+        onBack = onBack,
+        onOpenList = onOpenList,
+        onRetry = viewModel::load,
+        onHideList = viewModel::hideList,
+        onHideAuthor = {
+            viewModel.hideAuthor()
+            onBack()
+        },
+        onReport = viewModel::report,
+    )
 }
 
 @Composable
@@ -60,10 +80,25 @@ internal fun AuthorScreenContent(
     onOpenList: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onHideList: (String) -> Unit = {},
+    onHideAuthor: () -> Unit = {},
+    onReport: (String, ReportReason, String?) -> Unit = { _, _, _ -> },
 ) {
+    var authorActionsVisible by remember { mutableStateOf(false) }
+    var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
+    var reportFor by remember { mutableStateOf<PublishedListSummary?>(null) }
+    var reportedFrom by remember { mutableStateOf<PublishedListSummary?>(null) }
+
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         Column(Modifier.fillMaxSize().testTag(AuthorTestTags.SCREEN)) {
-            AuthorTopBar(onBack = onBack)
+            AuthorTopBar(
+                onBack = onBack,
+                onMoreClick = if (state is AuthorUiState.Ready) {
+                    { authorActionsVisible = true }
+                } else {
+                    null
+                },
+            )
 
             when (state) {
                 AuthorUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -95,6 +130,7 @@ internal fun AuthorScreenContent(
                             onSelectCategory = {},
                             onOpen = onOpenList,
                             onRetry = onRetry,
+                            onLongPress = { summary -> actionsFor = summary },
                             showCategories = false,
                             showAuthor = false,
                         )
@@ -102,12 +138,67 @@ internal fun AuthorScreenContent(
                 }
             }
         }
+
+        val ready = state as? AuthorUiState.Ready
+        if (ready != null && authorActionsVisible) {
+            AuthorActionsSheet(
+                name = ready.name,
+                photoUrl = ready.photoUrl,
+                onDismiss = { authorActionsVisible = false },
+                onHideAuthor = {
+                    authorActionsVisible = false
+                    onHideAuthor()
+                },
+            )
+        }
+
+        actionsFor?.let { summary ->
+            ListActionsSheet(
+                title = summary.title,
+                authorName = summary.authorName,
+                authorPhotoUrl = summary.authorPhotoUrl,
+                onDismiss = { actionsFor = null },
+                // Already on their profile: there is nowhere else to go.
+                onOpenAuthor = null,
+                onHide = {
+                    actionsFor = null
+                    onHideList(summary.id)
+                },
+                onReport = {
+                    actionsFor = null
+                    reportFor = summary
+                },
+            )
+        }
+
+        reportFor?.let { summary ->
+            ReportDialog(
+                onDismiss = { reportFor = null },
+                onSend = { reason, note ->
+                    reportFor = null
+                    onReport(summary.id, reason, note)
+                    reportedFrom = summary
+                },
+            )
+        }
+
+        reportedFrom?.let { summary ->
+            ReportSentDialog(
+                authorName = summary.authorName,
+                onDismiss = { reportedFrom = null },
+                onHideAuthor = {
+                    reportedFrom = null
+                    onHideAuthor()
+                },
+            )
+        }
     }
 }
 
 @Composable
-private fun AuthorTopBar(onBack: () -> Unit) {
+private fun AuthorTopBar(onBack: () -> Unit, onMoreClick: (() -> Unit)?) {
     val backDescription = stringResource(R.string.tier_detail_content_description_back)
+    val moreDescription = stringResource(R.string.tier_detail_content_description_more)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -120,6 +211,16 @@ private fun AuthorTopBar(onBack: () -> Unit) {
             onClick = onBack,
             modifier = Modifier.size(48.dp).semantics { contentDescription = backDescription },
         ) { BackIcon() }
+        Spacer(Modifier.weight(1f))
+        if (onMoreClick != null) {
+            IconButton(
+                onClick = onMoreClick,
+                modifier = Modifier
+                    .size(48.dp)
+                    .semantics { contentDescription = moreDescription }
+                    .testTag(AuthorTestTags.MORE),
+            ) { MoreIcon() }
+        }
     }
 }
 
@@ -185,6 +286,9 @@ internal object AuthorTestTags {
     const val SCREEN = "author_screen"
     const val NAME = "author_name"
     const val MESSAGE = "author_message"
+    const val MORE = "author_more"
+    const val ACTIONS_SHEET = "author_actions"
+    const val ACTION_HIDE_AUTHOR = "author_action_hide_author"
 }
 
 private val previewLists = listOf(

@@ -8,6 +8,8 @@ sealed interface CommunityListUiState {
     data class Success(
         val list: TierList,
         val authorName: String,
+        val authorUid: String = "",
+        val authorPhotoUrl: String? = null,
         /** True once the reader has moved something; nothing is stored either way. */
         val arranged: Boolean = false,
         val saving: Boolean = false,

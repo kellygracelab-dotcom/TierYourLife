@@ -376,4 +376,5 @@
     <string name="report_sent_body">Une seule personne examine les signalements à la main : elle peut rester visible pour les autres.</string>
     <string name="report_hide_author">Masquer aussi tout de %1$s</string>
     <string name="community_hidden">Masquée</string>
+    <string name="community_action_hide_author">Masquer tout de %1$s</string>
 </resources>

@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.NoteAddIcon
@@ -53,6 +54,8 @@ internal fun TierScreenTopBar(
     titleEditable: Boolean = false,
     /** Someone else's list: nothing here is editable, so nothing offers to edit. */
     readOnly: Boolean = false,
+    /** A reader's overflow: who wrote this, and how to stop seeing it. */
+    onReaderMoreClick: (() -> Unit)? = null,
     subtitle: String? = null,
 ) {
     val backDescription = stringResource(R.string.tier_detail_content_description_back)
@@ -112,6 +115,14 @@ internal fun TierScreenTopBar(
                 modifier = Modifier
                     .size(48.dp)
                     .semantics { contentDescription = moreDescription },
+            ) { MoreIcon() }
+        } else if (onReaderMoreClick != null) {
+            IconButton(
+                onClick = onReaderMoreClick,
+                modifier = Modifier
+                    .size(48.dp)
+                    .semantics { contentDescription = moreDescription }
+                    .testTag(CommunityTestTags.MORE),
             ) { MoreIcon() }
         }
     }

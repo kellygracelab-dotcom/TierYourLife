@@ -324,4 +324,5 @@
     <string name="report_sent_body">報告は一人が手作業で確認します。それまで他の人には表示され続けることがあります。</string>
     <string name="report_hide_author">%1$s の投稿をすべて非表示にする</string>
     <string name="community_hidden">非表示にしました</string>
+    <string name="community_action_hide_author">%1$s の投稿をすべて非表示</string>
 </resources>

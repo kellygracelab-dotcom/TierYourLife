@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.FakeAppPreferences
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -102,6 +103,7 @@ class CommunityListViewModelTest {
     ) = CommunityListViewModel(
         community = community,
         tiers = tiers,
+        preferences = FakeAppPreferences(),
         savedStateHandle = SavedStateHandle(mapOf("publishedId" to "abc")),
     )
 }

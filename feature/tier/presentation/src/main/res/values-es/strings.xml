@@ -376,4 +376,5 @@
     <string name="report_sent_body">Una sola persona revisa las denuncias a mano, así que puede seguir visible para los demás.</string>
     <string name="report_hide_author">Ocultar también todo de %1$s</string>
     <string name="community_hidden">Oculta</string>
+    <string name="community_action_hide_author">Ocultar todo de %1$s</string>
 </resources>

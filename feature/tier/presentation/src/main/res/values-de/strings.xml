@@ -351,4 +351,5 @@
     <string name="report_sent_body">Eine Person prüft Meldungen von Hand, bis dahin bleibt sie für andere sichtbar.</string>
     <string name="report_hide_author">Auch alles von %1$s ausblenden</string>
     <string name="community_hidden">Ausgeblendet</string>
+    <string name="community_action_hide_author">Alles von %1$s ausblenden</string>
 </resources>

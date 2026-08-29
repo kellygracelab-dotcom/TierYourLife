@@ -74,6 +74,7 @@ fun TierYourLifeNavHost(
                 navController.popBackStack()
                 navController.navigateToTierDetail(id)
             },
+            onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
         )
         aiStudioScreen(
             onBack = { ids ->

@@ -1,8 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.artiuillab.tieryourlife.core.settings.AppPreferences
-import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
@@ -17,6 +15,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.FakeAppPreferences
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -410,25 +409,4 @@ private class FakeCommunityRepository(
         reason: ReportReason,
         note: String?,
     ): Result<Unit> = Result.success(Unit)
-}
-
-private class FakeAppPreferences : AppPreferences {
-    private val hiddenLists = mutableSetOf<String>()
-    private val hiddenAuthors = mutableSetOf<String>()
-
-    override fun themeChoice(): ThemeChoice = ThemeChoice.SYSTEM
-    override fun setThemeChoice(choice: ThemeChoice) = Unit
-    override fun languageTag(): String? = null
-    override fun setLanguageTag(tag: String?) = Unit
-    override fun lastKnownCredits(): Int? = null
-    override fun setLastKnownCredits(credits: Int?) = Unit
-    override fun hiddenListIds(): Set<String> = hiddenLists
-    override fun hideList(publishedId: String) {
-        hiddenLists += publishedId
-    }
-
-    override fun hiddenAuthorUids(): Set<String> = hiddenAuthors
-    override fun hideAuthor(authorUid: String) {
-        hiddenAuthors += authorUid
-    }
 }

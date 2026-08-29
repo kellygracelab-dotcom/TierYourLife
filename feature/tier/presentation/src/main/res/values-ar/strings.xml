@@ -459,4 +459,5 @@
     <string name="report_sent_body">يراجع شخص واحد البلاغات يدويًا، لذا قد تظل ظاهرة للآخرين حتى ذلك الحين.</string>
     <string name="report_hide_author">إخفاء كل شيء من %1$s أيضًا</string>
     <string name="community_hidden">أُخفيت</string>
+    <string name="community_action_hide_author">إخفاء كل شيء من %1$s</string>
 </resources>

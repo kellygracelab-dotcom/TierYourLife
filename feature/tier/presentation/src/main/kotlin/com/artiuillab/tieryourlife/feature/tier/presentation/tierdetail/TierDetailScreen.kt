@@ -174,6 +174,7 @@ internal fun TierDetailScreenContent(
     userMessages: Flow<UserMessage> = emptyFlow(),
     readOnly: Boolean = false,
     subtitle: String? = null,
+    onReaderMoreClick: (() -> Unit)? = null,
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -206,6 +207,7 @@ internal fun TierDetailScreenContent(
                     userMessages = userMessages,
                     readOnly = readOnly,
                     subtitle = subtitle,
+                    onReaderMoreClick = onReaderMoreClick,
                 )
             }
 
@@ -231,6 +233,7 @@ private fun TierScreenBody(
     userMessages: Flow<UserMessage> = emptyFlow(),
     readOnly: Boolean = false,
     subtitle: String? = null,
+    onReaderMoreClick: (() -> Unit)? = null,
 ) {
     val onBack = actions.onBack
     val onAddClick = actions.onAddClick
@@ -409,6 +412,7 @@ private fun TierScreenBody(
                 titleEditable = !readOnly,
                 readOnly = readOnly,
                 subtitle = subtitle,
+                onReaderMoreClick = onReaderMoreClick,
             )
 
             if (list.displayMode == TierListDisplayMode.FLAT_RANKED) {
