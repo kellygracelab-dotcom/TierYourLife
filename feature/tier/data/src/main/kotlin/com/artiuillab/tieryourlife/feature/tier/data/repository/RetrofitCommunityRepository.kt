@@ -7,6 +7,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListSummaryDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ReportRequestDto
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishRefused
@@ -31,8 +32,10 @@ class RetrofitCommunityRepository @Inject constructor(
         category: ListCategory?,
         query: String?,
         author: String?,
-    ): Result<List<PublishedListSummary>> = runCatching {
-        api.feed(category?.id, query?.takeIf { it.isNotBlank() }, author).lists.map { it.toSummary() }
+        after: String?,
+    ): Result<CommunityPage> = runCatching {
+        val page = api.feed(category?.id, query?.takeIf { it.isNotBlank() }, author, after)
+        CommunityPage(lists = page.lists.map { it.toSummary() }, nextCursor = page.nextCursor)
     }
 
     override suspend fun open(id: String): Result<PublishedList> = runCatching {

@@ -1,22 +1,24 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.repository
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
-import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 interface CommunityRepository {
 
     /**
-     * The published feed. [query] is a prefix match on the title, [author] the
-     * uid whose lists to show; both narrow, neither is required.
+     * One page of the published feed. [query] is a prefix match on the title,
+     * [author] the uid whose lists to show; both narrow, neither is required.
+     * [after] is the cursor the page before handed back.
      */
     suspend fun feed(
         category: ListCategory? = null,
         query: String? = null,
         author: String? = null,
-    ): Result<List<PublishedListSummary>>
+        after: String? = null,
+    ): Result<CommunityPage>
 
     suspend fun open(id: String): Result<PublishedList>
 

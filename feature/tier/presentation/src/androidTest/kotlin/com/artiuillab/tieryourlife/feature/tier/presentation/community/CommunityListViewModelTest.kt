@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.community
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
@@ -113,7 +114,8 @@ private class FakeCommunityRepository : CommunityRepository {
         category: ListCategory?,
         query: String?,
         author: String?,
-    ): Result<List<PublishedListSummary>> = Result.success(emptyList())
+        after: String?,
+    ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
     override suspend fun open(id: String): Result<PublishedList> = Result.success(published)
     override suspend fun publish(list: TierList): Result<String> = Result.success("abc")
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
@@ -132,7 +134,8 @@ private class FailingCommunityRepository : CommunityRepository {
         category: ListCategory?,
         query: String?,
         author: String?,
-    ): Result<List<PublishedListSummary>> = Result.success(emptyList())
+        after: String?,
+    ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException("nope"))
     override suspend fun publish(list: TierList): Result<String> = Result.failure(IllegalStateException())
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)

@@ -13,15 +13,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +52,10 @@ private val CAPTION_SCRIM = Brush.verticalGradient(
     listOf(Color.Transparent, Color.Black.copy(alpha = 0.72f)),
 )
 
+// Far enough ahead that the next page is usually there before the
+// bottom is, close enough that an idle feed does not fetch on its own.
+private const val LOAD_MORE_ROWS_AHEAD = 4
+
 @Composable
 internal fun CommunityFeedList(
     feed: CommunityFeed,
@@ -57,9 +66,21 @@ internal fun CommunityFeedList(
     modifier: Modifier = Modifier,
     onOpenAuthor: ((String) -> Unit)? = null,
     onLongPress: ((PublishedListSummary) -> Unit)? = null,
+    onNearEnd: () -> Unit = {},
     showCategories: Boolean = true,
     showAuthor: Boolean = true,
 ) {
+    val gridState = rememberLazyGridState()
+    val shown = (feed as? CommunityFeed.Ready)?.lists?.size ?: 0
+
+    LaunchedEffect(gridState, shown) {
+        if (shown == 0) return@LaunchedEffect
+        snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1 }
+            .collect { lastVisible ->
+                if (lastVisible >= shown - LOAD_MORE_ROWS_AHEAD) onNearEnd()
+            }
+    }
+
     Column(modifier.fillMaxSize()) {
         if (showCategories) {
             CategoryFilterRow(
@@ -93,6 +114,7 @@ internal fun CommunityFeedList(
             } else {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
+                    state = gridState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -108,6 +130,21 @@ internal fun CommunityFeedList(
                                 { open(summary.authorUid) }
                             },
                         )
+                    }
+
+                    if (feed.loadingMore) {
+                        item(
+                            key = TierListsTestTags.COMMUNITY_LOADING_MORE,
+                            span = { GridItemSpan(maxLineSpan) },
+                        ) {
+                            Box(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .testTag(TierListsTestTags.COMMUNITY_LOADING_MORE)
+                                    .padding(vertical = 16.dp),
+                                contentAlignment = Alignment.Center,
+                            ) { CircularProgressIndicator(Modifier.size(24.dp)) }
+                        }
                     }
                 }
             }

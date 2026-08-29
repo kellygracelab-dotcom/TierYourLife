@@ -109,6 +109,7 @@ fun TierListsScreen(
         onSelectTab = viewModel::selectTab,
         onOpenCommunityList = onCommunityListClick,
         onRetryCommunity = viewModel::loadCommunityFeed,
+        onLoadMoreCommunity = viewModel::loadMoreCommunity,
         onSelectCommunityCategory = viewModel::selectCommunityCategory,
         onHideCommunityList = viewModel::hideCommunityList,
         onHideCommunityAuthor = viewModel::hideCommunityAuthor,
@@ -136,6 +137,7 @@ internal fun TierListsScreenContent(
     onSelectTab: (HomeTab) -> Unit = {},
     onOpenCommunityList: (String) -> Unit = {},
     onRetryCommunity: () -> Unit = {},
+    onLoadMoreCommunity: () -> Unit = {},
     onSelectCommunityCategory: (ListCategory?) -> Unit = {},
     onHideCommunityList: (PublishedListSummary) -> Unit = {},
     onHideCommunityAuthor: (uid: String, name: String) -> Unit = { _, _ -> },
@@ -255,6 +257,7 @@ internal fun TierListsScreenContent(
                             onSelectCategory = onSelectCommunityCategory,
                             onOpen = onOpenCommunityList,
                             onRetry = onRetryCommunity,
+                            onNearEnd = onLoadMoreCommunity,
                             onLongPress = { actionsFor = it },
                             onOpenAuthor = { uid ->
                                 val summary = (communityFeed as? CommunityFeed.Ready)

@@ -9,9 +9,9 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
-import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
@@ -167,7 +167,8 @@ private class FakeCommunityForAccount : CommunityRepository {
         category: ListCategory?,
         query: String?,
         author: String?,
-    ): Result<List<PublishedListSummary>> = Result.success(emptyList())
+        after: String?,
+    ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
 
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
 
