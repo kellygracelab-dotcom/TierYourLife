@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -162,7 +163,8 @@ class TierDetailViewModelTest {
     }
 
     // Publishing without a category would land the list in a feed nobody
-    // browses, so the screen asks before the network does.
+    // browses. The screen asks for one rather than refusing: the category is a
+    // row away, so the tap collects what is missing instead of complaining.
     @Test
     fun setPublic_withoutACategory_asksForOneRatherThanPublishing() = runBlocking {
         val community = FakeCommunityRepositoryForDetail()
@@ -176,7 +178,26 @@ class TierDetailViewModelTest {
 
         viewModel.setPublic(true)
 
-        assertEquals(PublishError.NoCategory, viewModel.publishError.value)
+        assertTrue(viewModel.categoryWanted.value)
+        assertNull(viewModel.publishError.value)
+        assertEquals(0, community.published.size)
+    }
+
+    @Test
+    fun backingOutOfTheCategorySheet_leavesTheListAlone() = runBlocking {
+        val community = FakeCommunityRepositoryForDetail()
+        val viewModel = TierDetailViewModel(
+            FakeTierRepository(listWithOneCard().copy(category = null)),
+            community,
+            FakeAccountRepositoryForDetail(signedIn = true),
+            savedStateHandle(),
+        )
+        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.setPublic(true)
+
+        viewModel.categoryNotChosen()
+
+        assertFalse(viewModel.categoryWanted.value)
         assertEquals(0, community.published.size)
     }
 
@@ -202,24 +223,44 @@ class TierDetailViewModelTest {
         assertEquals(ListCategory.Food, community.published.single().category)
     }
 
-    // A line that tells you to choose a category has to stop saying it once you
-    // have. Leaving it up reads as "that did not work".
+    // The whole point of asking: choosing finishes what the switch started, so
+    // the second tap is the last one.
     @Test
-    fun setCategory_afterBeingAskedFor_takesTheAskBackDown() = runBlocking {
+    fun choosingTheCategoryItAskedFor_finishesThePublish() = runBlocking {
+        val community = FakeCommunityRepositoryForDetail()
         val viewModel = TierDetailViewModel(
             FakeTierRepository(listWithOneCard().copy(category = null)),
-            FakeCommunityRepositoryForDetail(),
+            community,
             FakeAccountRepositoryForDetail(signedIn = true),
             savedStateHandle(),
         )
         viewModel.state.first { it is TierDetailUiState.Success }
         viewModel.setPublic(true)
-        assertEquals(PublishError.NoCategory, viewModel.publishError.value)
+
+        viewModel.setCategory(ListCategory.Food)
+        viewModel.publicPending.first { it == null }
+
+        assertEquals(ListCategory.Food, community.published.single().category)
+        assertFalse(viewModel.categoryWanted.value)
+    }
+
+    // Choosing one from the row, with no switch waiting on it, must not
+    // publish anything.
+    @Test
+    fun choosingACategoryOnItsOwn_publishesNothing() = runBlocking {
+        val community = FakeCommunityRepositoryForDetail()
+        val viewModel = TierDetailViewModel(
+            FakeTierRepository(listWithOneCard().copy(category = null)),
+            community,
+            FakeAccountRepositoryForDetail(signedIn = true),
+            savedStateHandle(),
+        )
+        viewModel.state.first { it is TierDetailUiState.Success }
 
         viewModel.setCategory(ListCategory.Food)
         viewModel.state.first { (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food }
 
-        assertNull(viewModel.publishError.value)
+        assertEquals(0, community.published.size)
     }
 
     // A refusal from the server is not something an unrelated edit answers, so

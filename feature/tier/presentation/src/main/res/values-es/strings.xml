@@ -337,7 +337,6 @@
     <string name="category_other">Otros</string>
     <string name="list_settings_category">Categoría</string>
     <string name="list_settings_category_none">Aún sin elegir</string>
-    <string name="list_settings_public_needs_category">Elige una categoría antes de publicar la lista.</string>
     <string name="list_settings_cover">Portada</string>
     <string name="list_settings_cover_none_set">Ninguna</string>
     <string name="list_settings_cover_set">Elegida</string>

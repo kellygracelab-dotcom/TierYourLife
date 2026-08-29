@@ -362,7 +362,6 @@
     <string name="category_other">Інше</string>
     <string name="list_settings_category">Категорія</string>
     <string name="list_settings_category_none">Ще не вибрана</string>
-    <string name="list_settings_public_needs_category">Виберіть категорію, перш ніж публікувати список.</string>
     <string name="list_settings_cover">Обкладинка</string>
     <string name="list_settings_cover_none_set">Немає</string>
     <string name="list_settings_cover_set">Вибрана</string>

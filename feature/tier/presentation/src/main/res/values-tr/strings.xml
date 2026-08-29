@@ -312,7 +312,6 @@
     <string name="category_other">Diğer</string>
     <string name="list_settings_category">Kategori</string>
     <string name="list_settings_category_none">Henüz seçilmedi</string>
-    <string name="list_settings_public_needs_category">Listeyi yayımlamadan önce bir kategori seçin.</string>
     <string name="list_settings_cover">Kapak</string>
     <string name="list_settings_cover_none_set">Yok</string>
     <string name="list_settings_cover_set">Seçildi</string>

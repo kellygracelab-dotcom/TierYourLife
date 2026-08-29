@@ -73,9 +73,12 @@ internal fun TierListSettingsScreenContent(
     publishing: Boolean = false,
     publishError: PublishError? = null,
     publicPending: Boolean? = null,
+    categoryWanted: Boolean = false,
     onSetPublic: (Boolean) -> Unit = {},
     onSetCategory: (ListCategory) -> Unit = {},
+    onCategoryNotChosen: () -> Unit = {},
     onSetCover: (String?) -> Unit = {},
+    onAddCards: () -> Unit = {},
 ) {
     var tierEditorVisible by remember { mutableStateOf(false) }
     var categorySheetVisible by remember { mutableStateOf(false) }
@@ -92,11 +95,12 @@ internal fun TierListSettingsScreenContent(
             busy = publishing,
             error = publishError,
             onSetPublic = onSetPublic,
+            onAddCards = onAddCards,
         )
 
-        // Both sit with the switch rather than inside a publishing wizard, and
-        // both stay available to a guest: a cover is what their own card shows,
-        // and a category chosen now is one less thing in the way later.
+        // A category exists only for the feed, so it belongs with the switch. A
+        // cover does not -- it is also what the list's own card wears in Your
+        // lists -- which is why it stays available to a guest.
         CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
         CoverRow(coverImageUrl = list.coverImageUrl, onClick = { coverSheetVisible = true })
 
@@ -113,10 +117,13 @@ internal fun TierListSettingsScreenContent(
         )
     }
 
-    if (categorySheetVisible) {
+    if (categorySheetVisible || categoryWanted) {
         CategorySheet(
             selected = list.category,
-            onDismiss = { categorySheetVisible = false },
+            onDismiss = {
+                categorySheetVisible = false
+                onCategoryNotChosen()
+            },
             onSelect = {
                 onSetCategory(it)
                 categorySheetVisible = false
@@ -372,6 +379,7 @@ private fun PublishSection(
     busy: Boolean,
     error: PublishError?,
     onSetPublic: (Boolean) -> Unit,
+    onAddCards: () -> Unit,
 ) {
     val caption = when {
         !signedIn -> R.string.list_settings_public_needs_account
@@ -379,7 +387,14 @@ private fun PublishSection(
         else -> R.string.list_settings_public_body
     }
 
-    Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
+    Column(
+        Modifier
+            // An empty list cannot be published, and the switch says so by
+            // being off. Tapping the row still goes somewhere: to the cards it
+            // is asking for, rather than to a refusal.
+            .then(if (signedIn && !hasItems) Modifier.clickable(onClick = onAddCards) else Modifier)
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(
@@ -396,9 +411,11 @@ private fun PublishSection(
             Switch(
                 checked = published,
                 onCheckedChange = onSetPublic,
-                // Left enabled with nothing to publish on purpose: a dead switch
-                // is a tap that vanishes, and the reason never gets said.
-                enabled = signedIn && !busy,
+                // Off with nothing to publish, because the only thing this tap
+                // could do is refuse. The reason is already under it, said
+                // before the tap rather than instead of it, and the row leads
+                // to the fix.
+                enabled = signedIn && hasItems && !busy,
                 modifier = Modifier.testTag(TierDetailTestTags.PUBLIC_SWITCH),
             )
         }
@@ -425,7 +442,6 @@ private fun PublishSection(
 private fun PublishError.messageRes(): Int = when (this) {
     PublishError.NotSignedIn -> R.string.list_settings_public_needs_account
     PublishError.NothingToPublish -> R.string.list_settings_public_needs_items
-    PublishError.NoCategory -> R.string.list_settings_public_needs_category
     PublishError.TooManyLists -> R.string.list_settings_public_too_many
     PublishError.TooLarge -> R.string.list_settings_public_too_large
     PublishError.Offline -> R.string.list_settings_public_offline

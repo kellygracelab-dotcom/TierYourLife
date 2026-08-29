@@ -107,6 +107,7 @@ fun TierDetailScreen(
     val publishing by viewModel.publishing.collectAsStateWithLifecycle()
     val publishError by viewModel.publishError.collectAsStateWithLifecycle()
     val publicPending by viewModel.publicPending.collectAsStateWithLifecycle()
+    val categoryWanted by viewModel.categoryWanted.collectAsStateWithLifecycle()
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
     var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -120,8 +121,10 @@ fun TierDetailScreen(
             publishing = publishing,
             publishError = publishError,
             publicPending = publicPending,
+            categoryWanted = categoryWanted,
             onSetPublic = viewModel::setPublic,
             onSetCategory = viewModel::setCategory,
+            onCategoryNotChosen = viewModel::categoryNotChosen,
             onSetCover = viewModel::setCoverImageUrl,
             onAddClick = { addSheetVisible = true },
             onManualAddClick = { manualEntryVisible = true },
@@ -263,9 +266,15 @@ private fun TierScreenBody(
             publishing = actions.publishing,
             publishError = actions.publishError,
             publicPending = actions.publicPending,
+            categoryWanted = actions.categoryWanted,
             onSetPublic = actions.onSetPublic,
             onSetCategory = actions.onSetCategory,
+            onCategoryNotChosen = actions.onCategoryNotChosen,
             onSetCover = actions.onSetCover,
+            onAddCards = {
+                listSettingsVisible = false
+                actions.onAddClick()
+            },
         )
         return
     }

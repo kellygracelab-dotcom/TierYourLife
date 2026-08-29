@@ -58,6 +58,10 @@ class TierDetailViewModel @Inject constructor(
     private val _publicPending = MutableStateFlow<Boolean?>(null)
     val publicPending: StateFlow<Boolean?> = _publicPending.asStateFlow()
 
+    /** Set when the switch was turned on and the list has no category yet. */
+    private val _categoryWanted = MutableStateFlow(false)
+    val categoryWanted: StateFlow<Boolean> = _categoryWanted.asStateFlow()
+
     private val tierListId = savedStateHandle.toRoute<Route.TierDetail>().tierListId
 
     private val _state = MutableStateFlow<TierDetailUiState>(TierDetailUiState.Loading)
@@ -80,7 +84,7 @@ class TierDetailViewModel @Inject constructor(
             return
         }
         if (public && list.category == null) {
-            _publishError.value = PublishError.NoCategory
+            _categoryWanted.value = true
             return
         }
 
@@ -111,8 +115,22 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Choosing one finishes the publish that asked for it. A tap on the switch
+     * turning into two taps is a smaller thing than a tap that only refuses.
+     */
     fun setCategory(category: ListCategory) {
-        mutate("Setting the category") { repository.setCategory(tierListId, category) }
+        val publishNext = _categoryWanted.value
+        _categoryWanted.value = false
+        viewModelScope.launch {
+            messages.guard("Setting the category") { repository.setCategory(tierListId, category) }
+            reloadTierList()
+            if (publishNext) setPublic(true)
+        }
+    }
+
+    fun categoryNotChosen() {
+        _categoryWanted.value = false
     }
 
     fun setCoverImageUrl(coverImageUrl: String?) {
@@ -245,16 +263,13 @@ class TierDetailViewModel @Inject constructor(
     }
 
     /**
-     * "Choose a category before you publish this list" has to stop saying that
-     * once a category is chosen. Only the two the list itself can answer are
-     * dropped; a refusal from the server stands until the next attempt.
+     * A message telling you to add a card has to stop saying that once you
+     * have. Only the one the list itself can answer is dropped; a refusal from
+     * the server stands until the next attempt.
      */
     private fun dropSettledPublishError(list: TierList) {
-        val settled = when (_publishError.value) {
-            PublishError.NoCategory -> list.category != null
-            PublishError.NothingToPublish -> list.tiers.any { it.items.isNotEmpty() }
-            else -> false
-        }
+        val settled = _publishError.value == PublishError.NothingToPublish &&
+            list.tiers.any { it.items.isNotEmpty() }
         if (settled) _publishError.value = null
     }
 
