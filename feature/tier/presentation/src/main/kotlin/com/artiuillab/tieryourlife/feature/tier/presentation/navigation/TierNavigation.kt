@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.AuthorScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.HiddenScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.ModerationScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreen
@@ -84,6 +85,7 @@ fun NavGraphBuilder.settingsScreen(
     onBack: () -> Unit,
     onTrashClick: () -> Unit,
     onHiddenClick: () -> Unit,
+    onModerationClick: () -> Unit,
     onAccountClick: () -> Unit,
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
@@ -95,6 +97,7 @@ fun NavGraphBuilder.settingsScreen(
             onBack = onBack,
             onTrashClick = onTrashClick,
             onHiddenClick = onHiddenClick,
+            onModerationClick = onModerationClick,
             onAccountClick = onAccountClick,
             themeChoice = themeChoice,
             onThemeChoiceChange = onThemeChoiceChange,
@@ -102,6 +105,16 @@ fun NavGraphBuilder.settingsScreen(
             onLanguageTagChange = onLanguageTagChange,
         )
     }
+}
+
+fun NavGraphBuilder.moderationScreen(onBack: () -> Unit) {
+    composable<Route.Moderation> {
+        ModerationScreen(onBack = onBack)
+    }
+}
+
+fun NavController.navigateToModeration() {
+    navigate(Route.Moderation)
 }
 
 fun NavGraphBuilder.hiddenScreen(onBack: () -> Unit) {

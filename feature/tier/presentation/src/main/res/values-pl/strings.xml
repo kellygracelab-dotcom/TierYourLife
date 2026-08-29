@@ -418,4 +418,18 @@
     <string name="hidden_empty_body">Listy i osoby ukryte w społeczności czekają tutaj, gdybyś zmienił zdanie.</string>
     <string name="hidden_unnamed_list">Lista, którą ukryłeś</string>
     <string name="hidden_unnamed_person">Ktoś, kogo ukryłeś</string>
+    <string name="moderation_title">Zgłoszenia</string>
+    <string name="moderation_failed">Nie udało się wczytać zgłoszeń</string>
+    <string name="moderation_empty_title">Nic do sprawdzenia</string>
+    <string name="moderation_empty_body">Zgłoszenia dotyczące list ze społeczności trafiają tutaj.</string>
+    <string name="moderation_action_take_down">Usuń</string>
+    <string name="moderation_action_keep">Zostaw</string>
+    <string name="settings_moderation">Zgłoszenia</string>
+    <string name="settings_moderation_none">Nic nie czeka</string>
+    <plurals name="moderation_waiting">
+        <item quantity="one">%d zgłoszenie czeka</item>
+        <item quantity="few">%d zgłoszenia czekają</item>
+        <item quantity="many">%d zgłoszeń czeka</item>
+        <item quantity="other">%d zgłoszenia czeka</item>
+    </plurals>
 </resources>

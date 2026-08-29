@@ -337,4 +337,15 @@
     <string name="hidden_empty_body">コミュニティで非表示にしたリストと人は、気が変わったときのためにここに残ります。</string>
     <string name="hidden_unnamed_list">非表示にしたリスト</string>
     <string name="hidden_unnamed_person">非表示にした人</string>
+    <string name="moderation_title">報告</string>
+    <string name="moderation_failed">報告を読み込めませんでした</string>
+    <string name="moderation_empty_title">確認するものはありません</string>
+    <string name="moderation_empty_body">コミュニティのリストへの報告はここに届きます。</string>
+    <string name="moderation_action_take_down">取り下げる</string>
+    <string name="moderation_action_keep">残す</string>
+    <string name="settings_moderation">報告</string>
+    <string name="settings_moderation_none">待ちはありません</string>
+    <plurals name="moderation_waiting">
+        <item quantity="other">%d件が未対応</item>
+    </plurals>
 </resources>

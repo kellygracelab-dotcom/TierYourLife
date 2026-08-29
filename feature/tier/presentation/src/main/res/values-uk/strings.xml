@@ -418,4 +418,18 @@
     <string name="hidden_empty_body">Списки й люди, яких ви сховаєте у спільноті, чекатимуть тут — раптом передумаєте.</string>
     <string name="hidden_unnamed_list">Список, який ви сховали</string>
     <string name="hidden_unnamed_person">Хтось, кого ви сховали</string>
+    <string name="moderation_title">Скарги</string>
+    <string name="moderation_failed">Не вдалося завантажити скарги</string>
+    <string name="moderation_empty_title">Розбирати нічого</string>
+    <string name="moderation_empty_body">Скарги на списки зі спільноти приходять сюди.</string>
+    <string name="moderation_action_take_down">Зняти</string>
+    <string name="moderation_action_keep">Залишити</string>
+    <string name="settings_moderation">Скарги</string>
+    <string name="settings_moderation_none">Нічого не чекає</string>
+    <plurals name="moderation_waiting">
+        <item quantity="one">%d скарга чекає</item>
+        <item quantity="few">%d скарги чекають</item>
+        <item quantity="many">%d скарг чекають</item>
+        <item quantity="other">%d скарги чекають</item>
+    </plurals>
 </resources>

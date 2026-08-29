@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.domain.repository
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -38,4 +39,16 @@ interface CommunityRepository {
 
     /** Files a complaint for a person to read. Nothing comes down on its own. */
     suspend fun report(publishedId: String, reason: ReportReason, note: String?): Result<Unit>
+
+    /**
+     * Complaints waiting to be read. Fails for everyone but the one person
+     * allowed to read them, which is also how the app finds out who that is.
+     */
+    suspend fun reports(): Result<List<ModerationReport>>
+
+    /** Removes a reported list for everyone and closes its complaints. */
+    suspend fun takeDown(publishedId: String): Result<Unit>
+
+    /** Closes the complaints about a list and leaves the list alone. */
+    suspend fun dismissReports(publishedId: String): Result<Unit>
 }

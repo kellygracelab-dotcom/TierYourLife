@@ -16,9 +16,11 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.authorScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.communityListScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.hiddenScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.moderationScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToAuthor
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToCommunityList
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToHidden
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToModeration
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToSettings
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTierDetail
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTrash
@@ -59,6 +61,7 @@ fun TierYourLifeNavHost(
             onBack = { navController.popBackStack() },
             onTrashClick = { navController.navigateToTrash() },
             onHiddenClick = { navController.navigateToHidden() },
+            onModerationClick = { navController.navigateToModeration() },
             onAccountClick = { navController.navigateToAccount() },
             themeChoice = themeChoice,
             onThemeChoiceChange = onThemeChoiceChange,
@@ -67,6 +70,7 @@ fun TierYourLifeNavHost(
         )
         trashScreen(onBack = { navController.popBackStack() })
         hiddenScreen(onBack = { navController.popBackStack() })
+        moderationScreen(onBack = { navController.popBackStack() })
         accountScreen(onClose = { navController.popBackStack() })
         authorScreen(
             onBack = { navController.popBackStack() },

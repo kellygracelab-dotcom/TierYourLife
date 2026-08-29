@@ -11,6 +11,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.tier.domain.export.TierListsExportStrings
 import com.artiuillab.tieryourlife.feature.tier.domain.export.buildTierListsExport
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 data class ExportedText(val text: String, val listCount: Int)
@@ -29,6 +31,7 @@ class SettingsViewModel @Inject constructor(
     private val repository: TierRepository,
     private val accountRepository: AccountRepository,
     private val generationCredits: GenerationCredits,
+    private val community: CommunityRepository,
 ) : ViewModel() {
 
     val account: StateFlow<Account> = accountRepository.account
@@ -40,6 +43,13 @@ class SettingsViewModel @Inject constructor(
     private val _trashCount = MutableStateFlow(0)
     val trashCount: StateFlow<Int> = _trashCount.asStateFlow()
 
+    /**
+     * How many complaints are waiting, or null for everyone who is not the
+     * person who reads them. Being turned away is how the app finds out.
+     */
+    private val _pendingReports = MutableStateFlow<Int?>(null)
+    val pendingReports: StateFlow<Int?> = _pendingReports.asStateFlow()
+
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
 
@@ -48,6 +58,18 @@ class SettingsViewModel @Inject constructor(
             logFailures("Reading generation credits") {
                 _credits.value = generationCredits.remaining()
             }
+        }
+    }
+
+    fun loadPendingReports() {
+        viewModelScope.launch {
+            // Being turned away is the ordinary answer for everyone who does not
+            // read reports, but it looks the same as the network being down, so
+            // the reason is written down rather than swallowed.
+            _pendingReports.value = community.reports()
+                .onFailure { Timber.i(it, "Not showing the report queue") }
+                .getOrNull()
+                ?.size
         }
     }
 

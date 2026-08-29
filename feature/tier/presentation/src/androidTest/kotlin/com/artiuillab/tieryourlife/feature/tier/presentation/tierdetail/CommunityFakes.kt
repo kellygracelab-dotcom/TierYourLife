@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -44,6 +45,9 @@ internal class FakeCommunityRepositoryForDetail(
         reason: ReportReason,
         note: String?,
     ): Result<Unit> = Result.success(Unit)
+    override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
+    override suspend fun takeDown(publishedId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
 }
 
 internal class FakeAccountRepositoryForDetail(signedIn: Boolean = false) : AccountRepository {

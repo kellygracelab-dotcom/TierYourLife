@@ -418,4 +418,18 @@
     <string name="hidden_empty_body">Списки и люди, которых вы скроете в сообществе, будут ждать здесь — вдруг передумаете.</string>
     <string name="hidden_unnamed_list">Список, который вы скрыли</string>
     <string name="hidden_unnamed_person">Кто-то, кого вы скрыли</string>
+    <string name="moderation_title">Жалобы</string>
+    <string name="moderation_failed">Не удалось загрузить жалобы</string>
+    <string name="moderation_empty_title">Разбирать нечего</string>
+    <string name="moderation_empty_body">Жалобы на списки из сообщества приходят сюда.</string>
+    <string name="moderation_action_take_down">Снять</string>
+    <string name="moderation_action_keep">Оставить</string>
+    <string name="settings_moderation">Жалобы</string>
+    <string name="settings_moderation_none">Ничего не ждёт</string>
+    <plurals name="moderation_waiting">
+        <item quantity="one">%d жалоба ждёт</item>
+        <item quantity="few">%d жалобы ждут</item>
+        <item quantity="many">%d жалоб ждут</item>
+        <item quantity="other">%d жалобы ждут</item>
+    </plurals>
 </resources>

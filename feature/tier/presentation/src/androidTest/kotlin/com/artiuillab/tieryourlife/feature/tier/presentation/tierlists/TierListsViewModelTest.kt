@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
@@ -562,4 +563,7 @@ private class FakeCommunityRepository(
         reason: ReportReason,
         note: String?,
     ): Result<Unit> = Result.success(Unit)
+    override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
+    override suspend fun takeDown(publishedId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
 }

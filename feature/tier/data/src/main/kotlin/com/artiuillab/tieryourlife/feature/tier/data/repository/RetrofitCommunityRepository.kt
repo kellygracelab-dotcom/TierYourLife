@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.data.repository
 
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.CommunityApi
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ModerationReportDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListDto
@@ -9,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ReportRequestDto
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
@@ -63,6 +65,28 @@ class RetrofitCommunityRepository @Inject constructor(
     ): Result<Unit> = runCatching {
         api.report(publishedId, ReportRequestDto(reason.id, note?.takeIf { it.isNotBlank() }))
     }
+
+    override suspend fun reports(): Result<List<ModerationReport>> = runCatching {
+        api.reports().reports.map { it.toDomain() }
+    }
+
+    override suspend fun takeDown(publishedId: String): Result<Unit> = runCatching {
+        api.takeDown(publishedId)
+    }
+
+    override suspend fun dismissReports(publishedId: String): Result<Unit> = runCatching {
+        api.dismissReports(publishedId)
+    }
+
+    private fun ModerationReportDto.toDomain() = ModerationReport(
+        listId = listId,
+        listTitle = listTitle,
+        authorName = authorName,
+        // A reason we do not recognise is still a complaint worth reading.
+        reason = ReportReason.entries.firstOrNull { it.id == reason } ?: ReportReason.Other,
+        note = note,
+        createdAtMillis = createdAt,
+    )
 }
 
 private fun Throwable.asPublishError(): PublishError = when {

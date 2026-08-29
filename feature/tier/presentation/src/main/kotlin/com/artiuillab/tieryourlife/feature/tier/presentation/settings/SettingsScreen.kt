@@ -51,6 +51,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.export.TierListsExportStr
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.FileDownloadIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.FlagIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.HideIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.AccountRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.LanguageRow
@@ -73,6 +74,7 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onTrashClick: () -> Unit,
     onHiddenClick: () -> Unit,
+    onModerationClick: () -> Unit,
     onAccountClick: () -> Unit,
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
@@ -81,10 +83,12 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val trashCount by viewModel.trashCount.collectAsStateWithLifecycle()
+    val pendingReports by viewModel.pendingReports.collectAsStateWithLifecycle()
     val account by viewModel.account.collectAsStateWithLifecycle()
     val credits by viewModel.credits.collectAsStateWithLifecycle()
     OnResumeEffect(onResume = viewModel::loadCredits)
     OnResumeEffect(onResume = viewModel::loadTrashCount)
+    OnResumeEffect(onResume = viewModel::loadPendingReports)
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -129,9 +133,11 @@ fun SettingsScreen(
         languageTag = languageTag,
         onLanguageTagChange = onLanguageTagChange,
         trashCount = trashCount,
+        pendingReports = pendingReports,
         onBack = onBack,
         onTrashClick = onTrashClick,
         onHiddenClick = onHiddenClick,
+        onModerationClick = onModerationClick,
         onExportClick = { createDocumentLauncher.launch(defaultExportFileName(context)) },
         snackbarHostState = snackbarHostState,
     )
@@ -219,9 +225,11 @@ internal fun SettingsScreenContent(
     languageTag: String?,
     onLanguageTagChange: (String?) -> Unit,
     trashCount: Int,
+    pendingReports: Int? = null,
     onBack: () -> Unit,
     onTrashClick: () -> Unit,
     onHiddenClick: () -> Unit,
+    onModerationClick: () -> Unit,
     onExportClick: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
@@ -251,6 +259,10 @@ internal fun SettingsScreenContent(
                         HiddenRow(onClick = onHiddenClick)
                         SettingsGroupDivider()
                         ExportRow(onClick = onExportClick)
+                        if (pendingReports != null) {
+                            SettingsGroupDivider()
+                            ModerationRow(waiting = pendingReports, onClick = onModerationClick)
+                        }
                     }
                     VersionLine(versionName)
                 }
@@ -340,6 +352,21 @@ private fun HiddenRow(onClick: () -> Unit) {
 }
 
 @Composable
+private fun ModerationRow(waiting: Int, onClick: () -> Unit) {
+    SettingsRow(
+        icon = { FlagIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = stringResource(R.string.settings_moderation),
+        subtitle = if (waiting == 0) {
+            stringResource(R.string.settings_moderation_none)
+        } else {
+            pluralStringResource(R.plurals.moderation_waiting, waiting, waiting)
+        },
+        onClick = onClick,
+        testTag = SettingsTestTags.MODERATION_ROW,
+    )
+}
+
+@Composable
 private fun ExportRow(onClick: () -> Unit) {
     SettingsRow(
         icon = { FileDownloadIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
@@ -395,6 +422,7 @@ private fun SettingsScreenLightPreview() = TierYourLifeTheme(false) {
         onBack = {},
         onTrashClick = {},
         onHiddenClick = {},
+        onModerationClick = {},
         onExportClick = {},
     )
 }
@@ -415,6 +443,7 @@ private fun SettingsScreenDarkPreview() = TierYourLifeTheme(true) {
         onBack = {},
         onTrashClick = {},
         onHiddenClick = {},
+        onModerationClick = {},
         onExportClick = {},
     )
 }

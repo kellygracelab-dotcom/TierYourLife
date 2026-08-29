@@ -389,4 +389,16 @@
     <string name="hidden_empty_body">As listas e pessoas que você ocultar na comunidade esperam aqui, caso mude de ideia.</string>
     <string name="hidden_unnamed_list">Uma lista que você ocultou</string>
     <string name="hidden_unnamed_person">Alguém que você ocultou</string>
+    <string name="moderation_title">Denúncias</string>
+    <string name="moderation_failed">Não foi possível carregar as denúncias</string>
+    <string name="moderation_empty_title">Nada para revisar</string>
+    <string name="moderation_empty_body">As denúncias sobre listas da comunidade chegam aqui.</string>
+    <string name="moderation_action_take_down">Remover</string>
+    <string name="moderation_action_keep">Manter</string>
+    <string name="settings_moderation">Denúncias</string>
+    <string name="settings_moderation_none">Nada pendente</string>
+    <plurals name="moderation_waiting">
+        <item quantity="one">%d pendente</item>
+        <item quantity="other">%d pendentes</item>
+    </plurals>
 </resources>
