@@ -16,14 +16,15 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-private const val TIER_COUNT = 12
-private const val ITEMS_PER_TIER = 30
-private const val POOL_ITEMS = 200
+private const val TIER_COUNT = 20
+private const val ITEMS_PER_TIER = 75
+private const val POOL_ITEMS = 500
 
 /**
- * A board far past what anyone builds by hand. Items inside a tier are composed
- * eagerly -- only the tiers themselves are lazy -- so this is where that would
- * show, in every display mode and on the oldest device the app supports.
+ * A board at exactly the ceiling a published list is allowed: twenty tiers and
+ * two thousand cards. Items inside a tier are composed eagerly -- only the
+ * tiers themselves are lazy -- so this is where that would show, in every
+ * display mode and on the oldest device the app supports.
  */
 @RunWith(AndroidJUnit4::class)
 class TierDetailLargeListTest {
@@ -32,7 +33,7 @@ class TierDetailLargeListTest {
     val composeRule = createComposeRule()
 
     @Test
-    fun aBoardOfTwelveTiersAndHundredsOfCards_rendersAndScrolls() {
+    fun aBoardAtTheFullPublishedCeiling_rendersAndScrolls() {
         setScreen(TierListDisplayMode.WRAP)
 
         composeRule.onNodeWithTag(TierDetailTestTags.POOL_PANEL).assertIsDisplayed()
