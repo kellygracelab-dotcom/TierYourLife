@@ -59,6 +59,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.GridViewIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ViewCarouselIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.captionsExcept
 
 private val DisplayModeSelectedTintLight = Color(0xFFEDEBFA)
 private val DisplayModeSelectedTintDark = Color(0xFF2E2F45)
@@ -144,6 +145,7 @@ internal fun TierListSettingsScreenContent(
 
     if (tierEditorVisible) {
         TierEditorSheet(
+            otherCaptions = list.captionsExcept(null),
             onDismiss = { tierEditorVisible = false },
             onSave = { label, caption, colorLight, colorDark ->
                 onAddTier(label, caption, colorLight, colorDark)
