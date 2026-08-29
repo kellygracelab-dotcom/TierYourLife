@@ -328,4 +328,11 @@
         <item quantity="other">%1$d cards</item>
     </plurals>
     <string name="snack_published_list_still_public">Kept, not deleted: its public copy could not be taken down. Try again when you are online.</string>
+    <string name="author_failed">Could not load this profile.</string>
+    <string name="author_no_public_lists">No public lists</string>
+    <string name="author_no_public_lists_body">Copies you already saved are yours and stay where they are.</string>
+    <plurals name="author_public_lists">
+        <item quantity="one">%1$d public list</item>
+        <item quantity="other">%1$d public lists</item>
+    </plurals>
 </resources>

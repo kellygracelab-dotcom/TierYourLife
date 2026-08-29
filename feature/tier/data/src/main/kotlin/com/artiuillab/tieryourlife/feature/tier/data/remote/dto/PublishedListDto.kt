@@ -6,7 +6,9 @@ import kotlinx.serialization.Serializable
 data class PublishedListSummaryDto(
     val id: String,
     val title: String,
+    val authorUid: String = "",
     val authorName: String,
+    val authorPhotoUrl: String? = null,
     val category: String = "other",
     val itemCount: Int,
     val coverImageUrl: String? = null,
@@ -38,7 +40,9 @@ data class PublishedItemDto(
 data class PublishedListDto(
     val id: String,
     val title: String,
+    val authorUid: String = "",
     val authorName: String,
+    val authorPhotoUrl: String? = null,
     val category: String = "other",
     val itemCount: Int = 0,
     val coverImageUrl: String? = null,

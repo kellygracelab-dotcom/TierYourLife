@@ -7,7 +7,15 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 interface CommunityRepository {
 
-    suspend fun feed(category: ListCategory? = null): Result<List<PublishedListSummary>>
+    /**
+     * The published feed. [query] is a prefix match on the title, [author] the
+     * uid whose lists to show; both narrow, neither is required.
+     */
+    suspend fun feed(
+        category: ListCategory? = null,
+        query: String? = null,
+        author: String? = null,
+    ): Result<List<PublishedListSummary>>
 
     suspend fun open(id: String): Result<PublishedList>
 

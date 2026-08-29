@@ -37,6 +37,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.AuthorPill
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.CommunityFeed
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
@@ -53,13 +54,18 @@ internal fun CommunityFeedList(
     onOpen: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onOpenAuthor: ((String) -> Unit)? = null,
+    showCategories: Boolean = true,
+    showAuthor: Boolean = true,
 ) {
     Column(modifier.fillMaxSize()) {
-        CategoryFilterRow(
-            selected = category,
-            onSelect = onSelectCategory,
-            modifier = Modifier.padding(bottom = 8.dp),
-        )
+        if (showCategories) {
+            CategoryFilterRow(
+                selected = category,
+                onSelect = onSelectCategory,
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+        }
 
         when (feed) {
             CommunityFeed.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -91,7 +97,14 @@ internal fun CommunityFeedList(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(feed.lists, key = { it.id }) { summary ->
-                        CommunityCard(summary = summary, onClick = { onOpen(summary.id) })
+                        CommunityCard(
+                            summary = summary,
+                            onClick = { onOpen(summary.id) },
+                            showAuthor = showAuthor,
+                            onAuthorClick = onOpenAuthor?.let { open ->
+                                { open(summary.authorUid) }
+                            },
+                        )
                     }
                 }
             }
@@ -100,7 +113,12 @@ internal fun CommunityFeedList(
 }
 
 @Composable
-private fun CommunityCard(summary: PublishedListSummary, onClick: () -> Unit) {
+private fun CommunityCard(
+    summary: PublishedListSummary,
+    onClick: () -> Unit,
+    showAuthor: Boolean,
+    onAuthorClick: (() -> Unit)?,
+) {
     Column(
         Modifier
             .clip(RoundedCornerShape(16.dp))
@@ -135,15 +153,19 @@ private fun CommunityCard(summary: PublishedListSummary, onClick: () -> Unit) {
                 )
             }
         }
-        Column(Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
+        Column(Modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
+            // On an author's own profile the name is already the heading, so
+            // repeating it on every card of theirs says nothing.
+            if (showAuthor) {
+                AuthorPill(
+                    name = summary.authorName,
+                    photoUrl = summary.authorPhotoUrl,
+                    onClick = onAuthorClick,
+                    testTag = TierListsTestTags.communityCardAuthor(summary.id),
+                )
+            }
             Text(
-                text = stringResource(R.string.community_by_author, summary.authorName),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
+                modifier = Modifier.padding(start = 8.dp, top = 2.dp),
                 text = pluralStringResource(
                     R.plurals.community_item_count,
                     summary.itemCount,
@@ -199,6 +221,7 @@ private val previewFeed = CommunityFeed.Ready(
         PublishedListSummary(
             id = "1",
             title = "Every A24 film",
+            authorUid = "u1",
             authorName = "Danylo K.",
             category = ListCategory.FilmTv,
             itemCount = 34,
@@ -208,6 +231,7 @@ private val previewFeed = CommunityFeed.Ready(
         PublishedListSummary(
             id = "2",
             title = "Ramen in Kyiv",
+            authorUid = "u2",
             authorName = "Olena",
             category = ListCategory.Food,
             itemCount = 12,

@@ -25,8 +25,12 @@ class RetrofitCommunityRepository @Inject constructor(
     private val api: CommunityApi,
 ) : CommunityRepository {
 
-    override suspend fun feed(category: ListCategory?): Result<List<PublishedListSummary>> = runCatching {
-        api.feed(category?.id).lists.map { it.toSummary() }
+    override suspend fun feed(
+        category: ListCategory?,
+        query: String?,
+        author: String?,
+    ): Result<List<PublishedListSummary>> = runCatching {
+        api.feed(category?.id, query?.takeIf { it.isNotBlank() }, author).lists.map { it.toSummary() }
     }
 
     override suspend fun open(id: String): Result<PublishedList> = runCatching {
@@ -60,7 +64,9 @@ private fun Throwable.asPublishError(): PublishError = when {
 private fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     id = id,
     title = title,
+    authorUid = authorUid,
     authorName = authorName,
+    authorPhotoUrl = authorPhotoUrl,
     category = ListCategory.fromId(category) ?: ListCategory.Other,
     itemCount = itemCount,
     coverImageUrl = coverImageUrl,
@@ -73,7 +79,9 @@ private fun PublishedListDto.toDomain() = PublishedList(
     summary = PublishedListSummary(
         id = id,
         title = title,
+        authorUid = authorUid,
         authorName = authorName,
+        authorPhotoUrl = authorPhotoUrl,
         category = ListCategory.fromId(category) ?: ListCategory.Other,
         itemCount = itemCount,
         coverImageUrl = coverImageUrl,

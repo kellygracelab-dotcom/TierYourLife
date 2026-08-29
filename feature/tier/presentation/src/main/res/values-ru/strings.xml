@@ -379,4 +379,13 @@
         <item quantity="other">%1$d карточки</item>
     </plurals>
     <string name="snack_published_list_still_public">Список оставлен, а не удалён: публичную копию не удалось снять. Попробуйте снова, когда будет сеть.</string>
+    <string name="author_failed">Не удалось открыть профиль.</string>
+    <string name="author_no_public_lists">Публичных списков нет</string>
+    <string name="author_no_public_lists_body">Копии, которые вы уже сохранили, ваши и никуда не денутся.</string>
+    <plurals name="author_public_lists">
+        <item quantity="one">%1$d публичный список</item>
+        <item quantity="few">%1$d публичных списка</item>
+        <item quantity="many">%1$d публичных списков</item>
+        <item quantity="other">%1$d публичного списка</item>
+    </plurals>
 </resources>

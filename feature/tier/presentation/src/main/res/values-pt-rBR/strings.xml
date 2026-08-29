@@ -352,4 +352,11 @@
         <item quantity="other">%1$d cards</item>
     </plurals>
     <string name="snack_published_list_still_public">Mantida, não excluída: não foi possível retirar a cópia pública. Tente de novo quando estiver online.</string>
+    <string name="author_failed">Não foi possível abrir este perfil.</string>
+    <string name="author_no_public_lists">Nenhuma lista pública</string>
+    <string name="author_no_public_lists_body">As cópias que você já salvou são suas e continuam onde estão.</string>
+    <plurals name="author_public_lists">
+        <item quantity="one">%1$d lista pública</item>
+        <item quantity="other">%1$d listas públicas</item>
+    </plurals>
 </resources>

@@ -352,4 +352,11 @@
         <item quantity="other">%1$d tarjetas</item>
     </plurals>
     <string name="snack_published_list_still_public">Se conservó en vez de borrarse: no se pudo retirar su copia pública. Inténtalo de nuevo cuando estés en línea.</string>
+    <string name="author_failed">No se pudo abrir este perfil.</string>
+    <string name="author_no_public_lists">Sin listas públicas</string>
+    <string name="author_no_public_lists_body">Las copias que ya guardaste son tuyas y se quedan donde están.</string>
+    <plurals name="author_public_lists">
+        <item quantity="one">%1$d lista pública</item>
+        <item quantity="other">%1$d listas públicas</item>
+    </plurals>
 </resources>

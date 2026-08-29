@@ -431,4 +431,15 @@
         <item quantity="other">%1$d بطاقة</item>
     </plurals>
     <string name="snack_published_list_still_public">أُبقيت ولم تُحذف: تعذّر سحب نسختها العامة. أعد المحاولة عند الاتصال بالإنترنت.</string>
+    <string name="author_failed">تعذّر فتح هذا الملف الشخصي.</string>
+    <string name="author_no_public_lists">لا توجد قوائم عامة</string>
+    <string name="author_no_public_lists_body">النسخ التي حفظتها بالفعل ملكك وتبقى في مكانها.</string>
+    <plurals name="author_public_lists">
+        <item quantity="zero">لا قوائم عامة</item>
+        <item quantity="one">قائمة عامة واحدة</item>
+        <item quantity="two">قائمتان عامتان</item>
+        <item quantity="few">%1$d قوائم عامة</item>
+        <item quantity="many">%1$d قائمة عامة</item>
+        <item quantity="other">%1$d قائمة عامة</item>
+    </plurals>
 </resources>

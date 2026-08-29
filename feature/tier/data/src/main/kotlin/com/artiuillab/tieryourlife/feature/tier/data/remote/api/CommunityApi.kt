@@ -14,7 +14,11 @@ import retrofit2.http.Query
 interface CommunityApi {
 
     @GET("lists")
-    suspend fun feed(@Query("category") category: String? = null): PublishedFeedDto
+    suspend fun feed(
+        @Query("category") category: String? = null,
+        @Query("q") query: String? = null,
+        @Query("author") author: String? = null,
+    ): PublishedFeedDto
 
     @GET("lists/{id}")
     suspend fun open(@Path("id") id: String): PublishedListDto

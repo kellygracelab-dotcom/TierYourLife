@@ -72,6 +72,7 @@ import kotlinx.coroutines.launch
 fun TierListsScreen(
     onTierListClick: (Long) -> Unit,
     onCommunityListClick: (String) -> Unit,
+    onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onSettingsClick: () -> Unit,
     onNewListCreated: (Long) -> Unit,
     viewModel: TierListsViewModel = hiltViewModel(),
@@ -83,6 +84,7 @@ fun TierListsScreen(
     TierListsScreenContent(
         state = state,
         onTierListClick = onTierListClick,
+        onAuthorClick = onAuthorClick,
         onSettingsClick = onSettingsClick,
         onSearchClick = viewModel::enterSearch,
         onSearchQueryChange = viewModel::updateSearchQuery,
@@ -106,6 +108,7 @@ fun TierListsScreen(
 internal fun TierListsScreenContent(
     state: TierListsUiState,
     onTierListClick: (Long) -> Unit,
+    onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit = { _, _, _ -> },
     onSettingsClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onSearchQueryChange: (String) -> Unit = {},
@@ -225,12 +228,22 @@ internal fun TierListsScreenContent(
                     )
 
                     is TierListsUiState.Success -> when {
-                        tab == HomeTab.Community && mode !is HomeMode.Searching -> CommunityFeedList(
+                        // Searching on this tab asks the server, so the same
+                        // feed answers; it is not the local lists filtered.
+                        tab == HomeTab.Community -> CommunityFeedList(
                             feed = communityFeed,
                             category = communityCategory,
                             onSelectCategory = onSelectCommunityCategory,
                             onOpen = onOpenCommunityList,
                             onRetry = onRetryCommunity,
+                            onOpenAuthor = { uid ->
+                                val summary = (communityFeed as? CommunityFeed.Ready)
+                                    ?.lists
+                                    ?.firstOrNull { it.authorUid == uid }
+                                if (summary != null) {
+                                    onAuthorClick(uid, summary.authorName, summary.authorPhotoUrl)
+                                }
+                            },
                         )
 
                         mode is HomeMode.Searching -> SearchResults(

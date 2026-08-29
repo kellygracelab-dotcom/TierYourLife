@@ -379,4 +379,13 @@
         <item quantity="other">%1$d karty</item>
     </plurals>
     <string name="snack_published_list_still_public">Zachowana, nie usunięta: nie udało się wycofać jej publicznej kopii. Spróbuj ponownie, gdy będziesz online.</string>
+    <string name="author_failed">Nie udało się otworzyć tego profilu.</string>
+    <string name="author_no_public_lists">Brak list publicznych</string>
+    <string name="author_no_public_lists_body">Kopie, które już zapisałeś, są twoje i zostają na miejscu.</string>
+    <plurals name="author_public_lists">
+        <item quantity="one">%1$d lista publiczna</item>
+        <item quantity="few">%1$d listy publiczne</item>
+        <item quantity="many">%1$d list publicznych</item>
+        <item quantity="other">%1$d listy publicznej</item>
+    </plurals>
 </resources>

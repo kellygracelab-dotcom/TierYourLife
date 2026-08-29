@@ -17,7 +17,11 @@ internal class FakeCommunityRepositoryForDetail(
     val published = mutableListOf<TierList>()
     val unpublished = mutableListOf<String>()
 
-    override suspend fun feed(category: ListCategory?): Result<List<PublishedListSummary>> = Result.success(emptyList())
+    override suspend fun feed(
+        category: ListCategory?,
+        query: String?,
+        author: String?,
+    ): Result<List<PublishedListSummary>> = Result.success(emptyList())
 
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
 

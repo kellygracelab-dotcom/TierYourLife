@@ -11,6 +11,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepos
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +22,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 import javax.inject.Inject
+
+private const val COMMUNITY_SEARCH_DELAY_MILLIS = 300L
 
 @HiltViewModel
 class TierListsViewModel @Inject constructor(
@@ -40,6 +44,7 @@ class TierListsViewModel @Inject constructor(
     private var tab: HomeTab = HomeTab.Mine
     private var communityFeed: CommunityFeed = CommunityFeed.Loading
     private var communityCategory: ListCategory? = null
+    private var communitySearch: Job? = null
 
     fun loadTierLists() {
         viewModelScope.launch {
@@ -95,6 +100,20 @@ class TierListsViewModel @Inject constructor(
         if (selected == HomeTab.Community) loadCommunityFeed()
     }
 
+    /**
+     * Searching the community is a request, not a filter over what is already
+     * on screen, so it waits for the typing to settle first.
+     */
+    private fun searchCommunity(query: String) {
+        communitySearch?.cancel()
+        communityFeed = CommunityFeed.Loading
+        emitSuccess()
+        communitySearch = viewModelScope.launch {
+            delay(COMMUNITY_SEARCH_DELAY_MILLIS)
+            loadCommunityFeedNow(query)
+        }
+    }
+
     fun selectCommunityCategory(category: ListCategory?) {
         if (communityCategory == category) return
         communityCategory = category
@@ -104,16 +123,19 @@ class TierListsViewModel @Inject constructor(
     }
 
     fun loadCommunityFeed() {
-        viewModelScope.launch {
-            communityFeed = community.feed(communityCategory).fold(
+        communitySearch?.cancel()
+        viewModelScope.launch { loadCommunityFeedNow((mode as? HomeMode.Searching)?.query) }
+    }
+
+    private suspend fun loadCommunityFeedNow(query: String?) {
+        communityFeed = community.feed(communityCategory, query).fold(
                 onSuccess = { CommunityFeed.Ready(it) },
                 onFailure = { error ->
                     Timber.w(error, "Loading the community feed failed")
                     CommunityFeed.Failed
                 },
-            )
-            emitSuccess()
-        }
+        )
+        emitSuccess()
     }
 
     private fun setMode(newMode: HomeMode) {
@@ -125,7 +147,10 @@ class TierListsViewModel @Inject constructor(
 
     fun enterSearch() = setMode(HomeMode.Searching(""))
 
-    fun updateSearchQuery(query: String) = setMode(HomeMode.Searching(query))
+    fun updateSearchQuery(query: String) {
+        setMode(HomeMode.Searching(query))
+        if (tab == HomeTab.Community) searchCommunity(query)
+    }
 
     fun exitSearch() = setMode(HomeMode.Browsing)
 

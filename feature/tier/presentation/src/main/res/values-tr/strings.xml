@@ -327,4 +327,11 @@
         <item quantity="other">%1$d kart</item>
     </plurals>
     <string name="snack_published_list_still_public">Silinmedi, korundu: herkese açık kopyası kaldırılamadı. Çevrimiçi olduğunuzda yeniden deneyin.</string>
+    <string name="author_failed">Bu profil açılamadı.</string>
+    <string name="author_no_public_lists">Herkese açık liste yok</string>
+    <string name="author_no_public_lists_body">Zaten kaydettiğiniz kopyalar sizindir ve yerinde kalır.</string>
+    <plurals name="author_public_lists">
+        <item quantity="one">%1$d herkese açık liste</item>
+        <item quantity="other">%1$d herkese açık liste</item>
+    </plurals>
 </resources>

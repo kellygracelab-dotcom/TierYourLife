@@ -327,4 +327,11 @@
         <item quantity="other">%1$d Karten</item>
     </plurals>
     <string name="snack_published_list_still_public">Behalten statt gelöscht: Die öffentliche Kopie ließ sich nicht entfernen. Versuche es erneut, sobald du online bist.</string>
+    <string name="author_failed">Dieses Profil konnte nicht geladen werden.</string>
+    <string name="author_no_public_lists">Keine öffentlichen Listen</string>
+    <string name="author_no_public_lists_body">Kopien, die du bereits gespeichert hast, gehören dir und bleiben, wo sie sind.</string>
+    <plurals name="author_public_lists">
+        <item quantity="one">%1$d öffentliche Liste</item>
+        <item quantity="other">%1$d öffentliche Listen</item>
+    </plurals>
 </resources>

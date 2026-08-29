@@ -352,4 +352,11 @@
         <item quantity="other">%1$d cartes</item>
     </plurals>
     <string name="snack_published_list_still_public">Conservée, pas supprimée : sa copie publique n\'a pas pu être retirée. Réessayez une fois en ligne.</string>
+    <string name="author_failed">Impossible d\'ouvrir ce profil.</string>
+    <string name="author_no_public_lists">Aucune liste publique</string>
+    <string name="author_no_public_lists_body">Les copies que vous avez déjà enregistrées sont à vous et restent où elles sont.</string>
+    <plurals name="author_public_lists">
+        <item quantity="one">%1$d liste publique</item>
+        <item quantity="other">%1$d listes publiques</item>
+    </plurals>
 </resources>

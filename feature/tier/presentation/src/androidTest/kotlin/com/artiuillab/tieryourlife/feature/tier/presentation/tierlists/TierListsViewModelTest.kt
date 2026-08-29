@@ -387,7 +387,11 @@ private class FakeCommunityRepository(
     private val unpublishResult: Result<Unit> = Result.success(Unit),
 ) : CommunityRepository {
     val takenDown = mutableListOf<String>()
-    override suspend fun feed(category: ListCategory?): Result<List<PublishedListSummary>> = Result.success(feed)
+    override suspend fun feed(
+        category: ListCategory?,
+        query: String?,
+        author: String?,
+    ): Result<List<PublishedListSummary>> = Result.success(feed)
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
     override suspend fun publish(list: com.artiuillab.tieryourlife.feature.tier.domain.model.TierList): Result<String> =
         Result.failure(IllegalStateException())

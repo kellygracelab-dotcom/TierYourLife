@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.AuthorScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
@@ -26,9 +27,23 @@ fun NavController.navigateToCommunityList(publishedId: String) {
     navigate(Route.CommunityList(publishedId))
 }
 
+fun NavGraphBuilder.authorScreen(
+    onBack: () -> Unit,
+    onOpenList: (String) -> Unit,
+) {
+    composable<Route.Author> {
+        AuthorScreen(onBack = onBack, onOpenList = onOpenList)
+    }
+}
+
+fun NavController.navigateToAuthor(uid: String, name: String, photoUrl: String?) {
+    navigate(Route.Author(uid, name, photoUrl))
+}
+
 fun NavGraphBuilder.tierListsScreen(
     onTierListClick: (Long) -> Unit,
     onCommunityListClick: (String) -> Unit,
+    onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onSettingsClick: () -> Unit,
     onNewListCreated: (Long) -> Unit,
 ) {
@@ -36,6 +51,7 @@ fun NavGraphBuilder.tierListsScreen(
         TierListsScreen(
             onTierListClick = onTierListClick,
             onCommunityListClick = onCommunityListClick,
+            onAuthorClick = onAuthorClick,
             onSettingsClick = onSettingsClick,
             onNewListCreated = onNewListCreated,
         )

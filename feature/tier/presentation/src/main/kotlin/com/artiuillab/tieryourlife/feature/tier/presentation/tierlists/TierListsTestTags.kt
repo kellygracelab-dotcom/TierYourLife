@@ -22,6 +22,8 @@ internal object TierListsTestTags {
     fun tierListCard(id: Long): String = "tier_list_card_$id"
     fun communityCard(id: String): String = "community_card_$id"
 
+    fun communityCardAuthor(id: String): String = "community_card_author_$id"
+
     fun categoryFilter(category: ListCategory?): String = "home_category_${category?.id ?: "all"}"
     fun tab(tab: HomeTab): String = "home_tab_${tab.name.lowercase()}"
     fun suggestion(index: Int): String = "home_suggestion_$index"
