@@ -307,5 +307,5 @@
     <plurals name="author_public_lists">
         <item quantity="other">公開リスト %1$d 件</item>
     </plurals>
-    <string name="list_settings_public_too_large">このリストは公開するには大きすぎます。カードは200枚、ティアは12段までです。</string>
+    <string name="list_settings_public_too_large">このリストは公開するには大きすぎます。カードは1000枚、ティアは20段までです。</string>
 </resources>

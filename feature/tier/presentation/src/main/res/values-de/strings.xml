@@ -334,5 +334,5 @@
         <item quantity="one">%1$d öffentliche Liste</item>
         <item quantity="other">%1$d öffentliche Listen</item>
     </plurals>
-    <string name="list_settings_public_too_large">Diese Liste ist zu groß zum Veröffentlichen: höchstens 200 Karten und 12 Stufen.</string>
+    <string name="list_settings_public_too_large">Diese Liste ist zu groß zum Veröffentlichen: höchstens 1000 Karten und 20 Stufen.</string>
 </resources>

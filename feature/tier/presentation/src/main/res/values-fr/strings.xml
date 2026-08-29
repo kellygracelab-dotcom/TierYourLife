@@ -359,5 +359,5 @@
         <item quantity="one">%1$d liste publique</item>
         <item quantity="other">%1$d listes publiques</item>
     </plurals>
-    <string name="list_settings_public_too_large">Cette liste est trop grande pour être publiée : 200 cartes et 12 rangs au maximum.</string>
+    <string name="list_settings_public_too_large">Cette liste est trop grande pour être publiée : 1000 cartes et 20 rangs au maximum.</string>
 </resources>

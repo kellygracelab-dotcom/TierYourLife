@@ -388,5 +388,5 @@
         <item quantity="many">%1$d публічних списків</item>
         <item quantity="other">%1$d публічного списку</item>
     </plurals>
-    <string name="list_settings_public_too_large">Список завеликий для публікації: не більше 200 карток і 12 тирів.</string>
+    <string name="list_settings_public_too_large">Список завеликий для публікації: не більше 1000 карток і 20 тирів.</string>
 </resources>

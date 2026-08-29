@@ -335,5 +335,5 @@
         <item quantity="one">%1$d public list</item>
         <item quantity="other">%1$d public lists</item>
     </plurals>
-    <string name="list_settings_public_too_large">This list is too big to publish: at most 200 cards and 12 tiers.</string>
+    <string name="list_settings_public_too_large">This list is too big to publish: at most 1000 cards and 20 tiers.</string>
 </resources>

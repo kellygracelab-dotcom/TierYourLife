@@ -334,5 +334,5 @@
         <item quantity="one">%1$d herkese açık liste</item>
         <item quantity="other">%1$d herkese açık liste</item>
     </plurals>
-    <string name="list_settings_public_too_large">Bu liste yayımlanamayacak kadar büyük: en fazla 200 kart ve 12 kademe.</string>
+    <string name="list_settings_public_too_large">Bu liste yayımlanamayacak kadar büyük: en fazla 1000 kart ve 20 kademe.</string>
 </resources>
