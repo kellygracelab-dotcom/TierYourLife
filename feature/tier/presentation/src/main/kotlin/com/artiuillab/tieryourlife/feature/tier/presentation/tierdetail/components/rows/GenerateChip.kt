@@ -25,7 +25,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDeta
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AutoAwesomeIcon
 
 @Composable
-internal fun GenerateChip(onClick: () -> Unit) {
+internal fun GenerateChip(onClick: () -> Unit, compact: Boolean = false) {
     val description = stringResource(R.string.cd_ai_chip)
     Row(
         modifier = Modifier
@@ -35,15 +35,17 @@ internal fun GenerateChip(onClick: () -> Unit) {
             .clickable(onClick = onClick)
             .semantics(mergeDescendants = true) { contentDescription = description }
             .testTag(TierDetailTestTags.GENERATE_CHIP)
-            .padding(start = 10.dp, end = 12.dp),
+            .padding(horizontal = if (compact) 7.dp else 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AutoAwesomeIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant)
-        Spacer(Modifier.width(6.dp))
-        Text(
-            text = stringResource(R.string.ai_chip),
-            style = TierYourLifeType.current.chipText,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (!compact) {
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = stringResource(R.string.ai_chip),
+                style = TierYourLifeType.current.chipText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }

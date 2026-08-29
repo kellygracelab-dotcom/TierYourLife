@@ -71,6 +71,7 @@ internal fun TierListSettingsScreenContent(
     signedIn: Boolean = false,
     publishing: Boolean = false,
     publishError: PublishError? = null,
+    publicPending: Boolean? = null,
     onSetPublic: (Boolean) -> Unit = {},
     onSetCategory: (ListCategory) -> Unit = {},
     onSetCover: (String?) -> Unit = {},
@@ -84,7 +85,7 @@ internal fun TierListSettingsScreenContent(
         ListSettingsTopBar(onBack = onBack)
 
         PublishSection(
-            published = list.publishedId != null,
+            published = publicPending ?: (list.publishedId != null),
             signedIn = signedIn,
             hasItems = list.tiers.any { it.items.isNotEmpty() },
             busy = publishing,
@@ -396,7 +397,9 @@ private fun PublishSection(
             Switch(
                 checked = published,
                 onCheckedChange = onSetPublic,
-                enabled = signedIn && (published || hasItems) && !busy,
+                // Left enabled with nothing to publish on purpose: a dead switch
+                // is a tap that vanishes, and the reason never gets said.
+                enabled = signedIn && !busy,
                 modifier = Modifier.testTag(TierDetailTestTags.PUBLIC_SWITCH),
             )
         }
@@ -425,6 +428,7 @@ private fun PublishError.messageRes(): Int = when (this) {
     PublishError.NothingToPublish -> R.string.list_settings_public_needs_items
     PublishError.NoCategory -> R.string.list_settings_public_needs_category
     PublishError.TooManyLists -> R.string.list_settings_public_too_many
+    PublishError.TooLarge -> R.string.list_settings_public_too_large
     PublishError.Offline -> R.string.list_settings_public_offline
     PublishError.Unknown -> R.string.list_settings_public_failed
 }

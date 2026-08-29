@@ -6,6 +6,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -93,4 +94,33 @@ internal fun FileDownloadIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize)
     drawLine(color, Offset(4f * scale, 17f * scale), Offset(4f * scale, 20f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(4f * scale, 20f * scale), Offset(20f * scale, 20f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(20f * scale, 20f * scale), Offset(20f * scale, 17f * scale), stroke, StrokeCap.Round)
+}
+
+@Composable
+internal fun RestoreIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
+    val stroke = 1.8f * scale
+    // A ring open at the top with the head on the left: an arrow going back.
+    drawArc(
+        color = color,
+        startAngle = 300f,
+        sweepAngle = 300f,
+        useCenter = false,
+        topLeft = Offset(4f * scale, 4f * scale),
+        size = Size(16f * scale, 16f * scale),
+        style = Stroke(stroke, cap = StrokeCap.Round),
+    )
+    drawLine(color, Offset(8f * scale, 5.1f * scale), Offset(4.4f * scale, 3.9f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(8f * scale, 5.1f * scale), Offset(6.6f * scale, 8.7f * scale), stroke, StrokeCap.Round)
+}
+
+@Composable
+internal fun DeleteIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.8f * scale
+    drawLine(color, Offset(4f * scale, 6.5f * scale), Offset(20f * scale, 6.5f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(9.5f * scale, 6.5f * scale), Offset(9.5f * scale, 4f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(9.5f * scale, 4f * scale), Offset(14.5f * scale, 4f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(14.5f * scale, 4f * scale), Offset(14.5f * scale, 6.5f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(6.5f * scale, 6.5f * scale), Offset(7.4f * scale, 20f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(17.5f * scale, 6.5f * scale), Offset(16.6f * scale, 20f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(7.4f * scale, 20f * scale), Offset(16.6f * scale, 20f * scale), stroke, StrokeCap.Round)
 }

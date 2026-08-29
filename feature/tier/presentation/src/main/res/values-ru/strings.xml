@@ -388,4 +388,5 @@
         <item quantity="many">%1$d публичных списков</item>
         <item quantity="other">%1$d публичного списка</item>
     </plurals>
+    <string name="list_settings_public_too_large">Список слишком большой для публикации: не больше 200 карточек и 12 тиров.</string>
 </resources>

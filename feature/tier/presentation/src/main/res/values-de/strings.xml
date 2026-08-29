@@ -290,7 +290,7 @@
     <string name="home_community_failed_body">Prüfe deine Verbindung.</string>
     <string name="community_by_author">von %1$s</string>
     <string name="community_save_to_my_lists">In meine Listen speichern</string>
-    <string name="community_someone_elses">Die Liste von jemand anderem. Ordne sie, wie du magst.</string>
+    <string name="community_someone_elses">Die Liste von jemand anderem. Ordne sie frei.</string>
     <string name="community_not_saved_yet">Deine Anordnung ist noch nicht gespeichert.</string>
     <string name="community_open_failed">Diese Liste ließ sich nicht öffnen</string>
     <string name="community_saved">In deinen Listen gespeichert</string>
@@ -334,4 +334,5 @@
         <item quantity="one">%1$d öffentliche Liste</item>
         <item quantity="other">%1$d öffentliche Listen</item>
     </plurals>
+    <string name="list_settings_public_too_large">Diese Liste ist zu groß zum Veröffentlichen: höchstens 200 Karten und 12 Stufen.</string>
 </resources>

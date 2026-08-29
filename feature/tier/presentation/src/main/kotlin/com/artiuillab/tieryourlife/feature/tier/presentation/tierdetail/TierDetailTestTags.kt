@@ -16,6 +16,7 @@ internal object TierDetailTestTags {
     const val FLOATING_DRAG_TILE = "tier_detail_floating_drag_tile"
     const val DELETED_ITEM_SNACKBAR = "tier_detail_deleted_item_snackbar"
     const val RANKED_LIST = "tier_detail_ranked_list"
+    const val TIER_LIST = "tier_detail_tier_list"
     const val RANKED_HEADER = "tier_detail_ranked_header"
     const val RANKED_POOL_COLLAPSED = "tier_detail_ranked_pool_collapsed"
     const val RANKED_POOL_ITEMS = "tier_detail_ranked_pool_items"

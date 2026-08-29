@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,7 +41,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
-import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -232,7 +231,7 @@ internal fun RankedPoolSection(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 if (!readOnly) {
                     CollapsedPoolAddChip(onClick = onAddClick)
-                    GenerateChip(onClick = onGenerateClick)
+                    GenerateChip(onClick = onGenerateClick, compact = true)
                 }
             }
         }
@@ -283,24 +282,25 @@ private fun PoolItemRow(item: TierItem, onSelect: (itemId: Long) -> Unit) {
     }
 }
 
+/**
+ * Icon only. This row already carries a count whose wording runs half again as
+ * long in German or Portuguese as in English, and the label was the thing being
+ * cut. The words move to the description instead.
+ */
 @Composable
 private fun CollapsedPoolAddChip(onClick: () -> Unit) {
-    Row(
+    val description = stringResource(R.string.tier_detail_add)
+    Box(
         modifier = Modifier
+            .size(32.dp)
             .clip(RoundedCornerShape(100.dp))
             .background(MaterialTheme.colorScheme.primaryContainer)
             .clickable(onClick = onClick)
-            .testTag(TierDetailTestTags.ADD_CHIP)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .semantics { contentDescription = description }
+            .testTag(TierDetailTestTags.ADD_CHIP),
+        contentAlignment = Alignment.Center,
     ) {
         PlusIcon(18.dp, MaterialTheme.colorScheme.onPrimaryContainer)
-        Spacer(Modifier.width(4.dp))
-        Text(
-            text = stringResource(R.string.tier_detail_add),
-            style = TierYourLifeType.current.chipText,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-        )
     }
 }
 

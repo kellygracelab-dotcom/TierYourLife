@@ -5,6 +5,7 @@ data class DeletedTierListRow(
     val title: String,
     val itemCount: Int,
     val deletedAt: Long,
+    val publishedId: String?,
 )
 
 data class DeletedTierItemRow(

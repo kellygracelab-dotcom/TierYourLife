@@ -26,4 +26,10 @@ interface CommunityRepository {
     suspend fun publish(list: TierList): Result<String>
 
     suspend fun unpublish(publishedId: String): Result<Unit>
+
+    /**
+     * Brings the author's name and face on lists they already published up to
+     * date. A snapshot freezes what was ranked, not who ranked it.
+     */
+    suspend fun refreshAuthor(): Result<Unit>
 }

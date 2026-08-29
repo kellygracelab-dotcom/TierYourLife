@@ -202,7 +202,7 @@ interface TierDao {
 
     @Query(
         """
-        SELECT l.id AS id, l.title AS title, l.deletedAt AS deletedAt,
+        SELECT l.id AS id, l.title AS title, l.deletedAt AS deletedAt, l.publishedId AS publishedId,
             (SELECT COUNT(*) FROM tier_items i
                 JOIN tiers t ON i.tierId = t.id
                 WHERE t.tierListId = l.id AND i.deletedAt IS NULL) AS itemCount

@@ -359,4 +359,5 @@
         <item quantity="one">%1$d lista pública</item>
         <item quantity="other">%1$d listas públicas</item>
     </plurals>
+    <string name="list_settings_public_too_large">Esta lista é grande demais para publicar: no máximo 200 cards e 12 níveis.</string>
 </resources>

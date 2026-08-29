@@ -106,6 +106,7 @@ fun TierDetailScreen(
     val signedIn by viewModel.signedIn.collectAsStateWithLifecycle()
     val publishing by viewModel.publishing.collectAsStateWithLifecycle()
     val publishError by viewModel.publishError.collectAsStateWithLifecycle()
+    val publicPending by viewModel.publicPending.collectAsStateWithLifecycle()
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
     var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -118,6 +119,7 @@ fun TierDetailScreen(
             signedIn = signedIn,
             publishing = publishing,
             publishError = publishError,
+            publicPending = publicPending,
             onSetPublic = viewModel::setPublic,
             onSetCategory = viewModel::setCategory,
             onSetCover = viewModel::setCoverImageUrl,
@@ -182,17 +184,16 @@ internal fun TierDetailScreenContent(
                     spinnerVisible = true
                 }
 
-                Column(Modifier.fillMaxSize()) {
-                    TierScreenTopBar(title = "", onBack = actions.onBack, onManualAdd = actions.onManualAddClick)
-                    Box(
-                        Modifier
-                            .fillMaxSize()
-                            .testTag(TierDetailTestTags.LOADING),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        if (spinnerVisible) {
-                            CircularProgressIndicator()
-                        }
+                // No top bar with an empty title: on a list just created it
+                // appeared, then filled in, which is the flicker.
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .testTag(TierDetailTestTags.LOADING),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (spinnerVisible) {
+                        CircularProgressIndicator()
                     }
                 }
             }
@@ -258,6 +259,7 @@ private fun TierScreenBody(
             signedIn = actions.signedIn,
             publishing = actions.publishing,
             publishError = actions.publishError,
+            publicPending = actions.publicPending,
             onSetPublic = actions.onSetPublic,
             onSetCategory = actions.onSetCategory,
             onSetCover = actions.onSetCover,
@@ -439,6 +441,7 @@ private fun TierScreenBody(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
+                        .testTag(TierDetailTestTags.TIER_LIST)
                         .onGloballyPositioned { coordinates -> tierListBounds = coordinates.boundsInRoot() },
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                     verticalArrangement = Arrangement.spacedBy(TIER_LIST_ITEM_SPACING),

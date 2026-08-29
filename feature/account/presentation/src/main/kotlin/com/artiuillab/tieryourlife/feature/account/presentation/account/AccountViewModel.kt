@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +28,7 @@ class AccountViewModel @Inject constructor(
     private val googleCredential: GoogleCredential,
     private val credits: GenerationCredits,
     private val ownLists: OwnLists,
+    private val community: CommunityRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AccountUiState(credits = credits.lastKnown()))
@@ -60,7 +62,7 @@ class AccountViewModel @Inject constructor(
         _state.update { it.copy(savingName = true) }
         viewModelScope.launch {
             val saved = repository.setDisplayName(name)
-            if (!saved) Timber.w("Renaming the account did not stick")
+            if (saved) refreshPublishedAuthor() else Timber.w("Renaming the account did not stick")
             _state.update {
                 it.copy(savingName = false, notice = if (saved) null else AccountNotice.NameNotSaved)
             }
@@ -95,6 +97,16 @@ class AccountViewModel @Inject constructor(
         _state.update { it.copy(signingIn = false, notice = notice) }
     }
 
+    /**
+     * Best effort: the profile is already saved, and a stale face on an old
+     * list is not worth refusing the change over.
+     */
+    private suspend fun refreshPublishedAuthor() {
+        community.refreshAuthor().onFailure {
+            Timber.w(it, "Could not bring the author up to date on published lists")
+        }
+    }
+
     private suspend fun refreshOwnLists() {
         if (_state.value.account !is Account.SignedIn) return
         val count = runCatching { ownLists.publishedCount() }
@@ -115,7 +127,7 @@ class AccountViewModel @Inject constructor(
     fun setPhoto(photoUrl: String?) {
         viewModelScope.launch {
             val saved = repository.setPhotoUrl(photoUrl)
-            if (!saved) _state.update { it.copy(notice = AccountNotice.NameNotSaved) }
+            if (saved) refreshPublishedAuthor() else _state.update { it.copy(notice = AccountNotice.NameNotSaved) }
         }
     }
 

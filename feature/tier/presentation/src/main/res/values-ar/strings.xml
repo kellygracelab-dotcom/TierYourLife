@@ -442,4 +442,5 @@
         <item quantity="many">%1$d قائمة عامة</item>
         <item quantity="other">%1$d قائمة عامة</item>
     </plurals>
+    <string name="list_settings_public_too_large">هذه القائمة أكبر من أن تُنشر: 200 بطاقة و12 مستوى كحد أقصى.</string>
 </resources>

@@ -9,6 +9,11 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -153,7 +158,23 @@ class AccountViewModelTest {
         credential: GoogleCredential = FakeGoogleCredential(GoogleCredentialResult.Cancelled),
         credits: GenerationCredits = FakeGenerationCredits(),
         publishedLists: OwnLists = FakeOwnLists(),
-    ) = AccountViewModel(repository, credential, credits, publishedLists)
+    ) = AccountViewModel(repository, credential, credits, publishedLists, FakeCommunityForAccount())
+}
+
+private class FakeCommunityForAccount : CommunityRepository {
+    override suspend fun feed(
+        category: ListCategory?,
+        query: String?,
+        author: String?,
+    ): Result<List<PublishedListSummary>> = Result.success(emptyList())
+
+    override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
+
+    override suspend fun publish(list: TierList): Result<String> = Result.failure(IllegalStateException())
+
+    override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
+
+    override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
 }
 
 private class FakeOwnLists(private val published: Int = 0) : OwnLists {

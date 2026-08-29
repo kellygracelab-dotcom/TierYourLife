@@ -388,4 +388,5 @@
         <item quantity="many">%1$d list publicznych</item>
         <item quantity="other">%1$d listy publicznej</item>
     </plurals>
+    <string name="list_settings_public_too_large">Ta lista jest za duża, by ją opublikować: najwyżej 200 kart i 12 poziomów.</string>
 </resources>

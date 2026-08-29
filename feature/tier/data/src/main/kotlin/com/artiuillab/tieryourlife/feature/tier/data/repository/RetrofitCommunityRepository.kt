@@ -48,12 +48,15 @@ class RetrofitCommunityRepository @Inject constructor(
     override suspend fun unpublish(publishedId: String): Result<Unit> = runCatching {
         api.unpublish(publishedId)
     }
+
+    override suspend fun refreshAuthor(): Result<Unit> = runCatching { api.refreshAuthor() }
 }
 
 private fun Throwable.asPublishError(): PublishError = when {
     this is HttpException -> when (code()) {
         403 -> PublishError.NotSignedIn
         409 -> PublishError.TooManyLists
+        413 -> PublishError.TooLarge
         else -> PublishError.Unknown
     }
 

@@ -34,6 +34,8 @@ internal class FakeCommunityRepositoryForDetail(
         unpublished += publishedId
         return Result.success(Unit)
     }
+
+    override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
 }
 
 internal class FakeAccountRepositoryForDetail(signedIn: Boolean = false) : AccountRepository {

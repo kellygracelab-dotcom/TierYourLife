@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,7 +39,8 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDeta
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailUiState
 
-private val SAVE_BAR_HEIGHT = 72.dp
+private val SAVE_BAR_MIN_HEIGHT = 72.dp
+private val SAVE_BUTTON_MAX_WIDTH = 180.dp
 
 @Composable
 fun CommunityListScreen(
@@ -111,13 +115,16 @@ internal fun CommunityListScreenContent(
 
 @Composable
 private fun SaveBar(arranged: Boolean, saving: Boolean, onSave: () -> Unit) {
+    // Both halves are allowed two lines and the bar grows to fit: "Save to my
+    // lists" is half again as long in German and nearly twice in French, and a
+    // fixed-height row spent that on the sentence beside it.
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             .navigationBarsPadding()
-            .height(SAVE_BAR_HEIGHT)
-            .padding(horizontal = 16.dp),
+            .heightIn(min = SAVE_BAR_MIN_HEIGHT)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -129,14 +136,22 @@ private fun SaveBar(arranged: Boolean, saving: Boolean, onSave: () -> Unit) {
                 .testTag(CommunityTestTags.STATUS),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis,
         )
         Spacer(Modifier.width(12.dp))
         Button(
             onClick = onSave,
             enabled = !saving,
-            modifier = Modifier.testTag(CommunityTestTags.SAVE),
+            modifier = Modifier
+                .widthIn(max = SAVE_BUTTON_MAX_WIDTH)
+                .testTag(CommunityTestTags.SAVE),
         ) {
-            Text(stringResource(R.string.community_save_to_my_lists))
+            Text(
+                text = stringResource(R.string.community_save_to_my_lists),
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+            )
         }
     }
 }

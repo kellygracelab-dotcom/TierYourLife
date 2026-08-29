@@ -14,10 +14,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +33,8 @@ import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.DeleteIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.RestoreIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashTestTags
 
@@ -109,7 +110,7 @@ private fun TrashRow(
             .heightIn(min = 72.dp)
             .testTag(TrashTestTags.row(entry))
             .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         thumbnail()
@@ -121,22 +122,29 @@ private fun TrashRow(
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            Text(text = meta, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text = meta,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
-        TextButton(
+        // Icons, not words: "Restore" and "Delete" side by side left the title
+        // four characters wide in Russian and broke the line into single
+        // syllables. The words live on in the descriptions.
+        IconButton(
             onClick = onRestore,
-            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary),
             modifier = Modifier
                 .semantics { contentDescription = restoreDescription }
                 .testTag(TrashTestTags.restoreButton(entry)),
-        ) { Text(stringResource(R.string.action_restore)) }
-        TextButton(
+        ) { RestoreIcon(22.dp, MaterialTheme.colorScheme.primary) }
+        IconButton(
             onClick = onRemove,
-            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
             modifier = Modifier
                 .semantics { contentDescription = removeDescription }
                 .testTag(TrashTestTags.removeButton(entry)),
-        ) { Text(stringResource(R.string.action_remove)) }
+        ) { DeleteIcon(22.dp, MaterialTheme.colorScheme.error) }
     }
 }
 

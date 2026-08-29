@@ -49,6 +49,14 @@ class TierDetailViewModel @Inject constructor(
     private val _publishError = MutableStateFlow<PublishError?>(null)
     val publishError: StateFlow<PublishError?> = _publishError.asStateFlow()
 
+    /**
+     * What the switch should read while the request is in flight. Waiting for
+     * the server to answer left it sitting on the old position for a second,
+     * which reads as a tap that missed.
+     */
+    private val _publicPending = MutableStateFlow<Boolean?>(null)
+    val publicPending: StateFlow<Boolean?> = _publicPending.asStateFlow()
+
     private val tierListId = savedStateHandle.toRoute<Route.TierDetail>().tierListId
 
     private val _state = MutableStateFlow<TierDetailUiState>(TierDetailUiState.Loading)
@@ -76,6 +84,7 @@ class TierDetailViewModel @Inject constructor(
         }
 
         _publishing.value = true
+        _publicPending.value = public
         viewModelScope.launch {
             val result: Result<String?> = if (public) {
                 community.publish(list)
@@ -94,6 +103,7 @@ class TierDetailViewModel @Inject constructor(
                 },
             )
             _publishing.value = false
+            _publicPending.value = null
         }
     }
 

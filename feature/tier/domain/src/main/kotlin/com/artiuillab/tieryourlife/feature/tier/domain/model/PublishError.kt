@@ -6,6 +6,7 @@ enum class PublishError {
     NothingToPublish,
     NoCategory,
     TooManyLists,
+    TooLarge,
     Offline,
     Unknown,
 }

@@ -399,4 +399,6 @@ private class FakeCommunityRepository(
         takenDown += publishedId
         return unpublishResult
     }
+
+    override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
 }

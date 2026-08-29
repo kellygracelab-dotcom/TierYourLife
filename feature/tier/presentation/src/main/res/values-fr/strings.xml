@@ -315,7 +315,7 @@
     <string name="home_community_failed_body">Vérifiez votre connexion.</string>
     <string name="community_by_author">de %1$s</string>
     <string name="community_save_to_my_lists">Enregistrer dans mes listes</string>
-    <string name="community_someone_elses">La liste de quelqu\'un d\'autre. Classez-la comme vous voulez.</string>
+    <string name="community_someone_elses">Liste de quelqu\'un d\'autre. Classez-la librement.</string>
     <string name="community_not_saved_yet">Votre classement n\'est pas encore enregistré.</string>
     <string name="community_open_failed">Impossible d\'ouvrir cette liste</string>
     <string name="community_saved">Enregistrée dans vos listes</string>
@@ -359,4 +359,5 @@
         <item quantity="one">%1$d liste publique</item>
         <item quantity="other">%1$d listes publiques</item>
     </plurals>
+    <string name="list_settings_public_too_large">Cette liste est trop grande pour être publiée : 200 cartes et 12 rangs au maximum.</string>
 </resources>
