@@ -359,7 +359,7 @@
     <string name="hidden_lists">LİSTELER</string>
     <string name="hidden_people">KİŞİLER</string>
     <string name="action_show_again">Yeniden göster</string>
-    <string name="hidden_empty_title">Gizlenen bir şey yok</string>
+    <string name="hidden_empty_title">Her şey görünür durumda</string>
     <string name="hidden_empty_body">Toplulukta gizlediğiniz listeler ve kişiler, fikrinizi değiştirirsiniz diye burada bekler.</string>
     <string name="hidden_unnamed_list">Gizlediğiniz bir liste</string>
     <string name="hidden_unnamed_person">Gizlediğiniz biri</string>

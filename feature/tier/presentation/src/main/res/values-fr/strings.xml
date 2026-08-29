@@ -386,7 +386,7 @@
     <string name="hidden_lists">LISTES</string>
     <string name="hidden_people">PERSONNES</string>
     <string name="action_show_again">Réafficher</string>
-    <string name="hidden_empty_title">Rien de masqué</string>
+    <string name="hidden_empty_title">Tout est visible</string>
     <string name="hidden_empty_body">Les listes et les personnes que vous masquez dans la communauté attendent ici, au cas où vous changeriez d\'avis.</string>
     <string name="hidden_unnamed_list">Une liste que vous avez masquée</string>
     <string name="hidden_unnamed_person">Quelqu’un que vous avez masqué</string>

@@ -38,8 +38,12 @@ import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.SectionLabel
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.HideIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
+
+private val SectionLabelPadding =
+    Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 4.dp)
 
 @Composable
 fun HiddenScreen(
@@ -64,7 +68,7 @@ internal fun HiddenScreenContent(
 ) {
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         Column(Modifier.fillMaxSize().testTag(HiddenTestTags.SCREEN)) {
-            TopBar(onBack = onBack, showTitle = !state.isEmpty)
+            TopBar(onBack = onBack)
 
             if (state.isEmpty) {
                 EmptyState()
@@ -84,7 +88,7 @@ internal fun HiddenScreenContent(
                     .padding(bottom = 32.dp),
             ) {
                 if (state.lists.isNotEmpty()) {
-                    SectionHeading(stringResource(R.string.hidden_lists))
+                    SectionLabel(stringResource(R.string.hidden_lists), SectionLabelPadding)
                     state.lists.forEach { entry ->
                         HiddenRow(entry, R.string.hidden_unnamed_list, HiddenTestTags.listRow(entry.id)) {
                             onShowListAgain(entry.id)
@@ -92,7 +96,7 @@ internal fun HiddenScreenContent(
                     }
                 }
                 if (state.people.isNotEmpty()) {
-                    SectionHeading(stringResource(R.string.hidden_people))
+                    SectionLabel(stringResource(R.string.hidden_people), SectionLabelPadding)
                     state.people.forEach { entry ->
                         HiddenRow(entry, R.string.hidden_unnamed_person, HiddenTestTags.personRow(entry.id)) {
                             onShowAuthorAgain(entry.id)
@@ -105,7 +109,7 @@ internal fun HiddenScreenContent(
 }
 
 @Composable
-private fun TopBar(onBack: () -> Unit, showTitle: Boolean) {
+private fun TopBar(onBack: () -> Unit) {
     val backDescription = stringResource(R.string.tier_detail_content_description_back)
     Row(
         modifier = Modifier
@@ -122,25 +126,13 @@ private fun TopBar(onBack: () -> Unit, showTitle: Boolean) {
                 .semantics { contentDescription = backDescription }
                 .testTag(HiddenTestTags.BACK),
         ) { BackIcon() }
-        if (showTitle) {
-            Text(
-                text = stringResource(R.string.hidden_title),
-                modifier = Modifier.padding(horizontal = 4.dp),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
+        Text(
+            text = stringResource(R.string.hidden_title),
+            modifier = Modifier.padding(horizontal = 4.dp),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
     }
-}
-
-@Composable
-private fun SectionHeading(text: String) {
-    Text(
-        text = text,
-        modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 4.dp),
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.primary,
-    )
 }
 
 @Composable

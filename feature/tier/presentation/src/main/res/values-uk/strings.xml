@@ -413,7 +413,7 @@
     <string name="hidden_lists">СПИСКИ</string>
     <string name="hidden_people">ЛЮДИ</string>
     <string name="action_show_again">Показати знову</string>
-    <string name="hidden_empty_title">Нічого не сховано</string>
+    <string name="hidden_empty_title">Усе на видноті</string>
     <string name="hidden_empty_body">Списки й люди, яких ви сховаєте у спільноті, чекатимуть тут — раптом передумаєте.</string>
     <string name="hidden_unnamed_list">Список, який ви сховали</string>
     <string name="hidden_unnamed_person">Хтось, кого ви сховали</string>

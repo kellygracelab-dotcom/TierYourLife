@@ -360,7 +360,7 @@
     <string name="hidden_lists">LISTS</string>
     <string name="hidden_people">PEOPLE</string>
     <string name="action_show_again">Show again</string>
-    <string name="hidden_empty_title">Nothing hidden</string>
+    <string name="hidden_empty_title">Everything is showing</string>
     <string name="hidden_empty_body">Lists and people you hide in the community wait here, in case you change your mind.</string>
     <string name="hidden_unnamed_list">A list you hid</string>
     <string name="hidden_unnamed_person">Someone you hid</string>

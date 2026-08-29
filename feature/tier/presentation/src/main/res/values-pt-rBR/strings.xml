@@ -386,7 +386,7 @@
     <string name="hidden_lists">LISTAS</string>
     <string name="hidden_people">PESSOAS</string>
     <string name="action_show_again">Mostrar de novo</string>
-    <string name="hidden_empty_title">Nada oculto</string>
+    <string name="hidden_empty_title">Tudo está visível</string>
     <string name="hidden_empty_body">As listas e pessoas que você ocultar na comunidade esperam aqui, caso mude de ideia.</string>
     <string name="hidden_unnamed_list">Uma lista que você ocultou</string>
     <string name="hidden_unnamed_person">Alguém que você ocultou</string>

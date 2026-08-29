@@ -359,7 +359,7 @@
     <string name="hidden_lists">LISTEN</string>
     <string name="hidden_people">MENSCHEN</string>
     <string name="action_show_again">Wieder anzeigen</string>
-    <string name="hidden_empty_title">Nichts ausgeblendet</string>
+    <string name="hidden_empty_title">Alles ist sichtbar</string>
     <string name="hidden_empty_body">Listen und Menschen, die du in der Community ausblendest, warten hier, falls du es dir anders überlegst.</string>
     <string name="hidden_unnamed_list">Eine Liste, die du ausgeblendet hast</string>
     <string name="hidden_unnamed_person">Jemand, den du ausgeblendet hast</string>

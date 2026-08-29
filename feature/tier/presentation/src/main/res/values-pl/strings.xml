@@ -413,7 +413,7 @@
     <string name="hidden_lists">LISTY</string>
     <string name="hidden_people">OSOBY</string>
     <string name="action_show_again">Pokaż ponownie</string>
-    <string name="hidden_empty_title">Nic nie ukryto</string>
+    <string name="hidden_empty_title">Wszystko jest widoczne</string>
     <string name="hidden_empty_body">Listy i osoby ukryte w społeczności czekają tutaj, gdybyś zmienił zdanie.</string>
     <string name="hidden_unnamed_list">Lista, którą ukryłeś</string>
     <string name="hidden_unnamed_person">Ktoś, kogo ukryłeś</string>

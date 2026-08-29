@@ -10,13 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.SectionLabel
 
 private val CARD_SHAPE = RoundedCornerShape(20.dp)
 
@@ -29,15 +27,7 @@ internal fun SettingsGroup(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Spacer(Modifier.height(24.dp))
-        Text(
-            text = title.uppercase(),
-            modifier = Modifier.padding(start = 28.dp, bottom = 8.dp),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            letterSpacing = 0.8.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        SectionLabel(title, Modifier.padding(start = 28.dp, bottom = 8.dp))
         Column(
             Modifier
                 .fillMaxWidth()
