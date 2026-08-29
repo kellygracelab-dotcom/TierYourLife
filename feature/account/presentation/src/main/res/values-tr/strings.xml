@@ -31,4 +31,11 @@
         <item quantity="one">%1$d herkese açık liste</item>
         <item quantity="other">%1$d herkese açık liste</item>
     </plurals>
+    <string name="account_face_title">Profil resminiz</string>
+    <string name="account_face_body">Kendi listelerinizden bir kart seçin.</string>
+    <string name="account_face_no_cards">Kartlarınızın hiçbirinde henüz katalog görseli yok.</string>
+    <string name="account_face_google">Google fotoğrafımı kullan</string>
+    <string name="account_face_letter">Sadece harf</string>
+    <string name="account_face_note">Hiçbir şey yüklenmez. Görsel internette zaten bulunduğu yerde kalır.</string>
+    <string name="account_cd_change_face">Resmi değiştir</string>
 </resources>

@@ -39,6 +39,7 @@ import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.presentation.R
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.CloseIcon
+import com.artiuillab.tieryourlife.feature.account.presentation.account.components.FaceSheet
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.NicknameDialog
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.SignInPitch
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.SignedInPanel
@@ -60,6 +61,7 @@ fun AccountScreen(
         onSignIn = { viewModel.signIn(context) },
         onSignOut = viewModel::signOut,
         onSetName = viewModel::setDisplayName,
+        onSetPhoto = viewModel::setPhoto,
         onNoticeShown = viewModel::dismissNotice,
     )
 }
@@ -72,10 +74,12 @@ internal fun AccountScreenContent(
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
     onSetName: (String) -> Unit = {},
+    onSetPhoto: (String?) -> Unit = {},
     onNoticeShown: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var nicknameDialogVisible by rememberSaveable { mutableStateOf(false) }
+    var faceSheetVisible by rememberSaveable { mutableStateOf(false) }
     val noticeText = state.notice?.let { stringResource(it.messageRes()) }
 
     LaunchedEffect(state.notice) {
@@ -117,6 +121,7 @@ internal fun AccountScreenContent(
                         publicListCount = state.publicListCount,
                         credits = state.credits,
                         onEditName = { nicknameDialogVisible = true },
+                        onEditFace = { faceSheetVisible = true },
                         onDone = onClose,
                         onSignOut = onSignOut,
                     )
@@ -132,6 +137,20 @@ internal fun AccountScreenContent(
                 onSave = {
                     onSetName(it)
                     nicknameDialogVisible = false
+                },
+            )
+        }
+
+        if (faceSheetVisible && signedIn != null) {
+            FaceSheet(
+                current = signedIn.photoUrl,
+                googlePhotoUrl = state.googlePhotoUrl,
+                cardImages = state.faceChoices,
+                name = signedIn.displayName,
+                onDismiss = { faceSheetVisible = false },
+                onChoose = {
+                    onSetPhoto(it)
+                    faceSheetVisible = false
                 },
             )
         }

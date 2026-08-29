@@ -33,4 +33,11 @@
         <item quantity="many">%1$d list publicznych</item>
         <item quantity="other">%1$d listy publicznej</item>
     </plurals>
+    <string name="account_face_title">Twoje zdjecie</string>
+    <string name="account_face_body">Wybierz kartę ze swoich list.</string>
+    <string name="account_face_no_cards">Żadna z twoich kart nie ma jeszcze obrazu z katalogu.</string>
+    <string name="account_face_google">Użyj zdjęcia z Google</string>
+    <string name="account_face_letter">Tylko litera</string>
+    <string name="account_face_note">Nic nie jest przesyłane. Obraz zostaje tam, gdzie już jest w sieci.</string>
+    <string name="account_cd_change_face">Zmień zdjęcie</string>
 </resources>

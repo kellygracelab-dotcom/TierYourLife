@@ -39,6 +39,7 @@ internal fun SignedInPanel(
     publicListCount: Int,
     credits: Int?,
     onEditName: () -> Unit,
+    onEditFace: () -> Unit,
     onDone: () -> Unit,
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
@@ -49,7 +50,7 @@ internal fun SignedInPanel(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        ProfileAvatar(photoUrl = photoUrl, name = displayName)
+        ProfileAvatar(photoUrl = photoUrl, name = displayName, onEdit = onEditFace)
         Spacer(Modifier.height(16.dp))
 
         Row(

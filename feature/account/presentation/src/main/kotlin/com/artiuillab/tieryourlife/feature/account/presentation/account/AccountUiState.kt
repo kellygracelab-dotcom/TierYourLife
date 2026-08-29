@@ -9,6 +9,9 @@ data class AccountUiState(
     /** Generations left, or null where nothing is counted. */
     val credits: Int? = null,
     val publicListCount: Int = 0,
+    /** Card pictures the reader can wear as a face. */
+    val faceChoices: List<String> = emptyList(),
+    val googlePhotoUrl: String? = null,
     val notice: AccountNotice? = null,
 )
 

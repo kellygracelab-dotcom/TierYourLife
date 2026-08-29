@@ -33,4 +33,11 @@
         <item quantity="many">%1$d публічних списків</item>
         <item quantity="other">%1$d публічного списку</item>
     </plurals>
+    <string name="account_face_title">Ваш аватар</string>
+    <string name="account_face_body">Виберіть картку зі своїх списків.</string>
+    <string name="account_face_no_cards">Жодна ваша картка ще не має каталожного зображення.</string>
+    <string name="account_face_google">Узяти фото з Google</string>
+    <string name="account_face_letter">Тільки літера</string>
+    <string name="account_face_note">Нічого не завантажується. Зображення залишається там, де воно вже є в мережі.</string>
+    <string name="account_cd_change_face">Змінити аватар</string>
 </resources>

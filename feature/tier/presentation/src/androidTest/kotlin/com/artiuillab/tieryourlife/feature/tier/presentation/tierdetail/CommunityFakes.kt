@@ -44,5 +44,9 @@ internal class FakeAccountRepositoryForDetail(signedIn: Boolean = false) : Accou
 
     override suspend fun setDisplayName(name: String): Boolean = true
 
+    override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
+
+    override fun googlePhotoUrl(): String? = null
+
     override suspend fun signOut() = Unit
 }

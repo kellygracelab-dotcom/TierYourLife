@@ -9,7 +9,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
-import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedLists
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -152,12 +152,14 @@ class AccountViewModelTest {
         repository: AccountRepository = FakeAccountRepository(),
         credential: GoogleCredential = FakeGoogleCredential(GoogleCredentialResult.Cancelled),
         credits: GenerationCredits = FakeGenerationCredits(),
-        publishedLists: PublishedLists = FakePublishedLists(),
+        publishedLists: OwnLists = FakeOwnLists(),
     ) = AccountViewModel(repository, credential, credits, publishedLists)
 }
 
-private class FakePublishedLists(private val published: Int = 0) : PublishedLists {
-    override suspend fun count(): Int = published
+private class FakeOwnLists(private val published: Int = 0) : OwnLists {
+    override suspend fun publishedCount(): Int = published
+
+    override suspend fun cardImages(limit: Int): List<String> = emptyList()
 }
 
 private class FakeAccountRepository(
@@ -179,6 +181,10 @@ private class FakeAccountRepository(
     }
 
     override suspend fun setDisplayName(name: String): Boolean = true
+
+    override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
+
+    override fun googlePhotoUrl(): String? = null
 
     override suspend fun signOut() {
         state.value = Account.Guest

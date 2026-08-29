@@ -2,11 +2,11 @@ package com.artiuillab.tieryourlife.feature.tier.data.di
 
 import com.artiuillab.tieryourlife.feature.tier.data.repository.CatalogueSearchRepositoryImpl
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RetrofitCommunityRepository
-import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomPublishedLists
+import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomOwnLists
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedLists
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.Binds
 import dagger.Module
@@ -32,9 +32,9 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindPublishedLists(
-        implementation: RoomPublishedLists,
-    ): PublishedLists
+    abstract fun bindOwnLists(
+        implementation: RoomOwnLists,
+    ): OwnLists
 
     @Binds
     @Singleton

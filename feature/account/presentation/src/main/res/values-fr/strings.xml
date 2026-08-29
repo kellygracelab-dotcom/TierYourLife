@@ -31,4 +31,11 @@
         <item quantity="one">%1$d liste publique</item>
         <item quantity="other">%1$d listes publiques</item>
     </plurals>
+    <string name="account_face_title">Votre image</string>
+    <string name="account_face_body">Choisissez une carte de vos listes.</string>
+    <string name="account_face_no_cards">Aucune de vos cartes n\'a encore d\'image de catalogue.</string>
+    <string name="account_face_google">Utiliser ma photo Google</string>
+    <string name="account_face_letter">Juste la lettre</string>
+    <string name="account_face_note">Rien n\'est envoyé. L\'image reste là où elle se trouve déjà sur le web.</string>
+    <string name="account_cd_change_face">Changer l\'image</string>
 </resources>
