@@ -401,4 +401,10 @@
         <item quantity="one">%d en attente</item>
         <item quantity="other">%d en attente</item>
     </plurals>
+    <string name="my_published_title">Vos listes publiques</string>
+    <string name="my_published_subtitle">Tout ce que vous avez dans la communauté, quel que soit l’appareil.</string>
+    <string name="my_published_empty_title">Rien de publié</string>
+    <string name="my_published_empty_body">Les listes que vous rendez publiques apparaissent ici.</string>
+    <string name="my_published_failed">Impossible de charger vos listes publiques</string>
+    <string name="my_published_action_open">Ouvrir</string>
 </resources>

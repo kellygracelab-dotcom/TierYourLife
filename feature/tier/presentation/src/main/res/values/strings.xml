@@ -377,4 +377,10 @@
         <item quantity="one">%d waiting</item>
         <item quantity="other">%d waiting</item>
     </plurals>
+    <string name="my_published_title">Your public lists</string>
+    <string name="my_published_subtitle">Everything you have in the community, wherever you published it from.</string>
+    <string name="my_published_empty_title">Nothing published</string>
+    <string name="my_published_empty_body">Lists you make public show up here.</string>
+    <string name="my_published_failed">Could not load your public lists</string>
+    <string name="my_published_action_open">Open</string>
 </resources>

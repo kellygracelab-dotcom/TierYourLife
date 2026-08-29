@@ -40,6 +40,7 @@ internal fun SignedInPanel(
     credits: Int?,
     onEditName: () -> Unit,
     onEditFace: () -> Unit,
+    onOpenPublished: () -> Unit,
     onDone: () -> Unit,
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
@@ -83,7 +84,12 @@ internal fun SignedInPanel(
         }
 
         Spacer(Modifier.height(28.dp))
-        CommunitySection(name = name, photoUrl = photoUrl, publicListCount = publicListCount)
+        CommunitySection(
+            name = name,
+            photoUrl = photoUrl,
+            publicListCount = publicListCount,
+            onOpenPublished = onOpenPublished,
+        )
 
         if (credits != null) {
             Spacer(Modifier.height(24.dp))
@@ -147,7 +153,12 @@ internal fun SignedInPanel(
 
 /** Shows the author row exactly as the community sees it, email left out of it. */
 @Composable
-private fun CommunitySection(name: String, photoUrl: String?, publicListCount: Int) {
+private fun CommunitySection(
+    name: String,
+    photoUrl: String?,
+    publicListCount: Int,
+    onOpenPublished: () -> Unit,
+) {
     Column(Modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.account_community_section),
@@ -160,6 +171,7 @@ private fun CommunitySection(name: String, photoUrl: String?, publicListCount: I
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                .clickable(onClick = onOpenPublished)
                 .padding(16.dp)
                 .testTag(AccountTestTags.COMMUNITY_ROW),
             verticalAlignment = Alignment.CenterVertically,

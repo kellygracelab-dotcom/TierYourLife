@@ -7,6 +7,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
@@ -25,6 +26,8 @@ internal class FakeCommunityRepositoryForDetail(
         author: String?,
         after: String?,
     ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
+
+    override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(emptyList())
 
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
 

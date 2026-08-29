@@ -376,4 +376,10 @@
         <item quantity="one">%d offen</item>
         <item quantity="other">%d offen</item>
     </plurals>
+    <string name="my_published_title">Deine öffentlichen Listen</string>
+    <string name="my_published_subtitle">Alles, was du in der Community hast, egal von welchem Gerät.</string>
+    <string name="my_published_empty_title">Nichts veröffentlicht</string>
+    <string name="my_published_empty_body">Listen, die du öffentlich machst, erscheinen hier.</string>
+    <string name="my_published_failed">Deine öffentlichen Listen konnten nicht geladen werden</string>
+    <string name="my_published_action_open">Öffnen</string>
 </resources>

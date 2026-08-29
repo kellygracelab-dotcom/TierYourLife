@@ -31,4 +31,7 @@ sealed interface Route {
 
     @Serializable
     data object Moderation : Route
+
+    @Serializable
+    data object MyPublished : Route
 }

@@ -401,4 +401,10 @@
         <item quantity="one">%d pendiente</item>
         <item quantity="other">%d pendientes</item>
     </plurals>
+    <string name="my_published_title">Tus listas públicas</string>
+    <string name="my_published_subtitle">Todo lo que tienes en la comunidad, desde donde sea que lo publicaste.</string>
+    <string name="my_published_empty_title">Nada publicado</string>
+    <string name="my_published_empty_body">Las listas que hagas públicas aparecen aquí.</string>
+    <string name="my_published_failed">No se pudieron cargar tus listas públicas</string>
+    <string name="my_published_action_open">Abrir</string>
 </resources>

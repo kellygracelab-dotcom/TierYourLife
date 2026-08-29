@@ -488,4 +488,10 @@
         <item quantity="many">%d بلاغًا تنتظر</item>
         <item quantity="other">%d بلاغ ينتظر</item>
     </plurals>
+    <string name="my_published_title">قوائمك العامة</string>
+    <string name="my_published_subtitle">كل ما لديك في المجتمع، أيًا كان الجهاز الذي نشرت منه.</string>
+    <string name="my_published_empty_title">لا شيء منشور</string>
+    <string name="my_published_empty_body">تظهر هنا القوائم التي تجعلها عامة.</string>
+    <string name="my_published_failed">تعذّر تحميل قوائمك العامة</string>
+    <string name="my_published_action_open">فتح</string>
 </resources>

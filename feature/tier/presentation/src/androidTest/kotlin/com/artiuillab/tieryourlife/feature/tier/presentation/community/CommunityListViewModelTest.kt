@@ -117,6 +117,8 @@ private class FakeCommunityRepository : CommunityRepository {
         author: String?,
         after: String?,
     ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
+    override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(emptyList())
+
     override suspend fun open(id: String): Result<PublishedList> = Result.success(published)
     override suspend fun publish(list: TierList): Result<String> = Result.success("abc")
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
@@ -140,6 +142,8 @@ private class FailingCommunityRepository : CommunityRepository {
         author: String?,
         after: String?,
     ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
+    override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(emptyList())
+
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException("nope"))
     override suspend fun publish(list: TierList): Result<String> = Result.failure(IllegalStateException())
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)

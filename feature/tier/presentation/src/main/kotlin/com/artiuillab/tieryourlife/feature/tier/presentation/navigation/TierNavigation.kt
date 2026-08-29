@@ -9,6 +9,7 @@ import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.AuthorScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.MyPublishedScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.HiddenScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.ModerationScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreen
@@ -105,6 +106,16 @@ fun NavGraphBuilder.settingsScreen(
             onLanguageTagChange = onLanguageTagChange,
         )
     }
+}
+
+fun NavGraphBuilder.myPublishedScreen(onBack: () -> Unit, onOpen: (String) -> Unit) {
+    composable<Route.MyPublished> {
+        MyPublishedScreen(onBack = onBack, onOpen = onOpen)
+    }
+}
+
+fun NavController.navigateToMyPublished() {
+    navigate(Route.MyPublished)
 }
 
 fun NavGraphBuilder.moderationScreen(onBack: () -> Unit) {

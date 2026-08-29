@@ -109,9 +109,13 @@ class AccountViewModel @Inject constructor(
 
     private suspend fun refreshOwnLists() {
         if (_state.value.account !is Account.SignedIn) return
-        val count = runCatching { ownLists.publishedCount() }
+        // Asked of the server, not of this phone: a list published from a
+        // device that is gone is still out there, and counting locally hid it.
+        val count = community.myPublished()
             .onFailure { Timber.w(it, "Counting published lists failed") }
-            .getOrDefault(0)
+            .getOrNull()
+            ?.size
+            ?: 0
         val faces = runCatching { ownLists.cardImages(FACE_CHOICE_LIMIT) }
             .onFailure { Timber.w(it, "Reading card pictures failed") }
             .getOrDefault(emptyList())

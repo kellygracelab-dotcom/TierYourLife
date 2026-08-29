@@ -548,6 +548,8 @@ private class FakeCommunityRepository(
         val more = index < nextPages.size
         return Result.success(CommunityPage(lists, nextCursor = if (more) index.toString() else null))
     }
+    override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(emptyList())
+
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
     override suspend fun publish(list: com.artiuillab.tieryourlife.feature.tier.domain.model.TierList): Result<String> =
         Result.failure(IllegalStateException())

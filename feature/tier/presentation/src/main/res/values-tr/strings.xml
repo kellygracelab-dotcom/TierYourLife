@@ -376,4 +376,10 @@
         <item quantity="one">%d bekliyor</item>
         <item quantity="other">%d bekliyor</item>
     </plurals>
+    <string name="my_published_title">Herkese açık listeleriniz</string>
+    <string name="my_published_subtitle">Toplulukta bulunan her şey, nereden yayımladığınızdan bağımsız.</string>
+    <string name="my_published_empty_title">Yayımlanan yok</string>
+    <string name="my_published_empty_body">Herkese açık yaptığınız listeler burada görünür.</string>
+    <string name="my_published_failed">Herkese açık listeleriniz yüklenemedi</string>
+    <string name="my_published_action_open">Aç</string>
 </resources>

@@ -17,9 +17,13 @@ internal data class SavedTemplate(
     val items: List<TierItem>,
 )
 
-internal class FakeTierRepositoryForCommunity : TierRepository {
+internal class FakeTierRepositoryForCommunity(
+    /** Stands in for a local copy that knows it was published. */
+    private val publishedIdOfFirstList: String? = null,
+) : TierRepository {
 
     val templates = mutableListOf<SavedTemplate>()
+    var clearedPublishedId: Long? = null
 
     override suspend fun createFromTemplate(
         title: String,
@@ -31,14 +35,18 @@ internal class FakeTierRepositoryForCommunity : TierRepository {
         return 7L
     }
 
-    override suspend fun setPublishedId(id: Long, publishedId: String?) = Unit
+    override suspend fun setPublishedId(id: Long, publishedId: String?) {
+        if (publishedId == null) clearedPublishedId = id
+    }
 
     override suspend fun setCategory(id: Long, category: ListCategory?) = Unit
 
     override suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?) = Unit
 
     override suspend fun getTierListById(id: Long): TierList? = null
-    override suspend fun getAllTierLists(): List<TierList> = emptyList()
+    override suspend fun getAllTierLists(): List<TierList> = publishedIdOfFirstList
+        ?.let { listOf(TierList(id = 7, title = "Local copy", tiers = emptyList(), publishedId = it)) }
+        .orEmpty()
     override suspend fun createTierList(title: String): Long = 0
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) = Unit
     override suspend fun renameTierList(id: Long, title: String) = Unit
