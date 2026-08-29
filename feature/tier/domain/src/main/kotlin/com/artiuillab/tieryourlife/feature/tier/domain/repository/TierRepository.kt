@@ -26,9 +26,6 @@ interface TierRepository {
 
     suspend fun setPublishedId(id: Long, publishedId: String?)
 
-    /** How many of this phone's lists are currently in the community feed. */
-    suspend fun publishedListCount(): Int
-
     suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode)
 
     suspend fun renameTierList(id: Long, title: String)

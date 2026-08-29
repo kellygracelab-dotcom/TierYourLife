@@ -9,7 +9,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
-import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedLists
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +24,7 @@ class AccountViewModel @Inject constructor(
     private val repository: AccountRepository,
     private val googleCredential: GoogleCredential,
     private val credits: GenerationCredits,
-    private val tiers: TierRepository,
+    private val publishedLists: PublishedLists,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AccountUiState())
@@ -95,7 +95,7 @@ class AccountViewModel @Inject constructor(
 
     private suspend fun refreshPublicListCount() {
         if (_state.value.account !is Account.SignedIn) return
-        val count = runCatching { tiers.publishedListCount() }
+        val count = runCatching { publishedLists.count() }
             .onFailure { Timber.w(it, "Counting published lists failed") }
             .getOrDefault(0)
         _state.update { it.copy(publicListCount = count) }

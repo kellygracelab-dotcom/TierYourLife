@@ -52,8 +52,6 @@ class RoomTierRepository internal constructor(
         dao.setPublishedId(id, publishedId)
     }
 
-    override suspend fun publishedListCount(): Int = dao.countPublishedLists()
-
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) {
         dao.updateTierListDisplayMode(id, displayMode.name)
     }
