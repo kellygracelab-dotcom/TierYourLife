@@ -22,9 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CategoryIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
 /**
@@ -87,17 +87,20 @@ internal fun ListActionsSheet(
                     text = stringResource(R.string.community_action_view_author, authorName),
                     testTag = TierListsTestTags.ACTION_VIEW_AUTHOR,
                     onClick = onOpenAuthor,
+                    icon = { size, tint -> PersonIcon(size, tint) },
                 )
             }
             ActionRow(
                 text = stringResource(R.string.community_action_hide),
                 testTag = TierListsTestTags.ACTION_HIDE,
                 onClick = onHide,
+                icon = { size, tint -> HideIcon(size, tint) },
             )
             ActionRow(
                 text = stringResource(R.string.community_action_report),
                 testTag = TierListsTestTags.ACTION_REPORT,
                 onClick = onReport,
+                icon = { size, tint -> FlagIcon(size, tint) },
                 color = MaterialTheme.colorScheme.error,
             )
             Spacer(Modifier.height(12.dp))
@@ -110,6 +113,7 @@ private fun ActionRow(
     text: String,
     testTag: String,
     onClick: () -> Unit,
+    icon: @Composable (Dp, Color) -> Unit,
     color: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Row(
@@ -120,7 +124,7 @@ private fun ActionRow(
             .padding(horizontal = 24.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        CategoryIcon(20.dp, color)
+        icon(20.dp, color)
         Spacer(Modifier.width(16.dp))
         Text(
             text = text,

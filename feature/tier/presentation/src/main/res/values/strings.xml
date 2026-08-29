@@ -351,6 +351,6 @@
     <string name="report_sent_title">Reported, and hidden for you</string>
     <string name="report_sent_body">One person reviews reports by hand, so it may stay up for other people until then.</string>
     <string name="report_hide_author">Also hide everything from %1$s</string>
-    <string name="community_hidden">Hidden</string>
     <string name="community_action_hide_author">Hide everything from %1$s</string>
+    <string name="action_done">Done</string>
 </resources>

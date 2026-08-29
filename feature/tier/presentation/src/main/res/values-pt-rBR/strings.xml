@@ -375,6 +375,6 @@
     <string name="report_sent_title">Denunciada e oculta para você</string>
     <string name="report_sent_body">Uma pessoa revisa as denúncias à mão, então ela pode continuar visível para os outros.</string>
     <string name="report_hide_author">Ocultar também tudo de %1$s</string>
-    <string name="community_hidden">Oculta</string>
     <string name="community_action_hide_author">Ocultar tudo de %1$s</string>
+    <string name="action_done">Concluído</string>
 </resources>

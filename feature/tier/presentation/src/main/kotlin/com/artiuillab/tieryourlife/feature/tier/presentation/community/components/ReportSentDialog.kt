@@ -28,7 +28,7 @@ internal fun ReportSentDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.community_hidden)) }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done)) }
         },
     )
 }
