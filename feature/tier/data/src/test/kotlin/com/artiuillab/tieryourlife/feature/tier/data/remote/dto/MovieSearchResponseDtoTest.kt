@@ -38,6 +38,7 @@ class MovieSearchResponseDtoTest {
         val response = networkJson.decodeFromString<MovieSearchResponseDto>(json)
 
         assertEquals(1, response.page)
+        assertEquals(1, response.totalPages)
         assertEquals("/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", response.results[0].posterPath)
     }
 }
