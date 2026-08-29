@@ -277,4 +277,27 @@
     <string name="list_settings_public_too_many">公開できるリストの上限に達しました。公開を1つ取り消すと空きができます。</string>
     <string name="list_settings_public_offline">接続がありません。オンラインに戻ってからもう一度お試しください。</string>
     <string name="list_settings_public_failed">このリストを公開できませんでした。もう一度お試しください。</string>
+    <string name="category_all">すべて</string>
+    <string name="category_anime">アニメ</string>
+    <string name="category_film_tv">映画・ドラマ</string>
+    <string name="category_games">ゲーム</string>
+    <string name="category_music">音楽</string>
+    <string name="category_food">グルメ</string>
+    <string name="category_sport">スポーツ</string>
+    <string name="category_people">人物</string>
+    <string name="category_other">その他</string>
+    <string name="list_settings_category">カテゴリ</string>
+    <string name="list_settings_category_none">未選択</string>
+    <string name="list_settings_public_needs_category">リストを公開する前にカテゴリを選んでください。</string>
+    <string name="list_settings_cover">カバー</string>
+    <string name="list_settings_cover_none_set">なし</string>
+    <string name="list_settings_cover_set">選択済み</string>
+    <string name="list_settings_cover_body">このリストのカード、またはギャラリーの画像から選べます。</string>
+    <string name="list_settings_cover_no_cards">このリストのカードにはまだ画像がありません。</string>
+    <string name="list_settings_cover_gallery">ギャラリーから選ぶ</string>
+    <string name="list_settings_cover_gallery_note">ギャラリーの画像はこの端末に留まります。コミュニティではカードが表示されます。</string>
+    <string name="list_settings_cover_none">カバーを削除</string>
+    <plurals name="community_item_count">
+        <item quantity="other">カード %1$d 枚</item>
+    </plurals>
 </resources>

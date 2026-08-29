@@ -16,4 +16,6 @@ data class TierListEntity(
     val publishedId: String? = null,
     /** Set on a copy taken from someone else's published list. */
     val authorName: String? = null,
+    val category: String? = null,
+    val coverImageUrl: String? = null,
 )

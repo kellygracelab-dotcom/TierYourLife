@@ -4,7 +4,9 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.api.CommunityApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListSummaryDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedTierDto
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
@@ -23,10 +25,8 @@ class RetrofitCommunityRepository @Inject constructor(
     private val api: CommunityApi,
 ) : CommunityRepository {
 
-    override suspend fun feed(): Result<List<PublishedListSummary>> = runCatching {
-        api.feed().lists.map {
-            PublishedListSummary(it.id, it.title, it.authorName, it.itemCount, it.updatedAt)
-        }
+    override suspend fun feed(category: ListCategory?): Result<List<PublishedListSummary>> = runCatching {
+        api.feed(category?.id).lists.map { it.toSummary() }
     }
 
     override suspend fun open(id: String): Result<PublishedList> = runCatching {
@@ -57,8 +57,30 @@ private fun Throwable.asPublishError(): PublishError = when {
     else -> PublishError.Unknown
 }
 
+private fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
+    id = id,
+    title = title,
+    authorName = authorName,
+    category = ListCategory.fromId(category) ?: ListCategory.Other,
+    itemCount = itemCount,
+    coverImageUrl = coverImageUrl,
+    previewImages = previewImages,
+    tierColors = tierColors,
+    updatedAtMillis = updatedAt,
+)
+
 private fun PublishedListDto.toDomain() = PublishedList(
-    summary = PublishedListSummary(id, title, authorName, itemCount, updatedAt),
+    summary = PublishedListSummary(
+        id = id,
+        title = title,
+        authorName = authorName,
+        category = ListCategory.fromId(category) ?: ListCategory.Other,
+        itemCount = itemCount,
+        coverImageUrl = coverImageUrl,
+        previewImages = previewImages,
+        tierColors = tierColors,
+        updatedAtMillis = updatedAt,
+    ),
     tiers = tiers.mapIndexed { index, tier ->
         Tier(
             id = index.toLong(),
@@ -78,6 +100,8 @@ private fun PublishedListDto.toDomain() = PublishedList(
 // theirs, and the reader ranks from scratch.
 private fun TierList.toRequest() = PublishListRequestDto(
     title = title,
+    category = (category ?: ListCategory.Other).id,
+    coverImageUrl = coverImageUrl,
     tiers = tiers.filterNot { it.isPool }.map {
         PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark)
     },

@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
@@ -263,6 +264,10 @@ private class FakeTierRepository(initial: List<TierList>) : TierRepository {
 
     override suspend fun setPublishedId(id: Long, publishedId: String?) = Unit
 
+    override suspend fun setCategory(id: Long, category: ListCategory?) = Unit
+
+    override suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?) = Unit
+
     private val lists = initial.associateBy { it.id }.toMutableMap()
     private val trashed = mutableMapOf<Long, TierList>()
     private var nextId = (initial.maxOfOrNull { it.id } ?: 0L) + 1
@@ -339,7 +344,7 @@ private class FakeTierRepository(initial: List<TierList>) : TierRepository {
 private class FakeCommunityRepository(
     private val feed: List<PublishedListSummary> = emptyList(),
 ) : CommunityRepository {
-    override suspend fun feed(): Result<List<PublishedListSummary>> = Result.success(feed)
+    override suspend fun feed(category: ListCategory?): Result<List<PublishedListSummary>> = Result.success(feed)
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
     override suspend fun publish(list: com.artiuillab.tieryourlife.feature.tier.domain.model.TierList): Result<String> =
         Result.failure(IllegalStateException())

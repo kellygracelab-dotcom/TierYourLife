@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.repository
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -25,6 +26,10 @@ interface TierRepository {
     ): Long
 
     suspend fun setPublishedId(id: Long, publishedId: String?)
+
+    suspend fun setCategory(id: Long, category: ListCategory?)
+
+    suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?)
 
     suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode)
 

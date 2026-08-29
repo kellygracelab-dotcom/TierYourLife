@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
@@ -13,6 +14,7 @@ sealed interface TierListsUiState {
         val mode: HomeMode = HomeMode.Browsing,
         val tab: HomeTab = HomeTab.Mine,
         val community: CommunityFeed = CommunityFeed.Loading,
+        val communityCategory: ListCategory? = null,
     ) : TierListsUiState
 
     data object Error : TierListsUiState

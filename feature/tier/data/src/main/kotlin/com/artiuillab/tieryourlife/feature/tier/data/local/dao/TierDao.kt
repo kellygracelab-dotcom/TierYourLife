@@ -109,6 +109,12 @@ interface TierDao {
     @Query("UPDATE tier_lists SET publishedId = :publishedId WHERE id = :id")
     suspend fun setPublishedId(id: Long, publishedId: String?)
 
+    @Query("UPDATE tier_lists SET category = :category WHERE id = :id")
+    suspend fun setCategory(id: Long, category: String?)
+
+    @Query("UPDATE tier_lists SET coverImageUrl = :coverImageUrl WHERE id = :id")
+    suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?)
+
     @Transaction
     suspend fun createTierListWithDefaultTier(title: String): Long {
         val tierListId = insertTierList(TierListEntity(title = title))

@@ -352,4 +352,30 @@
     <string name="list_settings_public_too_many">Masz już opublikowaną maksymalną liczbę list. Wycofaj jedną, aby zwolnić miejsce.</string>
     <string name="list_settings_public_offline">Brak połączenia. Spróbuj ponownie, gdy wrócisz do sieci.</string>
     <string name="list_settings_public_failed">Nie udało się opublikować listy. Spróbuj ponownie.</string>
+    <string name="category_all">Wszystko</string>
+    <string name="category_anime">Anime</string>
+    <string name="category_film_tv">Film i TV</string>
+    <string name="category_games">Gry</string>
+    <string name="category_music">Muzyka</string>
+    <string name="category_food">Jedzenie</string>
+    <string name="category_sport">Sport</string>
+    <string name="category_people">Ludzie</string>
+    <string name="category_other">Inne</string>
+    <string name="list_settings_category">Kategoria</string>
+    <string name="list_settings_category_none">Jeszcze nie wybrana</string>
+    <string name="list_settings_public_needs_category">Wybierz kategorię, zanim opublikujesz listę.</string>
+    <string name="list_settings_cover">Okładka</string>
+    <string name="list_settings_cover_none_set">Brak</string>
+    <string name="list_settings_cover_set">Wybrana</string>
+    <string name="list_settings_cover_body">Wybierz jedną z kart tej listy albo obraz z galerii.</string>
+    <string name="list_settings_cover_no_cards">Żadna karta tej listy nie ma jeszcze obrazu.</string>
+    <string name="list_settings_cover_gallery">Wybierz z galerii</string>
+    <string name="list_settings_cover_gallery_note">Obraz z galerii zostaje na tym telefonie. W społeczności lista pokaże swoje karty.</string>
+    <string name="list_settings_cover_none">Usuń okładkę</string>
+    <plurals name="community_item_count">
+        <item quantity="one">%1$d karta</item>
+        <item quantity="few">%1$d karty</item>
+        <item quantity="many">%1$d kart</item>
+        <item quantity="other">%1$d karty</item>
+    </plurals>
 </resources>

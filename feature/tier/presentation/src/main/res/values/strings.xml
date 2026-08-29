@@ -303,4 +303,28 @@
     <string name="list_settings_public_too_many">You have published as many lists as we allow. Unpublish one to make room.</string>
     <string name="list_settings_public_offline">No connection. Try again once you are back online.</string>
     <string name="list_settings_public_failed">Could not publish this list. Try again.</string>
+    <string name="category_all">All</string>
+    <string name="category_anime">Anime</string>
+    <string name="category_film_tv">Film &amp; TV</string>
+    <string name="category_games">Games</string>
+    <string name="category_music">Music</string>
+    <string name="category_food">Food</string>
+    <string name="category_sport">Sport</string>
+    <string name="category_people">People</string>
+    <string name="category_other">Other</string>
+    <string name="list_settings_category">Category</string>
+    <string name="list_settings_category_none">Not chosen yet</string>
+    <string name="list_settings_public_needs_category">Choose a category before you publish this list.</string>
+    <string name="list_settings_cover">Cover</string>
+    <string name="list_settings_cover_none_set">None</string>
+    <string name="list_settings_cover_set">Chosen</string>
+    <string name="list_settings_cover_body">Pick one of this list\'s cards, or a picture from your gallery.</string>
+    <string name="list_settings_cover_no_cards">None of this list\'s cards have a picture yet.</string>
+    <string name="list_settings_cover_gallery">Choose from gallery</string>
+    <string name="list_settings_cover_gallery_note">A gallery picture stays on this phone. In the community the list shows its cards instead.</string>
+    <string name="list_settings_cover_none">Remove cover</string>
+    <plurals name="community_item_count">
+        <item quantity="one">%1$d card</item>
+        <item quantity="other">%1$d cards</item>
+    </plurals>
 </resources>

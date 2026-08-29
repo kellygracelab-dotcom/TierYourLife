@@ -3,6 +3,13 @@ package com.artiuillab.tieryourlife.feature.tier.data.local.database
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN category TEXT")
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN coverImageUrl TEXT")
+    }
+}
+
 val MIGRATION_2_3 = object : Migration(2, 3) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE tier_lists ADD COLUMN publishedId TEXT")

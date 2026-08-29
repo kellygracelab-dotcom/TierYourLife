@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.ui.UserMessage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -114,6 +115,10 @@ private class FailingTierRepository(
     ): Long = 0
 
     override suspend fun setPublishedId(id: Long, publishedId: String?) = Unit
+
+    override suspend fun setCategory(id: Long, category: ListCategory?) = Unit
+
+    override suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?) = Unit
 
     override suspend fun getTierListById(id: Long): TierList? {
         if (failReads) throw IllegalStateException("read failed")

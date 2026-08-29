@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.community
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -31,6 +32,10 @@ internal class FakeTierRepositoryForCommunity : TierRepository {
     }
 
     override suspend fun setPublishedId(id: Long, publishedId: String?) = Unit
+
+    override suspend fun setCategory(id: Long, category: ListCategory?) = Unit
+
+    override suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?) = Unit
 
     override suspend fun getTierListById(id: Long): TierList? = null
     override suspend fun getAllTierLists(): List<TierList> = emptyList()

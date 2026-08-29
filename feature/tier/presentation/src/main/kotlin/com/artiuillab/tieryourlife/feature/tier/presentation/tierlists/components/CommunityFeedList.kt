@@ -6,14 +6,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -23,60 +24,75 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ChevronRightIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.CommunityFeed
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
+
+private const val CARD_ART_ASPECT = 1f
+private val CAPTION_SCRIM = Brush.verticalGradient(
+    listOf(Color.Transparent, Color.Black.copy(alpha = 0.72f)),
+)
 
 @Composable
 internal fun CommunityFeedList(
     feed: CommunityFeed,
+    category: ListCategory?,
+    onSelectCategory: (ListCategory?) -> Unit,
     onOpen: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    when (feed) {
-        CommunityFeed.Loading -> Box(
-            modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            CircularProgressIndicator(Modifier.testTag(TierListsTestTags.COMMUNITY_LOADING))
-        }
-
-        CommunityFeed.Failed -> CommunityMessage(
-            title = stringResource(R.string.home_community_failed),
-            body = stringResource(R.string.home_community_failed_body),
-            action = stringResource(R.string.action_try_again),
-            onAction = onRetry,
-            testTag = TierListsTestTags.COMMUNITY_FAILED,
-            modifier = modifier,
+    Column(modifier.fillMaxSize()) {
+        CategoryFilterRow(
+            selected = category,
+            onSelect = onSelectCategory,
+            modifier = Modifier.padding(bottom = 8.dp),
         )
 
-        is CommunityFeed.Ready -> if (feed.lists.isEmpty()) {
-            CommunityMessage(
-                title = stringResource(R.string.home_community_empty),
-                body = stringResource(R.string.home_community_empty_body),
-                action = null,
-                onAction = {},
-                testTag = TierListsTestTags.COMMUNITY_EMPTY,
-                modifier = modifier,
+        when (feed) {
+            CommunityFeed.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(Modifier.testTag(TierListsTestTags.COMMUNITY_LOADING))
+            }
+
+            CommunityFeed.Failed -> CommunityMessage(
+                title = stringResource(R.string.home_community_failed),
+                body = stringResource(R.string.home_community_failed_body),
+                action = stringResource(R.string.action_try_again),
+                onAction = onRetry,
+                testTag = TierListsTestTags.COMMUNITY_FAILED,
             )
-        } else {
-            LazyColumn(
-                modifier = modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                items(feed.lists, key = { it.id }) { summary ->
-                    CommunityCard(summary = summary, onClick = { onOpen(summary.id) })
+
+            is CommunityFeed.Ready -> if (feed.lists.isEmpty()) {
+                CommunityMessage(
+                    title = stringResource(R.string.home_community_empty),
+                    body = stringResource(R.string.home_community_empty_body),
+                    action = null,
+                    onAction = {},
+                    testTag = TierListsTestTags.COMMUNITY_EMPTY,
+                )
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(feed.lists, key = { it.id }) { summary ->
+                        CommunityCard(summary = summary, onClick = { onOpen(summary.id) })
+                    }
                 }
             }
         }
@@ -85,25 +101,41 @@ internal fun CommunityFeedList(
 
 @Composable
 private fun CommunityCard(summary: PublishedListSummary, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
+    Column(
+        Modifier
+            .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
             .clickable(onClick = onClick)
-            .testTag(TierListsTestTags.communityCard(summary.id))
-            .padding(horizontal = 20.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .testTag(TierListsTestTags.communityCard(summary.id)),
     ) {
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = summary.title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .aspectRatio(CARD_ART_ASPECT),
+        ) {
+            ListArt(
+                coverImageUrl = summary.coverImageUrl,
+                previewImages = summary.previewImages,
+                tierColors = summary.tierColors,
+                modifier = Modifier.fillMaxSize(),
             )
-            Spacer(Modifier.height(2.dp))
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomStart)
+                    .background(CAPTION_SCRIM)
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
+            ) {
+                Text(
+                    text = summary.title,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = Color.White,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+        Column(Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
             Text(
                 text = stringResource(R.string.community_by_author, summary.authorName),
                 style = MaterialTheme.typography.bodySmall,
@@ -111,8 +143,16 @@ private fun CommunityCard(summary: PublishedListSummary, onClick: () -> Unit) {
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            Text(
+                text = pluralStringResource(
+                    R.plurals.community_item_count,
+                    summary.itemCount,
+                    summary.itemCount,
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
         }
-        ChevronRightIcon(20.dp, MaterialTheme.colorScheme.outline)
     }
 }
 
@@ -154,16 +194,48 @@ private fun CommunityMessage(
     }
 }
 
-@Preview(showBackground = true, heightDp = 500)
+private val previewFeed = CommunityFeed.Ready(
+    listOf(
+        PublishedListSummary(
+            id = "1",
+            title = "Every A24 film",
+            authorName = "Danylo K.",
+            category = ListCategory.FilmTv,
+            itemCount = 34,
+            tierColors = listOf("#B03A32", "#C06A25", "#B79A1F", "#5E8C3A", "#2F6E8F"),
+            updatedAtMillis = 0,
+        ),
+        PublishedListSummary(
+            id = "2",
+            title = "Ramen in Kyiv",
+            authorName = "Olena",
+            category = ListCategory.Food,
+            itemCount = 12,
+            tierColors = listOf("#B03A32", "#C06A25", "#B79A1F"),
+            updatedAtMillis = 0,
+        ),
+    ),
+)
+
+@Preview(showBackground = true, heightDp = 560)
 @Composable
 private fun CommunityFeedPreview() = TierYourLifeTheme(false) {
     CommunityFeedList(
-        feed = CommunityFeed.Ready(
-            listOf(
-                PublishedListSummary("1", "Every A24 film", "Danylo K.", 34, 0),
-                PublishedListSummary("2", "Ramen in Kyiv", "Olena", 12, 0),
-            ),
-        ),
+        feed = previewFeed,
+        category = null,
+        onSelectCategory = {},
+        onOpen = {},
+        onRetry = {},
+    )
+}
+
+@Preview(showBackground = true, heightDp = 560)
+@Composable
+private fun CommunityFeedDarkPreview() = TierYourLifeTheme(true) {
+    CommunityFeedList(
+        feed = previewFeed,
+        category = ListCategory.Food,
+        onSelectCategory = {},
         onOpen = {},
         onRetry = {},
     )
@@ -172,5 +244,11 @@ private fun CommunityFeedPreview() = TierYourLifeTheme(false) {
 @Preview(showBackground = true, heightDp = 500)
 @Composable
 private fun CommunityFeedEmptyDarkPreview() = TierYourLifeTheme(true) {
-    CommunityFeedList(feed = CommunityFeed.Ready(emptyList()), onOpen = {}, onRetry = {})
+    CommunityFeedList(
+        feed = CommunityFeed.Ready(emptyList()),
+        category = null,
+        onSelectCategory = {},
+        onOpen = {},
+        onRetry = {},
+    )
 }

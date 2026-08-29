@@ -402,4 +402,32 @@
     <string name="list_settings_public_too_many">لقد نشرت العدد الأقصى المسموح به من القوائم. ألغِ نشر إحداها لإفساح المجال.</string>
     <string name="list_settings_public_offline">لا يوجد اتصال. أعد المحاولة عند عودتك إلى الإنترنت.</string>
     <string name="list_settings_public_failed">تعذّر نشر هذه القائمة. أعد المحاولة.</string>
+    <string name="category_all">الكل</string>
+    <string name="category_anime">أنمي</string>
+    <string name="category_film_tv">أفلام ومسلسلات</string>
+    <string name="category_games">ألعاب</string>
+    <string name="category_music">موسيقى</string>
+    <string name="category_food">طعام</string>
+    <string name="category_sport">رياضة</string>
+    <string name="category_people">أشخاص</string>
+    <string name="category_other">أخرى</string>
+    <string name="list_settings_category">الفئة</string>
+    <string name="list_settings_category_none">لم تُختر بعد</string>
+    <string name="list_settings_public_needs_category">اختر فئة قبل نشر القائمة.</string>
+    <string name="list_settings_cover">الغلاف</string>
+    <string name="list_settings_cover_none_set">لا يوجد</string>
+    <string name="list_settings_cover_set">مُختار</string>
+    <string name="list_settings_cover_body">اختر إحدى بطاقات هذه القائمة أو صورة من معرضك.</string>
+    <string name="list_settings_cover_no_cards">لا تحتوي أي بطاقة في هذه القائمة على صورة بعد.</string>
+    <string name="list_settings_cover_gallery">الاختيار من المعرض</string>
+    <string name="list_settings_cover_gallery_note">تبقى صورة المعرض على هذا الهاتف. في المجتمع تعرض القائمة بطاقاتها بدلًا منها.</string>
+    <string name="list_settings_cover_none">إزالة الغلاف</string>
+    <plurals name="community_item_count">
+        <item quantity="zero">لا بطاقات</item>
+        <item quantity="one">بطاقة واحدة</item>
+        <item quantity="two">بطاقتان</item>
+        <item quantity="few">%1$d بطاقات</item>
+        <item quantity="many">%1$d بطاقة</item>
+        <item quantity="other">%1$d بطاقة</item>
+    </plurals>
 </resources>

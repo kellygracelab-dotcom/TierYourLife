@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 
@@ -9,6 +10,8 @@ internal data class TierDetailActions(
     val publishing: Boolean = false,
     val publishError: PublishError? = null,
     val onSetPublic: (Boolean) -> Unit = {},
+    val onSetCategory: (ListCategory) -> Unit = {},
+    val onSetCover: (String?) -> Unit = {},
     val onAddClick: () -> Unit = {},
     val onManualAddClick: () -> Unit = {},
     val onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },

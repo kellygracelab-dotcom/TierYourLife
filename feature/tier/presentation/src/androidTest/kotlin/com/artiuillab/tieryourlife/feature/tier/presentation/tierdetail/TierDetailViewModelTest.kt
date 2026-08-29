@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishRefused
@@ -108,6 +109,47 @@ class TierDetailViewModelTest {
         assertEquals("published-1", repository.publishedIds.single().second)
     }
 
+    // Publishing without a category would land the list in a feed nobody
+    // browses, so the screen asks before the network does.
+    @Test
+    fun setPublic_withoutACategory_asksForOneRatherThanPublishing() = runBlocking {
+        val community = FakeCommunityRepositoryForDetail()
+        val viewModel = TierDetailViewModel(
+            FakeTierRepository(listWithOneCard().copy(category = null)),
+            community,
+            FakeAccountRepositoryForDetail(signedIn = true),
+            savedStateHandle(),
+        )
+        viewModel.state.first { it is TierDetailUiState.Success }
+
+        viewModel.setPublic(true)
+
+        assertEquals(PublishError.NoCategory, viewModel.publishError.value)
+        assertEquals(0, community.published.size)
+    }
+
+    @Test
+    fun setCategory_isRememberedAndUnblocksPublishing() = runBlocking {
+        val repository = FakeTierRepository(listWithOneCard().copy(category = null))
+        val community = FakeCommunityRepositoryForDetail()
+        val viewModel = TierDetailViewModel(
+            repository,
+            community,
+            FakeAccountRepositoryForDetail(signedIn = true),
+            savedStateHandle(),
+        )
+        viewModel.state.first { it is TierDetailUiState.Success }
+
+        viewModel.setCategory(ListCategory.Food)
+        viewModel.state.first {
+            (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food
+        }
+        viewModel.setPublic(true)
+        viewModel.publishing.first { !it }
+
+        assertEquals(ListCategory.Food, community.published.single().category)
+    }
+
     // The server refuses a list with nothing in it. Finding that out over the
     // network spends a round trip to end in a switch that springs back with no
     // explanation, so the screen answers first.
@@ -182,6 +224,7 @@ class TierDetailViewModelTest {
     private fun listWithOneCard(): TierList = TierList(
         id = 1,
         title = "Sci-fi films",
+        category = ListCategory.FilmTv,
         tiers = listOf(
             Tier(
                 id = 10,
@@ -217,6 +260,14 @@ private class FakeTierRepository(
     override suspend fun setPublishedId(id: Long, publishedId: String?) {
         publishedIds += id to publishedId
         list = list.copy(publishedId = publishedId)
+    }
+
+    override suspend fun setCategory(id: Long, category: ListCategory?) {
+        list = list.copy(category = category)
+    }
+
+    override suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?) {
+        list = list.copy(coverImageUrl = coverImageUrl)
     }
 
     override suspend fun createFromTemplate(

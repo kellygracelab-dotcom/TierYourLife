@@ -7,7 +7,11 @@ data class PublishedListSummaryDto(
     val id: String,
     val title: String,
     val authorName: String,
+    val category: String = "other",
     val itemCount: Int,
+    val coverImageUrl: String? = null,
+    val previewImages: List<String> = emptyList(),
+    val tierColors: List<String> = emptyList(),
     val updatedAt: Long = 0,
 )
 
@@ -35,7 +39,11 @@ data class PublishedListDto(
     val id: String,
     val title: String,
     val authorName: String,
+    val category: String = "other",
     val itemCount: Int = 0,
+    val coverImageUrl: String? = null,
+    val previewImages: List<String> = emptyList(),
+    val tierColors: List<String> = emptyList(),
     val updatedAt: Long = 0,
     val tiers: List<PublishedTierDto> = emptyList(),
     val items: List<PublishedItemDto> = emptyList(),
@@ -44,6 +52,8 @@ data class PublishedListDto(
 @Serializable
 data class PublishListRequestDto(
     val title: String,
+    val category: String,
+    val coverImageUrl: String? = null,
     val tiers: List<PublishedTierDto>,
     val items: List<PublishedItemDto>,
 )

@@ -42,14 +42,18 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CategoryIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ChevronRightIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CoverIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.FormatListNumberedIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.GridViewIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ViewCarouselIcon
@@ -68,8 +72,12 @@ internal fun TierListSettingsScreenContent(
     publishing: Boolean = false,
     publishError: PublishError? = null,
     onSetPublic: (Boolean) -> Unit = {},
+    onSetCategory: (ListCategory) -> Unit = {},
+    onSetCover: (String?) -> Unit = {},
 ) {
     var tierEditorVisible by remember { mutableStateOf(false) }
+    var categorySheetVisible by remember { mutableStateOf(false) }
+    var coverSheetVisible by remember { mutableStateOf(false) }
     val rankedTierCount = list.tiers.count { !it.isPool }
 
     Column(Modifier.fillMaxSize().testTag(TierDetailTestTags.LIST_SETTINGS_SCREEN)) {
@@ -84,6 +92,12 @@ internal fun TierListSettingsScreenContent(
             onSetPublic = onSetPublic,
         )
 
+        // Both sit with the switch rather than inside a publishing wizard, and
+        // both stay available to a guest: a cover is what their own card shows,
+        // and a category chosen now is one less thing in the way later.
+        CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
+        CoverRow(coverImageUrl = list.coverImageUrl, onClick = { coverSheetVisible = true })
+
         DisplayModeSection(selected = list.displayMode, onSelect = onSetDisplayMode)
 
         HorizontalDivider(
@@ -94,6 +108,28 @@ internal fun TierListSettingsScreenContent(
         NewTierRow(
             tierCount = rankedTierCount,
             onClick = { tierEditorVisible = true },
+        )
+    }
+
+    if (categorySheetVisible) {
+        CategorySheet(
+            selected = list.category,
+            onDismiss = { categorySheetVisible = false },
+            onSelect = {
+                onSetCategory(it)
+                categorySheetVisible = false
+            },
+        )
+    }
+
+    if (coverSheetVisible) {
+        CoverSheet(
+            list = list,
+            onDismiss = { coverSheetVisible = false },
+            onSelect = {
+                onSetCover(it)
+                coverSheetVisible = false
+            },
         )
     }
 
@@ -271,6 +307,31 @@ private fun SettingsActionRow(
 }
 
 @Composable
+private fun CategoryRow(category: ListCategory?, onClick: () -> Unit) {
+    SettingsActionRow(
+        icon = { CategoryIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = stringResource(R.string.list_settings_category),
+        subtitle = category?.let { stringResource(it.labelRes) }
+            ?: stringResource(R.string.list_settings_category_none),
+        onClick = onClick,
+        testTag = TierDetailTestTags.CATEGORY_ROW,
+    )
+}
+
+@Composable
+private fun CoverRow(coverImageUrl: String?, onClick: () -> Unit) {
+    SettingsActionRow(
+        icon = { CoverIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = stringResource(R.string.list_settings_cover),
+        subtitle = stringResource(
+            if (coverImageUrl == null) R.string.list_settings_cover_none_set else R.string.list_settings_cover_set,
+        ),
+        onClick = onClick,
+        testTag = TierDetailTestTags.COVER_ROW,
+    )
+}
+
+@Composable
 private fun NewTierRow(tierCount: Int, onClick: () -> Unit) {
     SettingsActionRow(
         icon = { PlusIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
@@ -362,6 +423,7 @@ private fun PublishSection(
 private fun PublishError.messageRes(): Int = when (this) {
     PublishError.NotSignedIn -> R.string.list_settings_public_needs_account
     PublishError.NothingToPublish -> R.string.list_settings_public_needs_items
+    PublishError.NoCategory -> R.string.list_settings_public_needs_category
     PublishError.TooManyLists -> R.string.list_settings_public_too_many
     PublishError.Offline -> R.string.list_settings_public_offline
     PublishError.Unknown -> R.string.list_settings_public_failed

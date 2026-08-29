@@ -4,6 +4,7 @@ package com.artiuillab.tieryourlife.feature.tier.domain.model
 enum class PublishError {
     NotSignedIn,
     NothingToPublish,
+    NoCategory,
     TooManyLists,
     Offline,
     Unknown,

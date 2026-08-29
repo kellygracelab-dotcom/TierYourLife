@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.core.ui.UserMessages
 import com.artiuillab.tieryourlife.core.ui.guard
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
@@ -38,6 +39,7 @@ class TierListsViewModel @Inject constructor(
     private var mode: HomeMode = HomeMode.Browsing
     private var tab: HomeTab = HomeTab.Mine
     private var communityFeed: CommunityFeed = CommunityFeed.Loading
+    private var communityCategory: ListCategory? = null
 
     fun loadTierLists() {
         viewModelScope.launch {
@@ -82,6 +84,7 @@ class TierListsViewModel @Inject constructor(
             mode = mode,
             tab = tab,
             community = communityFeed,
+            communityCategory = communityCategory,
         )
     }
 
@@ -92,9 +95,17 @@ class TierListsViewModel @Inject constructor(
         if (selected == HomeTab.Community) loadCommunityFeed()
     }
 
+    fun selectCommunityCategory(category: ListCategory?) {
+        if (communityCategory == category) return
+        communityCategory = category
+        communityFeed = CommunityFeed.Loading
+        emitSuccess()
+        loadCommunityFeed()
+    }
+
     fun loadCommunityFeed() {
         viewModelScope.launch {
-            communityFeed = community.feed().fold(
+            communityFeed = community.feed(communityCategory).fold(
                 onSuccess = { CommunityFeed.Ready(it) },
                 onFailure = { error ->
                     Timber.w(error, "Loading the community feed failed")

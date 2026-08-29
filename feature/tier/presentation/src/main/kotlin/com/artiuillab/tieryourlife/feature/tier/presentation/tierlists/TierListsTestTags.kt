@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+
 internal object TierListsTestTags {
     const val LOADING = "tier_lists_loading"
     const val LISTS = "tier_lists"
@@ -16,8 +18,11 @@ internal object TierListsTestTags {
     const val COMMUNITY_LOADING = "home_community_loading"
     const val COMMUNITY_FAILED = "home_community_failed"
     const val COMMUNITY_EMPTY = "home_community_empty"
+    const val CATEGORY_FILTERS = "home_category_filters"
     fun tierListCard(id: Long): String = "tier_list_card_$id"
     fun communityCard(id: String): String = "community_card_$id"
+
+    fun categoryFilter(category: ListCategory?): String = "home_category_${category?.id ?: "all"}"
     fun tab(tab: HomeTab): String = "home_tab_${tab.name.lowercase()}"
     fun suggestion(index: Int): String = "home_suggestion_$index"
 }

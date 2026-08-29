@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+
 internal object TierDetailTestTags {
     const val LOADING = "tier_detail_loading"
     const val HEADER_TITLE = "tier_detail_header_title"
@@ -19,6 +21,12 @@ internal object TierDetailTestTags {
     const val RANKED_POOL_ITEMS = "tier_detail_ranked_pool_items"
     const val PUBLIC_SWITCH = "tier_detail_public_switch"
     const val PUBLISH_ERROR = "tier_detail_publish_error"
+    const val CATEGORY_ROW = "tier_detail_category_row"
+    const val CATEGORY_SHEET = "tier_detail_category_sheet"
+    const val COVER_ROW = "tier_detail_cover_row"
+    const val COVER_SHEET = "tier_detail_cover_sheet"
+    const val COVER_FROM_GALLERY = "tier_detail_cover_gallery"
+    const val COVER_CLEAR = "tier_detail_cover_clear"
     const val LIST_SETTINGS_SCREEN = "tier_detail_list_settings_screen"
     const val LIST_SETTINGS_MODE_WRAP = "tier_detail_list_settings_mode_wrap"
     const val LIST_SETTINGS_MODE_STRIP = "tier_detail_list_settings_mode_strip"
@@ -57,4 +65,6 @@ internal object TierDetailTestTags {
     fun tierEditorPresetSwatch(index: Int): String = "tier_detail_tier_editor_preset_swatch_$index"
     fun sliderTrack(sliderTag: String): String = "${sliderTag}_track"
     fun sliderThumb(sliderTag: String): String = "${sliderTag}_thumb"
+
+    fun categoryRow(category: ListCategory): String = "tier_detail_category_${category.id}"
 }

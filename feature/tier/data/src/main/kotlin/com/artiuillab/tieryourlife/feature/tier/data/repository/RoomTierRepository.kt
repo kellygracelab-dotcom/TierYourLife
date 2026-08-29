@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewTemplateTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -50,6 +51,14 @@ class RoomTierRepository internal constructor(
 
     override suspend fun setPublishedId(id: Long, publishedId: String?) {
         dao.setPublishedId(id, publishedId)
+    }
+
+    override suspend fun setCategory(id: Long, category: ListCategory?) {
+        dao.setCategory(id, category?.id)
+    }
+
+    override suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?) {
+        dao.setCoverImageUrl(id, coverImageUrl)
     }
 
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) {
