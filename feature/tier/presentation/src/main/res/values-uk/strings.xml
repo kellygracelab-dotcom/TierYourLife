@@ -404,6 +404,6 @@
     <string name="report_sent_title">Скаргу надіслано, список сховано</string>
     <string name="report_sent_body">Скарги розбирає одна людина вручну, тому для інших список поки залишиться.</string>
     <string name="report_hide_author">Сховати взагалі все від %1$s</string>
-    <string name="community_hidden">Сховано</string>
     <string name="community_action_hide_author">Сховати все від %1$s</string>
+    <string name="action_done">Готово</string>
 </resources>

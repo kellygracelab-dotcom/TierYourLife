@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.AuthorTestTags
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CategoryIcon
 
 /**
  * What a reader can do about a person rather than a list. Reporting is not
@@ -76,7 +75,7 @@ internal fun AuthorActionsSheet(
                     .padding(horizontal = 24.dp, vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                CategoryIcon(20.dp, MaterialTheme.colorScheme.onSurface)
+                HideIcon(20.dp, MaterialTheme.colorScheme.onSurface)
                 Spacer(Modifier.width(16.dp))
                 Text(
                     text = stringResource(R.string.community_action_hide_author, name),
