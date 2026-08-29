@@ -37,5 +37,7 @@ internal class FakeAccountRepositoryForDetail(signedIn: Boolean = false) : Accou
 
     override suspend fun signInWithGoogle(idToken: String): SignInOutcome = SignInOutcome.Success
 
+    override suspend fun setDisplayName(name: String): Boolean = true
+
     override suspend fun signOut() = Unit
 }

@@ -172,6 +172,8 @@ private class FakeAccountRepository(
         return outcome
     }
 
+    override suspend fun setDisplayName(name: String): Boolean = true
+
     override suspend fun signOut() {
         state.value = Account.Guest
     }

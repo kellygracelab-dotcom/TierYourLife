@@ -1,7 +1,6 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.signin
 
 import android.content.Context
-import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialCancellationException
@@ -9,10 +8,9 @@ import androidx.credentials.exceptions.NoCredentialException
 import com.artiuillab.tieryourlife.feature.account.domain.signin.GoogleWebClientId
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-
-private const val LOG_TAG = "Account"
 
 sealed interface GoogleCredentialResult {
     data class Token(val idToken: String) : GoogleCredentialResult
@@ -53,7 +51,7 @@ class CredentialManagerGoogleCredential @Inject constructor(
         } catch (_: NoCredentialException) {
             GoogleCredentialResult.NoGoogleAccount
         } catch (e: Exception) {
-            Log.w(LOG_TAG, "The account picker failed", e)
+            Timber.w(e, "The account picker failed")
             GoogleCredentialResult.Unavailable
         }
     }

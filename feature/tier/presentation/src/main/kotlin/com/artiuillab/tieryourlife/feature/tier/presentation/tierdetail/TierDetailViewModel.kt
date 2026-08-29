@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +10,8 @@ import com.artiuillab.tieryourlife.core.ui.guard
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.ordering.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
@@ -26,9 +27,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
-
-private const val LOG_TAG = "TierDetail"
 
 @HiltViewModel
 class TierDetailViewModel @Inject constructor(
@@ -45,6 +45,9 @@ class TierDetailViewModel @Inject constructor(
     private val _publishing = MutableStateFlow(false)
     val publishing: StateFlow<Boolean> = _publishing.asStateFlow()
 
+    private val _publishError = MutableStateFlow<PublishError?>(null)
+    val publishError: StateFlow<PublishError?> = _publishError.asStateFlow()
+
     private val tierListId = savedStateHandle.toRoute<Route.TierDetail>().tierListId
 
     private val _state = MutableStateFlow<TierDetailUiState>(TierDetailUiState.Loading)
@@ -60,6 +63,13 @@ class TierDetailViewModel @Inject constructor(
     fun setPublic(public: Boolean) {
         val list = (_state.value as? TierDetailUiState.Success)?.list ?: return
         if (_publishing.value) return
+        _publishError.value = null
+
+        if (public && list.tiers.none { it.items.isNotEmpty() }) {
+            _publishError.value = PublishError.NothingToPublish
+            return
+        }
+
         _publishing.value = true
         viewModelScope.launch {
             val result: Result<String?> = if (public) {
@@ -74,7 +84,9 @@ class TierDetailViewModel @Inject constructor(
                     }
                     loadTierList()
                 },
-                onFailure = { messages.send(UserMessage.ActionFailed) },
+                onFailure = { failure ->
+                    _publishError.value = (failure as? PublishRefused)?.error ?: PublishError.Unknown
+                },
             )
             _publishing.value = false
         }
@@ -217,7 +229,7 @@ class TierDetailViewModel @Inject constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(LOG_TAG, "Loading the tier list failed", e)
+            Timber.w(e, "Loading the tier list failed")
             if (hasVisibleList) {
                 messages.send(UserMessage.ActionFailed)
             } else {

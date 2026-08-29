@@ -105,6 +105,7 @@ fun TierDetailScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val signedIn by viewModel.signedIn.collectAsStateWithLifecycle()
     val publishing by viewModel.publishing.collectAsStateWithLifecycle()
+    val publishError by viewModel.publishError.collectAsStateWithLifecycle()
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
     var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -116,6 +117,7 @@ fun TierDetailScreen(
             onBack = onBack,
             signedIn = signedIn,
             publishing = publishing,
+            publishError = publishError,
             onSetPublic = viewModel::setPublic,
             onAddClick = { addSheetVisible = true },
             onManualAddClick = { manualEntryVisible = true },
@@ -253,6 +255,7 @@ private fun TierScreenBody(
             onSetDisplayMode = onSetDisplayMode,
             signedIn = actions.signedIn,
             publishing = actions.publishing,
+            publishError = actions.publishError,
             onSetPublic = actions.onSetPublic,
         )
         return

@@ -17,4 +17,20 @@
     <string name="account_cd_close">Закрити</string>
     <string name="account_action_sign_out">Вийти</string>
     <string name="account_sign_out_body">Ваші списки залишаються на телефоні. Кредити чекатимуть тут.</string>
+    <string name="account_community_section">У СПІЛЬНОТІ</string>
+    <string name="account_community_note">Так вас бачать в опублікованих списках. Пошта не показується ніколи.</string>
+    <string name="account_nickname_title">Ваше імʼя</string>
+    <string name="account_nickname_body">Показується як автор в опублікованих списках.</string>
+    <string name="account_nickname_field">Імʼя</string>
+    <string name="account_nickname_counter">%1$d/%2$d</string>
+    <string name="account_nickname_snapshot_note">Уже опубліковані списки показують те імʼя, з яким їх опублікували, доки ви їх не оновите.</string>
+    <string name="account_action_save">Зберегти</string>
+    <string name="account_action_cancel">Скасувати</string>
+    <string name="account_error_name_not_saved">Не вдалося зберегти імʼя. Спробуйте ще раз.</string>
+    <plurals name="account_community_lists">
+        <item quantity="one">%1$d публічний список</item>
+        <item quantity="few">%1$d публічних списки</item>
+        <item quantity="many">%1$d публічних списків</item>
+        <item quantity="other">%1$d публічного списку</item>
+    </plurals>
 </resources>

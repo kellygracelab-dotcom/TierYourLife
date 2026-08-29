@@ -323,4 +323,8 @@
     <string name="list_settings_public_body">Qualquer pessoa pode abrir esta lista e organizá-la do seu jeito.</string>
     <string name="list_settings_public_needs_account">Entre com o Google para publicar. Ler e salvar as dos outros não precisa de conta.</string>
     <string name="list_settings_public_images">Só viajam as imagens que já estão na web. Fotos e arte gerada ficam neste telefone.</string>
+    <string name="list_settings_public_needs_items">Adicione ao menos um card antes de publicar a lista.</string>
+    <string name="list_settings_public_too_many">Você já publicou o número máximo de listas. Retire uma para abrir espaço.</string>
+    <string name="list_settings_public_offline">Sem conexão. Tente de novo quando voltar a ficar online.</string>
+    <string name="list_settings_public_failed">Não foi possível publicar esta lista. Tente de novo.</string>
 </resources>

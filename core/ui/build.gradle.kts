@@ -7,5 +7,6 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.logging)
     implementation(libs.kotlinx.coroutines.core)
 }

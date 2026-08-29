@@ -7,5 +7,10 @@ sealed interface Account {
     data class SignedIn(
         val email: String?,
         val photoUrl: String?,
-    ) : Account
+        val displayName: String? = null,
+    ) : Account {
+
+        /** What the community shows as the author. */
+        val authorName: String? get() = displayName?.takeIf { it.isNotBlank() }
+    }
 }

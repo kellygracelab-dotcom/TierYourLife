@@ -10,5 +10,8 @@ interface AccountRepository {
 
     suspend fun signInWithGoogle(idToken: String): SignInOutcome
 
+    /** Renames the author the community shows. Answers whether it stuck. */
+    suspend fun setDisplayName(name: String): Boolean
+
     suspend fun signOut()
 }

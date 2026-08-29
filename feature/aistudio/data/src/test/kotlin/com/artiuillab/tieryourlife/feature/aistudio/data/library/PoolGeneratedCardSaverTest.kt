@@ -34,6 +34,7 @@ class PoolGeneratedCardSaverTest {
 private data class AddCall(val tierListId: Long, val title: String, val imageUrl: String?, val source: TierItemSource)
 
 private class FakeTierRepository : TierRepository {
+    override suspend fun publishedListCount(): Int = 0
 
     override suspend fun createFromTemplate(
         title: String,

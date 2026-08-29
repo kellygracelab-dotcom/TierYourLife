@@ -61,6 +61,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeleteOutlineIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -147,7 +148,7 @@ private suspend fun attemptWriteExport(
         context.contentResolver.openOutputStream(uri)?.use { stream ->
             stream.write(text.toByteArray(Charsets.UTF_8))
         } ?: error("openOutputStream returned null")
-    }.isSuccess
+    }.onFailure { Timber.w(it, "Exporting lists failed") }.isSuccess
 
     snackbarHostState.currentSnackbarData?.dismiss()
     if (succeeded) {

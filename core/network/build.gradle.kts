@@ -9,6 +9,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.logging)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.appcheck)
     implementation(libs.firebase.auth)
