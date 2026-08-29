@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -27,7 +26,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
-import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeleteFilledIcon
@@ -94,9 +92,11 @@ internal fun TrashTarget(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
+        // No caption under the icon: it repeated what the icon says, at a size
+        // that would clip in half our languages, for the two seconds a finger
+        // hovers. The content description above carries it where it matters.
         if (isHovering) {
             DeleteFilledIcon(30.dp, contentColor)
-            Text(text = label, style = TierYourLifeType.current.trashRemoveLabel, color = contentColor)
         } else {
             DeleteOutlineIcon(24.dp, contentColor)
         }

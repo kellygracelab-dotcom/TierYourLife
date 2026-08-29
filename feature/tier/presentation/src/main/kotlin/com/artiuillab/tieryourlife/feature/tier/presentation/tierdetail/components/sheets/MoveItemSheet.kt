@@ -152,7 +152,7 @@ private fun MoveSheetHeader(item: TierItem) {
             )
             Text(
                 text = stringResource(R.string.tier_detail_move_sheet_subtitle),
-                style = TierYourLifeType.current.captionUnderTitle,
+                style = TierYourLifeType.current.supportingLabel,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
@@ -228,7 +228,7 @@ private fun MoveSheetTierRow(tier: Tier, isCurrent: Boolean, onClick: (() -> Uni
             if (isCurrent) {
                 Text(
                     text = stringResource(R.string.tier_detail_move_sheet_current_tier),
-                    style = TierYourLifeType.current.captionUnderTitle,
+                    style = TierYourLifeType.current.supportingLabel,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
@@ -271,7 +271,7 @@ private fun MoveSheetActionRow(
             Text(text = title, style = MaterialTheme.typography.titleMedium, color = titleColor)
             Text(
                 text = subtitle,
-                style = TierYourLifeType.current.captionUnderTitle,
+                style = TierYourLifeType.current.supportingLabel,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

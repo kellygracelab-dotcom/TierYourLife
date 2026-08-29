@@ -43,7 +43,7 @@ internal fun GenerateChip(onClick: () -> Unit, compact: Boolean = false) {
             Spacer(Modifier.width(6.dp))
             Text(
                 text = stringResource(R.string.ai_chip),
-                style = TierYourLifeType.current.chipText,
+                style = TierYourLifeType.current.supportingLabel,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

@@ -162,7 +162,7 @@ private fun AddChip(onClick: () -> Unit) {
         Spacer(Modifier.width(4.dp))
         Text(
             text = stringResource(R.string.tier_detail_add),
-            style = TierYourLifeType.current.chipText,
+            style = TierYourLifeType.current.supportingLabel,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
     }

@@ -229,7 +229,7 @@ private fun LivePreviewCard(
     Column(modifier) {
         Text(
             text = themeLabel,
-            style = TierYourLifeType.current.tabLabel,
+            style = TierYourLifeType.current.supportingLabel,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 6.dp),
         )

@@ -56,7 +56,7 @@ internal fun ThemeSection(themeChoice: ThemeChoice, onThemeChoiceChange: (ThemeC
             )
             Text(
                 text = stringResource(R.string.settings_theme_sub),
-                style = TierYourLifeType.current.captionUnderTitle,
+                style = TierYourLifeType.current.supportingLabel,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
@@ -71,7 +71,7 @@ internal fun ThemeSection(themeChoice: ThemeChoice, onThemeChoiceChange: (ThemeC
         BoxWithConstraints(
             modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
         ) {
-            val labelStyle = TierYourLifeType.current.tabLabel
+            val labelStyle = TierYourLifeType.current.supportingLabel
             val measurer = rememberTextMeasurer()
             val density = LocalDensity.current
             val segmentWidth = maxWidth / options.size
@@ -118,7 +118,7 @@ private fun ThemeSegmentedRow(
                     },
                     modifier = Modifier.testTag(tag),
                 ) {
-                    Text(text = labels[index], style = TierYourLifeType.current.tabLabel)
+                    Text(text = labels[index], style = TierYourLifeType.current.supportingLabel)
                 }
             }
         }
@@ -156,7 +156,7 @@ private fun ThemeStackedRows(
                 Spacer(Modifier.width(12.dp))
                 Text(
                     text = labels[index],
-                    style = TierYourLifeType.current.tabLabel,
+                    style = TierYourLifeType.current.supportingLabel,
                     color = if (selected) {
                         MaterialTheme.colorScheme.onPrimaryContainer
                     } else {
