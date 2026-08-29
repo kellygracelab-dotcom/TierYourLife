@@ -2,9 +2,13 @@ package com.artiuillab.tieryourlife.feature.account.presentation.account
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
@@ -22,11 +26,13 @@ class AccountScreenContentTest {
     private var closed = 0
     private var signInRequests = 0
     private var signOuts = 0
+    private val names = mutableListOf<String>()
 
     private fun setContent(state: AccountUiState) {
         closed = 0
         signInRequests = 0
         signOuts = 0
+        names.clear()
         composeRule.setContent {
             TierYourLifeTheme {
                 AccountScreenContent(
@@ -34,10 +40,25 @@ class AccountScreenContentTest {
                     onClose = { closed++ },
                     onSignIn = { signInRequests++ },
                     onSignOut = { signOuts++ },
+                    onSetName = { names += it },
                 )
             }
         }
     }
+
+    private fun signedIn(
+        displayName: String? = "Danylo K.",
+        credits: Int? = 12,
+        publicListCount: Int = 3,
+    ) = AccountUiState(
+        account = Account.SignedIn(
+            email = "someone@example.com",
+            photoUrl = null,
+            displayName = displayName,
+        ),
+        credits = credits,
+        publicListCount = publicListCount,
+    )
 
     @Test
     fun asAGuest_theOfferAndItsThreeReasonsAreShown() {
@@ -83,16 +104,11 @@ class AccountScreenContentTest {
 
     @Test
     fun onceSignedIn_theOfferIsReplacedByTheAccountItself() {
-        setContent(
-            AccountUiState(
-                account = Account.SignedIn(email = "someone@example.com", photoUrl = null),
-                credits = 12,
-            ),
-        )
+        setContent(signedIn())
 
         composeRule.onNodeWithTag(AccountTestTags.EMAIL).assertIsDisplayed()
-        composeRule.onNodeWithTag(AccountTestTags.CREDITS).assertIsDisplayed()
-        composeRule.onNodeWithTag(AccountTestTags.DONE).assertIsDisplayed()
+        composeRule.onNodeWithTag(AccountTestTags.CREDITS).performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithTag(AccountTestTags.DONE).performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithTag(AccountTestTags.SIGN_IN).assertDoesNotExist()
     }
 
@@ -100,12 +116,7 @@ class AccountScreenContentTest {
     // on the one screen whose job is to say the account was worth something.
     @Test
     fun signedIn_withNothingCounted_showsNoBalanceAtAll() {
-        setContent(
-            AccountUiState(
-                account = Account.SignedIn(email = "someone@example.com", photoUrl = null),
-                credits = null,
-            ),
-        )
+        setContent(signedIn(credits = null))
 
         composeRule.onNodeWithTag(AccountTestTags.CREDITS).assertDoesNotExist()
         composeRule.onNodeWithTag(AccountTestTags.EMAIL).assertIsDisplayed()
@@ -113,14 +124,9 @@ class AccountScreenContentTest {
 
     @Test
     fun signedIn_offersSignOut_andActsWithoutConfirmation() {
-        setContent(
-            AccountUiState(
-                account = Account.SignedIn(email = "someone@example.com", photoUrl = null),
-                credits = 12,
-            ),
-        )
+        setContent(signedIn())
 
-        composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT).performClick()
+        composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT).performScrollTo().performClick()
 
         composeRule.runOnIdle {
             assertEquals(1, signOuts)
@@ -133,6 +139,42 @@ class AccountScreenContentTest {
         setContent(AccountUiState())
 
         composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT).assertDoesNotExist()
+    }
+
+    // The community block is the whole point of the profile: it shows what
+    // strangers see, and the email is deliberately not part of that.
+    @Test
+    fun signedIn_showsTheAuthorRowTheCommunityWillSee() {
+        setContent(signedIn())
+
+        // The name sits inside the clickable row that opens the editor, so it
+        // only exists as its own node in the unmerged tree.
+        composeRule.onNodeWithTag(AccountTestTags.NAME, useUnmergedTree = true)
+            .assertTextEquals("Danylo K.")
+        composeRule.onNodeWithTag(AccountTestTags.EDIT_NAME).assertIsDisplayed()
+        composeRule.onNodeWithTag(AccountTestTags.COMMUNITY_ROW).performScrollTo().assertIsDisplayed()
+    }
+
+    @Test
+    fun editingTheName_handsBackTheTrimmedValue() {
+        setContent(signedIn())
+
+        composeRule.onNodeWithTag(AccountTestTags.EDIT_NAME).performClick()
+        composeRule.onNodeWithTag(AccountTestTags.NICKNAME_FIELD).performTextReplacement("  Grace  ")
+        composeRule.onNodeWithTag(AccountTestTags.NICKNAME_SAVE).performClick()
+
+        composeRule.runOnIdle { assertEquals(listOf("Grace"), names) }
+    }
+
+    // An author with no name is not an author anyone can find.
+    @Test
+    fun anEmptyName_cannotBeSaved() {
+        setContent(signedIn())
+
+        composeRule.onNodeWithTag(AccountTestTags.EDIT_NAME).performClick()
+        composeRule.onNodeWithTag(AccountTestTags.NICKNAME_FIELD).performTextClearance()
+
+        composeRule.onNodeWithTag(AccountTestTags.NICKNAME_SAVE).assertIsNotEnabled()
     }
 
     @Test
