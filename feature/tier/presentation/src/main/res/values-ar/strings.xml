@@ -382,4 +382,20 @@
     <string name="home_suggestion_restaurants">مطاعم</string>
     <string name="home_suggestion_albums">ألبومات</string>
     <string name="home_suggestion_books">كتب</string>
+    <string name="home_tab_mine">قوائمك</string>
+    <string name="home_tab_community">المجتمع</string>
+    <string name="home_community_empty">لا شيء منشور بعد</string>
+    <string name="home_community_empty_body">القوائم التي ينشرها الناس تظهر هنا.</string>
+    <string name="home_community_failed">تعذّر تحميل المجتمع</string>
+    <string name="home_community_failed_body">تحقق من اتصالك.</string>
+    <string name="community_by_author">من %1$s</string>
+    <string name="community_save_to_my_lists">احفظ في قوائمي</string>
+    <string name="community_someone_elses">قائمة شخص آخر. رتّبها كما يحلو لك.</string>
+    <string name="community_not_saved_yet">ترتيبك لم يُحفظ بعد.</string>
+    <string name="community_open_failed">تعذّر فتح هذه القائمة</string>
+    <string name="community_saved">حُفظت في قوائمك</string>
+    <string name="list_settings_public">عامة</string>
+    <string name="list_settings_public_body">يمكن لأي شخص فتح هذه القائمة وترتيبها بطريقته.</string>
+    <string name="list_settings_public_needs_account">سجّل الدخول بحساب Google للنشر. القراءة والحفظ لا تحتاجان إلى حساب.</string>
+    <string name="list_settings_public_images">تنتقل فقط الصور الموجودة على الإنترنت. الصور الشخصية والمولّدة تبقى على هذا الهاتف.</string>
 </resources>

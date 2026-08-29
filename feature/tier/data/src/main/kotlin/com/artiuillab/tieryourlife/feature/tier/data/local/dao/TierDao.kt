@@ -56,6 +56,57 @@ interface TierDao {
     }
 
     @Transaction
+    suspend fun createTierListFromTemplate(
+        title: String,
+        authorName: String,
+        tiers: List<NewTemplateTier>,
+        items: List<NewPoolItem>,
+    ): Long {
+        val tierListId = insertTierList(TierListEntity(title = title, authorName = authorName))
+
+        tiers.forEachIndexed { index, tier ->
+            insertTier(
+                TierEntity(
+                    tierListId = tierListId,
+                    position = index,
+                    label = tier.label,
+                    caption = tier.caption,
+                    colorLight = tier.colorLight,
+                    colorDark = tier.colorDark,
+                ),
+            )
+        }
+
+        val poolTierId = insertTier(
+            TierEntity(
+                tierListId = tierListId,
+                position = tiers.size,
+                label = "Unranked",
+                colorLight = DefaultTierColors.POOL_LIGHT,
+                colorDark = DefaultTierColors.POOL_DARK,
+                isPool = true,
+            ),
+        )
+
+        items.forEachIndexed { index, item ->
+            insertTierItem(
+                TierItemEntity(
+                    tierId = poolTierId,
+                    position = index,
+                    title = item.title,
+                    imageUrl = item.imageUrl,
+                    source = if (item.imageUrl?.startsWith("http") == true) "TMDB" else "MANUAL",
+                ),
+            )
+        }
+
+        return tierListId
+    }
+
+    @Query("UPDATE tier_lists SET publishedId = :publishedId WHERE id = :id")
+    suspend fun setPublishedId(id: Long, publishedId: String?)
+
+    @Transaction
     suspend fun createTierListWithDefaultTier(title: String): Long {
         val tierListId = insertTierList(TierListEntity(title = title))
 

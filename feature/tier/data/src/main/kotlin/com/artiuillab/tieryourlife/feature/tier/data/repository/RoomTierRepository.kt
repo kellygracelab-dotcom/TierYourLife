@@ -1,10 +1,13 @@
 package com.artiuillab.tieryourlife.feature.tier.data.repository
 
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewPoolItem
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewTemplateTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
@@ -31,6 +34,22 @@ class RoomTierRepository internal constructor(
 
     override suspend fun createTierList(title: String): Long {
         return dao.createTierListWithDefaultTier(title = title)
+    }
+
+    override suspend fun createFromTemplate(
+        title: String,
+        authorName: String,
+        tiers: List<Tier>,
+        items: List<TierItem>,
+    ): Long = dao.createTierListFromTemplate(
+        title = title,
+        authorName = authorName,
+        tiers = tiers.map { NewTemplateTier(it.label, it.caption, it.colorLight, it.colorDark) },
+        items = items.map { NewPoolItem(it.title, it.imageUrl) },
+    )
+
+    override suspend fun setPublishedId(id: Long, publishedId: String?) {
+        dao.setPublishedId(id, publishedId)
     }
 
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) {

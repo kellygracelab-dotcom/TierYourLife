@@ -1,6 +1,8 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.repository
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
@@ -13,6 +15,16 @@ interface TierRepository {
     suspend fun getAllTierLists(): List<TierList>
 
     suspend fun createTierList(title: String): Long
+
+    /** Builds a list from someone else's published template, items unranked. */
+    suspend fun createFromTemplate(
+        title: String,
+        authorName: String,
+        tiers: List<Tier>,
+        items: List<TierItem>,
+    ): Long
+
+    suspend fun setPublishedId(id: Long, publishedId: String?)
 
     suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode)
 

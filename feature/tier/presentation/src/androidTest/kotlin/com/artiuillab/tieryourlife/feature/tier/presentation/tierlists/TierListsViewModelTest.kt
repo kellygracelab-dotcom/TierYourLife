@@ -2,10 +2,15 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +36,7 @@ class TierListsViewModelTest {
                 fakeList(id = 2, title = "Another list"),
             ),
         )
-        val viewModel = TierListsViewModel(repository)
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
 
         viewModel.loadTierLists()
         val state = viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success
@@ -44,7 +49,7 @@ class TierListsViewModelTest {
     @Test
     fun loadTierLists_onAnEmptyRepository_staysEmpty_andCreatesNothing() = runBlocking {
         val repository = FakeTierRepository(initial = emptyList())
-        val viewModel = TierListsViewModel(repository)
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
 
         viewModel.loadTierLists()
         val state = viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success
@@ -56,7 +61,7 @@ class TierListsViewModelTest {
     @Test
     fun secondLoad_afterARenameOnTheRepository_showsTheNewTitle() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))
-        val viewModel = TierListsViewModel(repository)
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -79,7 +84,7 @@ class TierListsViewModelTest {
                 fakeList(id = 2, title = "Gets deleted"),
             ),
         )
-        val viewModel = TierListsViewModel(repository)
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -97,7 +102,7 @@ class TierListsViewModelTest {
     @Test
     fun firstLoad_passesThroughLoadingState() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Existing")))
-        val viewModel = TierListsViewModel(repository)
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
 
         val collected = recordStates(viewModel)
 
@@ -112,7 +117,7 @@ class TierListsViewModelTest {
     @Test
     fun secondLoad_neverShowsLoading_andReplacesTheListInOneStep() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))
-        val viewModel = TierListsViewModel(repository)
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -139,7 +144,7 @@ class TierListsViewModelTest {
         val repository = FakeTierRepository(
             initial = listOf(fakeList(id = 1, title = "Pizza in Lisbon"), fakeList(id = 2, title = "Sushi tour")),
         )
-        val viewModel = TierListsViewModel(repository)
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -158,7 +163,7 @@ class TierListsViewModelTest {
     @Test
     fun exitSearch_returnsToBrowsingWithEveryListVisibleAgain() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Pizza in Lisbon")))
-        val viewModel = TierListsViewModel(repository)
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -177,7 +182,7 @@ class TierListsViewModelTest {
     @Test
     fun toggleSelection_deselectingTheLastId_returnsToBrowsingMode() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Only list")))
-        val viewModel = TierListsViewModel(repository)
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -200,7 +205,7 @@ class TierListsViewModelTest {
         val repository = FakeTierRepository(
             initial = listOf(fakeList(id = 1, title = "Keeps existing"), fakeList(id = 2, title = "Gets deleted")),
         )
-        val viewModel = TierListsViewModel(repository)
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository())
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -248,6 +253,15 @@ class TierListsViewModelTest {
 }
 
 private class FakeTierRepository(initial: List<TierList>) : TierRepository {
+
+    override suspend fun createFromTemplate(
+        title: String,
+        authorName: String,
+        tiers: List<Tier>,
+        items: List<TierItem>,
+    ): Long = 0
+
+    override suspend fun setPublishedId(id: Long, publishedId: String?) = Unit
 
     private val lists = initial.associateBy { it.id }.toMutableMap()
     private val trashed = mutableMapOf<Long, TierList>()
@@ -320,4 +334,14 @@ private class FakeTierRepository(initial: List<TierList>) : TierRepository {
 
     private fun unsupported(): Nothing =
         throw UnsupportedOperationException("Not used by TierListsViewModel")
+}
+
+private class FakeCommunityRepository(
+    private val feed: List<PublishedListSummary> = emptyList(),
+) : CommunityRepository {
+    override suspend fun feed(): Result<List<PublishedListSummary>> = Result.success(feed)
+    override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
+    override suspend fun publish(list: com.artiuillab.tieryourlife.feature.tier.domain.model.TierList): Result<String> =
+        Result.failure(IllegalStateException())
+    override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
 }

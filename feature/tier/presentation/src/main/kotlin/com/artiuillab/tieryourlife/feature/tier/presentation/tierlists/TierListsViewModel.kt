@@ -7,6 +7,7 @@ import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.core.ui.UserMessages
 import com.artiuillab.tieryourlife.core.ui.guard
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -24,6 +25,7 @@ private const val LOAD_LOG_TAG = "TierLists"
 @HiltViewModel
 class TierListsViewModel @Inject constructor(
     private val repository: TierRepository,
+    private val community: CommunityRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<TierListsUiState>(TierListsUiState.Loading)
@@ -36,6 +38,8 @@ class TierListsViewModel @Inject constructor(
     private var lastLoadedLists: List<TierList> = emptyList()
 
     private var mode: HomeMode = HomeMode.Browsing
+    private var tab: HomeTab = HomeTab.Mine
+    private var communityFeed: CommunityFeed = CommunityFeed.Loading
 
     fun loadTierLists() {
         viewModelScope.launch {
@@ -78,7 +82,29 @@ class TierListsViewModel @Inject constructor(
             totalListCount = lastLoadedLists.size,
             rankedCount = rankedCount,
             mode = mode,
+            tab = tab,
+            community = communityFeed,
         )
+    }
+
+    fun selectTab(selected: HomeTab) {
+        if (tab == selected) return
+        tab = selected
+        emitSuccess()
+        if (selected == HomeTab.Community) loadCommunityFeed()
+    }
+
+    fun loadCommunityFeed() {
+        viewModelScope.launch {
+            communityFeed = community.feed().fold(
+                onSuccess = { CommunityFeed.Ready(it) },
+                onFailure = { error ->
+                    Log.w(LOAD_LOG_TAG, "Loading the community feed failed", error)
+                    CommunityFeed.Failed
+                },
+            )
+            emitSuccess()
+        }
     }
 
     private fun setMode(newMode: HomeMode) {

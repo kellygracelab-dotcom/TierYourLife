@@ -332,4 +332,20 @@
     <string name="home_suggestion_restaurants">Restauracje</string>
     <string name="home_suggestion_albums">Albumy</string>
     <string name="home_suggestion_books">Książki</string>
+    <string name="home_tab_mine">Twoje listy</string>
+    <string name="home_tab_community">Społeczność</string>
+    <string name="home_community_empty">Nic jeszcze nie opublikowano</string>
+    <string name="home_community_empty_body">Tu pojawiają się listy, które ktoś udostępnił publicznie.</string>
+    <string name="home_community_failed">Nie udało się wczytać społeczności</string>
+    <string name="home_community_failed_body">Sprawdź połączenie.</string>
+    <string name="community_by_author">od %1$s</string>
+    <string name="community_save_to_my_lists">Zapisz u siebie</string>
+    <string name="community_someone_elses">Cudza lista. Ułóż ją po swojemu.</string>
+    <string name="community_not_saved_yet">Twój układ nie jest jeszcze zapisany.</string>
+    <string name="community_open_failed">Nie udało się otworzyć tej listy</string>
+    <string name="community_saved">Zapisano na twoich listach</string>
+    <string name="list_settings_public">Publiczna</string>
+    <string name="list_settings_public_body">Każdy może otworzyć tę listę i ułożyć ją po swojemu.</string>
+    <string name="list_settings_public_needs_account">Zaloguj się przez Google, aby publikować. Czytanie i zapisywanie cudzych nie wymaga konta.</string>
+    <string name="list_settings_public_images">Podróżują tylko obrazy, które już są w sieci. Zdjęcia i generowana grafika zostają na tym telefonie.</string>
 </resources>

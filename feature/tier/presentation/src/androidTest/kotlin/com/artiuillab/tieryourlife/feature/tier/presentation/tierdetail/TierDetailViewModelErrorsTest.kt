@@ -27,7 +27,7 @@ class TierDetailViewModelErrorsTest {
     @Test
     fun aFailingMoveRollsTheOptimisticChangeBackAndReportsIt() = runBlocking {
         val repository = FailingTierRepository(twoTiers())
-        val viewModel = TierDetailViewModel(repository, savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
         awaitSuccess(viewModel)
 
         viewModel.moveItem(itemId = 1L, toTierId = 20L, toPosition = 0)
@@ -45,7 +45,7 @@ class TierDetailViewModelErrorsTest {
     @Test
     fun aFailingMutationDoesNotTakeTheScreenDown() = runBlocking {
         val repository = FailingTierRepository(twoTiers())
-        val viewModel = TierDetailViewModel(repository, savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
         awaitSuccess(viewModel)
 
         viewModel.renameTierList("New title")
@@ -58,7 +58,7 @@ class TierDetailViewModelErrorsTest {
     @Test
     fun aFailingFirstLoadShowsTheErrorState() = runBlocking {
         val repository = FailingTierRepository(twoTiers(), failReads = true)
-        val viewModel = TierDetailViewModel(repository, savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
 
         val state = withTimeout(AWAIT_TIMEOUT_MILLIS) {
             viewModel.state.first { it is TierDetailUiState.Error }
@@ -105,6 +105,15 @@ private class FailingTierRepository(
     val stored: TierList,
     private val failReads: Boolean = false,
 ) : TierRepository {
+
+    override suspend fun createFromTemplate(
+        title: String,
+        authorName: String,
+        tiers: List<Tier>,
+        items: List<TierItem>,
+    ): Long = 0
+
+    override suspend fun setPublishedId(id: Long, publishedId: String?) = Unit
 
     override suspend fun getTierListById(id: Long): TierList? {
         if (failReads) throw IllegalStateException("read failed")

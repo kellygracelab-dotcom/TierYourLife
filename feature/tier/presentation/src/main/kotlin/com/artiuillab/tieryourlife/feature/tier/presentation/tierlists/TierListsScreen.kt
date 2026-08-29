@@ -53,8 +53,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.CommunityFeedList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeEmptyState
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeHeader
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTabs
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchOffIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchTopBar
@@ -68,6 +70,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TierListsScreen(
     onTierListClick: (Long) -> Unit,
+    onCommunityListClick: (String) -> Unit,
     onSettingsClick: () -> Unit,
     onNewListCreated: (Long) -> Unit,
     viewModel: TierListsViewModel = hiltViewModel(),
@@ -90,6 +93,9 @@ fun TierListsScreen(
         onUndoDelete = viewModel::restoreTierLists,
         onCreateList = { viewModel.createTierList(defaultListTitle, onNewListCreated) },
         onCreateNamedList = { title -> viewModel.createTierList(title, onNewListCreated) },
+        onSelectTab = viewModel::selectTab,
+        onOpenCommunityList = onCommunityListClick,
+        onRetryCommunity = viewModel::loadCommunityFeed,
         userMessages = viewModel.userMessages,
     )
 }
@@ -109,6 +115,9 @@ internal fun TierListsScreenContent(
     onUndoDelete: (List<Long>) -> Unit = {},
     onCreateList: () -> Unit = {},
     onCreateNamedList: (String) -> Unit = {},
+    onSelectTab: (HomeTab) -> Unit = {},
+    onOpenCommunityList: (String) -> Unit = {},
+    onRetryCommunity: () -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val success = state as? TierListsUiState.Success
@@ -116,6 +125,8 @@ internal fun TierListsScreenContent(
     val lists = success?.lists.orEmpty()
     val totalListCount = success?.totalListCount ?: 0
     val rankedCount = success?.rankedCount ?: 0
+    val tab = success?.tab ?: HomeTab.Mine
+    val communityFeed = success?.community ?: CommunityFeed.Loading
 
     BackHandler(enabled = mode !is HomeMode.Browsing) {
         when (mode) {
@@ -153,6 +164,7 @@ internal fun TierListsScreenContent(
 
     val showsEmptyState = state is TierListsUiState.Success &&
         mode !is HomeMode.Searching &&
+        tab == HomeTab.Mine &&
         totalListCount == 0
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
@@ -178,6 +190,7 @@ internal fun TierListsScreenContent(
                 }
 
                 if (mode !is HomeMode.Searching) {
+                    HomeTabs(selected = tab, onSelect = onSelectTab)
                     HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
                 }
 
@@ -195,29 +208,33 @@ internal fun TierListsScreenContent(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
 
-                    is TierListsUiState.Success -> when (mode) {
-                        is HomeMode.Searching -> SearchResults(
+                    is TierListsUiState.Success -> when {
+                        tab == HomeTab.Community && mode !is HomeMode.Searching -> CommunityFeedList(
+                            feed = communityFeed,
+                            onOpen = onOpenCommunityList,
+                            onRetry = onRetryCommunity,
+                        )
+
+                        mode is HomeMode.Searching -> SearchResults(
                             lists = lists,
                             query = mode.query,
                             onTierListClick = onTierListClick,
                         )
 
-                        else -> if (totalListCount == 0) {
-                            HomeEmptyState(onCreateNamedList = onCreateNamedList)
-                        } else {
-                            HomeContent(
-                                lists = lists,
-                                mode = mode,
-                                onTierListClick = onTierListClick,
-                                onLongPressCard = onLongPressCard,
-                                onToggleSelected = onToggleSelected,
-                            )
-                        }
+                        totalListCount == 0 -> HomeEmptyState(onCreateNamedList = onCreateNamedList)
+
+                        else -> HomeContent(
+                            lists = lists,
+                            mode = mode,
+                            onTierListClick = onTierListClick,
+                            onLongPressCard = onLongPressCard,
+                            onToggleSelected = onToggleSelected,
+                        )
                     }
                 }
             }
 
-            if (mode == HomeMode.Browsing) {
+            if (mode == HomeMode.Browsing && tab == HomeTab.Mine) {
                 val newListDescription = stringResource(R.string.cd_new_list)
                 val fabModifier = Modifier
                     .align(Alignment.BottomEnd)

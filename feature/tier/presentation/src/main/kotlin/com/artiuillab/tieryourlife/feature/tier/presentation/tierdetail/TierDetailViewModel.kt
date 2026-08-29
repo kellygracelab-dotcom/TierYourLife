@@ -8,17 +8,23 @@ import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.core.ui.UserMessages
 import com.artiuillab.tieryourlife.core.ui.guard
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.ordering.withItemMoved
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,8 +33,17 @@ private const val LOG_TAG = "TierDetail"
 @HiltViewModel
 class TierDetailViewModel @Inject constructor(
     private val repository: TierRepository,
+    private val community: CommunityRepository,
+    accountRepository: AccountRepository,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
+    val signedIn: StateFlow<Boolean> = accountRepository.account
+        .map { it is Account.SignedIn }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), false)
+
+    private val _publishing = MutableStateFlow(false)
+    val publishing: StateFlow<Boolean> = _publishing.asStateFlow()
 
     private val tierListId = savedStateHandle.toRoute<Route.TierDetail>().tierListId
 
@@ -40,6 +55,29 @@ class TierDetailViewModel @Inject constructor(
 
     init {
         loadTierList()
+    }
+
+    fun setPublic(public: Boolean) {
+        val list = (_state.value as? TierDetailUiState.Success)?.list ?: return
+        if (_publishing.value) return
+        _publishing.value = true
+        viewModelScope.launch {
+            val result: Result<String?> = if (public) {
+                community.publish(list)
+            } else {
+                list.publishedId?.let { community.unpublish(it).map { _ -> null } } ?: Result.success(null)
+            }
+            result.fold(
+                onSuccess = { publishedId ->
+                    messages.guard("Recording the published list") {
+                        repository.setPublishedId(tierListId, publishedId)
+                    }
+                    loadTierList()
+                },
+                onFailure = { messages.send(UserMessage.ActionFailed) },
+            )
+            _publishing.value = false
+        }
     }
 
     fun loadTierList() {
@@ -188,3 +226,5 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 }
+
+private const val STOP_TIMEOUT_MILLIS = 5_000L

@@ -282,4 +282,20 @@
     <string name="home_suggestion_restaurants">Restoranlar</string>
     <string name="home_suggestion_albums">Albümler</string>
     <string name="home_suggestion_books">Kitaplar</string>
+    <string name="home_tab_mine">Listelerin</string>
+    <string name="home_tab_community">Topluluk</string>
+    <string name="home_community_empty">Henüz hiçbir şey yayımlanmadı</string>
+    <string name="home_community_empty_body">İnsanların herkese açık yaptığı listeler burada görünür.</string>
+    <string name="home_community_failed">Topluluk yüklenemedi</string>
+    <string name="home_community_failed_body">Bağlantını kontrol et.</string>
+    <string name="community_by_author">%1$s tarafından</string>
+    <string name="community_save_to_my_lists">Listelerime kaydet</string>
+    <string name="community_someone_elses">Başkasının listesi. Nasıl istersen sırala.</string>
+    <string name="community_not_saved_yet">Sıralaman henüz kaydedilmedi.</string>
+    <string name="community_open_failed">Bu liste açılamadı</string>
+    <string name="community_saved">Listelerine kaydedildi</string>
+    <string name="list_settings_public">Herkese açık</string>
+    <string name="list_settings_public_body">Herkes bu listeyi açıp kendince sıralayabilir.</string>
+    <string name="list_settings_public_needs_account">Yayımlamak için Google ile oturum aç. Başkalarınınkini okumak ve kaydetmek hesap istemez.</string>
+    <string name="list_settings_public_images">Yalnızca zaten internette olan görseller gider. Fotoğraflar ve üretilen görseller bu telefonda kalır.</string>
 </resources>

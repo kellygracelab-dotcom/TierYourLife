@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_1_2
+import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_2_3
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.TierDatabase
 import dagger.Module
 import dagger.Provides
@@ -25,7 +26,7 @@ object DatabaseModule {
         TierDatabase::class.java,
         DATABASE_NAME,
     )
-        .addMigrations(MIGRATION_1_2)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
         .fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
         .build()
 

@@ -103,6 +103,8 @@ fun TierDetailScreen(
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val signedIn by viewModel.signedIn.collectAsStateWithLifecycle()
+    val publishing by viewModel.publishing.collectAsStateWithLifecycle()
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
     var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -112,6 +114,9 @@ fun TierDetailScreen(
         userMessages = viewModel.userMessages,
         actions = TierDetailActions(
             onBack = onBack,
+            signedIn = signedIn,
+            publishing = publishing,
+            onSetPublic = viewModel::setPublic,
             onAddClick = { addSheetVisible = true },
             onManualAddClick = { manualEntryVisible = true },
             onMoveItem = viewModel::moveItem,
@@ -161,6 +166,8 @@ internal fun TierDetailScreenContent(
     actions: TierDetailActions = TierDetailActions(),
     addedItemIds: List<Long> = emptyList(),
     userMessages: Flow<UserMessage> = emptyFlow(),
+    readOnly: Boolean = false,
+    subtitle: String? = null,
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -192,6 +199,8 @@ internal fun TierDetailScreenContent(
                     actions = actions,
                     addedItemIds = addedItemIds,
                     userMessages = userMessages,
+                    readOnly = readOnly,
+                    subtitle = subtitle,
                 )
             }
 
@@ -215,6 +224,8 @@ private fun TierScreenBody(
     actions: TierDetailActions,
     addedItemIds: List<Long> = emptyList(),
     userMessages: Flow<UserMessage> = emptyFlow(),
+    readOnly: Boolean = false,
+    subtitle: String? = null,
 ) {
     val onBack = actions.onBack
     val onAddClick = actions.onAddClick
@@ -240,6 +251,9 @@ private fun TierScreenBody(
             onBack = { listSettingsVisible = false },
             onAddTier = onAddTier,
             onSetDisplayMode = onSetDisplayMode,
+            signedIn = actions.signedIn,
+            publishing = actions.publishing,
+            onSetPublic = actions.onSetPublic,
         )
         return
     }
@@ -383,7 +397,9 @@ private fun TierScreenBody(
                 onManualAdd = onManualAddClick,
                 onMoreClick = { listSettingsVisible = true },
                 onRenameList = onRenameList,
-                titleEditable = true,
+                titleEditable = !readOnly,
+                readOnly = readOnly,
+                subtitle = subtitle,
             )
 
             if (list.displayMode == TierListDisplayMode.FLAT_RANKED) {

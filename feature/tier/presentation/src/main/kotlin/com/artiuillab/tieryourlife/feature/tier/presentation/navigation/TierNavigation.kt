@@ -7,19 +7,35 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashScreen
 
+fun NavGraphBuilder.communityListScreen(
+    onBack: () -> Unit,
+    onSaved: (Long) -> Unit,
+) {
+    composable<Route.CommunityList> {
+        CommunityListScreen(onBack = onBack, onSaved = onSaved)
+    }
+}
+
+fun NavController.navigateToCommunityList(publishedId: String) {
+    navigate(Route.CommunityList(publishedId))
+}
+
 fun NavGraphBuilder.tierListsScreen(
     onTierListClick: (Long) -> Unit,
+    onCommunityListClick: (String) -> Unit,
     onSettingsClick: () -> Unit,
     onNewListCreated: (Long) -> Unit,
 ) {
     composable<Route.TierLists> {
         TierListsScreen(
             onTierListClick = onTierListClick,
+            onCommunityListClick = onCommunityListClick,
             onSettingsClick = onSettingsClick,
             onNewListCreated = onNewListCreated,
         )

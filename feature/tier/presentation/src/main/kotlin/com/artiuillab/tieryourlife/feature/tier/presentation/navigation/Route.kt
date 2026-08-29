@@ -10,6 +10,9 @@ sealed interface Route {
     data class TierDetail(val tierListId: Long) : Route
 
     @Serializable
+    data class CommunityList(val publishedId: String) : Route
+
+    @Serializable
     data object Settings : Route
 
     @Serializable

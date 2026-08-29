@@ -25,7 +25,7 @@ class TierDetailViewModelTest {
     @Test
     fun addManualItem_withTitleOnly_addsToThePoolWithNoImage() = runBlocking {
         val repository = FakeTierRepository(pool())
-        val viewModel = TierDetailViewModel(repository, savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
 
         viewModel.addManualItem("Dune", photoUris = emptyList())
         val state = viewModel.state.first {
@@ -41,7 +41,7 @@ class TierDetailViewModelTest {
     @Test
     fun addManualItem_withAPhoto_sendsTheGalleryUriOnlyToAttachImageToItem() = runBlocking {
         val repository = FakeTierRepository(pool())
-        val viewModel = TierDetailViewModel(repository, savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
 
         viewModel.addManualItem("Dune", photoUris = listOf("content://gallery/42"))
         viewModel.state.first {
@@ -55,7 +55,7 @@ class TierDetailViewModelTest {
     @Test
     fun addManualItem_withSeveralPhotos_addsOneItemPerPhoto() = runBlocking {
         val repository = FakeTierRepository(pool())
-        val viewModel = TierDetailViewModel(repository, savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
         val picked = listOf("content://gallery/1", "content://gallery/2", "content://gallery/3")
 
         viewModel.addManualItem("", photoUris = picked)
@@ -71,7 +71,7 @@ class TierDetailViewModelTest {
     @Test
     fun reorderTiers_emitsTheNewOrderSynchronously_beforeTheRepositoryResponds() = runBlocking {
         val repository = FakeTierRepository(rankedList())
-        val viewModel = TierDetailViewModel(repository, savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
         viewModel.state.first { it is TierDetailUiState.Success }
 
         viewModel.reorderTiers(listOf(20L, 10L))
@@ -85,6 +85,46 @@ class TierDetailViewModelTest {
         assertEquals(listOf(20L, 10L, 30L), stillOptimistic.list.tiers.map { it.id })
 
         repository.releaseReorder()
+    }
+
+    @Test
+    fun setPublic_publishesTheListAndRemembersWhereItLanded() = runBlocking {
+        val repository = FakeTierRepository(pool())
+        val community = FakeCommunityRepositoryForDetail()
+        val viewModel = TierDetailViewModel(
+            repository,
+            community,
+            FakeAccountRepositoryForDetail(signedIn = true),
+            savedStateHandle(),
+        )
+        viewModel.state.first { it is TierDetailUiState.Success }
+
+        viewModel.setPublic(true)
+        viewModel.publishing.first { !it }
+
+        assertEquals(1, community.published.size)
+        assertEquals("published-1", repository.publishedIds.single().second)
+    }
+
+    // Turning it off has to reach the server as well: a list that vanishes only
+    // from the phone would stay in the feed for everyone else.
+    @Test
+    fun setPublic_false_takesTheSnapshotDownAndForgetsItsId() = runBlocking {
+        val repository = FakeTierRepository(pool(), publishedId = "published-1")
+        val community = FakeCommunityRepositoryForDetail()
+        val viewModel = TierDetailViewModel(
+            repository,
+            community,
+            FakeAccountRepositoryForDetail(signedIn = true),
+            savedStateHandle(),
+        )
+        viewModel.state.first { it is TierDetailUiState.Success }
+
+        viewModel.setPublic(false)
+        viewModel.publishing.first { !it }
+
+        assertEquals(listOf("published-1"), community.unpublished)
+        assertEquals(null, repository.publishedIds.single().second)
     }
 
     private fun savedStateHandle(startInTitleEdit: Boolean = false): SavedStateHandle =
@@ -109,9 +149,27 @@ class TierDetailViewModelTest {
     )
 }
 
-private class FakeTierRepository(initial: TierList) : TierRepository {
+private class FakeTierRepository(
+    initial: TierList,
+    publishedId: String? = null,
+) : TierRepository {
 
-    private var list = initial
+    private var list = initial.copy(publishedId = publishedId)
+
+    val publishedIds = mutableListOf<Pair<Long, String?>>()
+
+    override suspend fun setPublishedId(id: Long, publishedId: String?) {
+        publishedIds += id to publishedId
+        list = list.copy(publishedId = publishedId)
+    }
+
+    override suspend fun createFromTemplate(
+        title: String,
+        authorName: String,
+        tiers: List<Tier>,
+        items: List<TierItem>,
+    ): Long = 0
+
     private var nextItemId = 1L
     var lastAddedImageUrl: String? = "not yet called"
         private set
