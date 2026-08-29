@@ -93,10 +93,13 @@ class TierDetailViewModel @Inject constructor(
             }
             result.fold(
                 onSuccess = { publishedId ->
-                    messages.guard("Recording the published list") {
+                    val recorded = messages.guard("Recording the published list") {
                         repository.setPublishedId(tierListId, publishedId)
                     }
-                    loadTierList()
+                    // Reading the list back would land after publicPending is
+                    // cleared below, so the switch would spring back to the old
+                    // position for a frame or two. The id is all that changed.
+                    if (recorded) showPublishedId(publishedId)
                 },
                 onFailure = { failure ->
                     _publishError.value = (failure as? PublishRefused)?.error ?: PublishError.Unknown
@@ -230,6 +233,13 @@ class TierDetailViewModel @Inject constructor(
     fun removeAddedItems(itemIds: List<Long>) {
         mutate("Removing added items") {
             itemIds.forEach { itemId -> repository.deleteTierItemPermanently(itemId) }
+        }
+    }
+
+    private fun showPublishedId(publishedId: String?) {
+        val current = _state.value
+        if (current is TierDetailUiState.Success) {
+            _state.value = TierDetailUiState.Success(current.list.copy(publishedId = publishedId))
         }
     }
 

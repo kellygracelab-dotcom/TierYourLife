@@ -14,10 +14,13 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -107,6 +110,52 @@ class TierDetailViewModelTest {
 
         assertEquals(1, community.published.size)
         assertEquals("published-1", repository.publishedIds.single().second)
+    }
+
+    // The switch reads publicPending while the request is in flight and the
+    // list itself afterwards. Reading the list back from the database landed
+    // after publicPending was cleared, so for a frame or two the switch sprang
+    // back to where it started and the note under it came and went, taking
+    // every row below with it.
+    @Test
+    fun setPublic_marksTheListPublished_beforeTheSwitchStopsPending() = runBlocking {
+        val repository = FakeTierRepository(listWithOneCard())
+        val viewModel = TierDetailViewModel(
+            repository,
+            FakeCommunityRepositoryForDetail(),
+            FakeAccountRepositoryForDetail(signedIn = true),
+            savedStateHandle(),
+        )
+        viewModel.state.first { it is TierDetailUiState.Success }
+        repository.readsAreHeld = true
+
+        viewModel.setPublic(true)
+        viewModel.publishing.first { !it }
+
+        val shown = (viewModel.state.value as TierDetailUiState.Success).list
+        assertEquals("published-1", shown.publishedId)
+        assertNull(viewModel.publicPending.value)
+    }
+
+    @Test
+    fun setPublic_neverSendsTheScreenBackThroughLoading() = runBlocking {
+        val viewModel = TierDetailViewModel(
+            FakeTierRepository(listWithOneCard()),
+            FakeCommunityRepositoryForDetail(),
+            FakeAccountRepositoryForDetail(signedIn = true),
+            savedStateHandle(),
+        )
+        viewModel.state.first { it is TierDetailUiState.Success }
+        val seen = mutableListOf<TierDetailUiState>()
+        val watcher = launch(Dispatchers.Unconfined) { viewModel.state.collect { seen += it } }
+
+        viewModel.setPublic(true)
+        viewModel.publishing.first { !it }
+        viewModel.setPublic(false)
+        viewModel.publishing.first { !it }
+        watcher.cancel()
+
+        assertTrue(seen.none { it is TierDetailUiState.Loading })
     }
 
     // Publishing without a category would land the list in a feed nobody
@@ -291,7 +340,13 @@ private class FakeTierRepository(
         reorderGate.complete(Unit)
     }
 
-    override suspend fun getTierListById(id: Long): TierList? = list
+    var readsAreHeld = false
+    private val heldRead = CompletableDeferred<Unit>()
+
+    override suspend fun getTierListById(id: Long): TierList? {
+        if (readsAreHeld) heldRead.await()
+        return list
+    }
 
     override suspend fun addItemToPool(
         tierListId: Long,
