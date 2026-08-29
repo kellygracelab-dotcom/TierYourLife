@@ -352,4 +352,30 @@
     <string name="list_settings_public_too_many">Опубліковано максимальну кількість списків. Зніміть один з публікації, щоб звільнити місце.</string>
     <string name="list_settings_public_offline">Немає зʼєднання. Спробуйте ще раз, коли мережа повернеться.</string>
     <string name="list_settings_public_failed">Не вдалося опублікувати список. Спробуйте ще раз.</string>
+    <string name="category_all">Усі</string>
+    <string name="category_anime">Аніме</string>
+    <string name="category_film_tv">Кіно і серіали</string>
+    <string name="category_games">Ігри</string>
+    <string name="category_music">Музика</string>
+    <string name="category_food">Їжа</string>
+    <string name="category_sport">Спорт</string>
+    <string name="category_people">Люди</string>
+    <string name="category_other">Інше</string>
+    <string name="list_settings_category">Категорія</string>
+    <string name="list_settings_category_none">Ще не вибрана</string>
+    <string name="list_settings_public_needs_category">Виберіть категорію, перш ніж публікувати список.</string>
+    <string name="list_settings_cover">Обкладинка</string>
+    <string name="list_settings_cover_none_set">Немає</string>
+    <string name="list_settings_cover_set">Вибрана</string>
+    <string name="list_settings_cover_body">Виберіть одну з карток списку або зображення з галереї.</string>
+    <string name="list_settings_cover_no_cards">Жодна картка списку ще не має зображення.</string>
+    <string name="list_settings_cover_gallery">Вибрати з галереї</string>
+    <string name="list_settings_cover_gallery_note">Зображення з галереї залишається на цьому телефоні. У спільноті список покаже свої картки.</string>
+    <string name="list_settings_cover_none">Прибрати обкладинку</string>
+    <plurals name="community_item_count">
+        <item quantity="one">%1$d картка</item>
+        <item quantity="few">%1$d картки</item>
+        <item quantity="many">%1$d карток</item>
+        <item quantity="other">%1$d картки</item>
+    </plurals>
 </resources>

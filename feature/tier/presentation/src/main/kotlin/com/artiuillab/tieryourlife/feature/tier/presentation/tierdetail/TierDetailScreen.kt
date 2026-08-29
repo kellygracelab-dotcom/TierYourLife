@@ -119,6 +119,8 @@ fun TierDetailScreen(
             publishing = publishing,
             publishError = publishError,
             onSetPublic = viewModel::setPublic,
+            onSetCategory = viewModel::setCategory,
+            onSetCover = viewModel::setCoverImageUrl,
             onAddClick = { addSheetVisible = true },
             onManualAddClick = { manualEntryVisible = true },
             onMoveItem = viewModel::moveItem,
@@ -257,6 +259,8 @@ private fun TierScreenBody(
             publishing = actions.publishing,
             publishError = actions.publishError,
             onSetPublic = actions.onSetPublic,
+            onSetCategory = actions.onSetCategory,
+            onSetCover = actions.onSetCover,
         )
         return
     }

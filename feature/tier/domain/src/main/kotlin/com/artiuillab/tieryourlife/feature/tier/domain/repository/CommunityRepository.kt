@@ -1,12 +1,13 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.repository
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 interface CommunityRepository {
 
-    suspend fun feed(): Result<List<PublishedListSummary>>
+    suspend fun feed(category: ListCategory? = null): Result<List<PublishedListSummary>>
 
     suspend fun open(id: String): Result<PublishedList>
 

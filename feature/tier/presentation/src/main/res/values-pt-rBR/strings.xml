@@ -327,4 +327,28 @@
     <string name="list_settings_public_too_many">Você já publicou o número máximo de listas. Retire uma para abrir espaço.</string>
     <string name="list_settings_public_offline">Sem conexão. Tente de novo quando voltar a ficar online.</string>
     <string name="list_settings_public_failed">Não foi possível publicar esta lista. Tente de novo.</string>
+    <string name="category_all">Tudo</string>
+    <string name="category_anime">Anime</string>
+    <string name="category_film_tv">Cinema e TV</string>
+    <string name="category_games">Jogos</string>
+    <string name="category_music">Música</string>
+    <string name="category_food">Comida</string>
+    <string name="category_sport">Esporte</string>
+    <string name="category_people">Pessoas</string>
+    <string name="category_other">Outros</string>
+    <string name="list_settings_category">Categoria</string>
+    <string name="list_settings_category_none">Ainda não escolhida</string>
+    <string name="list_settings_public_needs_category">Escolha uma categoria antes de publicar a lista.</string>
+    <string name="list_settings_cover">Capa</string>
+    <string name="list_settings_cover_none_set">Nenhuma</string>
+    <string name="list_settings_cover_set">Escolhida</string>
+    <string name="list_settings_cover_body">Escolha um dos cards da lista ou uma imagem da sua galeria.</string>
+    <string name="list_settings_cover_no_cards">Nenhum card desta lista tem imagem ainda.</string>
+    <string name="list_settings_cover_gallery">Escolher da galeria</string>
+    <string name="list_settings_cover_gallery_note">Uma imagem da galeria fica neste telefone. Na comunidade a lista mostra seus cards.</string>
+    <string name="list_settings_cover_none">Remover capa</string>
+    <plurals name="community_item_count">
+        <item quantity="one">%1$d card</item>
+        <item quantity="other">%1$d cards</item>
+    </plurals>
 </resources>

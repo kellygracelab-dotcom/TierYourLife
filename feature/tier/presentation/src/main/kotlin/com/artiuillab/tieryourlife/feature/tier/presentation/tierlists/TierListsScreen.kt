@@ -48,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.ui.UserMessage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
@@ -96,6 +97,7 @@ fun TierListsScreen(
         onSelectTab = viewModel::selectTab,
         onOpenCommunityList = onCommunityListClick,
         onRetryCommunity = viewModel::loadCommunityFeed,
+        onSelectCommunityCategory = viewModel::selectCommunityCategory,
         userMessages = viewModel.userMessages,
     )
 }
@@ -118,6 +120,7 @@ internal fun TierListsScreenContent(
     onSelectTab: (HomeTab) -> Unit = {},
     onOpenCommunityList: (String) -> Unit = {},
     onRetryCommunity: () -> Unit = {},
+    onSelectCommunityCategory: (ListCategory?) -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val success = state as? TierListsUiState.Success
@@ -127,6 +130,7 @@ internal fun TierListsScreenContent(
     val rankedCount = success?.rankedCount ?: 0
     val tab = success?.tab ?: HomeTab.Mine
     val communityFeed = success?.community ?: CommunityFeed.Loading
+    val communityCategory = success?.communityCategory
 
     BackHandler(enabled = mode !is HomeMode.Browsing) {
         when (mode) {
@@ -211,6 +215,8 @@ internal fun TierListsScreenContent(
                     is TierListsUiState.Success -> when {
                         tab == HomeTab.Community && mode !is HomeMode.Searching -> CommunityFeedList(
                             feed = communityFeed,
+                            category = communityCategory,
+                            onSelectCategory = onSelectCommunityCategory,
                             onOpen = onOpenCommunityList,
                             onRetry = onRetryCommunity,
                         )

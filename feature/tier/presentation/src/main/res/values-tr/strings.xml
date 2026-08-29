@@ -302,4 +302,28 @@
     <string name="list_settings_public_too_many">İzin verilen en fazla sayıda listeyi yayımladınız. Yer açmak için birini yayından kaldırın.</string>
     <string name="list_settings_public_offline">Bağlantı yok. Çevrimiçi olduğunuzda yeniden deneyin.</string>
     <string name="list_settings_public_failed">Bu liste yayımlanamadı. Yeniden deneyin.</string>
+    <string name="category_all">Tümü</string>
+    <string name="category_anime">Anime</string>
+    <string name="category_film_tv">Film ve Dizi</string>
+    <string name="category_games">Oyunlar</string>
+    <string name="category_music">Müzik</string>
+    <string name="category_food">Yemek</string>
+    <string name="category_sport">Spor</string>
+    <string name="category_people">Kişiler</string>
+    <string name="category_other">Diğer</string>
+    <string name="list_settings_category">Kategori</string>
+    <string name="list_settings_category_none">Henüz seçilmedi</string>
+    <string name="list_settings_public_needs_category">Listeyi yayımlamadan önce bir kategori seçin.</string>
+    <string name="list_settings_cover">Kapak</string>
+    <string name="list_settings_cover_none_set">Yok</string>
+    <string name="list_settings_cover_set">Seçildi</string>
+    <string name="list_settings_cover_body">Bu listedeki kartlardan birini ya da galerinizden bir görseli seçin.</string>
+    <string name="list_settings_cover_no_cards">Bu listedeki kartların henüz görseli yok.</string>
+    <string name="list_settings_cover_gallery">Galeriden seç</string>
+    <string name="list_settings_cover_gallery_note">Galeriden seçilen görsel bu telefonda kalır. Toplulukta liste bunun yerine kartlarını gösterir.</string>
+    <string name="list_settings_cover_none">Kapağı kaldır</string>
+    <plurals name="community_item_count">
+        <item quantity="one">%1$d kart</item>
+        <item quantity="other">%1$d kart</item>
+    </plurals>
 </resources>

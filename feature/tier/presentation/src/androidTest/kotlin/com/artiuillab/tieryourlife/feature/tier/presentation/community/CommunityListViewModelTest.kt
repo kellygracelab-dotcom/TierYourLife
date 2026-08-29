@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.community
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -17,7 +18,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 private val published = PublishedList(
-    summary = PublishedListSummary("abc", "Every A24 film", "Danylo K.", 2, 0),
+    summary = PublishedListSummary(
+        id = "abc",
+        title = "Every A24 film",
+        authorName = "Danylo K.",
+        category = ListCategory.FilmTv,
+        itemCount = 2,
+        updatedAtMillis = 0,
+    ),
     tiers = listOf(
         Tier(id = 0, label = "S", colorLight = "#B03A32", colorDark = "#F1948C", items = emptyList()),
         Tier(id = 1, label = "A", colorLight = "#C06A25", colorDark = "#E9A867", items = emptyList()),
@@ -97,14 +105,14 @@ class CommunityListViewModelTest {
 }
 
 private class FakeCommunityRepository : CommunityRepository {
-    override suspend fun feed(): Result<List<PublishedListSummary>> = Result.success(emptyList())
+    override suspend fun feed(category: ListCategory?): Result<List<PublishedListSummary>> = Result.success(emptyList())
     override suspend fun open(id: String): Result<PublishedList> = Result.success(published)
     override suspend fun publish(list: TierList): Result<String> = Result.success("abc")
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
 }
 
 private class FailingCommunityRepository : CommunityRepository {
-    override suspend fun feed(): Result<List<PublishedListSummary>> = Result.success(emptyList())
+    override suspend fun feed(category: ListCategory?): Result<List<PublishedListSummary>> = Result.success(emptyList())
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException("nope"))
     override suspend fun publish(list: TierList): Result<String> = Result.failure(IllegalStateException())
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)

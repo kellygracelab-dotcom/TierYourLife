@@ -302,4 +302,28 @@
     <string name="list_settings_public_too_many">Du hast bereits so viele Listen veröffentlicht, wie erlaubt sind. Nimm eine zurück, um Platz zu schaffen.</string>
     <string name="list_settings_public_offline">Keine Verbindung. Versuche es erneut, sobald du wieder online bist.</string>
     <string name="list_settings_public_failed">Die Liste konnte nicht veröffentlicht werden. Versuche es erneut.</string>
+    <string name="category_all">Alle</string>
+    <string name="category_anime">Anime</string>
+    <string name="category_film_tv">Film &amp; TV</string>
+    <string name="category_games">Spiele</string>
+    <string name="category_music">Musik</string>
+    <string name="category_food">Essen</string>
+    <string name="category_sport">Sport</string>
+    <string name="category_people">Menschen</string>
+    <string name="category_other">Sonstiges</string>
+    <string name="list_settings_category">Kategorie</string>
+    <string name="list_settings_category_none">Noch nicht gewählt</string>
+    <string name="list_settings_public_needs_category">Wähle eine Kategorie, bevor du die Liste veröffentlichst.</string>
+    <string name="list_settings_cover">Titelbild</string>
+    <string name="list_settings_cover_none_set">Keins</string>
+    <string name="list_settings_cover_set">Gewählt</string>
+    <string name="list_settings_cover_body">Wähle eine Karte aus dieser Liste oder ein Bild aus deiner Galerie.</string>
+    <string name="list_settings_cover_no_cards">Noch keine Karte dieser Liste hat ein Bild.</string>
+    <string name="list_settings_cover_gallery">Aus der Galerie wählen</string>
+    <string name="list_settings_cover_gallery_note">Ein Galeriebild bleibt auf diesem Telefon. In der Community zeigt die Liste stattdessen ihre Karten.</string>
+    <string name="list_settings_cover_none">Titelbild entfernen</string>
+    <plurals name="community_item_count">
+        <item quantity="one">%1$d Karte</item>
+        <item quantity="other">%1$d Karten</item>
+    </plurals>
 </resources>

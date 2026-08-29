@@ -9,11 +9,12 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface CommunityApi {
 
     @GET("lists")
-    suspend fun feed(): PublishedFeedDto
+    suspend fun feed(@Query("category") category: String? = null): PublishedFeedDto
 
     @GET("lists/{id}")
     suspend fun open(@Path("id") id: String): PublishedListDto

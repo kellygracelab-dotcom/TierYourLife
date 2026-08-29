@@ -352,4 +352,30 @@
     <string name="list_settings_public_too_many">Опубликовано максимальное число списков. Снимите один с публикации, чтобы освободить место.</string>
     <string name="list_settings_public_offline">Нет соединения. Попробуйте снова, когда сеть вернётся.</string>
     <string name="list_settings_public_failed">Не удалось опубликовать список. Попробуйте ещё раз.</string>
+    <string name="category_all">Все</string>
+    <string name="category_anime">Аниме</string>
+    <string name="category_film_tv">Кино и сериалы</string>
+    <string name="category_games">Игры</string>
+    <string name="category_music">Музыка</string>
+    <string name="category_food">Еда</string>
+    <string name="category_sport">Спорт</string>
+    <string name="category_people">Люди</string>
+    <string name="category_other">Другое</string>
+    <string name="list_settings_category">Категория</string>
+    <string name="list_settings_category_none">Пока не выбрана</string>
+    <string name="list_settings_public_needs_category">Выберите категорию, прежде чем публиковать список.</string>
+    <string name="list_settings_cover">Обложка</string>
+    <string name="list_settings_cover_none_set">Нет</string>
+    <string name="list_settings_cover_set">Выбрана</string>
+    <string name="list_settings_cover_body">Выберите одну из карточек списка или картинку из галереи.</string>
+    <string name="list_settings_cover_no_cards">Ни у одной карточки списка пока нет картинки.</string>
+    <string name="list_settings_cover_gallery">Выбрать из галереи</string>
+    <string name="list_settings_cover_gallery_note">Картинка из галереи остаётся на этом телефоне. В сообществе список покажет свои карточки.</string>
+    <string name="list_settings_cover_none">Убрать обложку</string>
+    <plurals name="community_item_count">
+        <item quantity="one">%1$d карточка</item>
+        <item quantity="few">%1$d карточки</item>
+        <item quantity="many">%1$d карточек</item>
+        <item quantity="other">%1$d карточки</item>
+    </plurals>
 </resources>

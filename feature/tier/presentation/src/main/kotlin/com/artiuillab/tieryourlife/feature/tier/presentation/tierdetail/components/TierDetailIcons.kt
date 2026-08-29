@@ -89,6 +89,30 @@ internal fun DeleteFilledIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize)
 }
 
 @Composable
+internal fun CategoryIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.7f * scale
+    listOf(6f, 12f, 18f).forEach { y ->
+        drawLine(color, Offset(4f * scale, y * scale), Offset(4f * scale, y * scale), stroke, StrokeCap.Round)
+        drawLine(color, Offset(8f * scale, y * scale), Offset(20f * scale, y * scale), stroke, StrokeCap.Round)
+    }
+}
+
+@Composable
+internal fun CoverIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.7f * scale
+    drawRoundRect(
+        color = color,
+        topLeft = Offset(4f * scale, 5f * scale),
+        size = Size(16f * scale, 14f * scale),
+        cornerRadius = CornerRadius(2f * scale),
+        style = Stroke(stroke),
+    )
+    drawLine(color, Offset(6f * scale, 16f * scale), Offset(11f * scale, 10f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(11f * scale, 10f * scale), Offset(18f * scale, 16f * scale), stroke, StrokeCap.Round)
+    drawCircle(color, radius = 1.4f * scale, center = Offset(15f * scale, 9f * scale))
+}
+
+@Composable
 internal fun ChevronRightIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
     val stroke = 1.7f * scale
     drawLine(color, Offset(9f * scale, 6f * scale), Offset(15f * scale, 12f * scale), stroke, StrokeCap.Round)

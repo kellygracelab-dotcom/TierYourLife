@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.core.ui.UserMessages
 import com.artiuillab.tieryourlife.core.ui.guard
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishRefused
@@ -69,6 +70,10 @@ class TierDetailViewModel @Inject constructor(
             _publishError.value = PublishError.NothingToPublish
             return
         }
+        if (public && list.category == null) {
+            _publishError.value = PublishError.NoCategory
+            return
+        }
 
         _publishing.value = true
         viewModelScope.launch {
@@ -90,6 +95,14 @@ class TierDetailViewModel @Inject constructor(
             )
             _publishing.value = false
         }
+    }
+
+    fun setCategory(category: ListCategory) {
+        mutate("Setting the category") { repository.setCategory(tierListId, category) }
+    }
+
+    fun setCoverImageUrl(coverImageUrl: String?) {
+        mutate("Setting the cover") { repository.setCoverImageUrl(tierListId, coverImageUrl) }
     }
 
     fun loadTierList() {

@@ -85,6 +85,34 @@ class TierDatabaseMigrationTest {
         assertEquals("S", tierLabel)
     }
 
+    // A list that predates categories keeps its rows; it simply has no category
+    // until its owner picks one, which is what blocks publishing rather than a
+    // silent default.
+    @Test
+    fun migrate_3_to_4_adds_category_and_cover_without_touching_existing_lists() {
+        helper.createDatabase(TEST_DB, 3).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, authorName) " +
+                    "VALUES (1, 'Films', NULL, 'WRAP', 'published-1', 'Danylo K.')",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 4, true, MIGRATION_3_4)
+
+        val cursor = migratedDb.query(
+            "SELECT title, publishedId, authorName, category, coverImageUrl FROM tier_lists WHERE id = 1",
+        )
+        cursor.use {
+            check(it.moveToFirst())
+            assertEquals("Films", it.getString(0))
+            assertEquals("published-1", it.getString(1))
+            assertEquals("Danylo K.", it.getString(2))
+            assertEquals(true, it.isNull(3))
+            assertEquals(true, it.isNull(4))
+        }
+    }
+
     private data class MigratedItem(
         val id: Long,
         val title: String,

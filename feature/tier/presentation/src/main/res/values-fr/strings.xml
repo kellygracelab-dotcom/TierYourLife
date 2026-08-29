@@ -327,4 +327,28 @@
     <string name="list_settings_public_too_many">Vous avez publié le maximum de listes autorisé. Retirez-en une pour faire de la place.</string>
     <string name="list_settings_public_offline">Pas de connexion. Réessayez une fois de retour en ligne.</string>
     <string name="list_settings_public_failed">Impossible de publier cette liste. Réessayez.</string>
+    <string name="category_all">Tout</string>
+    <string name="category_anime">Animé</string>
+    <string name="category_film_tv">Cinéma et TV</string>
+    <string name="category_games">Jeux</string>
+    <string name="category_music">Musique</string>
+    <string name="category_food">Cuisine</string>
+    <string name="category_sport">Sport</string>
+    <string name="category_people">Personnes</string>
+    <string name="category_other">Autre</string>
+    <string name="list_settings_category">Catégorie</string>
+    <string name="list_settings_category_none">Pas encore choisie</string>
+    <string name="list_settings_public_needs_category">Choisissez une catégorie avant de publier la liste.</string>
+    <string name="list_settings_cover">Couverture</string>
+    <string name="list_settings_cover_none_set">Aucune</string>
+    <string name="list_settings_cover_set">Choisie</string>
+    <string name="list_settings_cover_body">Choisissez une carte de cette liste ou une image de votre galerie.</string>
+    <string name="list_settings_cover_no_cards">Aucune carte de cette liste n\'a encore d\'image.</string>
+    <string name="list_settings_cover_gallery">Choisir dans la galerie</string>
+    <string name="list_settings_cover_gallery_note">Une image de la galerie reste sur ce téléphone. Dans la communauté, la liste montre ses cartes à la place.</string>
+    <string name="list_settings_cover_none">Retirer la couverture</string>
+    <plurals name="community_item_count">
+        <item quantity="one">%1$d carte</item>
+        <item quantity="other">%1$d cartes</item>
+    </plurals>
 </resources>

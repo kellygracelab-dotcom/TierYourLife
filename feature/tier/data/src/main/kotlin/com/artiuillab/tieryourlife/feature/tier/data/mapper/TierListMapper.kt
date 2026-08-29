@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWithTiers
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierWithItems
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
@@ -17,6 +18,8 @@ internal fun TierListEntity.toDomain(): TierList = TierList(
     displayMode = displayMode.toDisplayMode(),
     publishedId = publishedId,
     authorName = authorName,
+    category = ListCategory.fromId(category),
+    coverImageUrl = coverImageUrl,
 )
 
 internal fun TierListWithTiers.toDomain(): TierList = TierList(
@@ -28,6 +31,8 @@ internal fun TierListWithTiers.toDomain(): TierList = TierList(
     displayMode = tierList.displayMode.toDisplayMode(),
     publishedId = tierList.publishedId,
     authorName = tierList.authorName,
+    category = ListCategory.fromId(tierList.category),
+    coverImageUrl = tierList.coverImageUrl,
 )
 
 private fun String.toDisplayMode(): TierListDisplayMode =

@@ -4,7 +4,13 @@ data class PublishedListSummary(
     val id: String,
     val title: String,
     val authorName: String,
+    val category: ListCategory,
     val itemCount: Int,
+    val coverImageUrl: String? = null,
+    /** Card art the feed draws a mosaic from when there is no cover. */
+    val previewImages: List<String> = emptyList(),
+    /** The author's palette, for a card with neither a cover nor card art. */
+    val tierColors: List<String> = emptyList(),
     val updatedAtMillis: Long,
 )
 

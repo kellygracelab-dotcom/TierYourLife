@@ -9,4 +9,8 @@ data class TierList(
     val publishedId: String? = null,
     /** Set on a copy taken from someone else's published list. */
     val authorName: String? = null,
+    /** Where this list sits in the community feed. Required before publishing. */
+    val category: ListCategory? = null,
+    /** The author's own cover. A local pick never reaches the community. */
+    val coverImageUrl: String? = null,
 )
