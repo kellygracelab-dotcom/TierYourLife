@@ -26,6 +26,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
@@ -1148,7 +1149,12 @@ class TierDetailScreenTest {
 
         val firstTop = tileBounds(items.first().id).top
 
-        composeRule.onNodeWithTag(TierDetailTestTags.tile(items.last().id)).performScrollTo().assertIsDisplayed()
+        // The strip is lazy, so the last tile is not composed until scrolled to
+        // -- which is the point of it, and why this asks the row to scroll
+        // rather than asking a tile that does not exist yet.
+        composeRule.onNodeWithTag(TierDetailTestTags.tierItems(1L))
+            .performScrollToIndex(items.lastIndex)
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(items.last().id)).assertIsDisplayed()
         val lastTop = tileBounds(items.last().id).top
 
         assertEquals("expected the scrolled-to tile to stay on the same line", firstTop, lastTop, 0.5f)
