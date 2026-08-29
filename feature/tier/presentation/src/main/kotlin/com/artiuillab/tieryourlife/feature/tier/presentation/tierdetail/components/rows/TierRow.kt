@@ -5,13 +5,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,13 +19,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -95,6 +98,18 @@ internal fun TierRow(
     }
 
     val collapsed = dragController.isDraggingTier || dragController.isSettlingTier
+    val strip = displayMode == TierListDisplayMode.HORIZONTAL_SCROLL
+    val stripState = rememberLazyListState()
+
+    if (strip) {
+        SideEffect {
+            dragController.registerItemsRowMeta(tier.id, stripState, tier.items.map { it.id })
+        }
+    }
+
+    DisposableEffect(tier.id, strip) {
+        onDispose { if (strip) dragController.unregisterItemsRow(tier.id) }
+    }
 
     val rowHeightModifier = if (collapsed || displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
         Modifier.height(MIN_TIER_ROW_HEIGHT)
@@ -208,16 +223,22 @@ internal fun TierRow(
                     .testTag(TierDetailTestTags.tierItems(tier.id)),
             )
         } else if (displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
-            Row(
+            // Lazy, like the pool: a strip only ever shows a handful, and the
+            // drag controller works out the drop from the list's own layout
+            // rather than from every tile having reported where it sits.
+            LazyRow(
+                state = stripState,
                 modifier = Modifier
                     .weight(1f)
                     .height(MIN_TIER_ROW_HEIGHT)
-                    .horizontalScroll(rememberScrollState())
-                    .padding(10.dp)
+                    .onGloballyPositioned { coordinates ->
+                        dragController.registerItemsRowBounds(tier.id, coordinates.boundsInRoot())
+                    }
                     .testTag(TierDetailTestTags.tierItems(tier.id)),
+                contentPadding = PaddingValues(10.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                tier.items.forEachIndexed { index, item ->
+                items(tier.items, key = { it.id }) { item ->
                     DraggableTile(
                         item = item,
                         sourceTierId = tier.id,
@@ -226,7 +247,6 @@ internal fun TierRow(
                         dragController = dragController,
                         onMoveItem = onMoveItem,
                         onDeleteItem = onDeleteItem,
-                        onPositioned = { bounds -> dragController.registerTileBounds(tier.id, item.id, index, bounds) },
                         onDoubleTap = onDoubleTap,
                     )
                 }
