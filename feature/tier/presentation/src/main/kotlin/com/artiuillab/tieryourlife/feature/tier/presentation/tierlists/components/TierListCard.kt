@@ -110,7 +110,7 @@ internal fun TierListCard(
                             inPoolText,
                         )
                     },
-                    style = TierYourLifeType.current.captionUnderTitle,
+                    style = TierYourLifeType.current.supportingLabel,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }

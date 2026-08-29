@@ -398,7 +398,7 @@ internal fun SettingsRow(
             Text(text = title, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
             Text(
                 text = subtitle,
-                style = TierYourLifeType.current.captionUnderTitle,
+                style = TierYourLifeType.current.supportingLabel,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

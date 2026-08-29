@@ -200,8 +200,10 @@ class EveryScreenInEveryLanguageTest {
         id = 1,
         title = "Every A24 film, ranked by how much I cried",
         tiers = listOf(
-            Tier(1, "S", "#B03A32", "#F1948C", listOf(TierItem(1, "Hereditary", null))),
-            Tier(2, "A", "#C06A25", "#E9A867", listOf(TierItem(2, "Moonlight", null))),
+            // Captions carry letters that hang below the line in half our
+            // languages, and the band they sit in is the tightest box we draw.
+            Tier(1, "S", "#B03A32", "#F1948C", listOf(TierItem(1, "Hereditary", null)), caption = "Найкращі"),
+            Tier(2, "A", "#C06A25", "#E9A867", listOf(TierItem(2, "Moonlight", null)), caption = "جيد"),
             Tier(
                 id = -1,
                 label = "Unranked",

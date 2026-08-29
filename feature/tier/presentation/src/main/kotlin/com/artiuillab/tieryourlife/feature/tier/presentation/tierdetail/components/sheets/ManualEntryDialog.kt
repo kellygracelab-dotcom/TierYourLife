@@ -101,7 +101,7 @@ internal fun ManualEntryDialogContent(
             Column {
                 Text(
                     text = stringResource(R.string.manual_dialog_body),
-                    style = TierYourLifeType.current.captionUnderTitle,
+                    style = TierYourLifeType.current.supportingLabel,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 16.dp),
                 )
@@ -138,7 +138,7 @@ internal fun ManualEntryDialogContent(
                             } else {
                                 stringResource(R.string.manual_dialog_photo_optional)
                             },
-                            style = TierYourLifeType.current.captionUnderTitle,
+                            style = TierYourLifeType.current.supportingLabel,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = 8.dp),
                         )
@@ -153,7 +153,7 @@ internal fun ManualEntryDialogContent(
                                             R.string.manual_dialog_replace_photo
                                         },
                                     ),
-                                    style = TierYourLifeType.current.chipText,
+                                    style = TierYourLifeType.current.supportingLabel,
                                 )
                             },
                             leadingIcon = {

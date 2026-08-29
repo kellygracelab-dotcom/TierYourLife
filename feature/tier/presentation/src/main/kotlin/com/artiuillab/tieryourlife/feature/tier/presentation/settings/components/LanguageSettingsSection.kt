@@ -88,7 +88,7 @@ private fun LanguageBottomSheet(selectedTag: String?, onSelect: (String?) -> Uni
                 )
                 Text(
                     text = stringResource(R.string.settings_language_caption),
-                    style = TierYourLifeType.current.captionUnderTitle,
+                    style = TierYourLifeType.current.supportingLabel,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }

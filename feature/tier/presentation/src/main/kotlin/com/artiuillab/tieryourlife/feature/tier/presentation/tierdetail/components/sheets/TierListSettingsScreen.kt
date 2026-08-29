@@ -190,7 +190,7 @@ private fun DisplayModeSection(
         Text(
             text = stringResource(R.string.tier_list_settings_display_section_caption),
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-            style = TierYourLifeType.current.captionUnderTitle,
+            style = TierYourLifeType.current.supportingLabel,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Column(Modifier.selectableGroup()) {
@@ -258,7 +258,7 @@ private fun DisplayModeRow(
         icon(24.dp, if (selected) accent else neutral)
         Column(Modifier.weight(1f)) {
             Text(text = title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-            Text(text = subtitle, style = TierYourLifeType.current.captionUnderTitle, color = neutral)
+            Text(text = subtitle, style = TierYourLifeType.current.supportingLabel, color = neutral)
         }
     }
 }
@@ -299,7 +299,7 @@ private fun SettingsActionRow(
             )
             Text(
                 text = subtitle,
-                style = TierYourLifeType.current.captionUnderTitle,
+                style = TierYourLifeType.current.supportingLabel,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

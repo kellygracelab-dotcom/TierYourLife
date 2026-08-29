@@ -85,7 +85,7 @@ internal fun ResultsList(
                     item.subtitle?.let { subtitle ->
                         Text(
                             text = subtitle,
-                            style = TierYourLifeType.current.captionUnderTitle,
+                            style = TierYourLifeType.current.supportingLabel,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }

@@ -136,7 +136,7 @@ internal fun TierColorPicker(
 
         Text(
             text = stringResource(R.string.tier_editor_color_section_caption),
-            style = TierYourLifeType.current.captionUnderTitle,
+            style = TierYourLifeType.current.supportingLabel,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 10.dp),
         )
@@ -358,7 +358,7 @@ private fun ColorTabButton(
         Text(
             text = label,
             modifier = Modifier.padding(start = 8.dp),
-            style = TierYourLifeType.current.tabLabel,
+            style = TierYourLifeType.current.supportingLabel,
             color = textColor,
         )
     }
@@ -464,7 +464,7 @@ private fun ContrastReadout(isDark: Boolean, colorLight: String, colorDark: Stri
             ContrastIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
                 text = "%.1f:1".format(ratio),
-                style = TierYourLifeType.current.captionUnderTitle,
+                style = TierYourLifeType.current.supportingLabel,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.testTag(TierDetailTestTags.TIER_EDITOR_CONTRAST_READOUT),
             )
