@@ -218,7 +218,7 @@ class TierListsViewModel @Inject constructor(
 
     fun hideCommunityList(summary: PublishedListSummary) {
         preferences.hideList(summary.id, summary.title)
-        dropFromFeed { it.id == summary.id }
+        noteHidden(summary.id, reported = false)
     }
 
     fun hideCommunityAuthor(authorUid: String, name: String) {
@@ -231,11 +231,18 @@ class TierListsViewModel @Inject constructor(
      * person's decision, and the screen says so rather than pretending.
      */
     fun reportCommunityList(summary: PublishedListSummary, reason: ReportReason, note: String?) {
-        hideCommunityList(summary)
+        preferences.hideList(summary.id, summary.title)
+        noteHidden(summary.id, reported = true)
         viewModelScope.launch {
             community.report(summary.id, reason, note)
                 .onFailure { Timber.w(it, "Could not file the report") }
         }
+    }
+
+    private fun noteHidden(publishedId: String, reported: Boolean) {
+        val current = communityFeed as? CommunityFeed.Ready ?: return
+        communityFeed = current.copy(justHidden = current.justHidden + (publishedId to reported))
+        emitSuccess()
     }
 
     private fun dropFromFeed(matching: (PublishedListSummary) -> Boolean) {

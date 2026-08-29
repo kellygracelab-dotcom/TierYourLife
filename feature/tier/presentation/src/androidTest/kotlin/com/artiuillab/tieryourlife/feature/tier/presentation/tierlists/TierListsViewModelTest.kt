@@ -398,6 +398,51 @@ class TierListsViewModelTest {
         assertEquals(listOf("a", "c"), shownIds(viewModel))
     }
 
+    // Design asked for a quiet note where the card was, not a silent gap:
+    // vanishing reads as "deleted", which is not what happened.
+    @Test
+    fun hidingFromTheFeed_leavesANoteWhereTheCardWas() = runBlocking {
+        val community = FakeCommunityRepository(feed = listOf(published("a", "One"), published("b", "Two")))
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences())
+        viewModel.selectTab(HomeTab.Community)
+        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
+
+        viewModel.hideCommunityList(published("a", "One"))
+
+        val feed = readyFeed(viewModel.state.value)!!
+        assertEquals(listOf("a", "b"), feed.lists.map { it.id })
+        assertEquals(mapOf("a" to false), feed.justHidden)
+    }
+
+    @Test
+    fun reportingFromTheFeed_saysSoInTheNote() = runBlocking {
+        val community = FakeCommunityRepository(feed = listOf(published("a", "One")))
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences())
+        viewModel.selectTab(HomeTab.Community)
+        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
+
+        viewModel.reportCommunityList(published("a", "One"), ReportReason.Spam, null)
+
+        assertEquals(mapOf("a" to true), readyFeed(viewModel.state.value)!!.justHidden)
+    }
+
+    @Test
+    fun theNextLoad_carriesNoNotes() = runBlocking {
+        val preferences = FakeAppPreferences()
+        val community = FakeCommunityRepository(feed = listOf(published("a", "One"), published("b", "Two")))
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences)
+        viewModel.selectTab(HomeTab.Community)
+        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
+        viewModel.hideCommunityList(published("a", "One"))
+
+        viewModel.loadCommunityFeed()
+        val reloaded = viewModel.state.first {
+            readyFeed(it)?.justHidden?.isEmpty() == true && readyFeed(it)?.lists?.size == 1
+        }
+
+        assertEquals(listOf("b"), readyFeed(reloaded)!!.lists.map { it.id })
+    }
+
     private fun readyFeed(state: TierListsUiState): CommunityFeed.Ready? =
         (state as? TierListsUiState.Success)?.community as? CommunityFeed.Ready
 

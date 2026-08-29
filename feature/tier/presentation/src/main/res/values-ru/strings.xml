@@ -438,4 +438,6 @@
     <string name="my_published_empty_body">Списки, которые ты сделаешь публичными, появятся здесь.</string>
     <string name="my_published_failed">Не удалось загрузить твои публичные списки</string>
     <string name="my_published_action_open">Открыть</string>
+    <string name="community_tile_hidden">Скрыто у тебя</string>
+    <string name="community_tile_reported">Жалоба отправлена. Человек посмотрит.</string>
 </resources>

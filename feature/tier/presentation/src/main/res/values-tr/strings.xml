@@ -382,4 +382,6 @@
     <string name="my_published_empty_body">Herkese açık yaptığınız listeler burada görünür.</string>
     <string name="my_published_failed">Herkese açık listeleriniz yüklenemedi</string>
     <string name="my_published_action_open">Aç</string>
+    <string name="community_tile_hidden">Sizin için gizlendi</string>
+    <string name="community_tile_reported">Bildirildi. Bir kişi inceleyecek.</string>
 </resources>

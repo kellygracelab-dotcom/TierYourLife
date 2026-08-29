@@ -121,6 +121,11 @@ internal fun CommunityFeedList(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(feed.lists, key = { it.id }) { summary ->
+                        val reported = feed.justHidden[summary.id]
+                        if (reported != null) {
+                            HiddenTile(reported)
+                            return@items
+                        }
                         CommunityCard(
                             summary = summary,
                             onClick = { onOpen(summary.id) },
@@ -148,6 +153,37 @@ internal fun CommunityFeedList(
                     }
                 }
             }
+        }
+    }
+}
+
+/**
+ * What is left where a card was. Vanishing silently reads as "deleted",
+ * which is not what happened, and a card that stayed would read as though
+ * nothing had. It goes on the next load.
+ */
+@Composable
+private fun HiddenTile(reported: Boolean) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f))
+            .testTag(TierListsTestTags.COMMUNITY_HIDDEN_TILE)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.community_tile_hidden),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        if (reported) {
+            Text(
+                text = stringResource(R.string.community_tile_reported),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
         }
     }
 }
