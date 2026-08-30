@@ -450,7 +450,7 @@ class TierListsViewModelTest {
         id = id,
         title = title,
         authorUid = "author-$id",
-        authorName = "Danylo K.",
+        authorName = "Olena M.",
         category = ListCategory.FilmTv,
         itemCount = 12,
         updatedAtMillis = 0,

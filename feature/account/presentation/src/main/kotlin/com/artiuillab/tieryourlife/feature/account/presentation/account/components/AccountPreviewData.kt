@@ -8,7 +8,7 @@ internal val previewAccountGuestState = AccountUiState()
 internal val previewAccountSigningInState = AccountUiState(signingIn = true)
 
 internal val previewAccountSignedInState = AccountUiState(
-    account = Account.SignedIn(email = "danylo@example.com", photoUrl = null, displayName = "Danylo K."),
+    account = Account.SignedIn(email = "olena@example.com", photoUrl = null, displayName = "Olena M."),
     credits = 12,
     publicListCount = 3,
 )

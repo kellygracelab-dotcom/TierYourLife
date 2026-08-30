@@ -212,7 +212,7 @@ private fun HiddenScreenPreview() = TierYourLifeTheme {
     HiddenScreenContent(
         state = HiddenUiState(
             lists = listOf(HiddenEntry("1", "Every A24 film, ranked"), HiddenEntry("2", "Ramen places in Kyiv")),
-            people = listOf(HiddenEntry("u1", "Danylo Kovalenko")),
+            people = listOf(HiddenEntry("u1", "Olena Marchuk")),
         ),
         onBack = {},
     )

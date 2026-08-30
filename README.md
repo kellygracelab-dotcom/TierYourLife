@@ -26,16 +26,16 @@
 
 ## The app
 
-| Your boards | A board | AI image studio |
+| Your boards | A board | Settings |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/home-light.png" width="240"> | <img src="docs/screenshots/tiers-light.png" width="240"> | <img src="docs/screenshots/ai-studio-light.png" width="240"> |
+| <img src="docs/screenshots/home-light.png" width="240"> | <img src="docs/screenshots/board-light.png" width="240"> | <img src="docs/screenshots/settings-light.png" width="240"> |
 
 Light and dark are designed separately — each tier carries two colours, so a band that is readable
 on white is not a glowing slab at night. The theme follows the system or is pinned in settings.
 
-| Light | Dark | Settings |
+| A board, dark | Nothing yet | Settings, dark |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/tiers-light.png" width="240"> | <img src="docs/screenshots/tiers-dark.png" width="240"> | <img src="docs/screenshots/settings.png" width="240"> |
+| <img src="docs/screenshots/board-dark.png" width="240"> | <img src="docs/screenshots/home-empty-dark.png" width="240"> | <img src="docs/screenshots/settings-dark.png" width="240"> |
 
 ## The community
 
@@ -44,7 +44,7 @@ cards and your tiers, and an empty board to fill: the ranking is the part you do
 
 | The feed | Long-press a card | Reporting one |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/community-feed.png" width="240"> | <img src="docs/screenshots/community-actions.png" width="240"> | <img src="docs/screenshots/report.png" width="240"> |
+| <img src="docs/screenshots/community-light.png" width="240"> | <img src="docs/screenshots/list-actions-dark.png" width="240"> | <img src="docs/screenshots/report-light.png" width="240"> |
 
 A card shows a cover if the author set one, otherwise a mosaic of the list's own artwork,
 otherwise the author's tier palette — three kinds of card in one grid, each saying as much
@@ -57,7 +57,28 @@ and both can be undone from Settings.
 
 | Hidden, and put back | The report queue | What you have published |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/hidden.png" width="240"> | <img src="docs/screenshots/moderation.png" width="240"> | <img src="docs/screenshots/my-published.png" width="240"> |
+| <img src="docs/screenshots/hidden-light.png" width="240"> | <img src="docs/screenshots/moderation-light.png" width="240"> | <img src="docs/screenshots/my-published-light.png" width="240"> |
+
+Opening someone else's board gives you their cards and their tiers and an empty board, and the
+author is a person you can open rather than a line of text.
+
+| Someone else's board | Their profile |
+|:---:|:---:|
+| <img src="docs/screenshots/community-list-light.png" width="240"> | <img src="docs/screenshots/author-dark.png" width="240"> |
+
+## On a tablet
+
+Filling a tablet's width is not the same as using it. Content has a measure and the window keeps
+the rest: 640dp for rows where a label and its control have to stay in one glance, 1080dp for a
+board — wider on purpose, because a tier is a horizontal strip and width is the one thing it can
+spend. The feed is the exception: there the width buys more cards rather than bigger ones.
+
+| A board at 1280×800dp | The feed | Settings |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/tablet/board-light.png" width="300"> | <img src="docs/screenshots/tablet/community-light.png" width="300"> | <img src="docs/screenshots/tablet/settings-dark.png" width="300"> |
+
+Upright is asked for only while the window is compact, so a phone stays a phone — including a
+folding one, which is two different answers in one body — and a tablet turns freely.
 
 ## What it does today
 
@@ -180,8 +201,9 @@ Every push runs the whole suite:
 | JVM | domain logic, search merging, title derivation, DTO parsing, repository behaviour against fakes |
 | Instrumented — data | Room DAOs, transactions, cascades, the image store |
 | Instrumented — presentation | Compose screens, view models, drag arithmetic, RTL layout |
-| Instrumented — app | manifest contract (RTL support, portrait, config-change handling) |
+| Instrumented — app | manifest contract (RTL support, orientation by window size, config-change handling) |
 | Instrumented — every language | every screen rendered in all eleven, and written out to look at |
+| Instrumented — the README | the pictures above, drawn rather than photographed ([how](docs/screenshots.md)) |
 
 Some of these exist because a bug got through first: a locale change that quietly broke three
 things visible in no other language, a tier deletion that took recoverable items with it, a

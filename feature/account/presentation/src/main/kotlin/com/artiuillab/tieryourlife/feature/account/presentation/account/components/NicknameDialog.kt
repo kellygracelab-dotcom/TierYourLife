@@ -88,5 +88,5 @@ internal fun NicknameDialog(
 @TierYourLifeDevicePreviews
 @Composable
 private fun NicknameDialogPreview() = TierYourLifeTheme {
-    NicknameDialog(current = "Danylo", onDismiss = {}, onSave = {})
+    NicknameDialog(current = "Olena", onDismiss = {}, onSave = {})
 }

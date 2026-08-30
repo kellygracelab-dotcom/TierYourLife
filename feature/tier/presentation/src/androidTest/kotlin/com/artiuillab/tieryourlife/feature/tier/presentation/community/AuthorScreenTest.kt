@@ -91,7 +91,7 @@ class AuthorScreenTest {
             TierYourLifeTheme {
                 AuthorScreenContent(
                     state = AuthorUiState.Ready(
-                        name = "Danylo K.",
+                        name = "Olena M.",
                         photoUrl = null,
                         lists = listOf(summary("1", "Sci-fi films"), summary("2", "Every A24 film")),
                     ),
@@ -109,7 +109,7 @@ class AuthorScreenTest {
         id = id,
         title = title,
         authorUid = "author-1",
-        authorName = "Danylo K.",
+        authorName = "Olena M.",
         category = ListCategory.FilmTv,
         itemCount = 12,
         updatedAtMillis = 0,
