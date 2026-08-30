@@ -2,11 +2,15 @@ package com.artiuillab.tieryourlife.feature.tier.data.di
 
 import android.content.Context
 import androidx.room.Room
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_1_2
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_2_3
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_3_4
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_4_5
+import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_5_6
+import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_6_7
+import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_7_8
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.TierDatabase
 import dagger.Module
 import dagger.Provides
@@ -28,7 +32,7 @@ object DatabaseModule {
         TierDatabase::class.java,
         DATABASE_NAME,
     )
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
         // No destructive fallback of any kind. Opening a newer database with an
         // older build used to drop every table without a word, which turns
         // "you installed the wrong build" into "your library is gone" -- and
@@ -41,6 +45,10 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideTierDao(database: TierDatabase): TierDao = database.tierDao()
+
+    @Provides
+    @Singleton
+    fun provideBoardSyncDao(database: TierDatabase): BoardSyncDao = database.boardSyncDao()
 
     private const val DATABASE_NAME = "tier_your_life.db"
 }

@@ -1,10 +1,8 @@
 <resources>
     <string name="account_signed_in">Connecté</string>
-    <string name="account_sign_in_title">Se connecter</string>
+    <string name="account_sign_in_title">Gardez votre travail</string>
     <string name="account_optional">Le compte est facultatif. L\'application fonctionne pareil sans.</string>
-    <string name="account_reason_credits">Vos crédits de génération survivent à une réinstallation et à un nouveau téléphone.</string>
-    <string name="account_reason_purchases">Les achats reviennent d\'eux-mêmes.</string>
-    <string name="account_reason_sync">La synchronisation des tableaux, quand elle existera.</string>
+    <string name="account_reason_purchases">Les crédits et les achats reviennent sur n’importe quel appareil.</string>
     <string name="account_credits_note">Restaurés depuis votre compte</string>
     <string name="account_action_sign_in_google">Se connecter avec Google</string>
     <string name="account_action_not_now">Pas maintenant</string>
@@ -15,7 +13,6 @@
     <string name="account_notice_existing_account">Ce compte Google avait déjà ses propres crédits — ce sont ceux que vous avez maintenant.</string>
     <string name="account_cd_close">Fermer</string>
     <string name="account_action_sign_out">Se déconnecter</string>
-    <string name="account_sign_out_body">Vos listes restent sur ce téléphone. Vos crédits vous attendent ici.</string>
     <string name="account_community_section">DANS LA COMMUNAUTÉ</string>
     <string name="account_community_note">Voilà comment vous apparaissez sur les listes que vous publiez. Votre e-mail n\'est jamais affiché.</string>
     <string name="account_nickname_title">Votre nom</string>
@@ -43,4 +40,26 @@
         <item quantity="many">%1$d générations</item>
         <item quantity="other">%1$d générations</item>
     </plurals>
+    <string name="account_reason_devices">Vos tableaux vous suivent sur un nouveau téléphone.</string>
+    <string name="account_reason_publish">Publier une liste demande un compte.</string>
+    <string name="account_backup_label">Sauvegarder mes tableaux</string>
+    <string name="account_backup_sub">%1$s et leurs images. Vous pouvez désactiver ça dans les réglages.</string>
+    <string name="account_sign_out_body_1">Vos tableaux restent sur ce téléphone et dans votre compte. Les modifications faites après la déconnexion ne seront pas synchronisées.</string>
+    <string name="account_sign_out_body_2">Les crédits et les achats vous attendent ici.</string>
+    <plurals name="account_board_count">
+        <item quantity="one">%1$d tableau</item>
+        <item quantity="other">%1$d tableaux</item>
+    </plurals>
+    <string name="merge_title">Vous avez déjà utilisé ce compte</string>
+    <string name="merge_body">Il contient déjà %1$s. Ce téléphone a %2$s créés sans compte.</string>
+    <string name="merge_keep_title">Tout garder</string>
+    <string name="merge_keep_sub">Les %1$s. Si deux portent le même nom, le tableau local reçoit « (de ce téléphone) ».</string>
+    <string name="merge_remote_title">Utiliser seulement les tableaux du compte</string>
+    <string name="merge_remote_sub">%1$s de ce téléphone vont à la corbeille. Vous pouvez les restaurer pendant 30 jours.</string>
+    <string name="merge_footnote">Rien n’est supprimé dans les deux cas.</string>
+    <string name="merge_recommended">Recommandé</string>
+    <string name="merge_action_continue">Continuer</string>
+    <string name="merge_name_suffix">(de ce téléphone)</string>
+    <string name="account_sign_out_title">Se déconnecter ?</string>
+    <string name="account_sign_out_helper">Vos tableaux restent sur ce téléphone et dans votre compte. Les modifications faites après la déconnexion ne seront pas synchronisées. Les crédits et les achats vous attendent ici.</string>
 </resources>

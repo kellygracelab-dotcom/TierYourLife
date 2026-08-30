@@ -1,10 +1,8 @@
 <resources>
     <string name="account_signed_in">Oturum açıldı</string>
-    <string name="account_sign_in_title">Oturum aç</string>
+    <string name="account_sign_in_title">İşini sakla</string>
     <string name="account_optional">Hesap isteğe bağlı. Uygulama onsuz da aynı şekilde çalışır.</string>
-    <string name="account_reason_credits">Üretim hakların yeniden kurulumdan ve yeni telefondan sağ çıkar.</string>
-    <string name="account_reason_purchases">Satın alımlar kendiliğinden geri gelir.</string>
-    <string name="account_reason_sync">Pano eşitlemesi, geldiğinde.</string>
+    <string name="account_reason_purchases">Krediler ve satın almalar her cihazda geri gelir.</string>
     <string name="account_credits_note">Hesabından geri yüklendi</string>
     <string name="account_action_sign_in_google">Google ile oturum aç</string>
     <string name="account_action_not_now">Şimdi değil</string>
@@ -15,7 +13,6 @@
     <string name="account_notice_existing_account">Bu Google hesabının kendi hakları vardı — artık sende olanlar onlar.</string>
     <string name="account_cd_close">Kapat</string>
     <string name="account_action_sign_out">Oturumu kapat</string>
-    <string name="account_sign_out_body">Listelerin bu telefonda kalır. Hakların burada seni bekler.</string>
     <string name="account_community_section">TOPLULUKTA</string>
     <string name="account_community_note">Yayımladığınız listelerde böyle görünürsünüz. E-postanız asla gösterilmez.</string>
     <string name="account_nickname_title">Adınız</string>
@@ -41,4 +38,26 @@
         <item quantity="one">%1$d üretim</item>
         <item quantity="other">%1$d üretim</item>
     </plurals>
+    <string name="account_reason_devices">Panoların yeni telefona seninle gelir.</string>
+    <string name="account_reason_publish">Bir listeyi yayınlamak için hesap gerekir.</string>
+    <string name="account_backup_label">Panolarımın yedeğini al</string>
+    <string name="account_backup_sub">%1$s ve resimleri. Bunu ayarlardan kapatabilirsin.</string>
+    <string name="account_sign_out_body_1">Panoların hem bu telefonda hem hesabında kalır. Çıkış yaptıktan sonraki değişiklikler eşitlenmez.</string>
+    <string name="account_sign_out_body_2">Krediler ve satın almalar burada seni bekler.</string>
+    <plurals name="account_board_count">
+        <item quantity="one">1 pano</item>
+        <item quantity="other">%1$d pano</item>
+    </plurals>
+    <string name="merge_title">Bu hesabı daha önce kullandın</string>
+    <string name="merge_body">Zaten %1$s var. Bu telefonda hesapsız yaptığın %2$s var.</string>
+    <string name="merge_keep_title">Hepsini sakla</string>
+    <string name="merge_keep_sub">Tüm %1$s. İkisinin adı aynıysa yereldekine “(bu telefondan)” eklenir.</string>
+    <string name="merge_remote_title">Yalnızca hesabın panoları</string>
+    <string name="merge_remote_sub">Bu telefondaki %1$s çöp kutusuna gider. 30 gün boyunca geri alabilirsin.</string>
+    <string name="merge_footnote">Hiçbir durumda bir şey silinmez.</string>
+    <string name="merge_recommended">Önerilen</string>
+    <string name="merge_action_continue">Devam</string>
+    <string name="merge_name_suffix">(bu telefondan)</string>
+    <string name="account_sign_out_title">Çıkış yapılsın mı?</string>
+    <string name="account_sign_out_helper">Panoların hem bu telefonda hem hesabında kalır. Çıkış yaptıktan sonraki değişiklikler eşitlenmez. Krediler ve satın almalar burada seni bekler.</string>
 </resources>

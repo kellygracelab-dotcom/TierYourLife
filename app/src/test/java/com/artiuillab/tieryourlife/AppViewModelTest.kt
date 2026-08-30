@@ -84,6 +84,26 @@ private class FakeAppPreferences(
 
     override fun unhideAuthor(authorUid: String) = Unit
 
+    override fun backUpBoards(): Boolean = true
+
+    override fun setBackUpBoards(backUp: Boolean) = Unit
+
+    override fun signInOfferAnswered(): Boolean = false
+
+    override fun markSignInOfferAnswered() = Unit
+
+    override fun picturesOnWifiOnly(): Boolean = true
+
+    override fun setPicturesOnWifiOnly(wifiOnly: Boolean) = Unit
+
+    override fun lastSyncedAtMs(): Long? = null
+
+    override fun setLastSyncedAtMs(atMs: Long?) = Unit
+
+    override fun conflictsSeen(): Set<String> = emptySet()
+
+    override fun markConflictSeen(listUid: String) = Unit
+
     override fun lastKnownCredits(): Int? = null
 
     override fun setLastKnownCredits(credits: Int?) = Unit

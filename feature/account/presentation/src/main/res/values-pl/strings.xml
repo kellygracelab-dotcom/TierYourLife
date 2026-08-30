@@ -1,10 +1,8 @@
 <resources>
     <string name="account_signed_in">Zalogowano</string>
-    <string name="account_sign_in_title">Zaloguj się</string>
+    <string name="account_sign_in_title">Zachowaj swoją pracę</string>
     <string name="account_optional">Konto jest opcjonalne. Bez niego aplikacja działa tak samo.</string>
-    <string name="account_reason_credits">Kredyty na generowanie przetrwają ponowną instalację i nowy telefon.</string>
-    <string name="account_reason_purchases">Zakupy wracają same.</string>
-    <string name="account_reason_sync">Synchronizacja tablic, gdy powstanie.</string>
+    <string name="account_reason_purchases">Kredyty i zakupy wracają na każdym urządzeniu.</string>
     <string name="account_credits_note">Przywrócone z Twojego konta</string>
     <string name="account_action_sign_in_google">Zaloguj się przez Google</string>
     <string name="account_action_not_now">Nie teraz</string>
@@ -15,7 +13,6 @@
     <string name="account_notice_existing_account">To konto Google miało już własne kredyty — i to one są teraz Twoje.</string>
     <string name="account_cd_close">Zamknij</string>
     <string name="account_action_sign_out">Wyloguj się</string>
-    <string name="account_sign_out_body">Twoje listy zostają na tym telefonie. Kredyty czekają tutaj.</string>
     <string name="account_community_section">W SPOŁECZNOŚCI</string>
     <string name="account_community_note">Tak wyglądasz na listach, które publikujesz. Twój e-mail nigdy nie jest pokazywany.</string>
     <string name="account_nickname_title">Twoja nazwa</string>
@@ -45,4 +42,28 @@
         <item quantity="many">%1$d generacji</item>
         <item quantity="other">%1$d generacji</item>
     </plurals>
+    <string name="account_reason_devices">Tablice pojadą z tobą na nowy telefon.</string>
+    <string name="account_reason_publish">Publikowanie listy wymaga konta.</string>
+    <string name="account_backup_label">Kopia moich tablic</string>
+    <string name="account_backup_sub">%1$s i ich zdjęcia. Możesz to wyłączyć w ustawieniach.</string>
+    <string name="account_sign_out_body_1">Tablice zostają i na tym telefonie, i na koncie. Zmiany po wylogowaniu nie trafią na konto.</string>
+    <string name="account_sign_out_body_2">Kredyty i zakupy czekają tu na ciebie.</string>
+    <plurals name="account_board_count">
+        <item quantity="one">%1$d tablica</item>
+        <item quantity="few">%1$d tablice</item>
+        <item quantity="many">%1$d tablic</item>
+        <item quantity="other">%1$d tablicy</item>
+    </plurals>
+    <string name="merge_title">Już korzystałeś z tego konta</string>
+    <string name="merge_body">Ma już %1$s. Na tym telefonie jest %2$s zrobione bez konta.</string>
+    <string name="merge_keep_title">Zachowaj wszystko</string>
+    <string name="merge_keep_sub">Wszystkie %1$s. Jeśli dwie mają tę samą nazwę, do lokalnej dojdzie „(z tego telefonu)”.</string>
+    <string name="merge_remote_title">Tylko tablice z konta</string>
+    <string name="merge_remote_sub">%1$s z tego telefonu trafią do kosza. Możesz je przywrócić przez 30 dni.</string>
+    <string name="merge_footnote">Nic nie zostaje usunięte w żadnym przypadku.</string>
+    <string name="merge_recommended">Zalecane</string>
+    <string name="merge_action_continue">Dalej</string>
+    <string name="merge_name_suffix">(z tego telefonu)</string>
+    <string name="account_sign_out_title">Wylogować?</string>
+    <string name="account_sign_out_helper">Tablice zostają i na tym telefonie, i na koncie. Zmiany po wylogowaniu nie trafią na konto. Kredyty i zakupy czekają tu na ciebie.</string>
 </resources>

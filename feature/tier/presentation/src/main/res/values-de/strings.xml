@@ -386,4 +386,35 @@
         <item quantity="one">Angemeldet · %1$d Guthaben</item>
         <item quantity="other">Angemeldet · %1$d Guthaben</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">1 Board</item>
+        <item quantity="other">%1$d Boards</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, nur auf diesem Telefon</string>
+    <string name="local_only_card_title_one">Dieses Board liegt nur auf diesem Telefon</string>
+    <string name="local_only_card_title_many">Diese Boards liegen nur auf diesem Telefon</string>
+    <string name="local_only_card_body_one">Telefonwechsel oder Neuinstallation, und es ist weg. Ein Konto bewahrt es auf.</string>
+    <string name="local_only_card_body_many">Telefonwechsel oder Neuinstallation, und sie sind weg. Ein Konto bewahrt sie auf.</string>
+    <string name="local_only_card_not_now">Jetzt nicht</string>
+    <string name="local_only_card_sign_in">Anmelden</string>
+    <string name="restoring_one_picture">Bild wird wiederhergestellt</string>
+    <string name="restoring_pictures">Bilder werden wiederhergestellt · %1$d von %2$d</string>
+    <string name="settings_backup_label">Meine Boards sichern</string>
+    <string name="settings_backup_sub">Stufen, Karten und Beschriftungen</string>
+    <string name="settings_backup_pictures_label">Bilder nur über WLAN</string>
+    <string name="settings_backup_pictures_sub">%1$s in deinem Konto</string>
+    <string name="settings_backup_note">Deine Fotos und generierten Karten gehen in dein Konto, und nur du siehst sie. Veröffentlichte Listen zeigen weiterhin ausschließlich Katalogbilder.</string>
+    <string name="settings_backup_stuck">Seit %1$s nicht gesichert. Prüfe deine Verbindung.</string>
+    <string name="settings_backup_off_title">Sicherung beenden?</string>
+    <string name="settings_backup_off_body">Deine Boards bleiben auf diesem Telefon. Die Kopie in deinem Konto wird gelöscht, und ein neues Telefon fängt leer an.</string>
+    <string name="settings_backup_off_confirm">Beenden und löschen</string>
+    <string name="settings_backup_off_cancel">Abbrechen</string>
+    <string name="conflict_title">„%1$s“ wurde auf zwei Telefonen geändert</string>
+    <string name="conflict_body">Beide Fassungen sind hier. Öffne sie, behalte die richtige, lösche die andere.</string>
+    <string name="conflict_got_it">Verstanden</string>
+    <string name="conflict_tag">von %1$s</string>
+    <string name="conflict_tag_unknown">von einem anderen Telefon</string>
+    <string name="conflict_edited_there">Geändert auf %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Geändert auf einem anderen Telefon %1$s</string>
+    <string name="conflict_edited_here">Hier geändert %1$s</string>
 </resources>

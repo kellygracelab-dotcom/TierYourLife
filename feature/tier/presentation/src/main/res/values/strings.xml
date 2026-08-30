@@ -387,4 +387,35 @@
         <item quantity="one">Signed in · %1$d credit</item>
         <item quantity="other">Signed in · %1$d credits</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">1 board</item>
+        <item quantity="other">%1$d boards</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, on this phone only</string>
+    <string name="local_only_card_title_one">This board lives on this phone</string>
+    <string name="local_only_card_title_many">These boards live on this phone</string>
+    <string name="local_only_card_body_one">Change phones or reinstall and it is gone. An account keeps it.</string>
+    <string name="local_only_card_body_many">Change phones or reinstall and they are gone. An account keeps them.</string>
+    <string name="local_only_card_not_now">Not now</string>
+    <string name="local_only_card_sign_in">Sign in</string>
+    <string name="restoring_one_picture">Restoring 1 picture</string>
+    <string name="restoring_pictures">Restoring pictures · %1$d of %2$d</string>
+    <string name="settings_backup_label">Back up my boards</string>
+    <string name="settings_backup_sub">Tiers, items and notes</string>
+    <string name="settings_backup_pictures_label">Pictures on Wi-Fi only</string>
+    <string name="settings_backup_pictures_sub">%1$s in your account</string>
+    <string name="settings_backup_note">Your photos and generated cards go to your account, and only you can see them. Published lists still show catalogue images only.</string>
+    <string name="settings_backup_stuck">Not backed up since %1$s. Check your connection.</string>
+    <string name="settings_backup_off_title">Stop backing up?</string>
+    <string name="settings_backup_off_body">Your boards stay on this phone. The copy in your account is deleted, and a new phone will start empty.</string>
+    <string name="settings_backup_off_confirm">Stop and delete</string>
+    <string name="settings_backup_off_cancel">Cancel</string>
+    <string name="conflict_title">%1$s changed on two phones</string>
+    <string name="conflict_body">Both versions are here. Open them, keep the one you want, delete the other.</string>
+    <string name="conflict_got_it">Got it</string>
+    <string name="conflict_tag">from %1$s</string>
+    <string name="conflict_tag_unknown">from another phone</string>
+    <string name="conflict_edited_there">Edited on %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Edited on another phone %1$s</string>
+    <string name="conflict_edited_here">Edited here %1$s</string>
 </resources>

@@ -11,6 +11,7 @@ android {
 
 dependencies {
     implementation(projects.core.logging)
+    implementation(projects.core.settings)
     implementation(projects.core.theme)
     implementation(projects.feature.account.domain)
     // The confirmation panel reports the balance the account restored, which is

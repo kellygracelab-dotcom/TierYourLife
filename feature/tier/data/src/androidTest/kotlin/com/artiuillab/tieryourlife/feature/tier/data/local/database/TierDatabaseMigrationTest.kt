@@ -162,6 +162,114 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    @Test
+    fun migrate_5_to_6_makes_room_for_the_account_copy_without_moving_anything() {
+        helper.createDatabase(TEST_DB, 5).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, authorName, " +
+                    "category, coverImageUrl, uid) " +
+                    "VALUES (1, 'Films', NULL, 'WRAP', NULL, NULL, NULL, NULL, 'board-1')",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 6, true, MIGRATION_5_6)
+
+        migratedDb.query("SELECT title, uid, arrivedFrom FROM tier_lists WHERE id = 1").use {
+            check(it.moveToFirst())
+            assertEquals("Films", it.getString(0))
+            assertEquals("board-1", it.getString(1))
+            // Nothing arrived from anywhere: this board has only ever been here.
+            assertEquals(true, it.isNull(2))
+        }
+
+        // The table has to be empty rather than absent. A phone that has never
+        // synced must read as "never sent", not as "thrown away".
+        migratedDb.query("SELECT COUNT(*) FROM board_sync").use {
+            check(it.moveToFirst())
+            assertEquals(0, it.getInt(0))
+        }
+    }
+
+    @Test
+    fun migrate_6_to_7_remembers_nothing_and_loses_nothing() {
+        helper.createDatabase(TEST_DB, 6).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, authorName, " +
+                    "category, coverImageUrl, uid, arrivedFrom) " +
+                    "VALUES (1, 'Films', NULL, 'WRAP', NULL, NULL, NULL, NULL, 'board-1', NULL)",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 7, true, MIGRATION_6_7)
+
+        migratedDb.query("SELECT title FROM tier_lists WHERE id = 1").use {
+            check(it.moveToFirst())
+            assertEquals("Films", it.getString(0))
+        }
+
+        // Empty, not absent. A phone that has never sent a picture must read
+        // as "none sent yet" rather than as a broken database.
+        migratedDb.query("SELECT COUNT(*) FROM picture_sync").use {
+            check(it.moveToFirst())
+            assertEquals(0, it.getInt(0))
+        }
+    }
+
+    // The point of doing this in SQL: there are dozens of places that edit a
+    // board, and the database cannot forget any of them.
+    @Test
+    fun migrate_7_to_8_stamps_a_board_whenever_anything_in_it_changes() {
+        helper.createDatabase(TEST_DB, 7).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, authorName, " +
+                    "category, coverImageUrl, uid, arrivedFrom) " +
+                    "VALUES (1, 'Films', NULL, 'WRAP', NULL, NULL, NULL, NULL, 'board-1', NULL)",
+            )
+            execSQL(
+                "INSERT INTO tiers (id, tierListId, position, label, colorLight, colorDark, isPool, " +
+                    "caption, uid) VALUES (1, 1, 0, 'S', '#B03A32', '#F1948C', 0, NULL, 'tier-1')",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 8, true, MIGRATION_7_8)
+
+        // Every board that already existed is stamped, so nothing reads as
+        // never having been touched.
+        val backfilled = migratedDb.query("SELECT editedAt FROM tier_lists WHERE id = 1").use {
+            check(it.moveToFirst())
+            it.getLong(0)
+        }
+        assertTrue("a board that predates the column should still have an age", backfilled > 0)
+
+        migratedDb.execSQL("UPDATE tier_lists SET editedAt = 1 WHERE id = 1")
+        migratedDb.execSQL(
+            "INSERT INTO tier_items (id, tierId, position, title, imageUrl, source, deletedAt, uid) " +
+                "VALUES (1, 1, 0, 'Arrival', NULL, 'MANUAL', NULL, 'item-1')",
+        )
+        assertTrue("adding a card should age the board", editedAt(migratedDb) > 1)
+
+        migratedDb.execSQL("UPDATE tier_lists SET editedAt = 1 WHERE id = 1")
+        migratedDb.execSQL("UPDATE tier_items SET position = 3 WHERE id = 1")
+        assertTrue("moving a card should age the board", editedAt(migratedDb) > 1)
+
+        migratedDb.execSQL("UPDATE tier_lists SET editedAt = 1 WHERE id = 1")
+        migratedDb.execSQL("DELETE FROM tier_items WHERE id = 1")
+        assertTrue("removing a card should age the board", editedAt(migratedDb) > 1)
+
+        migratedDb.execSQL("UPDATE tier_lists SET editedAt = 1 WHERE id = 1")
+        migratedDb.execSQL("UPDATE tier_lists SET title = 'Shows' WHERE id = 1")
+        assertTrue("renaming the board should age it", editedAt(migratedDb) > 1)
+    }
+
+    private fun editedAt(db: androidx.sqlite.db.SupportSQLiteDatabase): Long =
+        db.query("SELECT editedAt FROM tier_lists WHERE id = 1").use {
+            check(it.moveToFirst())
+            it.getLong(0)
+        }
+
     private data class MigratedItem(
         val id: Long,
         val title: String,

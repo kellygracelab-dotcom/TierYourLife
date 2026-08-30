@@ -16,6 +16,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +50,8 @@ internal fun SignedInPanel(
     modifier: Modifier = Modifier,
 ) {
     val name = displayName?.takeIf { it.isNotBlank() } ?: stringResource(R.string.account_signed_in)
+
+    var confirming by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -130,7 +136,7 @@ internal fun SignedInPanel(
 
         Spacer(Modifier.height(40.dp))
         OutlinedButton(
-            onClick = onSignOut,
+            onClick = { confirming = true },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(BUTTON_HEIGHT)
@@ -142,11 +148,30 @@ internal fun SignedInPanel(
             Text(stringResource(R.string.account_action_sign_out))
         }
         Spacer(Modifier.height(8.dp))
+        // The same three facts the question asks, run together as one line:
+        // read before pressing anything it is reassurance, and the dialog
+        // breaks them apart only because that is the moment they are being
+        // weighed. Both replaced "your lists stay on this phone", which was
+        // true when this was the only place they lived and became a
+        // half-truth that read as a threat.
         Text(
-            text = stringResource(R.string.account_sign_out_body),
+            text = stringResource(R.string.account_sign_out_helper),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
+        )
+    }
+
+    // Only exists because sync exists. Before boards were kept, signing out
+    // changed nothing about anybody's data and a confirmation would have been
+    // a speed bump for its own sake.
+    if (confirming) {
+        SignOutDialog(
+            onConfirm = {
+                confirming = false
+                onSignOut()
+            },
+            onDismiss = { confirming = false },
         )
     }
 }

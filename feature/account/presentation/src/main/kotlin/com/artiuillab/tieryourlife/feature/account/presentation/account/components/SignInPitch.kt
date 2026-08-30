@@ -8,16 +8,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.account.presentation.R
 import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountTestTags
@@ -25,14 +29,17 @@ import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountT
 private val BUTTON_HEIGHT = 52.dp
 
 private val REASONS = listOf(
-    R.string.account_reason_credits,
+    R.string.account_reason_devices,
     R.string.account_reason_purchases,
-    R.string.account_reason_sync,
+    R.string.account_reason_publish,
 )
 
 @Composable
 internal fun SignInPitch(
     signingIn: Boolean,
+    boardCount: Int,
+    backUpBoards: Boolean,
+    onBackUpBoardsChange: (Boolean) -> Unit,
     onSignIn: () -> Unit,
     onNotNow: () -> Unit,
     modifier: Modifier = Modifier,
@@ -57,7 +64,18 @@ internal fun SignInPitch(
             }
         }
 
-        Spacer(Modifier.height(32.dp))
+        // Asked here rather than afterwards in Settings, because this is the
+        // moment somebody is deciding what an account is for. Turned off now
+        // it simply never starts -- nothing has gone up yet, so there is
+        // nothing to warn about and nothing to undo.
+        Spacer(Modifier.height(28.dp))
+        BackUpSwitch(
+            boardCount = boardCount,
+            checked = backUpBoards,
+            onCheckedChange = onBackUpBoardsChange,
+        )
+
+        Spacer(Modifier.height(28.dp))
         FilledTonalButton(
             onClick = onSignIn,
             enabled = !signingIn,
@@ -80,6 +98,36 @@ internal fun SignInPitch(
         ) {
             Text(stringResource(R.string.account_action_not_now))
         }
+    }
+}
+
+@Composable
+private fun BackUpSwitch(boardCount: Int, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
+            .testTag(AccountTestTags.BACK_UP_BOARDS)
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f).padding(end = 16.dp)) {
+            Text(
+                text = stringResource(R.string.account_backup_label),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = stringResource(
+                    R.string.account_backup_sub,
+                    pluralStringResource(R.plurals.account_board_count, boardCount, boardCount),
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Switch(checked = checked, onCheckedChange = null)
     }
 }
 

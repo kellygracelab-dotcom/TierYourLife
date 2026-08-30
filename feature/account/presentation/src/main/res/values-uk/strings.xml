@@ -1,10 +1,8 @@
 <resources>
     <string name="account_signed_in">Вхід виконано</string>
-    <string name="account_sign_in_title">Вхід</string>
+    <string name="account_sign_in_title">Збережіть свою роботу</string>
     <string name="account_optional">Обліковий запис необов\'язковий. Без нього застосунок працює так само.</string>
-    <string name="account_reason_credits">Кредити на генерацію переживуть перевстановлення й новий телефон.</string>
-    <string name="account_reason_purchases">Покупки повернуться самі.</string>
-    <string name="account_reason_sync">Синхронізація дошок, коли з\'явиться.</string>
+    <string name="account_reason_purchases">Кредити та покупки повернуться на будь-якому пристрої.</string>
     <string name="account_credits_note">Відновлено з вашого облікового запису</string>
     <string name="account_action_sign_in_google">Увійти через Google</string>
     <string name="account_action_not_now">Не зараз</string>
@@ -15,7 +13,6 @@
     <string name="account_notice_existing_account">У цього облікового запису Google уже були власні кредити — тепер у вас саме вони.</string>
     <string name="account_cd_close">Закрити</string>
     <string name="account_action_sign_out">Вийти</string>
-    <string name="account_sign_out_body">Ваші списки залишаються на телефоні. Кредити чекатимуть тут.</string>
     <string name="account_community_section">У СПІЛЬНОТІ</string>
     <string name="account_community_note">Так вас бачать в опублікованих списках. Пошта не показується ніколи.</string>
     <string name="account_nickname_title">Ваше імʼя</string>
@@ -45,4 +42,28 @@
         <item quantity="many">%1$d генерацій</item>
         <item quantity="other">%1$d генерації</item>
     </plurals>
+    <string name="account_reason_devices">Дошки переїдуть за вами на новий телефон.</string>
+    <string name="account_reason_publish">Щоб опублікувати список, потрібен обліковий запис.</string>
+    <string name="account_backup_label">Зберігати копію дошок</string>
+    <string name="account_backup_sub">%1$s та їхні картинки. Вимкнути можна в налаштуваннях.</string>
+    <string name="account_sign_out_body_1">Дошки залишаться і на телефоні, і в обліковому записі. Зміни після виходу туди не потраплять.</string>
+    <string name="account_sign_out_body_2">Кредити та покупки чекатимуть на вас тут.</string>
+    <plurals name="account_board_count">
+        <item quantity="one">%1$d дошка</item>
+        <item quantity="few">%1$d дошки</item>
+        <item quantity="many">%1$d дошок</item>
+        <item quantity="other">%1$d дошки</item>
+    </plurals>
+    <string name="merge_title">Ви вже користувалися цим обліковим записом</string>
+    <string name="merge_body">У ньому вже є %1$s. На цьому телефоні — %2$s, зроблені без облікового запису.</string>
+    <string name="merge_keep_title">Залишити все</string>
+    <string name="merge_keep_sub">Усі %1$s. Якщо дві називаються однаково, до місцевої додасться «(з цього телефона)».</string>
+    <string name="merge_remote_title">Лише дошки з облікового запису</string>
+    <string name="merge_remote_sub">%1$s з цього телефона підуть у кошик. Їх можна повернути протягом 30 днів.</string>
+    <string name="merge_footnote">Нічого не видаляється в жодному разі.</string>
+    <string name="merge_recommended">Рекомендовано</string>
+    <string name="merge_action_continue">Продовжити</string>
+    <string name="merge_name_suffix">(з цього телефона)</string>
+    <string name="account_sign_out_title">Вийти?</string>
+    <string name="account_sign_out_helper">Дошки залишаться і на телефоні, і в обліковому записі. Зміни після виходу туди не потраплять. Кредити та покупки чекатимуть на вас тут.</string>
 </resources>

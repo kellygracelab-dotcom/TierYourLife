@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.account.presentation.account
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
@@ -11,6 +12,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCre
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,9 +31,13 @@ class AccountViewModel @Inject constructor(
     private val credits: GenerationCredits,
     private val ownLists: OwnLists,
     private val community: CommunityRepository,
+    private val preferences: AppPreferences,
+    private val merge: BoardMerge,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AccountUiState(credits = credits.lastKnown()))
+    private val _state = MutableStateFlow(
+        AccountUiState(credits = credits.lastKnown(), backUpBoards = preferences.backUpBoards()),
+    )
     val state: StateFlow<AccountUiState> = _state.asStateFlow()
 
     init {
@@ -40,8 +46,19 @@ class AccountViewModel @Inject constructor(
                 _state.update { it.copy(account = account) }
                 refreshCredits()
                 refreshOwnLists()
+                _state.update { it.copy(boardCount = ownLists.boardCount()) }
             }
         }
+    }
+
+    /**
+     * Answered before signing in, so nothing has gone up yet and nothing has
+     * to be undone. Turning it off later is a different question with a
+     * different answer, and it is asked in Settings where the copy exists.
+     */
+    fun setBackUpBoards(backUp: Boolean) {
+        preferences.setBackUpBoards(backUp)
+        _state.update { it.copy(backUpBoards = backUp) }
     }
 
     fun signIn(context: Context) {
@@ -91,6 +108,44 @@ class AccountViewModel @Inject constructor(
         }
         finish(notice)
         refreshCredits()
+        askAboutMergeIfNeeded()
+    }
+
+    /**
+     * Asked only when both sides hold something. An account with nothing on it
+     * takes this phone's boards silently, because there is nothing to weigh
+     * them against, and a question with one possible answer is a delay.
+     */
+    private suspend fun askAboutMergeIfNeeded() {
+        if (!preferences.backUpBoards()) return
+        val choice = merge.choice()
+        if (choice.needed) {
+            _state.update { it.copy(merge = choice, mergeKeep = MergeKeep.Everything) }
+        }
+    }
+
+    fun setMergeKeep(keep: MergeKeep) {
+        _state.update { it.copy(mergeKeep = keep) }
+    }
+
+    fun applyMerge(fromThisPhone: String) {
+        val keep = _state.value.mergeKeep
+        _state.update { it.copy(merge = null) }
+        viewModelScope.launch {
+            when (keep) {
+                MergeKeep.Everything -> merge.keepEverything(fromThisPhone)
+                MergeKeep.AccountOnly -> merge.useAccountBoards()
+            }
+        }
+    }
+
+    /**
+     * Closing the question leaves them signed out with nothing written, which
+     * is the only honest reading of a person who did not answer it.
+     */
+    fun abandonMerge() {
+        _state.update { it.copy(merge = null) }
+        signOut()
     }
 
     private fun finish(notice: AccountNotice?) {

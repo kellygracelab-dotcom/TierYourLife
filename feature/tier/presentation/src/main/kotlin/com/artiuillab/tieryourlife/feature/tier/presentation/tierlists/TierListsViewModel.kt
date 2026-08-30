@@ -6,6 +6,8 @@ import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.core.ui.UserMessages
 import com.artiuillab.tieryourlife.core.ui.guard
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
@@ -13,6 +15,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -21,6 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -34,6 +39,9 @@ class TierListsViewModel @Inject constructor(
     private val repository: TierRepository,
     private val community: CommunityRepository,
     private val preferences: AppPreferences,
+    private val accounts: AccountRepository,
+    private val boardSync: BoardSync,
+    private val pictures: PictureRestore,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<TierListsUiState>(TierListsUiState.Loading)
@@ -58,6 +66,74 @@ class TierListsViewModel @Inject constructor(
     private var communityCategory: ListCategory? = null
     private var communitySearch: Job? = null
 
+    private var account: Account = Account.Unknown
+
+    /**
+     * Read once and kept, because it is consulted on every redraw and a
+     * preferences file is not a thing to reach for on every frame.
+     */
+    private var conflictsSeen: Set<String> = emptySet()
+    private var offerAnswered: Boolean = false
+    private var syncJob: Job? = null
+
+    private var restoringPictures: PictureRestore.Progress = PictureRestore.Progress.Idle
+
+    init {
+        offerAnswered = preferences.signInOfferAnswered()
+        conflictsSeen = preferences.conflictsSeen()
+        viewModelScope.launch {
+            pictures.restoring.collect { progress ->
+                restoringPictures = progress
+                if (_state.value is TierListsUiState.Success) emitSuccess()
+            }
+        }
+        viewModelScope.launch {
+            accounts.account.collectLatest { current ->
+                account = current
+                // Redraws a screen that is already up; it does not put one
+                // there. Firebase answers before the first read of the
+                // database finishes, and emitting here turned "still loading"
+                // into "you have no boards" for as long as that took.
+                if (_state.value is TierListsUiState.Success) emitSuccess()
+                if (current is Account.SignedIn) keepBoards()
+            }
+        }
+    }
+
+    /**
+     * Runs on the way back to the list, which is where somebody arrives after
+     * changing a board. Cancelled if they leave again mid-run, and that is
+     * fine: the next run works out the same answer from the same three lists,
+     * so nothing is lost by stopping halfway.
+     */
+    private fun keepBoards() {
+        if (account !is Account.SignedIn || !preferences.backUpBoards()) return
+        if (syncJob?.isActive == true) return
+        syncJob = viewModelScope.launch {
+            runCatching { boardSync.sync() }
+                .onFailure { failure -> Timber.w(failure, "Keeping boards did not finish") }
+        }
+    }
+
+    /**
+     * "Not now" is answered once and for all. A card that returns is a card
+     * people learn to dismiss without reading, and the footer line goes on
+     * saying the same thing for as long as it is true.
+     */
+    private fun seenConflict(list: TierList): Boolean = conflictsSeen.contains(list.title)
+
+    fun dismissConflictNotice(title: String) {
+        preferences.markConflictSeen(title)
+        conflictsSeen = conflictsSeen + title
+        emitSuccess()
+    }
+
+    fun dismissSignInOffer() {
+        offerAnswered = true
+        preferences.markSignInOfferAnswered()
+        emitSuccess()
+    }
+
     fun loadTierLists() {
         viewModelScope.launch {
             loadTierListsInternal()
@@ -74,6 +150,7 @@ class TierListsViewModel @Inject constructor(
         try {
             lastLoadedLists = repository.getAllTierLists()
             emitSuccess()
+            keepBoards()
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -84,6 +161,20 @@ class TierListsViewModel @Inject constructor(
         }
     }
 
+    /**
+     * A board that arrived from another phone is only half the story; the
+     * other half is the copy it landed beside. Marked as a pair here rather
+     * than in the database, because it stops being a pair the moment somebody
+     * deletes one -- a fact about what is on screen, not about the board.
+     */
+    private fun withTwins(lists: List<TierList>): List<TierList> {
+        val byTitle = lists.groupBy { it.title.removeSuffix(" ${it.arrivedFrom.orEmpty()}").trim() }
+        return lists.map { list ->
+            val twins = byTitle[list.title.removeSuffix(" ${list.arrivedFrom.orEmpty()}").trim()].orEmpty()
+            list.copy(hasTwin = twins.size > 1 && twins.any { it.arrivedFrom != null })
+        }
+    }
+
     private fun emitSuccess() {
         val query = (mode as? HomeMode.Searching)?.query
         val filtered = if (query != null) {
@@ -91,18 +182,34 @@ class TierListsViewModel @Inject constructor(
         } else {
             lastLoadedLists
         }
+        val paired = withTwins(filtered)
         val rankedCount = lastLoadedLists.sumOf { list ->
             list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
         }
         _state.value = TierListsUiState.Success(
-            lists = filtered,
+            lists = paired,
             totalListCount = lastLoadedLists.size,
             rankedCount = rankedCount,
             mode = mode,
             tab = tab,
             community = communityFeed,
             communityCategory = communityCategory,
+            localOnly = whereTheseLive(),
+            restoringPictures = restoringPictures,
+            conflict = paired.firstOrNull { it.hasTwin && it.arrivedFrom != null && !seenConflict(it) },
         )
+    }
+
+    /**
+     * The offer waits for a board to exist. Somebody who has not made one has
+     * nothing to lose yet, and asking them to sign in for the sake of an empty
+     * screen is the advertisement this is trying not to be.
+     */
+    private fun whereTheseLive(): LocalOnly = when {
+        account is Account.Unknown -> LocalOnly.Unknown
+        account is Account.SignedIn -> LocalOnly.Kept
+        lastLoadedLists.isEmpty() -> LocalOnly.Unknown
+        else -> LocalOnly.Here(offerSignIn = !offerAnswered)
     }
 
     fun selectTab(selected: HomeTab) {

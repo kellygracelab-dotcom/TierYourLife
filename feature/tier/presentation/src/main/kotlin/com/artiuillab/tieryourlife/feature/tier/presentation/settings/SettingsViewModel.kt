@@ -13,6 +13,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.export.TierListsExportStr
 import com.artiuillab.tieryourlife.feature.tier.domain.export.buildTierListsExport
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupSettings
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardBackup
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +34,7 @@ class SettingsViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val generationCredits: GenerationCredits,
     private val community: CommunityRepository,
+    private val backup: BoardBackup,
 ) : ViewModel() {
 
     val account: StateFlow<Account> = accountRepository.account
@@ -50,8 +53,41 @@ class SettingsViewModel @Inject constructor(
     private val _pendingReports = MutableStateFlow<Int?>(null)
     val pendingReports: StateFlow<Int?> = _pendingReports.asStateFlow()
 
+    private val _backupSettings = MutableStateFlow<BackupSettings?>(null)
+
+    /** Null until it has been read, and always null for a guest: there is nothing to say. */
+    val backupSettings: StateFlow<BackupSettings?> = _backupSettings.asStateFlow()
+
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
+
+    fun loadBackupSettings() {
+        viewModelScope.launch {
+            _backupSettings.value = if (account.value is Account.SignedIn) backup.settings() else null
+        }
+    }
+
+    fun startBackingUp() {
+        backup.start()
+        loadBackupSettings()
+    }
+
+    /**
+     * Confirmed on the way off, never on the way on. Turning it on has nothing
+     * to warn about; turning it off deletes the copy, and that is the promise
+     * the word "off" is making.
+     */
+    fun stopBackingUp() {
+        viewModelScope.launch {
+            backup.stopAndDelete()
+            loadBackupSettings()
+        }
+    }
+
+    fun setPicturesOnWifiOnly(wifiOnly: Boolean) {
+        backup.setPicturesOnWifiOnly(wifiOnly)
+        loadBackupSettings()
+    }
 
     fun loadCredits() {
         viewModelScope.launch {

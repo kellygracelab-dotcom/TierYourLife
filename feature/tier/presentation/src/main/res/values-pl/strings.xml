@@ -444,4 +444,37 @@
         <item quantity="many">Zalogowano · %1$d kredytów</item>
         <item quantity="other">Zalogowano · %1$d kredytu</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">%1$d tablica</item>
+        <item quantity="few">%1$d tablice</item>
+        <item quantity="many">%1$d tablic</item>
+        <item quantity="other">%1$d tablicy</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, tylko na tym telefonie</string>
+    <string name="local_only_card_title_one">Ta tablica jest tylko na tym telefonie</string>
+    <string name="local_only_card_title_many">Te tablice są tylko na tym telefonie</string>
+    <string name="local_only_card_body_one">Zmień telefon albo zainstaluj ponownie i zniknie. Konto ją zachowa.</string>
+    <string name="local_only_card_body_many">Zmień telefon albo zainstaluj ponownie i znikną. Konto je zachowa.</string>
+    <string name="local_only_card_not_now">Nie teraz</string>
+    <string name="local_only_card_sign_in">Zaloguj się</string>
+    <string name="restoring_one_picture">Przywracanie zdjęcia</string>
+    <string name="restoring_pictures">Przywracanie zdjęć · %1$d z %2$d</string>
+    <string name="settings_backup_label">Kopia moich tablic</string>
+    <string name="settings_backup_sub">Poziomy, karty i podpisy</string>
+    <string name="settings_backup_pictures_label">Zdjęcia tylko przez Wi-Fi</string>
+    <string name="settings_backup_pictures_sub">%1$s na twoim koncie</string>
+    <string name="settings_backup_note">Twoje zdjęcia i wygenerowane karty trafiają na twoje konto i widzisz je tylko ty. Opublikowane listy nadal pokazują wyłącznie obrazy z katalogów.</string>
+    <string name="settings_backup_stuck">Brak kopii od %1$s. Sprawdź połączenie.</string>
+    <string name="settings_backup_off_title">Przestać tworzyć kopię?</string>
+    <string name="settings_backup_off_body">Tablice zostają na tym telefonie. Kopia na koncie zostanie usunięta, a nowy telefon zacznie od pustego.</string>
+    <string name="settings_backup_off_confirm">Usuń kopię</string>
+    <string name="settings_backup_off_cancel">Anuluj</string>
+    <string name="conflict_title">„%1$s” zmieniono na dwóch telefonach</string>
+    <string name="conflict_body">Obie wersje są tutaj. Otwórz je, zostaw tę właściwą, drugą usuń.</string>
+    <string name="conflict_got_it">Rozumiem</string>
+    <string name="conflict_tag">z %1$s</string>
+    <string name="conflict_tag_unknown">z innego telefonu</string>
+    <string name="conflict_edited_there">Zmieniono na %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Zmieniono na innym telefonie %1$s</string>
+    <string name="conflict_edited_here">Zmieniono tutaj %1$s</string>
 </resources>

@@ -28,6 +28,44 @@ class TierImageStore internal constructor(
         openSource = { uri -> context.contentResolver.openInputStream(uri.toUri()) },
     )
 
+    /**
+     * What a picture is called, wherever it happens to sit.
+     *
+     * The file name is already a fresh id and already means the same thing on
+     * a second phone; the directory around it does not, so this is the only
+     * part of a path worth sending anywhere. A picture on somebody else's
+     * server is not one of ours and has no id.
+     */
+    fun pictureIdOf(imageUrl: String?): String? {
+        if (imageUrl == null || imageUrl.startsWith("http")) return null
+        val file = File(imageUrl)
+        return file.name.takeIf { it.isNotEmpty() && file.parentFile?.absoluteFile == directory.absoluteFile }
+    }
+
+    /** Where a picture with this id would live, whether or not it is here yet. */
+    fun pathFor(pictureId: String): String = File(directory, pictureId).absolutePath
+
+    fun holds(pictureId: String): Boolean = File(directory, pictureId).length() > 0
+
+    fun sizeOf(pictureId: String): Long = File(directory, pictureId).length()
+
+    fun read(pictureId: String): ByteArray? =
+        File(directory, pictureId).takeIf { it.length() > 0 }?.readBytes()
+
+    /**
+     * Written beside the target and moved into place, so a download that stops
+     * halfway leaves nothing behind that looks like a picture. Half a file
+     * would be indistinguishable from a whole one that is simply here.
+     */
+    fun write(pictureId: String, bytes: ByteArray): String {
+        directory.mkdirs()
+        val target = File(directory, pictureId)
+        val partial = File(directory, "$pictureId.part")
+        partial.writeBytes(bytes)
+        partial.renameTo(target)
+        return target.absolutePath
+    }
+
     fun copyToInternalStorage(sourceUri: String): String {
         directory.mkdirs()
         val target = File(directory, UUID.randomUUID().toString())

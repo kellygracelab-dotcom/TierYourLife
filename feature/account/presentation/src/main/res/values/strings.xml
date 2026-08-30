@@ -1,10 +1,16 @@
 <resources>
     <string name="account_signed_in">Signed in</string>
-    <string name="account_sign_in_title">Sign in</string>
+    <string name="account_sign_in_title">Keep your work</string>
     <string name="account_optional">An account is optional. The app works the same without one.</string>
-    <string name="account_reason_credits">Your generation credits survive reinstalling and a new phone.</string>
-    <string name="account_reason_purchases">Purchases come back on their own.</string>
-    <string name="account_reason_sync">Board sync, once it exists.</string>
+    <string name="account_reason_devices">Your boards follow you to a new phone.</string>
+    <string name="account_reason_purchases">Credits and purchases restore on any device.</string>
+    <string name="account_reason_publish">Publishing a list needs an account.</string>
+    <string name="account_backup_label">Back up my boards</string>
+    <string name="account_backup_sub">%1$s and their pictures. You can turn this off in Settings.</string>
+    <plurals name="account_board_count">
+        <item quantity="one">1 board</item>
+        <item quantity="other">%1$d boards</item>
+    </plurals>
     <string name="account_credits_note">Restored from your account</string>
     <string name="account_action_sign_in_google">Sign in with Google</string>
     <string name="account_action_not_now">Not now</string>
@@ -15,7 +21,10 @@
     <string name="account_notice_existing_account">This Google account already had credits of its own — those are what you have now.</string>
     <string name="account_cd_close">Close</string>
     <string name="account_action_sign_out">Sign out</string>
-    <string name="account_sign_out_body">Your lists stay on this phone. Your credits wait here for you.</string>
+    <string name="account_sign_out_title">Sign out?</string>
+    <string name="account_sign_out_helper">Your boards stay on this phone and in your account. Changes you make after signing out will not sync. Credits and purchases wait for you here.</string>
+    <string name="account_sign_out_body_1">Your boards stay on this phone and in your account. Changes you make after signing out will not sync.</string>
+    <string name="account_sign_out_body_2">Credits and purchases wait for you here.</string>
     <string name="account_community_section">IN COMMUNITY</string>
     <string name="account_community_note">This is how you appear on lists you publish. Your email is never shown.</string>
     <string name="account_nickname_title">Your name</string>
@@ -41,4 +50,14 @@
         <item quantity="one">%1$d generation credit</item>
         <item quantity="other">%1$d generation credits</item>
     </plurals>
+    <string name="merge_title">You’ve used this account before</string>
+    <string name="merge_body">It already has %1$s. This phone has %2$s you made without an account.</string>
+    <string name="merge_keep_title">Keep everything</string>
+    <string name="merge_keep_sub">All %1$s. If two have the same name, the local one gets “(from this phone)” added.</string>
+    <string name="merge_remote_title">Use only the account’s boards</string>
+    <string name="merge_remote_sub">The %1$s from this phone go to the trash. You can restore them for 30 days.</string>
+    <string name="merge_footnote">Nothing is deleted either way.</string>
+    <string name="merge_recommended">Recommended</string>
+    <string name="merge_action_continue">Continue</string>
+    <string name="merge_name_suffix">(from this phone)</string>
 </resources>

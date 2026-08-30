@@ -415,4 +415,35 @@
         <item quantity="many">Connecté · %1$d crédits</item>
         <item quantity="other">Connecté · %1$d crédits</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">%1$d tableau</item>
+        <item quantity="other">%1$d tableaux</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, uniquement sur ce téléphone</string>
+    <string name="local_only_card_title_one">Ce tableau ne vit que sur ce téléphone</string>
+    <string name="local_only_card_title_many">Ces tableaux ne vivent que sur ce téléphone</string>
+    <string name="local_only_card_body_one">Changez de téléphone ou réinstallez et il disparaît. Un compte le garde.</string>
+    <string name="local_only_card_body_many">Changez de téléphone ou réinstallez et ils disparaissent. Un compte les garde.</string>
+    <string name="local_only_card_not_now">Pas maintenant</string>
+    <string name="local_only_card_sign_in">Se connecter</string>
+    <string name="restoring_one_picture">Restauration de l’image</string>
+    <string name="restoring_pictures">Restauration des images · %1$d sur %2$d</string>
+    <string name="settings_backup_label">Sauvegarder mes tableaux</string>
+    <string name="settings_backup_sub">Niveaux, cartes et légendes</string>
+    <string name="settings_backup_pictures_label">Images en Wi-Fi seulement</string>
+    <string name="settings_backup_pictures_sub">%1$s dans votre compte</string>
+    <string name="settings_backup_note">Vos photos et cartes générées vont dans votre compte, et vous seul les voyez. Les listes publiées n’affichent toujours que des images de catalogue.</string>
+    <string name="settings_backup_stuck">Pas de sauvegarde depuis %1$s. Vérifiez votre connexion.</string>
+    <string name="settings_backup_off_title">Arrêter la sauvegarde ?</string>
+    <string name="settings_backup_off_body">Vos tableaux restent sur ce téléphone. La copie dans votre compte est supprimée, et un nouveau téléphone démarrera vide.</string>
+    <string name="settings_backup_off_confirm">Arrêter et supprimer</string>
+    <string name="settings_backup_off_cancel">Annuler</string>
+    <string name="conflict_title">« %1$s » a changé sur deux téléphones</string>
+    <string name="conflict_body">Les deux versions sont là. Ouvrez-les, gardez celle que vous voulez, supprimez l’autre.</string>
+    <string name="conflict_got_it">Compris</string>
+    <string name="conflict_tag">de %1$s</string>
+    <string name="conflict_tag_unknown">d’un autre téléphone</string>
+    <string name="conflict_edited_there">Modifié sur %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Modifié sur un autre téléphone %1$s</string>
+    <string name="conflict_edited_here">Modifié ici %1$s</string>
 </resources>

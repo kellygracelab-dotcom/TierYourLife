@@ -1,10 +1,8 @@
 <resources>
     <string name="account_signed_in">ログイン済み</string>
-    <string name="account_sign_in_title">ログイン</string>
+    <string name="account_sign_in_title">作ったものを残す</string>
     <string name="account_optional">アカウントは任意です。なくてもアプリは同じように使えます。</string>
-    <string name="account_reason_credits">生成回数は再インストールしても新しい端末でも残ります。</string>
-    <string name="account_reason_purchases">購入は自動で復元されます。</string>
-    <string name="account_reason_sync">ボードの同期は、できたときに。</string>
+    <string name="account_reason_purchases">クレジットと購入はどの端末でも復元されます。</string>
     <string name="account_credits_note">アカウントから復元しました</string>
     <string name="account_action_sign_in_google">Google でログイン</string>
     <string name="account_action_not_now">今はしない</string>
@@ -15,7 +13,6 @@
     <string name="account_notice_existing_account">この Google アカウントにはすでに回数があり、今はそれが使われます。</string>
     <string name="account_cd_close">閉じる</string>
     <string name="account_action_sign_out">ログアウト</string>
-    <string name="account_sign_out_body">リストはこの端末に残ります。生成回数はここで待っています。</string>
     <string name="account_community_section">コミュニティでの表示</string>
     <string name="account_community_note">公開したリストでの表示です。メールアドレスが表示されることはありません。</string>
     <string name="account_nickname_title">表示名</string>
@@ -39,4 +36,25 @@
     <plurals name="account_credits">
         <item quantity="other">%1$d 回の生成</item>
     </plurals>
+    <string name="account_reason_devices">ボードは新しい端末にもついてきます。</string>
+    <string name="account_reason_publish">リストの公開にはアカウントが必要です。</string>
+    <string name="account_backup_label">ボードをバックアップ</string>
+    <string name="account_backup_sub">%1$sとその画像。設定でオフにできます。</string>
+    <string name="account_sign_out_body_1">ボードはこの端末にもアカウントにも残ります。ログアウト後の変更は同期されません。</string>
+    <string name="account_sign_out_body_2">クレジットと購入はここで待っています。</string>
+    <plurals name="account_board_count">
+        <item quantity="other">%1$d 件のボード</item>
+    </plurals>
+    <string name="merge_title">このアカウントは以前に使っています</string>
+    <string name="merge_body">すでに%1$sがあります。この端末にはアカウントなしで作った%2$sがあります。</string>
+    <string name="merge_keep_title">すべて残す</string>
+    <string name="merge_keep_sub">%1$sすべて。同じ名前が二つあれば、この端末側に「（この端末から）」が付きます。</string>
+    <string name="merge_remote_title">アカウントのボードだけ使う</string>
+    <string name="merge_remote_sub">この端末の%1$sはごみ箱に入ります。30日間は復元できます。</string>
+    <string name="merge_footnote">どちらを選んでも何も削除されません。</string>
+    <string name="merge_recommended">推奨</string>
+    <string name="merge_action_continue">続ける</string>
+    <string name="merge_name_suffix">（この端末から）</string>
+    <string name="account_sign_out_title">ログアウトしますか？</string>
+    <string name="account_sign_out_helper">ボードはこの端末にもアカウントにも残ります。ログアウト後の変更は同期されません。 クレジットと購入はここで待っています。</string>
 </resources>

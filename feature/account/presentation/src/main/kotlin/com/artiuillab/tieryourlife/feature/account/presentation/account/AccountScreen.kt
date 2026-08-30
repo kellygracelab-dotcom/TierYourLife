@@ -42,6 +42,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.presentation.R
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.CloseIcon
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.FaceSheet
+import com.artiuillab.tieryourlife.feature.account.presentation.account.components.MergePicker
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.NicknameDialog
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.SignInPitch
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.SignedInPanel
@@ -57,6 +58,7 @@ fun AccountScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val fromThisPhone = stringResource(R.string.merge_name_suffix)
 
     AccountScreenContent(
         state = state,
@@ -67,6 +69,10 @@ fun AccountScreen(
         onSetName = viewModel::setDisplayName,
         onSetPhoto = viewModel::setPhoto,
         onNoticeShown = viewModel::dismissNotice,
+        onBackUpBoardsChange = viewModel::setBackUpBoards,
+        onMergeKeepChange = viewModel::setMergeKeep,
+        onApplyMerge = { viewModel.applyMerge(fromThisPhone) },
+        onAbandonMerge = viewModel::abandonMerge,
     )
 }
 
@@ -81,6 +87,10 @@ internal fun AccountScreenContent(
     onSetPhoto: (String?) -> Unit = {},
     onNoticeShown: () -> Unit = {},
     onOpenPublished: () -> Unit = {},
+    onBackUpBoardsChange: (Boolean) -> Unit = {},
+    onMergeKeepChange: (MergeKeep) -> Unit = {},
+    onApplyMerge: () -> Unit = {},
+    onAbandonMerge: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var nicknameDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -100,7 +110,7 @@ internal fun AccountScreenContent(
                 .fillMaxSize()
                 .testTag(AccountTestTags.SCREEN),
         ) {
-            CloseBar(onClose)
+            CloseBar(if (state.merge != null) onAbandonMerge else onClose)
             Column(
                 Modifier
                     .atMost(ContentWidth.Reading)
@@ -109,13 +119,27 @@ internal fun AccountScreenContent(
                     .padding(horizontal = 24.dp)
                     .padding(top = 8.dp, bottom = 32.dp),
             ) {
-                when (val account = state.account) {
+                val merge = state.merge
+                when {
+                    // Before anything is written either way, so closing it
+                    // leaves the person exactly where they were.
+                    merge != null -> MergePicker(
+                        choice = merge,
+                        keep = state.mergeKeep,
+                        onKeepChange = onMergeKeepChange,
+                        onContinue = onApplyMerge,
+                    )
+
+                    else -> when (val account = state.account) {
                     // Painting either panel before Firebase answers means
                     // painting the wrong one and swapping it a frame later.
                     Account.Unknown -> Unit
 
                     Account.Guest -> SignInPitch(
                         signingIn = state.signingIn,
+                        boardCount = state.boardCount,
+                        backUpBoards = state.backUpBoards,
+                        onBackUpBoardsChange = onBackUpBoardsChange,
                         onSignIn = onSignIn,
                         onNotNow = onClose,
                     )
@@ -132,6 +156,7 @@ internal fun AccountScreenContent(
                         onDone = onClose,
                         onSignOut = onSignOut,
                     )
+                    }
                 }
             }
         }

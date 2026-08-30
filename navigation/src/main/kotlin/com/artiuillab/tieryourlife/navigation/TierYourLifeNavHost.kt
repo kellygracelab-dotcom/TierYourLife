@@ -53,6 +53,7 @@ fun TierYourLifeNavHost(
             onCommunityListClick = { id -> navController.navigateToCommunityList(id) },
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
             onSettingsClick = { navController.navigateToSettings() },
+            onSignInClick = { navController.navigateToAccount() },
             onNewListCreated = { id -> navController.navigateToTierDetail(id) },
         )
         tierDetailScreen(

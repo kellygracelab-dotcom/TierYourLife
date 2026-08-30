@@ -386,4 +386,35 @@
         <item quantity="one">Giriş yapıldı · %1$d kredi</item>
         <item quantity="other">Giriş yapıldı · %1$d kredi</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">1 pano</item>
+        <item quantity="other">%1$d pano</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, yalnızca bu telefonda</string>
+    <string name="local_only_card_title_one">Bu pano yalnızca bu telefonda</string>
+    <string name="local_only_card_title_many">Bu panolar yalnızca bu telefonda</string>
+    <string name="local_only_card_body_one">Telefon değiştirin ya da yeniden kurun, gider. Bir hesap onu saklar.</string>
+    <string name="local_only_card_body_many">Telefon değiştirin ya da yeniden kurun, giderler. Bir hesap onları saklar.</string>
+    <string name="local_only_card_not_now">Şimdi değil</string>
+    <string name="local_only_card_sign_in">Oturum aç</string>
+    <string name="restoring_one_picture">Resim geri yükleniyor</string>
+    <string name="restoring_pictures">Resimler geri yükleniyor · %1$d / %2$d</string>
+    <string name="settings_backup_label">Panolarımın yedeğini al</string>
+    <string name="settings_backup_sub">Seviyeler, kartlar ve notlar</string>
+    <string name="settings_backup_pictures_label">Resimler yalnızca Wi-Fi’da</string>
+    <string name="settings_backup_pictures_sub">Hesabında %1$s</string>
+    <string name="settings_backup_note">Fotoğrafların ve üretilen kartlar hesabına gider, onları yalnızca sen görürsün. Yayınlanan listeler yine yalnızca katalog görselleri gösterir.</string>
+    <string name="settings_backup_stuck">%1$s tarihinden beri yedeklenmedi. Bağlantını kontrol et.</string>
+    <string name="settings_backup_off_title">Yedekleme durdurulsun mu?</string>
+    <string name="settings_backup_off_body">Panoların bu telefonda kalır. Hesabındaki kopya silinir ve yeni bir telefon boş başlar.</string>
+    <string name="settings_backup_off_confirm">Durdur ve sil</string>
+    <string name="settings_backup_off_cancel">İptal</string>
+    <string name="conflict_title">“%1$s” iki telefonda değişti</string>
+    <string name="conflict_body">İki sürüm de burada. Açıp istediğini tut, diğerini sil.</string>
+    <string name="conflict_got_it">Anladım</string>
+    <string name="conflict_tag">%1$s’dan</string>
+    <string name="conflict_tag_unknown">başka bir telefondan</string>
+    <string name="conflict_edited_there">%1$s üzerinde düzenlendi %2$s</string>
+    <string name="conflict_edited_there_unknown">Başka bir telefonda düzenlendi %1$s</string>
+    <string name="conflict_edited_here">Burada düzenlendi %1$s</string>
 </resources>

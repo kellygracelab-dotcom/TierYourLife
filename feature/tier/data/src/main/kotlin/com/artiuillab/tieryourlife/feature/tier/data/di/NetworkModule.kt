@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.di
 import com.artiuillab.tieryourlife.core.network.AppCheckInterceptor
 import com.artiuillab.tieryourlife.core.network.IdTokenInterceptor
 import com.artiuillab.tieryourlife.feature.tier.data.BuildConfig
+import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.CommunityApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataApi
@@ -109,6 +110,13 @@ object NetworkModule {
     @Singleton
     fun provideCommunityApi(@CommunityRetrofit retrofit: Retrofit): CommunityApi =
         retrofit.create(CommunityApi::class.java)
+
+    // The same client as the community: both count against an account, and
+    // both are refused without one.
+    @Provides
+    @Singleton
+    fun provideBoardsApi(@CommunityRetrofit retrofit: Retrofit): BoardsApi =
+        retrofit.create(BoardsApi::class.java)
 
     @Provides
     @Singleton

@@ -415,4 +415,35 @@
         <item quantity="many">Sesión iniciada · %1$d créditos</item>
         <item quantity="other">Sesión iniciada · %1$d créditos</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">1 tablero</item>
+        <item quantity="other">%1$d tableros</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, solo en este teléfono</string>
+    <string name="local_only_card_title_one">Este tablero solo vive en este teléfono</string>
+    <string name="local_only_card_title_many">Estos tableros solo viven en este teléfono</string>
+    <string name="local_only_card_body_one">Cambia de teléfono o reinstala y desaparece. Una cuenta lo conserva.</string>
+    <string name="local_only_card_body_many">Cambia de teléfono o reinstala y desaparecen. Una cuenta los conserva.</string>
+    <string name="local_only_card_not_now">Ahora no</string>
+    <string name="local_only_card_sign_in">Iniciar sesión</string>
+    <string name="restoring_one_picture">Restaurando la imagen</string>
+    <string name="restoring_pictures">Restaurando imágenes · %1$d de %2$d</string>
+    <string name="settings_backup_label">Guardar copia de mis tableros</string>
+    <string name="settings_backup_sub">Niveles, tarjetas y notas</string>
+    <string name="settings_backup_pictures_label">Imágenes solo por Wi-Fi</string>
+    <string name="settings_backup_pictures_sub">%1$s en tu cuenta</string>
+    <string name="settings_backup_note">Tus fotos y tarjetas generadas van a tu cuenta, y solo tú las ves. Las listas publicadas siguen mostrando únicamente imágenes de catálogo.</string>
+    <string name="settings_backup_stuck">Sin copia desde %1$s. Revisa tu conexión.</string>
+    <string name="settings_backup_off_title">¿Dejar de guardar copia?</string>
+    <string name="settings_backup_off_body">Tus tableros siguen en este teléfono. La copia de tu cuenta se elimina, y un teléfono nuevo empezará vacío.</string>
+    <string name="settings_backup_off_confirm">Detener y eliminar</string>
+    <string name="settings_backup_off_cancel">Cancelar</string>
+    <string name="conflict_title">“%1$s” cambió en dos teléfonos</string>
+    <string name="conflict_body">Las dos versiones están aquí. Ábrelas, quédate con la que quieras y borra la otra.</string>
+    <string name="conflict_got_it">Entendido</string>
+    <string name="conflict_tag">de %1$s</string>
+    <string name="conflict_tag_unknown">de otro teléfono</string>
+    <string name="conflict_edited_there">Editado en %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Editado en otro teléfono %1$s</string>
+    <string name="conflict_edited_here">Editado aquí %1$s</string>
 </resources>

@@ -444,4 +444,37 @@
         <item quantity="many">Вхід виконано · %1$d кредитів</item>
         <item quantity="other">Вхід виконано · %1$d кредиту</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">%1$d дошка</item>
+        <item quantity="few">%1$d дошки</item>
+        <item quantity="many">%1$d дошок</item>
+        <item quantity="other">%1$d дошки</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, лише на цьому телефоні</string>
+    <string name="local_only_card_title_one">Ця дошка живе лише на телефоні</string>
+    <string name="local_only_card_title_many">Ці дошки живуть лише на телефоні</string>
+    <string name="local_only_card_body_one">Зміните телефон або перевстановите — і її немає. Обліковий запис її збереже.</string>
+    <string name="local_only_card_body_many">Зміните телефон або перевстановите — і їх немає. Обліковий запис їх збереже.</string>
+    <string name="local_only_card_not_now">Не зараз</string>
+    <string name="local_only_card_sign_in">Увійти</string>
+    <string name="restoring_one_picture">Відновлюємо картинку</string>
+    <string name="restoring_pictures">Відновлюємо картинки · %1$d з %2$d</string>
+    <string name="settings_backup_label">Зберігати копію дошок</string>
+    <string name="settings_backup_sub">Тіри, картки та підписи</string>
+    <string name="settings_backup_pictures_label">Картинки лише через Wi-Fi</string>
+    <string name="settings_backup_pictures_sub">%1$s у вашому обліковому записі</string>
+    <string name="settings_backup_note">Ваші фото та згенеровані картки йдуть у ваш обліковий запис, і бачите їх лише ви. У опублікованих списках залишаються лише картинки з каталогів.</string>
+    <string name="settings_backup_stuck">Копії немає з %1$s. Перевірте з’єднання.</string>
+    <string name="settings_backup_off_title">Припинити зберігати копію?</string>
+    <string name="settings_backup_off_body">Дошки залишаться на цьому телефоні. Копію в обліковому записі буде видалено, і новий телефон почне з порожнього.</string>
+    <string name="settings_backup_off_confirm">Видалити копію</string>
+    <string name="settings_backup_off_cancel">Скасувати</string>
+    <string name="conflict_title">«%1$s» редагували на двох телефонах</string>
+    <string name="conflict_body">Обидві версії тут. Відкрийте, залиште потрібну, другу видаліть.</string>
+    <string name="conflict_got_it">Зрозуміло</string>
+    <string name="conflict_tag">з %1$s</string>
+    <string name="conflict_tag_unknown">з іншого телефона</string>
+    <string name="conflict_edited_there">Змінено на %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Змінено на іншому телефоні %1$s</string>
+    <string name="conflict_edited_here">Змінено тут %1$s</string>
 </resources>

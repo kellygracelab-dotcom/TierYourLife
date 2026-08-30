@@ -13,4 +13,14 @@ data class TierList(
     val category: ListCategory? = null,
     /** The author's own cover. A local pick never reaches the community. */
     val coverImageUrl: String? = null,
+    /**
+     * Set only on the copy kept after the same board was changed on two
+     * phones. Names the phone the other version came from, when that phone
+     * had a name worth showing.
+     */
+    val arrivedFrom: String? = null,
+    /** When anything about this board last changed. */
+    val editedAt: Long? = null,
+    /** True while this board and one beside it are two versions of the same thing. */
+    val hasTwin: Boolean = false,
 )

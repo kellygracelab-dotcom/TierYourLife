@@ -1,10 +1,8 @@
 <resources>
     <string name="account_signed_in">تم تسجيل الدخول</string>
-    <string name="account_sign_in_title">تسجيل الدخول</string>
+    <string name="account_sign_in_title">احفظ عملك</string>
     <string name="account_optional">الحساب اختياري. التطبيق يعمل كما هو من دونه.</string>
-    <string name="account_reason_credits">أرصدة التوليد تبقى بعد إعادة التثبيت وعند تغيير الهاتف.</string>
-    <string name="account_reason_purchases">المشتريات تعود من تلقاء نفسها.</string>
-    <string name="account_reason_sync">مزامنة اللوحات، عندما تتوفر.</string>
+    <string name="account_reason_purchases">الأرصدة والمشتريات تعود على أي جهاز.</string>
     <string name="account_credits_note">استُعيدت من حسابك</string>
     <string name="account_action_sign_in_google">تسجيل الدخول بحساب Google</string>
     <string name="account_action_not_now">ليس الآن</string>
@@ -15,7 +13,6 @@
     <string name="account_notice_existing_account">هذا الحساب كان له رصيده الخاص — وهو ما لديك الآن.</string>
     <string name="account_cd_close">إغلاق</string>
     <string name="account_action_sign_out">تسجيل الخروج</string>
-    <string name="account_sign_out_body">قوائمك تبقى على هذا الهاتف، ورصيدك ينتظرك هنا.</string>
     <string name="account_community_section">في المجتمع</string>
     <string name="account_community_note">هكذا تظهر في القوائم التي تنشرها. لا يُعرض بريدك الإلكتروني أبدًا.</string>
     <string name="account_nickname_title">اسمك</string>
@@ -49,4 +46,30 @@
         <item quantity="many">%1$d عملية توليد</item>
         <item quantity="other">%1$d عملية توليد</item>
     </plurals>
+    <string name="account_reason_devices">لوحاتك تنتقل معك إلى هاتف جديد.</string>
+    <string name="account_reason_publish">نشر قائمة يتطلّب حسابًا.</string>
+    <string name="account_backup_label">احتفظ بنسخة من لوحاتي</string>
+    <string name="account_backup_sub">%1$s وصورها. يمكنك إيقاف ذلك من الإعدادات.</string>
+    <string name="account_sign_out_body_1">تبقى لوحاتك على هذا الهاتف وفي حسابك. التغييرات بعد تسجيل الخروج لن تُزامن.</string>
+    <string name="account_sign_out_body_2">الأرصدة والمشتريات تنتظرك هنا.</string>
+    <plurals name="account_board_count">
+        <item quantity="zero">لا لوحات</item>
+        <item quantity="one">لوحة واحدة</item>
+        <item quantity="two">لوحتان</item>
+        <item quantity="few">%1$d لوحات</item>
+        <item quantity="many">%1$d لوحة</item>
+        <item quantity="other">%1$d لوحة</item>
+    </plurals>
+    <string name="merge_title">لقد استخدمت هذا الحساب من قبل</string>
+    <string name="merge_body">فيه بالفعل %1$s. وعلى هذا الهاتف %2$s أنشأتها بلا حساب.</string>
+    <string name="merge_keep_title">احتفظ بكل شيء</string>
+    <string name="merge_keep_sub">كل %1$s. إذا تطابق اسمان، تُضاف إلى المحلية «(من هذا الهاتف)».</string>
+    <string name="merge_remote_title">استخدم لوحات الحساب فقط</string>
+    <string name="merge_remote_sub">%1$s من هذا الهاتف تذهب إلى المهملات. يمكنك استعادتها خلال 30 يومًا.</string>
+    <string name="merge_footnote">لا يُحذف شيء في الحالتين.</string>
+    <string name="merge_recommended">موصى به</string>
+    <string name="merge_action_continue">متابعة</string>
+    <string name="merge_name_suffix">(من هذا الهاتف)</string>
+    <string name="account_sign_out_title">تسجيل الخروج؟</string>
+    <string name="account_sign_out_helper">تبقى لوحاتك على هذا الهاتف وفي حسابك. التغييرات بعد تسجيل الخروج لن تُزامن. الأرصدة والمشتريات تنتظرك هنا.</string>
 </resources>

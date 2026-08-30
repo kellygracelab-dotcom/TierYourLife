@@ -444,4 +444,37 @@
         <item quantity="many">Вход выполнен · %1$d кредитов</item>
         <item quantity="other">Вход выполнен · %1$d кредита</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">%1$d доска</item>
+        <item quantity="few">%1$d доски</item>
+        <item quantity="many">%1$d досок</item>
+        <item quantity="other">%1$d доски</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, только на этом телефоне</string>
+    <string name="local_only_card_title_one">Эта доска живёт только на телефоне</string>
+    <string name="local_only_card_title_many">Эти доски живут только на телефоне</string>
+    <string name="local_only_card_body_one">Смените телефон или переустановите — и её нет. Аккаунт её сохранит.</string>
+    <string name="local_only_card_body_many">Смените телефон или переустановите — и их нет. Аккаунт их сохранит.</string>
+    <string name="local_only_card_not_now">Не сейчас</string>
+    <string name="local_only_card_sign_in">Войти</string>
+    <string name="restoring_one_picture">Восстанавливаем картинку</string>
+    <string name="restoring_pictures">Восстанавливаем картинки · %1$d из %2$d</string>
+    <string name="settings_backup_label">Хранить копию досок</string>
+    <string name="settings_backup_sub">Тиры, карточки и подписи</string>
+    <string name="settings_backup_pictures_label">Картинки только по Wi-Fi</string>
+    <string name="settings_backup_pictures_sub">%1$s в вашем аккаунте</string>
+    <string name="settings_backup_note">Ваши фото и сгенерированные карточки уезжают в ваш аккаунт, и видите их только вы. В опубликованных списках остаются только картинки из каталогов.</string>
+    <string name="settings_backup_stuck">Нет копии с %1$s. Проверьте подключение.</string>
+    <string name="settings_backup_off_title">Перестать хранить копию?</string>
+    <string name="settings_backup_off_body">Доски останутся на этом телефоне. Копия в аккаунте будет удалена, и новый телефон начнёт с пустого.</string>
+    <string name="settings_backup_off_confirm">Удалить копию</string>
+    <string name="settings_backup_off_cancel">Отмена</string>
+    <string name="conflict_title">«%1$s» правили на двух телефонах</string>
+    <string name="conflict_body">Обе версии здесь. Откройте, оставьте нужную, вторую удалите.</string>
+    <string name="conflict_got_it">Понятно</string>
+    <string name="conflict_tag">с %1$s</string>
+    <string name="conflict_tag_unknown">с другого телефона</string>
+    <string name="conflict_edited_there">Правлена на %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Правлена на другом телефоне %1$s</string>
+    <string name="conflict_edited_here">Правлена здесь %1$s</string>
 </resources>

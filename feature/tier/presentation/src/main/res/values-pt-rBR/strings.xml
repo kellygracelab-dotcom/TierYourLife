@@ -415,4 +415,35 @@
         <item quantity="many">Conectado · %1$d créditos</item>
         <item quantity="other">Conectado · %1$d créditos</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">%1$d quadro</item>
+        <item quantity="other">%1$d quadros</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, só neste telefone</string>
+    <string name="local_only_card_title_one">Este quadro só existe neste telefone</string>
+    <string name="local_only_card_title_many">Estes quadros só existem neste telefone</string>
+    <string name="local_only_card_body_one">Troque de telefone ou reinstale e ele some. Uma conta guarda ele.</string>
+    <string name="local_only_card_body_many">Troque de telefone ou reinstale e eles somem. Uma conta guarda eles.</string>
+    <string name="local_only_card_not_now">Agora não</string>
+    <string name="local_only_card_sign_in">Entrar</string>
+    <string name="restoring_one_picture">Restaurando a imagem</string>
+    <string name="restoring_pictures">Restaurando imagens · %1$d de %2$d</string>
+    <string name="settings_backup_label">Guardar meus quadros</string>
+    <string name="settings_backup_sub">Níveis, cartões e legendas</string>
+    <string name="settings_backup_pictures_label">Imagens só no Wi-Fi</string>
+    <string name="settings_backup_pictures_sub">%1$s na sua conta</string>
+    <string name="settings_backup_note">Suas fotos e cartões gerados vão para a sua conta, e só você os vê. Listas publicadas continuam mostrando apenas imagens de catálogo.</string>
+    <string name="settings_backup_stuck">Sem cópia desde %1$s. Verifique sua conexão.</string>
+    <string name="settings_backup_off_title">Parar de guardar cópia?</string>
+    <string name="settings_backup_off_body">Seus quadros ficam neste telefone. A cópia na sua conta é apagada, e um telefone novo começará vazio.</string>
+    <string name="settings_backup_off_confirm">Parar e apagar</string>
+    <string name="settings_backup_off_cancel">Cancelar</string>
+    <string name="conflict_title">“%1$s” mudou em dois telefones</string>
+    <string name="conflict_body">As duas versões estão aqui. Abra, fique com a que quiser e apague a outra.</string>
+    <string name="conflict_got_it">Entendi</string>
+    <string name="conflict_tag">de %1$s</string>
+    <string name="conflict_tag_unknown">de outro telefone</string>
+    <string name="conflict_edited_there">Editado em %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Editado em outro telefone %1$s</string>
+    <string name="conflict_edited_here">Editado aqui %1$s</string>
 </resources>

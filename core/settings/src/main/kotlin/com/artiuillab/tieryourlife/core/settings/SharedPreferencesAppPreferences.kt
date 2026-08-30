@@ -12,6 +12,11 @@ private const val KEY_LANGUAGE_TAG = "language_tag"
 private const val KEY_LAST_KNOWN_CREDITS = "last_known_credits"
 private const val KEY_HIDDEN_LISTS = "hidden_list_ids"
 private const val KEY_HIDDEN_AUTHORS = "hidden_author_uids"
+private const val KEY_BACK_UP_BOARDS = "back_up_boards"
+private const val KEY_SIGN_IN_OFFER_ANSWERED = "sign_in_offer_answered"
+private const val KEY_PICTURES_ON_WIFI_ONLY = "pictures_on_wifi_only"
+private const val KEY_LAST_SYNCED_AT = "last_synced_at"
+private const val KEY_CONFLICTS_SEEN = "conflicts_seen"
 
 @Singleton
 class SharedPreferencesAppPreferences @Inject constructor(
@@ -42,6 +47,38 @@ class SharedPreferencesAppPreferences @Inject constructor(
         prefs.edit {
             if (credits == null) remove(KEY_LAST_KNOWN_CREDITS) else putInt(KEY_LAST_KNOWN_CREDITS, credits)
         }
+    }
+
+    override fun backUpBoards(): Boolean = prefs.getBoolean(KEY_BACK_UP_BOARDS, true)
+
+    override fun setBackUpBoards(backUp: Boolean) {
+        prefs.edit { putBoolean(KEY_BACK_UP_BOARDS, backUp) }
+    }
+
+    override fun signInOfferAnswered(): Boolean = prefs.getBoolean(KEY_SIGN_IN_OFFER_ANSWERED, false)
+
+    override fun markSignInOfferAnswered() {
+        prefs.edit { putBoolean(KEY_SIGN_IN_OFFER_ANSWERED, true) }
+    }
+
+    override fun picturesOnWifiOnly(): Boolean = prefs.getBoolean(KEY_PICTURES_ON_WIFI_ONLY, true)
+
+    override fun setPicturesOnWifiOnly(wifiOnly: Boolean) {
+        prefs.edit { putBoolean(KEY_PICTURES_ON_WIFI_ONLY, wifiOnly) }
+    }
+
+    override fun lastSyncedAtMs(): Long? = prefs.getLong(KEY_LAST_SYNCED_AT, 0L).takeIf { it > 0L }
+
+    override fun setLastSyncedAtMs(atMs: Long?) {
+        prefs.edit {
+            if (atMs == null) remove(KEY_LAST_SYNCED_AT) else putLong(KEY_LAST_SYNCED_AT, atMs)
+        }
+    }
+
+    override fun conflictsSeen(): Set<String> = stored(KEY_CONFLICTS_SEEN)
+
+    override fun markConflictSeen(listUid: String) {
+        prefs.edit { putStringSet(KEY_CONFLICTS_SEEN, stored(KEY_CONFLICTS_SEEN) + listUid) }
     }
 
     override fun hiddenListIds(): Set<String> = idsIn(KEY_HIDDEN_LISTS)
