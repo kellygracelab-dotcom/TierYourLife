@@ -426,4 +426,6 @@
     <string name="local_only_card_body_many">Cambia de teléfono o reinstala y desaparecen. Una cuenta los conserva.</string>
     <string name="local_only_card_not_now">Ahora no</string>
     <string name="local_only_card_sign_in">Iniciar sesión</string>
+    <string name="restoring_one_picture">Restaurando la imagen</string>
+    <string name="restoring_pictures">Restaurando imágenes · %1$d de %2$d</string>
 </resources>

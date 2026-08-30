@@ -26,7 +26,18 @@ import java.security.MessageDigest
  */
 object BoardFingerprint {
 
-    fun of(board: TierListEntity, tiers: List<TierEntity>, items: List<TierItemEntity>): String {
+    /**
+     * [pictureIdOf] turns a card's local image path into the picture's own
+     * name. The path differs on every phone and the name does not, so without
+     * this two phones holding the same board would never agree that they do,
+     * and would hand each other copies of it forever.
+     */
+    fun of(
+        board: TierListEntity,
+        tiers: List<TierEntity>,
+        items: List<TierItemEntity>,
+        pictureIdOf: (String?) -> String?,
+    ): String {
         val digest = MessageDigest.getInstance("SHA-256")
         digest.write(
             board.uid,
@@ -57,7 +68,7 @@ object BoardFingerprint {
                     item.uid,
                     item.position.toString(),
                     item.title,
-                    item.imageUrl,
+                    pictureIdOf(item.imageUrl) ?: item.imageUrl?.takeIf { it.startsWith("http") },
                     item.source,
                     item.deletedAt?.toString(),
                 )

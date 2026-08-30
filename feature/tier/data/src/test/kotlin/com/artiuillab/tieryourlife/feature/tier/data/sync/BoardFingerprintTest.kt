@@ -43,7 +43,14 @@ class BoardFingerprintTest {
         board: TierListEntity = this.board,
         tiers: List<TierEntity> = this.tiers,
         items: List<TierItemEntity> = this.items,
-    ) = BoardFingerprint.of(board, tiers, items)
+    ) = BoardFingerprint.of(board, tiers, items, ::pictureIdOf)
+
+    /**
+     * What [TierImageStore] does: the file's own name, which is the same on
+     * every phone, out of a path that is not.
+     */
+    private fun pictureIdOf(imageUrl: String?): String? =
+        imageUrl?.takeUnless { it.startsWith("http") }?.substringAfterLast('/')
 
     @Test
     fun `the same board twice gives the same fingerprint`() {
@@ -128,6 +135,32 @@ class BoardFingerprintTest {
         val joined = fingerprint(board = board.copy(title = "Scifi"), tiers = listOf(tiers[0].copy(label = ""), tiers[1]))
 
         assertNotEquals(split, joined)
+    }
+
+    // Without this two phones holding the same board would never agree that
+    // they do, and would hand each other copies of it forever: the directory
+    // around a picture is this phone's, and the name inside it is everyone's.
+    @Test
+    fun `the same picture under two different paths is the same picture`() {
+        val here = listOf(items[0].copy(imageUrl = "/data/user/0/app/files/tier_images/pic-1"), items[1])
+        val there = listOf(items[0].copy(imageUrl = "/data/user/10/app/files/tier_images/pic-1"), items[1])
+
+        assertEquals(fingerprint(items = here), fingerprint(items = there))
+    }
+
+    @Test
+    fun `swapping the picture on a card changes it`() {
+        val before = listOf(items[0].copy(imageUrl = "/files/tier_images/pic-1"), items[1])
+        val after = listOf(items[0].copy(imageUrl = "/files/tier_images/pic-2"), items[1])
+
+        assertNotEquals(fingerprint(items = before), fingerprint(items = after))
+    }
+
+    @Test
+    fun `a poster from a catalogue still counts as itself`() {
+        val poster = listOf(items[0].copy(imageUrl = "https://image.tmdb.org/t/p/w500/a.jpg"), items[1])
+
+        assertNotEquals(fingerprint(), fingerprint(items = poster))
     }
 
     @Test

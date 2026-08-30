@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.BoardSyncEntit
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
+import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.BoardConflictDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequestDto
@@ -48,6 +49,8 @@ class BoardSyncEngine @Inject constructor(
     private val api: BoardsApi,
     private val accounts: AccountRepository,
     private val json: Json,
+    private val images: TierImageStore,
+    private val pictures: PictureSync,
 ) : BoardSync {
 
     override suspend fun sync(): SyncReport {
@@ -64,6 +67,12 @@ class BoardSyncEngine @Inject constructor(
             synced = dao.allSyncRecords().map { SyncedBoard(it.listUid, it.revision, it.fingerprint) },
         )
 
+        // Before the boards, so that a board naming a picture is followed by a
+        // picture that is already there. The other way round leaves a window
+        // where the second phone is told about something it cannot fetch.
+        runCatching { pictures.push() }
+            .onFailure { failure -> Timber.w(failure, "Pictures did not go up") }
+
         var carried = 0
         var refused = 0
         steps.forEach { step ->
@@ -74,8 +83,24 @@ class BoardSyncEngine @Inject constructor(
                     Timber.w(failure, "Board sync: %s did not go through", step.uid)
                 }
         }
+        runCatching { pictures.pull(wantedPictures()) }
+            .onFailure { failure -> Timber.w(failure, "Pictures did not come down") }
+
         return SyncReport(signedIn = true, carried = carried, refused = refused)
     }
+
+    /**
+     * Cards whose picture is meant to be here. Read off the database rather
+     * than remembered from the run that fetched the board, so a download that
+     * failed last week is simply tried again today.
+     */
+    private suspend fun wantedPictures(): Map<String, String> = dao.allBoards()
+        .flatMap { board -> dao.itemsOf(board.id) }
+        .mapNotNull { item ->
+            val pictureId = images.pictureIdOf(item.imageUrl) ?: return@mapNotNull null
+            item.uid to pictureId
+        }
+        .toMap()
 
     private suspend fun readIndex(): Map<String, RemoteBoard> {
         val found = mutableMapOf<String, RemoteBoard>()
@@ -157,7 +182,7 @@ class BoardSyncEngine @Inject constructor(
     /** The account's copy replaces what is here, uid and all. */
     private suspend fun takeOver(incoming: KeptBoardDto) {
         val existing = dao.boardByUid(incoming.uid) ?: return adopt(incoming)
-        dao.replaceContents(incoming.toEntity(existing.id, existing.uid), incoming.tiers())
+        dao.replaceContents(incoming.toEntity(existing.id, existing.uid), incoming.tiers(images::pathFor))
         remember(incoming.uid, incoming.revision, fingerprintOf(dao.boardByUid(incoming.uid) ?: return))
     }
 
@@ -179,7 +204,7 @@ class BoardSyncEngine @Inject constructor(
             // A copy stands beside a board that still holds the original ids,
             // and every uid in the database is unique. Renaming the rows is
             // the price of having both.
-            tiers = incoming.tiers(renamed = asCopy),
+            tiers = incoming.tiers(images::pathFor, renamed = asCopy),
         )
         if (asCopy) return
 
@@ -199,7 +224,7 @@ class BoardSyncEngine @Inject constructor(
     }
 
     private suspend fun fingerprintOf(board: TierListEntity): String =
-        BoardFingerprint.of(board, dao.tiersOf(board.id), dao.itemsOf(board.id))
+        BoardFingerprint.of(board, dao.tiersOf(board.id), dao.itemsOf(board.id), images::pictureIdOf)
 
     private suspend fun request(
         board: TierListEntity,
@@ -234,6 +259,7 @@ class BoardSyncEngine @Inject constructor(
                 val tierUid = uidByTierId[item.tierId] ?: return@mapNotNull null
                 KeptItemDto(
                     uid = item.uid,
+                    pictureId = images.pictureIdOf(item.imageUrl),
                     tierUid = tierUid,
                     position = item.position,
                     title = item.title,
@@ -268,7 +294,10 @@ private fun KeptBoardDto.toEntity(id: Long, uid: String) = TierListEntity(
  * not here is dropped rather than guessed at -- the account refuses to store
  * one, so this only ever happens to a board written by something else.
  */
-private fun KeptBoardDto.tiers(renamed: Boolean = false): List<IncomingTier> {
+private fun KeptBoardDto.tiers(
+    pathFor: (String) -> String,
+    renamed: Boolean = false,
+): List<IncomingTier> {
     fun idFor(original: String) = if (renamed) UUID.randomUUID().toString() else original
     val itemsByTierUid = items.groupBy { it.tierUid }
     return tiers.sortedBy { it.position }.mapIndexed { index, tier ->
@@ -289,7 +318,11 @@ private fun KeptBoardDto.tiers(renamed: Boolean = false): List<IncomingTier> {
                     tierId = index.toLong(),
                     position = item.position,
                     title = item.title,
-                    imageUrl = item.imageUrl,
+                    // A picture of their own is written as the place it will
+                    // live once it arrives. Until then the card shows its
+                    // title on a plain tile, which is what a card with no
+                    // picture has always looked like.
+                    imageUrl = item.pictureId?.let(pathFor) ?: item.imageUrl,
                     source = item.source,
                     deletedAt = item.deletedAt,
                     uid = idFor(item.uid),

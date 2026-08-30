@@ -14,5 +14,8 @@ kotlin {
 }
 
 dependencies {
+    // A flow, for the one thing in here that has a running state: pictures
+    // arriving on a phone that has just been handed somebody's boards.
+    api(libs.kotlinx.coroutines.core)
     testImplementation(libs.junit)
 }

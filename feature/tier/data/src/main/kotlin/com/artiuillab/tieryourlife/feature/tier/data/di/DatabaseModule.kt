@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_2_
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_3_4
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_4_5
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_5_6
+import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_6_7
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.TierDatabase
 import dagger.Module
 import dagger.Provides
@@ -30,7 +31,7 @@ object DatabaseModule {
         TierDatabase::class.java,
         DATABASE_NAME,
     )
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
         // No destructive fallback of any kind. Opening a newer database with an
         // older build used to drop every table without a word, which turns
         // "you installed the wrong build" into "your library is gone" -- and

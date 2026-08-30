@@ -38,6 +38,13 @@ dependencies {
     implementation(projects.feature.tier.domain)
     implementation(projects.feature.account.domain)
     implementation(libs.androidx.core.ktx)
+    implementation(platform(libs.firebase.bom))
+    // A card's own picture goes straight here rather than through the proxy:
+    // a function moving megabytes it does nothing with is a pipe billed by
+    // the second.
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.auth)
+    implementation(libs.kotlinx.coroutines.play.services)
     // Coil shares this module's Wikimedia-aware OkHttpClient.
     implementation(libs.coil.core)
     implementation(libs.coil.network.okhttp)

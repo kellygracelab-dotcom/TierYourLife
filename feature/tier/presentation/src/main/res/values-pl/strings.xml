@@ -457,4 +457,6 @@
     <string name="local_only_card_body_many">Zmień telefon albo zainstaluj ponownie i znikną. Konto je zachowa.</string>
     <string name="local_only_card_not_now">Nie teraz</string>
     <string name="local_only_card_sign_in">Zaloguj się</string>
+    <string name="restoring_one_picture">Przywracanie zdjęcia</string>
+    <string name="restoring_pictures">Przywracanie zdjęć · %1$d z %2$d</string>
 </resources>

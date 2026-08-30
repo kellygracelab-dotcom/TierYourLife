@@ -426,4 +426,6 @@
     <string name="local_only_card_body_many">Troque de telefone ou reinstale e eles somem. Uma conta guarda eles.</string>
     <string name="local_only_card_not_now">Agora não</string>
     <string name="local_only_card_sign_in">Entrar</string>
+    <string name="restoring_one_picture">Restaurando a imagem</string>
+    <string name="restoring_pictures">Restaurando imagens · %1$d de %2$d</string>
 </resources>

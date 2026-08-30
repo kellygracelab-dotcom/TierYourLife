@@ -191,6 +191,32 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    @Test
+    fun migrate_6_to_7_remembers_nothing_and_loses_nothing() {
+        helper.createDatabase(TEST_DB, 6).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, authorName, " +
+                    "category, coverImageUrl, uid, arrivedFrom) " +
+                    "VALUES (1, 'Films', NULL, 'WRAP', NULL, NULL, NULL, NULL, 'board-1', NULL)",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 7, true, MIGRATION_6_7)
+
+        migratedDb.query("SELECT title FROM tier_lists WHERE id = 1").use {
+            check(it.moveToFirst())
+            assertEquals("Films", it.getString(0))
+        }
+
+        // Empty, not absent. A phone that has never sent a picture must read
+        // as "none sent yet" rather than as a broken database.
+        migratedDb.query("SELECT COUNT(*) FROM picture_sync").use {
+            check(it.moveToFirst())
+            assertEquals(0, it.getInt(0))
+        }
+    }
+
     private data class MigratedItem(
         val id: Long,
         val title: String,

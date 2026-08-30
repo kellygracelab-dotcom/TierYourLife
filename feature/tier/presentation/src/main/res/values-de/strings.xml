@@ -397,4 +397,6 @@
     <string name="local_only_card_body_many">Telefonwechsel oder Neuinstallation, und sie sind weg. Ein Konto bewahrt sie auf.</string>
     <string name="local_only_card_not_now">Jetzt nicht</string>
     <string name="local_only_card_sign_in">Anmelden</string>
+    <string name="restoring_one_picture">Bild wird wiederhergestellt</string>
+    <string name="restoring_pictures">Bilder werden wiederhergestellt · %1$d von %2$d</string>
 </resources>

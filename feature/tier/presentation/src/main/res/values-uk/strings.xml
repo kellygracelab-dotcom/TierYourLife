@@ -457,4 +457,6 @@
     <string name="local_only_card_body_many">Зміните телефон або перевстановите — і їх немає. Обліковий запис їх збереже.</string>
     <string name="local_only_card_not_now">Не зараз</string>
     <string name="local_only_card_sign_in">Увійти</string>
+    <string name="restoring_one_picture">Відновлюємо картинку</string>
+    <string name="restoring_pictures">Відновлюємо картинки · %1$d з %2$d</string>
 </resources>

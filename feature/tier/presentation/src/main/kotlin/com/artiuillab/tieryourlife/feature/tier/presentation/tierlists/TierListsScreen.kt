@@ -55,6 +55,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
@@ -69,6 +70,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlyFooter
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlySignInCard
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.RestoringPictures
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchOffIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SelectionTopBar
@@ -161,6 +163,7 @@ internal fun TierListsScreenContent(
     val communityFeed = success?.community ?: CommunityFeed.Loading
     val communityCategory = success?.communityCategory
     val localOnly = success?.localOnly ?: LocalOnly.Unknown
+    val restoringPictures = success?.restoringPictures ?: PictureRestore.Progress.Idle
     var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var reportFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var reportedFrom by remember { mutableStateOf<PublishedListSummary?>(null) }
@@ -233,6 +236,10 @@ internal fun TierListsScreenContent(
                         onSettingsClick = onSettingsClick,
                     )
                 }
+
+                // Directly under the bar, and above the tabs: it is about
+                // everything below it, not about whichever tab is showing.
+                RestoringPictures(restoringPictures)
 
                 if (mode !is HomeMode.Searching) {
                     HomeTabs(selected = tab, onSelect = onSelectTab)

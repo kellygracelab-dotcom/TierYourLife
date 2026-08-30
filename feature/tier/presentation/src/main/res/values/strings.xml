@@ -398,4 +398,6 @@
     <string name="local_only_card_body_many">Change phones or reinstall and they are gone. An account keeps them.</string>
     <string name="local_only_card_not_now">Not now</string>
     <string name="local_only_card_sign_in">Sign in</string>
+    <string name="restoring_one_picture">Restoring 1 picture</string>
+    <string name="restoring_pictures">Restoring pictures · %1$d of %2$d</string>
 </resources>

@@ -41,6 +41,11 @@ data class KeptTierDto(
 @Serializable
 data class KeptItemDto(
     val uid: String,
+    /**
+     * A picture of this person's own, by the file's own name. The path around
+     * it means nothing on a second phone, so only this travels.
+     */
+    val pictureId: String? = null,
     /** Which tier it sits in, by that tier's uid rather than a row number. */
     val tierUid: String,
     val position: Int,

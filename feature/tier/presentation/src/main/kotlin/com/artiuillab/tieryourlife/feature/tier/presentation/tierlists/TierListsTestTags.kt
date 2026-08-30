@@ -26,6 +26,7 @@ internal object TierListsTestTags {
     const val LOCAL_ONLY_DISMISS = "home_local_only_dismiss"
     const val LOCAL_ONLY_SIGN_IN = "home_local_only_sign_in"
     const val LOCAL_ONLY_FOOTER = "home_local_only_footer"
+    const val RESTORING_PICTURES = "home_restoring_pictures"
     const val LIST_ACTIONS_SHEET = "community_list_actions"
     const val ACTION_VIEW_AUTHOR = "community_action_view_author"
     const val ACTION_HIDE = "community_action_hide"

@@ -16,6 +16,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -40,6 +41,7 @@ class TierListsViewModel @Inject constructor(
     private val preferences: AppPreferences,
     private val accounts: AccountRepository,
     private val boardSync: BoardSync,
+    private val pictures: PictureRestore,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<TierListsUiState>(TierListsUiState.Loading)
@@ -68,8 +70,16 @@ class TierListsViewModel @Inject constructor(
     private var offerAnswered: Boolean = false
     private var syncJob: Job? = null
 
+    private var restoringPictures: PictureRestore.Progress = PictureRestore.Progress.Idle
+
     init {
         offerAnswered = preferences.signInOfferAnswered()
+        viewModelScope.launch {
+            pictures.restoring.collect { progress ->
+                restoringPictures = progress
+                if (_state.value is TierListsUiState.Success) emitSuccess()
+            }
+        }
         viewModelScope.launch {
             accounts.account.collectLatest { current ->
                 account = current
@@ -155,6 +165,7 @@ class TierListsViewModel @Inject constructor(
             community = communityFeed,
             communityCategory = communityCategory,
             localOnly = whereTheseLive(),
+            restoringPictures = restoringPictures,
         )
     }
 

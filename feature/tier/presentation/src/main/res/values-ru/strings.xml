@@ -457,4 +457,6 @@
     <string name="local_only_card_body_many">Смените телефон или переустановите — и их нет. Аккаунт их сохранит.</string>
     <string name="local_only_card_not_now">Не сейчас</string>
     <string name="local_only_card_sign_in">Войти</string>
+    <string name="restoring_one_picture">Восстанавливаем картинку</string>
+    <string name="restoring_pictures">Восстанавливаем картинки · %1$d из %2$d</string>
 </resources>

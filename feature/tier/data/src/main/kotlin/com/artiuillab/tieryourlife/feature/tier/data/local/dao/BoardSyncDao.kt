@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.BoardSyncEntity
+import com.artiuillab.tieryourlife.feature.tier.data.local.entity.PictureSyncEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
@@ -33,6 +34,23 @@ interface BoardSyncDao {
 
     @Query("DELETE FROM board_sync WHERE listUid = :listUid")
     suspend fun forget(listUid: String)
+
+    @Query("SELECT pictureId FROM picture_sync")
+    suspend fun sentPictureIds(): List<String>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun rememberPicture(record: PictureSyncEntity)
+
+    /**
+     * Every picture on the phone, trashed cards included. A card in the trash
+     * can be restored for thirty days, and restoring it to a blank tile is not
+     * restoring it.
+     */
+    @Query("SELECT DISTINCT imageUrl FROM tier_items WHERE imageUrl IS NOT NULL")
+    suspend fun allImageUrls(): List<String>
+
+    @Query("UPDATE tier_items SET imageUrl = :imageUrl WHERE uid = :itemUid")
+    suspend fun setItemImage(itemUid: String, imageUrl: String)
 
     @Query("SELECT * FROM tier_lists")
     suspend fun allBoards(): List<TierListEntity>

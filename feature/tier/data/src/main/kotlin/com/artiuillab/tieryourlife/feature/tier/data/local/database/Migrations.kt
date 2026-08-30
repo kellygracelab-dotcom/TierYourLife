@@ -4,6 +4,23 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
+ * Remembers which pictures have already gone up.
+ *
+ * No foreign key here either, and for the mirror of the reason board_sync has
+ * none: the row is about a file, and the card that used to point at it may be
+ * long gone while the file is still up there waiting to be swept.
+ */
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `picture_sync` (" +
+                "`pictureId` TEXT NOT NULL, `uploadedAt` INTEGER NOT NULL, " +
+                "PRIMARY KEY(`pictureId`))",
+        )
+    }
+}
+
+/**
  * Makes room for the copy an account keeps.
  *
  * `board_sync` has no foreign key on purpose: the row has to outlive the
