@@ -21,7 +21,16 @@ ANDROID_SERIAL=<phone> ./gradlew :feature:tier:presentation:connectedDebugAndroi
 
 The files land under
 `feature/tier/presentation/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected/<device>/readme/`.
-Copy them into `docs/screenshots/`.
+
+Copy over **only the ones the README points at** — the test draws every screen in both themes and
+the README uses about half of them, and an unread PNG is weight in a repository that nobody ever
+removes. Then shrink them: they are displayed at 240px (300 for the tablet), so 480px wide is
+already twice what any screen needs, and the full-size set is four times the bytes for no
+difference at all.
+
+```bash
+python -c "from PIL import Image; import sys; [Image.open(p).convert('RGB').resize((480, round(Image.open(p).height*480/Image.open(p).width))).save(p, optimize=True) for p in sys.argv[1:]]" docs/screenshots/*.png
+```
 
 The picture is the size of whatever drew it, so use a device with an ordinary phone window — the
 committed set came from a 1080×2640 phone at 3x. Run it a second time against a tablet and copy
