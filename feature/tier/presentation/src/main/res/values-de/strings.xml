@@ -386,4 +386,15 @@
         <item quantity="one">Angemeldet · %1$d Guthaben</item>
         <item quantity="other">Angemeldet · %1$d Guthaben</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">1 Board</item>
+        <item quantity="other">%1$d Boards</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, nur auf diesem Telefon</string>
+    <string name="local_only_card_title_one">Dieses Board liegt nur auf diesem Telefon</string>
+    <string name="local_only_card_title_many">Diese Boards liegen nur auf diesem Telefon</string>
+    <string name="local_only_card_body_one">Telefonwechsel oder Neuinstallation, und es ist weg. Ein Konto bewahrt es auf.</string>
+    <string name="local_only_card_body_many">Telefonwechsel oder Neuinstallation, und sie sind weg. Ein Konto bewahrt sie auf.</string>
+    <string name="local_only_card_not_now">Jetzt nicht</string>
+    <string name="local_only_card_sign_in">Anmelden</string>
 </resources>

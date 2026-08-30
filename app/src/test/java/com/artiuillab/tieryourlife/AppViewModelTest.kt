@@ -84,6 +84,14 @@ private class FakeAppPreferences(
 
     override fun unhideAuthor(authorUid: String) = Unit
 
+    override fun backUpBoards(): Boolean = true
+
+    override fun setBackUpBoards(backUp: Boolean) = Unit
+
+    override fun signInOfferAnswered(): Boolean = false
+
+    override fun markSignInOfferAnswered() = Unit
+
     override fun lastKnownCredits(): Int? = null
 
     override fun setLastKnownCredits(credits: Int?) = Unit

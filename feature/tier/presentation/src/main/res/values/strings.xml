@@ -387,4 +387,15 @@
         <item quantity="one">Signed in · %1$d credit</item>
         <item quantity="other">Signed in · %1$d credits</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">1 board</item>
+        <item quantity="other">%1$d boards</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, on this phone only</string>
+    <string name="local_only_card_title_one">This board lives on this phone</string>
+    <string name="local_only_card_title_many">These boards live on this phone</string>
+    <string name="local_only_card_body_one">Change phones or reinstall and it is gone. An account keeps it.</string>
+    <string name="local_only_card_body_many">Change phones or reinstall and they are gone. An account keeps them.</string>
+    <string name="local_only_card_not_now">Not now</string>
+    <string name="local_only_card_sign_in">Sign in</string>
 </resources>

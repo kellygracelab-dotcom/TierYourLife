@@ -415,4 +415,15 @@
         <item quantity="many">Sesión iniciada · %1$d créditos</item>
         <item quantity="other">Sesión iniciada · %1$d créditos</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">1 tablero</item>
+        <item quantity="other">%1$d tableros</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, solo en este teléfono</string>
+    <string name="local_only_card_title_one">Este tablero solo vive en este teléfono</string>
+    <string name="local_only_card_title_many">Estos tableros solo viven en este teléfono</string>
+    <string name="local_only_card_body_one">Cambia de teléfono o reinstala y desaparece. Una cuenta lo conserva.</string>
+    <string name="local_only_card_body_many">Cambia de teléfono o reinstala y desaparecen. Una cuenta los conserva.</string>
+    <string name="local_only_card_not_now">Ahora no</string>
+    <string name="local_only_card_sign_in">Iniciar sesión</string>
 </resources>

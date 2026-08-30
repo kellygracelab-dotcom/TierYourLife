@@ -357,4 +357,14 @@
     <plurals name="settings_account_signed_in_credits">
         <item quantity="other">ログイン済み · %1$d クレジット</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="other">%1$d 件のボード</item>
+    </plurals>
+    <string name="local_only_footer">%1$s、この端末だけにあります</string>
+    <string name="local_only_card_title_one">このボードはこの端末にしかありません</string>
+    <string name="local_only_card_title_many">このボードはこの端末にしかありません</string>
+    <string name="local_only_card_body_one">機種変更や再インストールで消えます。アカウントがあれば残ります。</string>
+    <string name="local_only_card_body_many">機種変更や再インストールで消えます。アカウントがあれば残ります。</string>
+    <string name="local_only_card_not_now">今はしない</string>
+    <string name="local_only_card_sign_in">ログイン</string>
 </resources>

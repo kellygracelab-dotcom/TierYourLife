@@ -444,4 +444,17 @@
         <item quantity="many">Zalogowano · %1$d kredytów</item>
         <item quantity="other">Zalogowano · %1$d kredytu</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">%1$d tablica</item>
+        <item quantity="few">%1$d tablice</item>
+        <item quantity="many">%1$d tablic</item>
+        <item quantity="other">%1$d tablicy</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, tylko na tym telefonie</string>
+    <string name="local_only_card_title_one">Ta tablica jest tylko na tym telefonie</string>
+    <string name="local_only_card_title_many">Te tablice są tylko na tym telefonie</string>
+    <string name="local_only_card_body_one">Zmień telefon albo zainstaluj ponownie i zniknie. Konto ją zachowa.</string>
+    <string name="local_only_card_body_many">Zmień telefon albo zainstaluj ponownie i znikną. Konto je zachowa.</string>
+    <string name="local_only_card_not_now">Nie teraz</string>
+    <string name="local_only_card_sign_in">Zaloguj się</string>
 </resources>

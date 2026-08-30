@@ -444,4 +444,17 @@
         <item quantity="many">Вход выполнен · %1$d кредитов</item>
         <item quantity="other">Вход выполнен · %1$d кредита</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">%1$d доска</item>
+        <item quantity="few">%1$d доски</item>
+        <item quantity="many">%1$d досок</item>
+        <item quantity="other">%1$d доски</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, только на этом телефоне</string>
+    <string name="local_only_card_title_one">Эта доска живёт только на телефоне</string>
+    <string name="local_only_card_title_many">Эти доски живут только на телефоне</string>
+    <string name="local_only_card_body_one">Смените телефон или переустановите — и её нет. Аккаунт её сохранит.</string>
+    <string name="local_only_card_body_many">Смените телефон или переустановите — и их нет. Аккаунт их сохранит.</string>
+    <string name="local_only_card_not_now">Не сейчас</string>
+    <string name="local_only_card_sign_in">Войти</string>
 </resources>

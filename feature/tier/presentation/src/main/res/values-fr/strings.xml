@@ -415,4 +415,15 @@
         <item quantity="many">Connecté · %1$d crédits</item>
         <item quantity="other">Connecté · %1$d crédits</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">%1$d tableau</item>
+        <item quantity="other">%1$d tableaux</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, uniquement sur ce téléphone</string>
+    <string name="local_only_card_title_one">Ce tableau ne vit que sur ce téléphone</string>
+    <string name="local_only_card_title_many">Ces tableaux ne vivent que sur ce téléphone</string>
+    <string name="local_only_card_body_one">Changez de téléphone ou réinstallez et il disparaît. Un compte le garde.</string>
+    <string name="local_only_card_body_many">Changez de téléphone ou réinstallez et ils disparaissent. Un compte les garde.</string>
+    <string name="local_only_card_not_now">Pas maintenant</string>
+    <string name="local_only_card_sign_in">Se connecter</string>
 </resources>

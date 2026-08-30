@@ -49,6 +49,7 @@ fun NavGraphBuilder.tierListsScreen(
     onCommunityListClick: (String) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onSettingsClick: () -> Unit,
+    onSignInClick: () -> Unit,
     onNewListCreated: (Long) -> Unit,
 ) {
     composable<Route.TierLists> {
@@ -57,6 +58,7 @@ fun NavGraphBuilder.tierListsScreen(
             onCommunityListClick = onCommunityListClick,
             onAuthorClick = onAuthorClick,
             onSettingsClick = onSettingsClick,
+            onSignInClick = onSignInClick,
             onNewListCreated = onNewListCreated,
         )
     }

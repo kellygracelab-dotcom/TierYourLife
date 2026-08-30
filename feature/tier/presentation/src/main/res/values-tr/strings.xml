@@ -386,4 +386,15 @@
         <item quantity="one">Giriş yapıldı · %1$d kredi</item>
         <item quantity="other">Giriş yapıldı · %1$d kredi</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">1 pano</item>
+        <item quantity="other">%1$d pano</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, yalnızca bu telefonda</string>
+    <string name="local_only_card_title_one">Bu pano yalnızca bu telefonda</string>
+    <string name="local_only_card_title_many">Bu panolar yalnızca bu telefonda</string>
+    <string name="local_only_card_body_one">Telefon değiştirin ya da yeniden kurun, gider. Bir hesap onu saklar.</string>
+    <string name="local_only_card_body_many">Telefon değiştirin ya da yeniden kurun, giderler. Bir hesap onları saklar.</string>
+    <string name="local_only_card_not_now">Şimdi değil</string>
+    <string name="local_only_card_sign_in">Oturum aç</string>
 </resources>

@@ -4,7 +4,10 @@ import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 
-internal class FakeAppPreferences : AppPreferences {
+internal class FakeAppPreferences(
+    private var backUpBoards: Boolean = true,
+    private var offerAnswered: Boolean = false,
+) : AppPreferences {
     private val hiddenLists = mutableMapOf<String, String>()
     private val hiddenAuthors = mutableMapOf<String, String>()
 
@@ -32,5 +35,17 @@ internal class FakeAppPreferences : AppPreferences {
 
     override fun unhideAuthor(authorUid: String) {
         hiddenAuthors -= authorUid
+    }
+
+    override fun backUpBoards(): Boolean = backUpBoards
+
+    override fun setBackUpBoards(backUp: Boolean) {
+        backUpBoards = backUp
+    }
+
+    override fun signInOfferAnswered(): Boolean = offerAnswered
+
+    override fun markSignInOfferAnswered() {
+        offerAnswered = true
     }
 }

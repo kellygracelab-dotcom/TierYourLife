@@ -15,8 +15,10 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequest
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.LocalBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.RemoteBoard
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncReport
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncStep
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncedBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.planSync
@@ -46,9 +48,9 @@ class BoardSyncEngine @Inject constructor(
     private val api: BoardsApi,
     private val accounts: AccountRepository,
     private val json: Json,
-) {
+) : BoardSync {
 
-    suspend fun sync(): SyncReport {
+    override suspend fun sync(): SyncReport {
         if (accounts.account.first() !is Account.SignedIn) {
             return SyncReport(signedIn = false)
         }
@@ -248,8 +250,6 @@ class BoardSyncEngine @Inject constructor(
         const val UNNAMED_DEVICE = "another phone"
     }
 }
-
-data class SyncReport(val signedIn: Boolean, val carried: Int = 0, val refused: Int = 0)
 
 private fun KeptBoardDto.toEntity(id: Long, uid: String) = TierListEntity(
     id = id,

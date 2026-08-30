@@ -415,4 +415,15 @@
         <item quantity="many">Conectado · %1$d créditos</item>
         <item quantity="other">Conectado · %1$d créditos</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="one">%1$d quadro</item>
+        <item quantity="other">%1$d quadros</item>
+    </plurals>
+    <string name="local_only_footer">%1$s, só neste telefone</string>
+    <string name="local_only_card_title_one">Este quadro só existe neste telefone</string>
+    <string name="local_only_card_title_many">Estes quadros só existem neste telefone</string>
+    <string name="local_only_card_body_one">Troque de telefone ou reinstale e ele some. Uma conta guarda ele.</string>
+    <string name="local_only_card_body_many">Troque de telefone ou reinstale e eles somem. Uma conta guarda eles.</string>
+    <string name="local_only_card_not_now">Agora não</string>
+    <string name="local_only_card_sign_in">Entrar</string>
 </resources>

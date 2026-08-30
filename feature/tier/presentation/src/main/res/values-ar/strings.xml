@@ -502,4 +502,19 @@
         <item quantity="many">تم تسجيل الدخول · %1$d رصيدًا</item>
         <item quantity="other">تم تسجيل الدخول · %1$d رصيد</item>
     </plurals>
+    <plurals name="board_count">
+        <item quantity="zero">لا لوحات</item>
+        <item quantity="one">لوحة واحدة</item>
+        <item quantity="two">لوحتان</item>
+        <item quantity="few">%1$d لوحات</item>
+        <item quantity="many">%1$d لوحة</item>
+        <item quantity="other">%1$d لوحة</item>
+    </plurals>
+    <string name="local_only_footer">%1$s، على هذا الهاتف فقط</string>
+    <string name="local_only_card_title_one">هذه اللوحة موجودة على هذا الهاتف فقط</string>
+    <string name="local_only_card_title_many">هذه اللوحات موجودة على هذا الهاتف فقط</string>
+    <string name="local_only_card_body_one">غيّر الهاتف أو أعد التثبيت وستختفي. الحساب يحتفظ بها.</string>
+    <string name="local_only_card_body_many">غيّر الهاتف أو أعد التثبيت وستختفي. الحساب يحتفظ بها.</string>
+    <string name="local_only_card_not_now">ليس الآن</string>
+    <string name="local_only_card_sign_in">تسجيل الدخول</string>
 </resources>

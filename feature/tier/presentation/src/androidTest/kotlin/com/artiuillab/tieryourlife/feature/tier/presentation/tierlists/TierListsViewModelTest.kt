@@ -2,6 +2,9 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.ui.UserMessage
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
+import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
@@ -17,12 +20,16 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncReport
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.FakeAppPreferences
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -43,7 +50,7 @@ class TierListsViewModelTest {
                 fakeList(id = 2, title = "Another list"),
             ),
         )
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync)
 
         viewModel.loadTierLists()
         val state = viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success
@@ -56,7 +63,7 @@ class TierListsViewModelTest {
     @Test
     fun loadTierLists_onAnEmptyRepository_staysEmpty_andCreatesNothing() = runBlocking {
         val repository = FakeTierRepository(initial = emptyList())
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync)
 
         viewModel.loadTierLists()
         val state = viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success
@@ -68,7 +75,7 @@ class TierListsViewModelTest {
     @Test
     fun secondLoad_afterARenameOnTheRepository_showsTheNewTitle() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync)
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -91,7 +98,7 @@ class TierListsViewModelTest {
                 fakeList(id = 2, title = "Gets deleted"),
             ),
         )
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync)
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -109,7 +116,7 @@ class TierListsViewModelTest {
     @Test
     fun firstLoad_passesThroughLoadingState() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Existing")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync)
 
         val collected = recordStates(viewModel)
 
@@ -124,7 +131,7 @@ class TierListsViewModelTest {
     @Test
     fun secondLoad_neverShowsLoading_andReplacesTheListInOneStep() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync)
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -151,7 +158,7 @@ class TierListsViewModelTest {
         val repository = FakeTierRepository(
             initial = listOf(fakeList(id = 1, title = "Pizza in Lisbon"), fakeList(id = 2, title = "Sushi tour")),
         )
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync)
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -170,7 +177,7 @@ class TierListsViewModelTest {
     @Test
     fun exitSearch_returnsToBrowsingWithEveryListVisibleAgain() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Pizza in Lisbon")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync)
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -189,7 +196,7 @@ class TierListsViewModelTest {
     @Test
     fun toggleSelection_deselectingTheLastId_returnsToBrowsingMode() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Only list")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync)
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -212,7 +219,7 @@ class TierListsViewModelTest {
         val repository = FakeTierRepository(
             initial = listOf(fakeList(id = 1, title = "Keeps existing"), fakeList(id = 2, title = "Gets deleted")),
         )
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences())
+        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync)
 
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
@@ -241,7 +248,7 @@ class TierListsViewModelTest {
             initial = listOf(fakeList(id = 1, title = "Films", publishedId = "published-1")),
         )
         val community = FakeCommunityRepository()
-        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences())
+        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences(), guestAccount(), NoBoardSync)
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
 
@@ -259,7 +266,7 @@ class TierListsViewModelTest {
             initial = listOf(fakeList(id = 1, title = "Films", publishedId = "published-1")),
         )
         val community = FakeCommunityRepository(unpublishResult = Result.failure(IllegalStateException()))
-        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences())
+        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences(), guestAccount(), NoBoardSync)
         viewModel.loadTierLists()
         viewModel.state.first { it is TierListsUiState.Success }
 
@@ -277,7 +284,7 @@ class TierListsViewModelTest {
         val community = FakeCommunityRepository(
             feed = listOf(published("a", "Sci-fi films"), published("b", "Every A24 film")),
         )
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences)
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences, guestAccount(), NoBoardSync)
         viewModel.selectTab(HomeTab.Community)
         viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
 
@@ -293,7 +300,7 @@ class TierListsViewModelTest {
     @Test
     fun comingBackWithNothingHidden_leavesTheFeedAlone() = runBlocking {
         val community = FakeCommunityRepository(feed = listOf(published("a", "Sci-fi films")))
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences())
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync)
         viewModel.selectTab(HomeTab.Community)
         viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
 
@@ -312,7 +319,7 @@ class TierListsViewModelTest {
         val community = FakeCommunityRepository(
             feed = listOf(published("a", "Sci-fi films"), published("b", "Every A24 film")),
         )
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences)
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences, guestAccount(), NoBoardSync)
         viewModel.selectTab(HomeTab.Community)
         viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
 
@@ -337,7 +344,7 @@ class TierListsViewModelTest {
             feed = listOf(published("a", "One")),
             nextPages = listOf(listOf(published("b", "Two"))),
         )
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences())
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync)
         viewModel.selectTab(HomeTab.Community)
         viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
 
@@ -351,7 +358,7 @@ class TierListsViewModelTest {
     @Test
     fun theLastPage_isNotFollowedByAnotherRequest() = runBlocking {
         val community = FakeCommunityRepository(feed = listOf(published("a", "One")))
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences())
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync)
         viewModel.selectTab(HomeTab.Community)
         viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
 
@@ -370,7 +377,7 @@ class TierListsViewModelTest {
             nextPages = listOf(listOf(published("b", "Two"))),
             laterPagesFail = true,
         )
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences())
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync)
         viewModel.selectTab(HomeTab.Community)
         viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
 
@@ -388,7 +395,7 @@ class TierListsViewModelTest {
             feed = listOf(published("a", "One")),
             nextPages = listOf(listOf(published("b", "Two"), published("c", "Three"))),
         )
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences)
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences, guestAccount(), NoBoardSync)
         viewModel.selectTab(HomeTab.Community)
         viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
 
@@ -403,7 +410,7 @@ class TierListsViewModelTest {
     @Test
     fun hidingFromTheFeed_leavesANoteWhereTheCardWas() = runBlocking {
         val community = FakeCommunityRepository(feed = listOf(published("a", "One"), published("b", "Two")))
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences())
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync)
         viewModel.selectTab(HomeTab.Community)
         viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
 
@@ -417,7 +424,7 @@ class TierListsViewModelTest {
     @Test
     fun reportingFromTheFeed_saysSoInTheNote() = runBlocking {
         val community = FakeCommunityRepository(feed = listOf(published("a", "One")))
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences())
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync)
         viewModel.selectTab(HomeTab.Community)
         viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
 
@@ -430,7 +437,7 @@ class TierListsViewModelTest {
     fun theNextLoad_carriesNoNotes() = runBlocking {
         val preferences = FakeAppPreferences()
         val community = FakeCommunityRepository(feed = listOf(published("a", "One"), published("b", "Two")))
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences)
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences, guestAccount(), NoBoardSync)
         viewModel.selectTab(HomeTab.Community)
         viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
         viewModel.hideCommunityList(published("a", "One"))
@@ -613,4 +620,18 @@ private class FakeCommunityRepository(
     override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
     override suspend fun takeDown(publishedId: String): Result<Unit> = Result.success(Unit)
     override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
+}
+
+private fun guestAccount(): AccountRepository = object : AccountRepository {
+    override val account: Flow<Account> = flowOf(Account.Guest)
+    override suspend fun signInWithGoogle(idToken: String): SignInOutcome = SignInOutcome.Success
+    override suspend fun setDisplayName(name: String): Boolean = true
+    override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
+    override fun googlePhotoUrl(): String? = null
+    override suspend fun signOut() = Unit
+}
+
+/** A guest has nowhere to sync to, so every case here would report the same thing. */
+private object NoBoardSync : BoardSync {
+    override suspend fun sync(): SyncReport = SyncReport(signedIn = false)
 }

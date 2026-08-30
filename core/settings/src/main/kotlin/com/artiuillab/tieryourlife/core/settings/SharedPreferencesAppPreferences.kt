@@ -12,6 +12,8 @@ private const val KEY_LANGUAGE_TAG = "language_tag"
 private const val KEY_LAST_KNOWN_CREDITS = "last_known_credits"
 private const val KEY_HIDDEN_LISTS = "hidden_list_ids"
 private const val KEY_HIDDEN_AUTHORS = "hidden_author_uids"
+private const val KEY_BACK_UP_BOARDS = "back_up_boards"
+private const val KEY_SIGN_IN_OFFER_ANSWERED = "sign_in_offer_answered"
 
 @Singleton
 class SharedPreferencesAppPreferences @Inject constructor(
@@ -42,6 +44,18 @@ class SharedPreferencesAppPreferences @Inject constructor(
         prefs.edit {
             if (credits == null) remove(KEY_LAST_KNOWN_CREDITS) else putInt(KEY_LAST_KNOWN_CREDITS, credits)
         }
+    }
+
+    override fun backUpBoards(): Boolean = prefs.getBoolean(KEY_BACK_UP_BOARDS, true)
+
+    override fun setBackUpBoards(backUp: Boolean) {
+        prefs.edit { putBoolean(KEY_BACK_UP_BOARDS, backUp) }
+    }
+
+    override fun signInOfferAnswered(): Boolean = prefs.getBoolean(KEY_SIGN_IN_OFFER_ANSWERED, false)
+
+    override fun markSignInOfferAnswered() {
+        prefs.edit { putBoolean(KEY_SIGN_IN_OFFER_ANSWERED, true) }
     }
 
     override fun hiddenListIds(): Set<String> = idsIn(KEY_HIDDEN_LISTS)
