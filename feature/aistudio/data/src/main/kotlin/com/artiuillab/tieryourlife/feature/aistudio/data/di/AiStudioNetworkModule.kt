@@ -2,8 +2,10 @@ package com.artiuillab.tieryourlife.feature.aistudio.data.di
 
 import com.artiuillab.tieryourlife.core.network.AppCheckInterceptor
 import com.artiuillab.tieryourlife.core.network.IdTokenInterceptor
+import com.artiuillab.tieryourlife.feature.account.domain.repository.GuestCredits
 import com.artiuillab.tieryourlife.feature.aistudio.data.BuildConfig
 import com.artiuillab.tieryourlife.feature.aistudio.data.credits.ProxyGenerationCredits
+import com.artiuillab.tieryourlife.feature.aistudio.data.credits.ProxyGuestCredits
 import com.artiuillab.tieryourlife.feature.aistudio.data.credits.UnmeteredGenerationCredits
 import com.artiuillab.tieryourlife.feature.aistudio.data.generation.ProxyCardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.data.generation.StubCardImageGenerator
@@ -74,6 +76,10 @@ object AiStudioNetworkModule {
     ): CardImageApi {
         return retrofit.create(CardImageApi::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideGuestCredits(implementation: ProxyGuestCredits): GuestCredits = implementation
 
     @Provides
     @Singleton

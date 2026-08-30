@@ -1,6 +1,8 @@
 package com.artiuillab.tieryourlife.feature.aistudio.data.generation
 
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.api.CardImageApi
+import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.AdoptGuestCreditsRequestDto
+import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.AdoptedCreditsDto
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.CreditsResponseDto
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.GenerateImageRequestDto
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.GenerationOutcome
@@ -138,6 +140,9 @@ private class FakeCardImageApi(
     }
 
     override suspend fun credits(): CreditsResponseDto = CreditsResponseDto(credits = 0)
+
+    override suspend fun adoptGuestCredits(request: AdoptGuestCreditsRequestDto): AdoptedCreditsDto =
+        AdoptedCreditsDto()
 }
 
 private class FakeImageBytesStore(private val savedPath: String) : ImageBytesStore {
