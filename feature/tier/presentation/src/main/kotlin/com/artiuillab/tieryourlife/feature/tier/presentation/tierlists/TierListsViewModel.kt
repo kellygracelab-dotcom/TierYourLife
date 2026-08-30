@@ -73,7 +73,11 @@ class TierListsViewModel @Inject constructor(
         viewModelScope.launch {
             accounts.account.collectLatest { current ->
                 account = current
-                emitSuccess()
+                // Redraws a screen that is already up; it does not put one
+                // there. Firebase answers before the first read of the
+                // database finishes, and emitting here turned "still loading"
+                // into "you have no boards" for as long as that took.
+                if (_state.value is TierListsUiState.Success) emitSuccess()
                 if (current is Account.SignedIn) keepBoards()
             }
         }
