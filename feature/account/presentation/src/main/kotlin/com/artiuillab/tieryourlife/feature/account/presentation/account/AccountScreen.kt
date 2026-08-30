@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.presentation.R
@@ -101,7 +103,8 @@ internal fun AccountScreenContent(
             CloseBar(onClose)
             Column(
                 Modifier
-                    .fillMaxWidth()
+                    .atMost(ContentWidth.Reading)
+                    .align(Alignment.CenterHorizontally)
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp)
                     .padding(top = 8.dp, bottom = 32.dp),

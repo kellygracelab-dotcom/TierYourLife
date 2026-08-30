@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -48,6 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -395,7 +396,7 @@ private fun HomeContent(
     ) {
         items(lists, key = { it.id }) { list ->
             val isSelected = list.id in selectedIds
-            Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+            CenteredContent(ContentWidth.Reading, Modifier.padding(horizontal = 16.dp)) {
                 TierListCard(
                     list = list,
                     onClick = {
@@ -426,21 +427,27 @@ private fun SearchResults(lists: List<TierList>, query: String, onTierListClick:
     }
 
     Column {
-        Text(
-            text = pluralStringResource(R.plurals.search_results_count, lists.size, lists.size),
-            modifier = Modifier
-                .padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 6.dp)
-                .testTag(TierListsTestTags.SEARCH_RESULTS_COUNT),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        // The same measure as the results, or the count stops standing over
+        // what it counts.
+        CenteredContent(ContentWidth.Reading) {
+            Text(
+                text = pluralStringResource(R.plurals.search_results_count, lists.size, lists.size),
+                modifier = Modifier
+                    .padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 6.dp)
+                    .testTag(TierListsTestTags.SEARCH_RESULTS_COUNT),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(lists, key = { it.id }) { list ->
-                TierListCard(list = list, onClick = { onTierListClick(list.id) })
+                CenteredContent(ContentWidth.Reading) {
+                    TierListCard(list = list, onClick = { onTierListClick(list.id) })
+                }
             }
         }
     }

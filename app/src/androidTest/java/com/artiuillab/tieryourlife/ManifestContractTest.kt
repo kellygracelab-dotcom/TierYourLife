@@ -32,16 +32,16 @@ class ManifestContractTest {
         )
     }
 
-    // A tier board is a column of rows. Sideways it is a column of rows with
-    // the rows cut short, which is worse on every screen, so there is no size
-    // at which turning the phone helps.
+    // Upright is right for a phone and wrong for a tablet, so it cannot be
+    // declared once here. The activity asks per window size instead, which the
+    // manifest must leave room for.
     @Test
-    fun mainActivity_isPortraitOnEverySize() {
+    fun mainActivity_declaresNoOrientation_soTheWindowCanDecide() {
         val declared = context.packageManager
             .getActivityInfo(ComponentName(context, MainActivity::class.java), 0)
             .screenOrientation
 
-        assertEquals(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, declared)
+        assertEquals(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED, declared)
     }
 
     @Test

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -52,6 +53,9 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -427,109 +431,120 @@ private fun TierScreenBody(
                 onReaderMoreClick = onReaderMoreClick,
             )
 
-            if (list.displayMode == TierListDisplayMode.FLAT_RANKED) {
-                RankedList(
-                    rankedTiers = rankedTiers,
-                    onSelect = { itemId -> chooserItemId = itemId },
-                    modifier = Modifier.weight(1f),
-                )
-
-                if (pool != null) {
-                    RankedPoolSection(
-                        pool = pool,
-                        onAddClick = onAddClick,
-                        onGenerateClick = onGenerateClick,
+            CenteredContent(max = ContentWidth.Board, modifier = Modifier.weight(1f)) {
+                if (list.displayMode == TierListDisplayMode.FLAT_RANKED) {
+                    RankedList(
+                        rankedTiers = rankedTiers,
                         onSelect = { itemId -> chooserItemId = itemId },
-                        readOnly = readOnly,
+                        modifier = Modifier.weight(1f),
                     )
-                }
-            } else {
-                val visualTierOrder = dragController.visualTierOrder
-                val displayedTiers = if ((dragController.isDraggingTier || dragController.isSettlingTier) && visualTierOrder.isNotEmpty()) {
-                    val indexById = visualTierOrder.withIndex().associate { (index, id) -> id to index }
-                    rankedTiers.sortedBy { indexById[it.id] ?: Int.MAX_VALUE }
-                } else {
-                    rankedTiers
-                }
 
-                LazyColumn(
-                    state = tierListState,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .testTag(TierDetailTestTags.TIER_LIST)
-                        .onGloballyPositioned { coordinates -> tierListBounds = coordinates.boundsInRoot() },
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                    verticalArrangement = Arrangement.spacedBy(TIER_LIST_ITEM_SPACING),
-                ) {
-                    items(displayedTiers, key = { it.id }) { tier ->
-                        val itemModifier = when (tier.id) {
-                            dragController.draggedTierId -> {
-                                Modifier
-                                    .zIndex(1f)
-                                    .graphicsLayer {
-                                        translationY = dragController.draggedTierOffsetYPx
-                                        scaleX = 1.02f
-                                        scaleY = 1.02f
-                                    }
-                                    .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                            }
-
-                            dragController.settlingTierId -> {
-                                val settleOffset = remember(dragController.settlingTierId) {
-                                    Animatable(dragController.draggedTierOffsetYPx)
-                                }
-                                LaunchedEffect(dragController.settlingTierId) {
-                                    settleOffset.animateTo(0f, tween(durationMillis = 150))
-                                    dragController.finishSettling()
-                                }
-                                Modifier
-                                    .zIndex(1f)
-                                    .graphicsLayer { translationY = settleOffset.value }
-                                    .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                            }
-
-                            else -> Modifier.animateItem()
-                        }
-                        TierRow(
-                            tier = tier,
-                            bandContentWidth = bandContentWidth,
-                            modifier = itemModifier,
-                            displayMode = list.displayMode,
-                            dragController = dragController,
-                            rankedTierIds = rankedTiers.map { it.id },
-                            onMoveItem = onMoveItem,
-                            onDeleteItem = deleteAndAnnounce,
-                            onReorderTiers = onReorderTiers,
-                            onDeleteTier = deleteTierAndAnnounce,
-                            onDoubleTap = { itemId -> chooserItemId = itemId },
-                            onEditTier = { tierId -> editingTierId = tierId },
+                    if (pool != null) {
+                        RankedPoolSection(
+                            pool = pool,
+                            onAddClick = onAddClick,
+                            onGenerateClick = onGenerateClick,
+                            onSelect = { itemId -> chooserItemId = itemId },
+                            readOnly = readOnly,
                         )
                     }
-                }
+                } else {
+                    val visualTierOrder = dragController.visualTierOrder
+                    val displayedTiers = if ((dragController.isDraggingTier || dragController.isSettlingTier) && visualTierOrder.isNotEmpty()) {
+                        val indexById = visualTierOrder.withIndex().associate { (index, id) -> id to index }
+                        rankedTiers.sortedBy { indexById[it.id] ?: Int.MAX_VALUE }
+                    } else {
+                        rankedTiers
+                    }
 
-                if (pool != null) {
-                    PoolPanel(
-                        pool = pool,
-                        onAddClick = onAddClick,
-                        onGenerateClick = onGenerateClick,
-                        dragController = dragController,
-                        onMoveItem = onMoveItem,
-                        onDeleteItem = deleteAndAnnounce,
-                        onDoubleTap = { itemId -> chooserItemId = itemId },
-                        readOnly = readOnly,
-                    )
+                    LazyColumn(
+                        state = tierListState,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .testTag(TierDetailTestTags.TIER_LIST)
+                            .onGloballyPositioned { coordinates -> tierListBounds = coordinates.boundsInRoot() },
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                        verticalArrangement = Arrangement.spacedBy(TIER_LIST_ITEM_SPACING),
+                    ) {
+                        items(displayedTiers, key = { it.id }) { tier ->
+                            val itemModifier = when (tier.id) {
+                                dragController.draggedTierId -> {
+                                    Modifier
+                                        .zIndex(1f)
+                                        .graphicsLayer {
+                                            translationY = dragController.draggedTierOffsetYPx
+                                            scaleX = 1.02f
+                                            scaleY = 1.02f
+                                        }
+                                        .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                                }
+
+                                dragController.settlingTierId -> {
+                                    val settleOffset = remember(dragController.settlingTierId) {
+                                        Animatable(dragController.draggedTierOffsetYPx)
+                                    }
+                                    LaunchedEffect(dragController.settlingTierId) {
+                                        settleOffset.animateTo(0f, tween(durationMillis = 150))
+                                        dragController.finishSettling()
+                                    }
+                                    Modifier
+                                        .zIndex(1f)
+                                        .graphicsLayer { translationY = settleOffset.value }
+                                        .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                                }
+
+                                else -> Modifier.animateItem()
+                            }
+                            TierRow(
+                                tier = tier,
+                                bandContentWidth = bandContentWidth,
+                                modifier = itemModifier,
+                                displayMode = list.displayMode,
+                                dragController = dragController,
+                                rankedTierIds = rankedTiers.map { it.id },
+                                onMoveItem = onMoveItem,
+                                onDeleteItem = deleteAndAnnounce,
+                                onReorderTiers = onReorderTiers,
+                                onDeleteTier = deleteTierAndAnnounce,
+                                onDoubleTap = { itemId -> chooserItemId = itemId },
+                                onEditTier = { tierId -> editingTierId = tierId },
+                            )
+                        }
+                    }
+
+                    if (pool != null) {
+                        PoolPanel(
+                            pool = pool,
+                            onAddClick = onAddClick,
+                            onGenerateClick = onGenerateClick,
+                            dragController = dragController,
+                            onMoveItem = onMoveItem,
+                            onDeleteItem = deleteAndAnnounce,
+                            onDoubleTap = { itemId -> chooserItemId = itemId },
+                            readOnly = readOnly,
+                        )
+                    }
                 }
             }
         }
 
         if (dragController.isDragging) {
             if (!readOnly) {
-                TrashTarget(
-                    dragController = dragController,
-                    poolTierId = pool?.id,
-                    modifier = Modifier.align(Alignment.TopEnd),
-                )
+                // The trash sits at the edge of the board a finger is dragging
+                // over, not at the edge of the window it is floating in.
+                Box(
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxHeight()
+                        .atMost(ContentWidth.Board),
+                ) {
+                    TrashTarget(
+                        dragController = dragController,
+                        poolTierId = pool?.id,
+                        modifier = Modifier.align(Alignment.TopEnd),
+                    )
+                }
             }
             FloatingDragTile(dragController)
         }

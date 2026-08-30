@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,40 +24,48 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.AiStudioTestTags
 
 @Composable
 internal fun AiStudioTopBar(onBack: () -> Unit, credits: Int? = null) {
     val backDescription = stringResource(R.string.cd_back)
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp)
-            .padding(horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .statusBarsPadding(),
+        contentAlignment = Alignment.TopCenter,
     ) {
-        IconButton(
-            onClick = onBack,
+        Row(
             modifier = Modifier
-                .size(48.dp)
-                .semantics { contentDescription = backDescription },
-        ) {
-            BackIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        Text(
-            text = stringResource(R.string.ai_title),
-            modifier = Modifier
-                .weight(1f)
+                .atMost(ContentWidth.Conversation)
+                .height(56.dp)
                 .padding(horizontal = 4.dp),
-            style = MaterialTheme.typography.titleLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        if (credits != null) {
-            CreditsBadge(credits)
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .size(48.dp)
+                    .semantics { contentDescription = backDescription },
+            ) {
+                BackIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Text(
+                text = stringResource(R.string.ai_title),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 4.dp),
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            if (credits != null) {
+                CreditsBadge(credits)
+            }
         }
     }
 }

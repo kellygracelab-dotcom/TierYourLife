@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -40,6 +41,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -89,33 +93,35 @@ internal fun TierListSettingsScreenContent(
     Column(Modifier.fillMaxSize().testTag(TierDetailTestTags.LIST_SETTINGS_SCREEN)) {
         ListSettingsTopBar(onBack = onBack)
 
-        PublishSection(
-            published = publicPending ?: (list.publishedId != null),
-            signedIn = signedIn,
-            hasItems = list.tiers.any { it.items.isNotEmpty() },
-            busy = publishing,
-            error = publishError,
-            onSetPublic = onSetPublic,
-            onAddCards = onAddCards,
-        )
+        CenteredContent(ContentWidth.Reading) {
+            PublishSection(
+                published = publicPending ?: (list.publishedId != null),
+                signedIn = signedIn,
+                hasItems = list.tiers.any { it.items.isNotEmpty() },
+                busy = publishing,
+                error = publishError,
+                onSetPublic = onSetPublic,
+                onAddCards = onAddCards,
+            )
 
-        // A category exists only for the feed, so it belongs with the switch. A
-        // cover does not -- it is also what the list's own card wears in Your
-        // lists -- which is why it stays available to a guest.
-        CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
-        CoverRow(coverImageUrl = list.coverImageUrl, onClick = { coverSheetVisible = true })
+            // A category exists only for the feed, so it belongs with the switch. A
+            // cover does not -- it is also what the list's own card wears in Your
+            // lists -- which is why it stays available to a guest.
+            CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
+            CoverRow(coverImageUrl = list.coverImageUrl, onClick = { coverSheetVisible = true })
 
-        DisplayModeSection(selected = list.displayMode, onSelect = onSetDisplayMode)
+            DisplayModeSection(selected = list.displayMode, onSelect = onSetDisplayMode)
 
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            color = MaterialTheme.colorScheme.outlineVariant,
-        )
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                color = MaterialTheme.colorScheme.outlineVariant,
+            )
 
-        NewTierRow(
-            tierCount = rankedTierCount,
-            onClick = { tierEditorVisible = true },
-        )
+            NewTierRow(
+                tierCount = rankedTierCount,
+                onClick = { tierEditorVisible = true },
+            )
+        }
     }
 
     if (categorySheetVisible || categoryWanted) {
@@ -158,30 +164,36 @@ internal fun TierListSettingsScreenContent(
 @Composable
 private fun ListSettingsTopBar(onBack: () -> Unit) {
     val backDescription = stringResource(R.string.tier_detail_content_description_back)
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp)
-            .padding(horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .statusBarsPadding(),
+        contentAlignment = Alignment.TopCenter,
     ) {
-        IconButton(
-            onClick = onBack,
+        Row(
             modifier = Modifier
-                .size(48.dp)
-                .semantics { contentDescription = backDescription },
-        ) { BackIcon() }
-        Text(
-            text = stringResource(R.string.tier_list_settings_title),
-            modifier = Modifier
-                .weight(1f)
+                .atMost(ContentWidth.Reading)
+                .height(56.dp)
                 .padding(horizontal = 4.dp),
-            style = MaterialTheme.typography.titleLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .size(48.dp)
+                    .semantics { contentDescription = backDescription },
+            ) { BackIcon() }
+            Text(
+                text = stringResource(R.string.tier_list_settings_title),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 4.dp),
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
     }
 }
 

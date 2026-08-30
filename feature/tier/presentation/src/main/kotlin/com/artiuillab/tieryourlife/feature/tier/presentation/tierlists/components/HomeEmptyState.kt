@@ -34,6 +34,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
@@ -86,53 +88,61 @@ internal fun HomeEmptyState(onCreateNamedList: (String) -> Unit, modifier: Modif
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            MiniBoard()
-            Spacer(Modifier.height(28.dp))
-            Text(
-                text = stringResource(R.string.home_empty_title),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = stringResource(R.string.home_empty_body),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(Modifier.height(28.dp))
-            Text(
-                text = stringResource(R.string.home_start_with),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                letterSpacing = 0.8.sp,
-            )
-            Spacer(Modifier.height(12.dp))
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+            // Board, copy and chips are one block. Given the window they stop
+            // being one: the chips spread into a line across it and the two
+            // sentences turn into two long ones.
+            Column(
+                modifier = Modifier.atMost(ContentWidth.Message),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                SUGGESTIONS.forEachIndexed { index, suggestion ->
-                    val label = stringResource(suggestion)
-                    AssistChip(
-                        onClick = { onCreateNamedList(label) },
-                        label = { Text(label) },
-                        leadingIcon = { PlusIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
-                        modifier = Modifier.testTag(TierListsTestTags.suggestion(index)),
-                        border = AssistChipDefaults.assistChipBorder(enabled = true),
-                    )
+                MiniBoard()
+                Spacer(Modifier.height(28.dp))
+                Text(
+                    text = stringResource(R.string.home_empty_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.home_empty_body),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
+
+                Spacer(Modifier.height(28.dp))
+                Text(
+                    text = stringResource(R.string.home_start_with),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    letterSpacing = 0.8.sp,
+                )
+                Spacer(Modifier.height(12.dp))
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    SUGGESTIONS.forEachIndexed { index, suggestion ->
+                        val label = stringResource(suggestion)
+                        AssistChip(
+                            onClick = { onCreateNamedList(label) },
+                            label = { Text(label) },
+                            leadingIcon = { PlusIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+                            modifier = Modifier.testTag(TierListsTestTags.suggestion(index)),
+                            border = AssistChipDefaults.assistChipBorder(enabled = true),
+                        )
+                    }
                 }
+                Spacer(Modifier.height(14.dp))
+                Text(
+                    text = stringResource(R.string.home_start_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline,
+                    textAlign = TextAlign.Center,
+                )
             }
-            Spacer(Modifier.height(14.dp))
-            Text(
-                text = stringResource(R.string.home_start_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline,
-                textAlign = TextAlign.Center,
-            )
         }
     }
 }

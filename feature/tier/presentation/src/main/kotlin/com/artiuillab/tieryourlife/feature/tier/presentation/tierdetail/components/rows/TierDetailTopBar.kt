@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,6 +36,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
@@ -62,68 +65,76 @@ internal fun TierScreenTopBar(
     val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
     val moreDescription = stringResource(R.string.tier_detail_content_description_more)
 
+    // The bar spans the window; what it holds keeps the board's measure, so the
+    // back arrow and the overflow stay either side of the board, not the screen.
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .statusBarsPadding()
             .height(56.dp)
             .padding(horizontal = 4.dp),
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(
-            onClick = onBack,
-            modifier = Modifier
-                .size(48.dp)
-                .semantics { contentDescription = backDescription },
-        ) { BackIcon() }
-        if (titleEditable) {
-            EditableListTitle(
-                title = title,
-                onRename = onRenameList,
-                modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
-            )
-        } else {
-            Column(Modifier.weight(1f).padding(horizontal = 4.dp)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurface,
+        Row(
+            modifier = Modifier.atMost(ContentWidth.Board),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .size(48.dp)
+                    .semantics { contentDescription = backDescription },
+            ) { BackIcon() }
+            if (titleEditable) {
+                EditableListTitle(
+                    title = title,
+                    onRename = onRenameList,
+                    modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
                 )
-                if (subtitle != null) {
+            } else {
+                Column(Modifier.weight(1f).padding(horizontal = 4.dp)) {
                     Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.bodySmall,
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
+                    if (subtitle != null) {
+                        Text(
+                            text = subtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
-        }
-        if (!readOnly) {
-            IconButton(
-                onClick = onManualAdd,
-                modifier = Modifier
-                    .size(48.dp)
-                    .semantics { contentDescription = manualAddDescription }
-                    .testTag(TierDetailTestTags.MANUAL_ADD_BUTTON),
-            ) { NoteAddIcon() }
-            IconButton(
-                onClick = onMoreClick,
-                modifier = Modifier
-                    .size(48.dp)
-                    .semantics { contentDescription = moreDescription },
-            ) { MoreIcon() }
-        } else if (onReaderMoreClick != null) {
-            IconButton(
-                onClick = onReaderMoreClick,
-                modifier = Modifier
-                    .size(48.dp)
-                    .semantics { contentDescription = moreDescription }
-                    .testTag(CommunityTestTags.MORE),
-            ) { MoreIcon() }
+            if (!readOnly) {
+                IconButton(
+                    onClick = onManualAdd,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .semantics { contentDescription = manualAddDescription }
+                        .testTag(TierDetailTestTags.MANUAL_ADD_BUTTON),
+                ) { NoteAddIcon() }
+                IconButton(
+                    onClick = onMoreClick,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .semantics { contentDescription = moreDescription },
+                ) { MoreIcon() }
+            } else if (onReaderMoreClick != null) {
+                IconButton(
+                    onClick = onReaderMoreClick,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .semantics { contentDescription = moreDescription }
+                        .testTag(CommunityTestTags.MORE),
+                ) { MoreIcon() }
+            }
         }
     }
 }

@@ -41,6 +41,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -65,7 +67,9 @@ internal fun RankedList(
 ) {
     val entries = remember(rankedTiers) { buildRankedEntries(rankedTiers) }
 
-    Column(modifier.fillMaxWidth()) {
+    // Narrower than the board it lives on: a rank, a title and a badge are one
+    // row to read, and the board's measure would push them apart.
+    CenteredContent(max = ContentWidth.Reading, modifier = modifier) {
         val headerText = if (entries.isEmpty()) {
             stringResource(R.string.tier_detail_ranked_header_empty)
         } else {

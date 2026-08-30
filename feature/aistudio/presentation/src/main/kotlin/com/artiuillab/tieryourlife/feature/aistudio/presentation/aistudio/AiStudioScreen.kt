@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
@@ -115,74 +117,81 @@ internal fun AiStudioScreenContent(
                 .testTag(AiStudioTestTags.SCREEN),
         ) {
             AiStudioTopBar(onBack = onBack, credits = state.credits)
-            Text(
-                text = String.format(stringResource(R.string.ai_caption), listTitle),
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 10.dp),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Box(modifier = Modifier.weight(1f)) {
-                if (state.exchanges.isEmpty()) {
-                    EmptyState(
-                        onHintClick = { hint ->
-                            onHintClick(hint)
-                            fieldFocusRequester.requestFocus()
-                        },
-                    )
-                } else {
-                    val listState = rememberLazyListState()
-                    LaunchedEffect(state.exchanges.size) {
-                        listState.animateScrollToItem(0)
-                    }
-                    LazyColumn(
-                        state = listState,
-                        reverseLayout = true,
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        items(state.exchanges.asReversed(), key = { it.id }) { exchange ->
-                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                PromptBubble(
-                                    prompt = exchange.prompt,
-                                    testTag = AiStudioTestTags.bubble(exchange.id),
-                                )
-                                when (val phase = exchange.phase) {
-                                    AiExchangePhase.Generating -> GeneratingCard(
-                                        testTag = AiStudioTestTags.result(exchange.id),
+            Column(
+                Modifier
+                    .atMost(ContentWidth.Conversation)
+                    .align(Alignment.CenterHorizontally)
+                    .weight(1f),
+            ) {
+                Text(
+                    text = String.format(stringResource(R.string.ai_caption), listTitle),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 10.dp),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Box(modifier = Modifier.weight(1f)) {
+                    if (state.exchanges.isEmpty()) {
+                        EmptyState(
+                            onHintClick = { hint ->
+                                onHintClick(hint)
+                                fieldFocusRequester.requestFocus()
+                            },
+                        )
+                    } else {
+                        val listState = rememberLazyListState()
+                        LaunchedEffect(state.exchanges.size) {
+                            listState.animateScrollToItem(0)
+                        }
+                        LazyColumn(
+                            state = listState,
+                            reverseLayout = true,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            items(state.exchanges.asReversed(), key = { it.id }) { exchange ->
+                                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                    PromptBubble(
+                                        prompt = exchange.prompt,
+                                        testTag = AiStudioTestTags.bubble(exchange.id),
                                     )
+                                    when (val phase = exchange.phase) {
+                                        AiExchangePhase.Generating -> GeneratingCard(
+                                            testTag = AiStudioTestTags.result(exchange.id),
+                                        )
 
-                                    is AiExchangePhase.Result -> ResultCard(
-                                        image = phase.image,
-                                        testTag = AiStudioTestTags.result(exchange.id),
-                                        onAddToList = { namingExchangeId = exchange.id },
-                                        onRegenerate = { onRegenerate(exchange.id) },
-                                        addedItemId = exchange.addedItemId,
-                                    )
+                                        is AiExchangePhase.Result -> ResultCard(
+                                            image = phase.image,
+                                            testTag = AiStudioTestTags.result(exchange.id),
+                                            onAddToList = { namingExchangeId = exchange.id },
+                                            onRegenerate = { onRegenerate(exchange.id) },
+                                            addedItemId = exchange.addedItemId,
+                                        )
 
-                                    AiExchangePhase.Failed -> ErrorCard(
-                                        testTag = AiStudioTestTags.error(exchange.id),
-                                        onTryAgain = { onRetry(exchange.id) },
-                                    )
+                                        AiExchangePhase.Failed -> ErrorCard(
+                                            testTag = AiStudioTestTags.error(exchange.id),
+                                            onTryAgain = { onRetry(exchange.id) },
+                                        )
 
-                                    AiExchangePhase.OutOfCredits -> OutOfCreditsCard(
-                                        testTag = AiStudioTestTags.outOfCredits(exchange.id),
-                                    )
+                                        AiExchangePhase.OutOfCredits -> OutOfCreditsCard(
+                                            testTag = AiStudioTestTags.outOfCredits(exchange.id),
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                AiComposer(
+                    text = fieldText,
+                    onTextChange = onFieldTextChange,
+                    generating = state.generating,
+                    onSend = onSend,
+                    focusRequester = fieldFocusRequester,
+                )
             }
-            AiComposer(
-                text = fieldText,
-                onTextChange = onFieldTextChange,
-                generating = state.generating,
-                onSend = onSend,
-                focusRequester = fieldFocusRequester,
-            )
         }
 
         SnackbarHost(

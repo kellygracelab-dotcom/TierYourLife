@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
@@ -95,23 +97,25 @@ internal fun MyPublishedScreenContent(
                         onAction = {},
                     )
                 } else {
-                    Text(
-                        text = stringResource(R.string.my_published_subtitle),
-                        modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 8.dp),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    LazyColumn(
-                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 32.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        items(state.lists, key = { it.id }) { summary ->
-                            PublishedRow(
-                                summary = summary,
-                                busy = state.removing != null,
-                                onOpen = { onOpen(summary.id) },
-                                onTakeDown = { onTakeDown(summary.id) },
-                            )
+                    CenteredContent(ContentWidth.Reading) {
+                        Text(
+                            text = stringResource(R.string.my_published_subtitle),
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 8.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        LazyColumn(
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 32.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            items(state.lists, key = { it.id }) { summary ->
+                                PublishedRow(
+                                    summary = summary,
+                                    busy = state.removing != null,
+                                    onOpen = { onOpen(summary.id) },
+                                    onTakeDown = { onTakeDown(summary.id) },
+                                )
+                            }
                         }
                     }
                 }

@@ -16,6 +16,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.CaptionLine
@@ -50,25 +52,27 @@ fun CatalogueSearchScreenContent(
             .fillMaxHeight()
             .imePadding(),
     ) {
-        SearchField(
-            query = query,
-            onQueryChange = onQueryChange,
-            onSearchClick = onSearchClick,
-            onClose = onClose,
-            fill = fieldFill,
-        )
-
-        if (state is CatalogueSearchUiState.Loading) {
-            LinearProgressIndicator(
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.primaryContainer,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(4.dp),
+        CenteredContent(ContentWidth.Reading) {
+            SearchField(
+                query = query,
+                onQueryChange = onQueryChange,
+                onSearchClick = onSearchClick,
+                onClose = onClose,
+                fill = fieldFill,
             )
-        }
 
-        CaptionLine(listTitle = listTitle)
+            if (state is CatalogueSearchUiState.Loading) {
+                LinearProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primaryContainer,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp),
+                )
+            }
+
+            CaptionLine(listTitle = listTitle)
+        }
 
         Box(modifier = Modifier.weight(1f)) {
             when (state) {

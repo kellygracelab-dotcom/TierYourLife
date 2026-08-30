@@ -28,6 +28,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.AiStudioTestTags
 
@@ -77,7 +79,7 @@ internal fun EmptyState(onHintClick: (String) -> Unit, modifier: Modifier = Modi
         )
         Spacer(Modifier.height(10.dp))
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.atMost(ContentWidth.Reading),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             hints.forEachIndexed { index, hint ->
