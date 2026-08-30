@@ -29,9 +29,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -109,8 +111,15 @@ fun TierListsScreen(
     LaunchedEffect(startOnCommunity) {
         viewModel.selectTab(if (startOnCommunity) HomeTab.Community else HomeTab.Mine)
     }
+    // Counted rather than flagged, and the count is remembered across the
+    // trip into the new board: coming back re-enters this composition, and a
+    // flag would make a second board every time somebody pressed back.
+    var boardsMade by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(newBoardRequests) {
-        if (newBoardRequests > 0) viewModel.createTierList(defaultListTitle, onNewListCreated)
+        if (newBoardRequests > boardsMade) {
+            boardsMade = newBoardRequests
+            viewModel.createTierList(defaultListTitle, onNewListCreated)
+        }
     }
 
     TierListsScreenContent(

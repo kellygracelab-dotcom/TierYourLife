@@ -73,7 +73,7 @@ fun TierYourLifeNavHost(
         }
         NavContent(
             navController = navController,
-            newBoardRequests = newBoardRequests,
+            newBoardRequests = { newBoardRequests },
             themeChoice = themeChoice,
             onThemeChoiceChange = onThemeChoiceChange,
             languageTag = languageTag,
@@ -122,7 +122,10 @@ private fun NavHostController.navigateToHome(community: Boolean) {
 @Composable
 private fun NavContent(
     navController: NavHostController,
-    newBoardRequests: Int,
+    // A lambda rather than a number: the graph is built once and remembered,
+    // so a value handed to it here is the value it keeps forever. Read inside
+    // the destination instead, where reading it is what subscribes to it.
+    newBoardRequests: () -> Int,
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
     languageTag: String?,
@@ -148,6 +151,13 @@ private fun NavContent(
         )
         tierDetailScreen(
             onBack = { navController.popBackStack() },
+            // Replaces the board rather than stacking on it: the column beside
+            // it is a way of switching boards, not of going deeper.
+            onOpenList = { id ->
+                navController.navigate(Route.TierDetail(id)) {
+                    popUpTo<Route.TierDetail> { inclusive = true }
+                }
+            },
             onOpenAiStudio = { tierListId, listTitle -> navController.navigateToAiStudio(tierListId, listTitle) },
         )
         settingsScreen(

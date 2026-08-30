@@ -199,7 +199,7 @@ private fun SelectionCheckbox(selected: Boolean) {
 }
 
 @Composable
-private fun TierRibbon(tiers: List<Tier>) {
+internal fun TierRibbon(tiers: List<Tier>) {
     val rankedTiers = tiers.filterNot { it.isPool }
     val pool = tiers.firstOrNull { it.isPool }
     val total = tiers.sumOf { it.items.size }

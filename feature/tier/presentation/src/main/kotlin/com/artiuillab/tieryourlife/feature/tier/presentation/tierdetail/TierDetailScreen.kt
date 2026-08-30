@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -56,11 +57,13 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BoardIndex
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.FloatingDragTile
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TIER_LIST_ITEM_SPACING
@@ -103,12 +106,14 @@ private fun autoScrollSpeedPx(pointerY: Float, top: Float, bottom: Float, edgePx
 @Composable
 fun TierDetailScreen(
     onBack: () -> Unit,
+    onOpenList: (Long) -> Unit = {},
     onOpenAiStudio: (listTitle: String) -> Unit = {},
     addedItemIds: List<Long> = emptyList(),
     onAddedItemConsumed: () -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val allLists by viewModel.allLists.collectAsStateWithLifecycle()
     val signedIn by viewModel.signedIn.collectAsStateWithLifecycle()
     val publishing by viewModel.publishing.collectAsStateWithLifecycle()
     val publishError by viewModel.publishError.collectAsStateWithLifecycle()
@@ -119,6 +124,8 @@ fun TierDetailScreen(
 
     TierDetailScreenContent(
         state = state,
+        allLists = allLists,
+        onOpenList = onOpenList,
         addedItemIds = addedItemIds,
         userMessages = viewModel.userMessages,
         actions = TierDetailActions(
@@ -177,6 +184,8 @@ fun TierDetailScreen(
 
 @Composable
 internal fun TierDetailScreenContent(
+    allLists: List<TierList> = emptyList(),
+    onOpenList: (Long) -> Unit = {},
     state: TierDetailUiState,
     actions: TierDetailActions = TierDetailActions(),
     addedItemIds: List<Long> = emptyList(),
@@ -184,6 +193,46 @@ internal fun TierDetailScreenContent(
     readOnly: Boolean = false,
     subtitle: String? = null,
     onReaderMoreClick: (() -> Unit)? = null,
+) {
+    // Beside the board rather than a screen away, once there is room for both.
+    // Held back on a short window as well as a narrow one: a phone in
+    // landscape is wide enough for the column and has nothing left over
+    // underneath it for the board.
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val showsIndex = !readOnly &&
+            currentWindowShape.holdsTwoPanes &&
+            maxHeight >= INDEX_NEEDS_HEIGHT &&
+            allLists.size > 1
+
+        Row(Modifier.fillMaxSize()) {
+            if (showsIndex) {
+                BoardIndex(
+                    lists = allLists,
+                    selectedId = (state as? TierDetailUiState.Success)?.list?.id ?: -1L,
+                    onSelect = onOpenList,
+                )
+            }
+            TierDetailPane(state, actions, addedItemIds, userMessages, readOnly, subtitle, onReaderMoreClick)
+        }
+    }
+}
+
+/**
+ * Tall enough for a board to be worth showing under its own bar. A phone
+ * turned sideways clears the width for the column and then has 360dp of height
+ * left, which is a board nobody can rank in.
+ */
+private val INDEX_NEEDS_HEIGHT = 480.dp
+
+@Composable
+private fun TierDetailPane(
+    state: TierDetailUiState,
+    actions: TierDetailActions,
+    addedItemIds: List<Long>,
+    userMessages: Flow<UserMessage>,
+    readOnly: Boolean,
+    subtitle: String?,
+    onReaderMoreClick: (() -> Unit)?,
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {

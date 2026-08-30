@@ -68,4 +68,8 @@ internal object TierDetailTestTags {
     fun sliderThumb(sliderTag: String): String = "${sliderTag}_thumb"
 
     fun categoryRow(category: ListCategory): String = "tier_detail_category_${category.id}"
+
+    const val BOARD_INDEX = "board_index"
+
+    fun indexRow(id: Long): String = "board_index_row_$id"
 }
