@@ -50,7 +50,7 @@ class AccountScreenContentTest {
         AccountUiState(account = Account.Guest, signingIn = signingIn)
 
     private fun signedIn(
-        displayName: String? = "Danylo K.",
+        displayName: String? = "Olena M.",
         credits: Int? = 12,
         publicListCount: Int = 3,
     ) = AccountUiState(
@@ -153,7 +153,7 @@ class AccountScreenContentTest {
         // The name sits inside the clickable row that opens the editor, so it
         // only exists as its own node in the unmerged tree.
         composeRule.onNodeWithTag(AccountTestTags.NAME, useUnmergedTree = true)
-            .assertTextEquals("Danylo K.")
+            .assertTextEquals("Olena M.")
         composeRule.onNodeWithTag(AccountTestTags.EDIT_NAME).assertIsDisplayed()
         composeRule.onNodeWithTag(AccountTestTags.COMMUNITY_ROW).performScrollTo().assertIsDisplayed()
     }

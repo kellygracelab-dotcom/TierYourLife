@@ -132,9 +132,9 @@ class CommunityListScreenTest {
                     items = listOf(TierItem(1, "Arrival", null)),
                 ),
             ),
-            authorName = "Danylo K.",
+            authorName = "Olena M.",
         ),
-        authorName = "Danylo K.",
+        authorName = "Olena M.",
         authorUid = "author-1",
     )
 

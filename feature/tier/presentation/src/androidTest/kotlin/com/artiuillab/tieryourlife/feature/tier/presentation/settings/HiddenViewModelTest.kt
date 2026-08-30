@@ -14,12 +14,12 @@ class HiddenViewModelTest {
     fun whatWasHidden_isListedByName() {
         val preferences = FakeAppPreferences()
         preferences.hideList("a", "Sci-fi films")
-        preferences.hideAuthor("u1", "Danylo K.")
+        preferences.hideAuthor("u1", "Olena M.")
 
         val state = HiddenViewModel(preferences).state.value
 
         assertEquals(listOf("Sci-fi films"), state.lists.map { it.label })
-        assertEquals(listOf("Danylo K."), state.people.map { it.label })
+        assertEquals(listOf("Olena M."), state.people.map { it.label })
     }
 
     @Test
@@ -38,7 +38,7 @@ class HiddenViewModelTest {
     fun showingAPersonAgain_leavesTheirListsAlone() {
         val preferences = FakeAppPreferences()
         preferences.hideList("a", "Sci-fi films")
-        preferences.hideAuthor("u1", "Danylo K.")
+        preferences.hideAuthor("u1", "Olena M.")
         val viewModel = HiddenViewModel(preferences)
 
         viewModel.showAuthorAgain("u1")

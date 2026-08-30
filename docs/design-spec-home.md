@@ -528,7 +528,7 @@ Two things the design assumes that the code does *not* do, and which are decided
 - **Home list order.** `TierDao.getAllTierLists()` is `ORDER BY id ASC` — oldest first.
   It stays that way for now, so a newly created list appears at the **bottom**, not the
   top as §4 says. Changing the ordering means changing a query that the data module's
-  instrumentation tests assert against, and those tests need a device. Danylo decides
+  instrumentation tests assert against, and those tests need a device. Decided
   later; nothing else in this document depends on it, because creating a list navigates
   straight into it rather than back to Home.
 - **Language.** §7 puts a Language row second in Settings. The app currently ships one

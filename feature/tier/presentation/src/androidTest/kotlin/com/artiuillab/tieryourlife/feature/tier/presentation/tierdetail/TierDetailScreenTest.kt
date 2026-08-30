@@ -1953,7 +1953,7 @@ class TierDetailScreenTest {
                     state = TierDetailUiState.Success(list),
                     actions = TierDetailActions(),
                     readOnly = true,
-                    subtitle = "by Danylo K.",
+                    subtitle = "by Olena M.",
                 )
             }
         }

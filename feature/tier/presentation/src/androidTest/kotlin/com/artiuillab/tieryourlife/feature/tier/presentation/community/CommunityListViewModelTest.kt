@@ -26,7 +26,7 @@ private val published = PublishedList(
         id = "abc",
         title = "Every A24 film",
         authorUid = "author-1",
-        authorName = "Danylo K.",
+        authorName = "Olena M.",
         category = ListCategory.FilmTv,
         itemCount = 2,
         updatedAtMillis = 0,
@@ -47,7 +47,7 @@ class CommunityListViewModelTest {
 
         val state = viewModel.state.first { it is CommunityListUiState.Success } as CommunityListUiState.Success
 
-        assertEquals("Danylo K.", state.authorName)
+        assertEquals("Olena M.", state.authorName)
         assertEquals(2, state.list.tiers.first { it.isPool }.items.size)
         assertTrue(state.list.tiers.filterNot { it.isPool }.all { it.items.isEmpty() })
     }
@@ -85,7 +85,7 @@ class CommunityListViewModelTest {
 
         val template = tiers.templates.single()
         assertEquals("Every A24 film", template.title)
-        assertEquals("Danylo K.", template.authorName)
+        assertEquals("Olena M.", template.authorName)
         assertEquals(2, template.items.size)
         assertEquals(2, template.tiers.size)
     }

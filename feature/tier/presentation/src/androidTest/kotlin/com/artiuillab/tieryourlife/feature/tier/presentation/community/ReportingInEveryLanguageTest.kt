@@ -82,7 +82,7 @@ class ReportingInEveryLanguageTest {
         "report" -> ReportDialog(onDismiss = {}, onSend = { _, _ -> })
         "list-actions" -> ListActionsSheet(
             title = "Every A24 film, ranked by how much I cried",
-            authorName = "Danylo Kovalenko",
+            authorName = "Olena Marchuk",
             authorPhotoUrl = null,
             onDismiss = {},
             onOpenAuthor = {},
@@ -91,7 +91,7 @@ class ReportingInEveryLanguageTest {
         )
 
         else -> AuthorActionsSheet(
-            name = "Danylo Kovalenko",
+            name = "Olena Marchuk",
             photoUrl = null,
             onDismiss = {},
             onHideAuthor = {},

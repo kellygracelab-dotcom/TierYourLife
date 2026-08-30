@@ -279,7 +279,7 @@ private fun ModerationScreenPreview() = TierYourLifeTheme {
                 ModerationReport(
                     listId = "1",
                     listTitle = "Every A24 film, ranked",
-                    authorName = "Danylo Kovalenko",
+                    authorName = "Olena Marchuk",
                     reason = ReportReason.Spam,
                     note = "Every card is a link to the same shop.",
                     createdAtMillis = 0,

@@ -191,7 +191,7 @@ private fun AccountRowGuestDarkPreview() = TierYourLifeTheme(true) {
 @Composable
 private fun AccountRowSignedInPreview() = TierYourLifeTheme(false) {
     AccountRow(
-        account = Account.SignedIn(email = "danylo@example.com", photoUrl = null),
+        account = Account.SignedIn(email = "olena@example.com", photoUrl = null),
         credits = 12,
         onClick = {},
     )
@@ -201,7 +201,7 @@ private fun AccountRowSignedInPreview() = TierYourLifeTheme(false) {
 @Composable
 private fun AccountRowSignedInDarkPreview() = TierYourLifeTheme(true) {
     AccountRow(
-        account = Account.SignedIn(email = "danylo@example.com", photoUrl = null),
+        account = Account.SignedIn(email = "olena@example.com", photoUrl = null),
         credits = 12,
         onClick = {},
     )

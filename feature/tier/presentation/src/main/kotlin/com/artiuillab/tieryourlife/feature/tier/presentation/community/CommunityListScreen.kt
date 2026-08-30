@@ -264,14 +264,14 @@ private val previewList = TierList(
             items = listOf(TierItem(1, "Hereditary", null), TierItem(2, "Moonlight", null)),
         ),
     ),
-    authorName = "Danylo K.",
+    authorName = "Olena M.",
 )
 
 @Preview(showBackground = true, showSystemUi = true, device = "id:pixel_9")
 @Composable
 private fun CommunityListPreview() = TierYourLifeTheme {
     CommunityListScreenContent(
-        state = CommunityListUiState.Success(previewList, "Danylo K."),
+        state = CommunityListUiState.Success(previewList, "Olena M."),
         onBack = {},
         onMoveItem = { _, _, _ -> },
         onSave = {},
@@ -283,7 +283,7 @@ private fun CommunityListPreview() = TierYourLifeTheme {
 @Composable
 private fun CommunityListArrangedDarkPreview() = TierYourLifeTheme(true) {
     CommunityListScreenContent(
-        state = CommunityListUiState.Success(previewList, "Danylo K.", arranged = true),
+        state = CommunityListUiState.Success(previewList, "Olena M.", arranged = true),
         onBack = {},
         onMoveItem = { _, _, _ -> },
         onSave = {},

@@ -307,7 +307,7 @@ private val previewLists = listOf(
         id = "1",
         title = "Every A24 film",
         authorUid = "u1",
-        authorName = "Danylo K.",
+        authorName = "Olena M.",
         category = ListCategory.FilmTv,
         itemCount = 34,
         tierColors = listOf("#B03A32", "#C06A25", "#B79A1F"),
@@ -319,7 +319,7 @@ private val previewLists = listOf(
 @Composable
 private fun AuthorPreview() = TierYourLifeTheme {
     AuthorScreenContent(
-        state = AuthorUiState.Ready(name = "Danylo K.", photoUrl = null, lists = previewLists),
+        state = AuthorUiState.Ready(name = "Olena M.", photoUrl = null, lists = previewLists),
         onBack = {},
         onOpenList = {},
         onRetry = {},

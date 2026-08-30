@@ -120,7 +120,7 @@ class EveryScreenInEveryLanguageTest {
 
         "detail" -> TierDetailScreenContent(state = TierDetailUiState.Success(bigBoard()))
         "community-list" -> CommunityListScreenContent(
-            state = CommunityListUiState.Success(bigBoard(), "Danylo Kovalenko", "u1"),
+            state = CommunityListUiState.Success(bigBoard(), "Olena Marchuk", "u1"),
             onBack = {},
             onMoveItem = { _, _, _ -> },
             onSave = {},
@@ -128,14 +128,14 @@ class EveryScreenInEveryLanguageTest {
         )
 
         "author" -> AuthorScreenContent(
-            state = AuthorUiState.Ready("Danylo Kovalenko", null, listOf(summary("1"), summary("2"))),
+            state = AuthorUiState.Ready("Olena Marchuk", null, listOf(summary("1"), summary("2"))),
             onBack = {},
             onOpenList = {},
             onRetry = {},
         )
 
         "author-empty" -> AuthorScreenContent(
-            state = AuthorUiState.Ready("Danylo Kovalenko", null, emptyList()),
+            state = AuthorUiState.Ready("Olena Marchuk", null, emptyList()),
             onBack = {},
             onOpenList = {},
             onRetry = {},
@@ -144,7 +144,7 @@ class EveryScreenInEveryLanguageTest {
         "hidden" -> HiddenScreenContent(
             state = HiddenUiState(
                 lists = listOf(HiddenEntry("1", "Every A24 film, ranked by how much I cried")),
-                people = listOf(HiddenEntry("u1", "Danylo Kovalenko")),
+                people = listOf(HiddenEntry("u1", "Olena Marchuk")),
             ),
             onBack = {},
         )
@@ -156,7 +156,7 @@ class EveryScreenInEveryLanguageTest {
                     ModerationReport(
                         listId = "1",
                         listTitle = "Every A24 film, ranked by how much I cried",
-                        authorName = "Danylo Kovalenko",
+                        authorName = "Olena Marchuk",
                         reason = ReportReason.Violence,
                         note = "The third card is a photograph of an injury.",
                         createdAtMillis = 0,
@@ -221,7 +221,7 @@ class EveryScreenInEveryLanguageTest {
         id = id,
         title = "Every A24 film, ranked by how much I cried",
         authorUid = "u1",
-        authorName = "Danylo Kovalenko",
+        authorName = "Olena Marchuk",
         category = ListCategory.FilmTv,
         itemCount = 24,
         updatedAtMillis = 0,
