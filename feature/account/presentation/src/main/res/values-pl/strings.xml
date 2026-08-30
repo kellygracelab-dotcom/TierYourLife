@@ -54,4 +54,14 @@
         <item quantity="many">%1$d tablic</item>
         <item quantity="other">%1$d tablicy</item>
     </plurals>
+    <string name="merge_title">Już korzystałeś z tego konta</string>
+    <string name="merge_body">Ma już %1$s. Na tym telefonie jest %2$s zrobione bez konta.</string>
+    <string name="merge_keep_title">Zachowaj wszystko</string>
+    <string name="merge_keep_sub">Wszystkie %1$s. Jeśli dwie mają tę samą nazwę, do lokalnej dojdzie „(z tego telefonu)”.</string>
+    <string name="merge_remote_title">Tylko tablice z konta</string>
+    <string name="merge_remote_sub">%1$s z tego telefonu trafią do kosza. Możesz je przywrócić przez 30 dni.</string>
+    <string name="merge_footnote">Nic nie zostaje usunięte w żadnym przypadku.</string>
+    <string name="merge_recommended">Zalecane</string>
+    <string name="merge_action_continue">Dalej</string>
+    <string name="merge_name_suffix">(z tego telefonu)</string>
 </resources>

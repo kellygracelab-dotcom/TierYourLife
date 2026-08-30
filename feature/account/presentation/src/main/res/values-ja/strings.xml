@@ -45,4 +45,14 @@
     <plurals name="account_board_count">
         <item quantity="other">%1$d 件のボード</item>
     </plurals>
+    <string name="merge_title">このアカウントは以前に使っています</string>
+    <string name="merge_body">すでに%1$sがあります。この端末にはアカウントなしで作った%2$sがあります。</string>
+    <string name="merge_keep_title">すべて残す</string>
+    <string name="merge_keep_sub">%1$sすべて。同じ名前が二つあれば、この端末側に「（この端末から）」が付きます。</string>
+    <string name="merge_remote_title">アカウントのボードだけ使う</string>
+    <string name="merge_remote_sub">この端末の%1$sはごみ箱に入ります。30日間は復元できます。</string>
+    <string name="merge_footnote">どちらを選んでも何も削除されません。</string>
+    <string name="merge_recommended">推奨</string>
+    <string name="merge_action_continue">続ける</string>
+    <string name="merge_name_suffix">（この端末から）</string>
 </resources>

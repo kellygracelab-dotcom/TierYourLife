@@ -54,4 +54,14 @@
         <item quantity="many">%1$d дошок</item>
         <item quantity="other">%1$d дошки</item>
     </plurals>
+    <string name="merge_title">Ви вже користувалися цим обліковим записом</string>
+    <string name="merge_body">У ньому вже є %1$s. На цьому телефоні — %2$s, зроблені без облікового запису.</string>
+    <string name="merge_keep_title">Залишити все</string>
+    <string name="merge_keep_sub">Усі %1$s. Якщо дві називаються однаково, до місцевої додасться «(з цього телефона)».</string>
+    <string name="merge_remote_title">Лише дошки з облікового запису</string>
+    <string name="merge_remote_sub">%1$s з цього телефона підуть у кошик. Їх можна повернути протягом 30 днів.</string>
+    <string name="merge_footnote">Нічого не видаляється в жодному разі.</string>
+    <string name="merge_recommended">Рекомендовано</string>
+    <string name="merge_action_continue">Продовжити</string>
+    <string name="merge_name_suffix">(з цього телефона)</string>
 </resources>

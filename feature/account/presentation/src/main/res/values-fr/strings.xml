@@ -50,4 +50,14 @@
         <item quantity="one">%1$d tableau</item>
         <item quantity="other">%1$d tableaux</item>
     </plurals>
+    <string name="merge_title">Vous avez déjà utilisé ce compte</string>
+    <string name="merge_body">Il contient déjà %1$s. Ce téléphone a %2$s créés sans compte.</string>
+    <string name="merge_keep_title">Tout garder</string>
+    <string name="merge_keep_sub">Les %1$s. Si deux portent le même nom, le tableau local reçoit « (de ce téléphone) ».</string>
+    <string name="merge_remote_title">Utiliser seulement les tableaux du compte</string>
+    <string name="merge_remote_sub">%1$s de ce téléphone vont à la corbeille. Vous pouvez les restaurer pendant 30 jours.</string>
+    <string name="merge_footnote">Rien n’est supprimé dans les deux cas.</string>
+    <string name="merge_recommended">Recommandé</string>
+    <string name="merge_action_continue">Continuer</string>
+    <string name="merge_name_suffix">(de ce téléphone)</string>
 </resources>

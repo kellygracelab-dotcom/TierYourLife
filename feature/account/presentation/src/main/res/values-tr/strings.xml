@@ -48,4 +48,14 @@
         <item quantity="one">1 pano</item>
         <item quantity="other">%1$d pano</item>
     </plurals>
+    <string name="merge_title">Bu hesabı daha önce kullandın</string>
+    <string name="merge_body">Zaten %1$s var. Bu telefonda hesapsız yaptığın %2$s var.</string>
+    <string name="merge_keep_title">Hepsini sakla</string>
+    <string name="merge_keep_sub">Tüm %1$s. İkisinin adı aynıysa yereldekine “(bu telefondan)” eklenir.</string>
+    <string name="merge_remote_title">Yalnızca hesabın panoları</string>
+    <string name="merge_remote_sub">Bu telefondaki %1$s çöp kutusuna gider. 30 gün boyunca geri alabilirsin.</string>
+    <string name="merge_footnote">Hiçbir durumda bir şey silinmez.</string>
+    <string name="merge_recommended">Önerilen</string>
+    <string name="merge_action_continue">Devam</string>
+    <string name="merge_name_suffix">(bu telefondan)</string>
 </resources>

@@ -50,4 +50,14 @@
         <item quantity="one">%1$d quadro</item>
         <item quantity="other">%1$d quadros</item>
     </plurals>
+    <string name="merge_title">Você já usou esta conta</string>
+    <string name="merge_body">Ela já tem %1$s. Este telefone tem %2$s que você fez sem conta.</string>
+    <string name="merge_keep_title">Manter tudo</string>
+    <string name="merge_keep_sub">Todos os %1$s. Se dois tiverem o mesmo nome, o local ganha “(deste telefone)”.</string>
+    <string name="merge_remote_title">Usar só os quadros da conta</string>
+    <string name="merge_remote_sub">%1$s deste telefone vão para a lixeira. Você pode restaurá-los por 30 dias.</string>
+    <string name="merge_footnote">Nada é apagado em nenhum dos casos.</string>
+    <string name="merge_recommended">Recomendado</string>
+    <string name="merge_action_continue">Continuar</string>
+    <string name="merge_name_suffix">(deste telefone)</string>
 </resources>

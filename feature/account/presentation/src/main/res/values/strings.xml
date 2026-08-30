@@ -48,4 +48,14 @@
         <item quantity="one">%1$d generation credit</item>
         <item quantity="other">%1$d generation credits</item>
     </plurals>
+    <string name="merge_title">You’ve used this account before</string>
+    <string name="merge_body">It already has %1$s. This phone has %2$s you made without an account.</string>
+    <string name="merge_keep_title">Keep everything</string>
+    <string name="merge_keep_sub">All %1$s. If two have the same name, the local one gets “(from this phone)” added.</string>
+    <string name="merge_remote_title">Use only the account’s boards</string>
+    <string name="merge_remote_sub">The %1$s from this phone go to the trash. You can restore them for 30 days.</string>
+    <string name="merge_footnote">Nothing is deleted either way.</string>
+    <string name="merge_recommended">Recommended</string>
+    <string name="merge_action_continue">Continue</string>
+    <string name="merge_name_suffix">(from this phone)</string>
 </resources>

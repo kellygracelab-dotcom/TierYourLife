@@ -48,4 +48,14 @@
         <item quantity="one">1 Board</item>
         <item quantity="other">%1$d Boards</item>
     </plurals>
+    <string name="merge_title">Du hast dieses Konto schon einmal benutzt</string>
+    <string name="merge_body">Es hat bereits %1$s. Auf diesem Telefon sind %2$s, die du ohne Konto gemacht hast.</string>
+    <string name="merge_keep_title">Alles behalten</string>
+    <string name="merge_keep_sub">Alle %1$s. Haben zwei denselben Namen, bekommt die lokale „(von diesem Telefon)“ dazu.</string>
+    <string name="merge_remote_title">Nur die Boards des Kontos</string>
+    <string name="merge_remote_sub">%1$s von diesem Telefon wandern in den Papierkorb. Du kannst sie 30 Tage lang zurückholen.</string>
+    <string name="merge_footnote">In keinem Fall wird etwas gelöscht.</string>
+    <string name="merge_recommended">Empfohlen</string>
+    <string name="merge_action_continue">Weiter</string>
+    <string name="merge_name_suffix">(von diesem Telefon)</string>
 </resources>

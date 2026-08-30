@@ -21,6 +21,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.MergeChoice
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -164,7 +166,7 @@ class AccountViewModelTest {
         credential: GoogleCredential = FakeGoogleCredential(GoogleCredentialResult.Cancelled),
         credits: GenerationCredits = FakeGenerationCredits(),
         publishedLists: OwnLists = FakeOwnLists(),
-    ) = AccountViewModel(repository, credential, credits, publishedLists, FakeCommunityForAccount(), FakeAppPreferences())
+    ) = AccountViewModel(repository, credential, credits, publishedLists, FakeCommunityForAccount(), FakeAppPreferences(), NoMerge)
 }
 
 private class FakeCommunityForAccount : CommunityRepository {
@@ -253,6 +255,13 @@ private class FakeGenerationCredits(private val balance: Int? = null) : Generati
         reads++
         return balance
     }
+}
+
+/** Nothing on either side, so the question never comes up in these cases. */
+private object NoMerge : BoardMerge {
+    override suspend fun choice() = MergeChoice(accountBoards = 0, localBoards = 0)
+    override suspend fun keepEverything(fromThisPhone: String) = Unit
+    override suspend fun useAccountBoards() = Unit
 }
 
 private class FakeAppPreferences : AppPreferences {

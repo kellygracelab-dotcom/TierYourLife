@@ -50,4 +50,14 @@
         <item quantity="one">1 tablero</item>
         <item quantity="other">%1$d tableros</item>
     </plurals>
+    <string name="merge_title">Ya has usado esta cuenta</string>
+    <string name="merge_body">Ya tiene %1$s. Este teléfono tiene %2$s que hiciste sin cuenta.</string>
+    <string name="merge_keep_title">Conservar todo</string>
+    <string name="merge_keep_sub">Los %1$s. Si dos tienen el mismo nombre, al local se le añade “(de este teléfono)”.</string>
+    <string name="merge_remote_title">Usar solo los tableros de la cuenta</string>
+    <string name="merge_remote_sub">%1$s de este teléfono van a la papelera. Puedes restaurarlos durante 30 días.</string>
+    <string name="merge_footnote">No se elimina nada en ningún caso.</string>
+    <string name="merge_recommended">Recomendado</string>
+    <string name="merge_action_continue">Continuar</string>
+    <string name="merge_name_suffix">(de este teléfono)</string>
 </resources>

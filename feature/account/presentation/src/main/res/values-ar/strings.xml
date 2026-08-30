@@ -60,4 +60,14 @@
         <item quantity="many">%1$d لوحة</item>
         <item quantity="other">%1$d لوحة</item>
     </plurals>
+    <string name="merge_title">لقد استخدمت هذا الحساب من قبل</string>
+    <string name="merge_body">فيه بالفعل %1$s. وعلى هذا الهاتف %2$s أنشأتها بلا حساب.</string>
+    <string name="merge_keep_title">احتفظ بكل شيء</string>
+    <string name="merge_keep_sub">كل %1$s. إذا تطابق اسمان، تُضاف إلى المحلية «(من هذا الهاتف)».</string>
+    <string name="merge_remote_title">استخدم لوحات الحساب فقط</string>
+    <string name="merge_remote_sub">%1$s من هذا الهاتف تذهب إلى المهملات. يمكنك استعادتها خلال 30 يومًا.</string>
+    <string name="merge_footnote">لا يُحذف شيء في الحالتين.</string>
+    <string name="merge_recommended">موصى به</string>
+    <string name="merge_action_continue">متابعة</string>
+    <string name="merge_name_suffix">(من هذا الهاتف)</string>
 </resources>

@@ -54,4 +54,14 @@
         <item quantity="many">%1$d досок</item>
         <item quantity="other">%1$d доски</item>
     </plurals>
+    <string name="merge_title">Вы уже пользовались этим аккаунтом</string>
+    <string name="merge_body">В нём уже есть %1$s. На этом телефоне — %2$s, сделанные без аккаунта.</string>
+    <string name="merge_keep_title">Оставить всё</string>
+    <string name="merge_keep_sub">Все %1$s. Если две называются одинаково, к местной добавится «(с этого телефона)».</string>
+    <string name="merge_remote_title">Только доски из аккаунта</string>
+    <string name="merge_remote_sub">%1$s с этого телефона уйдут в корзину. Их можно вернуть в течение 30 дней.</string>
+    <string name="merge_footnote">Ничего не удаляется ни в одном случае.</string>
+    <string name="merge_recommended">Рекомендуем</string>
+    <string name="merge_action_continue">Продолжить</string>
+    <string name="merge_name_suffix">(с этого телефона)</string>
 </resources>

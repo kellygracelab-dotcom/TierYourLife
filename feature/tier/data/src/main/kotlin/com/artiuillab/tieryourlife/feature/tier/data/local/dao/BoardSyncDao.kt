@@ -58,6 +58,15 @@ interface BoardSyncDao {
     @Query("SELECT * FROM tier_lists")
     suspend fun allBoards(): List<TierListEntity>
 
+    @Query("SELECT * FROM tier_lists WHERE deletedAt IS NULL")
+    suspend fun boardsInUse(): List<TierListEntity>
+
+    @Query("UPDATE tier_lists SET title = :title WHERE uid = :uid")
+    suspend fun renameBoard(uid: String, title: String)
+
+    @Query("UPDATE tier_lists SET deletedAt = :deletedAt WHERE deletedAt IS NULL")
+    suspend fun trashEveryBoard(deletedAt: Long)
+
     @Query("SELECT * FROM tier_lists WHERE uid = :uid")
     suspend fun boardByUid(uid: String): TierListEntity?
 
