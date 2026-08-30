@@ -36,6 +36,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.SectionLabel
@@ -67,12 +69,15 @@ internal fun HiddenScreenContent(
     onShowAuthorAgain: (String) -> Unit = {},
 ) {
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-        Column(Modifier.fillMaxSize().testTag(HiddenTestTags.SCREEN)) {
+        CenteredContent(
+            max = ContentWidth.Reading,
+            modifier = Modifier.fillMaxSize().testTag(HiddenTestTags.SCREEN),
+        ) {
             TopBar(onBack = onBack)
 
             if (state.isEmpty) {
                 EmptyState()
-                return@Column
+                return@CenteredContent
             }
 
             Text(

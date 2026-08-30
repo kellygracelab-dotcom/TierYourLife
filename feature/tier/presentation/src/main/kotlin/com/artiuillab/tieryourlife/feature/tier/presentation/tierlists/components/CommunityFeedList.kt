@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -40,6 +41,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -48,6 +51,16 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.Community
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
 private const val CARD_ART_ASPECT = 1f
+
+// The size a card is on a phone. Past the compact breakpoint a window spends
+// its surplus on more cards rather than bigger ones -- but only past it: an
+// Adaptive grid counts columns at every width, and one left to run on a phone
+// quietly finds a third column somewhere around 464dp, which the display-size
+// setting alone is enough to reach.
+private val CARD_MIN_WIDTH = 180.dp
+private val WIDE_ENOUGH_FOR_MORE_COLUMNS = 600.dp
+private const val PHONE_COLUMNS = 2
+
 private val CAPTION_SCRIM = Brush.verticalGradient(
     listOf(Color.Transparent, Color.Black.copy(alpha = 0.72f)),
 )
@@ -81,7 +94,9 @@ internal fun CommunityFeedList(
             }
     }
 
-    Column(modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier.fillMaxSize()) {
+        val wideEnoughForMoreColumns = maxWidth >= WIDE_ENOUGH_FOR_MORE_COLUMNS
+        Column(Modifier.fillMaxSize()) {
         if (showCategories) {
             CategoryFilterRow(
                 selected = category,
@@ -113,7 +128,11 @@ internal fun CommunityFeedList(
                 )
             } else {
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
+                    columns = if (wideEnoughForMoreColumns) {
+                        GridCells.Adaptive(minSize = CARD_MIN_WIDTH)
+                    } else {
+                        GridCells.Fixed(PHONE_COLUMNS)
+                    },
                     state = gridState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp),
@@ -154,6 +173,7 @@ internal fun CommunityFeedList(
                 }
             }
         }
+    }
     }
 }
 
@@ -265,31 +285,36 @@ private fun CommunityMessage(
     testTag: String,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 32.dp)
-            .padding(bottom = 96.dp)
-            .testTag(testTag),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+            .padding(bottom = 96.dp),
+        contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(6.dp))
-        Text(
-            text = body,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        if (action != null) {
-            Spacer(Modifier.height(12.dp))
-            TextButton(onClick = onAction) { Text(action) }
+        Column(
+            modifier = Modifier
+                .atMost(ContentWidth.Message)
+                .testTag(testTag),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = body,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+            if (action != null) {
+                Spacer(Modifier.height(12.dp))
+                TextButton(onClick = onAction) { Text(action) }
+            }
         }
     }
 }

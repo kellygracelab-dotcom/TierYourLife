@@ -25,6 +25,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.CatalogueSearchTestTags
@@ -56,41 +58,50 @@ internal fun ResultsList(
         items(items, key = { it.id }) { item ->
             val isSelected = item.id in selectedIds
             val background = if (isSelected) selectedTint else Color.Transparent
-            Row(
+            // The tint and the tap belong to the whole strip, so they stay full
+            // width -- it is the poster, the title and the tick that have to keep
+            // within one glance of each other.
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(background)
                     .selectable(selected = isSelected, onClick = { onToggle(item) })
-                    .testTag(CatalogueSearchTestTags.itemSearchResult(item.id))
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                    .testTag(CatalogueSearchTestTags.itemSearchResult(item.id)),
+                contentAlignment = Alignment.TopCenter,
             ) {
-                AsyncImage(
-                    model = item.imageUrl,
-                    contentDescription = item.title,
+                Row(
                     modifier = Modifier
-                        .size(width = 44.dp, height = 64.dp)
-                        .clip(RoundedCornerShape(6.dp)),
-                )
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 16.dp, end = 16.dp),
+                        .atMost(ContentWidth.Reading)
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = item.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+                    AsyncImage(
+                        model = item.imageUrl,
+                        contentDescription = item.title,
+                        modifier = Modifier
+                            .size(width = 44.dp, height = 64.dp)
+                            .clip(RoundedCornerShape(6.dp)),
                     )
-                    item.subtitle?.let { subtitle ->
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 16.dp, end = 16.dp),
+                    ) {
                         Text(
-                            text = subtitle,
-                            style = TierYourLifeType.current.supportingLabel,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            text = item.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
                         )
+                        item.subtitle?.let { subtitle ->
+                            Text(
+                                text = subtitle,
+                                style = TierYourLifeType.current.supportingLabel,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
+                    SelectionCheckbox(isSelected = isSelected)
                 }
-                SelectionCheckbox(isSelected = isSelected)
             }
         }
 

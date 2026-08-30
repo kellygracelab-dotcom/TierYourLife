@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.community
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -102,22 +105,27 @@ internal fun CommunityListScreenContent(
                 readOnly = true,
             )
 
-            CommunityListUiState.Error -> Column(
+            CommunityListUiState.Error -> Box(
                 Modifier
                     .fillMaxSize()
-                    .padding(32.dp)
-                    .testTag(CommunityTestTags.ERROR),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+                    .padding(32.dp),
+                contentAlignment = Alignment.Center,
             ) {
-                Text(
-                    text = stringResource(R.string.community_open_failed),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                )
-                Spacer(Modifier.height(12.dp))
-                TextButton(onClick = onRetry) { Text(stringResource(R.string.action_try_again)) }
+                Column(
+                    Modifier
+                        .atMost(ContentWidth.Message)
+                        .testTag(CommunityTestTags.ERROR),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = stringResource(R.string.community_open_failed),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    TextButton(onClick = onRetry) { Text(stringResource(R.string.action_try_again)) }
+                }
             }
 
             is CommunityListUiState.Success -> Column(
@@ -203,33 +211,41 @@ private fun SaveBar(arranged: Boolean, saving: Boolean, onSave: () -> Unit) {
             .navigationBarsPadding()
             .heightIn(min = SAVE_BAR_MIN_HEIGHT)
             .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = stringResource(
-                if (arranged) R.string.community_not_saved_yet else R.string.community_someone_elses,
-            ),
-            modifier = Modifier
-                .weight(1f)
-                .testTag(CommunityTestTags.STATUS),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Spacer(Modifier.width(12.dp))
-        Button(
-            onClick = onSave,
-            enabled = !saving,
-            modifier = Modifier
-                .widthIn(max = SAVE_BUTTON_MAX_WIDTH)
-                .testTag(CommunityTestTags.SAVE),
+        // The tint spans the window, the sentence and the button it explains
+        // do not: apart they read as two unrelated things.
+        Row(
+            modifier = Modifier.atMost(ContentWidth.Reading),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = stringResource(R.string.community_save_to_my_lists),
-                textAlign = TextAlign.Center,
-                maxLines = 2,
+                text = stringResource(
+                    if (arranged) R.string.community_not_saved_yet else R.string.community_someone_elses,
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag(CommunityTestTags.STATUS),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
             )
+            Spacer(Modifier.width(12.dp))
+            Button(
+                onClick = onSave,
+                enabled = !saving,
+                modifier = Modifier
+                    .widthIn(max = SAVE_BUTTON_MAX_WIDTH)
+                    .testTag(CommunityTestTags.SAVE),
+            ) {
+                Text(
+                    text = stringResource(R.string.community_save_to_my_lists),
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                )
+            }
         }
     }
 }

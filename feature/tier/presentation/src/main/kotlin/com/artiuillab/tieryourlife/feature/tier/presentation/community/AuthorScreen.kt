@@ -36,6 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
@@ -112,7 +115,7 @@ internal fun AuthorScreenContent(
                     onAction = onRetry,
                 )
 
-                is AuthorUiState.Ready -> {
+                is AuthorUiState.Ready -> CenteredContent(ContentWidth.Board) {
                     Header(state)
                     if (state.lists.isEmpty()) {
                         Message(
@@ -199,27 +202,35 @@ internal fun AuthorScreenContent(
 private fun AuthorTopBar(onBack: () -> Unit, onMoreClick: (() -> Unit)?) {
     val backDescription = stringResource(R.string.tier_detail_content_description_back)
     val moreDescription = stringResource(R.string.tier_detail_content_description_more)
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .height(56.dp)
-            .padding(horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .height(56.dp),
+        contentAlignment = Alignment.Center,
     ) {
-        IconButton(
-            onClick = onBack,
-            modifier = Modifier.size(48.dp).semantics { contentDescription = backDescription },
-        ) { BackIcon() }
-        Spacer(Modifier.weight(1f))
-        if (onMoreClick != null) {
+        // The bar spans the window; back and overflow keep the body's measure,
+        // or the spacer between them pushes them a screen apart.
+        Row(
+            modifier = Modifier
+                .atMost(ContentWidth.Board)
+                .padding(horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             IconButton(
-                onClick = onMoreClick,
-                modifier = Modifier
-                    .size(48.dp)
-                    .semantics { contentDescription = moreDescription }
-                    .testTag(AuthorTestTags.MORE),
-            ) { MoreIcon() }
+                onClick = onBack,
+                modifier = Modifier.size(48.dp).semantics { contentDescription = backDescription },
+            ) { BackIcon() }
+            Spacer(Modifier.weight(1f))
+            if (onMoreClick != null) {
+                IconButton(
+                    onClick = onMoreClick,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .semantics { contentDescription = moreDescription }
+                        .testTag(AuthorTestTags.MORE),
+                ) { MoreIcon() }
+            }
         }
     }
 }

@@ -30,8 +30,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.HomeTab
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
@@ -58,7 +61,17 @@ internal fun HomeTabs(selected: HomeTab, onSelect: (HomeTab) -> Unit, modifier: 
 
     Surface(modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surface) {
         Column {
-            BoxWithConstraints(Modifier.selectableGroup()) {
+            // The bar and its divider cross the window; the tabs do not. Two
+            // tabs across 1600dp are two 800dp targets with a word in the
+            // middle of each. The cap goes here so the arithmetic below --
+            // tab width, and the indicator offset built from it -- divides a
+            // measure instead of the window.
+            BoxWithConstraints(
+                Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .atMost(ContentWidth.Reading)
+                    .selectableGroup(),
+            ) {
                 val tabWidth = maxWidth / tabs.size
                 Row(Modifier.fillMaxWidth().height(TAB_HEIGHT)) {
                     tabs.forEachIndexed { index, tab ->
@@ -113,7 +126,11 @@ private fun Indicator(width: Dp, start: Dp, modifier: Modifier = Modifier) {
     val animatedStart by animateDpAsState(start, label = "indicatorStart")
     Box(
         modifier
-            .offset(x = animatedStart)
+            // The lambda overload reads the animation during placement rather
+            // than recomposing the bar around it. It still places relative to
+            // the layout direction, so Arabic mirrors on its own -- doing it
+            // here as well put the indicator off the edge of the screen.
+            .offset { IntOffset(animatedStart.roundToPx(), 0) }
             .width(animatedWidth)
             .height(INDICATOR_HEIGHT)
             .background(MaterialTheme.colorScheme.primary, INDICATOR_SHAPE),

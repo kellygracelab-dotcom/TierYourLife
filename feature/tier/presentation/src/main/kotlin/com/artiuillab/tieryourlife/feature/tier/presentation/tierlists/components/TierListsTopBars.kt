@@ -2,7 +2,6 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.componen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,6 +28,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
@@ -37,8 +39,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierLists
 
 @Composable
 internal fun HomeHeader(totalListCount: Int, rankedCount: Int) {
-    Column(
-        modifier = Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
+    // The counters head the boards below them, so they keep the boards' measure.
+    CenteredContent(
+        ContentWidth.Reading,
+        Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
     ) {
         if (totalListCount > 0) {
             Text(
@@ -57,27 +61,35 @@ internal fun HomeHeader(totalListCount: Int, rankedCount: Int) {
 
 @Composable
 internal fun HomeTopBar(onSearchClick: () -> Unit, onSettingsClick: () -> Unit) {
-    Row(
+    // The bar spans the window; the title and the buttons it belongs with do
+    // not, or the two end up a window apart.
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp)
-            .padding(horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .statusBarsPadding(),
+        contentAlignment = Alignment.TopCenter,
     ) {
-        Text(
-            text = stringResource(R.string.app_name_display),
+        Row(
             modifier = Modifier
-                .weight(1f)
-                .padding(start = 12.dp),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        HomeIconButton(stringResource(R.string.tier_lists_content_description_search), onSearchClick) {
-            SearchIcon()
-        }
-        HomeIconButton(stringResource(R.string.tier_lists_content_description_settings), onSettingsClick) {
-            SettingsIcon()
+                .atMost(ContentWidth.Reading)
+                .height(56.dp)
+                .padding(horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.app_name_display),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 12.dp),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            HomeIconButton(stringResource(R.string.tier_lists_content_description_search), onSearchClick) {
+                SearchIcon()
+            }
+            HomeIconButton(stringResource(R.string.tier_lists_content_description_settings), onSettingsClick) {
+                SettingsIcon()
+            }
         }
     }
 }
@@ -89,47 +101,53 @@ internal fun SearchTopBar(query: String, onQueryChange: (String) -> Unit, onClos
     val clearDescription = stringResource(R.string.cd_clear_query)
     val focusRequester = remember { FocusRequester() }
 
-    TextField(
-        value = query,
-        onValueChange = onQueryChange,
-        placeholder = { Text(stringResource(R.string.home_search_hint)) },
-        singleLine = true,
-        shape = RoundedCornerShape(28.dp),
-        leadingIcon = {
-            IconButton(
-                onClick = onClose,
-                modifier = Modifier
-                    .semantics { contentDescription = closeDescription }
-                    .testTag(TierListsTestTags.SEARCH_CLOSE),
-            ) { BackIcon() }
-        },
-        trailingIcon = {
-            if (query.isNotEmpty()) {
-                IconButton(
-                    onClick = { onQueryChange("") },
-                    modifier = Modifier
-                        .semantics { contentDescription = clearDescription }
-                        .testTag(TierListsTestTags.SEARCH_CLEAR),
-                ) { ClearIcon(20.dp, onSurfaceVariant) }
-            }
-        },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent,
-            cursorColor = MaterialTheme.colorScheme.primary,
-        ),
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 4.dp)
-            .height(56.dp)
-            .focusRequester(focusRequester)
-            .testTag(TierListsTestTags.SEARCH_FIELD),
-    )
+            .statusBarsPadding(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        TextField(
+            value = query,
+            onValueChange = onQueryChange,
+            placeholder = { Text(stringResource(R.string.home_search_hint)) },
+            singleLine = true,
+            shape = RoundedCornerShape(28.dp),
+            leadingIcon = {
+                IconButton(
+                    onClick = onClose,
+                    modifier = Modifier
+                        .semantics { contentDescription = closeDescription }
+                        .testTag(TierListsTestTags.SEARCH_CLOSE),
+                ) { BackIcon() }
+            },
+            trailingIcon = {
+                if (query.isNotEmpty()) {
+                    IconButton(
+                        onClick = { onQueryChange("") },
+                        modifier = Modifier
+                            .semantics { contentDescription = clearDescription }
+                            .testTag(TierListsTestTags.SEARCH_CLEAR),
+                    ) { ClearIcon(20.dp, onSurfaceVariant) }
+                }
+            },
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                cursorColor = MaterialTheme.colorScheme.primary,
+            ),
+            modifier = Modifier
+                .atMost(ContentWidth.Reading)
+                .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 4.dp)
+                .height(56.dp)
+                .focusRequester(focusRequester)
+                .testTag(TierListsTestTags.SEARCH_FIELD),
+        )
+    }
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 }
@@ -141,10 +159,11 @@ internal fun SelectionTopBar(count: Int, onClose: () -> Unit, onDelete: () -> Un
         Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceContainerLow),
+        contentAlignment = Alignment.TopCenter,
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .atMost(ContentWidth.Reading)
                 .statusBarsPadding()
                 .height(56.dp)
                 .padding(horizontal = 4.dp)
