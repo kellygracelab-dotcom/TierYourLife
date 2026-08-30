@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,6 +46,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun PoolPanel(
     pool: Tier,
@@ -99,11 +102,18 @@ internal fun PoolPanel(
                 .clip(RoundedCornerShape(2.dp))
                 .background(MaterialTheme.colorScheme.outline),
         )
-        Row(
+        // The count and the two chips sit on one line while they fit and take
+        // two when they do not. Given weight instead, the count was squeezed
+        // into whatever the chips left over -- about a hundred dp on a folding
+        // phone's cover screen, which is narrow enough to break "unranked"
+        // across three lines and still run into the buttons.
+        FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            itemVerticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = pluralStringResource(
@@ -117,9 +127,13 @@ internal fun PoolPanel(
             )
             // Someone else's pool is material to rank, not a place to add to.
             if (!readOnly) {
-                AddChip(onClick = onAddClick)
-                Spacer(Modifier.width(8.dp))
-                GenerateChip(onClick = onGenerateClick)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    AddChip(onClick = onAddClick)
+                    GenerateChip(onClick = onGenerateClick)
+                }
             }
         }
         LazyRow(
