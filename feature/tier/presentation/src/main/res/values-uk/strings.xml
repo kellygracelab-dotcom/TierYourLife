@@ -479,4 +479,5 @@
     <string name="conflict_edited_here">Змінено тут %1$s</string>
     <string name="cover_unfold_title">Розкладіть, щоб розставити</string>
     <string name="cover_unfold_body">Перетягувати картки можна лише на внутрішньому екрані.</string>
+    <string name="moderation_consequence">Зняття з публікації не торкається копії автора.</string>
 </resources>

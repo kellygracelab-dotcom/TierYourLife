@@ -191,6 +191,15 @@ private fun ReportCard(
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }
+        // Said before the buttons rather than found out afterwards: taking a
+        // list out of the feed is a decision about somebody else's work, and
+        // the one thing the person making it needs to know is how far it goes.
+        Spacer(Modifier.height(12.dp))
+        Text(
+            text = stringResource(R.string.moderation_consequence),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         Spacer(Modifier.height(4.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             TextButton(

@@ -369,6 +369,7 @@
     <string name="moderation_empty_body">Complaints about community lists arrive here.</string>
     <string name="moderation_action_take_down">Take it down</string>
     <string name="moderation_action_keep">Leave it up</string>
+    <string name="moderation_consequence">Taking it down leaves the author’s own copy untouched.</string>
     <string name="settings_moderation">Reports</string>
     <string name="settings_moderation_none">Nothing waiting</string>
     <plurals name="moderation_waiting">

@@ -448,4 +448,5 @@
     <string name="conflict_edited_here">Modifié ici %1$s</string>
     <string name="cover_unfold_title">Dépliez pour classer</string>
     <string name="cover_unfold_body">Déplacer les cartes demande l’écran intérieur.</string>
+    <string name="moderation_consequence">Le retrait ne touche pas la copie personnelle de l’auteur.</string>
 </resources>

@@ -448,4 +448,5 @@
     <string name="conflict_edited_here">Editado aquí %1$s</string>
     <string name="cover_unfold_title">Despliega para ordenar</string>
     <string name="cover_unfold_body">Mover tarjetas necesita la pantalla interior.</string>
+    <string name="moderation_consequence">Retirarla no toca la copia propia del autor.</string>
 </resources>

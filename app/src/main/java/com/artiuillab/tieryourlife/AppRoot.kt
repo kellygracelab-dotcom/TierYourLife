@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsets
@@ -46,7 +47,14 @@ fun AppRoot(
             // after the insets rather than before, because the width a layout
             // can actually use is what is left over -- and on a folded phone
             // in landscape that is a different answer.
-            val shape = WindowShape.of(maxWidth, maxHeight)
+            // A cover screen and half a phone in split view measure the same;
+            // only the system knows which is which.
+            val activity = LocalActivity.current
+            val shape = WindowShape.of(
+                width = maxWidth,
+                height = maxHeight,
+                shareable = activity?.isInMultiWindowMode == true,
+            )
             CompositionLocalProvider(LocalWindowShape provides shape) {
                 // A cover screen is not a very small phone; it is a surface
                 // that can show a board and cannot be used to build one. It

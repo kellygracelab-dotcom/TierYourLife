@@ -77,10 +77,21 @@ enum class WindowShape {
         const val COVER_MIN_RATIO = 0.8f
         const val COVER_MAX_RATIO = 1.5f
 
-        fun of(width: Dp, height: Dp = Dp.Unspecified): WindowShape = when {
+        /**
+         * [shareable] is false when the app has the screen to itself. Size and
+         * shape alone cannot tell a cover from half a phone in split view --
+         * 360 x 400dp is both -- and getting that wrong takes the whole app
+         * away from somebody who was only using two apps at once. A window the
+         * system is sharing is never a cover.
+         */
+        fun of(
+            width: Dp,
+            height: Dp = Dp.Unspecified,
+            shareable: Boolean = false,
+        ): WindowShape = when {
             width >= WideFrom -> Wide
             width >= MediumFrom -> Medium
-            height != Dp.Unspecified && isCover(width, height) -> Cover
+            !shareable && height != Dp.Unspecified && isCover(width, height) -> Cover
             else -> Narrow
         }
 

@@ -539,4 +539,5 @@
     <string name="conflict_edited_here">حُرّرت هنا %1$s</string>
     <string name="cover_unfold_title">افتح الهاتف للترتيب</string>
     <string name="cover_unfold_body">تحريك البطاقات يحتاج إلى الشاشة الداخلية.</string>
+    <string name="moderation_consequence">إلغاء النشر لا يمسّ نسخة المؤلف الخاصة.</string>
 </resources>

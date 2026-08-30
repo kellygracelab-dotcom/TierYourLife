@@ -419,4 +419,5 @@
     <string name="conflict_edited_here">Burada düzenlendi %1$s</string>
     <string name="cover_unfold_title">Sıralamak için aç</string>
     <string name="cover_unfold_body">Kartları taşımak iç ekranı gerektirir.</string>
+    <string name="moderation_consequence">Yayından kaldırmak yazarın kendi kopyasına dokunmaz.</string>
 </resources>

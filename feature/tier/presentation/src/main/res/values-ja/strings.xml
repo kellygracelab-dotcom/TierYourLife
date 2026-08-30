@@ -389,4 +389,5 @@
     <string name="conflict_edited_here">ここで編集 %1$s</string>
     <string name="cover_unfold_title">開いて並べ替え</string>
     <string name="cover_unfold_body">カードの移動には内側の画面が必要です。</string>
+    <string name="moderation_consequence">公開を取り下げても、作者自身のコピーはそのままです。</string>
 </resources>

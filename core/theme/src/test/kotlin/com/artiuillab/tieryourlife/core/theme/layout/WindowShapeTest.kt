@@ -72,6 +72,16 @@ class WindowShapeTest {
         assertEquals(WindowShape.Narrow, WindowShape.of(352.dp))
     }
 
+    // Size and shape cannot separate these two: half a phone in split view is
+    // small in both directions and roughly square, exactly like a cover. Being
+    // wrong here takes the whole app away from somebody running two at once,
+    // so a shared window is never a cover.
+    @Test
+    fun `half a phone in split view is not a cover`() {
+        assertEquals(WindowShape.Cover, WindowShape.of(360.dp, 400.dp))
+        assertEquals(WindowShape.Narrow, WindowShape.of(360.dp, 400.dp, shareable = true))
+    }
+
     @Test
     fun `only the two wider shapes carry a rail`() {
         assertFalse(WindowShape.Narrow.hasRail)

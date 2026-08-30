@@ -479,4 +479,5 @@
     <string name="conflict_edited_here">Правлена здесь %1$s</string>
     <string name="cover_unfold_title">Разложите, чтобы расставить</string>
     <string name="cover_unfold_body">Перетаскивать карточки можно только на внутреннем экране.</string>
+    <string name="moderation_consequence">Снятие с публикации не трогает копию автора.</string>
 </resources>
