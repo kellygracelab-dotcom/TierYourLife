@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
+import com.artiuillab.tieryourlife.feature.tier.presentation.cover.CoverScreen
 import com.artiuillab.tieryourlife.navigation.TierYourLifeNavHost
 
 @Composable
@@ -45,13 +46,22 @@ fun AppRoot(
             // after the insets rather than before, because the width a layout
             // can actually use is what is left over -- and on a folded phone
             // in landscape that is a different answer.
-            CompositionLocalProvider(LocalWindowShape provides WindowShape.of(maxWidth)) {
-                TierYourLifeNavHost(
-                    themeChoice = state.themeChoice,
-                    onThemeChoiceChange = onThemeChoiceChange,
-                    languageTag = state.languageTag,
-                    onLanguageTagChange = onLanguageTagChange,
-                )
+            val shape = WindowShape.of(maxWidth, maxHeight)
+            CompositionLocalProvider(LocalWindowShape provides shape) {
+                // A cover screen is not a very small phone; it is a surface
+                // that can show a board and cannot be used to build one. It
+                // gets its own screen rather than the app with most of its
+                // controls refusing.
+                if (shape.isGlanceable) {
+                    CoverScreen()
+                } else {
+                    TierYourLifeNavHost(
+                        themeChoice = state.themeChoice,
+                        onThemeChoiceChange = onThemeChoiceChange,
+                        languageTag = state.languageTag,
+                        onLanguageTagChange = onLanguageTagChange,
+                    )
+                }
             }
         }
     }

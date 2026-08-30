@@ -17,6 +17,14 @@ import androidx.compose.ui.unit.dp
 enum class WindowShape {
 
     /**
+     * A folding phone's cover screen. Barely taller than it is wide, which no
+     * phone is, and with a camera cutout in one corner -- so it is not "a very
+     * small phone", it is a surface that can show a board and cannot be used
+     * to build one.
+     */
+    Cover,
+
+    /**
      * One column, and the navigation along the bottom or the top. Everything
      * from a Flip's cover to a phone in landscape.
      */
@@ -34,7 +42,13 @@ enum class WindowShape {
 
     ;
 
-    val hasRail: Boolean get() = this != Narrow
+    val hasRail: Boolean get() = this == Medium || this == Wide
+
+    /**
+     * Whether anything here can be dragged, typed into or decided. The cover
+     * shows; everything else waits for the phone to be opened.
+     */
+    val isGlanceable: Boolean get() = this == Cover
 
     /** Whether a list of boards can stand beside the board that is open. */
     val holdsTwoPanes: Boolean get() = this == Wide
@@ -50,11 +64,30 @@ enum class WindowShape {
         val MediumFrom: Dp = 600.dp
         val WideFrom: Dp = 840.dp
 
-        fun of(width: Dp): WindowShape = when {
+        /**
+         * A cover is recognised by being small in both directions and roughly
+         * square. Width alone cannot find it -- 352dp is an ordinary narrow
+         * phone -- and shape alone would catch a small phone held sideways,
+         * which is a phone and can be typed on.
+         *
+         * Measured off a Z Flip 7: 352 x 339dp, a ratio of 0.96. A phone in
+         * landscape is nearer 0.45, and upright nearer 2.2.
+         */
+        val CoverMaxHeight: Dp = 480.dp
+        const val COVER_MIN_RATIO = 0.8f
+        const val COVER_MAX_RATIO = 1.5f
+
+        fun of(width: Dp, height: Dp = Dp.Unspecified): WindowShape = when {
             width >= WideFrom -> Wide
             width >= MediumFrom -> Medium
+            height != Dp.Unspecified && isCover(width, height) -> Cover
             else -> Narrow
         }
+
+        private fun isCover(width: Dp, height: Dp): Boolean =
+            height <= CoverMaxHeight &&
+                height >= width * COVER_MIN_RATIO &&
+                height <= width * COVER_MAX_RATIO
     }
 }
 

@@ -66,12 +66,24 @@ author is a person you can open rather than a line of text.
 |:---:|:---:|
 | <img src="docs/screenshots/community-list-light.png" width="240"> | <img src="docs/screenshots/author-dark.png" width="240"> |
 
-## On a tablet
+## On a tablet, and on a folded phone
 
 Filling a tablet's width is not the same as using it. Content has a measure and the window keeps
 the rest: 640dp for rows where a label and its control have to stay in one glance, 1080dp for a
 board — wider on purpose, because a tier is a horizontal strip and width is the one thing it can
 spend. The feed is the exception: there the width buys more cards rather than bigger ones.
+
+Past 600dp the navigation moves to a rail on the left and the tabs, the settings icon and the
+corner button all move into it — they were the same job, and two navigation systems on one screen
+is what makes tablet layouts fall apart. Sheets become centred dialogs at the same point: a bottom
+sheet is a phone shape, and on a tablet it is a strip along the bottom edge of a mostly empty
+window. Past 840dp the list of boards stands beside the board rather than a screen away.
+
+The window is classified by what a layout may do rather than by device — a phone in split view is
+not a tablet, and a folding phone is three different windows within a second. A folding phone's
+cover screen is its own case: it shows a board and refuses everything else, because ranking is a
+drag and a drag across 46dp rows with a camera cutout in the corner is a worse version of a gesture
+that works perfectly one fold away.
 
 | A board at 1280×800dp | The feed | Settings |
 |:---:|:---:|:---:|

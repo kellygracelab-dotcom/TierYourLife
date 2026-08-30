@@ -418,4 +418,6 @@
     <string name="conflict_edited_there">Edited on %1$s %2$s</string>
     <string name="conflict_edited_there_unknown">Edited on another phone %1$s</string>
     <string name="conflict_edited_here">Edited here %1$s</string>
+    <string name="cover_unfold_title">Unfold to rank</string>
+    <string name="cover_unfold_body">Moving cards needs the inner screen.</string>
 </resources>

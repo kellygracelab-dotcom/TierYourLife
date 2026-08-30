@@ -387,4 +387,6 @@
     <string name="conflict_edited_there">%1$sで編集 %2$s</string>
     <string name="conflict_edited_there_unknown">別の端末で編集 %1$s</string>
     <string name="conflict_edited_here">ここで編集 %1$s</string>
+    <string name="cover_unfold_title">開いて並べ替え</string>
+    <string name="cover_unfold_body">カードの移動には内側の画面が必要です。</string>
 </resources>

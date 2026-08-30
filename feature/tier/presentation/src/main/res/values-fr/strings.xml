@@ -446,4 +446,6 @@
     <string name="conflict_edited_there">Modifié sur %1$s %2$s</string>
     <string name="conflict_edited_there_unknown">Modifié sur un autre téléphone %1$s</string>
     <string name="conflict_edited_here">Modifié ici %1$s</string>
+    <string name="cover_unfold_title">Dépliez pour classer</string>
+    <string name="cover_unfold_body">Déplacer les cartes demande l’écran intérieur.</string>
 </resources>

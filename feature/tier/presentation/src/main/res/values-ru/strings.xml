@@ -477,4 +477,6 @@
     <string name="conflict_edited_there">Правлена на %1$s %2$s</string>
     <string name="conflict_edited_there_unknown">Правлена на другом телефоне %1$s</string>
     <string name="conflict_edited_here">Правлена здесь %1$s</string>
+    <string name="cover_unfold_title">Разложите, чтобы расставить</string>
+    <string name="cover_unfold_body">Перетаскивать карточки можно только на внутреннем экране.</string>
 </resources>

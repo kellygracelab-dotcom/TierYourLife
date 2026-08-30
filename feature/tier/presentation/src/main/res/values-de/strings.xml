@@ -417,4 +417,6 @@
     <string name="conflict_edited_there">Geändert auf %1$s %2$s</string>
     <string name="conflict_edited_there_unknown">Geändert auf einem anderen Telefon %1$s</string>
     <string name="conflict_edited_here">Hier geändert %1$s</string>
+    <string name="cover_unfold_title">Zum Sortieren aufklappen</string>
+    <string name="cover_unfold_body">Karten verschieben geht nur auf dem inneren Display.</string>
 </resources>

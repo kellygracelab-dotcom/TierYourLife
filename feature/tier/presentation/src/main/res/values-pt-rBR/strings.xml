@@ -446,4 +446,6 @@
     <string name="conflict_edited_there">Editado em %1$s %2$s</string>
     <string name="conflict_edited_there_unknown">Editado em outro telefone %1$s</string>
     <string name="conflict_edited_here">Editado aqui %1$s</string>
+    <string name="cover_unfold_title">Abra para ordenar</string>
+    <string name="cover_unfold_body">Mover cartões precisa da tela interna.</string>
 </resources>
