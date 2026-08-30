@@ -4,6 +4,28 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
+ * Makes room for the copy an account keeps.
+ *
+ * `board_sync` has no foreign key on purpose: the row has to outlive the
+ * board. A board emptied out of the trash leaves nothing behind to compare,
+ * and this row is the only thing that can tell "thrown away here" from "never
+ * sent" -- without it, a delete comes straight back from the account.
+ */
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN arrivedFrom TEXT")
+        // Written the way Room writes it, so the migration test compares like
+        // with like rather than arguing about where the primary key is said.
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `board_sync` (" +
+                "`listUid` TEXT NOT NULL, `revision` INTEGER NOT NULL, " +
+                "`fingerprint` TEXT NOT NULL, `syncedAt` INTEGER NOT NULL, " +
+                "PRIMARY KEY(`listUid`))",
+        )
+    }
+}
+
+/**
  * Gives every row a name that means the same thing on another device. The
  * primary keys are this database's own counters: two phones each hand out
  * id 1, so nothing can be matched up across them.

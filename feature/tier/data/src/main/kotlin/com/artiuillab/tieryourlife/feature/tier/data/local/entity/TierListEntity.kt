@@ -29,4 +29,10 @@ data class TierListEntity(
      */
     @ColumnInfo(defaultValue = "''")
     val uid: String = UUID.randomUUID().toString(),
+    /**
+     * Set only on the copy kept after two phones edited the same board apart
+     * from each other. Two boards with the same name and different insides are
+     * unreadable without it; "from Pixel 7" is the whole difference.
+     */
+    val arrivedFrom: String? = null,
 )

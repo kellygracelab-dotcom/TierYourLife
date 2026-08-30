@@ -162,6 +162,35 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    @Test
+    fun migrate_5_to_6_makes_room_for_the_account_copy_without_moving_anything() {
+        helper.createDatabase(TEST_DB, 5).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, authorName, " +
+                    "category, coverImageUrl, uid) " +
+                    "VALUES (1, 'Films', NULL, 'WRAP', NULL, NULL, NULL, NULL, 'board-1')",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 6, true, MIGRATION_5_6)
+
+        migratedDb.query("SELECT title, uid, arrivedFrom FROM tier_lists WHERE id = 1").use {
+            check(it.moveToFirst())
+            assertEquals("Films", it.getString(0))
+            assertEquals("board-1", it.getString(1))
+            // Nothing arrived from anywhere: this board has only ever been here.
+            assertEquals(true, it.isNull(2))
+        }
+
+        // The table has to be empty rather than absent. A phone that has never
+        // synced must read as "never sent", not as "thrown away".
+        migratedDb.query("SELECT COUNT(*) FROM board_sync").use {
+            check(it.moveToFirst())
+            assertEquals(0, it.getInt(0))
+        }
+    }
+
     private data class MigratedItem(
         val id: Long,
         val title: String,
