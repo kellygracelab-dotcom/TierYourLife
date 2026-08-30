@@ -1,7 +1,14 @@
 package com.artiuillab.tieryourlife
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.navigation.TierYourLifeNavHost
@@ -19,11 +26,22 @@ fun AppRoot(
     }
 
     TierYourLifeTheme(darkTheme = darkTheme) {
-        TierYourLifeNavHost(
-            themeChoice = state.themeChoice,
-            onThemeChoiceChange = onThemeChoiceChange,
-            languageTag = state.languageTag,
-            onLanguageTagChange = onLanguageTagChange,
-        )
+        // The app draws under the system bars and pads for them itself, screen
+        // by screen -- but only ever at the top and the bottom, which is where
+        // they are on an upright phone. Turn the window sideways, or open a
+        // folding phone's cover screen, and the navigation bar moves to an edge
+        // nothing was padding for and lands on top of the content.
+        //
+        // Horizontal only: the top and bottom are already somebody's job, and
+        // doing them again here would pad everything twice. On an upright phone
+        // this measures zero, which is why it has been invisible.
+        Box(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))) {
+            TierYourLifeNavHost(
+                themeChoice = state.themeChoice,
+                onThemeChoiceChange = onThemeChoiceChange,
+                languageTag = state.languageTag,
+                onLanguageTagChange = onLanguageTagChange,
+            )
+        }
     }
 }
