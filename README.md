@@ -210,8 +210,8 @@ Every push runs the whole suite:
 
 | Where | What they cover |
 |---|---|
-| JVM | domain logic, search merging, title derivation, DTO parsing, repository behaviour against fakes |
-| Instrumented — data | Room DAOs, transactions, cascades, the image store |
+| JVM | domain logic, search merging, title derivation, DTO parsing, repository behaviour against fakes, the sync plan, the board fingerprint, which window gets which layout |
+| Instrumented — data | Room DAOs, transactions, cascades, migrations, the image store, pictures going up and coming back |
 | Instrumented — presentation | Compose screens, view models, drag arithmetic, RTL layout |
 | Instrumented — app | manifest contract (RTL support, orientation by window size, config-change handling) |
 | Instrumented — every language | every screen rendered in all eleven, and written out to look at |
@@ -220,7 +220,9 @@ Every push runs the whole suite:
 Some of these exist because a bug got through first: a locale change that quietly broke three
 things visible in no other language, a tier deletion that took recoverable items with it, a
 floating drag preview that ran away from the finger in Arabic, and a collapsed pool bar whose
-centre tap opened the wrong sheet once a second chip joined it.
+centre tap opened the wrong sheet once a second chip joined it. Two more joined them while sync
+was being built — a fingerprint that hashed a file path, so two phones would never have agreed
+they held the same board, and a timestamp trigger that fired on the stamp it had just written.
 
 ## How this was built
 
