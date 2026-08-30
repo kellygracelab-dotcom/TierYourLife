@@ -75,6 +75,17 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 private val MIN_TIER_ROW_HEIGHT = 84.dp
 
 private val MIN_TIER_BAND_WIDTH = 56.dp
+
+/**
+ * A third of the row was the whole ceiling, which is the right shape on a
+ * phone and the wrong one on a board 1080dp wide: there a third is 360dp, and
+ * a long caption would be allowed to grow the band to five times what the same
+ * caption gets on a phone, for no reason anyone could name. A caption is a
+ * caption at any window size, so the ceiling is a number. The fraction stays
+ * as well, and the tighter of the two wins -- on a narrow screen a third is
+ * still less than the number.
+ */
+private val MAX_TIER_BAND_WIDTH = 128.dp
 private const val MAX_TIER_BAND_FRACTION = 1f / 3f
 internal val BAND_CAPTION_PADDING = 6.dp
 
@@ -180,6 +191,7 @@ internal fun TierRow(
         val bandWidth = minOf(
             maxOf(MIN_TIER_BAND_WIDTH, bandContentWidth),
             maxWidth * MAX_TIER_BAND_FRACTION,
+            MAX_TIER_BAND_WIDTH,
         )
         Row(
             modifier = Modifier
