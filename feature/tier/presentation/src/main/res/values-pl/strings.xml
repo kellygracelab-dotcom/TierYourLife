@@ -469,4 +469,12 @@
     <string name="settings_backup_off_body">Tablice zostają na tym telefonie. Kopia na koncie zostanie usunięta, a nowy telefon zacznie od pustego.</string>
     <string name="settings_backup_off_confirm">Usuń kopię</string>
     <string name="settings_backup_off_cancel">Anuluj</string>
+    <string name="conflict_title">„%1$s” zmieniono na dwóch telefonach</string>
+    <string name="conflict_body">Obie wersje są tutaj. Otwórz je, zostaw tę właściwą, drugą usuń.</string>
+    <string name="conflict_got_it">Rozumiem</string>
+    <string name="conflict_tag">z %1$s</string>
+    <string name="conflict_tag_unknown">z innego telefonu</string>
+    <string name="conflict_edited_there">Zmieniono na %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Zmieniono na innym telefonie %1$s</string>
+    <string name="conflict_edited_here">Zmieniono tutaj %1$s</string>
 </resources>

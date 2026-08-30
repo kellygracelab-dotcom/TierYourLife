@@ -56,4 +56,8 @@ internal class FakeAppPreferences(
     override fun lastSyncedAtMs(): Long? = null
 
     override fun setLastSyncedAtMs(atMs: Long?) = Unit
+
+    override fun conflictsSeen(): Set<String> = emptySet()
+
+    override fun markConflictSeen(listUid: String) = Unit
 }

@@ -67,6 +67,12 @@ class TierListsViewModel @Inject constructor(
     private var communitySearch: Job? = null
 
     private var account: Account = Account.Unknown
+
+    /**
+     * Read once and kept, because it is consulted on every redraw and a
+     * preferences file is not a thing to reach for on every frame.
+     */
+    private var conflictsSeen: Set<String> = emptySet()
     private var offerAnswered: Boolean = false
     private var syncJob: Job? = null
 
@@ -74,6 +80,7 @@ class TierListsViewModel @Inject constructor(
 
     init {
         offerAnswered = preferences.signInOfferAnswered()
+        conflictsSeen = preferences.conflictsSeen()
         viewModelScope.launch {
             pictures.restoring.collect { progress ->
                 restoringPictures = progress
@@ -113,6 +120,14 @@ class TierListsViewModel @Inject constructor(
      * people learn to dismiss without reading, and the footer line goes on
      * saying the same thing for as long as it is true.
      */
+    private fun seenConflict(list: TierList): Boolean = conflictsSeen.contains(list.title)
+
+    fun dismissConflictNotice(title: String) {
+        preferences.markConflictSeen(title)
+        conflictsSeen = conflictsSeen + title
+        emitSuccess()
+    }
+
     fun dismissSignInOffer() {
         offerAnswered = true
         preferences.markSignInOfferAnswered()
@@ -146,6 +161,20 @@ class TierListsViewModel @Inject constructor(
         }
     }
 
+    /**
+     * A board that arrived from another phone is only half the story; the
+     * other half is the copy it landed beside. Marked as a pair here rather
+     * than in the database, because it stops being a pair the moment somebody
+     * deletes one -- a fact about what is on screen, not about the board.
+     */
+    private fun withTwins(lists: List<TierList>): List<TierList> {
+        val byTitle = lists.groupBy { it.title.removeSuffix(" ${it.arrivedFrom.orEmpty()}").trim() }
+        return lists.map { list ->
+            val twins = byTitle[list.title.removeSuffix(" ${list.arrivedFrom.orEmpty()}").trim()].orEmpty()
+            list.copy(hasTwin = twins.size > 1 && twins.any { it.arrivedFrom != null })
+        }
+    }
+
     private fun emitSuccess() {
         val query = (mode as? HomeMode.Searching)?.query
         val filtered = if (query != null) {
@@ -153,11 +182,12 @@ class TierListsViewModel @Inject constructor(
         } else {
             lastLoadedLists
         }
+        val paired = withTwins(filtered)
         val rankedCount = lastLoadedLists.sumOf { list ->
             list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
         }
         _state.value = TierListsUiState.Success(
-            lists = filtered,
+            lists = paired,
             totalListCount = lastLoadedLists.size,
             rankedCount = rankedCount,
             mode = mode,
@@ -166,6 +196,7 @@ class TierListsViewModel @Inject constructor(
             communityCategory = communityCategory,
             localOnly = whereTheseLive(),
             restoringPictures = restoringPictures,
+            conflict = paired.firstOrNull { it.hasTwin && it.arrivedFrom != null && !seenConflict(it) },
         )
     }
 

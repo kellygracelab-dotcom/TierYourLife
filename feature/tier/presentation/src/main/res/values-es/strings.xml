@@ -438,4 +438,12 @@
     <string name="settings_backup_off_body">Tus tableros siguen en este teléfono. La copia de tu cuenta se elimina, y un teléfono nuevo empezará vacío.</string>
     <string name="settings_backup_off_confirm">Detener y eliminar</string>
     <string name="settings_backup_off_cancel">Cancelar</string>
+    <string name="conflict_title">“%1$s” cambió en dos teléfonos</string>
+    <string name="conflict_body">Las dos versiones están aquí. Ábrelas, quédate con la que quieras y borra la otra.</string>
+    <string name="conflict_got_it">Entendido</string>
+    <string name="conflict_tag">de %1$s</string>
+    <string name="conflict_tag_unknown">de otro teléfono</string>
+    <string name="conflict_edited_there">Editado en %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Editado en otro teléfono %1$s</string>
+    <string name="conflict_edited_here">Editado aquí %1$s</string>
 </resources>

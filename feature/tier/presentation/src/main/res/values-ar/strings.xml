@@ -529,4 +529,12 @@
     <string name="settings_backup_off_body">تبقى لوحاتك على هذا الهاتف. تُحذف النسخة في حسابك، وسيبدأ الهاتف الجديد فارغًا.</string>
     <string name="settings_backup_off_confirm">إيقاف وحذف</string>
     <string name="settings_backup_off_cancel">إلغاء</string>
+    <string name="conflict_title">تغيّرت «%1$s» على هاتفين</string>
+    <string name="conflict_body">النسختان كلتاهما هنا. افتحهما، احتفظ بما تريد، واحذف الأخرى.</string>
+    <string name="conflict_got_it">فهمت</string>
+    <string name="conflict_tag">من %1$s</string>
+    <string name="conflict_tag_unknown">من هاتف آخر</string>
+    <string name="conflict_edited_there">حُرّرت على %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">حُرّرت على هاتف آخر %1$s</string>
+    <string name="conflict_edited_here">حُرّرت هنا %1$s</string>
 </resources>

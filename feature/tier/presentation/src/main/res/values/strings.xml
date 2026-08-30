@@ -410,4 +410,12 @@
     <string name="settings_backup_off_body">Your boards stay on this phone. The copy in your account is deleted, and a new phone will start empty.</string>
     <string name="settings_backup_off_confirm">Stop and delete</string>
     <string name="settings_backup_off_cancel">Cancel</string>
+    <string name="conflict_title">%1$s changed on two phones</string>
+    <string name="conflict_body">Both versions are here. Open them, keep the one you want, delete the other.</string>
+    <string name="conflict_got_it">Got it</string>
+    <string name="conflict_tag">from %1$s</string>
+    <string name="conflict_tag_unknown">from another phone</string>
+    <string name="conflict_edited_there">Edited on %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Edited on another phone %1$s</string>
+    <string name="conflict_edited_here">Edited here %1$s</string>
 </resources>

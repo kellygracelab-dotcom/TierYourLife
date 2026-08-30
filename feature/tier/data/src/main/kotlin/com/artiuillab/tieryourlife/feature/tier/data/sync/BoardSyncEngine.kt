@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
-import android.os.Build
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
@@ -53,6 +52,7 @@ class BoardSyncEngine @Inject constructor(
     private val images: TierImageStore,
     private val pictures: PictureSync,
     private val preferences: AppPreferences,
+    private val deviceName: DeviceName,
 ) : BoardSync {
 
     override suspend fun sync(): SyncReport {
@@ -205,7 +205,10 @@ class BoardSyncEngine @Inject constructor(
         val uid = if (asCopy) UUID.randomUUID().toString() else incoming.uid
         dao.addBoard(
             board = incoming.toEntity(id = 0, uid = uid).copy(
-                arrivedFrom = if (asCopy) incoming.deviceName ?: UNNAMED_DEVICE else null,
+                // Null rather than a placeholder: the phrase for a board
+                // that cannot say where it came from belongs to whatever is
+                // showing it, not to the database.
+                arrivedFrom = if (asCopy) incoming.deviceName else null,
                 // A copy is not the published list; two boards pointing at one
                 // published id would fight over it on the next publish.
                 publishedId = if (asCopy) null else incoming.publishedId,
@@ -244,7 +247,7 @@ class BoardSyncEngine @Inject constructor(
         val uidByTierId = tiers.associate { it.id to it.uid }
         return KeepBoardRequestDto(
             basedOn = basedOn,
-            deviceName = Build.MODEL,
+            deviceName = deviceName.current(),
             fingerprint = fingerprint,
             title = board.title,
             displayMode = board.displayMode,
@@ -282,7 +285,6 @@ class BoardSyncEngine @Inject constructor(
 
     private companion object {
         const val HTTP_CONFLICT = 409
-        const val UNNAMED_DEVICE = "another phone"
     }
 }
 

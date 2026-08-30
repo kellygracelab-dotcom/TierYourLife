@@ -469,4 +469,12 @@
     <string name="settings_backup_off_body">Дошки залишаться на цьому телефоні. Копію в обліковому записі буде видалено, і новий телефон почне з порожнього.</string>
     <string name="settings_backup_off_confirm">Видалити копію</string>
     <string name="settings_backup_off_cancel">Скасувати</string>
+    <string name="conflict_title">«%1$s» редагували на двох телефонах</string>
+    <string name="conflict_body">Обидві версії тут. Відкрийте, залиште потрібну, другу видаліть.</string>
+    <string name="conflict_got_it">Зрозуміло</string>
+    <string name="conflict_tag">з %1$s</string>
+    <string name="conflict_tag_unknown">з іншого телефона</string>
+    <string name="conflict_edited_there">Змінено на %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Змінено на іншому телефоні %1$s</string>
+    <string name="conflict_edited_here">Змінено тут %1$s</string>
 </resources>

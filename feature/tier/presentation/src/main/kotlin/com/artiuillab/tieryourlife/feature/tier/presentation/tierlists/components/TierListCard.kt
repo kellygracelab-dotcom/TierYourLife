@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components
 
+import android.text.format.DateUtils
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,6 +34,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
@@ -46,6 +48,19 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 private val COVER_THUMBNAIL = 56.dp
 
 @OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun editedLine(arrivedFrom: String?, editedAt: Long): String {
+    val ago = DateUtils.getRelativeTimeSpanString(
+        editedAt,
+        System.currentTimeMillis(),
+        DateUtils.MINUTE_IN_MILLIS,
+    ).toString()
+    return when {
+        arrivedFrom != null -> stringResource(R.string.conflict_edited_there, arrivedFrom, ago)
+        else -> stringResource(R.string.conflict_edited_here, ago)
+    }
+}
+
 @Composable
 internal fun TierListCard(
     list: TierList,
@@ -94,12 +109,24 @@ internal fun TierListCard(
                 Spacer(Modifier.width(12.dp))
             }
             Column(Modifier.weight(1f)) {
-                Text(
-                    list.title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        list.title,
+                        modifier = Modifier.weight(1f, fill = false),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    // Only on the copy, and only while its twin is still here:
+                    // two boards with one name is the state this answers, and
+                    // once one of them is gone the tag is noise.
+                    if (list.hasTwin && list.arrivedFrom != null) {
+                        Spacer(Modifier.width(8.dp))
+                        ArrivedFromChip(list.arrivedFrom)
+                    }
+                }
                 Text(
                     text = if (ranked == 0) {
                         stringResource(R.string.tier_lists_card_nothing_ranked_yet, inPoolText)
@@ -113,6 +140,17 @@ internal fun TierListCard(
                     style = TierYourLifeType.current.supportingLabel,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                // Which of the two was worked on more recently is the thing
+                // that actually tells them apart; the phone's name only helps
+                // when it happens to be a human one.
+                val editedAt = list.editedAt
+                if (list.hasTwin && editedAt != null) {
+                    Text(
+                        text = editedLine(list.arrivedFrom, editedAt),
+                        style = TierYourLifeType.current.supportingLabel,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
             if (selectionMode) {
                 SelectionCheckbox(selected)

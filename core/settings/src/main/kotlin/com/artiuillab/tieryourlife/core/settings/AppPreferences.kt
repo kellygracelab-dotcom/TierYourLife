@@ -75,4 +75,13 @@ interface AppPreferences {
     fun lastSyncedAtMs(): Long?
 
     fun setLastSyncedAtMs(atMs: Long?)
+
+    /**
+     * Boards whose "changed on two phones" notice has been read. Kept by uid
+     * rather than as one flag, because a second conflict months later is news
+     * again and deserves saying.
+     */
+    fun conflictsSeen(): Set<String>
+
+    fun markConflictSeen(listUid: String)
 }

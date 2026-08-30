@@ -64,6 +64,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.community.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.CommunityFeedList
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ConflictBanner
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeEmptyState
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeHeader
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTabs
@@ -104,6 +105,7 @@ fun TierListsScreen(
         onSettingsClick = onSettingsClick,
         onSignInClick = onSignInClick,
         onDismissSignInOffer = viewModel::dismissSignInOffer,
+        onDismissConflictNotice = viewModel::dismissConflictNotice,
         onSearchClick = viewModel::enterSearch,
         onSearchQueryChange = viewModel::updateSearchQuery,
         onCloseSearch = viewModel::exitSearch,
@@ -134,6 +136,7 @@ internal fun TierListsScreenContent(
     onSettingsClick: () -> Unit = {},
     onSignInClick: () -> Unit = {},
     onDismissSignInOffer: () -> Unit = {},
+    onDismissConflictNotice: (String) -> Unit = {},
     onSearchClick: () -> Unit = {},
     onSearchQueryChange: (String) -> Unit = {},
     onCloseSearch: () -> Unit = {},
@@ -164,6 +167,7 @@ internal fun TierListsScreenContent(
     val communityCategory = success?.communityCategory
     val localOnly = success?.localOnly ?: LocalOnly.Unknown
     val restoringPictures = success?.restoringPictures ?: PictureRestore.Progress.Idle
+    val conflict = success?.conflict
     var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var reportFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var reportedFrom by remember { mutableStateOf<PublishedListSummary?>(null) }
@@ -297,11 +301,13 @@ internal fun TierListsScreenContent(
                             lists = lists,
                             mode = mode,
                             localOnly = localOnly,
+                            conflict = conflict,
                             onTierListClick = onTierListClick,
                             onLongPressCard = onLongPressCard,
                             onToggleSelected = onToggleSelected,
                             onSignInClick = onSignInClick,
                             onDismissSignInOffer = onDismissSignInOffer,
+                            onDismissConflictNotice = onDismissConflictNotice,
                         )
                     }
                 }
@@ -400,11 +406,13 @@ private fun HomeContent(
     lists: List<TierList>,
     mode: HomeMode,
     localOnly: LocalOnly,
+    conflict: TierList?,
     onTierListClick: (Long) -> Unit,
     onLongPressCard: (Long) -> Unit,
     onToggleSelected: (Long) -> Unit,
     onSignInClick: () -> Unit,
     onDismissSignInOffer: () -> Unit,
+    onDismissConflictNotice: (String) -> Unit,
 ) {
     val isSelecting = mode is HomeMode.Selecting
     val selectedIds = (mode as? HomeMode.Selecting)?.selectedIds.orEmpty()
@@ -419,6 +427,18 @@ private fun HomeContent(
         // Above the boards, because it is about all of them. Out of the way
         // while somebody is picking boards to delete: two sets of buttons
         // asking different questions is one too many.
+        // Above everything, including the sign-in offer: two copies of one
+        // board is news, and the offer can wait a screen.
+        if (conflict != null && !isSelecting) {
+            item(key = "conflict-banner") {
+                CenteredContent(ContentWidth.Reading, Modifier.padding(horizontal = 16.dp)) {
+                    ConflictBanner(
+                        title = conflict.title,
+                        onGotIt = { onDismissConflictNotice(conflict.title) },
+                    )
+                }
+            }
+        }
         if (here?.offerSignIn == true && !isSelecting) {
             item(key = "local-only-card") {
                 CenteredContent(ContentWidth.Reading, Modifier.padding(horizontal = 16.dp)) {

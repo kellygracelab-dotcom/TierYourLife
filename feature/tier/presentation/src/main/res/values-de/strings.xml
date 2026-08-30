@@ -409,4 +409,12 @@
     <string name="settings_backup_off_body">Deine Boards bleiben auf diesem Telefon. Die Kopie in deinem Konto wird gelöscht, und ein neues Telefon fängt leer an.</string>
     <string name="settings_backup_off_confirm">Beenden und löschen</string>
     <string name="settings_backup_off_cancel">Abbrechen</string>
+    <string name="conflict_title">„%1$s“ wurde auf zwei Telefonen geändert</string>
+    <string name="conflict_body">Beide Fassungen sind hier. Öffne sie, behalte die richtige, lösche die andere.</string>
+    <string name="conflict_got_it">Verstanden</string>
+    <string name="conflict_tag">von %1$s</string>
+    <string name="conflict_tag_unknown">von einem anderen Telefon</string>
+    <string name="conflict_edited_there">Geändert auf %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Geändert auf einem anderen Telefon %1$s</string>
+    <string name="conflict_edited_here">Hier geändert %1$s</string>
 </resources>

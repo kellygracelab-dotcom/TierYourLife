@@ -379,4 +379,12 @@
     <string name="settings_backup_off_body">ボードはこの端末に残ります。アカウント内のコピーは削除され、新しい端末は空の状態から始まります。</string>
     <string name="settings_backup_off_confirm">停止して削除</string>
     <string name="settings_backup_off_cancel">キャンセル</string>
+    <string name="conflict_title">「%1$s」が2つの端末で変更されました</string>
+    <string name="conflict_body">両方の版がここにあります。開いて残す方を選び、もう一方を削除してください。</string>
+    <string name="conflict_got_it">了解</string>
+    <string name="conflict_tag">%1$sから</string>
+    <string name="conflict_tag_unknown">別の端末から</string>
+    <string name="conflict_edited_there">%1$sで編集 %2$s</string>
+    <string name="conflict_edited_there_unknown">別の端末で編集 %1$s</string>
+    <string name="conflict_edited_here">ここで編集 %1$s</string>
 </resources>

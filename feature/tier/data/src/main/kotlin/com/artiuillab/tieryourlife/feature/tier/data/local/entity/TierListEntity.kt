@@ -35,4 +35,11 @@ data class TierListEntity(
      * unreadable without it; "from Pixel 7" is the whole difference.
      */
     val arrivedFrom: String? = null,
+    /**
+     * When anything about this board last changed, written by triggers rather
+     * than by the code that does the changing -- there are dozens of those and
+     * one forgotten call is a board with the wrong age on the one screen where
+     * two copies have to be told apart.
+     */
+    val editedAt: Long? = null,
 )

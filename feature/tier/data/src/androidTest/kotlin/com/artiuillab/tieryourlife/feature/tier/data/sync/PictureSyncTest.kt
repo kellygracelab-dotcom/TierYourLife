@@ -3,6 +3,9 @@ package com.artiuillab.tieryourlife.feature.tier.data.sync
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.HiddenEntry
+import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.TierDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
@@ -10,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
@@ -53,7 +57,7 @@ class PictureSyncTest {
     @Test
     fun aPictureOnThePhone_goesUpOnce_andIsNotSentAgain() = runBlocking {
         val vault = FakePictures()
-        val sync = PictureSync(dao, images, vault)
+        val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(pictureId = "pic-1", bytes = byteArrayOf(1, 2, 3))
 
         sync.push()
@@ -68,7 +72,7 @@ class PictureSyncTest {
     @Test
     fun aPictureThatWillNotGoUp_isTriedAgainNextTime() = runBlocking {
         val vault = FakePictures(refuse = true)
-        val sync = PictureSync(dao, images, vault)
+        val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(pictureId = "pic-1", bytes = byteArrayOf(1))
 
         sync.push()
@@ -82,7 +86,7 @@ class PictureSyncTest {
     @Test
     fun aPosterFromACatalogue_isNotSentAnywhere() = runBlocking {
         val vault = FakePictures()
-        val sync = PictureSync(dao, images, vault)
+        val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(imageUrl = "https://image.tmdb.org/t/p/w500/a.jpg")
 
         sync.push()
@@ -95,7 +99,7 @@ class PictureSyncTest {
     @Test
     fun aPictureOnATrashedCard_stillGoesUp() = runBlocking {
         val vault = FakePictures()
-        val sync = PictureSync(dao, images, vault)
+        val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(pictureId = "pic-1", bytes = byteArrayOf(1), deletedAt = 1_700_000_000_000)
 
         sync.push()
@@ -106,7 +110,7 @@ class PictureSyncTest {
     @Test
     fun aPictureAboardSays_shouldBeHere_comesDownAndIsWrittenToTheCard() = runBlocking {
         val vault = FakePictures(held = mutableMapOf("pic-1" to byteArrayOf(9, 9)))
-        val sync = PictureSync(dao, images, vault)
+        val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(imageUrl = images.pathFor("pic-1"), itemUid = "item-1")
 
         sync.pull(mapOf("item-1" to "pic-1"))
@@ -119,7 +123,7 @@ class PictureSyncTest {
     @Test
     fun aPictureAlreadyHere_isNotFetchedAgain() = runBlocking {
         val vault = FakePictures(held = mutableMapOf("pic-1" to byteArrayOf(9)))
-        val sync = PictureSync(dao, images, vault)
+        val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(pictureId = "pic-1", bytes = byteArrayOf(1), itemUid = "item-1")
 
         sync.pull(mapOf("item-1" to "pic-1"))
@@ -132,7 +136,7 @@ class PictureSyncTest {
     @Test
     fun aPictureThatCameDown_isNotSentStraightBackUp() = runBlocking {
         val vault = FakePictures(held = mutableMapOf("pic-1" to byteArrayOf(9)))
-        val sync = PictureSync(dao, images, vault)
+        val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(imageUrl = images.pathFor("pic-1"), itemUid = "item-1")
 
         sync.pull(mapOf("item-1" to "pic-1"))
@@ -144,7 +148,7 @@ class PictureSyncTest {
     @Test
     fun theProgressCounts_andIsBackToNothingAtTheEnd() = runBlocking {
         val vault = FakePictures(held = mutableMapOf("pic-1" to byteArrayOf(1), "pic-2" to byteArrayOf(2)))
-        val sync = PictureSync(dao, images, vault)
+        val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(imageUrl = images.pathFor("pic-1"), itemUid = "item-1")
         givenCard(imageUrl = images.pathFor("pic-2"), itemUid = "item-2", boardId = 2, title = "Other")
 
@@ -158,7 +162,7 @@ class PictureSyncTest {
     @Test
     fun aPictureThatWillNotComeDown_leavesTheCardAlone() = runBlocking {
         val vault = FakePictures()
-        val sync = PictureSync(dao, images, vault)
+        val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(imageUrl = images.pathFor("pic-1"), itemUid = "item-1")
 
         sync.pull(mapOf("item-1" to "pic-1"))
@@ -207,6 +211,40 @@ class PictureSyncTest {
             ),
         )
     }
+}
+
+/**
+ * Wi-Fi, always, because these cases are about what moves rather than about
+ * when it is allowed to.
+ */
+private object OnWifiAlways : AppPreferences, Connection {
+    override val available = MutableStateFlow(Unit)
+    override fun unmetered(): Boolean = true
+
+    override fun picturesOnWifiOnly(): Boolean = true
+    override fun setPicturesOnWifiOnly(wifiOnly: Boolean) = Unit
+    override fun themeChoice(): ThemeChoice = ThemeChoice.SYSTEM
+    override fun setThemeChoice(choice: ThemeChoice) = Unit
+    override fun languageTag(): String? = null
+    override fun setLanguageTag(tag: String?) = Unit
+    override fun lastKnownCredits(): Int? = null
+    override fun setLastKnownCredits(credits: Int?) = Unit
+    override fun hiddenListIds(): Set<String> = emptySet()
+    override fun hiddenLists(): List<HiddenEntry> = emptyList()
+    override fun hideList(publishedId: String, title: String) = Unit
+    override fun unhideList(publishedId: String) = Unit
+    override fun hiddenAuthorUids(): Set<String> = emptySet()
+    override fun hiddenAuthors(): List<HiddenEntry> = emptyList()
+    override fun hideAuthor(authorUid: String, name: String) = Unit
+    override fun unhideAuthor(authorUid: String) = Unit
+    override fun backUpBoards(): Boolean = true
+    override fun setBackUpBoards(backUp: Boolean) = Unit
+    override fun signInOfferAnswered(): Boolean = false
+    override fun markSignInOfferAnswered() = Unit
+    override fun lastSyncedAtMs(): Long? = null
+    override fun setLastSyncedAtMs(atMs: Long?) = Unit
+    override fun conflictsSeen(): Set<String> = emptySet()
+    override fun markConflictSeen(listUid: String) = Unit
 }
 
 private class FakePictures(

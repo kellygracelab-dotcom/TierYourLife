@@ -469,4 +469,12 @@
     <string name="settings_backup_off_body">Доски останутся на этом телефоне. Копия в аккаунте будет удалена, и новый телефон начнёт с пустого.</string>
     <string name="settings_backup_off_confirm">Удалить копию</string>
     <string name="settings_backup_off_cancel">Отмена</string>
+    <string name="conflict_title">«%1$s» правили на двух телефонах</string>
+    <string name="conflict_body">Обе версии здесь. Откройте, оставьте нужную, вторую удалите.</string>
+    <string name="conflict_got_it">Понятно</string>
+    <string name="conflict_tag">с %1$s</string>
+    <string name="conflict_tag_unknown">с другого телефона</string>
+    <string name="conflict_edited_there">Правлена на %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Правлена на другом телефоне %1$s</string>
+    <string name="conflict_edited_here">Правлена здесь %1$s</string>
 </resources>

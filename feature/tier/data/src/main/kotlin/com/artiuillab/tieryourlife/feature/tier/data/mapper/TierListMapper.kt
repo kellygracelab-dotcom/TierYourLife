@@ -20,6 +20,8 @@ internal fun TierListEntity.toDomain(): TierList = TierList(
     authorName = authorName,
     category = ListCategory.fromId(category),
     coverImageUrl = coverImageUrl,
+    arrivedFrom = arrivedFrom,
+    editedAt = editedAt,
 )
 
 internal fun TierListWithTiers.toDomain(): TierList = TierList(
@@ -33,6 +35,8 @@ internal fun TierListWithTiers.toDomain(): TierList = TierList(
     authorName = tierList.authorName,
     category = ListCategory.fromId(tierList.category),
     coverImageUrl = tierList.coverImageUrl,
+    arrivedFrom = tierList.arrivedFrom,
+    editedAt = tierList.editedAt,
 )
 
 private fun String.toDisplayMode(): TierListDisplayMode =

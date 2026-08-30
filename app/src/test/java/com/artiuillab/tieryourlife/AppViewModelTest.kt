@@ -100,6 +100,10 @@ private class FakeAppPreferences(
 
     override fun setLastSyncedAtMs(atMs: Long?) = Unit
 
+    override fun conflictsSeen(): Set<String> = emptySet()
+
+    override fun markConflictSeen(listUid: String) = Unit
+
     override fun lastKnownCredits(): Int? = null
 
     override fun setLastKnownCredits(credits: Int?) = Unit

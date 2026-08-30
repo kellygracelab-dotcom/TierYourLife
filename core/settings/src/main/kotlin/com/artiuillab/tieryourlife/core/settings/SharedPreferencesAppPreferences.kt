@@ -16,6 +16,7 @@ private const val KEY_BACK_UP_BOARDS = "back_up_boards"
 private const val KEY_SIGN_IN_OFFER_ANSWERED = "sign_in_offer_answered"
 private const val KEY_PICTURES_ON_WIFI_ONLY = "pictures_on_wifi_only"
 private const val KEY_LAST_SYNCED_AT = "last_synced_at"
+private const val KEY_CONFLICTS_SEEN = "conflicts_seen"
 
 @Singleton
 class SharedPreferencesAppPreferences @Inject constructor(
@@ -72,6 +73,12 @@ class SharedPreferencesAppPreferences @Inject constructor(
         prefs.edit {
             if (atMs == null) remove(KEY_LAST_SYNCED_AT) else putLong(KEY_LAST_SYNCED_AT, atMs)
         }
+    }
+
+    override fun conflictsSeen(): Set<String> = stored(KEY_CONFLICTS_SEEN)
+
+    override fun markConflictSeen(listUid: String) {
+        prefs.edit { putStringSet(KEY_CONFLICTS_SEEN, stored(KEY_CONFLICTS_SEEN) + listUid) }
     }
 
     override fun hiddenListIds(): Set<String> = idsIn(KEY_HIDDEN_LISTS)

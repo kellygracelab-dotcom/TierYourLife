@@ -18,6 +18,8 @@ sealed interface TierListsUiState {
         val communityCategory: ListCategory? = null,
         val localOnly: LocalOnly = LocalOnly.Unknown,
         val restoringPictures: PictureRestore.Progress = PictureRestore.Progress.Idle,
+        /** The board whose two versions have not been mentioned yet, if there is one. */
+        val conflict: TierList? = null,
     ) : TierListsUiState
 
     data object Error : TierListsUiState

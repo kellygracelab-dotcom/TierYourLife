@@ -438,4 +438,12 @@
     <string name="settings_backup_off_body">Seus quadros ficam neste telefone. A cópia na sua conta é apagada, e um telefone novo começará vazio.</string>
     <string name="settings_backup_off_confirm">Parar e apagar</string>
     <string name="settings_backup_off_cancel">Cancelar</string>
+    <string name="conflict_title">“%1$s” mudou em dois telefones</string>
+    <string name="conflict_body">As duas versões estão aqui. Abra, fique com a que quiser e apague a outra.</string>
+    <string name="conflict_got_it">Entendi</string>
+    <string name="conflict_tag">de %1$s</string>
+    <string name="conflict_tag_unknown">de outro telefone</string>
+    <string name="conflict_edited_there">Editado em %1$s %2$s</string>
+    <string name="conflict_edited_there_unknown">Editado em outro telefone %1$s</string>
+    <string name="conflict_edited_here">Editado aqui %1$s</string>
 </resources>

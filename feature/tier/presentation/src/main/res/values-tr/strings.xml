@@ -409,4 +409,12 @@
     <string name="settings_backup_off_body">Panoların bu telefonda kalır. Hesabındaki kopya silinir ve yeni bir telefon boş başlar.</string>
     <string name="settings_backup_off_confirm">Durdur ve sil</string>
     <string name="settings_backup_off_cancel">İptal</string>
+    <string name="conflict_title">“%1$s” iki telefonda değişti</string>
+    <string name="conflict_body">İki sürüm de burada. Açıp istediğini tut, diğerini sil.</string>
+    <string name="conflict_got_it">Anladım</string>
+    <string name="conflict_tag">%1$s’dan</string>
+    <string name="conflict_tag_unknown">başka bir telefondan</string>
+    <string name="conflict_edited_there">%1$s üzerinde düzenlendi %2$s</string>
+    <string name="conflict_edited_there_unknown">Başka bir telefonda düzenlendi %1$s</string>
+    <string name="conflict_edited_here">Burada düzenlendi %1$s</string>
 </resources>
