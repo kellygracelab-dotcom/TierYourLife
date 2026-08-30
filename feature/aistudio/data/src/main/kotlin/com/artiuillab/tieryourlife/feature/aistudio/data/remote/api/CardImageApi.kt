@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.aistudio.data.remote.api
 
+import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.AdoptGuestCreditsRequestDto
+import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.AdoptedCreditsDto
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.CreditsResponseDto
 import com.artiuillab.tieryourlife.feature.aistudio.data.remote.dto.GenerateImageRequestDto
 import okhttp3.ResponseBody
@@ -17,4 +19,12 @@ interface CardImageApi {
 
     @GET("credits")
     suspend fun credits(): CreditsResponseDto
+
+    /**
+     * Both halves of the proof travel here: the caller's own token in the
+     * header says where the credits are going, and the guest's says where they
+     * are coming from. A uid in the body would let anyone drain anyone.
+     */
+    @POST("adoptGuestCredits")
+    suspend fun adoptGuestCredits(@Body request: AdoptGuestCreditsRequestDto): AdoptedCreditsDto
 }

@@ -32,6 +32,7 @@ dependencies {
     api(projects.core.network)
     implementation(projects.core.logging)
     implementation(projects.feature.aistudio.domain)
+    implementation(projects.feature.account.domain)
     implementation(projects.feature.tier.domain)
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)

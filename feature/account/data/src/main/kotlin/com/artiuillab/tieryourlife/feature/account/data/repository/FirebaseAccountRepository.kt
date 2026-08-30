@@ -4,6 +4,7 @@ import androidx.core.net.toUri
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.account.domain.repository.GuestCredits
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -27,6 +28,7 @@ private const val GOOGLE_PROVIDER = "google.com"
 @Singleton
 class FirebaseAccountRepository @Inject constructor(
     private val auth: FirebaseAuth,
+    private val guestCredits: GuestCredits,
 ) : AccountRepository {
 
     /**
@@ -50,13 +52,18 @@ class FirebaseAccountRepository @Inject constructor(
         val guest = auth.currentUser?.takeIf { it.isAnonymous }
 
         if (guest != null) {
+            // Taken before anything is attempted. If the sign-in turns into a
+            // switch of identity rather than a link, this is the only thing
+            // left that can prove the guest was this person -- afterwards the
+            // guest is signed out and unreachable, with its balance on it.
+            val guestToken = runCatching { guest.getIdToken(false).await().token }.getOrNull()
             try {
                 guest.linkWithCredential(credential).await()
                 adoptGoogleProfile()
                 return SignInOutcome.Success
             } catch (e: FirebaseAuthUserCollisionException) {
                 Timber.i(e, "Google account already in use; signing into it instead")
-                return signInToExisting(credential)
+                return signInToExisting(credential, guestToken)
             } catch (e: Exception) {
                 Timber.w(e, "Could not link the Google account")
                 return SignInOutcome.Failed
@@ -75,10 +82,15 @@ class FirebaseAccountRepository @Inject constructor(
 
     private suspend fun signInToExisting(
         credential: AuthCredential,
+        guestToken: String?,
     ): SignInOutcome = try {
         auth.signInWithCredential(credential).await()
         adoptGoogleProfile()
-        SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = false)
+        // The guest is gone from this phone now, but its balance is not gone
+        // from the ledger, and this is the last moment anybody can say whose
+        // it was.
+        val carried = guestToken != null && guestCredits.carryOver(guestToken)
+        SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = carried)
     } catch (e: Exception) {
         Timber.w(e, "Could not sign into the existing Google account")
         SignInOutcome.Failed
