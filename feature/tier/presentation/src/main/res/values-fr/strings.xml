@@ -54,7 +54,7 @@
     </plurals>
     <string name="action_undo">Annuler</string>
     <string name="home_empty_title">Classez n\'importe quoi</string>
-    <string name="home_empty_body">Films, jeux, restaurants, albums — tout ce que vous voulez. Vos tableaux restent sur ce téléphone.</string>
+    <string name="home_empty_body">Films, jeux, restaurants, albums — tout ce que vous voulez.</string>
     <string name="cd_new_list">Nouvelle liste</string>
     <string name="default_tier_list_title">Liste sans titre</string>
     <string name="tier_lists_load_error">Impossible de charger les listes.</string>

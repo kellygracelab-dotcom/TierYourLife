@@ -47,7 +47,7 @@
     </plurals>
     <string name="action_undo">Geri al</string>
     <string name="home_empty_title">Her şeyi sırala</string>
-    <string name="home_empty_body">Filmler, oyunlar, restoranlar, albümler — ne olursa. Panoların bu telefonda kalır.</string>
+    <string name="home_empty_body">Filmler, oyunlar, restoranlar, albümler — ne olursa.</string>
     <string name="cd_new_list">Yeni liste</string>
     <string name="default_tier_list_title">Başlıksız liste</string>
     <string name="tier_lists_load_error">Listeler yüklenemedi.</string>

@@ -54,7 +54,7 @@
     </plurals>
     <string name="action_undo">Desfazer</string>
     <string name="home_empty_title">Classifique o que quiser</string>
-    <string name="home_empty_body">Filmes, jogos, restaurantes, álbuns — o que quiser. Seus quadros ficam neste telefone.</string>
+    <string name="home_empty_body">Filmes, jogos, restaurantes, álbuns — o que quiser.</string>
     <string name="cd_new_list">Nova lista</string>
     <string name="default_tier_list_title">Lista sem título</string>
     <string name="tier_lists_load_error">Não foi possível carregar as listas.</string>

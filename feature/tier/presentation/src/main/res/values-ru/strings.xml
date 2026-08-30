@@ -61,7 +61,7 @@
     </plurals>
     <string name="action_undo">Отменить</string>
     <string name="home_empty_title">Ранжируй что угодно</string>
-    <string name="home_empty_body">Фильмы, игры, рестораны, альбомы — что угодно. Ваши доски остаются на телефоне.</string>
+    <string name="home_empty_body">Фильмы, игры, рестораны, альбомы — что угодно.</string>
     <string name="cd_new_list">Новый список</string>
     <string name="default_tier_list_title">Список без названия</string>
     <string name="tier_lists_load_error">Не удалось загрузить списки.</string>

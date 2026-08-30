@@ -40,7 +40,7 @@
     </plurals>
     <string name="action_undo">元に戻す</string>
     <string name="home_empty_title">なんでもランク付け</string>
-    <string name="home_empty_body">映画、ゲーム、レストラン、アルバム、なんでも。ボードはこの端末に残ります。</string>
+    <string name="home_empty_body">映画、ゲーム、レストラン、アルバム、なんでも。</string>
     <string name="cd_new_list">新しいリスト</string>
     <string name="default_tier_list_title">無題のリスト</string>
     <string name="tier_lists_load_error">リストを読み込めませんでした。</string>

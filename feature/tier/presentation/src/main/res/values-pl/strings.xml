@@ -61,7 +61,7 @@
     </plurals>
     <string name="action_undo">Cofnij</string>
     <string name="home_empty_title">Oceniaj cokolwiek</string>
-    <string name="home_empty_body">Filmy, gry, restauracje, albumy — cokolwiek. Twoje tablice zostają na tym telefonie.</string>
+    <string name="home_empty_body">Filmy, gry, restauracje, albumy — cokolwiek.</string>
     <string name="cd_new_list">Nowa lista</string>
     <string name="default_tier_list_title">Lista bez tytułu</string>
     <string name="tier_lists_load_error">Nie udało się wczytać list.</string>

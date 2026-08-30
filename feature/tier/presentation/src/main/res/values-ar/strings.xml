@@ -75,7 +75,7 @@
     </plurals>
     <string name="action_undo">تراجع</string>
     <string name="home_empty_title">رتّب أي شيء</string>
-    <string name="home_empty_body">أفلام، ألعاب، مطاعم، ألبومات — أي شيء. لوحاتك تبقى على هذا الهاتف.</string>
+    <string name="home_empty_body">أفلام، ألعاب، مطاعم، ألبومات — أي شيء.</string>
     <string name="cd_new_list">قائمة جديدة</string>
     <string name="default_tier_list_title">قائمة بلا عنوان</string>
     <string name="tier_lists_load_error">تعذّر تحميل القوائم.</string>

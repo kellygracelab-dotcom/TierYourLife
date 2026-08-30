@@ -47,7 +47,7 @@
     </plurals>
     <string name="action_undo">Undo</string>
     <string name="home_empty_title">Rank anything</string>
-    <string name="home_empty_body">Films, games, restaurants, albums — anything at all. Your boards stay on this phone.</string>
+    <string name="home_empty_body">Films, games, restaurants, albums — anything at all.</string>
     <string name="cd_new_list">New list</string>
     <string name="default_tier_list_title">Untitled list</string>
     <string name="tier_lists_load_error">Couldn’t load your lists.</string>

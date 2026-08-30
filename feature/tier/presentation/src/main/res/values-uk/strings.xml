@@ -61,7 +61,7 @@
     </plurals>
     <string name="action_undo">Скасувати</string>
     <string name="home_empty_title">Оцінюй будь-що</string>
-    <string name="home_empty_body">Фільми, ігри, ресторани, альбоми — будь-що. Ваші дошки залишаються на телефоні.</string>
+    <string name="home_empty_body">Фільми, ігри, ресторани, альбоми — будь-що.</string>
     <string name="cd_new_list">Новий список</string>
     <string name="default_tier_list_title">Список без назви</string>
     <string name="tier_lists_load_error">Не вдалося завантажити списки.</string>
