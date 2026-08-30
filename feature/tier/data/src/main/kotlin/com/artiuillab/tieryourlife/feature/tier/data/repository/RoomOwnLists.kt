@@ -10,5 +10,7 @@ class RoomOwnLists @Inject constructor(
 
     override suspend fun publishedCount(): Int = dao.countPublishedLists()
 
+    override suspend fun boardCount(): Int = dao.countBoards()
+
     override suspend fun cardImages(limit: Int): List<String> = dao.cardImageUrls(limit)
 }

@@ -142,8 +142,19 @@ internal fun SignedInPanel(
             Text(stringResource(R.string.account_action_sign_out))
         }
         Spacer(Modifier.height(8.dp))
+        // Two sentences rather than one, and both of them changed the day
+        // boards started being kept: "your lists stay on this phone" was true
+        // when this was the only place they lived, and became a half-truth
+        // that read as a threat.
         Text(
-            text = stringResource(R.string.account_sign_out_body),
+            text = stringResource(R.string.account_sign_out_body_1),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(10.dp))
+        Text(
+            text = stringResource(R.string.account_sign_out_body_2),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

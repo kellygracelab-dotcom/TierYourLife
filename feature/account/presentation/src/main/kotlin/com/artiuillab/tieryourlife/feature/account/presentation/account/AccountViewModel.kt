@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.account.presentation.account
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
@@ -29,9 +30,12 @@ class AccountViewModel @Inject constructor(
     private val credits: GenerationCredits,
     private val ownLists: OwnLists,
     private val community: CommunityRepository,
+    private val preferences: AppPreferences,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AccountUiState(credits = credits.lastKnown()))
+    private val _state = MutableStateFlow(
+        AccountUiState(credits = credits.lastKnown(), backUpBoards = preferences.backUpBoards()),
+    )
     val state: StateFlow<AccountUiState> = _state.asStateFlow()
 
     init {
@@ -40,8 +44,19 @@ class AccountViewModel @Inject constructor(
                 _state.update { it.copy(account = account) }
                 refreshCredits()
                 refreshOwnLists()
+                _state.update { it.copy(boardCount = ownLists.boardCount()) }
             }
         }
+    }
+
+    /**
+     * Answered before signing in, so nothing has gone up yet and nothing has
+     * to be undone. Turning it off later is a different question with a
+     * different answer, and it is asked in Settings where the copy exists.
+     */
+    fun setBackUpBoards(backUp: Boolean) {
+        preferences.setBackUpBoards(backUp)
+        _state.update { it.copy(backUpBoards = backUp) }
     }
 
     fun signIn(context: Context) {

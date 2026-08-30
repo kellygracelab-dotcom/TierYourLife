@@ -5,6 +5,7 @@ internal object AccountTestTags {
     const val CLOSE = "account_close"
     const val SIGN_IN = "account_sign_in"
     const val NOT_NOW = "account_not_now"
+    const val BACK_UP_BOARDS = "account_back_up_boards"
     const val DONE = "account_done"
     const val SIGN_OUT = "account_sign_out"
     const val EMAIL = "account_email"

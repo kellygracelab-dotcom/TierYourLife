@@ -1,10 +1,16 @@
 <resources>
     <string name="account_signed_in">Signed in</string>
-    <string name="account_sign_in_title">Sign in</string>
+    <string name="account_sign_in_title">Keep your work</string>
     <string name="account_optional">An account is optional. The app works the same without one.</string>
-    <string name="account_reason_credits">Your generation credits survive reinstalling and a new phone.</string>
-    <string name="account_reason_purchases">Purchases come back on their own.</string>
-    <string name="account_reason_sync">Board sync, once it exists.</string>
+    <string name="account_reason_devices">Your boards follow you to a new phone.</string>
+    <string name="account_reason_purchases">Credits and purchases restore on any device.</string>
+    <string name="account_reason_publish">Publishing a list needs an account.</string>
+    <string name="account_backup_label">Back up my boards</string>
+    <string name="account_backup_sub">%1$s and their pictures. You can turn this off in Settings.</string>
+    <plurals name="account_board_count">
+        <item quantity="one">1 board</item>
+        <item quantity="other">%1$d boards</item>
+    </plurals>
     <string name="account_credits_note">Restored from your account</string>
     <string name="account_action_sign_in_google">Sign in with Google</string>
     <string name="account_action_not_now">Not now</string>
@@ -15,7 +21,8 @@
     <string name="account_notice_existing_account">This Google account already had credits of its own — those are what you have now.</string>
     <string name="account_cd_close">Close</string>
     <string name="account_action_sign_out">Sign out</string>
-    <string name="account_sign_out_body">Your lists stay on this phone. Your credits wait here for you.</string>
+    <string name="account_sign_out_body_1">Your boards stay on this phone and in your account. Changes you make after signing out will not sync.</string>
+    <string name="account_sign_out_body_2">Credits and purchases wait for you here.</string>
     <string name="account_community_section">IN COMMUNITY</string>
     <string name="account_community_note">This is how you appear on lists you publish. Your email is never shown.</string>
     <string name="account_nickname_title">Your name</string>

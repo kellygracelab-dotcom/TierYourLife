@@ -106,6 +106,9 @@ interface TierDao {
     @Query("SELECT COUNT(*) FROM tier_lists WHERE publishedId IS NOT NULL AND deletedAt IS NULL")
     suspend fun countPublishedLists(): Int
 
+    @Query("SELECT COUNT(*) FROM tier_lists WHERE deletedAt IS NULL")
+    suspend fun countBoards(): Int
+
     @Query(
         """
         SELECT DISTINCT i.imageUrl FROM tier_items i

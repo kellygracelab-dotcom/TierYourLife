@@ -1,10 +1,8 @@
 <resources>
     <string name="account_signed_in">Sesión iniciada</string>
-    <string name="account_sign_in_title">Iniciar sesión</string>
+    <string name="account_sign_in_title">Conserva tu trabajo</string>
     <string name="account_optional">La cuenta es opcional. La app funciona igual sin ella.</string>
-    <string name="account_reason_credits">Tus créditos de generación sobreviven a reinstalar y a cambiar de teléfono.</string>
-    <string name="account_reason_purchases">Las compras vuelven solas.</string>
-    <string name="account_reason_sync">Sincronización de tableros, cuando exista.</string>
+    <string name="account_reason_purchases">Los créditos y las compras se restauran en cualquier dispositivo.</string>
     <string name="account_credits_note">Restaurados desde tu cuenta</string>
     <string name="account_action_sign_in_google">Iniciar sesión con Google</string>
     <string name="account_action_not_now">Ahora no</string>
@@ -15,7 +13,6 @@
     <string name="account_notice_existing_account">Esta cuenta de Google ya tenía sus propios créditos: esos son los que tienes ahora.</string>
     <string name="account_cd_close">Cerrar</string>
     <string name="account_action_sign_out">Cerrar sesión</string>
-    <string name="account_sign_out_body">Tus listas se quedan en este teléfono. Tus créditos te esperan aquí.</string>
     <string name="account_community_section">EN LA COMUNIDAD</string>
     <string name="account_community_note">Así apareces en las listas que publicas. Tu correo nunca se muestra.</string>
     <string name="account_nickname_title">Tu nombre</string>
@@ -42,5 +39,15 @@
         <item quantity="one">%1$d generación</item>
         <item quantity="many">%1$d generaciones</item>
         <item quantity="other">%1$d generaciones</item>
+    </plurals>
+    <string name="account_reason_devices">Tus tableros te siguen a un teléfono nuevo.</string>
+    <string name="account_reason_publish">Publicar una lista requiere una cuenta.</string>
+    <string name="account_backup_label">Guardar copia de mis tableros</string>
+    <string name="account_backup_sub">%1$s y sus imágenes. Puedes desactivarlo en Ajustes.</string>
+    <string name="account_sign_out_body_1">Tus tableros siguen en este teléfono y en tu cuenta. Los cambios que hagas tras cerrar sesión no se sincronizarán.</string>
+    <string name="account_sign_out_body_2">Los créditos y las compras te esperan aquí.</string>
+    <plurals name="account_board_count">
+        <item quantity="one">1 tablero</item>
+        <item quantity="other">%1$d tableros</item>
     </plurals>
 </resources>

@@ -67,6 +67,7 @@ fun AccountScreen(
         onSetName = viewModel::setDisplayName,
         onSetPhoto = viewModel::setPhoto,
         onNoticeShown = viewModel::dismissNotice,
+        onBackUpBoardsChange = viewModel::setBackUpBoards,
     )
 }
 
@@ -81,6 +82,7 @@ internal fun AccountScreenContent(
     onSetPhoto: (String?) -> Unit = {},
     onNoticeShown: () -> Unit = {},
     onOpenPublished: () -> Unit = {},
+    onBackUpBoardsChange: (Boolean) -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var nicknameDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -116,6 +118,9 @@ internal fun AccountScreenContent(
 
                     Account.Guest -> SignInPitch(
                         signingIn = state.signingIn,
+                        boardCount = state.boardCount,
+                        backUpBoards = state.backUpBoards,
+                        onBackUpBoardsChange = onBackUpBoardsChange,
                         onSignIn = onSignIn,
                         onNotNow = onClose,
                     )

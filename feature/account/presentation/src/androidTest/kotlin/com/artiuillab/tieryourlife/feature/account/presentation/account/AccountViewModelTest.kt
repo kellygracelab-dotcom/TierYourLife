@@ -3,6 +3,9 @@ package com.artiuillab.tieryourlife.feature.account.presentation.account
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.HiddenEntry
+import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
@@ -161,7 +164,7 @@ class AccountViewModelTest {
         credential: GoogleCredential = FakeGoogleCredential(GoogleCredentialResult.Cancelled),
         credits: GenerationCredits = FakeGenerationCredits(),
         publishedLists: OwnLists = FakeOwnLists(),
-    ) = AccountViewModel(repository, credential, credits, publishedLists, FakeCommunityForAccount())
+    ) = AccountViewModel(repository, credential, credits, publishedLists, FakeCommunityForAccount(), FakeAppPreferences())
 }
 
 private class FakeCommunityForAccount : CommunityRepository {
@@ -195,8 +198,10 @@ private class FakeCommunityForAccount : CommunityRepository {
     ): Result<Unit> = Result.success(Unit)
 }
 
-private class FakeOwnLists(private val published: Int = 0) : OwnLists {
+private class FakeOwnLists(private val published: Int = 0, private val boards: Int = 0) : OwnLists {
     override suspend fun publishedCount(): Int = published
+
+    override suspend fun boardCount(): Int = boards
 
     override suspend fun cardImages(limit: Int): List<String> = emptyList()
 }
@@ -247,5 +252,32 @@ private class FakeGenerationCredits(private val balance: Int? = null) : Generati
     override suspend fun remaining(): Int? {
         reads++
         return balance
+    }
+}
+
+private class FakeAppPreferences : AppPreferences {
+    private var backUp = true
+
+    override fun themeChoice(): ThemeChoice = ThemeChoice.SYSTEM
+    override fun setThemeChoice(choice: ThemeChoice) = Unit
+    override fun languageTag(): String? = null
+    override fun setLanguageTag(tag: String?) = Unit
+    override fun lastKnownCredits(): Int? = null
+    override fun setLastKnownCredits(credits: Int?) = Unit
+    override fun hiddenListIds(): Set<String> = emptySet()
+    override fun hiddenLists(): List<HiddenEntry> = emptyList()
+    override fun hideList(publishedId: String, title: String) = Unit
+    override fun unhideList(publishedId: String) = Unit
+    override fun hiddenAuthorUids(): Set<String> = emptySet()
+    override fun hiddenAuthors(): List<HiddenEntry> = emptyList()
+    override fun hideAuthor(authorUid: String, name: String) = Unit
+    override fun unhideAuthor(authorUid: String) = Unit
+    override fun signInOfferAnswered(): Boolean = false
+    override fun markSignInOfferAnswered() = Unit
+
+    override fun backUpBoards(): Boolean = backUp
+
+    override fun setBackUpBoards(backUp: Boolean) {
+        this.backUp = backUp
     }
 }

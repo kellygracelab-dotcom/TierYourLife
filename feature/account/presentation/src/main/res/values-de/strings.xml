@@ -1,10 +1,8 @@
 <resources>
     <string name="account_signed_in">Angemeldet</string>
-    <string name="account_sign_in_title">Anmelden</string>
+    <string name="account_sign_in_title">Deine Arbeit bewahren</string>
     <string name="account_optional">Ein Konto ist optional. Die App funktioniert genauso ohne.</string>
-    <string name="account_reason_credits">Dein Guthaben übersteht eine Neuinstallation und ein neues Telefon.</string>
-    <string name="account_reason_purchases">Käufe kommen von selbst zurück.</string>
-    <string name="account_reason_sync">Board-Sync, sobald es ihn gibt.</string>
+    <string name="account_reason_purchases">Credits und Käufe kehren auf jedem Gerät zurück.</string>
     <string name="account_credits_note">Aus deinem Konto wiederhergestellt</string>
     <string name="account_action_sign_in_google">Mit Google anmelden</string>
     <string name="account_action_not_now">Jetzt nicht</string>
@@ -15,7 +13,6 @@
     <string name="account_notice_existing_account">Dieses Google-Konto hatte bereits eigenes Guthaben — das hast du jetzt.</string>
     <string name="account_cd_close">Schließen</string>
     <string name="account_action_sign_out">Abmelden</string>
-    <string name="account_sign_out_body">Deine Listen bleiben auf diesem Telefon. Dein Guthaben wartet hier.</string>
     <string name="account_community_section">IN DER COMMUNITY</string>
     <string name="account_community_note">So erscheinst du auf Listen, die du veröffentlichst. Deine E-Mail wird nie gezeigt.</string>
     <string name="account_nickname_title">Dein Name</string>
@@ -40,5 +37,15 @@
     <plurals name="account_credits">
         <item quantity="one">%1$d Generierung</item>
         <item quantity="other">%1$d Generierungen</item>
+    </plurals>
+    <string name="account_reason_devices">Deine Boards kommen mit auf ein neues Telefon.</string>
+    <string name="account_reason_publish">Zum Veröffentlichen einer Liste braucht es ein Konto.</string>
+    <string name="account_backup_label">Meine Boards sichern</string>
+    <string name="account_backup_sub">%1$s und ihre Bilder. Du kannst das in den Einstellungen abschalten.</string>
+    <string name="account_sign_out_body_1">Deine Boards bleiben auf diesem Telefon und in deinem Konto. Änderungen nach dem Abmelden werden nicht mehr übertragen.</string>
+    <string name="account_sign_out_body_2">Credits und Käufe warten hier auf dich.</string>
+    <plurals name="account_board_count">
+        <item quantity="one">1 Board</item>
+        <item quantity="other">%1$d Boards</item>
     </plurals>
 </resources>

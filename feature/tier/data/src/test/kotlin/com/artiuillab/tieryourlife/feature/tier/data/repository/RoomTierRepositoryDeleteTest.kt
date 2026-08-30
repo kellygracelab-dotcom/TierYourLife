@@ -54,6 +54,8 @@ private class RecordingTierDao : TierDao {
 
     override suspend fun countPublishedLists(): Int = 0
 
+    override suspend fun countBoards(): Int = 0
+
     override suspend fun cardImageUrls(limit: Int): List<String> = emptyList()
 
     override suspend fun setPublishedId(id: Long, publishedId: String?) = Unit

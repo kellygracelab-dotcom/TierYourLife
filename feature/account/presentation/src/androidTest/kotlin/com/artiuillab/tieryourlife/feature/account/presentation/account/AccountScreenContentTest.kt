@@ -5,13 +5,16 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.account.presentation.R
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -28,10 +31,51 @@ class AccountScreenContentTest {
     private var signOuts = 0
     private val names = mutableListOf<String>()
 
+    private val backUpChanges = mutableListOf<Boolean>()
+
+    @Test
+    fun theOfferSaysWhatItWouldBeKeeping() {
+        setContent(AccountUiState(account = Account.Guest, boardCount = 3))
+
+        composeRule.onNodeWithTag(AccountTestTags.BACK_UP_BOARDS).assertIsDisplayed()
+        composeRule.onNodeWithText(
+            string(
+                R.string.account_backup_sub,
+                plural(R.plurals.account_board_count, 3),
+            ),
+        ).assertIsDisplayed()
+    }
+
+    // Answered here, before anything has gone up. Turning it off later is a
+    // different question, because by then there is a copy to delete.
+    @Test
+    fun turningTheOfferOff_reachesTheCaller() {
+        setContent(AccountUiState(account = Account.Guest, backUpBoards = true))
+
+        composeRule.onNodeWithTag(AccountTestTags.BACK_UP_BOARDS).performClick()
+
+        composeRule.runOnIdle { assertEquals(listOf(false), backUpChanges) }
+    }
+
+    @Test
+    fun signedIn_neverSeesTheOffer() {
+        setContent(AccountUiState(account = Account.SignedIn("someone@example.com", null)))
+
+        composeRule.onNodeWithTag(AccountTestTags.BACK_UP_BOARDS).assertDoesNotExist()
+    }
+
+    private fun string(resourceId: Int, vararg formatArgs: Any): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(resourceId, *formatArgs)
+
+    private fun plural(resourceId: Int, count: Int): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.resources
+            .getQuantityString(resourceId, count, count)
+
     private fun setContent(state: AccountUiState) {
         closed = 0
         signInRequests = 0
         signOuts = 0
+        backUpChanges.clear()
         names.clear()
         composeRule.setContent {
             TierYourLifeTheme {
@@ -41,6 +85,7 @@ class AccountScreenContentTest {
                     onSignIn = { signInRequests++ },
                     onSignOut = { signOuts++ },
                     onSetName = { names += it },
+                    onBackUpBoardsChange = { backUpChanges += it },
                 )
             }
         }

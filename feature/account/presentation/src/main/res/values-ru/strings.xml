@@ -1,10 +1,8 @@
 <resources>
     <string name="account_signed_in">Вход выполнен</string>
-    <string name="account_sign_in_title">Вход</string>
+    <string name="account_sign_in_title">Сохраните свою работу</string>
     <string name="account_optional">Аккаунт необязателен. Без него приложение работает так же.</string>
-    <string name="account_reason_credits">Кредиты на генерацию переживут переустановку и новый телефон.</string>
-    <string name="account_reason_purchases">Покупки восстановятся сами.</string>
-    <string name="account_reason_sync">Синхронизация досок, когда появится.</string>
+    <string name="account_reason_purchases">Кредиты и покупки вернутся на любом устройстве.</string>
     <string name="account_credits_note">Восстановлено из вашего аккаунта</string>
     <string name="account_action_sign_in_google">Войти через Google</string>
     <string name="account_action_not_now">Не сейчас</string>
@@ -15,7 +13,6 @@
     <string name="account_notice_existing_account">У этого аккаунта Google уже были свои кредиты — теперь у вас именно они.</string>
     <string name="account_cd_close">Закрыть</string>
     <string name="account_action_sign_out">Выйти</string>
-    <string name="account_sign_out_body">Ваши списки останутся на телефоне. Кредиты будут ждать здесь.</string>
     <string name="account_community_section">В СООБЩЕСТВЕ</string>
     <string name="account_community_note">Так вас видят в опубликованных списках. Почта не показывается никогда.</string>
     <string name="account_nickname_title">Ваше имя</string>
@@ -44,5 +41,17 @@
         <item quantity="few">%1$d генерации</item>
         <item quantity="many">%1$d генераций</item>
         <item quantity="other">%1$d генерации</item>
+    </plurals>
+    <string name="account_reason_devices">Доски переедут за вами на новый телефон.</string>
+    <string name="account_reason_publish">Для публикации списка нужен аккаунт.</string>
+    <string name="account_backup_label">Хранить копию досок</string>
+    <string name="account_backup_sub">%1$s и их картинки. Отключить можно в настройках.</string>
+    <string name="account_sign_out_body_1">Доски останутся и на телефоне, и в аккаунте. Правки после выхода туда не попадут.</string>
+    <string name="account_sign_out_body_2">Кредиты и покупки дождутся вас здесь.</string>
+    <plurals name="account_board_count">
+        <item quantity="one">%1$d доска</item>
+        <item quantity="few">%1$d доски</item>
+        <item quantity="many">%1$d досок</item>
+        <item quantity="other">%1$d доски</item>
     </plurals>
 </resources>
