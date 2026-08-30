@@ -64,4 +64,6 @@
     <string name="merge_recommended">Рекомендовано</string>
     <string name="merge_action_continue">Продовжити</string>
     <string name="merge_name_suffix">(з цього телефона)</string>
+    <string name="account_sign_out_title">Вийти?</string>
+    <string name="account_sign_out_helper">Дошки залишаться і на телефоні, і в обліковому записі. Зміни після виходу туди не потраплять. Кредити та покупки чекатимуть на вас тут.</string>
 </resources>

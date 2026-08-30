@@ -60,4 +60,6 @@
     <string name="merge_recommended">Recomendado</string>
     <string name="merge_action_continue">Continuar</string>
     <string name="merge_name_suffix">(de este teléfono)</string>
+    <string name="account_sign_out_title">¿Cerrar sesión?</string>
+    <string name="account_sign_out_helper">Tus tableros siguen en este teléfono y en tu cuenta. Los cambios que hagas tras cerrar sesión no se sincronizarán. Los créditos y las compras te esperan aquí.</string>
 </resources>

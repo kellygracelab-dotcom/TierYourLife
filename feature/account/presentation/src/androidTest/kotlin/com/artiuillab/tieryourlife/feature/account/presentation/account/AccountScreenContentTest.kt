@@ -170,16 +170,41 @@ class AccountScreenContentTest {
         composeRule.onNodeWithTag(AccountTestTags.EMAIL).assertIsDisplayed()
     }
 
+    // Confirmed now, and only because the boards are kept somewhere: before
+    // that, signing out changed nothing about anybody's data.
     @Test
-    fun signedIn_offersSignOut_andActsWithoutConfirmation() {
+    fun signedIn_asksBeforeSigningOut() {
         setContent(signedIn())
 
         composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT).performScrollTo().performClick()
+
+        composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT_DIALOG).assertIsDisplayed()
+        composeRule.runOnIdle { assertEquals(0, signOuts) }
+    }
+
+    @Test
+    fun confirmingTheQuestion_signsOut() {
+        setContent(signedIn())
+
+        composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT).performScrollTo().performClick()
+        composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT_CONFIRM).performClick()
 
         composeRule.runOnIdle {
             assertEquals(1, signOuts)
             assertEquals(0, closed)
         }
+    }
+
+    // Both fears the dialog answers, in the order somebody has them: the work
+    // first, what they paid for second.
+    @Test
+    fun theQuestion_answersBothFears() {
+        setContent(signedIn())
+
+        composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT).performScrollTo().performClick()
+
+        composeRule.onNodeWithText(string(R.string.account_sign_out_body_1)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.account_sign_out_body_2)).assertIsDisplayed()
     }
 
     @Test

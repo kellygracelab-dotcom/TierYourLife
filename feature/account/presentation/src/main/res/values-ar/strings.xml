@@ -70,4 +70,6 @@
     <string name="merge_recommended">موصى به</string>
     <string name="merge_action_continue">متابعة</string>
     <string name="merge_name_suffix">(من هذا الهاتف)</string>
+    <string name="account_sign_out_title">تسجيل الخروج؟</string>
+    <string name="account_sign_out_helper">تبقى لوحاتك على هذا الهاتف وفي حسابك. التغييرات بعد تسجيل الخروج لن تُزامن. الأرصدة والمشتريات تنتظرك هنا.</string>
 </resources>

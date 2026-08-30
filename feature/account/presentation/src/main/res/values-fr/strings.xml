@@ -60,4 +60,6 @@
     <string name="merge_recommended">Recommandé</string>
     <string name="merge_action_continue">Continuer</string>
     <string name="merge_name_suffix">(de ce téléphone)</string>
+    <string name="account_sign_out_title">Se déconnecter ?</string>
+    <string name="account_sign_out_helper">Vos tableaux restent sur ce téléphone et dans votre compte. Les modifications faites après la déconnexion ne seront pas synchronisées. Les crédits et les achats vous attendent ici.</string>
 </resources>

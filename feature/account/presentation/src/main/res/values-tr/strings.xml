@@ -58,4 +58,6 @@
     <string name="merge_recommended">Önerilen</string>
     <string name="merge_action_continue">Devam</string>
     <string name="merge_name_suffix">(bu telefondan)</string>
+    <string name="account_sign_out_title">Çıkış yapılsın mı?</string>
+    <string name="account_sign_out_helper">Panoların hem bu telefonda hem hesabında kalır. Çıkış yaptıktan sonraki değişiklikler eşitlenmez. Krediler ve satın almalar burada seni bekler.</string>
 </resources>

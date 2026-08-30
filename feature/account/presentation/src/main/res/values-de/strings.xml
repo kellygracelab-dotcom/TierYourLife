@@ -58,4 +58,6 @@
     <string name="merge_recommended">Empfohlen</string>
     <string name="merge_action_continue">Weiter</string>
     <string name="merge_name_suffix">(von diesem Telefon)</string>
+    <string name="account_sign_out_title">Abmelden?</string>
+    <string name="account_sign_out_helper">Deine Boards bleiben auf diesem Telefon und in deinem Konto. Änderungen nach dem Abmelden werden nicht mehr übertragen. Credits und Käufe warten hier auf dich.</string>
 </resources>

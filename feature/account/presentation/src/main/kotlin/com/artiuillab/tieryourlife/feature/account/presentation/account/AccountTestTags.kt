@@ -12,6 +12,8 @@ internal object AccountTestTags {
     const val MERGE_CONTINUE = "account_merge_continue"
     const val DONE = "account_done"
     const val SIGN_OUT = "account_sign_out"
+    const val SIGN_OUT_DIALOG = "account_sign_out_dialog"
+    const val SIGN_OUT_CONFIRM = "account_sign_out_confirm"
     const val EMAIL = "account_email"
     const val NAME = "account_name"
     const val EDIT_NAME = "account_edit_name"

@@ -64,4 +64,6 @@
     <string name="merge_recommended">Zalecane</string>
     <string name="merge_action_continue">Dalej</string>
     <string name="merge_name_suffix">(z tego telefonu)</string>
+    <string name="account_sign_out_title">Wylogować?</string>
+    <string name="account_sign_out_helper">Tablice zostają i na tym telefonie, i na koncie. Zmiany po wylogowaniu nie trafią na konto. Kredyty i zakupy czekają tu na ciebie.</string>
 </resources>

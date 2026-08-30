@@ -60,4 +60,6 @@
     <string name="merge_recommended">Recomendado</string>
     <string name="merge_action_continue">Continuar</string>
     <string name="merge_name_suffix">(deste telefone)</string>
+    <string name="account_sign_out_title">Sair?</string>
+    <string name="account_sign_out_helper">Seus quadros ficam neste telefone e na sua conta. Mudanças feitas depois de sair não serão sincronizadas. Créditos e compras esperam por você aqui.</string>
 </resources>
