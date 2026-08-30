@@ -428,4 +428,14 @@
     <string name="local_only_card_sign_in">Se connecter</string>
     <string name="restoring_one_picture">Restauration de l’image</string>
     <string name="restoring_pictures">Restauration des images · %1$d sur %2$d</string>
+    <string name="settings_backup_label">Sauvegarder mes tableaux</string>
+    <string name="settings_backup_sub">Niveaux, cartes et légendes</string>
+    <string name="settings_backup_pictures_label">Images en Wi-Fi seulement</string>
+    <string name="settings_backup_pictures_sub">%1$s dans votre compte</string>
+    <string name="settings_backup_note">Vos photos et cartes générées vont dans votre compte, et vous seul les voyez. Les listes publiées n’affichent toujours que des images de catalogue.</string>
+    <string name="settings_backup_stuck">Pas de sauvegarde depuis %1$s. Vérifiez votre connexion.</string>
+    <string name="settings_backup_off_title">Arrêter la sauvegarde ?</string>
+    <string name="settings_backup_off_body">Vos tableaux restent sur ce téléphone. La copie dans votre compte est supprimée, et un nouveau téléphone démarrera vide.</string>
+    <string name="settings_backup_off_confirm">Arrêter et supprimer</string>
+    <string name="settings_backup_off_cancel">Annuler</string>
 </resources>

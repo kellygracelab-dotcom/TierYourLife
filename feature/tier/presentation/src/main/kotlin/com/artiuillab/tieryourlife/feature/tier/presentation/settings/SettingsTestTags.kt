@@ -14,5 +14,11 @@ internal object SettingsTestTags {
     const val HIDDEN_ROW = "settings_hidden_row"
     const val MODERATION_ROW = "settings_moderation_row"
     const val EXPORT_ROW = "settings_export_row"
+    const val BACKUP_ROW = "settings_backup_row"
+    const val BACKUP_SWITCH = "settings_backup_switch"
+    const val BACKUP_PICTURES_SWITCH = "settings_backup_pictures_switch"
+    const val BACKUP_STUCK = "settings_backup_stuck"
+    const val BACKUP_OFF_DIALOG = "settings_backup_off_dialog"
+    const val BACKUP_OFF_CONFIRM = "settings_backup_off_confirm"
     fun languageOption(tag: String?) = "settings_language_option_${tag ?: "default"}"
 }

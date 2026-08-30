@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Read only, and for one decision: whether the connection is somebody's
+        data allowance. Pictures wait for Wi-Fi by default; the boards
+        themselves are text and go regardless. Declared here as well as in the
+        app so this module is honest about what it needs on its own.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>

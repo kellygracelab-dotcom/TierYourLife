@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.settings
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.text.format.DateUtils
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -27,8 +28,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -50,15 +54,18 @@ import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.tier.domain.export.TierListsExportStrings
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupSettings
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.FileDownloadIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.FlagIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.HideIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.AccountRow
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.BackupSection
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.LanguageRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.SettingsGroup
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.SettingsGroupDivider
+import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.StopBackingUpDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.ThemeSection
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ChevronRightIcon
@@ -91,6 +98,9 @@ fun SettingsScreen(
     OnResumeEffect(onResume = viewModel::loadCredits)
     OnResumeEffect(onResume = viewModel::loadTrashCount)
     OnResumeEffect(onResume = viewModel::loadPendingReports)
+    OnResumeEffect(onResume = viewModel::loadBackupSettings)
+    val backupSettings by viewModel.backupSettings.collectAsStateWithLifecycle()
+    var stoppingBackup by rememberSaveable { mutableStateOf(false) }
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -141,8 +151,37 @@ fun SettingsScreen(
         onHiddenClick = onHiddenClick,
         onModerationClick = onModerationClick,
         onExportClick = { createDocumentLauncher.launch(defaultExportFileName(context)) },
+        backupSettings = backupSettings,
+        onBackUpChange = { on ->
+            if (on) viewModel.startBackingUp() else stoppingBackup = true
+        },
+        onPicturesOnWifiOnlyChange = viewModel::setPicturesOnWifiOnly,
         snackbarHostState = snackbarHostState,
     )
+
+    if (stoppingBackup) {
+        StopBackingUpDialog(
+            onConfirm = {
+                stoppingBackup = false
+                viewModel.stopBackingUp()
+            },
+            onDismiss = { stoppingBackup = false },
+        )
+    }
+}
+
+/**
+ * When the account was last known to be up to date, said in words, and only
+ * when it is long enough ago to be worth saying at all.
+ */
+@Composable
+private fun stuckSince(settings: BackupSettings): String? {
+    val since = settings.stuckSince(System.currentTimeMillis()) ?: return null
+    return DateUtils.getRelativeTimeSpanString(
+        since,
+        System.currentTimeMillis(),
+        DateUtils.MINUTE_IN_MILLIS,
+    ).toString()
 }
 
 private suspend fun attemptWriteExport(
@@ -233,6 +272,9 @@ internal fun SettingsScreenContent(
     onHiddenClick: () -> Unit,
     onModerationClick: () -> Unit,
     onExportClick: () -> Unit,
+    backupSettings: BackupSettings? = null,
+    onBackUpChange: (Boolean) -> Unit = {},
+    onPicturesOnWifiOnlyChange: (Boolean) -> Unit = {},
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
@@ -249,6 +291,17 @@ internal fun SettingsScreenContent(
                         outlined = account is Account.Guest,
                     ) {
                         AccountRow(account = account, credits = credits, onClick = onAccountClick)
+                        // Under the account because that is what it is about:
+                        // no account, no copy, nothing to switch.
+                        if (backupSettings != null) {
+                            SettingsGroupDivider()
+                            BackupSection(
+                                settings = backupSettings,
+                                stuckSince = stuckSince(backupSettings),
+                                onBackUpChange = onBackUpChange,
+                                onPicturesOnWifiOnlyChange = onPicturesOnWifiOnlyChange,
+                            )
+                        }
                     }
                     SettingsGroup(title = stringResource(R.string.settings_group_appearance)) {
                         ThemeSection(themeChoice = themeChoice, onThemeChoiceChange = onThemeChoiceChange)

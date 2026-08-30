@@ -47,6 +47,8 @@ class TierImageStore internal constructor(
 
     fun holds(pictureId: String): Boolean = File(directory, pictureId).length() > 0
 
+    fun sizeOf(pictureId: String): Long = File(directory, pictureId).length()
+
     fun read(pictureId: String): ByteArray? =
         File(directory, pictureId).takeIf { it.length() > 0 }?.readBytes()
 

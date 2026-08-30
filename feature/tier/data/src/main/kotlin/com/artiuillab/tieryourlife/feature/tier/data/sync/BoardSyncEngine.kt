@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
 import android.os.Build
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
@@ -51,10 +52,11 @@ class BoardSyncEngine @Inject constructor(
     private val json: Json,
     private val images: TierImageStore,
     private val pictures: PictureSync,
+    private val preferences: AppPreferences,
 ) : BoardSync {
 
     override suspend fun sync(): SyncReport {
-        if (accounts.account.first() !is Account.SignedIn) {
+        if (accounts.account.first() !is Account.SignedIn || !preferences.backUpBoards()) {
             return SyncReport(signedIn = false)
         }
 
@@ -85,6 +87,13 @@ class BoardSyncEngine @Inject constructor(
         }
         runCatching { pictures.pull(wantedPictures()) }
             .onFailure { failure -> Timber.w(failure, "Pictures did not come down") }
+
+        // Only when the whole run got through. A partial run leaves the
+        // account behind on something, and the one line this timestamp feeds
+        // exists to say exactly that.
+        if (refused == 0) {
+            preferences.setLastSyncedAtMs(System.currentTimeMillis())
+        }
 
         return SyncReport(signedIn = true, carried = carried, refused = refused)
     }

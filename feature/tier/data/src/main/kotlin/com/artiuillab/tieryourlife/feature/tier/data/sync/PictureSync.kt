@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.PictureSyncEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
@@ -25,6 +26,8 @@ class PictureSync @Inject constructor(
     private val dao: BoardSyncDao,
     private val images: TierImageStore,
     private val vault: Pictures,
+    private val preferences: AppPreferences,
+    private val connection: Connection,
 ) : PictureRestore {
 
     private val _restoring = MutableStateFlow(PictureRestore.Progress.Idle)
@@ -38,6 +41,13 @@ class PictureSync @Inject constructor(
      * outcome this whole thing exists to prevent.
      */
     suspend fun push() {
+        // Pictures are the part of a board that costs somebody their data
+        // allowance. The boards themselves are text and go regardless, so
+        // waiting here never delays the thing that matters most.
+        if (preferences.picturesOnWifiOnly() && !connection.unmetered()) {
+            Timber.d("Pictures are waiting for Wi-Fi")
+            return
+        }
         val sent = dao.sentPictureIds().toSet()
         val here = dao.allImageUrls().mapNotNull(images::pictureIdOf).distinct()
 
@@ -60,6 +70,10 @@ class PictureSync @Inject constructor(
      * always looked like -- not an error, just not finished.
      */
     suspend fun pull(wanted: Map<String, String>) {
+        if (preferences.picturesOnWifiOnly() && !connection.unmetered()) {
+            _restoring.value = PictureRestore.Progress.Idle
+            return
+        }
         val missing = wanted.filterValues { pictureId -> !images.holds(pictureId) }
         if (missing.isEmpty()) {
             _restoring.value = PictureRestore.Progress.Idle

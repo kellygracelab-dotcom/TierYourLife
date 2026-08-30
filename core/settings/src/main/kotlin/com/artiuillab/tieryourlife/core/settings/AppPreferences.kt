@@ -61,4 +61,18 @@ interface AppPreferences {
     fun signInOfferAnswered(): Boolean
 
     fun markSignInOfferAnswered()
+
+    /**
+     * Pictures are the part of a board that costs somebody their data
+     * allowance, so they wait for Wi-Fi by default. The boards themselves are
+     * text and go whenever.
+     */
+    fun picturesOnWifiOnly(): Boolean
+
+    fun setPicturesOnWifiOnly(wifiOnly: Boolean)
+
+    /** When a sync run last got through, or null while none ever has. */
+    fun lastSyncedAtMs(): Long?
+
+    fun setLastSyncedAtMs(atMs: Long?)
 }

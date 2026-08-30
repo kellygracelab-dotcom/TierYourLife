@@ -14,6 +14,8 @@ private const val KEY_HIDDEN_LISTS = "hidden_list_ids"
 private const val KEY_HIDDEN_AUTHORS = "hidden_author_uids"
 private const val KEY_BACK_UP_BOARDS = "back_up_boards"
 private const val KEY_SIGN_IN_OFFER_ANSWERED = "sign_in_offer_answered"
+private const val KEY_PICTURES_ON_WIFI_ONLY = "pictures_on_wifi_only"
+private const val KEY_LAST_SYNCED_AT = "last_synced_at"
 
 @Singleton
 class SharedPreferencesAppPreferences @Inject constructor(
@@ -56,6 +58,20 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun markSignInOfferAnswered() {
         prefs.edit { putBoolean(KEY_SIGN_IN_OFFER_ANSWERED, true) }
+    }
+
+    override fun picturesOnWifiOnly(): Boolean = prefs.getBoolean(KEY_PICTURES_ON_WIFI_ONLY, true)
+
+    override fun setPicturesOnWifiOnly(wifiOnly: Boolean) {
+        prefs.edit { putBoolean(KEY_PICTURES_ON_WIFI_ONLY, wifiOnly) }
+    }
+
+    override fun lastSyncedAtMs(): Long? = prefs.getLong(KEY_LAST_SYNCED_AT, 0L).takeIf { it > 0L }
+
+    override fun setLastSyncedAtMs(atMs: Long?) {
+        prefs.edit {
+            if (atMs == null) remove(KEY_LAST_SYNCED_AT) else putLong(KEY_LAST_SYNCED_AT, atMs)
+        }
     }
 
     override fun hiddenListIds(): Set<String> = idsIn(KEY_HIDDEN_LISTS)

@@ -519,4 +519,14 @@
     <string name="local_only_card_sign_in">تسجيل الدخول</string>
     <string name="restoring_one_picture">جارٍ استعادة الصورة</string>
     <string name="restoring_pictures">جارٍ استعادة الصور · %1$d من %2$d</string>
+    <string name="settings_backup_label">احتفظ بنسخة من لوحاتي</string>
+    <string name="settings_backup_sub">المستويات والبطاقات والملاحظات</string>
+    <string name="settings_backup_pictures_label">الصور عبر Wi-Fi فقط</string>
+    <string name="settings_backup_pictures_sub">%1$s في حسابك</string>
+    <string name="settings_backup_note">صورك والبطاقات المولّدة تذهب إلى حسابك، ولا يراها أحد سواك. القوائم المنشورة لا تزال تعرض صور الفهارس فقط.</string>
+    <string name="settings_backup_stuck">لا توجد نسخة منذ %1$s. تحقق من اتصالك.</string>
+    <string name="settings_backup_off_title">إيقاف النسخ الاحتياطي؟</string>
+    <string name="settings_backup_off_body">تبقى لوحاتك على هذا الهاتف. تُحذف النسخة في حسابك، وسيبدأ الهاتف الجديد فارغًا.</string>
+    <string name="settings_backup_off_confirm">إيقاف وحذف</string>
+    <string name="settings_backup_off_cancel">إلغاء</string>
 </resources>

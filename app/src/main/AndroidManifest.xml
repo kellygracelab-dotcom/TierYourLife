@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--
+        Read only, and for one decision: whether the connection is somebody's
+        data allowance. Pictures wait for Wi-Fi by default; the boards
+        themselves are text and go regardless.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".TierYourLifeApplication"

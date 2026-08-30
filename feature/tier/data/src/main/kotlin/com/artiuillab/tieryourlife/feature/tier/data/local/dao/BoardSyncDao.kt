@@ -35,6 +35,9 @@ interface BoardSyncDao {
     @Query("DELETE FROM board_sync WHERE listUid = :listUid")
     suspend fun forget(listUid: String)
 
+    @Query("DELETE FROM picture_sync")
+    suspend fun forgetEveryPicture()
+
     @Query("SELECT pictureId FROM picture_sync")
     suspend fun sentPictureIds(): List<String>
 

@@ -399,4 +399,14 @@
     <string name="local_only_card_sign_in">Anmelden</string>
     <string name="restoring_one_picture">Bild wird wiederhergestellt</string>
     <string name="restoring_pictures">Bilder werden wiederhergestellt · %1$d von %2$d</string>
+    <string name="settings_backup_label">Meine Boards sichern</string>
+    <string name="settings_backup_sub">Stufen, Karten und Beschriftungen</string>
+    <string name="settings_backup_pictures_label">Bilder nur über WLAN</string>
+    <string name="settings_backup_pictures_sub">%1$s in deinem Konto</string>
+    <string name="settings_backup_note">Deine Fotos und generierten Karten gehen in dein Konto, und nur du siehst sie. Veröffentlichte Listen zeigen weiterhin ausschließlich Katalogbilder.</string>
+    <string name="settings_backup_stuck">Seit %1$s nicht gesichert. Prüfe deine Verbindung.</string>
+    <string name="settings_backup_off_title">Sicherung beenden?</string>
+    <string name="settings_backup_off_body">Deine Boards bleiben auf diesem Telefon. Die Kopie in deinem Konto wird gelöscht, und ein neues Telefon fängt leer an.</string>
+    <string name="settings_backup_off_confirm">Beenden und löschen</string>
+    <string name="settings_backup_off_cancel">Abbrechen</string>
 </resources>

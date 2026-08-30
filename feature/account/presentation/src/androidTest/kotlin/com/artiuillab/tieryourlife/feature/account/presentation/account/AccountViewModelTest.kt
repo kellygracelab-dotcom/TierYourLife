@@ -280,4 +280,12 @@ private class FakeAppPreferences : AppPreferences {
     override fun setBackUpBoards(backUp: Boolean) {
         this.backUp = backUp
     }
+
+    override fun picturesOnWifiOnly(): Boolean = true
+
+    override fun setPicturesOnWifiOnly(wifiOnly: Boolean) = Unit
+
+    override fun lastSyncedAtMs(): Long? = null
+
+    override fun setLastSyncedAtMs(atMs: Long?) = Unit
 }

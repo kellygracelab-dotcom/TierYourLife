@@ -459,4 +459,14 @@
     <string name="local_only_card_sign_in">Войти</string>
     <string name="restoring_one_picture">Восстанавливаем картинку</string>
     <string name="restoring_pictures">Восстанавливаем картинки · %1$d из %2$d</string>
+    <string name="settings_backup_label">Хранить копию досок</string>
+    <string name="settings_backup_sub">Тиры, карточки и подписи</string>
+    <string name="settings_backup_pictures_label">Картинки только по Wi-Fi</string>
+    <string name="settings_backup_pictures_sub">%1$s в вашем аккаунте</string>
+    <string name="settings_backup_note">Ваши фото и сгенерированные карточки уезжают в ваш аккаунт, и видите их только вы. В опубликованных списках остаются только картинки из каталогов.</string>
+    <string name="settings_backup_stuck">Нет копии с %1$s. Проверьте подключение.</string>
+    <string name="settings_backup_off_title">Перестать хранить копию?</string>
+    <string name="settings_backup_off_body">Доски останутся на этом телефоне. Копия в аккаунте будет удалена, и новый телефон начнёт с пустого.</string>
+    <string name="settings_backup_off_confirm">Удалить копию</string>
+    <string name="settings_backup_off_cancel">Отмена</string>
 </resources>

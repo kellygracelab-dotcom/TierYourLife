@@ -428,4 +428,14 @@
     <string name="local_only_card_sign_in">Entrar</string>
     <string name="restoring_one_picture">Restaurando a imagem</string>
     <string name="restoring_pictures">Restaurando imagens · %1$d de %2$d</string>
+    <string name="settings_backup_label">Guardar meus quadros</string>
+    <string name="settings_backup_sub">Níveis, cartões e legendas</string>
+    <string name="settings_backup_pictures_label">Imagens só no Wi-Fi</string>
+    <string name="settings_backup_pictures_sub">%1$s na sua conta</string>
+    <string name="settings_backup_note">Suas fotos e cartões gerados vão para a sua conta, e só você os vê. Listas publicadas continuam mostrando apenas imagens de catálogo.</string>
+    <string name="settings_backup_stuck">Sem cópia desde %1$s. Verifique sua conexão.</string>
+    <string name="settings_backup_off_title">Parar de guardar cópia?</string>
+    <string name="settings_backup_off_body">Seus quadros ficam neste telefone. A cópia na sua conta é apagada, e um telefone novo começará vazio.</string>
+    <string name="settings_backup_off_confirm">Parar e apagar</string>
+    <string name="settings_backup_off_cancel">Cancelar</string>
 </resources>
