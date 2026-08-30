@@ -1721,6 +1721,10 @@ class TierDetailScreenTest {
         assertTrue("that width must clear the 56dp floor", shortBandWidth >= minWidthPx - 1f)
     }
 
+    // 128dp rather than a third of the row: a third is the right shape on a
+    // phone and 360dp on a tablet, where the same caption would get a band five
+    // times the size for no reason. Both still apply and the tighter wins, so on
+    // a phone this is the fraction and nothing has moved.
     @Test
     fun aCaptionTooLongForTheRow_stopsAtAThirdOfIt() {
         val list = listOf(
