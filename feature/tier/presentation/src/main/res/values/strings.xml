@@ -47,7 +47,7 @@
     </plurals>
     <string name="action_undo">Undo</string>
     <string name="home_empty_title">Rank anything</string>
-    <string name="home_empty_body">Films, games, restaurants, albums — anything at all. Your boards stay on this phone.</string>
+    <string name="home_empty_body">Films, games, restaurants, albums — anything at all.</string>
     <string name="cd_new_list">New list</string>
     <string name="default_tier_list_title">Untitled list</string>
     <string name="tier_lists_load_error">Couldn’t load your lists.</string>
@@ -369,6 +369,7 @@
     <string name="moderation_empty_body">Complaints about community lists arrive here.</string>
     <string name="moderation_action_take_down">Take it down</string>
     <string name="moderation_action_keep">Leave it up</string>
+    <string name="moderation_consequence">Taking it down leaves the author’s own copy untouched.</string>
     <string name="settings_moderation">Reports</string>
     <string name="settings_moderation_none">Nothing waiting</string>
     <plurals name="moderation_waiting">
@@ -418,4 +419,6 @@
     <string name="conflict_edited_there">Edited on %1$s %2$s</string>
     <string name="conflict_edited_there_unknown">Edited on another phone %1$s</string>
     <string name="conflict_edited_here">Edited here %1$s</string>
+    <string name="cover_unfold_title">Unfold to rank</string>
+    <string name="cover_unfold_body">Moving cards needs the inner screen.</string>
 </resources>

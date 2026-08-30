@@ -52,12 +52,18 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierLists
 
 private const val CARD_ART_ASPECT = 1f
 
-// The size a card is on a phone. Past the compact breakpoint a window spends
-// its surplus on more cards rather than bigger ones -- but only past it: an
-// Adaptive grid counts columns at every width, and one left to run on a phone
-// quietly finds a third column somewhere around 464dp, which the display-size
-// setting alone is enough to reach.
-private val CARD_MIN_WIDTH = 180.dp
+/**
+ * Two cards on a phone, counted rather than measured. An Adaptive grid counts
+ * columns at every width, and one left to run on a phone quietly finds a third
+ * somewhere around 464dp -- which the display-size setting alone is enough to
+ * reach.
+ *
+ * Past the breakpoint it does the counting, and 200dp is what it counts by: two
+ * at 600dp, three near 760, four at 1024, five near 1280, with no table of
+ * widths to keep in step with anything. A hard-coded "four on a tablet" is
+ * right for exactly one tablet.
+ */
+private val WIDE_CARD_MIN_WIDTH = 200.dp
 private val WIDE_ENOUGH_FOR_MORE_COLUMNS = 600.dp
 private const val PHONE_COLUMNS = 2
 
@@ -129,15 +135,19 @@ internal fun CommunityFeedList(
             } else {
                 LazyVerticalGrid(
                     columns = if (wideEnoughForMoreColumns) {
-                        GridCells.Adaptive(minSize = CARD_MIN_WIDTH)
+                        GridCells.Adaptive(minSize = WIDE_CARD_MIN_WIDTH)
                     } else {
                         GridCells.Fixed(PHONE_COLUMNS)
                     },
                     state = gridState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(
+                        start = if (wideEnoughForMoreColumns) 24.dp else 16.dp,
+                        end = if (wideEnoughForMoreColumns) 24.dp else 16.dp,
+                        bottom = 96.dp,
+                    ),
+                    horizontalArrangement = Arrangement.spacedBy(if (wideEnoughForMoreColumns) 16.dp else 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(if (wideEnoughForMoreColumns) 16.dp else 12.dp),
                 ) {
                     items(feed.lists, key = { it.id }) { summary ->
                         val reported = feed.justHidden[summary.id]

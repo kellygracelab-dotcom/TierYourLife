@@ -40,7 +40,7 @@
     </plurals>
     <string name="action_undo">元に戻す</string>
     <string name="home_empty_title">なんでもランク付け</string>
-    <string name="home_empty_body">映画、ゲーム、レストラン、アルバム、なんでも。ボードはこの端末に残ります。</string>
+    <string name="home_empty_body">映画、ゲーム、レストラン、アルバム、なんでも。</string>
     <string name="cd_new_list">新しいリスト</string>
     <string name="default_tier_list_title">無題のリスト</string>
     <string name="tier_lists_load_error">リストを読み込めませんでした。</string>
@@ -387,4 +387,7 @@
     <string name="conflict_edited_there">%1$sで編集 %2$s</string>
     <string name="conflict_edited_there_unknown">別の端末で編集 %1$s</string>
     <string name="conflict_edited_here">ここで編集 %1$s</string>
+    <string name="cover_unfold_title">開いて並べ替え</string>
+    <string name="cover_unfold_body">カードの移動には内側の画面が必要です。</string>
+    <string name="moderation_consequence">公開を取り下げても、作者自身のコピーはそのままです。</string>
 </resources>

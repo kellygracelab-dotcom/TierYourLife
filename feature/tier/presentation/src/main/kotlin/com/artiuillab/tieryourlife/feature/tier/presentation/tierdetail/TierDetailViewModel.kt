@@ -44,6 +44,15 @@ class TierDetailViewModel @Inject constructor(
         .map { it is Account.SignedIn }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), false)
 
+    /**
+     * Every board, for the column that stands beside this one on a wide
+     * window. Read here rather than shared with the list screen because that
+     * screen is not on the stack when this one is: they are two destinations,
+     * not one with a panel.
+     */
+    private val _allLists = MutableStateFlow<List<TierList>>(emptyList())
+    val allLists: StateFlow<List<TierList>> = _allLists.asStateFlow()
+
     private val _publishing = MutableStateFlow(false)
     val publishing: StateFlow<Boolean> = _publishing.asStateFlow()
 
@@ -139,6 +148,10 @@ class TierDetailViewModel @Inject constructor(
 
     fun loadTierList() {
         viewModelScope.launch { reloadTierList() }
+        viewModelScope.launch {
+            runCatching { repository.getAllTierLists() }
+                .onSuccess { lists -> _allLists.value = lists }
+        }
     }
 
     fun addItemToPool(title: String, imageUrl: String?) {

@@ -54,7 +54,7 @@
     </plurals>
     <string name="action_undo">Annuler</string>
     <string name="home_empty_title">Classez n\'importe quoi</string>
-    <string name="home_empty_body">Films, jeux, restaurants, albums — tout ce que vous voulez. Vos tableaux restent sur ce téléphone.</string>
+    <string name="home_empty_body">Films, jeux, restaurants, albums — tout ce que vous voulez.</string>
     <string name="cd_new_list">Nouvelle liste</string>
     <string name="default_tier_list_title">Liste sans titre</string>
     <string name="tier_lists_load_error">Impossible de charger les listes.</string>
@@ -446,4 +446,7 @@
     <string name="conflict_edited_there">Modifié sur %1$s %2$s</string>
     <string name="conflict_edited_there_unknown">Modifié sur un autre téléphone %1$s</string>
     <string name="conflict_edited_here">Modifié ici %1$s</string>
+    <string name="cover_unfold_title">Dépliez pour classer</string>
+    <string name="cover_unfold_body">Déplacer les cartes demande l’écran intérieur.</string>
+    <string name="moderation_consequence">Le retrait ne touche pas la copie personnelle de l’auteur.</string>
 </resources>

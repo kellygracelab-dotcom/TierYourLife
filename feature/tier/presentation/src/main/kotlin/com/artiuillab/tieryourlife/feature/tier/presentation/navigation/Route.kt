@@ -3,8 +3,14 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.navigation
 import kotlinx.serialization.Serializable
 
 sealed interface Route {
+    /**
+     * [community] is the tab to open on. Carried by the route rather than kept
+     * in the screen because the rail on a wide window navigates here to switch
+     * tabs, and a rail that could not say which tab would be a rail that only
+     * works from one of them.
+     */
     @Serializable
-    data object TierLists : Route
+    data class TierLists(val community: Boolean = false) : Route
 
     @Serializable
     data class TierDetail(val tierListId: Long) : Route

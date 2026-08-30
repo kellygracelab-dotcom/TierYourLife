@@ -47,7 +47,7 @@
     </plurals>
     <string name="action_undo">Geri al</string>
     <string name="home_empty_title">Her şeyi sırala</string>
-    <string name="home_empty_body">Filmler, oyunlar, restoranlar, albümler — ne olursa. Panoların bu telefonda kalır.</string>
+    <string name="home_empty_body">Filmler, oyunlar, restoranlar, albümler — ne olursa.</string>
     <string name="cd_new_list">Yeni liste</string>
     <string name="default_tier_list_title">Başlıksız liste</string>
     <string name="tier_lists_load_error">Listeler yüklenemedi.</string>
@@ -417,4 +417,7 @@
     <string name="conflict_edited_there">%1$s üzerinde düzenlendi %2$s</string>
     <string name="conflict_edited_there_unknown">Başka bir telefonda düzenlendi %1$s</string>
     <string name="conflict_edited_here">Burada düzenlendi %1$s</string>
+    <string name="cover_unfold_title">Sıralamak için aç</string>
+    <string name="cover_unfold_body">Kartları taşımak iç ekranı gerektirir.</string>
+    <string name="moderation_consequence">Yayından kaldırmak yazarın kendi kopyasına dokunmaz.</string>
 </resources>

@@ -61,7 +61,7 @@
     </plurals>
     <string name="action_undo">Отменить</string>
     <string name="home_empty_title">Ранжируй что угодно</string>
-    <string name="home_empty_body">Фильмы, игры, рестораны, альбомы — что угодно. Ваши доски остаются на телефоне.</string>
+    <string name="home_empty_body">Фильмы, игры, рестораны, альбомы — что угодно.</string>
     <string name="cd_new_list">Новый список</string>
     <string name="default_tier_list_title">Список без названия</string>
     <string name="tier_lists_load_error">Не удалось загрузить списки.</string>
@@ -477,4 +477,7 @@
     <string name="conflict_edited_there">Правлена на %1$s %2$s</string>
     <string name="conflict_edited_there_unknown">Правлена на другом телефоне %1$s</string>
     <string name="conflict_edited_here">Правлена здесь %1$s</string>
+    <string name="cover_unfold_title">Разложите, чтобы расставить</string>
+    <string name="cover_unfold_body">Перетаскивать карточки можно только на внутреннем экране.</string>
+    <string name="moderation_consequence">Снятие с публикации не трогает копию автора.</string>
 </resources>

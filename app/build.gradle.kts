@@ -59,6 +59,7 @@ dependencies {
     implementation(projects.feature.account.data)
     implementation(projects.feature.account.domain)
     implementation(projects.feature.tier.data)
+    implementation(projects.feature.tier.presentation)
     implementation(projects.feature.aistudio.data)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

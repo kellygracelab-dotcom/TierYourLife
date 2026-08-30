@@ -47,7 +47,7 @@
     </plurals>
     <string name="action_undo">Rückgängig</string>
     <string name="home_empty_title">Ordne alles ein</string>
-    <string name="home_empty_body">Filme, Spiele, Restaurants, Alben — was du willst. Deine Boards bleiben auf diesem Telefon.</string>
+    <string name="home_empty_body">Filme, Spiele, Restaurants, Alben — was du willst.</string>
     <string name="cd_new_list">Neue Liste</string>
     <string name="default_tier_list_title">Unbenannte Liste</string>
     <string name="tier_lists_load_error">Listen konnten nicht geladen werden.</string>
@@ -417,4 +417,7 @@
     <string name="conflict_edited_there">Geändert auf %1$s %2$s</string>
     <string name="conflict_edited_there_unknown">Geändert auf einem anderen Telefon %1$s</string>
     <string name="conflict_edited_here">Hier geändert %1$s</string>
+    <string name="cover_unfold_title">Zum Sortieren aufklappen</string>
+    <string name="cover_unfold_body">Karten verschieben geht nur auf dem inneren Display.</string>
+    <string name="moderation_consequence">Das Entfernen lässt die eigene Kopie des Autors unberührt.</string>
 </resources>

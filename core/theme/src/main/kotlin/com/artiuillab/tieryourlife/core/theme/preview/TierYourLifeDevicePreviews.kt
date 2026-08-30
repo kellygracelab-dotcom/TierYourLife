@@ -35,8 +35,22 @@ import androidx.compose.ui.tooling.preview.Preview
     showSystemUi = false,
 )
 @Preview(
+    // Where the rail arrives and the second pane does not: a small tablet, or
+    // half a large one. The awkward middle, and the one most often skipped.
+    name = "Small tablet",
+    device = "spec:width=600dp,height=960dp,dpi=240",
+    showSystemUi = false,
+)
+@Preview(
     name = "Tablet",
     device = "spec:width=800dp,height=1280dp,dpi=240",
+    showSystemUi = false,
+)
+@Preview(
+    // A tablet held as a tablet: the rail, the index and the board all at
+    // once, which is the only window where all three are on screen together.
+    name = "Tablet landscape",
+    device = "spec:width=1280dp,height=800dp,dpi=240",
     showSystemUi = false,
 )
 @Preview(

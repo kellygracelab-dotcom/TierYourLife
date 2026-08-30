@@ -12,8 +12,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * quietly wrong on the one screen where two copies have to be told apart. The
  * database cannot forget.
  *
- * Guarded against re-firing on the stamp it writes itself, because SQLite will
- * happily recurse if a build ever turns recursive triggers on.
+ * The board's own trigger names the columns it watches. Room turns recursive
+ * triggers on, so a trigger that fired on any update would fire on the stamp it
+ * had just written -- and within the same second the new value equals the old
+ * one, so no comparison can stop it. Naming the columns does.
  */
 val MIGRATION_7_8 = object : Migration(7, 8) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -22,8 +24,9 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
 
         db.execSQL(
             """
-            CREATE TRIGGER IF NOT EXISTS tier_lists_edited AFTER UPDATE ON tier_lists
-            WHEN NEW.editedAt IS OLD.editedAt
+            CREATE TRIGGER IF NOT EXISTS tier_lists_edited
+            AFTER UPDATE OF title, deletedAt, displayMode, category, coverImageUrl, authorName, arrivedFrom
+            ON tier_lists
             BEGIN
                 UPDATE tier_lists SET editedAt = CAST(strftime('%s','now') AS INTEGER) * 1000
                 WHERE id = NEW.id;

@@ -6,3 +6,7 @@ plugins {
 android {
     namespace = "com.artiuillab.tieryourlife.core.theme"
 }
+
+dependencies {
+    testImplementation(libs.junit)
+}

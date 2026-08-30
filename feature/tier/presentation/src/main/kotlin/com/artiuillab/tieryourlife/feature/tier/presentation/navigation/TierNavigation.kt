@@ -45,6 +45,7 @@ fun NavController.navigateToAuthor(uid: String, name: String, photoUrl: String?)
 }
 
 fun NavGraphBuilder.tierListsScreen(
+    newBoardRequests: () -> Int = { 0 },
     onTierListClick: (Long) -> Unit,
     onCommunityListClick: (String) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
@@ -52,8 +53,10 @@ fun NavGraphBuilder.tierListsScreen(
     onSignInClick: () -> Unit,
     onNewListCreated: (Long) -> Unit,
 ) {
-    composable<Route.TierLists> {
+    composable<Route.TierLists> { backStackEntry ->
         TierListsScreen(
+            startOnCommunity = backStackEntry.toRoute<Route.TierLists>().community,
+            newBoardRequests = newBoardRequests(),
             onTierListClick = onTierListClick,
             onCommunityListClick = onCommunityListClick,
             onAuthorClick = onAuthorClick,
@@ -68,6 +71,7 @@ const val ADDED_ITEMS_RESULT_KEY = "ai_added_item_ids"
 
 fun NavGraphBuilder.tierDetailScreen(
     onBack: () -> Unit,
+    onOpenList: (Long) -> Unit = {},
     onOpenAiStudio: (tierListId: Long, listTitle: String) -> Unit,
 ) {
     composable<Route.TierDetail> { backStackEntry ->
@@ -78,6 +82,7 @@ fun NavGraphBuilder.tierDetailScreen(
         TierDetailScreen(
             onBack = onBack,
             onOpenAiStudio = { listTitle -> onOpenAiStudio(route.tierListId, listTitle) },
+            onOpenList = onOpenList,
             addedItemIds = addedItemIds,
             onAddedItemConsumed = { backStackEntry.savedStateHandle[ADDED_ITEMS_RESULT_KEY] = ArrayList<Long>() },
         )

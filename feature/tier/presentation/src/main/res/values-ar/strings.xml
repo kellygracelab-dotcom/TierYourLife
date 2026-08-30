@@ -75,7 +75,7 @@
     </plurals>
     <string name="action_undo">تراجع</string>
     <string name="home_empty_title">رتّب أي شيء</string>
-    <string name="home_empty_body">أفلام، ألعاب، مطاعم، ألبومات — أي شيء. لوحاتك تبقى على هذا الهاتف.</string>
+    <string name="home_empty_body">أفلام، ألعاب، مطاعم، ألبومات — أي شيء.</string>
     <string name="cd_new_list">قائمة جديدة</string>
     <string name="default_tier_list_title">قائمة بلا عنوان</string>
     <string name="tier_lists_load_error">تعذّر تحميل القوائم.</string>
@@ -537,4 +537,7 @@
     <string name="conflict_edited_there">حُرّرت على %1$s %2$s</string>
     <string name="conflict_edited_there_unknown">حُرّرت على هاتف آخر %1$s</string>
     <string name="conflict_edited_here">حُرّرت هنا %1$s</string>
+    <string name="cover_unfold_title">افتح الهاتف للترتيب</string>
+    <string name="cover_unfold_body">تحريك البطاقات يحتاج إلى الشاشة الداخلية.</string>
+    <string name="moderation_consequence">إلغاء النشر لا يمسّ نسخة المؤلف الخاصة.</string>
 </resources>

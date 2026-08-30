@@ -54,7 +54,7 @@
     </plurals>
     <string name="action_undo">Desfazer</string>
     <string name="home_empty_title">Classifique o que quiser</string>
-    <string name="home_empty_body">Filmes, jogos, restaurantes, álbuns — o que quiser. Seus quadros ficam neste telefone.</string>
+    <string name="home_empty_body">Filmes, jogos, restaurantes, álbuns — o que quiser.</string>
     <string name="cd_new_list">Nova lista</string>
     <string name="default_tier_list_title">Lista sem título</string>
     <string name="tier_lists_load_error">Não foi possível carregar as listas.</string>
@@ -446,4 +446,7 @@
     <string name="conflict_edited_there">Editado em %1$s %2$s</string>
     <string name="conflict_edited_there_unknown">Editado em outro telefone %1$s</string>
     <string name="conflict_edited_here">Editado aqui %1$s</string>
+    <string name="cover_unfold_title">Abra para ordenar</string>
+    <string name="cover_unfold_body">Mover cartões precisa da tela interna.</string>
+    <string name="moderation_consequence">Remover não mexe na cópia do próprio autor.</string>
 </resources>

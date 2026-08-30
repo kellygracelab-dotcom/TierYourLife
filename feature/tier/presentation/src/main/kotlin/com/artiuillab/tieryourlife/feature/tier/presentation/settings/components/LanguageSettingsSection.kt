@@ -13,9 +13,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +33,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
+import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.VectorIcon
@@ -74,10 +74,10 @@ internal fun LanguageRow(languageTag: String?, onLanguageTagChange: (String?) ->
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LanguageBottomSheet(selectedTag: String?, onSelect: (String?) -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+    AdaptiveSheet(
+        onDismiss = onDismiss,
+        width = SheetWidth.Choosing,
+        maxHeight = 560.dp,
     ) {
         Column(Modifier.testTag(SettingsTestTags.LANGUAGE_SHEET)) {
             Column(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 8.dp)) {
