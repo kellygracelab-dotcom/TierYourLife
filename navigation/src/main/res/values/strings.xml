@@ -1,0 +1,5 @@
+<resources>
+    <string name="rail_lists">Lists</string>
+    <string name="rail_community">Community</string>
+    <string name="rail_settings">Settings</string>
+</resources>

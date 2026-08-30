@@ -49,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -83,6 +84,12 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TierListsScreen(
+    startOnCommunity: Boolean = false,
+    /**
+     * Bumped when the rail's button is pressed. A count rather than a callback
+     * because the rail sits above every screen and cannot reach into this one.
+     */
+    newBoardRequests: Int = 0,
     onTierListClick: (Long) -> Unit,
     onCommunityListClick: (String) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
@@ -96,6 +103,14 @@ fun TierListsScreen(
     OnResumeEffect {
         viewModel.loadTierLists()
         viewModel.refreshHidden()
+    }
+    // Arriving here from the rail is how tabs are chosen on a wide window, and
+    // the rail says which one by navigating.
+    LaunchedEffect(startOnCommunity) {
+        viewModel.selectTab(if (startOnCommunity) HomeTab.Community else HomeTab.Mine)
+    }
+    LaunchedEffect(newBoardRequests) {
+        if (newBoardRequests > 0) viewModel.createTierList(defaultListTitle, onNewListCreated)
     }
 
     TierListsScreenContent(
@@ -168,6 +183,7 @@ internal fun TierListsScreenContent(
     val localOnly = success?.localOnly ?: LocalOnly.Unknown
     val restoringPictures = success?.restoringPictures ?: PictureRestore.Progress.Idle
     val conflict = success?.conflict
+    val hasRail = currentWindowShape.hasRail
     var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var reportFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var reportedFrom by remember { mutableStateOf<PublishedListSummary?>(null) }
@@ -237,7 +253,10 @@ internal fun TierListsScreenContent(
 
                     HomeMode.Browsing -> HomeTopBar(
                         onSearchClick = onSearchClick,
-                        onSettingsClick = onSettingsClick,
+                        // Promoted into the rail where there is one. Two ways
+                        // to the same screen, one of them a leftover, is how a
+                        // tablet layout starts looking unconsidered.
+                        onSettingsClick = onSettingsClick.takeUnless { hasRail },
                     )
                 }
 
@@ -245,13 +264,18 @@ internal fun TierListsScreenContent(
                 // everything below it, not about whichever tab is showing.
                 RestoringPictures(restoringPictures)
 
-                if (mode !is HomeMode.Searching) {
+                // The rail is doing this job. Two navigation systems on one
+                // screen is exactly what makes tablet layouts fall apart.
+                if (mode !is HomeMode.Searching && !hasRail) {
                     HomeTabs(selected = tab, onSelect = onSelectTab)
                     // The counters describe this phone's lists, which says
                     // nothing about the feed the Community tab is showing.
                     if (tab == HomeTab.Mine) {
                         HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
                     }
+                }
+                if (mode !is HomeMode.Searching && hasRail && tab == HomeTab.Mine) {
+                    HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
                 }
 
                 when (state) {
@@ -313,7 +337,9 @@ internal fun TierListsScreenContent(
                 }
             }
 
-            if (mode == HomeMode.Browsing && tab == HomeTab.Mine) {
+            // The button moved into the rail, and a board is made from one
+            // place at a time.
+            if (mode == HomeMode.Browsing && tab == HomeTab.Mine && !hasRail) {
                 val newListDescription = stringResource(R.string.cd_new_list)
                 val fabModifier = Modifier
                     .align(Alignment.BottomEnd)

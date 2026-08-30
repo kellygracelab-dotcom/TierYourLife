@@ -60,7 +60,7 @@ internal fun HomeHeader(totalListCount: Int, rankedCount: Int) {
 }
 
 @Composable
-internal fun HomeTopBar(onSearchClick: () -> Unit, onSettingsClick: () -> Unit) {
+internal fun HomeTopBar(onSearchClick: () -> Unit, onSettingsClick: (() -> Unit)?) {
     // The bar spans the window; the title and the buttons it belongs with do
     // not, or the two end up a window apart.
     Box(
@@ -87,8 +87,16 @@ internal fun HomeTopBar(onSearchClick: () -> Unit, onSettingsClick: () -> Unit) 
             HomeIconButton(stringResource(R.string.tier_lists_content_description_search), onSearchClick) {
                 SearchIcon()
             }
-            HomeIconButton(stringResource(R.string.tier_lists_content_description_settings), onSettingsClick) {
-                SettingsIcon()
+            // Null once the rail is carrying it. Two ways to the same screen,
+            // one of them left over from a narrower window, is how a tablet
+            // layout starts looking unconsidered.
+            if (onSettingsClick != null) {
+                HomeIconButton(
+                    stringResource(R.string.tier_lists_content_description_settings),
+                    onSettingsClick,
+                ) {
+                    SettingsIcon()
+                }
             }
         }
     }
