@@ -7,6 +7,8 @@ import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 internal class FakeAppPreferences(
     private var backUpBoards: Boolean = true,
     private var offerAnswered: Boolean = false,
+    private var pendingReports: Int? = null,
+    private var trashCount: Int = 0,
 ) : AppPreferences {
     private val hiddenLists = mutableMapOf<String, String>()
     private val hiddenAuthors = mutableMapOf<String, String>()
@@ -17,6 +19,17 @@ internal class FakeAppPreferences(
     override fun setLanguageTag(tag: String?) = Unit
     override fun lastKnownCredits(): Int? = null
     override fun setLastKnownCredits(credits: Int?) = Unit
+
+    override fun lastKnownPendingReports(): Int? = pendingReports
+    override fun setLastKnownPendingReports(reports: Int?) {
+        pendingReports = reports
+    }
+
+    override fun lastKnownTrashCount(): Int = trashCount
+    override fun setLastKnownTrashCount(count: Int) {
+        trashCount = count
+    }
+
     override fun hiddenListIds(): Set<String> = hiddenLists.keys
     override fun hiddenLists(): List<HiddenEntry> = hiddenLists.map { HiddenEntry(it.key, it.value) }
     override fun hideList(publishedId: String, title: String) {

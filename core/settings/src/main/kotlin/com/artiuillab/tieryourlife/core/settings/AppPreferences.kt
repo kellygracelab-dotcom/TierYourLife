@@ -20,6 +20,25 @@ interface AppPreferences {
     fun setLastKnownCredits(credits: Int?)
 
     /**
+     * How many complaints were waiting the last time the queue answered, or
+     * null for everyone it has never answered for -- which is everyone who
+     * does not read them.
+     *
+     * Kept for the same reason as the credit balance, and one more: whether
+     * the row exists at all is the answer to a question only the server can
+     * settle, so without this the settings screen has to grow a row halfway
+     * through being looked at.
+     */
+    fun lastKnownPendingReports(): Int?
+
+    fun setLastKnownPendingReports(reports: Int?)
+
+    /** What the trash held last time it was counted. */
+    fun lastKnownTrashCount(): Int
+
+    fun setLastKnownTrashCount(count: Int)
+
+    /**
      * Community lists this phone has hidden, and authors it has hidden
      * entirely. Both are local: nobody is told they were hidden, and hiding is
      * not an accusation. Both can be undone, which is why a name is kept
