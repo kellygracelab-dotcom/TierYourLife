@@ -14,6 +14,12 @@ data class PublishedListSummary(
     /** The author's palette, for a card with neither a cover nor card art. */
     val tierColors: List<String> = emptyList(),
     val updatedAtMillis: Long,
+    /**
+     * How many people have taken this list to rank for themselves. The card
+     * says the number the popular ordering sorts by, so that what a reader
+     * sees and what put it there are the same thing.
+     */
+    val takeCount: Int = 0,
 )
 
 /**

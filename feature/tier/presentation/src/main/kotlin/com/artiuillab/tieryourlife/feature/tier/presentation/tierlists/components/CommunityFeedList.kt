@@ -43,9 +43,12 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.AuthorPill
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.CommunityFeed
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
@@ -88,6 +91,8 @@ internal fun CommunityFeedList(
     onNearEnd: () -> Unit = {},
     showCategories: Boolean = true,
     showAuthor: Boolean = true,
+    /** Null on the screens that are already one author's or one person's own. */
+    controls: FeedControls? = null,
 ) {
     val gridState = rememberLazyGridState()
     val shown = (feed as? CommunityFeed.Ready)?.lists?.size ?: 0
@@ -103,6 +108,15 @@ internal fun CommunityFeedList(
     BoxWithConstraints(modifier.fillMaxSize()) {
         val wideEnoughForMoreColumns = maxWidth >= WIDE_ENOUGH_FOR_MORE_COLUMNS
         Column(Modifier.fillMaxSize()) {
+        if (controls != null) {
+            FeedControlsRow(
+                source = controls.source,
+                sort = controls.sort,
+                onSelectSource = controls.onSelectSource,
+                onSelectSort = controls.onSelectSort,
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+        }
         if (showCategories) {
             CategoryFilterRow(
                 selected = category,
@@ -124,10 +138,30 @@ internal fun CommunityFeedList(
                 testTag = TierListsTestTags.COMMUNITY_FAILED,
             )
 
+            is CommunityFeed.FollowingNobody -> FollowingNobody(
+                authors = feed.authors,
+                loading = feed.loading,
+                followed = feed.followed,
+                onFollow = controls?.onFollow ?: {},
+                onOpenAuthor = onOpenAuthor ?: {},
+            )
+
             is CommunityFeed.Ready -> if (feed.lists.isEmpty()) {
                 CommunityMessage(
-                    title = stringResource(R.string.home_community_empty),
-                    body = stringResource(R.string.home_community_empty_body),
+                    // Following says who is missing, everybody says what is.
+                    // "No lists" from a feed you built yourself is the wrong
+                    // sentence: the lists are not missing, these people have
+                    // not published any.
+                    title = if (controls?.source == FeedSource.Following) {
+                        followingEmptyTitle(category)
+                    } else {
+                        stringResource(R.string.home_community_empty)
+                    },
+                    body = if (controls?.source == FeedSource.Following) {
+                        ""
+                    } else {
+                        stringResource(R.string.home_community_empty_body)
+                    },
                     action = null,
                     onAction = {},
                     testTag = TierListsTestTags.COMMUNITY_EMPTY,
@@ -274,11 +308,23 @@ private fun CommunityCard(
             }
             Text(
                 modifier = Modifier.padding(start = 8.dp, top = 2.dp),
+                // How many cards, and -- once anybody has taken it -- how many
+                // people have. The second number is what the popular ordering
+                // sorts by, so a reader can see why a list is where it is
+                // rather than having to trust the word "popular".
                 text = pluralStringResource(
                     R.plurals.community_item_count,
                     summary.itemCount,
                     summary.itemCount,
-                ),
+                ) + if (summary.takeCount > 0) {
+                    " · " + pluralStringResource(
+                        R.plurals.tier_lists_rankings_count,
+                        summary.takeCount,
+                        summary.takeCount,
+                    )
+                } else {
+                    ""
+                },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
             )
@@ -388,4 +434,24 @@ private fun CommunityFeedEmptyDarkPreview() = TierYourLifeTheme(true) {
         onOpen = {},
         onRetry = {},
     )
+}
+
+/**
+ * What the feed's two other questions are answered with, and how to change
+ * them. Absent on the screens where they make no sense: one author's lists are
+ * already one author's, and your own published lists are your own.
+ */
+internal data class FeedControls(
+    val source: FeedSource,
+    val sort: FeedSort,
+    val onSelectSource: (FeedSource) -> Unit,
+    val onSelectSort: (FeedSort) -> Unit,
+    val onFollow: (String) -> Unit,
+)
+
+@Composable
+private fun followingEmptyTitle(category: ListCategory?): String = if (category == null) {
+    stringResource(R.string.home_following_empty_all)
+} else {
+    stringResource(R.string.home_following_empty, stringResource(category.labelRes))
 }

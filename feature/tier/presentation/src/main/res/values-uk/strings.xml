@@ -337,6 +337,23 @@
     <string name="home_tab_community">Спільнота</string>
     <string name="home_community_empty">Поки нічого не опубліковано</string>
     <string name="home_community_empty_body">Тут з’являються списки, які люди зробили публічними.</string>
+    <string name="feed_source_following">Підписки</string>
+    <string name="feed_source_everyone">Усі</string>
+    <string name="feed_sort_recent">Нові</string>
+    <string name="feed_sort_popular">Популярні</string>
+    <string name="cd_feed_sort">Сортування</string>
+    <string name="action_follow">Підписатися</string>
+    <string name="action_following">Ви підписані</string>
+    <string name="home_following_nobody">Ви ні на кого не підписані</string>
+    <string name="home_following_nobody_body">Підпишіться — і нові дошки цих людей з’являтимуться тут першими.</string>
+    <string name="home_following_empty">Ні в кого з ваших підписок немає дошок у категорії «%1$s».</string>
+    <string name="home_following_empty_all">Ваші підписки поки нічого не опублікували.</string>
+    <plurals name="author_followers_count">
+        <item quantity="one">%d підписник</item>
+        <item quantity="few">%d підписники</item>
+        <item quantity="many">%d підписників</item>
+        <item quantity="other">%d підписника</item>
+    </plurals>
     <string name="home_community_failed">Не вдалося завантажити спільноту</string>
     <string name="home_community_failed_body">Перевірте з\'єднання.</string>
     <string name="community_by_author">від %1$s</string>

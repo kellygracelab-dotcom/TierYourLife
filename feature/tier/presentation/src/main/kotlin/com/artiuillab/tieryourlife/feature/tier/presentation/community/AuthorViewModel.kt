@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
@@ -26,6 +27,12 @@ sealed interface AuthorUiState {
         val name: String,
         val photoUrl: String?,
         val lists: List<PublishedListSummary>,
+        /**
+         * Null until the server answers. Distinct from "not following": a
+         * button that says Follow before we know would ask somebody to undo
+         * something they never did.
+         */
+        val follow: FollowState? = null,
     ) : AuthorUiState
 
     data object Failed : AuthorUiState
@@ -45,6 +52,49 @@ class AuthorViewModel @Inject constructor(
 
     init {
         load()
+        loadFollowState()
+    }
+
+    private fun loadFollowState() {
+        viewModelScope.launch {
+            val state = community.followState(route.authorUid)
+                .onFailure { Timber.i(it, "Not showing whether this author is followed") }
+                .getOrNull() ?: return@launch
+            _state.update { current ->
+                if (current is AuthorUiState.Ready) current.copy(follow = state) else current
+            }
+        }
+    }
+
+    /**
+     * Follows or stops, showing the answer before the server gives it.
+     *
+     * The count moves with the button, because the two are one fact and a
+     * button that changes while the number beside it does not reads as a bug.
+     * Both go back if the request fails.
+     */
+    fun toggleFollow() {
+        val current = _state.value as? AuthorUiState.Ready ?: return
+        val was = current.follow ?: return
+        val now = FollowState(
+            following = !was.following,
+            followers = (was.followers + if (was.following) -1 else 1).coerceAtLeast(0),
+        )
+        _state.update { (it as AuthorUiState.Ready).copy(follow = now) }
+
+        viewModelScope.launch {
+            val result = if (now.following) {
+                community.follow(route.authorUid)
+            } else {
+                community.unfollow(route.authorUid)
+            }
+            result.onFailure { error ->
+                Timber.w(error, "Following an author failed")
+                _state.update { current2 ->
+                    if (current2 is AuthorUiState.Ready) current2.copy(follow = was) else current2
+                }
+            }
+        }
     }
 
     fun load() {
@@ -59,6 +109,7 @@ class AuthorViewModel @Inject constructor(
                     val hidden = preferences.hiddenListIds()
                     val lists = all.filterNot { it.id in hidden }
                     AuthorUiState.Ready(
+                        follow = (_state.value as? AuthorUiState.Ready)?.follow,
                         // Their own lists carry a fresher name and face than the
                         // card the reader tapped, so prefer those when there are any.
                         name = all.firstOrNull()?.authorName ?: route.authorName,

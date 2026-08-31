@@ -312,6 +312,22 @@
     <string name="home_tab_community">Comunidade</string>
     <string name="home_community_empty">Nada publicado ainda</string>
     <string name="home_community_empty_body">Aqui aparecem as listas que as pessoas tornam públicas.</string>
+    <string name="feed_source_following">Seguindo</string>
+    <string name="feed_source_everyone">Todas</string>
+    <string name="feed_sort_recent">Recentes</string>
+    <string name="feed_sort_popular">Populares</string>
+    <string name="cd_feed_sort">Ordenação</string>
+    <string name="action_follow">Seguir</string>
+    <string name="action_following">Seguindo</string>
+    <string name="home_following_nobody">Você não segue ninguém</string>
+    <string name="home_following_nobody_body">Siga alguém e os novos quadros dessa pessoa aparecem aqui primeiro.</string>
+    <string name="home_following_empty">Ninguém que você segue tem um quadro em %1$s.</string>
+    <string name="home_following_empty_all">Ninguém que você segue publicou nada ainda.</string>
+    <plurals name="author_followers_count">
+        <item quantity="one">%d seguidor</item>
+        <item quantity="many">%d seguidores</item>
+        <item quantity="other">%d seguidores</item>
+    </plurals>
     <string name="home_community_failed">Não foi possível carregar a comunidade</string>
     <string name="home_community_failed_body">Verifique sua conexão.</string>
     <string name="community_by_author">de %1$s</string>

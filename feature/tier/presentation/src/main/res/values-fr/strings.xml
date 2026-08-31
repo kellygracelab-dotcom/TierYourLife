@@ -312,6 +312,22 @@
     <string name="home_tab_community">Communauté</string>
     <string name="home_community_empty">Rien de publié pour l\'instant</string>
     <string name="home_community_empty_body">Les listes rendues publiques apparaissent ici.</string>
+    <string name="feed_source_following">Abonnements</string>
+    <string name="feed_source_everyone">Toutes</string>
+    <string name="feed_sort_recent">Récents</string>
+    <string name="feed_sort_popular">Populaires</string>
+    <string name="cd_feed_sort">Tri</string>
+    <string name="action_follow">Suivre</string>
+    <string name="action_following">Abonné</string>
+    <string name="home_following_nobody">Vous ne suivez personne</string>
+    <string name="home_following_nobody_body">Abonnez-vous, et leurs nouveaux tableaux arriveront ici en premier.</string>
+    <string name="home_following_empty">Personne que vous suivez n’a de tableau dans %1$s.</string>
+    <string name="home_following_empty_all">Personne que vous suivez n’a encore rien publié.</string>
+    <plurals name="author_followers_count">
+        <item quantity="one">%d abonné</item>
+        <item quantity="many">%d abonnés</item>
+        <item quantity="other">%d abonnés</item>
+    </plurals>
     <string name="home_community_failed">Impossible de charger la communauté</string>
     <string name="home_community_failed_body">Vérifiez votre connexion.</string>
     <string name="community_by_author">de %1$s</string>

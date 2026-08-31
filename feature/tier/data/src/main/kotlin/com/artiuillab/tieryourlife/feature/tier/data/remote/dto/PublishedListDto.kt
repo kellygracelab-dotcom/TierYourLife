@@ -15,12 +15,33 @@ data class PublishedListSummaryDto(
     val previewImages: List<String> = emptyList(),
     val tierColors: List<String> = emptyList(),
     val updatedAt: Long = 0,
+    val takeCount: Int = 0,
 )
 
 @Serializable
 data class PublishedFeedDto(
     val lists: List<PublishedListSummaryDto> = emptyList(),
     val nextCursor: String? = null,
+    val followingNobody: Boolean = false,
+)
+
+@Serializable
+data class FollowStateDto(
+    val following: Boolean = false,
+    val followers: Int = 0,
+)
+
+@Serializable
+data class SuggestedAuthorDto(
+    val uid: String,
+    val name: String = "",
+    val photoUrl: String? = null,
+    val takeCount: Int = 0,
+)
+
+@Serializable
+data class SuggestedAuthorsDto(
+    val authors: List<SuggestedAuthorDto> = emptyList(),
 )
 
 @Serializable

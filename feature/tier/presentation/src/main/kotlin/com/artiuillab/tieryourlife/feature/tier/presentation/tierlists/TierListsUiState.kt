@@ -1,8 +1,12 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.opensOn
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 
 sealed interface TierListsUiState {
@@ -18,6 +22,9 @@ sealed interface TierListsUiState {
         val asPictures: Boolean = false,
         val community: CommunityFeed = CommunityFeed.Loading,
         val communityCategory: ListCategory? = null,
+        /** Whose lists, and in what order. The category answers a third question. */
+        val communitySource: FeedSource = FeedSource.Everyone,
+        val communitySort: FeedSort = FeedSource.Everyone.opensOn,
         val localOnly: LocalOnly = LocalOnly.Unknown,
         val restoringPictures: PictureRestore.Progress = PictureRestore.Progress.Idle,
         /** The board whose two versions have not been mentioned yet, if there is one. */
@@ -66,5 +73,20 @@ sealed interface CommunityFeed {
          */
         val justHidden: Map<String, Boolean> = emptyMap(),
     ) : CommunityFeed
+
+    /**
+     * Following, from somebody who follows nobody yet.
+     *
+     * Its own state rather than an empty [Ready], because the two want
+     * opposite things on screen: an empty feed says there is nothing, and this
+     * one has to say who there is.
+     */
+    data class FollowingNobody(
+        val authors: List<SuggestedAuthor> = emptyList(),
+        val loading: Boolean = true,
+        /** Authors followed from this screen, which it keeps showing. */
+        val followed: Set<String> = emptySet(),
+    ) : CommunityFeed
+
     data object Failed : CommunityFeed
 }

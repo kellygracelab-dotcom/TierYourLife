@@ -262,6 +262,20 @@
     <string name="home_tab_community">コミュニティ</string>
     <string name="home_community_empty">まだ何も公開されていません</string>
     <string name="home_community_empty_body">公開されたリストがここに並びます。</string>
+    <string name="feed_source_following">フォロー中</string>
+    <string name="feed_source_everyone">すべて</string>
+    <string name="feed_sort_recent">新着</string>
+    <string name="feed_sort_popular">人気</string>
+    <string name="cd_feed_sort">並び替え</string>
+    <string name="action_follow">フォロー</string>
+    <string name="action_following">フォロー中</string>
+    <string name="home_following_nobody">まだ誰もフォローしていません</string>
+    <string name="home_following_nobody_body">フォローすると、その人の新しいボードがここに先に届きます。</string>
+    <string name="home_following_empty">フォロー中の人に「%1$s」のボードはありません。</string>
+    <string name="home_following_empty_all">フォロー中の人はまだ何も公開していません。</string>
+    <plurals name="author_followers_count">
+        <item quantity="other">フォロワー %d 人</item>
+    </plurals>
     <string name="home_community_failed">コミュニティを読み込めませんでした</string>
     <string name="home_community_failed_body">接続を確認してください。</string>
     <string name="community_by_author">%1$s さん</string>

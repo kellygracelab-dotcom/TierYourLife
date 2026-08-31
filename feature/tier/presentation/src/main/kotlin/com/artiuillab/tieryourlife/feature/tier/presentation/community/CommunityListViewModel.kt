@@ -115,7 +115,15 @@ class CommunityListViewModel @Inject constructor(
                 )
             }
             _state.update { (it as CommunityListUiState.Success).copy(saving = false) }
-            if (saved) newId?.let(onSaved)
+            if (saved) {
+                // What the popular ordering counts. Told after the board
+                // exists, and its failure is not this person's problem: they
+                // have their copy either way, and a number that missed one
+                // take is not worth an error on a screen.
+                community.noteTaken(publishedId)
+                    .onFailure { Timber.i(it, "Not counting this list as taken") }
+                newId?.let(onSaved)
+            }
         }
     }
 

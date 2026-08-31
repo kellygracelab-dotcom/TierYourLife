@@ -57,10 +57,13 @@ import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.ui.UserMessage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.opensOn
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
@@ -72,6 +75,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardTile
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.CommunityFeedList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ConflictBanner
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.FeedControls
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeEmptyState
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeHeader
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTabs
@@ -150,6 +154,9 @@ fun TierListsScreen(
         onRetryCommunity = viewModel::loadCommunityFeed,
         onLoadMoreCommunity = viewModel::loadMoreCommunity,
         onSelectCommunityCategory = viewModel::selectCommunityCategory,
+        onSelectCommunitySource = viewModel::selectCommunitySource,
+        onSelectCommunitySort = viewModel::selectCommunitySort,
+        onFollowAuthor = viewModel::followSuggested,
         onToggleView = viewModel::toggleBoardsAsPictures,
         onHideCommunityList = viewModel::hideCommunityList,
         onHideCommunityAuthor = viewModel::hideCommunityAuthor,
@@ -182,6 +189,9 @@ internal fun TierListsScreenContent(
     onRetryCommunity: () -> Unit = {},
     onLoadMoreCommunity: () -> Unit = {},
     onSelectCommunityCategory: (ListCategory?) -> Unit = {},
+    onSelectCommunitySource: (FeedSource) -> Unit = {},
+    onSelectCommunitySort: (FeedSort) -> Unit = {},
+    onFollowAuthor: (String) -> Unit = {},
     onHideCommunityList: (PublishedListSummary) -> Unit = {},
     onHideCommunityAuthor: (uid: String, name: String) -> Unit = { _, _ -> },
     onReportCommunityList: (PublishedListSummary, ReportReason, String?) -> Unit = { _, _, _ -> },
@@ -196,6 +206,8 @@ internal fun TierListsScreenContent(
     val tab = success?.tab ?: HomeTab.Mine
     val communityFeed = success?.community ?: CommunityFeed.Loading
     val communityCategory = success?.communityCategory
+    val communitySource = success?.communitySource ?: FeedSource.Everyone
+    val communitySort = success?.communitySort ?: FeedSource.Everyone.opensOn
     val localOnly = success?.localOnly ?: LocalOnly.Unknown
     val restoringPictures = success?.restoringPictures ?: PictureRestore.Progress.Idle
     val conflict = success?.conflict
@@ -331,8 +343,25 @@ internal fun TierListsScreenContent(
                                     ?.firstOrNull { it.authorUid == uid }
                                 if (summary != null) {
                                     onAuthorClick(uid, summary.authorName, summary.authorPhotoUrl)
+                                } else {
+                                    // Offered rather than found in the feed: the
+                                    // empty following screen has authors the feed
+                                    // by definition does not carry.
+                                    val offered = (communityFeed as? CommunityFeed.FollowingNobody)
+                                        ?.authors
+                                        ?.firstOrNull { it.uid == uid }
+                                    if (offered != null) {
+                                        onAuthorClick(uid, offered.name, offered.photoUrl)
+                                    }
                                 }
                             },
+                            controls = FeedControls(
+                                source = communitySource,
+                                sort = communitySort,
+                                onSelectSource = onSelectCommunitySource,
+                                onSelectSort = onSelectCommunitySort,
+                                onFollow = onFollowAuthor,
+                            ),
                         )
 
                         mode is HomeMode.Searching -> SearchResults(

@@ -288,6 +288,21 @@
     <string name="home_tab_community">Community</string>
     <string name="home_community_empty">Nothing published yet</string>
     <string name="home_community_empty_body">Lists people make public show up here.</string>
+    <string name="feed_source_following">Following</string>
+    <string name="feed_source_everyone">All</string>
+    <string name="feed_sort_recent">Newest</string>
+    <string name="feed_sort_popular">Popular</string>
+    <string name="cd_feed_sort">Sort lists</string>
+    <string name="action_follow">Follow</string>
+    <string name="action_following">Following</string>
+    <string name="home_following_nobody">You aren’t following anyone</string>
+    <string name="home_following_nobody_body">Follow someone and their new lists arrive here first.</string>
+    <string name="home_following_empty">Nobody you follow has a list in %1$s.</string>
+    <string name="home_following_empty_all">Nobody you follow has published anything yet.</string>
+    <plurals name="author_followers_count">
+        <item quantity="one">%d follower</item>
+        <item quantity="other">%d followers</item>
+    </plurals>
     <string name="home_community_failed">Could not load the community</string>
     <string name="home_community_failed_body">Check your connection.</string>
     <string name="community_by_author">by %1$s</string>
