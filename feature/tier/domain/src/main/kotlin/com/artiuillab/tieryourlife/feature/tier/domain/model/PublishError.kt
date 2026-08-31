@@ -9,6 +9,9 @@ enum class PublishError {
 
     /** One of the photographs on the board may not go into a public feed. */
     PictureRefused,
+
+    /** Something written on the board may not go into a public feed. */
+    WordingRefused,
     Offline,
     Unknown,
 }

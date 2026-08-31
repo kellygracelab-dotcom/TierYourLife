@@ -390,6 +390,7 @@
     </plurals>
     <string name="list_settings_public_too_large">Список слишком большой для публикации: не больше 1000 карточек и 20 тиров.</string>
     <string name="list_settings_public_picture_refused">Одно из ваших фото нельзя показывать в общей ленте. Уберите его или оставьте список личным.</string>
+    <string name="list_settings_public_wording_refused">Нечто в тексте этого списка нельзя показывать в общей ленте. Измените его или оставьте список личным.</string>
     <string name="community_action_view_author">Профиль %1$s</string>
     <string name="community_action_hide">Скрыть этот список</string>
     <string name="community_action_report">Пожаловаться на список</string>

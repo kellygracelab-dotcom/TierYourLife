@@ -459,6 +459,7 @@ private fun PublishError.messageRes(): Int = when (this) {
     PublishError.TooManyLists -> R.string.list_settings_public_too_many
     PublishError.TooLarge -> R.string.list_settings_public_too_large
     PublishError.PictureRefused -> R.string.list_settings_public_picture_refused
+    PublishError.WordingRefused -> R.string.list_settings_public_wording_refused
     PublishError.Offline -> R.string.list_settings_public_offline
     PublishError.Unknown -> R.string.list_settings_public_failed
 }

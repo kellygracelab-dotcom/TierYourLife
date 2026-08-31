@@ -444,6 +444,7 @@
     </plurals>
     <string name="list_settings_public_too_large">هذه القائمة أكبر من أن تُنشر: 1000 بطاقة و20 مستوى كحد أقصى.</string>
     <string name="list_settings_public_picture_refused">إحدى صورك لا يمكن عرضها في المجتمع. احذفها أو اترك القائمة خاصة.</string>
+    <string name="list_settings_public_wording_refused">هناك نص في هذه القائمة لا يمكن عرضه في المجتمع. غيّره أو اترك القائمة خاصة.</string>
     <string name="community_action_view_author">عرض %1$s</string>
     <string name="community_action_hide">إخفاء هذه القائمة</string>
     <string name="community_action_report">الإبلاغ عن هذه القائمة</string>

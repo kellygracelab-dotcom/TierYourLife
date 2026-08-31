@@ -336,6 +336,7 @@
     </plurals>
     <string name="list_settings_public_too_large">Diese Liste ist zu groß zum Veröffentlichen: höchstens 1000 Karten und 20 Stufen.</string>
     <string name="list_settings_public_picture_refused">Eines deiner Fotos darf nicht in den öffentlichen Feed. Entferne es oder behalte die Liste privat.</string>
+    <string name="list_settings_public_wording_refused">Etwas im Text dieser Liste darf nicht in den öffentlichen Feed. Ändere es oder behalte die Liste privat.</string>
     <string name="community_action_view_author">%1$s ansehen</string>
     <string name="community_action_hide">Diese Liste ausblenden</string>
     <string name="community_action_report">Diese Liste melden</string>

@@ -337,6 +337,7 @@
     </plurals>
     <string name="list_settings_public_too_large">This list is too big to publish: at most 1000 cards and 20 tiers.</string>
     <string name="list_settings_public_picture_refused">One of your photos cannot go in the public feed. Remove it, or keep this list private.</string>
+    <string name="list_settings_public_wording_refused">Something written on this list cannot go in the public feed. Change it, or keep this list private.</string>
     <string name="community_action_view_author">View %1$s</string>
     <string name="community_action_hide">Hide this list</string>
     <string name="community_action_report">Report this list</string>

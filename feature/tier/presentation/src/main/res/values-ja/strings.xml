@@ -309,6 +309,7 @@
     </plurals>
     <string name="list_settings_public_too_large">このリストは公開するには大きすぎます。カードは1000枚、ティアは20段までです。</string>
     <string name="list_settings_public_picture_refused">写真のうち一枚は公開フィードに掲載できません。削除するか、リストを非公開のままにしてください。</string>
+    <string name="list_settings_public_wording_refused">このリストの文言の一部は公開フィードに掲載できません。変更するか、リストを非公開のままにしてください。</string>
     <string name="community_action_view_author">%1$s のプロフィール</string>
     <string name="community_action_hide">このリストを非表示</string>
     <string name="community_action_report">このリストを報告</string>
