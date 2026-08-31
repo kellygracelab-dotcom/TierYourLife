@@ -354,7 +354,7 @@
     <string name="settings_hidden_sub">Listen und Menschen, die du nicht mehr siehst</string>
     <string name="settings_hidden_none">Nichts ausgeblendet</string>
     <string name="hidden_title">Ausgeblendet</string>
-    <string name="hidden_subtitle">Nur für dich ausgeblendet. Niemand wurde benachrichtigt.</string>
+    <string name="hidden_subtitle">Nur für dich ausgeblendet.</string>
     <string name="hidden_lists">LISTEN</string>
     <string name="hidden_people">MENSCHEN</string>
     <string name="action_show_again">Wieder anzeigen</string>

@@ -381,7 +381,7 @@
     <string name="settings_hidden_sub">Listas e pessoas que você deixou de ver</string>
     <string name="settings_hidden_none">Nada oculto</string>
     <string name="hidden_title">Oculto</string>
-    <string name="hidden_subtitle">Oculto apenas para você. Ninguém foi avisado.</string>
+    <string name="hidden_subtitle">Oculto apenas para você.</string>
     <string name="hidden_lists">LISTAS</string>
     <string name="hidden_people">PESSOAS</string>
     <string name="action_show_again">Mostrar de novo</string>

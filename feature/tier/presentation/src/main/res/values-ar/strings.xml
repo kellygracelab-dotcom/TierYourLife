@@ -462,7 +462,7 @@
     <string name="settings_hidden_sub">قوائم وأشخاص لم تعد تراهم</string>
     <string name="settings_hidden_none">لا شيء مخفي</string>
     <string name="hidden_title">المخفي</string>
-    <string name="hidden_subtitle">مخفي عنك وحدك. لم يُبلَّغ أحد.</string>
+    <string name="hidden_subtitle">مخفي عنك وحدك.</string>
     <string name="hidden_lists">القوائم</string>
     <string name="hidden_people">الأشخاص</string>
     <string name="action_show_again">إظهار مجددًا</string>

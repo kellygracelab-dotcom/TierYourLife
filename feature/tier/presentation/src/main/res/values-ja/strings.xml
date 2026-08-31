@@ -327,7 +327,7 @@
     <string name="settings_hidden_sub">表示しなくしたリストと人</string>
     <string name="settings_hidden_none">非表示はありません</string>
     <string name="hidden_title">非表示にしたもの</string>
-    <string name="hidden_subtitle">あなたにだけ非表示です。誰にも通知されていません。</string>
+    <string name="hidden_subtitle">あなたにだけ非表示です。</string>
     <string name="hidden_lists">リスト</string>
     <string name="hidden_people">ユーザー</string>
     <string name="action_show_again">再表示</string>

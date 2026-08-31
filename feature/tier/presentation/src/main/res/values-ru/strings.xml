@@ -408,7 +408,7 @@
     <string name="settings_hidden_sub">Списки и люди, которых вы перестали видеть</string>
     <string name="settings_hidden_none">Ничего не скрыто</string>
     <string name="hidden_title">Скрытое</string>
-    <string name="hidden_subtitle">Скрыто только у вас. Никому об этом не сообщали.</string>
+    <string name="hidden_subtitle">Скрыто только у вас.</string>
     <string name="hidden_lists">СПИСКИ</string>
     <string name="hidden_people">ЛЮДИ</string>
     <string name="action_show_again">Показать снова</string>
