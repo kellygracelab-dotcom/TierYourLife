@@ -13,7 +13,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -59,10 +58,15 @@ class FloatingDragTilePositionTest {
     // stands to the left of the board, the overlay no longer starts where the
     // window does -- and reading one as the other put every dragged card the
     // width of that column too far right.
+    //
+    // Two copies of the same drag, one in an overlay that is the window and
+    // one in an overlay that is a pane inside it. Wherever they land, they
+    // have to land together.
     @Test
     fun theFloatingCopy_ignoresWhereItsOwnPaneBegins() {
         composeRule.setContent {
             TierYourLifeTheme {
+                Box(Modifier.fillMaxSize()) { FloatingDragTile(controllerDraggingTo(POINTER_X)) }
                 Row(Modifier.fillMaxSize()) {
                     Box(Modifier.width(PANE_INSET).fillMaxHeight())
                     Box(Modifier.weight(1f).fillMaxHeight()) {
@@ -72,13 +76,14 @@ class FloatingDragTilePositionTest {
             }
         }
 
-        val bounds = composeRule.onNodeWithTag(TierDetailTestTags.FLOATING_DRAG_TILE)
-            .getUnclippedBoundsInRoot()
-        val centre = with(composeRule.density) { (bounds.left + bounds.right).toPx() / 2f }
+        val copies = composeRule.onAllNodesWithTag(TierDetailTestTags.FLOATING_DRAG_TILE)
+        val fillingTheWindow = copies[0].getUnclippedBoundsInRoot().left.value
+        val besideAColumn = copies[1].getUnclippedBoundsInRoot().left.value
 
         assertTrue(
-            "the pointer was at $POINTER_X but the copy was centred on $centre",
-            abs(centre - POINTER_X) < 2f,
+            "the copy sat at $fillingTheWindow on its own and $besideAColumn beside a " +
+                "column of boards, but the pointer was in the same place for both",
+            abs(fillingTheWindow - besideAColumn) < 2f,
         )
     }
 
@@ -100,6 +105,6 @@ class FloatingDragTilePositionTest {
 
     private companion object {
         const val POINTER_X = 700f
-        val PANE_INSET = 320.dp
+        val PANE_INSET = 96.dp
     }
 }
