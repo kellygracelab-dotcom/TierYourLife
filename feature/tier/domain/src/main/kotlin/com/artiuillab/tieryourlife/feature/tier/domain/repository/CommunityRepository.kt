@@ -35,7 +35,11 @@ interface CommunityRepository {
      * Publishes a snapshot and answers with the id it was stored under. Passing
      * the previous id replaces that snapshot instead of adding another.
      */
-    suspend fun publish(list: TierList): Result<String>
+    /**
+     * Answers with the id the feed keeps it under and a record of what was
+     * sent, so the board can later tell whether it has moved on.
+     */
+    suspend fun publish(list: TierList): Result<Published>
 
     suspend fun unpublish(publishedId: String): Result<Unit>
 
@@ -60,3 +64,6 @@ interface CommunityRepository {
     /** Closes the complaints about a list and leaves the list alone. */
     suspend fun dismissReports(publishedId: String): Result<Unit>
 }
+
+/** What came back from publishing: where it lives, and what went. */
+data class Published(val id: String, val fingerprint: String)

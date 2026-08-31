@@ -391,6 +391,8 @@
     <string name="my_published_empty_body">Lists you make public show up here.</string>
     <string name="my_published_failed">Could not load your public lists</string>
     <string name="my_published_action_open">Open</string>
+    <string name="my_published_behind">The published copy is behind this board.</string>
+    <string name="my_published_action_update">Update</string>
     <string name="community_tile_hidden">Hidden for you</string>
     <string name="community_tile_reported">Reported. A person will look at it.</string>
     <plurals name="settings_account_signed_in_credits">

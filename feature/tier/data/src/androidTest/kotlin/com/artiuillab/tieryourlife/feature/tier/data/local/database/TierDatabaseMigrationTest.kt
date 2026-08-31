@@ -264,6 +264,31 @@ class TierDatabaseMigrationTest {
         assertTrue("renaming the board should age it", editedAt(migratedDb) > 1)
     }
 
+    /**
+     * A board published before this column existed says nothing about what was
+     * sent, and null is the right answer: claiming its published copy is
+     * behind would send somebody to republish a list that was already right.
+     */
+    @Test
+    fun migration8To9_leavesAnAlreadyPublishedBoardSayingNothingAboutWhatWasSent() {
+        helper.createDatabase(TEST_DB, 8).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, authorName, " +
+                    "category, coverImageUrl, uid, arrivedFrom, editedAt) " +
+                    "VALUES (1, 'Films', NULL, 'WRAP', 'published-1', NULL, NULL, NULL, 'board-1', NULL, 1)",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 9, true, MIGRATION_8_9)
+
+        migratedDb.query("SELECT publishedId, publishedFingerprint FROM tier_lists WHERE id = 1").use {
+            check(it.moveToFirst())
+            assertEquals("published-1", it.getString(0))
+            assertTrue("nothing is known about what was sent", it.isNull(1))
+        }
+    }
+
     private fun editedAt(db: androidx.sqlite.db.SupportSQLiteDatabase): Long =
         db.query("SELECT editedAt FROM tier_lists WHERE id = 1").use {
             check(it.moveToFirst())

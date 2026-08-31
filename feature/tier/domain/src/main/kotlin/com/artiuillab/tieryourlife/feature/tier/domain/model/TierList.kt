@@ -7,6 +7,16 @@ data class TierList(
     val displayMode: TierListDisplayMode = TierListDisplayMode.WRAP,
     /** Set once this list has been published; the id the server keeps it under. */
     val publishedId: String? = null,
+    /**
+     * What was sent the last time this board was published, so that the board
+     * can tell whether it has moved on since.
+     *
+     * Opaque: nothing reads it, only compares it. Null on a board published
+     * before this was recorded, which reads as "we do not know" -- and not
+     * knowing must never be shown as "behind", or somebody is sent to republish
+     * a list that was already right.
+     */
+    val publishedFingerprint: String? = null,
     /** Set on a copy taken from someone else's published list. */
     val authorName: String? = null,
     /** Where this list sits in the community feed. Required before publishing. */

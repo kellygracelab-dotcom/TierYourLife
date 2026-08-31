@@ -437,6 +437,8 @@
     <string name="my_published_empty_body">Списки, которые ты сделаешь публичными, появятся здесь.</string>
     <string name="my_published_failed">Не удалось загрузить твои публичные списки</string>
     <string name="my_published_action_open">Открыть</string>
+    <string name="my_published_behind">Опубликованная версия отстала от вашей доски.</string>
+    <string name="my_published_action_update">Обновить</string>
     <string name="community_tile_hidden">Скрыто у тебя</string>
     <string name="community_tile_reported">Жалоба отправлена. Человек посмотрит.</string>
     <plurals name="settings_account_signed_in_credits">

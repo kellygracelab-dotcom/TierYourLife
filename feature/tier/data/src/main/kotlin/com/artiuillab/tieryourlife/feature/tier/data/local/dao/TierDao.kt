@@ -122,8 +122,10 @@ interface TierDao {
     )
     suspend fun cardImageUrls(limit: Int): List<String>
 
-    @Query("UPDATE tier_lists SET publishedId = :publishedId WHERE id = :id")
-    suspend fun setPublishedId(id: Long, publishedId: String?)
+    // Both together, always: an id without the fingerprint that goes with it
+    // would claim the published copy is behind the moment anybody looked.
+    @Query("UPDATE tier_lists SET publishedId = :publishedId, publishedFingerprint = :fingerprint WHERE id = :id")
+    suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?)
 
     @Query("UPDATE tier_lists SET category = :category WHERE id = :id")
     suspend fun setCategory(id: Long, category: String?)

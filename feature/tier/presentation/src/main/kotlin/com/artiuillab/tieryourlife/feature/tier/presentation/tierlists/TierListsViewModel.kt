@@ -414,7 +414,7 @@ class TierListsViewModel @Inject constructor(
             val publishedId = list.publishedId ?: return@mapNotNull null
             community.unpublish(publishedId).fold(
                 onSuccess = {
-                    repository.setPublishedId(list.id, null)
+                    repository.setPublished(list.id, null, null)
                     null
                 },
                 onFailure = { error ->

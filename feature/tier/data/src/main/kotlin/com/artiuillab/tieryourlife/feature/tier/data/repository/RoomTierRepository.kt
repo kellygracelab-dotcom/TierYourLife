@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewTemplateTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
+import com.artiuillab.tieryourlife.feature.tier.data.sync.PublishFingerprint
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -49,9 +50,20 @@ class RoomTierRepository internal constructor(
         items = items.map { NewPoolItem(it.title, it.imageUrl) },
     )
 
-    override suspend fun setPublishedId(id: Long, publishedId: String?) {
-        dao.setPublishedId(id, publishedId)
+    override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) {
+        dao.setPublished(id, publishedId, fingerprint)
     }
+
+    override suspend fun publishedCopiesLeftBehind(): Set<String> = dao.getAllTierListsWithTiers()
+        .mapNotNull { it.toDomain().takeIf { board -> board.publishedFingerprint != null } }
+        .filter { board -> PublishFingerprint.of(board, imageStore::pictureIdOf) != board.publishedFingerprint }
+        .mapNotNull { board -> board.publishedId }
+        .toSet()
+
+    override suspend fun boardPublishedAs(publishedId: String): TierList? =
+        dao.getAllTierListsWithTiers()
+            .map { it.toDomain() }
+            .firstOrNull { board -> board.publishedId == publishedId }
 
     override suspend fun setCategory(id: Long, category: ListCategory?) {
         dao.setCategory(id, category?.id)

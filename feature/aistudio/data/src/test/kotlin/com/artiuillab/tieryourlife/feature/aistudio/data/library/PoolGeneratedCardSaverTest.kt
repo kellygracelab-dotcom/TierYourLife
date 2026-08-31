@@ -46,7 +46,11 @@ private class FakeTierRepository : TierRepository {
         items: List<TierItem>,
     ): Long = 0
 
-    override suspend fun setPublishedId(id: Long, publishedId: String?) = Unit
+    override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) = Unit
+
+    override suspend fun publishedCopiesLeftBehind(): Set<String> = emptySet()
+
+    override suspend fun boardPublishedAs(publishedId: String): TierList? = null
 
     val addCalls = mutableListOf<AddCall>()
     val attachCalls = mutableListOf<Pair<Long, String>>()

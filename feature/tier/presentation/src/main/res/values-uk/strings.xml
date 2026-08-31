@@ -437,6 +437,8 @@
     <string name="my_published_empty_body">Списки, які ти зробиш публічними, з’являться тут.</string>
     <string name="my_published_failed">Не вдалося завантажити твої публічні списки</string>
     <string name="my_published_action_open">Відкрити</string>
+    <string name="my_published_behind">Опублікована версія відстала від вашої дошки.</string>
+    <string name="my_published_action_update">Оновити</string>
     <string name="community_tile_hidden">Сховано в тебе</string>
     <string name="community_tile_reported">Скаргу надіслано. Людина подивиться.</string>
     <plurals name="settings_account_signed_in_credits">

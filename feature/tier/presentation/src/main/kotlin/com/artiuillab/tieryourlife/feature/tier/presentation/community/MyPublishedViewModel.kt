@@ -16,7 +16,16 @@ import javax.inject.Inject
 sealed interface MyPublishedUiState {
     data object Loading : MyPublishedUiState
 
-    data class Ready(val lists: List<PublishedListSummary>, val removing: String? = null) : MyPublishedUiState
+    data class Ready(
+        val lists: List<PublishedListSummary>,
+        val removing: String? = null,
+        /**
+         * The ones whose board has been edited since. Only these offer to be
+         * brought up to date -- for the rest there is nothing to send.
+         */
+        val behind: Set<String> = emptySet(),
+        val updating: String? = null,
+    ) : MyPublishedUiState
 
     data object Failed : MyPublishedUiState
 }
@@ -36,8 +45,11 @@ class MyPublishedViewModel @Inject constructor(
 
     fun load() {
         viewModelScope.launch {
+            val behind = runCatching { tiers.publishedCopiesLeftBehind() }
+                .onFailure { Timber.w(it, "Comparing published copies failed") }
+                .getOrDefault(emptySet())
             _state.value = community.myPublished().fold(
-                onSuccess = { MyPublishedUiState.Ready(it) },
+                onSuccess = { MyPublishedUiState.Ready(lists = it, behind = behind) },
                 onFailure = { error ->
                     Timber.w(error, "Reading your published lists failed")
                     MyPublishedUiState.Failed
@@ -70,9 +82,44 @@ class MyPublishedViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Sends the board again, over the copy already in the feed.
+     *
+     * The same id, so the same link: anybody who has it keeps it, and the
+     * people who saw the list yesterday find the same list today. Taking it
+     * down and publishing again would work and would break every link given
+     * out, which is the one thing publishing is for.
+     */
+    fun update(publishedId: String) {
+        val shown = _state.value as? MyPublishedUiState.Ready ?: return
+        if (shown.updating != null || shown.removing != null) return
+
+        _state.value = shown.copy(updating = publishedId)
+        viewModelScope.launch {
+            val board = runCatching { tiers.boardPublishedAs(publishedId) }.getOrNull()
+            if (board == null) {
+                // Published from a phone this one no longer is. There is
+                // nothing here to send, and saying so beats a button that
+                // fails silently.
+                _state.value = shown.copy(updating = null)
+                return@launch
+            }
+            community.publish(board).fold(
+                onSuccess = { published ->
+                    runCatching { tiers.setPublished(board.id, published.id, published.fingerprint) }
+                    _state.value = shown.copy(updating = null, behind = shown.behind - publishedId)
+                },
+                onFailure = { error ->
+                    Timber.w(error, "Updating $publishedId failed")
+                    _state.value = shown.copy(updating = null)
+                },
+            )
+        }
+    }
+
     private suspend fun forgetLocally(publishedId: String) {
         val mine = runCatching { tiers.getAllTierLists() }.getOrNull().orEmpty()
         mine.firstOrNull { it.publishedId == publishedId }
-            ?.let { runCatching { tiers.setPublishedId(it.id, null) } }
+            ?.let { runCatching { tiers.setPublished(it.id, null, null) } }
     }
 }

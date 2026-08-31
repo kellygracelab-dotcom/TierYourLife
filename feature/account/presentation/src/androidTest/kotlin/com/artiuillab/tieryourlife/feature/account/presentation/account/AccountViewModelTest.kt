@@ -21,6 +21,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.MergeChoice
 import kotlinx.coroutines.flow.Flow
@@ -187,7 +188,7 @@ private class FakeCommunityForAccount : CommunityRepository {
 
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
 
-    override suspend fun publish(list: TierList): Result<String> = Result.failure(IllegalStateException())
+    override suspend fun publish(list: TierList): Result<Published> = Result.failure(IllegalStateException())
 
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
 

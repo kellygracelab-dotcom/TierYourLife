@@ -437,6 +437,8 @@
     <string name="my_published_empty_body">Listy, które upublicznisz, pojawią się tutaj.</string>
     <string name="my_published_failed">Nie udało się wczytać twoich publicznych list</string>
     <string name="my_published_action_open">Otwórz</string>
+    <string name="my_published_behind">Opublikowana wersja jest starsza niż ta lista.</string>
+    <string name="my_published_action_update">Aktualizuj</string>
     <string name="community_tile_hidden">Ukryte u ciebie</string>
     <string name="community_tile_reported">Zgłoszono. Człowiek to sprawdzi.</string>
     <plurals name="settings_account_signed_in_credits">

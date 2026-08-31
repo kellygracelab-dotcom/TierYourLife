@@ -409,6 +409,8 @@
     <string name="my_published_empty_body">Las listas que hagas públicas aparecen aquí.</string>
     <string name="my_published_failed">No se pudieron cargar tus listas públicas</string>
     <string name="my_published_action_open">Abrir</string>
+    <string name="my_published_behind">La versión publicada está desactualizada.</string>
+    <string name="my_published_action_update">Actualizar</string>
     <string name="community_tile_hidden">Oculto para ti</string>
     <string name="community_tile_reported">Denunciado. Una persona lo revisará.</string>
     <plurals name="settings_account_signed_in_credits">

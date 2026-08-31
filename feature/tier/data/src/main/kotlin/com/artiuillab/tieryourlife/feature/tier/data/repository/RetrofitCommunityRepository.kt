@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListSum
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ReportRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.sync.PictureSync
+import com.artiuillab.tieryourlife.feature.tier.data.sync.PublishFingerprint
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
@@ -22,6 +23,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.Published
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
@@ -53,7 +55,7 @@ class RetrofitCommunityRepository @Inject constructor(
         api.open(id).toDomain()
     }
 
-    override suspend fun publish(list: TierList): Result<String> = try {
+    override suspend fun publish(list: TierList): Result<Published> = try {
         // The server copies a photograph out of this account's folder, so it
         // has to be in that folder first. Sending them here rather than
         // trusting the background trickle: publishing is a button somebody
@@ -62,7 +64,8 @@ class RetrofitCommunityRepository @Inject constructor(
         val up = pictures.sendNow(list.ownPictureIds(images))
         val request = list.toRequest(images, up)
         val existing = list.publishedId
-        Result.success(if (existing == null) api.publish(request).id else api.republish(existing, request).id)
+        val id = if (existing == null) api.publish(request).id else api.republish(existing, request).id
+        Result.success(Published(id = id, fingerprint = PublishFingerprint.of(list, images::pictureIdOf)))
     } catch (e: Exception) {
         Timber.w(e, "Publishing failed")
         Result.failure(PublishRefused(e.asPublishError()))
