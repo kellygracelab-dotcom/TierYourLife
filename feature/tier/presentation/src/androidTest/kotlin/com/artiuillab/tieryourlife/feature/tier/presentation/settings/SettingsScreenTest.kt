@@ -1,6 +1,9 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.settings
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
@@ -12,6 +15,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
@@ -77,6 +82,19 @@ class SettingsScreenTest {
         composeRule.onNodeWithTag(SettingsTestTags.languageOption("ru")).assertIsNotSelected()
     }
 
+    // Eleven of them, and on a tablet this is a dialog with a ceiling rather
+    // than a sheet with the rest of the screen under it. The last language has
+    // to be reachable, not merely drawn past the bottom edge.
+    @Test
+    fun languageSheet_reachesItsLastOption() {
+        setScreen(languageTag = null)
+        composeRule.onNodeWithTag(SettingsTestTags.LANGUAGE_ROW).performClick()
+
+        composeRule.onNodeWithTag(SettingsTestTags.languageOption("ar"))
+            .performScrollTo()
+            .assertIsDisplayed()
+    }
+
     @Test
     fun languageSheet_selectingALanguage_reportsItsTag_andClosesTheSheet() {
         var reportedTag: String? = "unset"
@@ -111,9 +129,12 @@ class SettingsScreenTest {
         assertTrue("dark should sit to the right of light", dark.left > light.left)
     }
 
+    // Stacking is the answer to labels that no longer fit across the width, so
+    // the width has to be part of the question. A tablet at double scale still
+    // has room for all three side by side, and is right to keep them there.
     @Test
     fun themeControl_atDoubleFontScale_stacksTheThreeChoices() {
-        setScreen(languageTag = null, fontScale = 2f)
+        setScreen(languageTag = null, fontScale = 2f, width = PHONE_WIDTH)
 
         val light = composeRule.onNodeWithTag(SettingsTestTags.THEME_LIGHT).getUnclippedBoundsInRoot()
         val dark = composeRule.onNodeWithTag(SettingsTestTags.THEME_DARK).getUnclippedBoundsInRoot()
@@ -129,12 +150,14 @@ class SettingsScreenTest {
         languageTag: String?,
         onLanguageTagChange: (String?) -> Unit = {},
         fontScale: Float = 1f,
+        width: Dp = Dp.Unspecified,
     ) {
         composeRule.setContent {
             val density = LocalDensity.current
             CompositionLocalProvider(
                 LocalDensity provides Density(density.density, fontScale),
             ) {
+            Box(if (width == Dp.Unspecified) Modifier else Modifier.width(width)) {
             TierYourLifeTheme {
                 SettingsScreenContent(
                     account = Account.Guest,
@@ -154,7 +177,12 @@ class SettingsScreenTest {
                 )
             }
             }
+            }
         }
+    }
+
+    private companion object {
+        val PHONE_WIDTH = 360.dp
     }
 
     private fun string(resourceId: Int): String =

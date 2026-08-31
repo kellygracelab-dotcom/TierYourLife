@@ -1,7 +1,10 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -10,6 +13,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -51,6 +55,33 @@ class FloatingDragTilePositionTest {
         )
     }
 
+    // The pointer is reported against the window. Once a column of boards
+    // stands to the left of the board, the overlay no longer starts where the
+    // window does -- and reading one as the other put every dragged card the
+    // width of that column too far right.
+    @Test
+    fun theFloatingCopy_ignoresWhereItsOwnPaneBegins() {
+        composeRule.setContent {
+            TierYourLifeTheme {
+                Row(Modifier.fillMaxSize()) {
+                    Box(Modifier.width(PANE_INSET).fillMaxHeight())
+                    Box(Modifier.weight(1f).fillMaxHeight()) {
+                        FloatingDragTile(controllerDraggingTo(POINTER_X))
+                    }
+                }
+            }
+        }
+
+        val bounds = composeRule.onNodeWithTag(TierDetailTestTags.FLOATING_DRAG_TILE)
+            .getUnclippedBoundsInRoot()
+        val centre = with(composeRule.density) { (bounds.left + bounds.right).toPx() / 2f }
+
+        assertTrue(
+            "the pointer was at $POINTER_X but the copy was centred on $centre",
+            abs(centre - POINTER_X) < 2f,
+        )
+    }
+
     private fun controllerDraggingTo(pointerX: Float) = TierDragController().apply {
         registerRowBounds(tierId = 1L, bounds = Rect(0f, 0f, 1000f, 200f))
         setValidTargets(tierIds = listOf(1L), itemIds = listOf(2L))
@@ -69,5 +100,6 @@ class FloatingDragTilePositionTest {
 
     private companion object {
         const val POINTER_X = 700f
+        val PANE_INSET = 320.dp
     }
 }

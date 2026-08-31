@@ -23,13 +23,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TierYourLife">
         <!--
-            No screenOrientation here on purpose. Upright is right for a phone,
-            where a board is a column of rows and turning only cuts the rows
-            short, but it is wrong for a tablet, which has the width to spend.
-            The activity asks for portrait only while its own window is compact
-            (see orientationFor), which answers a folding phone as well as a
-            tablet. From Android 16 a large screen ignores the request in any
-            case.
+            No screenOrientation, and nothing in code asking for one either. A
+            phone was held upright for a while on the argument that a board is a
+            column of rows and turning it only cuts the rows short. That is a
+            reason to prefer upright, not a reason to refuse sideways: whoever
+            is holding the phone can see the screen, and the app taking the
+            decision away is the part they notice.
         -->
         <activity
             android:name=".MainActivity"

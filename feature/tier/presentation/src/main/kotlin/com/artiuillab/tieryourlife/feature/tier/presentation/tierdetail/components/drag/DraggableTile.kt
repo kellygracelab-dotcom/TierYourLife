@@ -124,13 +124,16 @@ internal fun FloatingDragTile(dragController: TierDragController) {
     val shape = RoundedCornerShape(6.dp)
     val readingDirection = LocalLayoutDirection.current
 
-    ForcedLeftToRightOverlay {
+    ForcedLeftToRightOverlay { origin ->
         Box(
             modifier = Modifier
                 .absoluteOffset {
+                    // The pointer is measured against the window; this places
+                    // against whatever pane the overlay sits in. Beside a
+                    // column of boards those are four hundred points apart.
                     IntOffset(
-                        x = (position.x - halfWidthPx).roundToInt(),
-                        y = (position.y - halfHeightPx).roundToInt(),
+                        x = (position.x - origin.x - halfWidthPx).roundToInt(),
+                        y = (position.y - origin.y - halfHeightPx).roundToInt(),
                     )
                 }
                 .size(payload.width, payload.height)
