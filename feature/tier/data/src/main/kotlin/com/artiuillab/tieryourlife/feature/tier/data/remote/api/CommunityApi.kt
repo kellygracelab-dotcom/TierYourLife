@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.remote.api
 
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.FaceDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ModerationQueueDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedFeedDto
@@ -47,6 +48,9 @@ interface CommunityApi {
 
     @DELETE("lists/{id}")
     suspend fun unpublish(@Path("id") id: String)
+
+    @POST("lists/face/{pictureId}")
+    suspend fun makeFace(@Path("pictureId") pictureId: String): FaceDto
 
     @PATCH("lists")
     suspend fun refreshAuthor()

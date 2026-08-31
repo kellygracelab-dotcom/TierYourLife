@@ -166,7 +166,7 @@ class ReadmeScreenshotTest {
         )
 
         "community-list" -> CommunityListScreenContent(
-            state = CommunityListUiState.Success(filmBoard(), "Olena M.", "u1"),
+            state = CommunityListUiState.Success(list = filmBoard(), authorName = "Olena M.", authorUid = "u1"),
             onBack = {},
             onMoveItem = { _, _, _ -> },
             onSave = {},

@@ -58,7 +58,8 @@ private class RecordingTierDao : TierDao {
 
     override suspend fun cardImageUrls(limit: Int): List<String> = emptyList()
 
-    override suspend fun setPublishedId(id: Long, publishedId: String?) = Unit
+    override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) = Unit
+
     val markedListDeletes = mutableListOf<Pair<List<Long>, Long>>()
     val markedItemDeletes = mutableListOf<Pair<Long, Long>>()
     val permanentlyDeletedListIds = mutableListOf<Long>()

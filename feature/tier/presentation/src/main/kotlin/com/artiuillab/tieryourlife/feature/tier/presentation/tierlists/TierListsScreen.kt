@@ -14,6 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -65,6 +69,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.community.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardTile
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.CommunityFeedList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ConflictBanner
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeEmptyState
@@ -77,6 +82,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchOffIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SelectionTopBar
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.TILE_MIN_WIDTH
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.TierListCard
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.previewTierLists
 import kotlinx.coroutines.flow.Flow
@@ -144,6 +150,7 @@ fun TierListsScreen(
         onRetryCommunity = viewModel::loadCommunityFeed,
         onLoadMoreCommunity = viewModel::loadMoreCommunity,
         onSelectCommunityCategory = viewModel::selectCommunityCategory,
+        onToggleView = viewModel::toggleBoardsAsPictures,
         onHideCommunityList = viewModel::hideCommunityList,
         onHideCommunityAuthor = viewModel::hideCommunityAuthor,
         onReportCommunityList = viewModel::reportCommunityList,
@@ -178,6 +185,7 @@ internal fun TierListsScreenContent(
     onHideCommunityList: (PublishedListSummary) -> Unit = {},
     onHideCommunityAuthor: (uid: String, name: String) -> Unit = { _, _ -> },
     onReportCommunityList: (PublishedListSummary, ReportReason, String?) -> Unit = { _, _, _ -> },
+    onToggleView: () -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val success = state as? TierListsUiState.Success
@@ -191,6 +199,7 @@ internal fun TierListsScreenContent(
     val localOnly = success?.localOnly ?: LocalOnly.Unknown
     val restoringPictures = success?.restoringPictures ?: PictureRestore.Progress.Idle
     val conflict = success?.conflict
+    val asPictures = success?.asPictures ?: false
     val hasRail = currentWindowShape.hasRail
     var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var reportFor by remember { mutableStateOf<PublishedListSummary?>(null) }
@@ -265,6 +274,11 @@ internal fun TierListsScreenContent(
                         // to the same screen, one of them a leftover, is how a
                         // tablet layout starts looking unconsidered.
                         onSettingsClick = onSettingsClick.takeUnless { hasRail },
+                        asPictures = asPictures,
+                        // Only over your own boards: the feed has one shape,
+                        // and a control that changes nothing is a control that
+                        // teaches people to distrust the others.
+                        onToggleView = onToggleView.takeIf { tab == HomeTab.Mine },
                     )
                 }
 
@@ -331,6 +345,7 @@ internal fun TierListsScreenContent(
 
                         else -> HomeContent(
                             lists = lists,
+                            asPictures = asPictures,
                             mode = mode,
                             localOnly = localOnly,
                             conflict = conflict,
@@ -438,6 +453,7 @@ internal fun TierListsScreenContent(
 @Composable
 private fun HomeContent(
     lists: List<TierList>,
+    asPictures: Boolean,
     mode: HomeMode,
     localOnly: LocalOnly,
     conflict: TierList?,
@@ -451,6 +467,24 @@ private fun HomeContent(
     val isSelecting = mode is HomeMode.Selecting
     val selectedIds = (mode as? HomeMode.Selecting)?.selectedIds.orEmpty()
     val here = localOnly as? LocalOnly.Here
+
+    if (asPictures) {
+        BoardTiles(
+            lists = lists,
+            here = here,
+            conflict = conflict?.takeUnless { isSelecting },
+            isSelecting = isSelecting,
+            selectedIds = selectedIds,
+            onTierListClick = onTierListClick,
+            onLongPressCard = onLongPressCard,
+            onToggleSelected = onToggleSelected,
+            onSignInClick = onSignInClick,
+            onDismissSignInOffer = onDismissSignInOffer,
+            onDismissConflictNotice = onDismissConflictNotice,
+        )
+        return
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -505,6 +539,68 @@ private fun HomeContent(
                 CenteredContent(ContentWidth.Reading, Modifier.padding(horizontal = 16.dp)) {
                     LocalOnlyFooter(boardCount = lists.size)
                 }
+            }
+        }
+    }
+}
+
+/**
+ * The same boards as pictures.
+ *
+ * Everything above them -- the conflict notice, the offer to sign in -- spans
+ * the grid rather than sitting in a column of its own: those are about all the
+ * boards, and a notice the width of one tile reads as being about that tile.
+ */
+@Composable
+private fun BoardTiles(
+    lists: List<TierList>,
+    here: LocalOnly.Here?,
+    conflict: TierList?,
+    isSelecting: Boolean,
+    selectedIds: Set<Long>,
+    onTierListClick: (Long) -> Unit,
+    onLongPressCard: (Long) -> Unit,
+    onToggleSelected: (Long) -> Unit,
+    onSignInClick: () -> Unit,
+    onDismissSignInOffer: () -> Unit,
+    onDismissConflictNotice: (String) -> Unit,
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = TILE_MIN_WIDTH),
+        modifier = Modifier.fillMaxSize().testTag(TierListsTestTags.LISTS),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        if (conflict != null) {
+            item(key = "conflict-banner", span = { GridItemSpan(maxLineSpan) }) {
+                ConflictBanner(
+                    title = conflict.title,
+                    onGotIt = { onDismissConflictNotice(conflict.title) },
+                )
+            }
+        }
+        if (here?.offerSignIn == true && !isSelecting) {
+            item(key = "local-only-card", span = { GridItemSpan(maxLineSpan) }) {
+                LocalOnlySignInCard(
+                    boardCount = lists.size,
+                    onSignIn = onSignInClick,
+                    onDismiss = onDismissSignInOffer,
+                )
+            }
+        }
+        items(lists, key = { it.id }) { list ->
+            BoardTile(
+                list = list,
+                onClick = { if (isSelecting) onToggleSelected(list.id) else onTierListClick(list.id) },
+                onLongClick = { if (!isSelecting) onLongPressCard(list.id) },
+                selectionMode = isSelecting,
+                selected = list.id in selectedIds,
+            )
+        }
+        if (here != null) {
+            item(key = "local-only-footer", span = { GridItemSpan(maxLineSpan) }) {
+                LocalOnlyFooter(boardCount = lists.size)
             }
         }
     }

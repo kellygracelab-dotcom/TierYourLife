@@ -237,6 +237,14 @@ private object OnWifiAlways : AppPreferences, Connection {
     override fun hiddenAuthors(): List<HiddenEntry> = emptyList()
     override fun hideAuthor(authorUid: String, name: String) = Unit
     override fun unhideAuthor(authorUid: String) = Unit
+    private var asPictures = false
+
+    override fun boardsAsPictures(): Boolean = asPictures
+
+    override fun setBoardsAsPictures(asPictures: Boolean) {
+        this.asPictures = asPictures
+    }
+
     override fun backUpBoards(): Boolean = true
     override fun setBackUpBoards(backUp: Boolean) = Unit
     override fun signInOfferAnswered(): Boolean = false

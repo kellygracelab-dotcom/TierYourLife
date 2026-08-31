@@ -16,6 +16,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -67,6 +70,7 @@ fun CommunityListScreen(
         onMoveItem = viewModel::moveItem,
         onSave = { viewModel.saveToMyLists(onSaved) },
         onRetry = viewModel::load,
+        onShow = viewModel::show,
         onAuthorClick = onAuthorClick,
         onHide = {
             viewModel.hide()
@@ -88,6 +92,7 @@ internal fun CommunityListScreenContent(
     onSave: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onShow: (Showing) -> Unit = {},
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit = { _, _, _ -> },
     onHide: () -> Unit = {},
     onHideAuthor: (uid: String, name: String) -> Unit = { _, _ -> },
@@ -135,12 +140,22 @@ internal fun CommunityListScreenContent(
             ) {
                 Box(Modifier.weight(1f)) {
                     TierDetailScreenContent(
-                        state = TierDetailUiState.Success(state.list),
+                        // Read-only while their arrangement is on screen: it
+                        // is theirs, and a card that slides under your finger
+                        // and then springs back on the way to your own board
+                        // is a promise the screen cannot keep.
+                        state = TierDetailUiState.Success(state.shown),
                         actions = TierDetailActions(onBack = onBack, onMoveItem = onMoveItem),
                         readOnly = true,
                         subtitle = stringResource(R.string.community_by_author, state.authorName),
                         onReaderMoreClick = { actionsVisible = true },
                     )
+                }
+                // Only where there is something to switch to. A snapshot from
+                // before the author's arrangement was recorded has one half,
+                // and a control over an empty choice is a control that lies.
+                if (state.knowsTheirs) {
+                    WhoseArrangement(showing = state.showing, onShow = onShow)
                 }
                 SaveBar(arranged = state.arranged, saving = state.saving, onSave = onSave)
             }
@@ -193,6 +208,41 @@ internal fun CommunityListScreenContent(
                         reportedFrom = false
                         onHideAuthor(loaded.authorUid, loaded.authorName)
                     },
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Whose ranking is on screen: the author's, or the reader's own.
+ *
+ * Two boards rather than one, so a reader who has spent ten minutes on theirs
+ * and glances at the author's finds their work where they left it.
+ */
+@Composable
+private fun WhoseArrangement(showing: Showing, onShow: (Showing) -> Unit) {
+    SingleChoiceSegmentedButtonRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .height(40.dp),
+    ) {
+        Showing.entries.forEachIndexed { index, which ->
+            SegmentedButton(
+                selected = showing == which,
+                onClick = { onShow(which) },
+                shape = SegmentedButtonDefaults.itemShape(index, Showing.entries.size),
+                modifier = Modifier.testTag(CommunityTestTags.showing(which)),
+            ) {
+                Text(
+                    stringResource(
+                        if (which == Showing.Theirs) {
+                            R.string.community_showing_theirs
+                        } else {
+                            R.string.community_showing_mine
+                        },
+                    ),
                 )
             }
         }
@@ -271,7 +321,7 @@ private val previewList = TierList(
 @Composable
 private fun CommunityListPreview() = TierYourLifeTheme {
     CommunityListScreenContent(
-        state = CommunityListUiState.Success(previewList, "Olena M."),
+        state = CommunityListUiState.Success(list = previewList, authorName = "Olena M."),
         onBack = {},
         onMoveItem = { _, _, _ -> },
         onSave = {},
@@ -283,7 +333,7 @@ private fun CommunityListPreview() = TierYourLifeTheme {
 @Composable
 private fun CommunityListArrangedDarkPreview() = TierYourLifeTheme(true) {
     CommunityListScreenContent(
-        state = CommunityListUiState.Success(previewList, "Olena M.", arranged = true),
+        state = CommunityListUiState.Success(list = previewList, authorName = "Olena M.", arranged = true),
         onBack = {},
         onMoveItem = { _, _, _ -> },
         onSave = {},

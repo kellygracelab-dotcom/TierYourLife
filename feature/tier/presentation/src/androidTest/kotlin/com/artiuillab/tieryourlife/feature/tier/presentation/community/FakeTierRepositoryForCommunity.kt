@@ -35,9 +35,13 @@ internal class FakeTierRepositoryForCommunity(
         return 7L
     }
 
-    override suspend fun setPublishedId(id: Long, publishedId: String?) {
+    override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) {
         if (publishedId == null) clearedPublishedId = id
     }
+
+    override suspend fun publishedCopiesLeftBehind(): Set<String> = emptySet()
+
+    override suspend fun boardPublishedAs(publishedId: String): TierList? = null
 
     override suspend fun setCategory(id: Long, category: ListCategory?) = Unit
 

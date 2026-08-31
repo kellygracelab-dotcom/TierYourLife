@@ -38,6 +38,8 @@
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · لم يتم تصنيف أي شيء بعد</string>
     <string name="tier_lists_status_start_dragging">اسحب لتبدأ التصنيف</string>
     <string name="tier_lists_content_description_search">البحث في قوائمك</string>
+    <string name="tier_lists_content_description_as_pictures">عرض اللوحات كصور</string>
+    <string name="tier_lists_content_description_as_rows">عرض اللوحات كقائمة</string>
     <string name="tier_lists_content_description_settings">الإعدادات</string>
 
     <string name="home_search_hint">البحث في قوائمك</string>
@@ -388,6 +390,8 @@
     <string name="home_community_failed">تعذّر تحميل المجتمع</string>
     <string name="home_community_failed_body">تحقق من اتصالك.</string>
     <string name="community_by_author">من %1$s</string>
+    <string name="community_showing_theirs">ترتيبه</string>
+    <string name="community_showing_mine">ترتيبي</string>
     <string name="community_save_to_my_lists">احفظ في قوائمي</string>
     <string name="community_someone_elses">قائمة شخص آخر. رتّبها كما يحلو لك.</string>
     <string name="community_not_saved_yet">ترتيبك لم يُحفظ بعد.</string>
@@ -493,6 +497,8 @@
     <string name="my_published_empty_body">تظهر هنا القوائم التي تجعلها عامة.</string>
     <string name="my_published_failed">تعذّر تحميل قوائمك العامة</string>
     <string name="my_published_action_open">فتح</string>
+    <string name="my_published_behind">النسخة المنشورة متأخرة عن هذه اللوحة.</string>
+    <string name="my_published_action_update">تحديث</string>
     <string name="community_tile_hidden">مخفي عنك</string>
     <string name="community_tile_reported">تم الإبلاغ. سيطّلع عليه شخص.</string>
     <plurals name="settings_account_signed_in_credits">

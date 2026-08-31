@@ -30,6 +30,8 @@
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · ще нічого не оцінено</string>
     <string name="tier_lists_status_start_dragging">Перетягніть, щоб оцінити</string>
     <string name="tier_lists_content_description_search">Пошук у ваших списках</string>
+    <string name="tier_lists_content_description_as_pictures">Показати дошки картинками</string>
+    <string name="tier_lists_content_description_as_rows">Показати дошки списком</string>
     <string name="tier_lists_content_description_settings">Налаштування</string>
 
     <string name="home_search_hint">Пошук у ваших списках</string>
@@ -338,6 +340,8 @@
     <string name="home_community_failed">Не вдалося завантажити спільноту</string>
     <string name="home_community_failed_body">Перевірте з\'єднання.</string>
     <string name="community_by_author">від %1$s</string>
+    <string name="community_showing_theirs">Його розташування</string>
+    <string name="community_showing_mine">Моє</string>
     <string name="community_save_to_my_lists">Зберегти собі</string>
     <string name="community_someone_elses">Чужий список. Розкладіть його як забажаєте.</string>
     <string name="community_not_saved_yet">Ваша розкладка ще не збережена.</string>
@@ -437,6 +441,8 @@
     <string name="my_published_empty_body">Списки, які ти зробиш публічними, з’являться тут.</string>
     <string name="my_published_failed">Не вдалося завантажити твої публічні списки</string>
     <string name="my_published_action_open">Відкрити</string>
+    <string name="my_published_behind">Опублікована версія відстала від вашої дошки.</string>
+    <string name="my_published_action_update">Оновити</string>
     <string name="community_tile_hidden">Сховано в тебе</string>
     <string name="community_tile_reported">Скаргу надіслано. Людина подивиться.</string>
     <plurals name="settings_account_signed_in_credits">

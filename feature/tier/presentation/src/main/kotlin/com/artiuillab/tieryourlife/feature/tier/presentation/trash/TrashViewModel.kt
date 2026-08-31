@@ -42,7 +42,7 @@ class TrashViewModel @Inject constructor(
     fun restoreList(id: Long) {
         mutate("Restoring a list") {
             takeDownPublished(listOf(id))
-            repository.setPublishedId(id, null)
+            repository.setPublished(id, null, null)
             repository.restoreTierLists(listOf(id))
         }
     }

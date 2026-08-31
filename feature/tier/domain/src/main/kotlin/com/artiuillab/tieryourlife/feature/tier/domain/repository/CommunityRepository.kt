@@ -32,12 +32,24 @@ interface CommunityRepository {
     suspend fun open(id: String): Result<PublishedList>
 
     /**
-     * Publishes a snapshot and answers with the id it was stored under. Passing
-     * the previous id replaces that snapshot instead of adding another.
+     * Publishes a snapshot and answers with the id it was stored under, along
+     * with a record of what was sent, so the board can later tell whether it
+     * has moved on. Passing the previous id replaces that snapshot instead of
+     * adding another.
      */
-    suspend fun publish(list: TierList): Result<String>
+    suspend fun publish(list: TierList): Result<Published>
 
     suspend fun unpublish(publishedId: String): Result<Unit>
+
+    /**
+     * Copies one of this person's own pictures somewhere the community can see
+     * it, and answers with its address there.
+     *
+     * A face is shown beside every list they publish, so it cannot live in the
+     * folder only they may read. Catalogue art needs none of this -- it has an
+     * address already.
+     */
+    suspend fun makeFace(pictureId: String): Result<String>
 
     /**
      * Brings the author's name and face on lists they already published up to
@@ -60,3 +72,6 @@ interface CommunityRepository {
     /** Closes the complaints about a list and leaves the list alone. */
     suspend fun dismissReports(publishedId: String): Result<Unit>
 }
+
+/** What came back from publishing: where it lives, and what went. */
+data class Published(val id: String, val fingerprint: String)

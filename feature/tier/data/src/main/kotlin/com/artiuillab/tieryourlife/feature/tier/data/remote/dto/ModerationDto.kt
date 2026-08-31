@@ -22,3 +22,7 @@ data class ModerationReportDto(
 data class ModerationQueueDto(
     val reports: List<ModerationReportDto> = emptyList(),
 )
+
+/** Where a picture of somebody's own ended up once it was made a face. */
+@Serializable
+data class FaceDto(val url: String)

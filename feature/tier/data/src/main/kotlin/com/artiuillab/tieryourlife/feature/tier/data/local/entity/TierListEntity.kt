@@ -19,6 +19,19 @@ data class TierListEntity(
     val displayMode: String = "WRAP",
     /** Set once this list has been published; the id the server keeps it under. */
     val publishedId: String? = null,
+    /**
+     * What this board looked like the last time it was published.
+     *
+     * A published list is a snapshot and stays as it was published, which is
+     * right -- somebody who opened it yesterday should not find a different
+     * thing today. But the board goes on being edited, and without this there
+     * is no way to know the two have parted: the only honest answer to "is the
+     * published copy behind?" is to remember what was sent.
+     *
+     * Covers exactly what publishing sends, so changing the display mode --
+     * which does not travel -- does not claim the copy is stale.
+     */
+    val publishedFingerprint: String? = null,
     /** Set on a copy taken from someone else's published list. */
     val authorName: String? = null,
     val category: String? = null,

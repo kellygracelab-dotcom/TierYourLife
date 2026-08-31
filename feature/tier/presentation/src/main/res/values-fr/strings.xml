@@ -26,6 +26,8 @@
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · rien de classé pour l\'instant</string>
     <string name="tier_lists_status_start_dragging">Glissez pour classer</string>
     <string name="tier_lists_content_description_search">Rechercher dans vos listes</string>
+    <string name="tier_lists_content_description_as_pictures">Afficher les tableaux en images</string>
+    <string name="tier_lists_content_description_as_rows">Afficher les tableaux en lignes</string>
     <string name="tier_lists_content_description_settings">Paramètres</string>
 
     <string name="home_search_hint">Rechercher dans vos listes</string>
@@ -313,6 +315,8 @@
     <string name="home_community_failed">Impossible de charger la communauté</string>
     <string name="home_community_failed_body">Vérifiez votre connexion.</string>
     <string name="community_by_author">de %1$s</string>
+    <string name="community_showing_theirs">Son classement</string>
+    <string name="community_showing_mine">Le mien</string>
     <string name="community_save_to_my_lists">Enregistrer dans mes listes</string>
     <string name="community_someone_elses">Liste de quelqu\'un d\'autre. Classez-la librement.</string>
     <string name="community_not_saved_yet">Votre classement n\'est pas encore enregistré.</string>
@@ -409,6 +413,8 @@
     <string name="my_published_empty_body">Les listes que vous rendez publiques apparaissent ici.</string>
     <string name="my_published_failed">Impossible de charger vos listes publiques</string>
     <string name="my_published_action_open">Ouvrir</string>
+    <string name="my_published_behind">La version publiée est en retard sur ce tableau.</string>
+    <string name="my_published_action_update">Mettre à jour</string>
     <string name="community_tile_hidden">Masqué pour vous</string>
     <string name="community_tile_reported">Signalé. Une personne va regarder.</string>
     <plurals name="settings_account_signed_in_credits">

@@ -114,16 +114,29 @@ interface TierDao {
         SELECT DISTINCT i.imageUrl FROM tier_items i
             JOIN tiers t ON i.tierId = t.id
             JOIN tier_lists l ON t.tierListId = l.id
-        WHERE i.imageUrl LIKE 'https://%'
+        WHERE (i.imageUrl LIKE 'https://%' OR i.source = 'GENERATED')
+            AND i.imageUrl IS NOT NULL
             AND i.deletedAt IS NULL
             AND l.deletedAt IS NULL
         LIMIT :limit
         """,
     )
+    /**
+     * Pictures a face may be made from: catalogue art, which already has an
+     * address, and pictures this app generated, which do not and are copied
+     * when one is chosen.
+     *
+     * Photographs out of somebody's gallery are excluded, and that is the
+     * whole point of the source condition. A face sits beside every list
+     * somebody publishes and beside every report they file, and a face is not
+     * where a personal photograph should first become public.
+     */
     suspend fun cardImageUrls(limit: Int): List<String>
 
-    @Query("UPDATE tier_lists SET publishedId = :publishedId WHERE id = :id")
-    suspend fun setPublishedId(id: Long, publishedId: String?)
+    // Both together, always: an id without the fingerprint that goes with it
+    // would claim the published copy is behind the moment anybody looked.
+    @Query("UPDATE tier_lists SET publishedId = :publishedId, publishedFingerprint = :fingerprint WHERE id = :id")
+    suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?)
 
     @Query("UPDATE tier_lists SET category = :category WHERE id = :id")
     suspend fun setCategory(id: Long, category: String?)

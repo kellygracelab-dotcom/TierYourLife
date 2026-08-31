@@ -21,6 +21,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.MergeChoice
 import kotlinx.coroutines.flow.Flow
@@ -187,9 +188,12 @@ private class FakeCommunityForAccount : CommunityRepository {
 
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
 
-    override suspend fun publish(list: TierList): Result<String> = Result.failure(IllegalStateException())
+    override suspend fun publish(list: TierList): Result<Published> = Result.failure(IllegalStateException())
 
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
+
+    override suspend fun makeFace(pictureId: String): Result<String> =
+        Result.success("https://example.test/face.jpg")
 
     override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
 
@@ -229,8 +233,6 @@ private class FakeAccountRepository(
     override suspend fun setDisplayName(name: String): Boolean = true
 
     override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
-
-    override fun googlePhotoUrl(): String? = null
 
     override suspend fun signOut() {
         state.value = Account.Guest
@@ -283,6 +285,14 @@ private class FakeAppPreferences : AppPreferences {
     override fun unhideAuthor(authorUid: String) = Unit
     override fun signInOfferAnswered(): Boolean = false
     override fun markSignInOfferAnswered() = Unit
+
+    private var asPictures = false
+
+    override fun boardsAsPictures(): Boolean = asPictures
+
+    override fun setBoardsAsPictures(asPictures: Boolean) {
+        this.asPictures = asPictures
+    }
 
     override fun backUpBoards(): Boolean = backUp
 

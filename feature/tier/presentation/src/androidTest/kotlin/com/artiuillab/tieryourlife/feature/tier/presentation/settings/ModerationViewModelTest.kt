@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummar
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.Published
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -135,8 +136,11 @@ private class FakeModerationRepository(
     override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(emptyList())
 
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
-    override suspend fun publish(list: TierList): Result<String> = Result.failure(IllegalStateException())
+    override suspend fun publish(list: TierList): Result<Published> = Result.failure(IllegalStateException())
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
+
+    override suspend fun makeFace(pictureId: String): Result<String> =
+        Result.success("https://example.test/face.jpg")
     override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
     override suspend fun report(
         publishedId: String,

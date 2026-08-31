@@ -71,6 +71,17 @@ interface AppPreferences {
 
     fun setPicturesOnWifiOnly(wifiOnly: Boolean)
 
+    /**
+     * Whether Your lists is drawn as pictures rather than as rows.
+     *
+     * A property of the screen rather than of the person, but remembered all
+     * the same: somebody who chose pictures once meant it, and asking again on
+     * every visit would be the app forgetting on purpose.
+     */
+    fun boardsAsPictures(): Boolean
+
+    fun setBoardsAsPictures(asPictures: Boolean)
+
     /** When a sync run last got through, or null while none ever has. */
     fun lastSyncedAtMs(): Long?
 

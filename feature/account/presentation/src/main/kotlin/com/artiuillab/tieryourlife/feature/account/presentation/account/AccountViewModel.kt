@@ -178,14 +178,31 @@ class AccountViewModel @Inject constructor(
             it.copy(
                 publicListCount = count,
                 faceChoices = faces,
-                googlePhotoUrl = repository.googlePhotoUrl(),
             )
         }
     }
 
+    /**
+     * A face is either an address already or a picture of this person's own.
+     *
+     * Catalogue art is hosted by somebody else and can be used as it stands.
+     * A picture this app generated is a file in a folder only its owner may
+     * read, so the server copies it somewhere the community can see -- after
+     * looking at it, on the same terms as a published board's pictures.
+     */
     fun setPhoto(photoUrl: String?) {
         viewModelScope.launch {
-            val saved = repository.setPhotoUrl(photoUrl)
+            _state.update { it.copy(makingFace = photoUrl != null && !photoUrl.startsWith("https://")) }
+            val address = when {
+                photoUrl == null || photoUrl.startsWith("https://") -> photoUrl
+                else -> community.makeFace(photoUrl.substringAfterLast('/')).getOrNull()
+            }
+            if (photoUrl != null && address == null) {
+                _state.update { it.copy(makingFace = false, notice = AccountNotice.FaceNotMade) }
+                return@launch
+            }
+            val saved = repository.setPhotoUrl(address)
+            _state.update { it.copy(makingFace = false) }
             if (saved) refreshPublishedAuthor() else _state.update { it.copy(notice = AccountNotice.NameNotSaved) }
         }
     }

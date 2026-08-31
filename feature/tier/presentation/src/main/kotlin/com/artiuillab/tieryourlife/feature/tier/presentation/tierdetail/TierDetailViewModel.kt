@@ -17,6 +17,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.ordering.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -100,20 +101,20 @@ class TierDetailViewModel @Inject constructor(
         _publishing.value = true
         _publicPending.value = public
         viewModelScope.launch {
-            val result: Result<String?> = if (public) {
+            val result: Result<Published?> = if (public) {
                 community.publish(list)
             } else {
                 list.publishedId?.let { community.unpublish(it).map { _ -> null } } ?: Result.success(null)
             }
             result.fold(
-                onSuccess = { publishedId ->
+                onSuccess = { published ->
                     val recorded = messages.guard("Recording the published list") {
-                        repository.setPublishedId(tierListId, publishedId)
+                        repository.setPublished(tierListId, published?.id, published?.fingerprint)
                     }
                     // Reading the list back would land after publicPending is
                     // cleared below, so the switch would spring back to the old
                     // position for a frame or two. The id is all that changed.
-                    if (recorded) showPublishedId(publishedId)
+                    if (recorded) showPublishedId(published?.id)
                 },
                 onFailure = { failure ->
                     _publishError.value = (failure as? PublishRefused)?.error ?: PublishError.Unknown

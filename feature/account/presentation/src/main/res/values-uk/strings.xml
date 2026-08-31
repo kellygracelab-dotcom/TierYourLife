@@ -23,6 +23,7 @@
     <string name="account_action_save">Зберегти</string>
     <string name="account_action_cancel">Скасувати</string>
     <string name="account_error_name_not_saved">Не вдалося зберегти імʼя. Спробуйте ще раз.</string>
+    <string name="account_error_face_not_made">Ця картинка не може бути вашою аватаркою. Оберіть іншу.</string>
     <plurals name="account_community_lists">
         <item quantity="one">%1$d публічний список</item>
         <item quantity="few">%1$d публічних списки</item>
@@ -32,7 +33,6 @@
     <string name="account_face_title">Ваш аватар</string>
     <string name="account_face_body">Виберіть картку зі своїх списків.</string>
     <string name="account_face_no_cards">Жодна ваша картка ще не має каталожного зображення.</string>
-    <string name="account_face_google">Узяти фото з Google</string>
     <string name="account_face_letter">Тільки літера</string>
     <string name="account_face_note">Нічого не завантажується. Зображення залишається там, де воно вже є в мережі.</string>
     <string name="account_cd_change_face">Змінити аватар</string>

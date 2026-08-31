@@ -61,6 +61,7 @@ fun MyPublishedScreen(
         onBack = onBack,
         onOpen = onOpen,
         onTakeDown = viewModel::takeDown,
+        onUpdate = viewModel::update,
         onRetry = viewModel::load,
     )
 }
@@ -71,6 +72,7 @@ internal fun MyPublishedScreenContent(
     onBack: () -> Unit,
     onOpen: (String) -> Unit = {},
     onTakeDown: (String) -> Unit = {},
+    onUpdate: (String) -> Unit = {},
     onRetry: () -> Unit = {},
 ) {
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
@@ -111,8 +113,10 @@ internal fun MyPublishedScreenContent(
                             items(state.lists, key = { it.id }) { summary ->
                                 PublishedRow(
                                     summary = summary,
-                                    busy = state.removing != null,
+                                    busy = state.removing != null || state.updating != null,
+                                    behind = summary.id in state.behind,
                                     onOpen = { onOpen(summary.id) },
+                                    onUpdate = { onUpdate(summary.id) },
                                     onTakeDown = { onTakeDown(summary.id) },
                                 )
                             }
@@ -155,7 +159,9 @@ private fun TopBar(onBack: () -> Unit) {
 private fun PublishedRow(
     summary: PublishedListSummary,
     busy: Boolean,
+    behind: Boolean,
     onOpen: () -> Unit,
+    onUpdate: () -> Unit,
     onTakeDown: () -> Unit,
 ) {
     Column(
@@ -178,6 +184,18 @@ private fun PublishedRow(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        // What the feed is showing is not what the board says any more. Said
+        // here rather than left to be discovered by opening it, because the
+        // person who edited the board is the last to notice: their own copy
+        // looks right to them.
+        if (behind) {
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = stringResource(R.string.my_published_behind),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
         Spacer(Modifier.height(4.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             TextButton(
@@ -185,6 +203,13 @@ private fun PublishedRow(
                 enabled = !busy,
                 modifier = Modifier.testTag(MyPublishedTestTags.open(summary.id)),
             ) { Text(stringResource(R.string.my_published_action_open)) }
+            if (behind) {
+                TextButton(
+                    onClick = onUpdate,
+                    enabled = !busy,
+                    modifier = Modifier.testTag(MyPublishedTestTags.update(summary.id)),
+                ) { Text(stringResource(R.string.my_published_action_update)) }
+            }
             TextButton(
                 onClick = onTakeDown,
                 enabled = !busy,
@@ -245,6 +270,8 @@ internal object MyPublishedTestTags {
     fun row(id: String): String = "my_published_row_$id"
 
     fun open(id: String): String = "my_published_open_$id"
+
+    fun update(id: String): String = "my_published_update_$id"
 
     fun takeDown(id: String): String = "my_published_take_down_$id"
 }

@@ -37,6 +37,14 @@ internal class FakeAppPreferences(
         hiddenAuthors -= authorUid
     }
 
+    private var asPictures = false
+
+    override fun boardsAsPictures(): Boolean = asPictures
+
+    override fun setBoardsAsPictures(asPictures: Boolean) {
+        this.asPictures = asPictures
+    }
+
     override fun backUpBoards(): Boolean = backUpBoards
 
     override fun setBackUpBoards(backUp: Boolean) {

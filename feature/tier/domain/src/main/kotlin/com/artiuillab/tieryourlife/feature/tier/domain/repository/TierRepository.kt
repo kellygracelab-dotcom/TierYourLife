@@ -25,7 +25,21 @@ interface TierRepository {
         items: List<TierItem>,
     ): Long
 
-    suspend fun setPublishedId(id: Long, publishedId: String?)
+    suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?)
+
+    /**
+     * The boards whose published copy no longer matches them, by the id the
+     * feed keeps that copy under.
+     *
+     * A board published before this was recorded says nothing: not knowing
+     * what was sent is not the same as knowing it was something else, and
+     * showing it as behind would send somebody to republish a list that was
+     * already right.
+     */
+    suspend fun publishedCopiesLeftBehind(): Set<String>
+
+    /** The board this published copy came from, if this phone still has it. */
+    suspend fun boardPublishedAs(publishedId: String): TierList?
 
     suspend fun setCategory(id: Long, category: ListCategory?)
 

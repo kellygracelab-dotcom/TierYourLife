@@ -18,6 +18,8 @@
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · まだ何もランク付けされていません</string>
     <string name="tier_lists_status_start_dragging">ドラッグしてランク付け</string>
     <string name="tier_lists_content_description_search">リストを検索</string>
+    <string name="tier_lists_content_description_as_pictures">ボードを画像で表示</string>
+    <string name="tier_lists_content_description_as_rows">ボードをリストで表示</string>
     <string name="tier_lists_content_description_settings">設定</string>
 
     <string name="home_search_hint">リストを検索</string>
@@ -263,6 +265,8 @@
     <string name="home_community_failed">コミュニティを読み込めませんでした</string>
     <string name="home_community_failed_body">接続を確認してください。</string>
     <string name="community_by_author">%1$s さん</string>
+    <string name="community_showing_theirs">作者の並べ方</string>
+    <string name="community_showing_mine">自分の並べ方</string>
     <string name="community_save_to_my_lists">自分のリストに保存</string>
     <string name="community_someone_elses">ほかの人のリストです。好きなように並べてください。</string>
     <string name="community_not_saved_yet">並べ方はまだ保存されていません。</string>
@@ -353,6 +357,8 @@
     <string name="my_published_empty_body">公開にしたリストがここに並びます。</string>
     <string name="my_published_failed">公開中のリストを読み込めませんでした</string>
     <string name="my_published_action_open">開く</string>
+    <string name="my_published_behind">公開中の内容はこのボードより古いです。</string>
+    <string name="my_published_action_update">更新</string>
     <string name="community_tile_hidden">あなたには非表示</string>
     <string name="community_tile_reported">報告しました。人が確認します。</string>
     <plurals name="settings_account_signed_in_credits">

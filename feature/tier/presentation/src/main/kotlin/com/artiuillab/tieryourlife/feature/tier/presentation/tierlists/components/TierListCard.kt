@@ -174,7 +174,7 @@ internal fun TierListCard(
 }
 
 @Composable
-private fun SelectionCheckbox(selected: Boolean) {
+internal fun SelectionCheckbox(selected: Boolean) {
     val outline = MaterialTheme.colorScheme.outline
     val primary = MaterialTheme.colorScheme.primary
     val onPrimary = MaterialTheme.colorScheme.onPrimary

@@ -22,6 +22,8 @@
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · noch nichts eingestuft</string>
     <string name="tier_lists_status_start_dragging">Zum Einstufen ziehen</string>
     <string name="tier_lists_content_description_search">Deine Listen durchsuchen</string>
+    <string name="tier_lists_content_description_as_pictures">Boards als Bilder zeigen</string>
+    <string name="tier_lists_content_description_as_rows">Boards als Zeilen zeigen</string>
     <string name="tier_lists_content_description_settings">Einstellungen</string>
 
     <string name="home_search_hint">Deine Listen durchsuchen</string>
@@ -288,6 +290,8 @@
     <string name="home_community_failed">Community konnte nicht geladen werden</string>
     <string name="home_community_failed_body">Prüfe deine Verbindung.</string>
     <string name="community_by_author">von %1$s</string>
+    <string name="community_showing_theirs">Ihre Reihung</string>
+    <string name="community_showing_mine">Meine</string>
     <string name="community_save_to_my_lists">In meine Listen speichern</string>
     <string name="community_someone_elses">Die Liste von jemand anderem. Ordne sie frei.</string>
     <string name="community_not_saved_yet">Deine Anordnung ist noch nicht gespeichert.</string>
@@ -381,6 +385,8 @@
     <string name="my_published_empty_body">Listen, die du öffentlich machst, erscheinen hier.</string>
     <string name="my_published_failed">Deine öffentlichen Listen konnten nicht geladen werden</string>
     <string name="my_published_action_open">Öffnen</string>
+    <string name="my_published_behind">Die veröffentlichte Fassung ist älter als dieses Board.</string>
+    <string name="my_published_action_update">Aktualisieren</string>
     <string name="community_tile_hidden">Für dich ausgeblendet</string>
     <string name="community_tile_reported">Gemeldet. Ein Mensch sieht es sich an.</string>
     <plurals name="settings_account_signed_in_credits">

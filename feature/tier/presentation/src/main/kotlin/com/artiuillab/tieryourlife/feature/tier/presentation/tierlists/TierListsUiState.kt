@@ -14,6 +14,8 @@ sealed interface TierListsUiState {
         val rankedCount: Int,
         val mode: HomeMode = HomeMode.Browsing,
         val tab: HomeTab = HomeTab.Mine,
+        /** Your own boards drawn as pictures rather than as rows. */
+        val asPictures: Boolean = false,
         val community: CommunityFeed = CommunityFeed.Loading,
         val communityCategory: ListCategory? = null,
         val localOnly: LocalOnly = LocalOnly.Unknown,

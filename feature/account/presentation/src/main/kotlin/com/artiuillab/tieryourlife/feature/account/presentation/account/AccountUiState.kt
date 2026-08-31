@@ -15,7 +15,8 @@ data class AccountUiState(
     val backUpBoards: Boolean = true,
     /** Card pictures the reader can wear as a face. */
     val faceChoices: List<String> = emptyList(),
-    val googlePhotoUrl: String? = null,
+    /** True while a picture of their own is being made into a face. */
+    val makingFace: Boolean = false,
     val notice: AccountNotice? = null,
     /**
      * Set only while the question is open: somebody has signed into an account
@@ -34,4 +35,7 @@ enum class AccountNotice {
     SignInUnavailable,
     SignedInToExistingAccount,
     NameNotSaved,
+
+    /** The picture was refused, or would not copy. The old face stays. */
+    FaceNotMade,
 }

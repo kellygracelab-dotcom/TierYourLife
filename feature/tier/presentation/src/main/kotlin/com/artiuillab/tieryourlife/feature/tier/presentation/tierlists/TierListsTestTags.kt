@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 internal object TierListsTestTags {
     const val LOADING = "tier_lists_loading"
     const val LISTS = "tier_lists"
+    const val VIEW_TOGGLE = "tier_lists_view_toggle"
     const val SEARCH_FIELD = "home_search_field"
     const val SEARCH_CLOSE = "home_search_close"
     const val SEARCH_CLEAR = "home_search_clear"
@@ -38,6 +39,7 @@ internal object TierListsTestTags {
     const val REPORT_NOTE = "community_report_note"
     const val REPORT_SEND = "community_report_send"
     fun tierListCard(id: Long): String = "tier_list_card_$id"
+    fun tile(id: Long): String = "tier_list_tile_$id"
     fun communityCard(id: String): String = "community_card_$id"
 
     fun communityCardAuthor(id: String): String = "community_card_author_$id"

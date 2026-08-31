@@ -20,7 +20,6 @@ interface AccountRepository {
     suspend fun setPhotoUrl(photoUrl: String?): Boolean
 
     /** The photo Google gave, whatever the user has chosen since. */
-    fun googlePhotoUrl(): String?
 
     suspend fun signOut()
 }

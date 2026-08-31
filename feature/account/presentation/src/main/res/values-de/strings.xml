@@ -23,6 +23,7 @@
     <string name="account_action_save">Speichern</string>
     <string name="account_action_cancel">Abbrechen</string>
     <string name="account_error_name_not_saved">Der Name konnte nicht gespeichert werden. Versuche es erneut.</string>
+    <string name="account_error_face_not_made">Dieses Bild kann nicht dein Profilbild sein. Wähle ein anderes.</string>
     <plurals name="account_community_lists">
         <item quantity="one">%1$d öffentliche Liste</item>
         <item quantity="other">%1$d öffentliche Listen</item>
@@ -30,7 +31,6 @@
     <string name="account_face_title">Dein Bild</string>
     <string name="account_face_body">Wähle eine Karte aus deinen Listen.</string>
     <string name="account_face_no_cards">Noch keine deiner Karten hat ein Bild aus einem Katalog.</string>
-    <string name="account_face_google">Google-Foto verwenden</string>
     <string name="account_face_letter">Nur der Buchstabe</string>
     <string name="account_face_note">Nichts wird hochgeladen. Das Bild bleibt dort, wo es im Netz schon liegt.</string>
     <string name="account_cd_change_face">Bild ändern</string>

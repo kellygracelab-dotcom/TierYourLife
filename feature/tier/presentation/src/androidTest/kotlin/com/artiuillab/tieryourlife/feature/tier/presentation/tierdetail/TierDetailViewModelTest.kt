@@ -394,10 +394,14 @@ private class FakeTierRepository(
 
     val publishedIds = mutableListOf<Pair<Long, String?>>()
 
-    override suspend fun setPublishedId(id: Long, publishedId: String?) {
+    override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) {
         publishedIds += id to publishedId
         list = list.copy(publishedId = publishedId)
     }
+
+    override suspend fun publishedCopiesLeftBehind(): Set<String> = emptySet()
+
+    override suspend fun boardPublishedAs(publishedId: String): TierList? = null
 
     override suspend fun setCategory(id: Long, category: ListCategory?) {
         list = list.copy(category = category)

@@ -22,7 +22,6 @@ internal object AccountTestTags {
     const val COMMUNITY_ROW = "account_community_row"
     const val EDIT_FACE = "account_edit_face"
     const val FACE_SHEET = "account_face_sheet"
-    const val FACE_GOOGLE = "account_face_google"
     const val FACE_LETTER = "account_face_letter"
     const val CREDITS = "account_credits"
     const val NOTICE = "account_notice"

@@ -44,7 +44,6 @@ private val CHOICE_SIZE = 64.dp
 @Composable
 internal fun FaceSheet(
     current: String?,
-    googlePhotoUrl: String?,
     cardImages: List<String>,
     name: String?,
     onDismiss: () -> Unit,
@@ -98,16 +97,6 @@ internal fun FaceSheet(
                 Spacer(Modifier.height(20.dp))
             }
 
-            if (googlePhotoUrl != null) {
-                TextButton(
-                    onClick = { onChoose(googlePhotoUrl) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(AccountTestTags.FACE_GOOGLE),
-                ) {
-                    Text(stringResource(R.string.account_face_google))
-                }
-            }
             TextButton(
                 onClick = { onChoose(null) },
                 modifier = Modifier

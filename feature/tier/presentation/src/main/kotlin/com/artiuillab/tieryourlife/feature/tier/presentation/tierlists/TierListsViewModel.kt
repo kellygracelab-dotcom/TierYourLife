@@ -192,6 +192,7 @@ class TierListsViewModel @Inject constructor(
             rankedCount = rankedCount,
             mode = mode,
             tab = tab,
+            asPictures = preferences.boardsAsPictures(),
             community = communityFeed,
             communityCategory = communityCategory,
             localOnly = whereTheseLive(),
@@ -210,6 +211,15 @@ class TierListsViewModel @Inject constructor(
         account is Account.SignedIn -> LocalOnly.Kept
         lastLoadedLists.isEmpty() -> LocalOnly.Unknown
         else -> LocalOnly.Here(offerSignIn = !offerAnswered)
+    }
+
+    /**
+     * Rows or pictures, remembered. A property of the screen rather than of
+     * the person, but somebody who chose pictures once meant it.
+     */
+    fun toggleBoardsAsPictures() {
+        preferences.setBoardsAsPictures(!preferences.boardsAsPictures())
+        emitSuccess()
     }
 
     fun selectTab(selected: HomeTab) {
@@ -414,7 +424,7 @@ class TierListsViewModel @Inject constructor(
             val publishedId = list.publishedId ?: return@mapNotNull null
             community.unpublish(publishedId).fold(
                 onSuccess = {
-                    repository.setPublishedId(list.id, null)
+                    repository.setPublished(list.id, null, null)
                     null
                 },
                 onFailure = { error ->

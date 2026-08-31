@@ -26,6 +26,8 @@
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · nada clasificado todavía</string>
     <string name="tier_lists_status_start_dragging">Arrastra para clasificar</string>
     <string name="tier_lists_content_description_search">Buscar en tus listas</string>
+    <string name="tier_lists_content_description_as_pictures">Mostrar los tableros como imágenes</string>
+    <string name="tier_lists_content_description_as_rows">Mostrar los tableros como filas</string>
     <string name="tier_lists_content_description_settings">Ajustes</string>
 
     <string name="home_search_hint">Buscar en tus listas</string>
@@ -313,6 +315,8 @@
     <string name="home_community_failed">No se pudo cargar la comunidad</string>
     <string name="home_community_failed_body">Comprueba tu conexión.</string>
     <string name="community_by_author">de %1$s</string>
+    <string name="community_showing_theirs">Su orden</string>
+    <string name="community_showing_mine">El mío</string>
     <string name="community_save_to_my_lists">Guardar en mis listas</string>
     <string name="community_someone_elses">Lista de otra persona. Ordénala como quieras.</string>
     <string name="community_not_saved_yet">Tu orden todavía no está guardado.</string>
@@ -409,6 +413,8 @@
     <string name="my_published_empty_body">Las listas que hagas públicas aparecen aquí.</string>
     <string name="my_published_failed">No se pudieron cargar tus listas públicas</string>
     <string name="my_published_action_open">Abrir</string>
+    <string name="my_published_behind">La versión publicada está desactualizada.</string>
+    <string name="my_published_action_update">Actualizar</string>
     <string name="community_tile_hidden">Oculto para ti</string>
     <string name="community_tile_reported">Denunciado. Una persona lo revisará.</string>
     <plurals name="settings_account_signed_in_credits">

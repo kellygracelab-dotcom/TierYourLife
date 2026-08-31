@@ -23,6 +23,7 @@
     <string name="account_action_save">حفظ</string>
     <string name="account_action_cancel">إلغاء</string>
     <string name="account_error_name_not_saved">تعذّر حفظ هذا الاسم. أعد المحاولة.</string>
+    <string name="account_error_face_not_made">لا يمكن استخدام هذه الصورة. اختر غيرها.</string>
     <plurals name="account_community_lists">
         <item quantity="zero">لا قوائم عامة</item>
         <item quantity="one">قائمة عامة واحدة</item>
@@ -34,7 +35,6 @@
     <string name="account_face_title">صورتك</string>
     <string name="account_face_body">اختر بطاقة من قوائمك.</string>
     <string name="account_face_no_cards">لا تحتوي أي من بطاقاتك على صورة من الفهرس بعد.</string>
-    <string name="account_face_google">استخدام صورتي من Google</string>
     <string name="account_face_letter">الحرف فقط</string>
     <string name="account_face_note">لا يتم رفع أي شيء. تبقى الصورة حيث هي على الويب.</string>
     <string name="account_cd_change_face">تغيير الصورة</string>

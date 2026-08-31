@@ -17,6 +17,16 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * had just written -- and within the same second the new value equals the old
  * one, so no comparison can stop it. Naming the columns does.
  */
+val MIGRATION_8_9 = object : Migration(8, 9) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN publishedFingerprint TEXT")
+        // Left null on boards that are already published. Null reads as "we do
+        // not know what was sent", and the screen says nothing rather than
+        // guessing -- claiming a copy is stale when it is not would send
+        // somebody to republish a list that was already right.
+    }
+}
+
 val MIGRATION_7_8 = object : Migration(7, 8) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE tier_lists ADD COLUMN editedAt INTEGER")
