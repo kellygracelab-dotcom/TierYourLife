@@ -6,12 +6,15 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.tier.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
@@ -494,7 +497,7 @@ class TierListsViewModelTest {
     }
 }
 
-private class FakeTierRepository(initial: List<TierList>) : TierRepository {
+internal class FakeTierRepository(initial: List<TierList>) : TierRepository {
 
     override suspend fun createFromTemplate(
         title: String,
@@ -600,6 +603,8 @@ private class FakeCommunityRepository(
         query: String?,
         author: String?,
         after: String?,
+        sort: FeedSort,
+        following: Boolean,
     ): Result<CommunityPage> {
         cursorsAsked += after
         if (after != null && laterPagesFail) return Result.failure(IllegalStateException("offline"))
@@ -631,6 +636,17 @@ private class FakeCommunityRepository(
     override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
     override suspend fun takeDown(publishedId: String): Result<Unit> = Result.success(Unit)
     override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
+
+    override suspend fun follow(authorUid: String): Result<Unit> = Result.success(Unit)
+
+    override suspend fun unfollow(authorUid: String): Result<Unit> = Result.success(Unit)
+
+    override suspend fun followState(authorUid: String): Result<FollowState> =
+        Result.success(FollowState(following = false, followers = 0))
+
+    override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> = Result.success(emptyList())
+
+    override suspend fun noteTaken(publishedId: String): Result<Unit> = Result.success(Unit)
 }
 
 private fun guestAccount(): AccountRepository = object : AccountRepository {

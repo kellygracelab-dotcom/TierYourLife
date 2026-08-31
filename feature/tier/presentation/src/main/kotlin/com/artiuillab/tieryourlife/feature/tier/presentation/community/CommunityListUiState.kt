@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.community
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 /** Whose arrangement is on screen. */
@@ -25,6 +26,8 @@ sealed interface CommunityListUiState {
         val authorPhotoUrl: String? = null,
         /** True once the reader has moved something; nothing is stored either way. */
         val arranged: Boolean = false,
+        /** Null until the server answers whether this author is followed. */
+        val follow: FollowState? = null,
         val saving: Boolean = false,
     ) : CommunityListUiState {
         /** What the board area is drawing right now. */

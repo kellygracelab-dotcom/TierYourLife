@@ -325,7 +325,6 @@ class TierListsViewModel @Inject constructor(
             onSuccess = { page ->
                 communityCursor = page.nextCursor
                 if (page.followingNobody) {
-                    loadSuggestedAuthors()
                     CommunityFeed.FollowingNobody()
                 } else {
                     CommunityFeed.Ready(
@@ -341,6 +340,13 @@ class TierListsViewModel @Inject constructor(
             },
         )
         emitSuccess()
+        // Asked for only once the state above is in place. Started any earlier
+        // and a fast answer -- a cached one, or a failure -- arrives while the
+        // screen is still Loading, finds nothing of its own to fill in, and
+        // leaves the spinner up for good.
+        if (communityFeed is CommunityFeed.FollowingNobody) {
+            loadSuggestedAuthors()
+        }
     }
 
     private fun loadSuggestedAuthors() {

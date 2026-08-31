@@ -45,6 +45,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.AuthorLine
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportSentDialog
@@ -81,6 +82,7 @@ fun CommunityListScreen(
             onBack()
         },
         onReport = viewModel::report,
+        onToggleFollow = viewModel::toggleFollow,
     )
 }
 
@@ -97,6 +99,7 @@ internal fun CommunityListScreenContent(
     onHide: () -> Unit = {},
     onHideAuthor: (uid: String, name: String) -> Unit = { _, _ -> },
     onReport: (ReportReason, String?) -> Unit = { _, _ -> },
+    onToggleFollow: () -> Unit = {},
 ) {
     var actionsVisible by remember { mutableStateOf(false) }
     var reportVisible by remember { mutableStateOf(false) }
@@ -138,6 +141,13 @@ internal fun CommunityListScreenContent(
                     .fillMaxSize()
                     .testTag(CommunityTestTags.SCREEN),
             ) {
+                AuthorLine(
+                    name = state.authorName,
+                    photoUrl = state.authorPhotoUrl,
+                    follow = state.follow,
+                    onOpenAuthor = { onAuthorClick(state.authorUid, state.authorName, state.authorPhotoUrl) },
+                    onToggleFollow = onToggleFollow,
+                )
                 Box(Modifier.weight(1f)) {
                     TierDetailScreenContent(
                         // Read-only while their arrangement is on screen: it
@@ -147,7 +157,6 @@ internal fun CommunityListScreenContent(
                         state = TierDetailUiState.Success(state.shown),
                         actions = TierDetailActions(onBack = onBack, onMoveItem = onMoveItem),
                         readOnly = true,
-                        subtitle = stringResource(R.string.community_by_author, state.authorName),
                         onReaderMoreClick = { actionsVisible = true },
                     )
                 }
