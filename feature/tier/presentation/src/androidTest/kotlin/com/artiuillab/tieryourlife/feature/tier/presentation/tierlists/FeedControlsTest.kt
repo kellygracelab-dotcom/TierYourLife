@@ -21,9 +21,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncReport
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.FakeAppPreferences
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -160,10 +160,6 @@ class FeedControlsTest {
     }
 
     /**
-     * Bounded, so a state that never arrives fails the test with the state it
-     * got stuck on instead of hanging the whole run.
-     */
-    /**
      * Waits for something a coroutine will do, rather than assuming it already
      * has. The screen answers before the server does on purpose, so a check on
      * what reached the server has to wait for it -- on a machine where the
@@ -179,6 +175,10 @@ class FeedControlsTest {
             seen
         } ?: error("Never saw $what")
 
+    /**
+     * Bounded, so a state that never arrives fails the test with the state it
+     * got stuck on instead of hanging the whole run.
+     */
     private suspend fun ready(
         viewModel: TierListsViewModel,
         until: (TierListsUiState.Success) -> Boolean = { true },
