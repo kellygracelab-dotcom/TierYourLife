@@ -160,7 +160,13 @@ private fun NavContent(
         )
         trashScreen(onBack = { navController.popBackStack() })
         hiddenScreen(onBack = { navController.popBackStack() })
-        moderationScreen(onBack = { navController.popBackStack() })
+        moderationScreen(
+            onBack = { navController.popBackStack() },
+            // Only reachable on a window too narrow to stand the board beside
+            // the queue. Where there is room, the pane shows it without going
+            // anywhere.
+            onOpenList = { id -> navController.navigateToCommunityList(id) },
+        )
         accountScreen(
             onClose = { navController.popBackStack() },
             onOpenPublished = { navController.navigateToMyPublished() },

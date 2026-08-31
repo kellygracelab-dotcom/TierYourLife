@@ -1,9 +1,11 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,11 +28,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -41,25 +46,33 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListScreenContent
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.FlagIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 
 @Composable
 fun ModerationScreen(
     onBack: () -> Unit,
+    onOpenList: (String) -> Unit,
     viewModel: ModerationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val looking by viewModel.looking.collectAsStateWithLifecycle()
     ModerationScreenContent(
         state = state,
+        looking = looking,
         onBack = onBack,
         onTakeDown = viewModel::takeDown,
         onDismiss = viewModel::dismiss,
         onRetry = viewModel::load,
+        onOpenList = onOpenList,
+        onLook = viewModel::look,
     )
 }
 
@@ -67,16 +80,62 @@ fun ModerationScreen(
 internal fun ModerationScreenContent(
     state: ModerationUiState,
     onBack: () -> Unit,
+    looking: CommunityListUiState = CommunityListUiState.Loading,
     onTakeDown: (String) -> Unit = {},
     onDismiss: (String) -> Unit = {},
     onRetry: () -> Unit = {},
+    onOpenList: (String) -> Unit = {},
+    onLook: (String) -> Unit = {},
 ) {
+    // Beside the queue once there is room. A complaint now takes a list out of
+    // the feed, so the feed is no longer where it can be looked at -- this is.
+    val besideIt = currentWindowShape.holdsTwoPanes
+    if (besideIt) {
+        Row(Modifier.fillMaxSize().testTag(ModerationTestTags.SCREEN)) {
+            Surface(
+                modifier = Modifier.width(QUEUE_WIDTH).fillMaxSize(),
+                color = MaterialTheme.colorScheme.surface,
+            ) {
+                Column {
+                    Queue(state, onBack, onTakeDown, onDismiss, onRetry, onLook, besideIt)
+                }
+            }
+            CommunityListScreenContent(
+                state = looking,
+                onBack = {},
+                onMoveItem = { _, _, _ -> },
+                onSave = {},
+                onRetry = {},
+                modifier = Modifier.weight(1f),
+            )
+        }
+        return
+    }
+
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         CenteredContent(
             max = ContentWidth.Reading,
             modifier = Modifier.fillMaxSize().testTag(ModerationTestTags.SCREEN),
         ) {
-            TopBar(onBack)
+            Queue(state, onBack, onTakeDown, onDismiss, onRetry, onOpenList, besideIt)
+        }
+    }
+}
+
+/** Its own width, wider than the board index: these rows carry three lines. */
+private val QUEUE_WIDTH = 360.dp
+
+@Composable
+private fun ColumnScope.Queue(
+    state: ModerationUiState,
+    onBack: () -> Unit,
+    onTakeDown: (String) -> Unit,
+    onDismiss: (String) -> Unit,
+    onRetry: () -> Unit,
+    onChoose: (String) -> Unit,
+    besideIt: Boolean,
+) {
+    TopBar(onBack)
 
             when (state) {
                 ModerationUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -98,22 +157,27 @@ internal fun ModerationScreenContent(
                         onAction = {},
                     )
                 } else {
+                    LaunchedEffect(besideIt, state.reports.firstOrNull()?.listId) {
+                        // The pane needs something in it the moment the queue
+                        // arrives; nobody should have to tap to see the first.
+                        if (besideIt) state.reports.firstOrNull()?.let { onChoose(it.listId) }
+                    }
                     LazyColumn(
                         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 32.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        items(state.reports, key = { "${it.listId}-${it.createdAtMillis}" }) { report ->
+                        items(state.reports, key = { it.listId }) { report ->
                             ReportCard(
                                 report = report,
                                 busy = state.settling != null,
+                                chosen = besideIt && state.looking == report.listId,
+                                onOpen = { onChoose(report.listId) },
                                 onTakeDown = { onTakeDown(report.listId) },
                                 onDismiss = { onDismiss(report.listId) },
                             )
                         }
                     }
                 }
-            }
-        }
     }
 }
 
@@ -148,6 +212,8 @@ private fun TopBar(onBack: () -> Unit) {
 private fun ReportCard(
     report: ModerationReport,
     busy: Boolean,
+    chosen: Boolean,
+    onOpen: () -> Unit,
     onTakeDown: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -155,10 +221,28 @@ private fun ReportCard(
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+            .background(
+                if (chosen) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                },
+            )
+            .clickable(onClick = onOpen)
             .testTag(ModerationTestTags.reportCard(report.listId))
             .padding(16.dp),
     ) {
+        // Said first, because it changes what the two buttons mean: keeping a
+        // list nobody can see puts it back, keeping a visible one changes
+        // nothing anybody will notice.
+        if (report.hidden) {
+            Text(
+                text = stringResource(R.string.moderation_hidden_now),
+                modifier = Modifier.padding(bottom = 6.dp),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
         Text(
             text = report.listTitle,
             style = MaterialTheme.typography.titleMedium,
@@ -177,18 +261,42 @@ private fun ReportCard(
         Row(verticalAlignment = Alignment.CenterVertically) {
             FlagIcon(18.dp, MaterialTheme.colorScheme.error)
             Text(
-                text = stringResource(report.reason.labelRes()),
+                // How many complained is the useful part: it is the difference
+                // between one person taking offence and a queue forming.
+                text = if (report.reportCount > 1) {
+                    stringResource(
+                        R.string.moderation_reason_and_count,
+                        stringResource(report.reason.labelRes()),
+                        pluralStringResource(
+                            R.plurals.moderation_report_count,
+                            report.reportCount,
+                            report.reportCount,
+                        ),
+                    )
+                } else {
+                    stringResource(report.reason.labelRes())
+                },
                 modifier = Modifier.padding(start = 8.dp),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
             )
         }
-        report.note?.let { note ->
+        // Every note, verbatim. It is the only evidence there is, and the one
+        // somebody bothered to type is rarely the first.
+        report.notes.forEach { note ->
             Spacer(Modifier.height(8.dp))
             Text(
                 text = note,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+        if (report.reviewed) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.moderation_already_kept),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         // Said before the buttons rather than found out afterwards: taking a
@@ -206,7 +314,13 @@ private fun ReportCard(
                 onClick = onDismiss,
                 enabled = !busy,
                 modifier = Modifier.testTag(ModerationTestTags.dismiss(report.listId)),
-            ) { Text(stringResource(R.string.moderation_action_keep)) }
+            ) {
+                Text(
+                    stringResource(
+                        if (report.hidden) R.string.moderation_action_put_back else R.string.moderation_action_keep,
+                    ),
+                )
+            }
             TextButton(
                 onClick = onTakeDown,
                 enabled = !busy,
@@ -289,17 +403,23 @@ private fun ModerationScreenPreview() = TierYourLifeTheme {
                     listId = "1",
                     listTitle = "Every A24 film, ranked",
                     authorName = "Olena Marchuk",
-                    reason = ReportReason.Spam,
-                    note = "Every card is a link to the same shop.",
-                    createdAtMillis = 0,
+                    reasons = listOf(ReportReason.Sexual, ReportReason.Spam, ReportReason.Other),
+                    notes = listOf("Every card is a link to the same shop."),
+                    reportCount = 3,
+                    newestAtMillis = 0,
+                    hidden = true,
+                    reviewed = false,
                 ),
                 ModerationReport(
                     listId = "2",
                     listTitle = "Ramen places in Kyiv",
                     authorName = "Someone Else",
-                    reason = ReportReason.Hate,
-                    note = null,
-                    createdAtMillis = 0,
+                    reasons = listOf(ReportReason.Hate),
+                    notes = emptyList(),
+                    reportCount = 1,
+                    newestAtMillis = 0,
+                    hidden = false,
+                    reviewed = true,
                 ),
             ),
         ),

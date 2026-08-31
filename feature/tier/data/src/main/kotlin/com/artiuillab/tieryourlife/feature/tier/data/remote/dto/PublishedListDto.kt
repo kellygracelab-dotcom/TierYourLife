@@ -35,6 +35,13 @@ data class PublishedTierDto(
 data class PublishedItemDto(
     val title: String,
     val imageUrl: String? = null,
+    /**
+     * A photograph of this person's own, named rather than addressed: it lives
+     * in their private folder, which nobody else may read, so the server
+     * copies it into the feed's own folder and puts that address in the
+     * snapshot. Null for a poster, which already has an address of its own.
+     */
+    val pictureId: String? = null,
 )
 
 @Serializable
@@ -59,6 +66,7 @@ data class PublishListRequestDto(
     val title: String,
     val category: String,
     val coverImageUrl: String? = null,
+    val coverPictureId: String? = null,
     val tiers: List<PublishedTierDto>,
     val items: List<PublishedItemDto>,
 )

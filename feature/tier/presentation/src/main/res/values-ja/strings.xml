@@ -306,6 +306,7 @@
         <item quantity="other">公開リスト %1$d 件</item>
     </plurals>
     <string name="list_settings_public_too_large">このリストは公開するには大きすぎます。カードは1000枚、ティアは20段までです。</string>
+    <string name="list_settings_public_picture_refused">写真のうち一枚は公開フィードに掲載できません。削除するか、リストを非公開のままにしてください。</string>
     <string name="community_action_view_author">%1$s のプロフィール</string>
     <string name="community_action_hide">このリストを非表示</string>
     <string name="community_action_report">このリストを報告</string>
@@ -390,4 +391,11 @@
     <string name="cover_unfold_title">開いて並べ替え</string>
     <string name="cover_unfold_body">カードの移動には内側の画面が必要です。</string>
     <string name="moderation_consequence">公開を取り下げても、作者自身のコピーはそのままです。</string>
+    <string name="moderation_hidden_now">判断待ちの間、誰にも表示されません</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">一度維持されたため、報告では非表示になりません。</string>
+    <string name="moderation_action_put_back">戻す</string>
+    <plurals name="moderation_report_count">
+        <item quantity="other">%1$d 件の報告</item>
+    </plurals>
 </resources>

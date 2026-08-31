@@ -360,6 +360,7 @@
         <item quantity="many">%1$d listes publiques</item>
     </plurals>
     <string name="list_settings_public_too_large">Cette liste est trop grande pour être publiée : 1000 cartes et 20 rangs au maximum.</string>
+    <string name="list_settings_public_picture_refused">Une de vos photos ne peut pas figurer dans le fil public. Retirez-la ou gardez la liste privée.</string>
     <string name="community_action_view_author">Voir %1$s</string>
     <string name="community_action_hide">Masquer cette liste</string>
     <string name="community_action_report">Signaler cette liste</string>
@@ -449,4 +450,13 @@
     <string name="cover_unfold_title">Dépliez pour classer</string>
     <string name="cover_unfold_body">Déplacer les cartes demande l’écran intérieur.</string>
     <string name="moderation_consequence">Le retrait ne touche pas la copie personnelle de l’auteur.</string>
+    <string name="moderation_hidden_now">Personne ne le voit tant qu’il attend</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">Déjà conservée une fois : les signalements ne la masquent plus.</string>
+    <string name="moderation_action_put_back">Restaurer</string>
+    <plurals name="moderation_report_count">
+        <item quantity="one">%1$d signalement</item>
+        <item quantity="many">%1$d signalements</item>
+        <item quantity="other">%1$d signalements</item>
+    </plurals>
 </resources>

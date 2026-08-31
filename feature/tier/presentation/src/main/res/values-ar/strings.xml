@@ -441,6 +441,7 @@
         <item quantity="other">%1$d قائمة عامة</item>
     </plurals>
     <string name="list_settings_public_too_large">هذه القائمة أكبر من أن تُنشر: 1000 بطاقة و20 مستوى كحد أقصى.</string>
+    <string name="list_settings_public_picture_refused">إحدى صورك لا يمكن عرضها في المجتمع. احذفها أو اترك القائمة خاصة.</string>
     <string name="community_action_view_author">عرض %1$s</string>
     <string name="community_action_hide">إخفاء هذه القائمة</string>
     <string name="community_action_report">الإبلاغ عن هذه القائمة</string>
@@ -540,4 +541,16 @@
     <string name="cover_unfold_title">افتح الهاتف للترتيب</string>
     <string name="cover_unfold_body">تحريك البطاقات يحتاج إلى الشاشة الداخلية.</string>
     <string name="moderation_consequence">إلغاء النشر لا يمسّ نسخة المؤلف الخاصة.</string>
+    <string name="moderation_hidden_now">لا يراه أحد ريثما ينتظر القرار</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">أُبقيت مرة من قبل، ولن تخفيها البلاغات بعد الآن.</string>
+    <string name="moderation_action_put_back">إعادة</string>
+    <plurals name="moderation_report_count">
+        <item quantity="zero">%1$d بلاغ</item>
+        <item quantity="one">بلاغ واحد</item>
+        <item quantity="two">بلاغان</item>
+        <item quantity="few">%1$d بلاغات</item>
+        <item quantity="many">%1$d بلاغًا</item>
+        <item quantity="other">%1$d بلاغ</item>
+    </plurals>
 </resources>

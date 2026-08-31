@@ -333,6 +333,7 @@
         <item quantity="other">%1$d herkese açık liste</item>
     </plurals>
     <string name="list_settings_public_too_large">Bu liste yayımlanamayacak kadar büyük: en fazla 1000 kart ve 20 kademe.</string>
+    <string name="list_settings_public_picture_refused">Fotoğraflarınızdan biri herkese açık akışta yer alamaz. Kaldırın ya da listeyi özel tutun.</string>
     <string name="community_action_view_author">%1$s profilini aç</string>
     <string name="community_action_hide">Bu listeyi gizle</string>
     <string name="community_action_report">Bu listeyi bildir</string>
@@ -420,4 +421,12 @@
     <string name="cover_unfold_title">Sıralamak için aç</string>
     <string name="cover_unfold_body">Kartları taşımak iç ekranı gerektirir.</string>
     <string name="moderation_consequence">Yayından kaldırmak yazarın kendi kopyasına dokunmaz.</string>
+    <string name="moderation_hidden_now">Beklerken bunu kimse göremez</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">Bir kez korundu, artık bildirimler onu gizlemiyor.</string>
+    <string name="moderation_action_put_back">Geri al</string>
+    <plurals name="moderation_report_count">
+        <item quantity="one">%1$d bildirim</item>
+        <item quantity="other">%1$d bildirim</item>
+    </plurals>
 </resources>

@@ -62,6 +62,31 @@ class PictureSync @Inject constructor(
     }
 
     /**
+     * Sends these particular pictures, now, whatever the Wi-Fi rule says.
+     *
+     * Publishing is not the background trickle [push] exists for. Somebody
+     * pressed a button and is watching for the result, and a board that
+     * reaches the feed with blank tiles because the phone was on mobile data
+     * is a failure they cannot see the reason for. Answers with the ones that
+     * are up -- everything already sent, plus everything sent just now.
+     */
+    suspend fun sendNow(pictureIds: List<String>): Set<String> {
+        if (pictureIds.isEmpty()) return emptySet()
+        val sent = dao.sentPictureIds().toSet().toMutableSet()
+
+        pictureIds.filterNot { it in sent }.forEach { pictureId ->
+            val bytes = images.read(pictureId) ?: return@forEach
+            if (vault.put(pictureId, bytes)) {
+                dao.rememberPicture(PictureSyncEntity(pictureId, System.currentTimeMillis()))
+                sent += pictureId
+            } else {
+                Timber.d("Picture %s did not go up before publishing", pictureId)
+            }
+        }
+        return pictureIds.filterTo(mutableSetOf()) { it in sent }
+    }
+
+    /**
      * Fetches what a board says should be here and is not.
      *
      * The gap is what a new phone looks like: the boards arrive in one request

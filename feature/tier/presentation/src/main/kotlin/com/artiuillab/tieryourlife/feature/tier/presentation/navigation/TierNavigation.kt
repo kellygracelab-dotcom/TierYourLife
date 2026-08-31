@@ -125,9 +125,9 @@ fun NavController.navigateToMyPublished() {
     navigate(Route.MyPublished)
 }
 
-fun NavGraphBuilder.moderationScreen(onBack: () -> Unit) {
+fun NavGraphBuilder.moderationScreen(onBack: () -> Unit, onOpenList: (String) -> Unit) {
     composable<Route.Moderation> {
-        ModerationScreen(onBack = onBack)
+        ModerationScreen(onBack = onBack, onOpenList = onOpenList)
     }
 }
 

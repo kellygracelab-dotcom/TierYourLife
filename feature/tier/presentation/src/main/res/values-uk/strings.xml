@@ -387,6 +387,7 @@
         <item quantity="other">%1$d публічного списку</item>
     </plurals>
     <string name="list_settings_public_too_large">Список завеликий для публікації: не більше 1000 карток і 20 тирів.</string>
+    <string name="list_settings_public_picture_refused">Одне з ваших фото не може бути в загальній стрічці. Приберіть його або залиште список особистим.</string>
     <string name="community_action_view_author">Профіль %1$s</string>
     <string name="community_action_hide">Сховати цей список</string>
     <string name="community_action_report">Поскаржитися на список</string>
@@ -480,4 +481,14 @@
     <string name="cover_unfold_title">Розкладіть, щоб розставити</string>
     <string name="cover_unfold_body">Перетягувати картки можна лише на внутрішньому екрані.</string>
     <string name="moderation_consequence">Зняття з публікації не торкається копії автора.</string>
+    <string name="moderation_hidden_now">Поки чекає рішення, його не бачить ніхто</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">Уже залишено одного разу — скарги більше його не ховають.</string>
+    <string name="moderation_action_put_back">Повернути</string>
+    <plurals name="moderation_report_count">
+        <item quantity="one">%1$d скарга</item>
+        <item quantity="few">%1$d скарги</item>
+        <item quantity="many">%1$d скарг</item>
+        <item quantity="other">%1$d скарги</item>
+    </plurals>
 </resources>

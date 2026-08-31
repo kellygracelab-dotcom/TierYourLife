@@ -61,6 +61,16 @@ interface BoardSyncDao {
     @Query("SELECT * FROM tier_lists WHERE deletedAt IS NULL")
     suspend fun boardsInUse(): List<TierListEntity>
 
+    /**
+     * Forgets a published id the account no longer knows about.
+     *
+     * Deliberately not touching editedAt: nothing about the board changed, and
+     * stamping it would make every phone in the account re-send a board whose
+     * contents are identical.
+     */
+    @Query("UPDATE tier_lists SET publishedId = NULL WHERE publishedId IN (:goneIds)")
+    suspend fun forgetPublished(goneIds: List<String>)
+
     @Query("UPDATE tier_lists SET title = :title WHERE uid = :uid")
     suspend fun renameBoard(uid: String, title: String)
 

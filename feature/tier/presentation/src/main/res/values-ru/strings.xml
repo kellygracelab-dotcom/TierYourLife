@@ -387,6 +387,7 @@
         <item quantity="other">%1$d публичного списка</item>
     </plurals>
     <string name="list_settings_public_too_large">Список слишком большой для публикации: не больше 1000 карточек и 20 тиров.</string>
+    <string name="list_settings_public_picture_refused">Одно из ваших фото нельзя показывать в общей ленте. Уберите его или оставьте список личным.</string>
     <string name="community_action_view_author">Профиль %1$s</string>
     <string name="community_action_hide">Скрыть этот список</string>
     <string name="community_action_report">Пожаловаться на список</string>
@@ -480,4 +481,14 @@
     <string name="cover_unfold_title">Разложите, чтобы расставить</string>
     <string name="cover_unfold_body">Перетаскивать карточки можно только на внутреннем экране.</string>
     <string name="moderation_consequence">Снятие с публикации не трогает копию автора.</string>
+    <string name="moderation_hidden_now">Пока ждёт решения, его не видно никому</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">Уже оставлен один раз — жалобы больше его не прячут.</string>
+    <string name="moderation_action_put_back">Вернуть</string>
+    <plurals name="moderation_report_count">
+        <item quantity="one">%1$d жалоба</item>
+        <item quantity="few">%1$d жалобы</item>
+        <item quantity="many">%1$d жалоб</item>
+        <item quantity="other">%1$d жалобы</item>
+    </plurals>
 </resources>

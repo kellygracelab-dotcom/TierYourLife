@@ -387,6 +387,7 @@
         <item quantity="other">%1$d listy publicznej</item>
     </plurals>
     <string name="list_settings_public_too_large">Ta lista jest za duża, by ją opublikować: najwyżej 1000 kart i 20 poziomów.</string>
+    <string name="list_settings_public_picture_refused">Jedno z Twoich zdjęć nie może trafić do publicznego kanału. Usuń je albo zostaw listę prywatną.</string>
     <string name="community_action_view_author">Zobacz %1$s</string>
     <string name="community_action_hide">Ukryj tę listę</string>
     <string name="community_action_report">Zgłoś tę listę</string>
@@ -480,4 +481,14 @@
     <string name="cover_unfold_title">Rozłóż, aby uporządkować</string>
     <string name="cover_unfold_body">Przeciąganie kart wymaga wewnętrznego ekranu.</string>
     <string name="moderation_consequence">Usunięcie z publikacji nie rusza kopii autora.</string>
+    <string name="moderation_hidden_now">Nikt tego nie widzi, dopóki czeka</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">Już raz zachowana, więc zgłoszenia jej nie ukrywają.</string>
+    <string name="moderation_action_put_back">Przywróć</string>
+    <plurals name="moderation_report_count">
+        <item quantity="one">%1$d zgłoszenie</item>
+        <item quantity="few">%1$d zgłoszenia</item>
+        <item quantity="many">%1$d zgłoszeń</item>
+        <item quantity="other">%1$d zgłoszenia</item>
+    </plurals>
 </resources>

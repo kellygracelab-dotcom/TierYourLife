@@ -333,6 +333,7 @@
         <item quantity="other">%1$d öffentliche Listen</item>
     </plurals>
     <string name="list_settings_public_too_large">Diese Liste ist zu groß zum Veröffentlichen: höchstens 1000 Karten und 20 Stufen.</string>
+    <string name="list_settings_public_picture_refused">Eines deiner Fotos darf nicht in den öffentlichen Feed. Entferne es oder behalte die Liste privat.</string>
     <string name="community_action_view_author">%1$s ansehen</string>
     <string name="community_action_hide">Diese Liste ausblenden</string>
     <string name="community_action_report">Diese Liste melden</string>
@@ -420,4 +421,12 @@
     <string name="cover_unfold_title">Zum Sortieren aufklappen</string>
     <string name="cover_unfold_body">Karten verschieben geht nur auf dem inneren Display.</string>
     <string name="moderation_consequence">Das Entfernen lässt die eigene Kopie des Autors unberührt.</string>
+    <string name="moderation_hidden_now">Solange es wartet, sieht es niemand</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">Einmal behalten, also blenden Meldungen sie nicht mehr aus.</string>
+    <string name="moderation_action_put_back">Zurückholen</string>
+    <plurals name="moderation_report_count">
+        <item quantity="one">%1$d Meldung</item>
+        <item quantity="other">%1$d Meldungen</item>
+    </plurals>
 </resources>

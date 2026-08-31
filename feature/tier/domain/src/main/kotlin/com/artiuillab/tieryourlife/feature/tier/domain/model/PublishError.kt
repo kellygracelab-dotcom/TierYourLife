@@ -6,6 +6,9 @@ enum class PublishError {
     NothingToPublish,
     TooManyLists,
     TooLarge,
+
+    /** One of the photographs on the board may not go into a public feed. */
+    PictureRefused,
     Offline,
     Unknown,
 }

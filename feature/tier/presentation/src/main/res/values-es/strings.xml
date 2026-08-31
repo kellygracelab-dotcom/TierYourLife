@@ -360,6 +360,7 @@
         <item quantity="many">%1$d listas públicas</item>
     </plurals>
     <string name="list_settings_public_too_large">Esta lista es demasiado grande para publicarse: como máximo 1000 tarjetas y 20 niveles.</string>
+    <string name="list_settings_public_picture_refused">Una de tus fotos no puede aparecer en el feed público. Quítala o mantén la lista privada.</string>
     <string name="community_action_view_author">Ver a %1$s</string>
     <string name="community_action_hide">Ocultar esta lista</string>
     <string name="community_action_report">Denunciar esta lista</string>
@@ -449,4 +450,13 @@
     <string name="cover_unfold_title">Despliega para ordenar</string>
     <string name="cover_unfold_body">Mover tarjetas necesita la pantalla interior.</string>
     <string name="moderation_consequence">Retirarla no toca la copia propia del autor.</string>
+    <string name="moderation_hidden_now">Nadie lo ve mientras espera</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">Ya se mantuvo una vez, así que los reportes ya no la ocultan.</string>
+    <string name="moderation_action_put_back">Restaurar</string>
+    <plurals name="moderation_report_count">
+        <item quantity="one">%1$d reporte</item>
+        <item quantity="many">%1$d reportes</item>
+        <item quantity="other">%1$d reportes</item>
+    </plurals>
 </resources>

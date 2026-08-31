@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.repository
 
+import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.CommunityApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ModerationReportDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishListRequestDto
@@ -8,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListSummaryDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ReportRequestDto
+import com.artiuillab.tieryourlife.feature.tier.data.sync.PictureSync
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
@@ -29,6 +31,8 @@ import javax.inject.Singleton
 @Singleton
 class RetrofitCommunityRepository @Inject constructor(
     private val api: CommunityApi,
+    private val images: TierImageStore,
+    private val pictures: PictureSync,
 ) : CommunityRepository {
 
     override suspend fun feed(
@@ -50,7 +54,13 @@ class RetrofitCommunityRepository @Inject constructor(
     }
 
     override suspend fun publish(list: TierList): Result<String> = try {
-        val request = list.toRequest()
+        // The server copies a photograph out of this account's folder, so it
+        // has to be in that folder first. Sending them here rather than
+        // trusting the background trickle: publishing is a button somebody
+        // pressed, and blank tiles in the feed would be the only sign that it
+        // half worked.
+        val up = pictures.sendNow(list.ownPictureIds(images))
+        val request = list.toRequest(images, up)
         val existing = list.publishedId
         Result.success(if (existing == null) api.publish(request).id else api.republish(existing, request).id)
     } catch (e: Exception) {
@@ -89,9 +99,14 @@ class RetrofitCommunityRepository @Inject constructor(
         listTitle = listTitle,
         authorName = authorName,
         // A reason we do not recognise is still a complaint worth reading.
-        reason = ReportReason.entries.firstOrNull { it.id == reason } ?: ReportReason.Other,
-        note = note,
-        createdAtMillis = createdAt,
+        reasons = reasons.map { given ->
+            ReportReason.entries.firstOrNull { it.id == given } ?: ReportReason.Other
+        },
+        notes = notes,
+        reportCount = reportCount,
+        newestAtMillis = newestAtMs,
+        hidden = hidden,
+        reviewed = reviewed,
     )
 }
 
@@ -109,6 +124,7 @@ private fun Throwable.asPublishError(): PublishError = when {
         403 -> PublishError.NotSignedIn
         409 -> PublishError.TooManyLists
         413 -> PublishError.TooLarge
+        422 -> PublishError.PictureRefused
         else -> PublishError.Unknown
     }
 
@@ -159,14 +175,37 @@ private fun PublishedListDto.toDomain() = PublishedList(
     },
 )
 
-// Only the tier definitions and the cards travel; where the author put them is
-// theirs, and the reader ranks from scratch.
-private fun TierList.toRequest() = PublishListRequestDto(
+/**
+ * Every picture of this person's own that the board wears, each one once.
+ *
+ * A poster has an address of its own and is nobody's to upload; a photograph
+ * out of the gallery is a file in this app's folder, and its name is the only
+ * part of its path worth sending anywhere.
+ *
+ * Only the tier definitions and the cards travel; where the author put them is
+ * theirs, and the reader ranks from scratch.
+ */
+private fun TierList.ownPictureIds(images: TierImageStore): List<String> =
+    (tiers.flatMap { tier -> tier.items.map { it.imageUrl } } + coverImageUrl)
+        .mapNotNull(images::pictureIdOf)
+        .distinct()
+
+private fun TierList.toRequest(images: TierImageStore, uploaded: Set<String>) = PublishListRequestDto(
     title = title,
     category = (category ?: ListCategory.Other).id,
-    coverImageUrl = coverImageUrl,
+    coverImageUrl = coverImageUrl?.takeIf { it.startsWith("https://") },
+    coverPictureId = images.pictureIdOf(coverImageUrl)?.takeIf { it in uploaded },
     tiers = tiers.filterNot { it.isPool }.map {
         PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark)
     },
-    items = tiers.flatMap { it.items }.map { PublishedItemDto(it.title, it.imageUrl) },
+    // A picture that would not upload is left unnamed rather than named and
+    // missing: the server would look for it, not find it, and the card would
+    // end up exactly as bare either way.
+    items = tiers.flatMap { it.items }.map { item ->
+        PublishedItemDto(
+            title = item.title,
+            imageUrl = item.imageUrl?.takeIf { it.startsWith("https://") },
+            pictureId = images.pictureIdOf(item.imageUrl)?.takeIf { it in uploaded },
+        )
+    },
 )

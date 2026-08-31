@@ -25,7 +25,8 @@ class ModerationViewModelTest {
 
         val ready = viewModel.state.first { it is ModerationUiState.Ready } as ModerationUiState.Ready
 
-        assertEquals(listOf("a", "a", "b"), ready.reports.map { it.listId })
+        assertEquals(listOf("a", "b"), ready.reports.map { it.listId })
+        assertEquals(2, ready.reports.first().reportCount)
     }
 
     // Everyone who is not the one person allowed to read these is turned away,
@@ -80,18 +81,24 @@ class ModerationViewModelTest {
             (it as? ModerationUiState.Ready)?.settling == null
         } as ModerationUiState.Ready
 
-        assertEquals(listOf("a", "a"), still.reports.map { it.listId })
+        assertEquals(listOf("a"), still.reports.map { it.listId })
+        assertEquals(2, still.reports.single().reportCount)
     }
 
-    private fun twoAboutOneList() = listOf(about("a"), about("a"))
+    // The server groups by list now, so two complaints about one board arrive
+    // as one row carrying a count of two.
+    private fun twoAboutOneList() = listOf(about("a", reportCount = 2))
 
-    private fun about(listId: String) = ModerationReport(
+    private fun about(listId: String, reportCount: Int = 1) = ModerationReport(
         listId = listId,
         listTitle = "A list",
         authorName = "Someone",
-        reason = ReportReason.Spam,
-        note = null,
-        createdAtMillis = 0,
+        reasons = List(reportCount) { ReportReason.Spam },
+        notes = emptyList(),
+        reportCount = reportCount,
+        newestAtMillis = 0,
+        hidden = false,
+        reviewed = false,
     )
 }
 
