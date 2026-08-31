@@ -306,6 +306,7 @@
         <item quantity="other">公開リスト %1$d 件</item>
     </plurals>
     <string name="list_settings_public_too_large">このリストは公開するには大きすぎます。カードは1000枚、ティアは20段までです。</string>
+    <string name="list_settings_public_picture_refused">写真のうち一枚は公開フィードに掲載できません。削除するか、リストを非公開のままにしてください。</string>
     <string name="community_action_view_author">%1$s のプロフィール</string>
     <string name="community_action_hide">このリストを非表示</string>
     <string name="community_action_report">このリストを報告</string>
@@ -316,10 +317,10 @@
     <string name="report_reason_spam">スパムや広告</string>
     <string name="report_reason_other">その他</string>
     <string name="report_note_label">補足があれば（任意）</string>
-    <string name="report_by_hand">報告はすべて人が読みます。自動的に削除されることはありません。</string>
+    <string name="report_by_hand">報告は人が読みます。数が揃うと、判断までリストは非表示になります。</string>
     <string name="report_action_send">報告する</string>
     <string name="report_sent_title">報告しました。あなたには非表示になります</string>
-    <string name="report_sent_body">報告は一人が手作業で確認します。それまで他の人には表示され続けることがあります。</string>
+    <string name="report_sent_body">報告は人が確認します。それまでは他の人には表示されたままのことがあります。</string>
     <string name="report_hide_author">%1$s の投稿をすべて非表示にする</string>
     <string name="community_action_hide_author">%1$s の投稿をすべて非表示</string>
     <string name="action_done">完了</string>
@@ -373,7 +374,7 @@
     <string name="settings_backup_sub">ティア、カード、説明</string>
     <string name="settings_backup_pictures_label">画像はWi-Fiのみ</string>
     <string name="settings_backup_pictures_sub">アカウント内 %1$s</string>
-    <string name="settings_backup_note">あなたの写真や生成したカードはアカウントに保存され、見られるのはあなただけです。公開したリストには引き続きカタログの画像のみが表示されます。</string>
+    <string name="settings_backup_note">写真と生成カードはあなたのアカウントに保存され、見られるのはあなただけです。公開すると画像はフィードに複製され、誰でも見られます。</string>
     <string name="settings_backup_stuck">%1$sからバックアップされていません。接続を確認してください。</string>
     <string name="settings_backup_off_title">バックアップを停止しますか？</string>
     <string name="settings_backup_off_body">ボードはこの端末に残ります。アカウント内のコピーは削除され、新しい端末は空の状態から始まります。</string>
@@ -390,4 +391,11 @@
     <string name="cover_unfold_title">開いて並べ替え</string>
     <string name="cover_unfold_body">カードの移動には内側の画面が必要です。</string>
     <string name="moderation_consequence">公開を取り下げても、作者自身のコピーはそのままです。</string>
+    <string name="moderation_hidden_now">判断待ちの間、誰にも表示されません</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">一度維持されたため、報告では非表示になりません。</string>
+    <string name="moderation_action_put_back">戻す</string>
+    <plurals name="moderation_report_count">
+        <item quantity="other">%1$d 件の報告</item>
+    </plurals>
 </resources>

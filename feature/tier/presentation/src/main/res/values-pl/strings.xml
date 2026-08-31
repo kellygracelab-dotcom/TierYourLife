@@ -387,6 +387,7 @@
         <item quantity="other">%1$d listy publicznej</item>
     </plurals>
     <string name="list_settings_public_too_large">Ta lista jest za duża, by ją opublikować: najwyżej 1000 kart i 20 poziomów.</string>
+    <string name="list_settings_public_picture_refused">Jedno z Twoich zdjęć nie może trafić do publicznego kanału. Usuń je albo zostaw listę prywatną.</string>
     <string name="community_action_view_author">Zobacz %1$s</string>
     <string name="community_action_hide">Ukryj tę listę</string>
     <string name="community_action_report">Zgłoś tę listę</string>
@@ -397,10 +398,10 @@
     <string name="report_reason_spam">Spam lub reklama</string>
     <string name="report_reason_other">Coś innego</string>
     <string name="report_note_label">Coś do dodania (opcjonalnie)</string>
-    <string name="report_by_hand">Każde zgłoszenie czyta człowiek. Nic nie znika automatycznie.</string>
+    <string name="report_by_hand">Zgłoszenia czyta człowiek. Gdy jest ich dość, lista znika do czasu decyzji.</string>
     <string name="report_action_send">Zgłoś</string>
     <string name="report_sent_title">Zgłoszono i ukryto dla ciebie</string>
-    <string name="report_sent_body">Zgłoszenia sprawdza ręcznie jedna osoba, więc dla innych lista może pozostać.</string>
+    <string name="report_sent_body">Zgłoszenia rozpatruje człowiek. Do tego czasu inni mogą wciąż ją widzieć.</string>
     <string name="report_hide_author">Ukryj też wszystko od %1$s</string>
     <string name="community_action_hide_author">Ukryj wszystko od %1$s</string>
     <string name="action_done">Gotowe</string>
@@ -463,7 +464,7 @@
     <string name="settings_backup_sub">Poziomy, karty i podpisy</string>
     <string name="settings_backup_pictures_label">Zdjęcia tylko przez Wi-Fi</string>
     <string name="settings_backup_pictures_sub">%1$s na twoim koncie</string>
-    <string name="settings_backup_note">Twoje zdjęcia i wygenerowane karty trafiają na twoje konto i widzisz je tylko ty. Opublikowane listy nadal pokazują wyłącznie obrazy z katalogów.</string>
+    <string name="settings_backup_note">Twoje zdjęcia i wygenerowane karty trafiają na Twoje konto, gdzie widzisz je tylko Ty. Publikacja kopiuje obrazy listy do kanału, gdzie widzą je wszyscy.</string>
     <string name="settings_backup_stuck">Brak kopii od %1$s. Sprawdź połączenie.</string>
     <string name="settings_backup_off_title">Przestać tworzyć kopię?</string>
     <string name="settings_backup_off_body">Tablice zostają na tym telefonie. Kopia na koncie zostanie usunięta, a nowy telefon zacznie od pustego.</string>
@@ -480,4 +481,14 @@
     <string name="cover_unfold_title">Rozłóż, aby uporządkować</string>
     <string name="cover_unfold_body">Przeciąganie kart wymaga wewnętrznego ekranu.</string>
     <string name="moderation_consequence">Usunięcie z publikacji nie rusza kopii autora.</string>
+    <string name="moderation_hidden_now">Nikt tego nie widzi, dopóki czeka</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">Już raz zachowana, więc zgłoszenia jej nie ukrywają.</string>
+    <string name="moderation_action_put_back">Przywróć</string>
+    <plurals name="moderation_report_count">
+        <item quantity="one">%1$d zgłoszenie</item>
+        <item quantity="few">%1$d zgłoszenia</item>
+        <item quantity="many">%1$d zgłoszeń</item>
+        <item quantity="other">%1$d zgłoszenia</item>
+    </plurals>
 </resources>

@@ -16,6 +16,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequest
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.LocalBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.RemoteBoard
@@ -53,6 +54,7 @@ class BoardSyncEngine @Inject constructor(
     private val pictures: PictureSync,
     private val preferences: AppPreferences,
     private val deviceName: DeviceName,
+    private val community: CommunityRepository,
 ) : BoardSync {
 
     override suspend fun sync(): SyncReport {
@@ -88,6 +90,9 @@ class BoardSyncEngine @Inject constructor(
         runCatching { pictures.pull(wantedPictures()) }
             .onFailure { failure -> Timber.w(failure, "Pictures did not come down") }
 
+        runCatching { forgetWhatIsNoLongerPublished() }
+            .onFailure { failure -> Timber.w(failure, "Could not reconcile what is published") }
+
         // Only when the whole run got through. A partial run leaves the
         // account behind on something, and the one line this timestamp feeds
         // exists to say exactly that.
@@ -96,6 +101,27 @@ class BoardSyncEngine @Inject constructor(
         }
 
         return SyncReport(signedIn = true, carried = carried, refused = refused)
+    }
+
+    /**
+     * Drops a published id the account has never heard of.
+     *
+     * A snapshot can go without this phone doing it: taken down after a
+     * complaint, or unpublished from another device. Until now the board went
+     * on saying it was public, the switch went on showing it on, and nothing
+     * said why it was not in the feed -- and because the switch was already
+     * on, the one action that would have fixed it was the one nobody would
+     * think to take.
+     */
+    private suspend fun forgetWhatIsNoLongerPublished() {
+        val claimed = dao.allBoards().mapNotNull { it.publishedId }.distinct()
+        if (claimed.isEmpty()) return
+        val theirs = community.myPublished().getOrElse { return }.map { it.id }.toSet()
+        val gone = claimed.filterNot { it in theirs }
+        if (gone.isNotEmpty()) {
+            Timber.i("%d published list(s) are no longer in the account", gone.size)
+            dao.forgetPublished(gone)
+        }
     }
 
     /**

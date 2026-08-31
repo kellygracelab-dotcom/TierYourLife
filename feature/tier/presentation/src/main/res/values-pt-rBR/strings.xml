@@ -360,6 +360,7 @@
         <item quantity="many">%1$d listas públicas</item>
     </plurals>
     <string name="list_settings_public_too_large">Esta lista é grande demais para publicar: no máximo 1000 cards e 20 níveis.</string>
+    <string name="list_settings_public_picture_refused">Uma das suas fotos não pode aparecer no feed público. Remova-a ou mantenha a lista privada.</string>
     <string name="community_action_view_author">Ver %1$s</string>
     <string name="community_action_hide">Ocultar esta lista</string>
     <string name="community_action_report">Denunciar esta lista</string>
@@ -370,10 +371,10 @@
     <string name="report_reason_spam">Spam ou publicidade</string>
     <string name="report_reason_other">Outra coisa</string>
     <string name="report_note_label">Algo a acrescentar (opcional)</string>
-    <string name="report_by_hand">Uma pessoa lê cada denúncia. Nada é removido automaticamente.</string>
+    <string name="report_by_hand">Uma pessoa lê cada denúncia. Se forem várias, a lista some até a decisão.</string>
     <string name="report_action_send">Denunciar</string>
     <string name="report_sent_title">Denunciada e oculta para você</string>
-    <string name="report_sent_body">Uma pessoa revisa as denúncias à mão, então ela pode continuar visível para os outros.</string>
+    <string name="report_sent_body">Uma pessoa analisa as denúncias. Até lá, outros ainda podem vê-la.</string>
     <string name="report_hide_author">Ocultar também tudo de %1$s</string>
     <string name="community_action_hide_author">Ocultar tudo de %1$s</string>
     <string name="action_done">Concluído</string>
@@ -432,7 +433,7 @@
     <string name="settings_backup_sub">Níveis, cartões e legendas</string>
     <string name="settings_backup_pictures_label">Imagens só no Wi-Fi</string>
     <string name="settings_backup_pictures_sub">%1$s na sua conta</string>
-    <string name="settings_backup_note">Suas fotos e cartões gerados vão para a sua conta, e só você os vê. Listas publicadas continuam mostrando apenas imagens de catálogo.</string>
+    <string name="settings_backup_note">Suas fotos e cartas geradas vão para sua conta, onde só você as vê. Publicar copia as imagens para o feed, onde qualquer um as vê.</string>
     <string name="settings_backup_stuck">Sem cópia desde %1$s. Verifique sua conexão.</string>
     <string name="settings_backup_off_title">Parar de guardar cópia?</string>
     <string name="settings_backup_off_body">Seus quadros ficam neste telefone. A cópia na sua conta é apagada, e um telefone novo começará vazio.</string>
@@ -449,4 +450,13 @@
     <string name="cover_unfold_title">Abra para ordenar</string>
     <string name="cover_unfold_body">Mover cartões precisa da tela interna.</string>
     <string name="moderation_consequence">Remover não mexe na cópia do próprio autor.</string>
+    <string name="moderation_hidden_now">Ninguém vê isto enquanto espera</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">Já foi mantida uma vez, então denúncias não a ocultam mais.</string>
+    <string name="moderation_action_put_back">Restaurar</string>
+    <plurals name="moderation_report_count">
+        <item quantity="one">%1$d denúncia</item>
+        <item quantity="many">%1$d denúncias</item>
+        <item quantity="other">%1$d denúncias</item>
+    </plurals>
 </resources>

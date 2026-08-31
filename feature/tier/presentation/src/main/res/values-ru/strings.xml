@@ -387,6 +387,7 @@
         <item quantity="other">%1$d публичного списка</item>
     </plurals>
     <string name="list_settings_public_too_large">Список слишком большой для публикации: не больше 1000 карточек и 20 тиров.</string>
+    <string name="list_settings_public_picture_refused">Одно из ваших фото нельзя показывать в общей ленте. Уберите его или оставьте список личным.</string>
     <string name="community_action_view_author">Профиль %1$s</string>
     <string name="community_action_hide">Скрыть этот список</string>
     <string name="community_action_report">Пожаловаться на список</string>
@@ -397,10 +398,10 @@
     <string name="report_reason_spam">Спам или реклама</string>
     <string name="report_reason_other">Что-то другое</string>
     <string name="report_note_label">Что-то добавить (необязательно)</string>
-    <string name="report_by_hand">Каждую жалобу читает человек. Автоматически ничего не удаляется.</string>
+    <string name="report_by_hand">Жалобы читает человек. Если их наберётся, список скроется до решения.</string>
     <string name="report_action_send">Пожаловаться</string>
     <string name="report_sent_title">Жалоба отправлена, список скрыт</string>
-    <string name="report_sent_body">Жалобы разбирает один человек вручную, поэтому для других список пока останется.</string>
+    <string name="report_sent_body">Жалобы разбирает человек. До этого список может оставаться видным другим.</string>
     <string name="report_hide_author">Скрыть вообще всё от %1$s</string>
     <string name="community_action_hide_author">Скрыть всё от %1$s</string>
     <string name="action_done">Готово</string>
@@ -463,7 +464,7 @@
     <string name="settings_backup_sub">Тиры, карточки и подписи</string>
     <string name="settings_backup_pictures_label">Картинки только по Wi-Fi</string>
     <string name="settings_backup_pictures_sub">%1$s в вашем аккаунте</string>
-    <string name="settings_backup_note">Ваши фото и сгенерированные карточки уезжают в ваш аккаунт, и видите их только вы. В опубликованных списках остаются только картинки из каталогов.</string>
+    <string name="settings_backup_note">Ваши фото и сгенерированные карточки едут в ваш аккаунт, где их видите только вы. Публикация копирует картинки списка в ленту, где их видят все.</string>
     <string name="settings_backup_stuck">Нет копии с %1$s. Проверьте подключение.</string>
     <string name="settings_backup_off_title">Перестать хранить копию?</string>
     <string name="settings_backup_off_body">Доски останутся на этом телефоне. Копия в аккаунте будет удалена, и новый телефон начнёт с пустого.</string>
@@ -480,4 +481,14 @@
     <string name="cover_unfold_title">Разложите, чтобы расставить</string>
     <string name="cover_unfold_body">Перетаскивать карточки можно только на внутреннем экране.</string>
     <string name="moderation_consequence">Снятие с публикации не трогает копию автора.</string>
+    <string name="moderation_hidden_now">Пока ждёт решения, его не видно никому</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">Уже оставлен один раз — жалобы больше его не прячут.</string>
+    <string name="moderation_action_put_back">Вернуть</string>
+    <plurals name="moderation_report_count">
+        <item quantity="one">%1$d жалоба</item>
+        <item quantity="few">%1$d жалобы</item>
+        <item quantity="many">%1$d жалоб</item>
+        <item quantity="other">%1$d жалобы</item>
+    </plurals>
 </resources>

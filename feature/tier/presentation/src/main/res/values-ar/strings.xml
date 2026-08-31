@@ -441,6 +441,7 @@
         <item quantity="other">%1$d قائمة عامة</item>
     </plurals>
     <string name="list_settings_public_too_large">هذه القائمة أكبر من أن تُنشر: 1000 بطاقة و20 مستوى كحد أقصى.</string>
+    <string name="list_settings_public_picture_refused">إحدى صورك لا يمكن عرضها في المجتمع. احذفها أو اترك القائمة خاصة.</string>
     <string name="community_action_view_author">عرض %1$s</string>
     <string name="community_action_hide">إخفاء هذه القائمة</string>
     <string name="community_action_report">الإبلاغ عن هذه القائمة</string>
@@ -451,10 +452,10 @@
     <string name="report_reason_spam">رسائل مزعجة أو إعلانات</string>
     <string name="report_reason_other">شيء آخر</string>
     <string name="report_note_label">أي إضافة (اختياري)</string>
-    <string name="report_by_hand">يقرأ شخص كل بلاغ. لا يُحذف أي شيء تلقائيًا.</string>
+    <string name="report_by_hand">يقرأ شخص كل بلاغ. وإذا تكررت، تُخفى القائمة حتى ذلك الحين.</string>
     <string name="report_action_send">إبلاغ</string>
     <string name="report_sent_title">تم الإبلاغ وأُخفيت عنك</string>
-    <string name="report_sent_body">يراجع شخص واحد البلاغات يدويًا، لذا قد تظل ظاهرة للآخرين حتى ذلك الحين.</string>
+    <string name="report_sent_body">يراجع شخص البلاغات. وحتى ذلك قد تظل ظاهرة للآخرين.</string>
     <string name="report_hide_author">إخفاء كل شيء من %1$s أيضًا</string>
     <string name="community_action_hide_author">إخفاء كل شيء من %1$s</string>
     <string name="action_done">تم</string>
@@ -523,7 +524,7 @@
     <string name="settings_backup_sub">المستويات والبطاقات والملاحظات</string>
     <string name="settings_backup_pictures_label">الصور عبر Wi-Fi فقط</string>
     <string name="settings_backup_pictures_sub">%1$s في حسابك</string>
-    <string name="settings_backup_note">صورك والبطاقات المولّدة تذهب إلى حسابك، ولا يراها أحد سواك. القوائم المنشورة لا تزال تعرض صور الفهارس فقط.</string>
+    <string name="settings_backup_note">تنتقل صورك وبطاقاتك المُولّدة إلى حسابك، ولا يراها سواك. والنشر ينسخ صور القائمة إلى المجتمع حيث يراها الجميع.</string>
     <string name="settings_backup_stuck">لا توجد نسخة منذ %1$s. تحقق من اتصالك.</string>
     <string name="settings_backup_off_title">إيقاف النسخ الاحتياطي؟</string>
     <string name="settings_backup_off_body">تبقى لوحاتك على هذا الهاتف. تُحذف النسخة في حسابك، وسيبدأ الهاتف الجديد فارغًا.</string>
@@ -540,4 +541,16 @@
     <string name="cover_unfold_title">افتح الهاتف للترتيب</string>
     <string name="cover_unfold_body">تحريك البطاقات يحتاج إلى الشاشة الداخلية.</string>
     <string name="moderation_consequence">إلغاء النشر لا يمسّ نسخة المؤلف الخاصة.</string>
+    <string name="moderation_hidden_now">لا يراه أحد ريثما ينتظر القرار</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">أُبقيت مرة من قبل، ولن تخفيها البلاغات بعد الآن.</string>
+    <string name="moderation_action_put_back">إعادة</string>
+    <plurals name="moderation_report_count">
+        <item quantity="zero">%1$d بلاغ</item>
+        <item quantity="one">بلاغ واحد</item>
+        <item quantity="two">بلاغان</item>
+        <item quantity="few">%1$d بلاغات</item>
+        <item quantity="many">%1$d بلاغًا</item>
+        <item quantity="other">%1$d بلاغ</item>
+    </plurals>
 </resources>

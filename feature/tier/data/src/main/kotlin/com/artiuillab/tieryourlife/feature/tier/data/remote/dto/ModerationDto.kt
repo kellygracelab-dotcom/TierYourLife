@@ -7,9 +7,15 @@ data class ModerationReportDto(
     val listId: String,
     val listTitle: String = "",
     val authorName: String = "",
-    val reason: String = "other",
-    val note: String? = null,
-    val createdAt: Long = 0,
+    /** Newest first. One per person who complained. */
+    val reasons: List<String> = emptyList(),
+    val notes: List<String> = emptyList(),
+    val reportCount: Int = 0,
+    val newestAtMs: Long = 0,
+    /** Out of the feed while it waits to be looked at. */
+    val hidden: Boolean = false,
+    /** Looked at once and kept, so later complaints no longer hide it. */
+    val reviewed: Boolean = false,
 )
 
 @Serializable

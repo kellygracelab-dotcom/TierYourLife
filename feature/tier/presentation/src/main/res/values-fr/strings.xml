@@ -360,6 +360,7 @@
         <item quantity="many">%1$d listes publiques</item>
     </plurals>
     <string name="list_settings_public_too_large">Cette liste est trop grande pour être publiée : 1000 cartes et 20 rangs au maximum.</string>
+    <string name="list_settings_public_picture_refused">Une de vos photos ne peut pas figurer dans le fil public. Retirez-la ou gardez la liste privée.</string>
     <string name="community_action_view_author">Voir %1$s</string>
     <string name="community_action_hide">Masquer cette liste</string>
     <string name="community_action_report">Signaler cette liste</string>
@@ -370,10 +371,10 @@
     <string name="report_reason_spam">Spam ou publicité</string>
     <string name="report_reason_other">Autre chose</string>
     <string name="report_note_label">Quelque chose à ajouter (facultatif)</string>
-    <string name="report_by_hand">Une personne lit chaque signalement. Rien n\'est retiré automatiquement.</string>
+    <string name="report_by_hand">Une personne lit chaque signalement. S’il y en a assez, la liste disparaît jusque-là.</string>
     <string name="report_action_send">Signaler</string>
     <string name="report_sent_title">Signalée et masquée pour vous</string>
-    <string name="report_sent_body">Une seule personne examine les signalements à la main : elle peut rester visible pour les autres.</string>
+    <string name="report_sent_body">Une personne examine les signalements. D’ici là, elle peut rester visible.</string>
     <string name="report_hide_author">Masquer aussi tout de %1$s</string>
     <string name="community_action_hide_author">Masquer tout de %1$s</string>
     <string name="action_done">Terminé</string>
@@ -432,7 +433,7 @@
     <string name="settings_backup_sub">Niveaux, cartes et légendes</string>
     <string name="settings_backup_pictures_label">Images en Wi-Fi seulement</string>
     <string name="settings_backup_pictures_sub">%1$s dans votre compte</string>
-    <string name="settings_backup_note">Vos photos et cartes générées vont dans votre compte, et vous seul les voyez. Les listes publiées n’affichent toujours que des images de catalogue.</string>
+    <string name="settings_backup_note">Vos photos et cartes générées vont dans votre compte, où vous seul les voyez. Publier copie les images dans le fil, où tout le monde les voit.</string>
     <string name="settings_backup_stuck">Pas de sauvegarde depuis %1$s. Vérifiez votre connexion.</string>
     <string name="settings_backup_off_title">Arrêter la sauvegarde ?</string>
     <string name="settings_backup_off_body">Vos tableaux restent sur ce téléphone. La copie dans votre compte est supprimée, et un nouveau téléphone démarrera vide.</string>
@@ -449,4 +450,13 @@
     <string name="cover_unfold_title">Dépliez pour classer</string>
     <string name="cover_unfold_body">Déplacer les cartes demande l’écran intérieur.</string>
     <string name="moderation_consequence">Le retrait ne touche pas la copie personnelle de l’auteur.</string>
+    <string name="moderation_hidden_now">Personne ne le voit tant qu’il attend</string>
+    <string name="moderation_reason_and_count">%1$s · %2$s</string>
+    <string name="moderation_already_kept">Déjà conservée une fois : les signalements ne la masquent plus.</string>
+    <string name="moderation_action_put_back">Restaurer</string>
+    <plurals name="moderation_report_count">
+        <item quantity="one">%1$d signalement</item>
+        <item quantity="many">%1$d signalements</item>
+        <item quantity="other">%1$d signalements</item>
+    </plurals>
 </resources>
