@@ -17,6 +17,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.FakeAppPreferences
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
@@ -56,7 +57,7 @@ class FollowingAnAuthorTest {
         val after = ready(viewModel) { it.follow?.following == true }
 
         assertEquals(5, after.follow?.followers)
-        assertEquals(listOf("author-1"), community.followed)
+        assertEquals("author-1", eventually("the follow to reach the server") { community.followed.firstOrNull() })
     }
 
     // A button that changes while the number beside it does not reads as a bug,
@@ -84,7 +85,10 @@ class FollowingAnAuthorTest {
         val after = ready(viewModel) { it.follow?.following == false }
 
         assertEquals(8, after.follow?.followers)
-        assertEquals(listOf("author-1"), community.unfollowed)
+        assertEquals(
+            "author-1",
+            eventually("the unfollow to reach the server") { community.unfollowed.firstOrNull() },
+        )
     }
 
     // The only thing the popular ordering counts.
@@ -95,13 +99,8 @@ class FollowingAnAuthorTest {
         ready(viewModel)
 
         viewModel.saveToMyLists {}
-        withTimeoutOrNull(WAIT_MILLIS) {
-            while (community.taken.isEmpty()) {
-                kotlinx.coroutines.yield()
-            }
-        }
 
-        assertEquals(listOf("abc"), community.taken)
+        assertEquals("abc", eventually("the take to be counted") { community.taken.firstOrNull() })
     }
 
     // Their copy exists either way, and a count that missed one take is not
@@ -115,14 +114,25 @@ class FollowingAnAuthorTest {
 
         var savedId: Long? = null
         viewModel.saveToMyLists { savedId = it }
-        withTimeoutOrNull(WAIT_MILLIS) {
-            while (savedId == null) {
-                kotlinx.coroutines.yield()
-            }
-        }
 
-        assertTrue(savedId != null)
+        assertTrue(eventually("the board to be saved") { savedId } > 0)
     }
+
+    /**
+     * Waits for something a coroutine will do, rather than assuming it already
+     * has. The button answers before the server does on purpose, so a check on
+     * what reached the server has to wait for it -- on a machine where the
+     * launch does not happen to run inline, it has not.
+     */
+    private suspend fun <T : Any> eventually(what: String, get: () -> T?): T =
+        withTimeoutOrNull(WAIT_MILLIS) {
+            var seen = get()
+            while (seen == null) {
+                delay(POLL_MILLIS)
+                seen = get()
+            }
+            seen
+        } ?: error("Never saw $what")
 
     private suspend fun ready(
         viewModel: CommunityListViewModel,
@@ -144,6 +154,7 @@ class FollowingAnAuthorTest {
 }
 
 private const val WAIT_MILLIS = 5_000L
+private const val POLL_MILLIS = 5L
 
 private val theList = PublishedList(
     summary = PublishedListSummary(
