@@ -12,6 +12,9 @@ internal data class TierDetailActions(
     val categoryWanted: Boolean = false,
     val publicPending: Boolean? = null,
     val onSetPublic: (Boolean) -> Unit = {},
+    /** True only where the published copy is known to differ from the board. */
+    val publishedIsBehind: Boolean = false,
+    val onUpdatePublished: () -> Unit = {},
     val onSetCategory: (ListCategory) -> Unit = {},
     val onCategoryNotChosen: () -> Unit = {},
     val onSetCover: (String?) -> Unit = {},

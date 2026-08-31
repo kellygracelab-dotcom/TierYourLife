@@ -20,6 +20,7 @@ internal object TierDetailTestTags {
     const val RANKED_HEADER = "tier_detail_ranked_header"
     const val RANKED_POOL_COLLAPSED = "tier_detail_ranked_pool_collapsed"
     const val RANKED_POOL_ITEMS = "tier_detail_ranked_pool_items"
+    const val UPDATE_PUBLISHED = "tier_detail_update_published"
     const val PUBLIC_SWITCH = "tier_detail_public_switch"
     const val PUBLISH_ERROR = "tier_detail_publish_error"
     const val CATEGORY_ROW = "tier_detail_category_row"

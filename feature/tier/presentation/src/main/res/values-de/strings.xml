@@ -301,6 +301,8 @@
     <string name="list_settings_public_body">Alle können diese Liste öffnen und selbst einordnen.</string>
     <string name="list_settings_public_needs_account">Melde dich mit Google an, um zu veröffentlichen. Lesen und Speichern geht ohne Konto.</string>
     <string name="list_settings_public_images">Nur Bilder, die schon im Netz liegen, reisen mit. Fotos und generierte Kunst bleiben auf diesem Telefon.</string>
+    <string name="list_settings_update_published">Veröffentlichte Fassung</string>
+    <string name="list_settings_update_published_body">Dieses Board erneut senden, unter demselben Link.</string>
     <string name="list_settings_public_needs_items">Füge mindestens eine Karte hinzu, bevor du die Liste veröffentlichst.</string>
     <string name="list_settings_public_too_many">Du hast bereits so viele Listen veröffentlicht, wie erlaubt sind. Nimm eine zurück, um Platz zu schaffen.</string>
     <string name="list_settings_public_offline">Keine Verbindung. Versuche es erneut, sobald du wieder online bist.</string>

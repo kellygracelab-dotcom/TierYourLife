@@ -351,6 +351,8 @@
     <string name="list_settings_public_body">Każdy może otworzyć tę listę i ułożyć ją po swojemu.</string>
     <string name="list_settings_public_needs_account">Zaloguj się przez Google, aby publikować. Czytanie i zapisywanie cudzych nie wymaga konta.</string>
     <string name="list_settings_public_images">Podróżują tylko obrazy, które już są w sieci. Zdjęcia i generowana grafika zostają na tym telefonie.</string>
+    <string name="list_settings_update_published">Opublikowana wersja</string>
+    <string name="list_settings_update_published_body">Wyślij tę listę ponownie, pod tym samym linkiem.</string>
     <string name="list_settings_public_needs_items">Dodaj co najmniej jedną kartę, zanim opublikujesz listę.</string>
     <string name="list_settings_public_too_many">Masz już opublikowaną maksymalną liczbę list. Wycofaj jedną, aby zwolnić miejsce.</string>
     <string name="list_settings_public_offline">Brak połączenia. Spróbuj ponownie, gdy wrócisz do sieci.</string>
