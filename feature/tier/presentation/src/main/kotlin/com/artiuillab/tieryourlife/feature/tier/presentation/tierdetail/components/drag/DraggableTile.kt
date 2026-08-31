@@ -114,17 +114,21 @@ internal fun DraggableTile(
 
 @Composable
 internal fun FloatingDragTile(dragController: TierDragController) {
-    val payload = dragController.draggedPayload ?: return
-    val position = dragController.pointerPositionInRoot
     val media = TierYourLifeMedia.current
     val density = LocalDensity.current
-    val halfWidthPx = with(density) { (payload.width / 2).toPx() }
-    val halfHeightPx = with(density) { (payload.height / 2).toPx() }
     val borderAlpha = if (media.isDark) 0.14f else 0.6f
     val shape = RoundedCornerShape(6.dp)
     val readingDirection = LocalLayoutDirection.current
 
+    // The overlay stands whether or not anything is being dragged. It learns
+    // where it begins by being laid out, and that answer has to be in hand
+    // before the first frame of a drag rather than one frame after it.
     ForcedLeftToRightOverlay { origin ->
+        val payload = dragController.draggedPayload ?: return@ForcedLeftToRightOverlay
+        val position = dragController.pointerPositionInRoot
+        val halfWidthPx = with(density) { (payload.width / 2).toPx() }
+        val halfHeightPx = with(density) { (payload.height / 2).toPx() }
+
         Box(
             modifier = Modifier
                 .absoluteOffset {
