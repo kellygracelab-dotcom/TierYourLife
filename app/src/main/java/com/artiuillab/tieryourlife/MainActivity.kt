@@ -1,16 +1,11 @@
 package com.artiuillab.tieryourlife
 
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.os.LocaleListCompat
@@ -41,21 +36,8 @@ class MainActivity : AppCompatActivity() {
         applyWindowBackground()
         enableEdgeToEdge()
         setContent {
-            val containerSize = LocalWindowInfo.current.containerSize
-            val compactBreakpointPx = with(LocalDensity.current) { COMPACT_BREAKPOINT.roundToPx() }
             val viewModel: AppViewModel = viewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
-
-            // Read from the window rather than from the device: a folding phone
-            // is two different answers in one body, and only the window knows
-            // which one is open.
-            LaunchedEffect(containerSize, compactBreakpointPx) {
-                requestedOrientation = orientationFor(
-                    containerWidth = containerSize.width,
-                    containerHeight = containerSize.height,
-                    compactBreakpoint = compactBreakpointPx,
-                )
-            }
 
             AppRoot(
                 state = state,
@@ -94,28 +76,3 @@ class MainActivity : AppCompatActivity() {
 internal interface AppPreferencesEntryPoint {
     fun appPreferences(): AppPreferences
 }
-
-/** Material's compact window class: below this, one column is all there is. */
-internal val COMPACT_BREAKPOINT = 600.dp
-
-/**
- * Upright while the window is small, free once it is not.
- *
- * A board is a column of rows you drag things between. On a phone, turning it
- * sideways keeps the column and cuts the rows short, so there is nothing to
- * gain. A tablet is the other case entirely: the width is the point, and a
- * person holding one landscape should not be told to turn it.
- *
- * Either dimension being compact is enough, so a phone held sideways is still
- * asked to come back upright.
- */
-internal fun orientationFor(
-    containerWidth: Int,
-    containerHeight: Int,
-    compactBreakpoint: Int,
-): Int =
-    if (containerWidth < compactBreakpoint || containerHeight < compactBreakpoint) {
-        ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-    } else {
-        ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-    }

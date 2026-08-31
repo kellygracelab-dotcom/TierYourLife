@@ -31,7 +31,14 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierLists
 fun CoverScreen(viewModel: TierListsViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var explaining by remember { mutableStateOf(false) }
-    OnResumeEffect { viewModel.loadTierLists() }
+    OnResumeEffect {
+        viewModel.loadTierLists()
+        // The notice leaves after four seconds, but a cover screen is closed
+        // rather than dismissed: shutting the phone mid-notice and opening it
+        // again should show the board, not the remainder of an answer to a tap
+        // nobody remembers making.
+        explaining = false
+    }
 
     val boards = (state as? TierListsUiState.Success)?.lists.orEmpty()
 

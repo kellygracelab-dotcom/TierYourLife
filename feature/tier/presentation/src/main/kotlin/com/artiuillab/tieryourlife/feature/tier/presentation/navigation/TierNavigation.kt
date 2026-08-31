@@ -45,7 +45,6 @@ fun NavController.navigateToAuthor(uid: String, name: String, photoUrl: String?)
 }
 
 fun NavGraphBuilder.tierListsScreen(
-    newBoardRequests: () -> Int = { 0 },
     onTierListClick: (Long) -> Unit,
     onCommunityListClick: (String) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
@@ -54,9 +53,10 @@ fun NavGraphBuilder.tierListsScreen(
     onNewListCreated: (Long) -> Unit,
 ) {
     composable<Route.TierLists> { backStackEntry ->
+        val route = backStackEntry.toRoute<Route.TierLists>()
         TierListsScreen(
-            startOnCommunity = backStackEntry.toRoute<Route.TierLists>().community,
-            newBoardRequests = newBoardRequests(),
+            startOnCommunity = route.community,
+            makeBoard = route.makeBoard,
             onTierListClick = onTierListClick,
             onCommunityListClick = onCommunityListClick,
             onAuthorClick = onAuthorClick,

@@ -1,7 +1,10 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -51,6 +54,39 @@ class FloatingDragTilePositionTest {
         )
     }
 
+    // The pointer is reported against the window. Once a column of boards
+    // stands to the left of the board, the overlay no longer starts where the
+    // window does -- and reading one as the other put every dragged card the
+    // width of that column too far right.
+    //
+    // Two copies of the same drag, one in an overlay that is the window and
+    // one in an overlay that is a pane inside it. Wherever they land, they
+    // have to land together.
+    @Test
+    fun theFloatingCopy_ignoresWhereItsOwnPaneBegins() {
+        composeRule.setContent {
+            TierYourLifeTheme {
+                Box(Modifier.fillMaxSize()) { FloatingDragTile(controllerDraggingTo(POINTER_X)) }
+                Row(Modifier.fillMaxSize()) {
+                    Box(Modifier.width(PANE_INSET).fillMaxHeight())
+                    Box(Modifier.weight(1f).fillMaxHeight()) {
+                        FloatingDragTile(controllerDraggingTo(POINTER_X))
+                    }
+                }
+            }
+        }
+
+        val copies = composeRule.onAllNodesWithTag(TierDetailTestTags.FLOATING_DRAG_TILE)
+        val fillingTheWindow = copies[0].getUnclippedBoundsInRoot().left.value
+        val besideAColumn = copies[1].getUnclippedBoundsInRoot().left.value
+
+        assertTrue(
+            "the copy sat at $fillingTheWindow on its own and $besideAColumn beside a " +
+                "column of boards, but the pointer was in the same place for both",
+            abs(fillingTheWindow - besideAColumn) < 2f,
+        )
+    }
+
     private fun controllerDraggingTo(pointerX: Float) = TierDragController().apply {
         registerRowBounds(tierId = 1L, bounds = Rect(0f, 0f, 1000f, 200f))
         setValidTargets(tierIds = listOf(1L), itemIds = listOf(2L))
@@ -69,5 +105,6 @@ class FloatingDragTilePositionTest {
 
     private companion object {
         const val POINTER_X = 700f
+        val PANE_INSET = 96.dp
     }
 }

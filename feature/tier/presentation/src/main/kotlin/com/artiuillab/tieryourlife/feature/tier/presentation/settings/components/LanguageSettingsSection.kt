@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -92,7 +94,16 @@ private fun LanguageBottomSheet(selectedTag: String?, onSelect: (String?) -> Uni
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Column(Modifier.selectableGroup()) {
+            // Eleven of them, and a centred dialog has a ceiling where a
+            // bottom sheet had the rest of the screen. The heading stays put
+            // and the list moves under it, so the last language is reachable
+            // rather than simply drawn past the bottom edge.
+            Column(
+                Modifier
+                    .weight(1f, fill = false)
+                    .verticalScroll(rememberScrollState())
+                    .selectableGroup(),
+            ) {
                 LanguageOptions.forEach { option ->
                     LanguageOptionRow(
                         option = option,
