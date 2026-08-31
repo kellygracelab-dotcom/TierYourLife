@@ -291,6 +291,8 @@
     <string name="home_community_failed">Could not load the community</string>
     <string name="home_community_failed_body">Check your connection.</string>
     <string name="community_by_author">by %1$s</string>
+    <string name="community_showing_theirs">Their ranking</string>
+    <string name="community_showing_mine">Mine</string>
     <string name="community_save_to_my_lists">Save to my lists</string>
     <string name="community_someone_elses">Someone else\'s list. Rank it however you like.</string>
     <string name="community_not_saved_yet">Your arrangement isn\'t saved yet.</string>

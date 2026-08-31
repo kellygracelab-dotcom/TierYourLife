@@ -23,6 +23,7 @@
     <string name="account_action_save">Enregistrer</string>
     <string name="account_action_cancel">Annuler</string>
     <string name="account_error_name_not_saved">Impossible d\'enregistrer ce nom. Réessayez.</string>
+    <string name="account_error_face_not_made">Cette image ne peut pas être votre photo. Choisissez-en une autre.</string>
     <plurals name="account_community_lists">
         <item quantity="one">%1$d liste publique</item>
         <item quantity="other">%1$d listes publiques</item>
@@ -31,7 +32,6 @@
     <string name="account_face_title">Votre image</string>
     <string name="account_face_body">Choisissez une carte de vos listes.</string>
     <string name="account_face_no_cards">Aucune de vos cartes n\'a encore d\'image de catalogue.</string>
-    <string name="account_face_google">Utiliser ma photo Google</string>
     <string name="account_face_letter">Juste la lettre</string>
     <string name="account_face_note">Rien n\'est envoyé. L\'image reste là où elle se trouve déjà sur le web.</string>
     <string name="account_cd_change_face">Changer l\'image</string>

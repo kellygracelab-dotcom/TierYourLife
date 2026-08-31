@@ -315,6 +315,8 @@
     <string name="home_community_failed">No se pudo cargar la comunidad</string>
     <string name="home_community_failed_body">Comprueba tu conexión.</string>
     <string name="community_by_author">de %1$s</string>
+    <string name="community_showing_theirs">Su orden</string>
+    <string name="community_showing_mine">El mío</string>
     <string name="community_save_to_my_lists">Guardar en mis listas</string>
     <string name="community_someone_elses">Lista de otra persona. Ordénala como quieras.</string>
     <string name="community_not_saved_yet">Tu orden todavía no está guardado.</string>

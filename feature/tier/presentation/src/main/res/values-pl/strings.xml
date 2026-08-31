@@ -340,6 +340,8 @@
     <string name="home_community_failed">Nie udało się wczytać społeczności</string>
     <string name="home_community_failed_body">Sprawdź połączenie.</string>
     <string name="community_by_author">od %1$s</string>
+    <string name="community_showing_theirs">Jego układ</string>
+    <string name="community_showing_mine">Mój</string>
     <string name="community_save_to_my_lists">Zapisz u siebie</string>
     <string name="community_someone_elses">Cudza lista. Ułóż ją po swojemu.</string>
     <string name="community_not_saved_yet">Twój układ nie jest jeszcze zapisany.</string>

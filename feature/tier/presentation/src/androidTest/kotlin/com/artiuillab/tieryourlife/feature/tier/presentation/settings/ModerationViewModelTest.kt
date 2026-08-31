@@ -138,6 +138,9 @@ private class FakeModerationRepository(
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
     override suspend fun publish(list: TierList): Result<Published> = Result.failure(IllegalStateException())
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
+
+    override suspend fun makeFace(pictureId: String): Result<String> =
+        Result.success("https://example.test/face.jpg")
     override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
     override suspend fun report(
         publishedId: String,

@@ -23,6 +23,7 @@
     <string name="account_action_save">Salvar</string>
     <string name="account_action_cancel">Cancelar</string>
     <string name="account_error_name_not_saved">Não foi possível salvar esse nome. Tente de novo.</string>
+    <string name="account_error_face_not_made">Essa imagem não pode ser sua foto. Escolha outra.</string>
     <plurals name="account_community_lists">
         <item quantity="one">%1$d lista pública</item>
         <item quantity="other">%1$d listas públicas</item>
@@ -31,7 +32,6 @@
     <string name="account_face_title">Sua imagem</string>
     <string name="account_face_body">Escolha um card das suas listas.</string>
     <string name="account_face_no_cards">Nenhum dos seus cards tem imagem de catálogo ainda.</string>
-    <string name="account_face_google">Usar minha foto do Google</string>
     <string name="account_face_letter">Apenas a letra</string>
     <string name="account_face_note">Nada é enviado. A imagem fica onde já está na web.</string>
     <string name="account_cd_change_face">Alterar a imagem</string>

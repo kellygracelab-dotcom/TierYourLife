@@ -265,6 +265,8 @@
     <string name="home_community_failed">コミュニティを読み込めませんでした</string>
     <string name="home_community_failed_body">接続を確認してください。</string>
     <string name="community_by_author">%1$s さん</string>
+    <string name="community_showing_theirs">作者の並べ方</string>
+    <string name="community_showing_mine">自分の並べ方</string>
     <string name="community_save_to_my_lists">自分のリストに保存</string>
     <string name="community_someone_elses">ほかの人のリストです。好きなように並べてください。</string>
     <string name="community_not_saved_yet">並べ方はまだ保存されていません。</string>

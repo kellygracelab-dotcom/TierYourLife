@@ -315,6 +315,8 @@
     <string name="home_community_failed">Impossible de charger la communauté</string>
     <string name="home_community_failed_body">Vérifiez votre connexion.</string>
     <string name="community_by_author">de %1$s</string>
+    <string name="community_showing_theirs">Son classement</string>
+    <string name="community_showing_mine">Le mien</string>
     <string name="community_save_to_my_lists">Enregistrer dans mes listes</string>
     <string name="community_someone_elses">Liste de quelqu\'un d\'autre. Classez-la librement.</string>
     <string name="community_not_saved_yet">Votre classement n\'est pas encore enregistré.</string>

@@ -23,6 +23,7 @@
     <string name="account_action_save">Zapisz</string>
     <string name="account_action_cancel">Anuluj</string>
     <string name="account_error_name_not_saved">Nie udało się zapisać tej nazwy. Spróbuj ponownie.</string>
+    <string name="account_error_face_not_made">To zdjęcie nie może być Twoim awatarem. Wybierz inne.</string>
     <plurals name="account_community_lists">
         <item quantity="one">%1$d lista publiczna</item>
         <item quantity="few">%1$d listy publiczne</item>
@@ -32,7 +33,6 @@
     <string name="account_face_title">Twoje zdjecie</string>
     <string name="account_face_body">Wybierz kartę ze swoich list.</string>
     <string name="account_face_no_cards">Żadna z twoich kart nie ma jeszcze obrazu z katalogu.</string>
-    <string name="account_face_google">Użyj zdjęcia z Google</string>
     <string name="account_face_letter">Tylko litera</string>
     <string name="account_face_note">Nic nie jest przesyłane. Obraz zostaje tam, gdzie już jest w sieci.</string>
     <string name="account_cd_change_face">Zmień zdjęcie</string>

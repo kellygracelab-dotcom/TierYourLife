@@ -120,7 +120,7 @@ class EveryScreenInEveryLanguageTest {
 
         "detail" -> TierDetailScreenContent(state = TierDetailUiState.Success(bigBoard()))
         "community-list" -> CommunityListScreenContent(
-            state = CommunityListUiState.Success(bigBoard(), "Olena Marchuk", "u1"),
+            state = CommunityListUiState.Success(list = bigBoard(), authorName = "Olena Marchuk", authorUid = "u1"),
             onBack = {},
             onMoveItem = { _, _, _ -> },
             onSave = {},

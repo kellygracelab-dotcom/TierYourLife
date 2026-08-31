@@ -101,6 +101,9 @@ private class FakePublishedRepository(
         return Result.success(Unit)
     }
 
+    override suspend fun makeFace(pictureId: String): Result<String> =
+        Result.success("https://example.test/face.jpg")
+
     override suspend fun feed(
         category: ListCategory?,
         query: String?,

@@ -75,6 +75,13 @@ class RetrofitCommunityRepository @Inject constructor(
         api.unpublish(publishedId)
     }
 
+    override suspend fun makeFace(pictureId: String): Result<String> = attempt("Making that picture a face") {
+        // Sent up first, the same as publishing: the server copies it out of
+        // this account's folder, so it has to be in that folder.
+        pictures.sendNow(listOf(pictureId))
+        api.makeFace(pictureId).url
+    }
+
     override suspend fun refreshAuthor(): Result<Unit> = attempt("Refreshing the author on published lists") { api.refreshAuthor() }
 
     override suspend fun report(
@@ -176,6 +183,10 @@ private fun PublishedListDto.toDomain() = PublishedList(
     items = items.mapIndexed { index, item ->
         TierItem(id = index.toLong(), title = item.title, imageUrl = item.imageUrl)
     },
+    // Null on everything published before the snapshot remembered this, which
+    // reads as "the author's arrangement is unknown" rather than as "they
+    // ranked nothing".
+    arrangement = items.map { it.tierIndex },
 )
 
 /**
@@ -204,11 +215,21 @@ private fun TierList.toRequest(images: TierImageStore, uploaded: Set<String>) = 
     // A picture that would not upload is left unnamed rather than named and
     // missing: the server would look for it, not find it, and the card would
     // end up exactly as bare either way.
-    items = tiers.flatMap { it.items }.map { item ->
-        PublishedItemDto(
-            title = item.title,
-            imageUrl = item.imageUrl?.takeIf { it.startsWith("https://") },
-            pictureId = images.pictureIdOf(item.imageUrl)?.takeIf { it in uploaded },
-        )
+    // Numbered against the published tiers, which are the board's minus the
+    // pool: a card in the pool is one the author did not rank, and says so
+    // with null rather than by pointing at a tier the reader cannot see.
+    items = run {
+        val ranked = tiers.filterNot { it.isPool }
+        tiers.flatMap { tier ->
+            val where = ranked.indexOfFirst { it.id == tier.id }.takeIf { it >= 0 }
+            tier.items.map { item ->
+                PublishedItemDto(
+                    title = item.title,
+                    imageUrl = item.imageUrl?.takeIf { it.startsWith("https://") },
+                    pictureId = images.pictureIdOf(item.imageUrl)?.takeIf { it in uploaded },
+                    tierIndex = where,
+                )
+            }
+        }
     },
 )

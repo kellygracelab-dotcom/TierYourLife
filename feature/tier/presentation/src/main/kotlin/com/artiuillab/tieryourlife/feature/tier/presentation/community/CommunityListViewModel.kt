@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.core.ui.UserMessages
 import com.artiuillab.tieryourlife.core.ui.guard
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -53,12 +54,13 @@ class CommunityListViewModel @Inject constructor(
             _state.value = community.open(publishedId).fold(
                 onSuccess = { published ->
                     CommunityListUiState.Success(
-                        list = TierList(
-                            id = 0,
-                            title = published.summary.title,
-                            tiers = published.tiers.map { it.copy(items = emptyList()) } + pool(published.items),
-                            authorName = published.summary.authorName,
-                        ),
+                        list = asTheAuthorLeftIt(published),
+                        mine = emptied(published),
+                        // What somebody came for: the list as its author
+                        // ranked it. Handing over a pile of cards instead
+                        // answers a question they did not ask.
+                        showing = if (published.arrangement.isEmpty()) Showing.Mine else Showing.Theirs,
+                        knowsTheirs = published.arrangement.isNotEmpty(),
                         authorName = published.summary.authorName,
                         authorUid = published.summary.authorUid,
                         authorPhotoUrl = published.summary.authorPhotoUrl,
@@ -66,6 +68,19 @@ class CommunityListViewModel @Inject constructor(
                 },
                 onFailure = { CommunityListUiState.Error },
             )
+        }
+    }
+
+    /**
+     * Switches between the author's arrangement and your own.
+     *
+     * Two boards kept side by side rather than one rebuilt: somebody who has
+     * spent ten minutes ranking a list and glances at the author's should find
+     * their own work where they left it.
+     */
+    fun show(which: Showing) {
+        _state.update { current ->
+            if (current !is CommunityListUiState.Success) current else current.copy(showing = which)
         }
     }
 
@@ -124,6 +139,35 @@ class CommunityListViewModel @Inject constructor(
                 .onFailure { Timber.w(it, "Could not file the report") }
         }
     }
+
+    /**
+     * The board as its author left it.
+     *
+     * A card whose tier the snapshot does not know goes to the pool, which is
+     * also where the author's own unranked cards sit -- the two are the same
+     * thing to look at, and inventing a tier for them would be worse.
+     */
+    private fun asTheAuthorLeftIt(published: PublishedList): TierList {
+        val where = published.arrangement
+        val ranked = published.tiers.mapIndexed { index, tier ->
+            tier.copy(items = published.items.filterIndexed { at, _ -> where.getOrNull(at) == index })
+        }
+        val unranked = published.items.filterIndexed { at, _ -> where.getOrNull(at) == null }
+        return TierList(
+            id = 0,
+            title = published.summary.title,
+            tiers = ranked + pool(unranked),
+            authorName = published.summary.authorName,
+        )
+    }
+
+    /** The same board with every card back in the pool, for ranking it yourself. */
+    private fun emptied(published: PublishedList) = TierList(
+        id = 0,
+        title = published.summary.title,
+        tiers = published.tiers.map { it.copy(items = emptyList()) } + pool(published.items),
+        authorName = published.summary.authorName,
+    )
 
     private fun pool(items: List<com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem>) = Tier(
         id = POOL_TIER_ID,

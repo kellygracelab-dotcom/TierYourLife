@@ -340,6 +340,8 @@
     <string name="home_community_failed">Не вдалося завантажити спільноту</string>
     <string name="home_community_failed_body">Перевірте з\'єднання.</string>
     <string name="community_by_author">від %1$s</string>
+    <string name="community_showing_theirs">Його розташування</string>
+    <string name="community_showing_mine">Моє</string>
     <string name="community_save_to_my_lists">Зберегти собі</string>
     <string name="community_someone_elses">Чужий список. Розкладіть його як забажаєте.</string>
     <string name="community_not_saved_yet">Ваша розкладка ще не збережена.</string>

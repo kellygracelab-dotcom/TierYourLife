@@ -176,7 +176,6 @@ internal fun AccountScreenContent(
         if (faceSheetVisible && signedIn != null) {
             FaceSheet(
                 current = signedIn.photoUrl,
-                googlePhotoUrl = state.googlePhotoUrl,
                 cardImages = state.faceChoices,
                 name = signedIn.displayName,
                 onDismiss = { faceSheetVisible = false },
@@ -225,6 +224,7 @@ private fun AccountNotice.messageRes(): Int = when (this) {
     AccountNotice.NoGoogleAccount -> R.string.account_error_no_google_account
     AccountNotice.SignInUnavailable -> R.string.account_error_unavailable
     AccountNotice.SignedInToExistingAccount -> R.string.account_notice_existing_account
+    AccountNotice.FaceNotMade -> R.string.account_error_face_not_made
     AccountNotice.NameNotSaved -> R.string.account_error_name_not_saved
 }
 

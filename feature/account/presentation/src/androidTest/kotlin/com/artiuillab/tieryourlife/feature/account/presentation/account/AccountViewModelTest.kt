@@ -192,6 +192,9 @@ private class FakeCommunityForAccount : CommunityRepository {
 
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
 
+    override suspend fun makeFace(pictureId: String): Result<String> =
+        Result.success("https://example.test/face.jpg")
+
     override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
 
     override suspend fun report(
@@ -230,8 +233,6 @@ private class FakeAccountRepository(
     override suspend fun setDisplayName(name: String): Boolean = true
 
     override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
-
-    override fun googlePhotoUrl(): String? = null
 
     override suspend fun signOut() {
         state.value = Account.Guest

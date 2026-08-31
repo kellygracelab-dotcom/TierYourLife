@@ -24,4 +24,14 @@ data class PublishedList(
     val summary: PublishedListSummary,
     val tiers: List<Tier>,
     val items: List<TierItem>,
+    /**
+     * Where the author put each card, aligned with [items]: the position of a
+     * tier in [tiers], or null for one they left unranked.
+     *
+     * Empty on a snapshot published before this was recorded. Empty is not the
+     * same as all-null: the first means nobody knows what the author thought,
+     * the second means they thought nothing, and the screen says different
+     * things about them.
+     */
+    val arrangement: List<Int?> = emptyList(),
 )

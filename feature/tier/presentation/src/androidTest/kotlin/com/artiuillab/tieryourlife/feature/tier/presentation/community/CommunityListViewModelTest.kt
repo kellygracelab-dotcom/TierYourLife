@@ -125,6 +125,9 @@ private class FakeCommunityRepository : CommunityRepository {
         Result.success(Published(id = "abc", fingerprint = "sent"))
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
 
+    override suspend fun makeFace(pictureId: String): Result<String> =
+        Result.success("https://example.test/face.jpg")
+
     override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
 
     override suspend fun report(
@@ -149,6 +152,7 @@ private class FailingCommunityRepository : CommunityRepository {
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException("nope"))
     override suspend fun publish(list: TierList): Result<Published> = Result.failure(IllegalStateException())
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun makeFace(pictureId: String): Result<String> = Result.failure(IllegalStateException())
 
     override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
 

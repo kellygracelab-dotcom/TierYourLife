@@ -133,12 +133,6 @@ class FirebaseAccountRepository @Inject constructor(
         }
     }
 
-    override fun googlePhotoUrl(): String? = auth.currentUser
-        ?.providerData
-        ?.firstOrNull { it.providerId == GOOGLE_PROVIDER }
-        ?.photoUrl
-        ?.toString()
-
     override suspend fun signOut() {
         auth.signOut()
         runCatching { auth.signInAnonymously().await() }

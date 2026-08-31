@@ -42,6 +42,9 @@ internal class FakeCommunityRepositoryForDetail(
         return Result.success(Unit)
     }
 
+    override suspend fun makeFace(pictureId: String): Result<String> =
+        Result.success("https://example.test/face.jpg")
+
     override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
 
     override suspend fun report(
@@ -63,8 +66,6 @@ internal class FakeAccountRepositoryForDetail(signedIn: Boolean = false) : Accou
     override suspend fun setDisplayName(name: String): Boolean = true
 
     override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
-
-    override fun googlePhotoUrl(): String? = null
 
     override suspend fun signOut() = Unit
 }

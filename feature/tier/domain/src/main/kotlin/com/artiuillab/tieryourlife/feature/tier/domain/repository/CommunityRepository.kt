@@ -42,6 +42,16 @@ interface CommunityRepository {
     suspend fun unpublish(publishedId: String): Result<Unit>
 
     /**
+     * Copies one of this person's own pictures somewhere the community can see
+     * it, and answers with its address there.
+     *
+     * A face is shown beside every list they publish, so it cannot live in the
+     * folder only they may read. Catalogue art needs none of this -- it has an
+     * address already.
+     */
+    suspend fun makeFace(pictureId: String): Result<String>
+
+    /**
      * Brings the author's name and face on lists they already published up to
      * date. A snapshot freezes what was ranked, not who ranked it.
      */

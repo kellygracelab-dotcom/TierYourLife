@@ -42,6 +42,12 @@ data class PublishedItemDto(
      * snapshot. Null for a poster, which already has an address of its own.
      */
     val pictureId: String? = null,
+    /**
+     * Which tier the author put this card in, by position among the published
+     * tiers, or null for one they left unranked. Absent on everything
+     * published before this existed.
+     */
+    val tierIndex: Int? = null,
 )
 
 @Serializable

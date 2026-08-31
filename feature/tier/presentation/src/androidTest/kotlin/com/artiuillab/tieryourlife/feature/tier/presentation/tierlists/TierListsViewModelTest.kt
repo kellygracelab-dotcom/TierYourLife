@@ -617,6 +617,9 @@ private class FakeCommunityRepository(
         return unpublishResult
     }
 
+    override suspend fun makeFace(pictureId: String): Result<String> =
+        Result.success("https://example.test/face.jpg")
+
     override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
 
     override suspend fun report(
@@ -634,7 +637,6 @@ private fun guestAccount(): AccountRepository = object : AccountRepository {
     override suspend fun signInWithGoogle(idToken: String): SignInOutcome = SignInOutcome.Success
     override suspend fun setDisplayName(name: String): Boolean = true
     override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
-    override fun googlePhotoUrl(): String? = null
     override suspend fun signOut() = Unit
 }
 

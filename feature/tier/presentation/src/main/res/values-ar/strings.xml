@@ -390,6 +390,8 @@
     <string name="home_community_failed">تعذّر تحميل المجتمع</string>
     <string name="home_community_failed_body">تحقق من اتصالك.</string>
     <string name="community_by_author">من %1$s</string>
+    <string name="community_showing_theirs">ترتيبه</string>
+    <string name="community_showing_mine">ترتيبي</string>
     <string name="community_save_to_my_lists">احفظ في قوائمي</string>
     <string name="community_someone_elses">قائمة شخص آخر. رتّبها كما يحلو لك.</string>
     <string name="community_not_saved_yet">ترتيبك لم يُحفظ بعد.</string>

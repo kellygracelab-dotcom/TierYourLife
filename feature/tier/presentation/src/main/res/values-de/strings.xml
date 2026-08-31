@@ -290,6 +290,8 @@
     <string name="home_community_failed">Community konnte nicht geladen werden</string>
     <string name="home_community_failed_body">Prüfe deine Verbindung.</string>
     <string name="community_by_author">von %1$s</string>
+    <string name="community_showing_theirs">Ihre Reihung</string>
+    <string name="community_showing_mine">Meine</string>
     <string name="community_save_to_my_lists">In meine Listen speichern</string>
     <string name="community_someone_elses">Die Liste von jemand anderem. Ordne sie frei.</string>
     <string name="community_not_saved_yet">Deine Anordnung ist noch nicht gespeichert.</string>
