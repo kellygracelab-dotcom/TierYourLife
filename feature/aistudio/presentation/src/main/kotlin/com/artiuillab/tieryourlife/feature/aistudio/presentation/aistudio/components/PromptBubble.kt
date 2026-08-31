@@ -16,6 +16,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+
+private const val PHONE_SHARE = 0.76f
 
 @Composable
 internal fun PromptBubble(prompt: String, testTag: String, modifier: Modifier = Modifier) {
@@ -24,7 +27,11 @@ internal fun PromptBubble(prompt: String, testTag: String, modifier: Modifier = 
             text = prompt,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .widthIn(max = maxWidth * 0.76f)
+                // A share of the window on a phone, and a line length past
+                // it. Three quarters of a 720dp conversation is a 547dp line,
+                // which is further than an eye tracks back comfortably -- and
+                // a bubble that wide stops reading as somebody speaking.
+                .widthIn(max = minOf(maxWidth * PHONE_SHARE, ContentWidth.Message))
                 .clip(
                     RoundedCornerShape(
                         topStart = 20.dp,
