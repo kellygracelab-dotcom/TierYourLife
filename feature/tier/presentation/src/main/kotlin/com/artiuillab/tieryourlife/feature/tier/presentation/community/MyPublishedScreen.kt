@@ -114,6 +114,7 @@ internal fun MyPublishedScreenContent(
                                 PublishedRow(
                                     summary = summary,
                                     busy = state.removing != null || state.updating != null,
+                                    canUpdate = summary.id in state.canUpdate,
                                     behind = summary.id in state.behind,
                                     onOpen = { onOpen(summary.id) },
                                     onUpdate = { onUpdate(summary.id) },
@@ -159,6 +160,7 @@ private fun TopBar(onBack: () -> Unit) {
 private fun PublishedRow(
     summary: PublishedListSummary,
     busy: Boolean,
+    canUpdate: Boolean,
     behind: Boolean,
     onOpen: () -> Unit,
     onUpdate: () -> Unit,
@@ -203,7 +205,9 @@ private fun PublishedRow(
                 enabled = !busy,
                 modifier = Modifier.testTag(MyPublishedTestTags.open(summary.id)),
             ) { Text(stringResource(R.string.my_published_action_open)) }
-            if (behind) {
+            // Offered whenever there is a board here to send. Saying "behind"
+            // needs proof; offering to send again does not.
+            if (canUpdate) {
                 TextButton(
                     onClick = onUpdate,
                     enabled = !busy,

@@ -20,6 +20,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.Published
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
@@ -504,7 +505,7 @@ private class FakeTierRepository(initial: List<TierList>) : TierRepository {
 
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) = Unit
 
-    override suspend fun publishedCopiesLeftBehind(): Set<String> = emptySet()
+    override suspend fun publishedStanding(): PublishedStanding = PublishedStanding()
 
     override suspend fun boardPublishedAs(publishedId: String): TierList? = null
 

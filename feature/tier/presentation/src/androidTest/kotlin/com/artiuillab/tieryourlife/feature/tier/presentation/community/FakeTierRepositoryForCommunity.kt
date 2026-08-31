@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 
 internal data class SavedTemplate(
@@ -39,7 +40,7 @@ internal class FakeTierRepositoryForCommunity(
         if (publishedId == null) clearedPublishedId = id
     }
 
-    override suspend fun publishedCopiesLeftBehind(): Set<String> = emptySet()
+    override suspend fun publishedStanding(): PublishedStanding = PublishedStanding()
 
     override suspend fun boardPublishedAs(publishedId: String): TierList? = null
 
