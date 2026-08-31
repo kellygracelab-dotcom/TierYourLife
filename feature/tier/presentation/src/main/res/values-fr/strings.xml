@@ -26,6 +26,8 @@
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · rien de classé pour l\'instant</string>
     <string name="tier_lists_status_start_dragging">Glissez pour classer</string>
     <string name="tier_lists_content_description_search">Rechercher dans vos listes</string>
+    <string name="tier_lists_content_description_as_pictures">Afficher les tableaux en images</string>
+    <string name="tier_lists_content_description_as_rows">Afficher les tableaux en lignes</string>
     <string name="tier_lists_content_description_settings">Paramètres</string>
 
     <string name="home_search_hint">Rechercher dans vos listes</string>

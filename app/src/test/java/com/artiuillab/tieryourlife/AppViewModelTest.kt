@@ -84,6 +84,14 @@ private class FakeAppPreferences(
 
     override fun unhideAuthor(authorUid: String) = Unit
 
+    private var asPictures = false
+
+    override fun boardsAsPictures(): Boolean = asPictures
+
+    override fun setBoardsAsPictures(asPictures: Boolean) {
+        this.asPictures = asPictures
+    }
+
     override fun backUpBoards(): Boolean = true
 
     override fun setBackUpBoards(backUp: Boolean) = Unit

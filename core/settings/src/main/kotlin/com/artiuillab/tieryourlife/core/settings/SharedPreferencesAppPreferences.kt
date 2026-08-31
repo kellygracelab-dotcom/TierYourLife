@@ -13,6 +13,7 @@ private const val KEY_LAST_KNOWN_CREDITS = "last_known_credits"
 private const val KEY_HIDDEN_LISTS = "hidden_list_ids"
 private const val KEY_HIDDEN_AUTHORS = "hidden_author_uids"
 private const val KEY_BACK_UP_BOARDS = "back_up_boards"
+private const val KEY_BOARDS_AS_PICTURES = "boards_as_pictures"
 private const val KEY_SIGN_IN_OFFER_ANSWERED = "sign_in_offer_answered"
 private const val KEY_PICTURES_ON_WIFI_ONLY = "pictures_on_wifi_only"
 private const val KEY_LAST_SYNCED_AT = "last_synced_at"
@@ -47,6 +48,14 @@ class SharedPreferencesAppPreferences @Inject constructor(
         prefs.edit {
             if (credits == null) remove(KEY_LAST_KNOWN_CREDITS) else putInt(KEY_LAST_KNOWN_CREDITS, credits)
         }
+    }
+
+    // Rows by default: they say how many cards are ranked and how many wait,
+    // which pictures cannot, and that is the more useful thing to open on.
+    override fun boardsAsPictures(): Boolean = prefs.getBoolean(KEY_BOARDS_AS_PICTURES, false)
+
+    override fun setBoardsAsPictures(asPictures: Boolean) {
+        prefs.edit { putBoolean(KEY_BOARDS_AS_PICTURES, asPictures) }
     }
 
     override fun backUpBoards(): Boolean = prefs.getBoolean(KEY_BACK_UP_BOARDS, true)

@@ -285,6 +285,14 @@ private class FakeAppPreferences : AppPreferences {
     override fun signInOfferAnswered(): Boolean = false
     override fun markSignInOfferAnswered() = Unit
 
+    private var asPictures = false
+
+    override fun boardsAsPictures(): Boolean = asPictures
+
+    override fun setBoardsAsPictures(asPictures: Boolean) {
+        this.asPictures = asPictures
+    }
+
     override fun backUpBoards(): Boolean = backUp
 
     override fun setBackUpBoards(backUp: Boolean) {

@@ -2,7 +2,9 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.componen
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -16,6 +18,35 @@ import kotlin.math.sin
 
 @Composable
 internal fun SearchIcon() = SearchVectorIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
+
+/** Four panes: what the boards would become. Shown while they are rows. */
+@Composable
+internal fun PicturesIcon() {
+    val color = MaterialTheme.colorScheme.onSurfaceVariant
+    VectorIcon(24.dp) { scale ->
+        listOf(4f to 4f, 13f to 4f, 4f to 13f, 13f to 13f).forEach { (x, y) ->
+            drawRoundRect(
+                color = color,
+                topLeft = Offset(x * scale, y * scale),
+                size = Size(7f * scale, 7f * scale),
+                cornerRadius = CornerRadius(1.5f * scale, 1.5f * scale),
+                style = Stroke(1.7f * scale),
+            )
+        }
+    }
+}
+
+/** Three lines: what the boards would become. Shown while they are pictures. */
+@Composable
+internal fun RowsIcon() {
+    val color = MaterialTheme.colorScheme.onSurfaceVariant
+    VectorIcon(24.dp) { scale ->
+        repeat(3) { row ->
+            val y = (6f + row * 6f) * scale
+            drawLine(color, Offset(4f * scale, y), Offset(20f * scale, y), 1.8f * scale, StrokeCap.Round)
+        }
+    }
+}
 
 @Composable
 private fun SearchVectorIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->

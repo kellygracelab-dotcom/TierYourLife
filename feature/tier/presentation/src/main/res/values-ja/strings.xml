@@ -18,6 +18,8 @@
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · まだ何もランク付けされていません</string>
     <string name="tier_lists_status_start_dragging">ドラッグしてランク付け</string>
     <string name="tier_lists_content_description_search">リストを検索</string>
+    <string name="tier_lists_content_description_as_pictures">ボードを画像で表示</string>
+    <string name="tier_lists_content_description_as_rows">ボードをリストで表示</string>
     <string name="tier_lists_content_description_settings">設定</string>
 
     <string name="home_search_hint">リストを検索</string>

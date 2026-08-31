@@ -67,6 +67,17 @@ interface AppPreferences {
      * allowance, so they wait for Wi-Fi by default. The boards themselves are
      * text and go whenever.
      */
+    /**
+     * Whether Your lists is drawn as pictures rather than as rows.
+     *
+     * A property of the screen rather than of the person, but remembered all
+     * the same: somebody who chose pictures once meant it, and asking again on
+     * every visit would be the app forgetting on purpose.
+     */
+    fun boardsAsPictures(): Boolean
+
+    fun setBoardsAsPictures(asPictures: Boolean)
+
     fun picturesOnWifiOnly(): Boolean
 
     fun setPicturesOnWifiOnly(wifiOnly: Boolean)
