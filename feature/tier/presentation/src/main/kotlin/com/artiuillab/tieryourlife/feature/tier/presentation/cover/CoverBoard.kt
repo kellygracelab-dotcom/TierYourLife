@@ -36,6 +36,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 
 private val ROW_HEIGHT = 46.dp
@@ -81,8 +82,18 @@ internal fun CoverBoard(
                 modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                board.tiers.filterNot { it.isPool }.take(VISIBLE_ROWS).forEach { tier ->
-                    CoverRow(tier)
+                // The board is shown in the mode its owner chose. A ranked
+                // board is a numbered column, and squashing it into a grid of
+                // coloured strips here would be answering a question nobody
+                // asked -- at this size a numbered list reads better anyway.
+                if (board.displayMode == TierListDisplayMode.FLAT_RANKED) {
+                    rankedRows(board).take(RANKED_ROWS).forEach { (place, item, tier) ->
+                        CoverRankedRow(place = place, item = item, tier = tier)
+                    }
+                } else {
+                    board.tiers.filterNot { it.isPool }.take(VISIBLE_ROWS).forEach { tier ->
+                        CoverRow(tier)
+                    }
                 }
             }
             BoardDots(count = boards.size, shown = shown)
@@ -146,6 +157,69 @@ private fun CoverRow(tier: Tier) {
             horizontalArrangement = Arrangement.spacedBy(5.dp),
         ) {
             tier.items.take(MAX_TILES).forEach { item -> CoverTile(item) }
+        }
+    }
+}
+
+/** Where each card stands overall, in the order the tiers are in. */
+private fun rankedRows(board: TierList): List<Triple<Int, TierItem, Tier>> {
+    var place = 0
+    return board.tiers
+        .filterNot { it.isPool }
+        .flatMap { tier -> tier.items.map { item -> Triple(++place, item, tier) } }
+}
+
+@Composable
+private fun CoverRankedRow(place: Int, item: TierItem, tier: Tier) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(RANKED_ROW_HEIGHT)
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            .padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = place.toString(),
+            modifier = Modifier.width(20.dp),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        Box(
+            modifier = Modifier
+                .size(width = 26.dp, height = 36.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = item.title.take(1),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Text(
+            text = item.title,
+            modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Box(
+            modifier = Modifier
+                .size(22.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .background(tierColour(tier)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = tier.label.take(2),
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black,
+            )
         }
     }
 }
@@ -215,6 +289,11 @@ internal object CoverTestTags {
 
 /** Five rows is what 339dp holds under a header and above the dots. */
 private const val VISIBLE_ROWS = 5
+
+private val RANKED_ROW_HEIGHT = 44.dp
+
+/** Shorter rows, so one more of them fits in the same height. */
+private const val RANKED_ROWS = 5
 
 /** Nine tiles across 352dp once the band and the padding are taken out. */
 private const val MAX_TILES = 9

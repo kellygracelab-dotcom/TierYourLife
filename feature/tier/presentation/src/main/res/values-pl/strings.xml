@@ -408,7 +408,7 @@
     <string name="settings_hidden_sub">Listy i osoby, których już nie widzisz</string>
     <string name="settings_hidden_none">Nic nie ukryto</string>
     <string name="hidden_title">Ukryte</string>
-    <string name="hidden_subtitle">Ukryte tylko u ciebie. Nikogo nie powiadomiono.</string>
+    <string name="hidden_subtitle">Ukryte tylko u ciebie.</string>
     <string name="hidden_lists">LISTY</string>
     <string name="hidden_people">OSOBY</string>
     <string name="action_show_again">Pokaż ponownie</string>

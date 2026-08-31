@@ -381,7 +381,7 @@
     <string name="settings_hidden_sub">Listes et personnes que vous ne voyez plus</string>
     <string name="settings_hidden_none">Rien de masqué</string>
     <string name="hidden_title">Masqué</string>
-    <string name="hidden_subtitle">Masqué seulement pour vous. Personne n\'a été prévenu.</string>
+    <string name="hidden_subtitle">Masqué seulement pour vous.</string>
     <string name="hidden_lists">LISTES</string>
     <string name="hidden_people">PERSONNES</string>
     <string name="action_show_again">Réafficher</string>

@@ -355,7 +355,7 @@
     <string name="settings_hidden_sub">Lists and people you stopped seeing</string>
     <string name="settings_hidden_none">Nothing hidden</string>
     <string name="hidden_title">Hidden</string>
-    <string name="hidden_subtitle">Hidden only for you. Nobody was told.</string>
+    <string name="hidden_subtitle">Hidden only for you.</string>
     <string name="hidden_lists">LISTS</string>
     <string name="hidden_people">PEOPLE</string>
     <string name="action_show_again">Show again</string>

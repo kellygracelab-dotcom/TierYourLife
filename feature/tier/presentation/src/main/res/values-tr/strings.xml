@@ -354,7 +354,7 @@
     <string name="settings_hidden_sub">Artık görmediğiniz listeler ve kişiler</string>
     <string name="settings_hidden_none">Gizlenen bir şey yok</string>
     <string name="hidden_title">Gizlenenler</string>
-    <string name="hidden_subtitle">Yalnızca sizde gizlendi. Kimseye bildirilmedi.</string>
+    <string name="hidden_subtitle">Yalnızca sizde gizlendi.</string>
     <string name="hidden_lists">LİSTELER</string>
     <string name="hidden_people">KİŞİLER</string>
     <string name="action_show_again">Yeniden göster</string>
