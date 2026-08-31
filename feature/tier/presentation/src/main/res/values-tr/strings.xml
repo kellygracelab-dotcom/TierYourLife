@@ -344,10 +344,10 @@
     <string name="report_reason_spam">Spam veya reklam</string>
     <string name="report_reason_other">Başka bir şey</string>
     <string name="report_note_label">Eklemek istediğiniz bir şey (isteğe bağlı)</string>
-    <string name="report_by_hand">Her bildirimi bir insan okur. Hiçbir şey otomatik olarak kaldırılmaz.</string>
+    <string name="report_by_hand">Her bildirimi bir kişi okur. Yeterince birikirse liste o ana kadar gizlenir.</string>
     <string name="report_action_send">Bildir</string>
     <string name="report_sent_title">Bildirildi ve sizin için gizlendi</string>
-    <string name="report_sent_body">Bildirimleri tek bir kişi elle inceler, o zamana kadar başkaları için görünür kalabilir.</string>
+    <string name="report_sent_body">Bildirimleri bir kişi inceler. O ana kadar başkaları hâlâ görebilir.</string>
     <string name="report_hide_author">%1$s kullanıcısından gelen her şeyi de gizle</string>
     <string name="community_action_hide_author">%1$s kullanıcısından gelen her şeyi gizle</string>
     <string name="action_done">Tamam</string>
@@ -404,7 +404,7 @@
     <string name="settings_backup_sub">Seviyeler, kartlar ve notlar</string>
     <string name="settings_backup_pictures_label">Resimler yalnızca Wi-Fi’da</string>
     <string name="settings_backup_pictures_sub">Hesabında %1$s</string>
-    <string name="settings_backup_note">Fotoğrafların ve üretilen kartlar hesabına gider, onları yalnızca sen görürsün. Yayınlanan listeler yine yalnızca katalog görselleri gösterir.</string>
+    <string name="settings_backup_note">Fotoğraflarınız ve üretilen kartlar hesabınıza gider, orada yalnızca siz görürsünüz. Yayımlamak, listenin görsellerini herkesin gördüğü akışa kopyalar.</string>
     <string name="settings_backup_stuck">%1$s tarihinden beri yedeklenmedi. Bağlantını kontrol et.</string>
     <string name="settings_backup_off_title">Yedekleme durdurulsun mu?</string>
     <string name="settings_backup_off_body">Panoların bu telefonda kalır. Hesabındaki kopya silinir ve yeni bir telefon boş başlar.</string>

@@ -398,10 +398,10 @@
     <string name="report_reason_spam">Спам або реклама</string>
     <string name="report_reason_other">Щось інше</string>
     <string name="report_note_label">Щось додати (необовʼязково)</string>
-    <string name="report_by_hand">Кожну скаргу читає людина. Автоматично нічого не видаляється.</string>
+    <string name="report_by_hand">Скарги читає людина. Якщо їх набереться, список сховається до рішення.</string>
     <string name="report_action_send">Поскаржитися</string>
     <string name="report_sent_title">Скаргу надіслано, список сховано</string>
-    <string name="report_sent_body">Скарги розбирає одна людина вручну, тому для інших список поки залишиться.</string>
+    <string name="report_sent_body">Скарги розглядає людина. До того список може залишатися видимим іншим.</string>
     <string name="report_hide_author">Сховати взагалі все від %1$s</string>
     <string name="community_action_hide_author">Сховати все від %1$s</string>
     <string name="action_done">Готово</string>
@@ -464,7 +464,7 @@
     <string name="settings_backup_sub">Тіри, картки та підписи</string>
     <string name="settings_backup_pictures_label">Картинки лише через Wi-Fi</string>
     <string name="settings_backup_pictures_sub">%1$s у вашому обліковому записі</string>
-    <string name="settings_backup_note">Ваші фото та згенеровані картки йдуть у ваш обліковий запис, і бачите їх лише ви. У опублікованих списках залишаються лише картинки з каталогів.</string>
+    <string name="settings_backup_note">Ваші фото та згенеровані картки йдуть у ваш акаунт, де їх бачите лише ви. Публікація копіює картинки списку у стрічку, де їх бачать усі.</string>
     <string name="settings_backup_stuck">Копії немає з %1$s. Перевірте з’єднання.</string>
     <string name="settings_backup_off_title">Припинити зберігати копію?</string>
     <string name="settings_backup_off_body">Дошки залишаться на цьому телефоні. Копію в обліковому записі буде видалено, і новий телефон почне з порожнього.</string>

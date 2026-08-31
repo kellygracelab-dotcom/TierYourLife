@@ -344,10 +344,10 @@
     <string name="report_reason_spam">Spam oder Werbung</string>
     <string name="report_reason_other">Etwas anderes</string>
     <string name="report_note_label">Etwas hinzufügen (optional)</string>
-    <string name="report_by_hand">Jede Meldung liest ein Mensch. Nichts wird automatisch entfernt.</string>
+    <string name="report_by_hand">Ein Mensch liest jede Meldung. Genug davon blenden die Liste bis dahin aus.</string>
     <string name="report_action_send">Melden</string>
     <string name="report_sent_title">Gemeldet und für dich ausgeblendet</string>
-    <string name="report_sent_body">Eine Person prüft Meldungen von Hand, bis dahin bleibt sie für andere sichtbar.</string>
+    <string name="report_sent_body">Ein Mensch prüft Meldungen. Bis dahin bleibt sie für andere vielleicht sichtbar.</string>
     <string name="report_hide_author">Auch alles von %1$s ausblenden</string>
     <string name="community_action_hide_author">Alles von %1$s ausblenden</string>
     <string name="action_done">Fertig</string>
@@ -404,7 +404,7 @@
     <string name="settings_backup_sub">Stufen, Karten und Beschriftungen</string>
     <string name="settings_backup_pictures_label">Bilder nur über WLAN</string>
     <string name="settings_backup_pictures_sub">%1$s in deinem Konto</string>
-    <string name="settings_backup_note">Deine Fotos und generierten Karten gehen in dein Konto, und nur du siehst sie. Veröffentlichte Listen zeigen weiterhin ausschließlich Katalogbilder.</string>
+    <string name="settings_backup_note">Deine Fotos und erzeugten Karten liegen in deinem Konto, wo nur du sie siehst. Beim Veröffentlichen werden die Bilder in den Feed kopiert, wo alle sie sehen.</string>
     <string name="settings_backup_stuck">Seit %1$s nicht gesichert. Prüfe deine Verbindung.</string>
     <string name="settings_backup_off_title">Sicherung beenden?</string>
     <string name="settings_backup_off_body">Deine Boards bleiben auf diesem Telefon. Die Kopie in deinem Konto wird gelöscht, und ein neues Telefon fängt leer an.</string>
