@@ -228,7 +228,7 @@ class TierDetailScreenTest {
         var moved: Triple<Long, Long, Int>? = null
         setScreen(TierDetailUiState.Success(list), onMoveItem = { itemId, toTierId, toPosition -> moved = Triple(itemId, toTierId, toPosition) })
 
-        dragTile(sourceTag = TierDetailTestTags.tile(402), targetTag = TierDetailTestTags.tierItems(1), horizontalBias = 0.05f)
+        dragTileOntoLeadingHalf(sourceTag = TierDetailTestTags.tile(402), targetTag = TierDetailTestTags.tile(401))
 
         composeRule.runOnIdle { assertEquals(Triple(402L, 1L, 0), moved) }
     }
@@ -1888,6 +1888,17 @@ class TierDetailScreenTest {
             y = targetBounds.top + verticalOffset,
         )
         dragTileToRoot(sourceTag, target)
+    }
+
+    // Landing before a card is a claim about that card, not about a fraction
+    // of the row -- and the row is as wide as the window. A twentieth of the
+    // way across a tablet is already most of the way through the first card.
+    private fun dragTileOntoLeadingHalf(sourceTag: String, targetTag: String) {
+        val targetBounds = composeRule.onNodeWithTag(targetTag).fetchSemanticsNode().boundsInRoot
+        dragTileToRoot(
+            sourceTag,
+            Offset(x = targetBounds.left + targetBounds.width * 0.25f, y = targetBounds.center.y),
+        )
     }
 
     private fun dragTileToRoot(sourceTag: String, rootTarget: Offset) {
