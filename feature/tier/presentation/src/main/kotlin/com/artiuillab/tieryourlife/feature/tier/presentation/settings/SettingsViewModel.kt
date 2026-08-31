@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.core.ui.UserMessages
 import com.artiuillab.tieryourlife.core.ui.guard
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -35,6 +37,7 @@ class SettingsViewModel @Inject constructor(
     private val generationCredits: GenerationCredits,
     private val community: CommunityRepository,
     private val backup: BoardBackup,
+    private val preferences: AppPreferences,
 ) : ViewModel() {
 
     val account: StateFlow<Account> = accountRepository.account
@@ -43,14 +46,18 @@ class SettingsViewModel @Inject constructor(
     private val _credits = MutableStateFlow(generationCredits.lastKnown())
     val credits: StateFlow<Int?> = _credits.asStateFlow()
 
-    private val _trashCount = MutableStateFlow(0)
+    private val _trashCount = MutableStateFlow(preferences.lastKnownTrashCount())
     val trashCount: StateFlow<Int> = _trashCount.asStateFlow()
 
     /**
      * How many complaints are waiting, or null for everyone who is not the
      * person who reads them. Being turned away is how the app finds out.
+     *
+     * Opens with the last answer, because this one decides whether a row
+     * exists: asked fresh every time, the screen grows a row a moment after
+     * somebody has started reading it.
      */
-    private val _pendingReports = MutableStateFlow<Int?>(null)
+    private val _pendingReports = MutableStateFlow(preferences.lastKnownPendingReports())
     val pendingReports: StateFlow<Int?> = _pendingReports.asStateFlow()
 
     private val _backupSettings = MutableStateFlow<BackupSettings?>(null)
@@ -61,9 +68,16 @@ class SettingsViewModel @Inject constructor(
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
 
+    /**
+     * Waits for the account rather than sampling it: on the way in it is
+     * [Account.Unknown] for a frame or two, and asking then answered "no
+     * account, no copy" for a signed-in person and left the section out
+     * altogether.
+     */
     fun loadBackupSettings() {
         viewModelScope.launch {
-            _backupSettings.value = if (account.value is Account.SignedIn) backup.settings() else null
+            val settled = account.first { it !is Account.Unknown }
+            _backupSettings.value = if (settled is Account.SignedIn) backup.settings() else null
         }
     }
 
@@ -101,18 +115,24 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             // Being turned away is the ordinary answer for everyone who does not
             // read reports, but it looks the same as the network being down, so
-            // the reason is written down rather than swallowed.
-            _pendingReports.value = community.reports()
+            // the reason is written down rather than swallowed. It is also why
+            // a failure leaves the last answer standing instead of clearing it:
+            // a moderator with no signal has not stopped being one.
+            community.reports()
                 .onFailure { Timber.i(it, "Not showing the report queue") }
-                .getOrNull()
-                ?.size
+                .onSuccess { reports ->
+                    _pendingReports.value = reports.size
+                    preferences.setLastKnownPendingReports(reports.size)
+                }
         }
     }
 
     fun loadTrashCount() {
         viewModelScope.launch {
             logFailures("Counting trashed entries") {
-                _trashCount.value = repository.getTrashEntries().size
+                val count = repository.getTrashEntries().size
+                _trashCount.value = count
+                preferences.setLastKnownTrashCount(count)
             }
         }
     }

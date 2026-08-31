@@ -275,6 +275,14 @@ private class FakeAppPreferences : AppPreferences {
     override fun setLanguageTag(tag: String?) = Unit
     override fun lastKnownCredits(): Int? = null
     override fun setLastKnownCredits(credits: Int?) = Unit
+
+    override fun lastKnownPendingReports(): Int? = null
+
+    override fun setLastKnownPendingReports(reports: Int?) = Unit
+
+    override fun lastKnownTrashCount(): Int = 0
+
+    override fun setLastKnownTrashCount(count: Int) = Unit
     override fun hiddenListIds(): Set<String> = emptySet()
     override fun hiddenLists(): List<HiddenEntry> = emptyList()
     override fun hideList(publishedId: String, title: String) = Unit

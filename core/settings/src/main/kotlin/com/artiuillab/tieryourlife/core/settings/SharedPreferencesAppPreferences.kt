@@ -18,6 +18,8 @@ private const val KEY_SIGN_IN_OFFER_ANSWERED = "sign_in_offer_answered"
 private const val KEY_PICTURES_ON_WIFI_ONLY = "pictures_on_wifi_only"
 private const val KEY_LAST_SYNCED_AT = "last_synced_at"
 private const val KEY_CONFLICTS_SEEN = "conflicts_seen"
+private const val KEY_LAST_KNOWN_REPORTS = "last_known_reports"
+private const val KEY_LAST_KNOWN_TRASH = "last_known_trash"
 
 @Singleton
 class SharedPreferencesAppPreferences @Inject constructor(
@@ -48,6 +50,21 @@ class SharedPreferencesAppPreferences @Inject constructor(
         prefs.edit {
             if (credits == null) remove(KEY_LAST_KNOWN_CREDITS) else putInt(KEY_LAST_KNOWN_CREDITS, credits)
         }
+    }
+
+    override fun lastKnownPendingReports(): Int? =
+        prefs.getInt(KEY_LAST_KNOWN_REPORTS, -1).takeIf { it >= 0 }
+
+    override fun setLastKnownPendingReports(reports: Int?) {
+        prefs.edit {
+            if (reports == null) remove(KEY_LAST_KNOWN_REPORTS) else putInt(KEY_LAST_KNOWN_REPORTS, reports)
+        }
+    }
+
+    override fun lastKnownTrashCount(): Int = prefs.getInt(KEY_LAST_KNOWN_TRASH, 0)
+
+    override fun setLastKnownTrashCount(count: Int) {
+        prefs.edit { putInt(KEY_LAST_KNOWN_TRASH, count) }
     }
 
     // Rows by default: they say how many cards are ranked and how many wait,

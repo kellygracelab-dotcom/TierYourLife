@@ -116,6 +116,14 @@ private class FakeAppPreferences(
 
     override fun setLastKnownCredits(credits: Int?) = Unit
 
+    override fun lastKnownPendingReports(): Int? = null
+
+    override fun setLastKnownPendingReports(reports: Int?) = Unit
+
+    override fun lastKnownTrashCount(): Int = 0
+
+    override fun setLastKnownTrashCount(count: Int) = Unit
+
     val storedThemeChoices = mutableListOf<ThemeChoice>()
     val storedLanguageTags = mutableListOf<String?>()
 
