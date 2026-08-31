@@ -122,21 +122,12 @@ class RetrofitCommunityRepository @Inject constructor(
 private inline fun <T> attempt(what: String, block: () -> T): Result<T> =
     runCatching(block).onFailure { Timber.w(it, "%s failed", what) }
 
-private fun HttpException.refusedFor(code: String): Boolean =
-    runCatching { response()?.errorBody()?.string().orEmpty() }.getOrDefault("").contains(code)
-
 private fun Throwable.asPublishError(): PublishError = when {
     this is HttpException -> when (code()) {
         403 -> PublishError.NotSignedIn
         409 -> PublishError.TooManyLists
         413 -> PublishError.TooLarge
-        // Both refusals are 422; only the body says which, and the two send
-        // somebody to do completely different things.
-        422 -> if (refusedFor("WORDING_REFUSED")) {
-            PublishError.WordingRefused
-        } else {
-            PublishError.PictureRefused
-        }
+        422 -> PublishError.PictureRefused
         else -> PublishError.Unknown
     }
 

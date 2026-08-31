@@ -363,7 +363,6 @@
     </plurals>
     <string name="list_settings_public_too_large">Esta lista es demasiado grande para publicarse: como máximo 1000 tarjetas y 20 niveles.</string>
     <string name="list_settings_public_picture_refused">Una de tus fotos no puede aparecer en el feed público. Quítala o mantén la lista privada.</string>
-    <string name="list_settings_public_wording_refused">Algo escrito en esta lista no puede aparecer en el feed público. Cámbialo o mantén la lista privada.</string>
     <string name="community_action_view_author">Ver a %1$s</string>
     <string name="community_action_hide">Ocultar esta lista</string>
     <string name="community_action_report">Denunciar esta lista</string>

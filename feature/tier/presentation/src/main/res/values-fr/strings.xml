@@ -363,7 +363,6 @@
     </plurals>
     <string name="list_settings_public_too_large">Cette liste est trop grande pour être publiée : 1000 cartes et 20 rangs au maximum.</string>
     <string name="list_settings_public_picture_refused">Une de vos photos ne peut pas figurer dans le fil public. Retirez-la ou gardez la liste privée.</string>
-    <string name="list_settings_public_wording_refused">Un texte de cette liste ne peut pas figurer dans le fil public. Modifiez-le ou gardez la liste privée.</string>
     <string name="community_action_view_author">Voir %1$s</string>
     <string name="community_action_hide">Masquer cette liste</string>
     <string name="community_action_report">Signaler cette liste</string>

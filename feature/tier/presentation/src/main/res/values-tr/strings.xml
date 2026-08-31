@@ -336,7 +336,6 @@
     </plurals>
     <string name="list_settings_public_too_large">Bu liste yayımlanamayacak kadar büyük: en fazla 1000 kart ve 20 kademe.</string>
     <string name="list_settings_public_picture_refused">Fotoğraflarınızdan biri herkese açık akışta yer alamaz. Kaldırın ya da listeyi özel tutun.</string>
-    <string name="list_settings_public_wording_refused">Bu listedeki bir yazı herkese açık akışta yer alamaz. Değiştirin ya da listeyi özel tutun.</string>
     <string name="community_action_view_author">%1$s profilini aç</string>
     <string name="community_action_hide">Bu listeyi gizle</string>
     <string name="community_action_report">Bu listeyi bildir</string>

@@ -390,7 +390,6 @@
     </plurals>
     <string name="list_settings_public_too_large">Ta lista jest za duża, by ją opublikować: najwyżej 1000 kart i 20 poziomów.</string>
     <string name="list_settings_public_picture_refused">Jedno z Twoich zdjęć nie może trafić do publicznego kanału. Usuń je albo zostaw listę prywatną.</string>
-    <string name="list_settings_public_wording_refused">Coś w tekście tej listy nie może trafić do publicznego kanału. Zmień to albo zostaw listę prywatną.</string>
     <string name="community_action_view_author">Zobacz %1$s</string>
     <string name="community_action_hide">Ukryj tę listę</string>
     <string name="community_action_report">Zgłoś tę listę</string>
