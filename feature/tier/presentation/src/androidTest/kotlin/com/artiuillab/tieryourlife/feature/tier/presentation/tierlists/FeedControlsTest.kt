@@ -23,13 +23,13 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncReport
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.FakeAppPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -50,7 +50,7 @@ class FeedControlsTest {
 
         assertEquals(FeedSource.Everyone, shown.communitySource)
         assertEquals(FeedSort.Popular, shown.communitySort)
-        assertEquals(FeedSort.Popular, community.asked.last().sort)
+        assertEquals(FeedSort.Popular, eventually("a feed request") { community.asked.lastOrNull() }.sort)
     }
 
     // Somebody who followed these people has already vouched for them, and
@@ -66,7 +66,10 @@ class FeedControlsTest {
         val shown = ready(viewModel) { it.communitySource == FeedSource.Following }
 
         assertEquals(FeedSort.Recent, shown.communitySort)
-        assertTrue(community.asked.last().following)
+        val sent = eventually("a request for the people followed") {
+            community.asked.lastOrNull()?.takeIf { it.following }
+        }
+        assertEquals(FeedSort.Recent, sent.sort)
     }
 
     @Test
@@ -99,7 +102,10 @@ class FeedControlsTest {
         val shown = ready(viewModel) { it.communitySource == FeedSource.Following }
 
         assertEquals(ListCategory.Games, shown.communityCategory)
-        assertEquals(ListCategory.Games, community.asked.last().category)
+        val sent = eventually("a request narrowed to games") {
+            community.asked.lastOrNull()?.takeIf { it.following }
+        }
+        assertEquals(ListCategory.Games, sent.category)
     }
 
     @Test
@@ -130,7 +136,7 @@ class FeedControlsTest {
         } as CommunityFeed.FollowingNobody
 
         assertEquals(listOf("a"), after.authors.map { it.uid })
-        assertEquals(listOf("a"), community.followed)
+        assertEquals("a", eventually("the follow to reach the server") { community.followed.firstOrNull() })
     }
 
     @Test
@@ -157,6 +163,22 @@ class FeedControlsTest {
      * Bounded, so a state that never arrives fails the test with the state it
      * got stuck on instead of hanging the whole run.
      */
+    /**
+     * Waits for something a coroutine will do, rather than assuming it already
+     * has. The screen answers before the server does on purpose, so a check on
+     * what reached the server has to wait for it -- on a machine where the
+     * launch does not happen to run inline, it has not.
+     */
+    private suspend fun <T : Any> eventually(what: String, get: () -> T?): T =
+        withTimeoutOrNull(WAIT_MILLIS) {
+            var seen = get()
+            while (seen == null) {
+                delay(POLL_MILLIS)
+                seen = get()
+            }
+            seen
+        } ?: error("Never saw $what")
+
     private suspend fun ready(
         viewModel: TierListsViewModel,
         until: (TierListsUiState.Success) -> Boolean = { true },
@@ -189,13 +211,13 @@ class FeedControlsTest {
 }
 
 /** What the feed was actually asked for, which is the thing under test. */
-private data class Asked(
+internal data class Asked(
     val category: ListCategory?,
     val sort: FeedSort,
     val following: Boolean,
 )
 
-private class RecordingCommunity(
+internal class RecordingCommunity(
     private val followsNobody: Boolean = false,
     private val suggestions: List<SuggestedAuthor> = emptyList(),
     private val followFails: Boolean = false,
@@ -261,3 +283,4 @@ private object NoRestore : PictureRestore {
 }
 
 private const val WAIT_MILLIS = 5_000L
+private const val POLL_MILLIS = 5L
