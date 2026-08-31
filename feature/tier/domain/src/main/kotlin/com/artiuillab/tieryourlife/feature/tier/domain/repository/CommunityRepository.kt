@@ -1,11 +1,14 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.repository
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.tier.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 interface CommunityRepository {
@@ -20,7 +23,35 @@ interface CommunityRepository {
         query: String? = null,
         author: String? = null,
         after: String? = null,
+        sort: FeedSort = FeedSort.Recent,
+        following: Boolean = false,
     ): Result<CommunityPage>
+
+    /**
+     * Follows an author, so their new lists come first. Fails for a guest:
+     * a guest is an identity this app hands out and later sweeps away, and a
+     * following list kept on one would be a promise we delete.
+     */
+    suspend fun follow(authorUid: String): Result<Unit>
+
+    suspend fun unfollow(authorUid: String): Result<Unit>
+
+    /** Whether this person follows that author, and how many people do. */
+    suspend fun followState(authorUid: String): Result<FollowState>
+
+    /**
+     * Authors worth following, for somebody who follows nobody yet. Drawn from
+     * the lists people have taken most, because that is the only standing
+     * anybody has here.
+     */
+    suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>>
+
+    /**
+     * Says that this person took the list to rank for themselves, which is
+     * what the popular ordering counts. Counted once per person; saying it
+     * twice is harmless and changes nothing.
+     */
+    suspend fun noteTaken(publishedId: String): Result<Unit>
 
     /**
      * Everything this person has in the community, as the server has it. Not

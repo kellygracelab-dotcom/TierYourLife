@@ -387,6 +387,25 @@
     <string name="home_tab_community">المجتمع</string>
     <string name="home_community_empty">لا شيء منشور بعد</string>
     <string name="home_community_empty_body">القوائم التي ينشرها الناس تظهر هنا.</string>
+    <string name="feed_source_following">المتابَعون</string>
+    <string name="feed_source_everyone">الكل</string>
+    <string name="feed_sort_recent">الأحدث</string>
+    <string name="feed_sort_popular">الأكثر رواجًا</string>
+    <string name="cd_feed_sort">الترتيب</string>
+    <string name="action_follow">متابعة</string>
+    <string name="action_following">تتابعه</string>
+    <string name="home_following_nobody">أنت لا تتابع أحدًا</string>
+    <string name="home_following_nobody_body">تابِع شخصًا ما، وستظهر لوحاته الجديدة هنا أولًا.</string>
+    <string name="home_following_empty">لا أحد ممن تتابعهم لديه لوحة في %1$s.</string>
+    <string name="home_following_empty_all">لم ينشر أحد ممن تتابعهم شيئًا بعد.</string>
+    <plurals name="author_followers_count">
+        <item quantity="zero">لا متابعين</item>
+        <item quantity="one">متابع واحد</item>
+        <item quantity="two">متابعان</item>
+        <item quantity="few">%d متابعين</item>
+        <item quantity="many">%d متابعًا</item>
+        <item quantity="other">%d متابع</item>
+    </plurals>
     <string name="home_community_failed">تعذّر تحميل المجتمع</string>
     <string name="home_community_failed_body">تحقق من اتصالك.</string>
     <string name="community_by_author">من %1$s</string>

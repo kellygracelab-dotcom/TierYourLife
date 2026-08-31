@@ -12,6 +12,8 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ReportRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.sync.PictureSync
 import com.artiuillab.tieryourlife.feature.tier.data.sync.PublishFingerprint
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
@@ -19,6 +21,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.tier.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -42,9 +45,49 @@ class RetrofitCommunityRepository @Inject constructor(
         query: String?,
         author: String?,
         after: String?,
+        sort: FeedSort,
+        following: Boolean,
     ): Result<CommunityPage> = attempt("Reading the community feed") {
-        val page = api.feed(category?.id, query?.takeIf { it.isNotBlank() }, author, after)
-        CommunityPage(lists = page.lists.map { it.toSummary() }, nextCursor = page.nextCursor)
+        val page = api.feed(
+            category = category?.id,
+            query = query?.takeIf { it.isNotBlank() },
+            author = author,
+            after = after,
+            sort = sort.id,
+            // Sent only when it is wanted, so an ordinary feed carries no
+            // parameter the server has to read as a false.
+            following = "1".takeIf { following },
+        )
+        CommunityPage(
+            lists = page.lists.map { it.toSummary() },
+            nextCursor = page.nextCursor,
+            followingNobody = page.followingNobody,
+        )
+    }
+
+    override suspend fun follow(authorUid: String): Result<Unit> = attempt("Following an author") {
+        api.follow(authorUid)
+    }
+
+    override suspend fun unfollow(authorUid: String): Result<Unit> = attempt("Unfollowing an author") {
+        api.unfollow(authorUid)
+    }
+
+    override suspend fun followState(authorUid: String): Result<FollowState> =
+        attempt("Reading whether an author is followed") {
+            val state = api.followState(authorUid)
+            FollowState(following = state.following, followers = state.followers)
+        }
+
+    override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> =
+        attempt("Reading who to follow") {
+            api.suggestedAuthors().authors.map {
+                SuggestedAuthor(uid = it.uid, name = it.name, photoUrl = it.photoUrl, takeCount = it.takeCount)
+            }
+        }
+
+    override suspend fun noteTaken(publishedId: String): Result<Unit> = attempt("Counting a list as taken") {
+        api.noteTaken(publishedId)
     }
 
     override suspend fun myPublished(): Result<List<PublishedListSummary>> = attempt("Reading what this account has published") {
@@ -154,6 +197,7 @@ private fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     previewImages = previewImages,
     tierColors = tierColors,
     updatedAtMillis = updatedAt,
+    takeCount = takeCount,
 )
 
 private fun PublishedListDto.toDomain() = PublishedList(

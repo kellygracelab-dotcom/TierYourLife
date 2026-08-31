@@ -48,6 +48,47 @@ class CommunityListViewModel @Inject constructor(
         load()
     }
 
+    private fun loadFollowState(authorUid: String) {
+        if (authorUid.isEmpty()) return
+        viewModelScope.launch {
+            val state = community.followState(authorUid)
+                .onFailure { Timber.i(it, "Not showing whether this author is followed") }
+                .getOrNull() ?: return@launch
+            _state.update { current ->
+                if (current is CommunityListUiState.Success) current.copy(follow = state) else current
+            }
+        }
+    }
+
+    /**
+     * Follows or stops, showing the answer before the server gives it and
+     * putting it back if the server refuses. Nothing else on the screen
+     * depends on it, so there is nothing else to undo.
+     */
+    fun toggleFollow() {
+        val current = _state.value as? CommunityListUiState.Success ?: return
+        val was = current.follow ?: return
+        val now = was.copy(
+            following = !was.following,
+            followers = (was.followers + if (was.following) -1 else 1).coerceAtLeast(0),
+        )
+        _state.update { (it as CommunityListUiState.Success).copy(follow = now) }
+
+        viewModelScope.launch {
+            val result = if (now.following) {
+                community.follow(current.authorUid)
+            } else {
+                community.unfollow(current.authorUid)
+            }
+            result.onFailure { error ->
+                Timber.w(error, "Following an author failed")
+                _state.update { state ->
+                    if (state is CommunityListUiState.Success) state.copy(follow = was) else state
+                }
+            }
+        }
+    }
+
     fun load() {
         viewModelScope.launch {
             _state.value = CommunityListUiState.Loading
@@ -68,6 +109,7 @@ class CommunityListViewModel @Inject constructor(
                 },
                 onFailure = { CommunityListUiState.Error },
             )
+            (_state.value as? CommunityListUiState.Success)?.let { loadFollowState(it.authorUid) }
         }
     }
 
@@ -115,7 +157,15 @@ class CommunityListViewModel @Inject constructor(
                 )
             }
             _state.update { (it as CommunityListUiState.Success).copy(saving = false) }
-            if (saved) newId?.let(onSaved)
+            if (saved) {
+                // What the popular ordering counts. Told after the board
+                // exists, and its failure is not this person's problem: they
+                // have their copy either way, and a number that missed one
+                // take is not worth an error on a screen.
+                community.noteTaken(publishedId)
+                    .onFailure { Timber.i(it, "Not counting this list as taken") }
+                newId?.let(onSaved)
+            }
         }
     }
 

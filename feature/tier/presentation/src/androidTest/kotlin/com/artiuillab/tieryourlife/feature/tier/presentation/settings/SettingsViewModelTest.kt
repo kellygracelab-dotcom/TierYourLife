@@ -6,11 +6,14 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.tier.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.Published
@@ -180,6 +183,8 @@ private class FakeCommunity(
         query: String?,
         author: String?,
         after: String?,
+        sort: FeedSort,
+        following: Boolean,
     ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
 
     override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(emptyList())
@@ -195,4 +200,12 @@ private class FakeCommunity(
         reason: ReportReason,
         note: String?,
     ): Result<Unit> = Result.success(Unit)
+
+    override suspend fun follow(authorUid: String): Result<Unit> = Result.success(Unit)
+    override suspend fun unfollow(authorUid: String): Result<Unit> = Result.success(Unit)
+    override suspend fun followState(authorUid: String): Result<FollowState> =
+        Result.success(FollowState(following = false, followers = 0))
+
+    override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> = Result.success(emptyList())
+    override suspend fun noteTaken(publishedId: String): Result<Unit> = Result.success(Unit)
 }

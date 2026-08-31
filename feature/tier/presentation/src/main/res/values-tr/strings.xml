@@ -287,6 +287,21 @@
     <string name="home_tab_community">Topluluk</string>
     <string name="home_community_empty">Henüz hiçbir şey yayımlanmadı</string>
     <string name="home_community_empty_body">İnsanların herkese açık yaptığı listeler burada görünür.</string>
+    <string name="feed_source_following">Takip</string>
+    <string name="feed_source_everyone">Tümü</string>
+    <string name="feed_sort_recent">En yeni</string>
+    <string name="feed_sort_popular">Popüler</string>
+    <string name="cd_feed_sort">Sıralama</string>
+    <string name="action_follow">Takip et</string>
+    <string name="action_following">Takiptesiniz</string>
+    <string name="home_following_nobody">Kimseyi takip etmiyorsunuz</string>
+    <string name="home_following_nobody_body">Birini takip edin, yeni panoları önce burada görünsün.</string>
+    <string name="home_following_empty">Takip ettiklerinizin %1$s kategorisinde panosu yok.</string>
+    <string name="home_following_empty_all">Takip ettikleriniz henüz bir şey yayımlamadı.</string>
+    <plurals name="author_followers_count">
+        <item quantity="one">%d takipçi</item>
+        <item quantity="other">%d takipçi</item>
+    </plurals>
     <string name="home_community_failed">Topluluk yüklenemedi</string>
     <string name="home_community_failed_body">Bağlantını kontrol et.</string>
     <string name="community_by_author">%1$s tarafından</string>

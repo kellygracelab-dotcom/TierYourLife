@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -73,6 +75,7 @@ fun AuthorScreen(
             onBack()
         },
         onReport = viewModel::report,
+        onToggleFollow = viewModel::toggleFollow,
     )
 }
 
@@ -86,6 +89,7 @@ internal fun AuthorScreenContent(
     onHideList: (id: String, title: String) -> Unit = { _, _ -> },
     onHideAuthor: () -> Unit = {},
     onReport: (id: String, title: String, ReportReason, String?) -> Unit = { _, _, _, _ -> },
+    onToggleFollow: () -> Unit = {},
 ) {
     var authorActionsVisible by remember { mutableStateOf(false) }
     var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
@@ -116,7 +120,7 @@ internal fun AuthorScreenContent(
                 )
 
                 is AuthorUiState.Ready -> CenteredContent(ContentWidth.Board) {
-                    Header(state)
+                    Header(state, onToggleFollow = onToggleFollow)
                     if (state.lists.isEmpty()) {
                         Message(
                             title = stringResource(R.string.author_no_public_lists),
@@ -236,7 +240,7 @@ private fun AuthorTopBar(onBack: () -> Unit, onMoreClick: (() -> Unit)?) {
 }
 
 @Composable
-private fun Header(state: AuthorUiState.Ready) {
+private fun Header(state: AuthorUiState.Ready, onToggleFollow: () -> Unit) {
     Column(
         Modifier
             .fillMaxWidth()
@@ -259,6 +263,46 @@ private fun Header(state: AuthorUiState.Ready) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        // Nothing at all until the server has answered. A button here before
+        // then would offer to undo something nobody has done.
+        val follow = state.follow
+        if (follow != null) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = pluralStringResource(
+                    R.plurals.author_followers_count,
+                    follow.followers,
+                    follow.followers,
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
+            Spacer(Modifier.height(12.dp))
+            FollowButton(
+                following = follow.following,
+                onClick = onToggleFollow,
+                modifier = Modifier.testTag(AuthorTestTags.FOLLOW),
+            )
+        }
+    }
+}
+
+/**
+ * Filled while it is an offer, outlined once it has been taken up.
+ *
+ * The outlined one stays pressable, because unfollowing has to be possible
+ * from where following was, and there is nowhere else it would go.
+ */
+@Composable
+private fun FollowButton(following: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    if (following) {
+        OutlinedButton(onClick = onClick, modifier = modifier) {
+            Text(stringResource(R.string.action_following))
+        }
+    } else {
+        Button(onClick = onClick, modifier = modifier) {
+            Text(stringResource(R.string.action_follow))
+        }
     }
 }
 
@@ -300,6 +344,7 @@ internal object AuthorTestTags {
     const val MORE = "author_more"
     const val ACTIONS_SHEET = "author_actions"
     const val ACTION_HIDE_AUTHOR = "author_action_hide_author"
+    const val FOLLOW = "author_follow"
 }
 
 private val previewLists = listOf(

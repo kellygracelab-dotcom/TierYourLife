@@ -337,6 +337,23 @@
     <string name="home_tab_community">Społeczność</string>
     <string name="home_community_empty">Nic jeszcze nie opublikowano</string>
     <string name="home_community_empty_body">Tu pojawiają się listy, które ktoś udostępnił publicznie.</string>
+    <string name="feed_source_following">Obserwowani</string>
+    <string name="feed_source_everyone">Wszystkie</string>
+    <string name="feed_sort_recent">Najnowsze</string>
+    <string name="feed_sort_popular">Popularne</string>
+    <string name="cd_feed_sort">Sortowanie</string>
+    <string name="action_follow">Obserwuj</string>
+    <string name="action_following">Obserwujesz</string>
+    <string name="home_following_nobody">Nikogo nie obserwujesz</string>
+    <string name="home_following_nobody_body">Zaobserwuj kogoś, a jego nowe listy pojawią się tu jako pierwsze.</string>
+    <string name="home_following_empty">Nikt z obserwowanych nie ma listy w kategorii %1$s.</string>
+    <string name="home_following_empty_all">Obserwowani nie opublikowali jeszcze niczego.</string>
+    <plurals name="author_followers_count">
+        <item quantity="one">%d obserwujący</item>
+        <item quantity="few">%d obserwujących</item>
+        <item quantity="many">%d obserwujących</item>
+        <item quantity="other">%d obserwujących</item>
+    </plurals>
     <string name="home_community_failed">Nie udało się wczytać społeczności</string>
     <string name="home_community_failed_body">Sprawdź połączenie.</string>
     <string name="community_by_author">od %1$s</string>

@@ -287,6 +287,21 @@
     <string name="home_tab_community">Community</string>
     <string name="home_community_empty">Noch nichts veröffentlicht</string>
     <string name="home_community_empty_body">Hier erscheinen Listen, die andere öffentlich gemacht haben.</string>
+    <string name="feed_source_following">Abos</string>
+    <string name="feed_source_everyone">Alle</string>
+    <string name="feed_sort_recent">Neueste</string>
+    <string name="feed_sort_popular">Beliebt</string>
+    <string name="cd_feed_sort">Sortierung</string>
+    <string name="action_follow">Folgen</string>
+    <string name="action_following">Abonniert</string>
+    <string name="home_following_nobody">Du folgst noch niemandem</string>
+    <string name="home_following_nobody_body">Folge jemandem, und seine neuen Boards erscheinen hier zuerst.</string>
+    <string name="home_following_empty">Niemand, dem du folgst, hat ein Board in %1$s.</string>
+    <string name="home_following_empty_all">Wem du folgst, hat noch nichts veröffentlicht.</string>
+    <plurals name="author_followers_count">
+        <item quantity="one">%d Abonnent</item>
+        <item quantity="other">%d Abonnenten</item>
+    </plurals>
     <string name="home_community_failed">Community konnte nicht geladen werden</string>
     <string name="home_community_failed_body">Prüfe deine Verbindung.</string>
     <string name="community_by_author">von %1$s</string>

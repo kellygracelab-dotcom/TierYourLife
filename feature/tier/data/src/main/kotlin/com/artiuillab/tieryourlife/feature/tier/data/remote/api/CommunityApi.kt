@@ -1,12 +1,14 @@
 package com.artiuillab.tieryourlife.feature.tier.data.remote.api
 
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.FaceDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.FollowStateDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ModerationQueueDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedFeedDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedIdDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ReportRequestDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.SuggestedAuthorsDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -23,7 +25,24 @@ interface CommunityApi {
         @Query("q") query: String? = null,
         @Query("author") author: String? = null,
         @Query("after") after: String? = null,
+        @Query("sort") sort: String? = null,
+        @Query("following") following: String? = null,
     ): PublishedFeedDto
+
+    @GET("lists/follow/{authorUid}")
+    suspend fun followState(@Path("authorUid") authorUid: String): FollowStateDto
+
+    @POST("lists/follow/{authorUid}")
+    suspend fun follow(@Path("authorUid") authorUid: String)
+
+    @DELETE("lists/follow/{authorUid}")
+    suspend fun unfollow(@Path("authorUid") authorUid: String)
+
+    @GET("lists/follow")
+    suspend fun suggestedAuthors(): SuggestedAuthorsDto
+
+    @POST("lists/{id}/taken")
+    suspend fun noteTaken(@Path("id") id: String)
 
     @GET("lists/mine")
     suspend fun myPublished(): PublishedFeedDto

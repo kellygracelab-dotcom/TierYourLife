@@ -9,10 +9,13 @@ import com.artiuillab.tieryourlife.core.ui.guard
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
+import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.opensOn
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
@@ -64,6 +67,19 @@ class TierListsViewModel @Inject constructor(
     private var moreJob: Job? = null
     private var communityFeed: CommunityFeed = CommunityFeed.Loading
     private var communityCategory: ListCategory? = null
+    private var communitySource: FeedSource = FeedSource.Everyone
+
+    /**
+     * The order each source was last read in, remembered separately.
+     *
+     * They open on different orders and for a reason, so one shared setting
+     * would make switching source silently change the order too. Somebody who
+     * chose Newest among everybody expects it back when they come back.
+     */
+    private val communitySort = mutableMapOf(
+        FeedSource.Everyone to FeedSource.Everyone.opensOn,
+        FeedSource.Following to FeedSource.Following.opensOn,
+    )
     private var communitySearch: Job? = null
 
     private var account: Account = Account.Unknown
@@ -195,6 +211,8 @@ class TierListsViewModel @Inject constructor(
             asPictures = preferences.boardsAsPictures(),
             community = communityFeed,
             communityCategory = communityCategory,
+            communitySource = communitySource,
+            communitySort = sortNow(),
             localOnly = whereTheseLive(),
             restoringPictures = restoringPictures,
             conflict = paired.firstOrNull { it.hasTwin && it.arrivedFrom != null && !seenConflict(it) },
@@ -251,6 +269,45 @@ class TierListsViewModel @Inject constructor(
         loadCommunityFeed()
     }
 
+    fun selectCommunitySource(source: FeedSource) {
+        if (communitySource == source) return
+        communitySource = source
+        communityFeed = CommunityFeed.Loading
+        emitSuccess()
+        loadCommunityFeed()
+    }
+
+    fun selectCommunitySort(sort: FeedSort) {
+        if (sortNow() == sort) return
+        communitySort[communitySource] = sort
+        communityFeed = CommunityFeed.Loading
+        emitSuccess()
+        loadCommunityFeed()
+    }
+
+    private fun sortNow(): FeedSort = communitySort.getValue(communitySource)
+
+    /**
+     * Follows somebody from the screen that offered them.
+     *
+     * Their card stays where it is rather than disappearing: a list that
+     * removes what you just touched makes the next tap land on somebody else.
+     * The feed behind it is left alone until the screen is opened again.
+     */
+    fun followSuggested(authorUid: String) {
+        val shown = communityFeed as? CommunityFeed.FollowingNobody ?: return
+        communityFeed = shown.copy(followed = shown.followed + authorUid)
+        emitSuccess()
+        viewModelScope.launch {
+            community.follow(authorUid).onFailure { error ->
+                Timber.w(error, "Following an author failed")
+                val now = communityFeed as? CommunityFeed.FollowingNobody ?: return@onFailure
+                communityFeed = now.copy(followed = now.followed - authorUid)
+                emitSuccess()
+            }
+        }
+    }
+
     fun loadCommunityFeed() {
         communitySearch?.cancel()
         viewModelScope.launch { loadCommunityFeedNow((mode as? HomeMode.Searching)?.query) }
@@ -259,13 +316,22 @@ class TierListsViewModel @Inject constructor(
     private suspend fun loadCommunityFeedNow(query: String?) {
         moreJob?.cancel()
         appliedHidden = preferences.hiddenListIds() + preferences.hiddenAuthorUids()
-        communityFeed = community.feed(communityCategory, query).fold(
+        communityFeed = community.feed(
+            category = communityCategory,
+            query = query,
+            sort = sortNow(),
+            following = communitySource == FeedSource.Following,
+        ).fold(
             onSuccess = { page ->
                 communityCursor = page.nextCursor
-                CommunityFeed.Ready(
-                    lists = page.lists.filterNot(::isHidden),
-                    canLoadMore = page.nextCursor != null,
-                )
+                if (page.followingNobody) {
+                    CommunityFeed.FollowingNobody()
+                } else {
+                    CommunityFeed.Ready(
+                        lists = page.lists.filterNot(::isHidden),
+                        canLoadMore = page.nextCursor != null,
+                    )
+                }
             },
             onFailure = { error ->
                 Timber.w(error, "Loading the community feed failed")
@@ -274,6 +340,26 @@ class TierListsViewModel @Inject constructor(
             },
         )
         emitSuccess()
+        // Asked for only once the state above is in place. Started any earlier
+        // and a fast answer -- a cached one, or a failure -- arrives while the
+        // screen is still Loading, finds nothing of its own to fill in, and
+        // leaves the spinner up for good.
+        if (communityFeed is CommunityFeed.FollowingNobody) {
+            loadSuggestedAuthors()
+        }
+    }
+
+    private fun loadSuggestedAuthors() {
+        viewModelScope.launch {
+            val authors = community.suggestedAuthors()
+                .onFailure { Timber.w(it, "Reading who to follow failed") }
+                .getOrDefault(emptyList())
+            // Only if the screen is still the one that asked. Switching back to
+            // everybody while this was in flight must not put it back.
+            val shown = communityFeed as? CommunityFeed.FollowingNobody ?: return@launch
+            communityFeed = shown.copy(authors = authors, loading = false)
+            emitSuccess()
+        }
     }
 
     fun loadMoreCommunity() {
@@ -284,7 +370,13 @@ class TierListsViewModel @Inject constructor(
         communityFeed = shown.copy(loadingMore = true)
         emitSuccess()
         moreJob = viewModelScope.launch {
-            community.feed(communityCategory, (mode as? HomeMode.Searching)?.query, after = cursor)
+            community.feed(
+                category = communityCategory,
+                query = (mode as? HomeMode.Searching)?.query,
+                after = cursor,
+                sort = sortNow(),
+                following = communitySource == FeedSource.Following,
+            )
                 .onSuccess { page -> appendPage(page) }
                 // A page that never arrived is no reason to take away the
                 // ones that did. The next scroll asks again.
