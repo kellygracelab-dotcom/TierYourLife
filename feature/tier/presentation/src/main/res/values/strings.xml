@@ -302,6 +302,8 @@
     <string name="list_settings_public_body">Anyone can open this list and rank it themselves.</string>
     <string name="list_settings_public_needs_account">Sign in with Google to publish. Reading and saving others’ lists needs no account.</string>
     <string name="list_settings_public_images">Only pictures that already live on the web travel. Photos and generated art stay on this phone.</string>
+    <string name="list_settings_update_published">Published version</string>
+    <string name="list_settings_update_published_body">Send this board again, over the same link.</string>
     <string name="list_settings_public_needs_items">Add at least one card before you publish this list.</string>
     <string name="list_settings_public_too_many">You have published as many lists as we allow. Unpublish one to make room.</string>
     <string name="list_settings_public_offline">No connection. Try again once you are back online.</string>

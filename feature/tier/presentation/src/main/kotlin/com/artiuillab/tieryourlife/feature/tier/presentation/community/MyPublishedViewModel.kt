@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,10 +20,9 @@ sealed interface MyPublishedUiState {
     data class Ready(
         val lists: List<PublishedListSummary>,
         val removing: String? = null,
-        /**
-         * The ones whose board has been edited since. Only these offer to be
-         * brought up to date -- for the rest there is nothing to send.
-         */
+        /** Every copy this phone still has the board for. */
+        val canUpdate: Set<String> = emptySet(),
+        /** The ones we can prove have been left behind. */
         val behind: Set<String> = emptySet(),
         val updating: String? = null,
     ) : MyPublishedUiState
@@ -45,11 +45,17 @@ class MyPublishedViewModel @Inject constructor(
 
     fun load() {
         viewModelScope.launch {
-            val behind = runCatching { tiers.publishedCopiesLeftBehind() }
+            val standing = runCatching { tiers.publishedStanding() }
                 .onFailure { Timber.w(it, "Comparing published copies failed") }
-                .getOrDefault(emptySet())
+                .getOrDefault(PublishedStanding())
             _state.value = community.myPublished().fold(
-                onSuccess = { MyPublishedUiState.Ready(lists = it, behind = behind) },
+                onSuccess = {
+                    MyPublishedUiState.Ready(
+                        lists = it,
+                        canUpdate = standing.canUpdate,
+                        behind = standing.knownBehind,
+                    )
+                },
                 onFailure = { error ->
                     Timber.w(error, "Reading your published lists failed")
                     MyPublishedUiState.Failed
@@ -107,6 +113,7 @@ class MyPublishedViewModel @Inject constructor(
             community.publish(board).fold(
                 onSuccess = { published ->
                     runCatching { tiers.setPublished(board.id, published.id, published.fingerprint) }
+                    // Sent, so it is neither behind nor unknown any more.
                     _state.value = shown.copy(updating = null, behind = shown.behind - publishedId)
                 },
                 onFailure = { error ->

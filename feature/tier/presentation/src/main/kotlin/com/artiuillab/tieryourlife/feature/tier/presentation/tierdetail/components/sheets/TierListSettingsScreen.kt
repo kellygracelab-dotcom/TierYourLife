@@ -21,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -80,6 +81,8 @@ internal fun TierListSettingsScreenContent(
     publicPending: Boolean? = null,
     categoryWanted: Boolean = false,
     onSetPublic: (Boolean) -> Unit = {},
+    publishedIsBehind: Boolean = false,
+    onUpdatePublished: () -> Unit = {},
     onSetCategory: (ListCategory) -> Unit = {},
     onCategoryNotChosen: () -> Unit = {},
     onSetCover: (String?) -> Unit = {},
@@ -101,6 +104,8 @@ internal fun TierListSettingsScreenContent(
                 busy = publishing,
                 error = publishError,
                 onSetPublic = onSetPublic,
+                behind = publishedIsBehind,
+                onUpdatePublished = onUpdatePublished,
                 onAddCards = onAddCards,
             )
 
@@ -394,6 +399,8 @@ private fun PublishSection(
     error: PublishError?,
     onSetPublic: (Boolean) -> Unit,
     onAddCards: () -> Unit,
+    behind: Boolean,
+    onUpdatePublished: () -> Unit,
 ) {
     val caption = when {
         !signedIn -> R.string.list_settings_public_needs_account
@@ -442,7 +449,40 @@ private fun PublishSection(
                 color = MaterialTheme.colorScheme.error,
             )
         }
+        // Where somebody actually is when they have just changed the board:
+        // in its own settings, not three taps away under the account. The
+        // published copy is a snapshot and stays as it was published, which is
+        // right and is exactly why there has to be a way to send a new one
+        // from here.
         if (published) {
+            Spacer(Modifier.height(14.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.list_settings_update_published),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        // Saying it is behind needs proof; offering to send it
+                        // again does not.
+                        text = stringResource(
+                            if (behind) {
+                                R.string.my_published_behind
+                            } else {
+                                R.string.list_settings_update_published_body
+                            },
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                TextButton(
+                    onClick = onUpdatePublished,
+                    enabled = !busy,
+                    modifier = Modifier.testTag(TierDetailTestTags.UPDATE_PUBLISHED),
+                ) { Text(stringResource(R.string.my_published_action_update)) }
+            }
             Spacer(Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.list_settings_public_images),

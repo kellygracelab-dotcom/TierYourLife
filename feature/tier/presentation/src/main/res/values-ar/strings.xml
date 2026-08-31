@@ -401,6 +401,8 @@
     <string name="list_settings_public_body">يمكن لأي شخص فتح هذه القائمة وترتيبها بطريقته.</string>
     <string name="list_settings_public_needs_account">سجّل الدخول بحساب Google للنشر. القراءة والحفظ لا تحتاجان إلى حساب.</string>
     <string name="list_settings_public_images">تنتقل فقط الصور الموجودة على الإنترنت. الصور الشخصية والمولّدة تبقى على هذا الهاتف.</string>
+    <string name="list_settings_update_published">النسخة المنشورة</string>
+    <string name="list_settings_update_published_body">أرسل هذه اللوحة مرة أخرى بنفس الرابط.</string>
     <string name="list_settings_public_needs_items">أضف بطاقة واحدة على الأقل قبل نشر القائمة.</string>
     <string name="list_settings_public_too_many">لقد نشرت العدد الأقصى المسموح به من القوائم. ألغِ نشر إحداها لإفساح المجال.</string>
     <string name="list_settings_public_offline">لا يوجد اتصال. أعد المحاولة عند عودتك إلى الإنترنت.</string>

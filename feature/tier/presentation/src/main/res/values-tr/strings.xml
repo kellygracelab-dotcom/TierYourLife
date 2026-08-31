@@ -301,6 +301,8 @@
     <string name="list_settings_public_body">Herkes bu listeyi açıp kendince sıralayabilir.</string>
     <string name="list_settings_public_needs_account">Yayımlamak için Google ile oturum aç. Başkalarınınkini okumak ve kaydetmek hesap istemez.</string>
     <string name="list_settings_public_images">Yalnızca zaten internette olan görseller gider. Fotoğraflar ve üretilen görseller bu telefonda kalır.</string>
+    <string name="list_settings_update_published">Yayımlanan sürüm</string>
+    <string name="list_settings_update_published_body">Bu panoyu aynı bağlantıyla yeniden gönder.</string>
     <string name="list_settings_public_needs_items">Listeyi yayımlamadan önce en az bir kart ekleyin.</string>
     <string name="list_settings_public_too_many">İzin verilen en fazla sayıda listeyi yayımladınız. Yer açmak için birini yayından kaldırın.</string>
     <string name="list_settings_public_offline">Bağlantı yok. Çevrimiçi olduğunuzda yeniden deneyin.</string>

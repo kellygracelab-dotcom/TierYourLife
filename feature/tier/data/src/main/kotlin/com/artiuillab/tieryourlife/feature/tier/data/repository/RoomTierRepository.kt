@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import javax.inject.Inject
 
@@ -54,11 +55,19 @@ class RoomTierRepository internal constructor(
         dao.setPublished(id, publishedId, fingerprint)
     }
 
-    override suspend fun publishedCopiesLeftBehind(): Set<String> = dao.getAllTierListsWithTiers()
-        .mapNotNull { it.toDomain().takeIf { board -> board.publishedFingerprint != null } }
-        .filter { board -> PublishFingerprint.of(board, imageStore::pictureIdOf) != board.publishedFingerprint }
-        .mapNotNull { board -> board.publishedId }
-        .toSet()
+    override suspend fun publishedStanding(): PublishedStanding {
+        val published = dao.getAllTierListsWithTiers()
+            .map { it.toDomain() }
+            .filter { board -> board.publishedId != null }
+        return PublishedStanding(
+            canUpdate = published.mapNotNull { it.publishedId }.toSet(),
+            knownBehind = published
+                .filter { board -> board.publishedFingerprint != null }
+                .filter { board -> PublishFingerprint.of(board, imageStore::pictureIdOf) != board.publishedFingerprint }
+                .mapNotNull { board -> board.publishedId }
+                .toSet(),
+        )
+    }
 
     override suspend fun boardPublishedAs(publishedId: String): TierList? =
         dao.getAllTierListsWithTiers()

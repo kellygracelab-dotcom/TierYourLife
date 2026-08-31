@@ -28,15 +28,20 @@ interface TierRepository {
     suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?)
 
     /**
-     * The boards whose published copy no longer matches them, by the id the
-     * feed keeps that copy under.
+     * How each published copy stands against the board it came from.
      *
-     * A board published before this was recorded says nothing: not knowing
-     * what was sent is not the same as knowing it was something else, and
-     * showing it as behind would send somebody to republish a list that was
-     * already right.
+     * Two different questions, because they have different answers for a board
+     * published before any of this was recorded: that copy *can* be sent again
+     * -- there is a board right here to send -- but nobody knows whether it
+     * needs to be.
+     *
+     * The first mistake here was treating "we do not know" as "do not offer".
+     * That is honest about the line of type and wrong about the button: the
+     * cost of an unnecessary update is one republish, and the cost of never
+     * offering one is that everybody who published before the change can never
+     * update anything again.
      */
-    suspend fun publishedCopiesLeftBehind(): Set<String>
+    suspend fun publishedStanding(): PublishedStanding
 
     /** The board this published copy came from, if this phone still has it. */
     suspend fun boardPublishedAs(publishedId: String): TierList?
@@ -104,3 +109,12 @@ interface TierRepository {
 
     suspend fun getTrashEntries(): List<TrashEntry>
 }
+
+/**
+ * [canUpdate] is every published copy this phone still has the board for.
+ * [knownBehind] is the subset we can prove has been left behind.
+ */
+data class PublishedStanding(
+    val canUpdate: Set<String> = emptySet(),
+    val knownBehind: Set<String> = emptySet(),
+)

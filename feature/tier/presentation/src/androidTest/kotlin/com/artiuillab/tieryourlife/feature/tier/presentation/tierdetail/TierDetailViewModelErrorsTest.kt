@@ -11,6 +11,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -116,7 +117,7 @@ private class FailingTierRepository(
 
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) = Unit
 
-    override suspend fun publishedCopiesLeftBehind(): Set<String> = emptySet()
+    override suspend fun publishedStanding(): PublishedStanding = PublishedStanding()
 
     override suspend fun boardPublishedAs(publishedId: String): TierList? = null
 

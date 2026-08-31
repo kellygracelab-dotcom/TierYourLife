@@ -61,6 +61,17 @@ class TierDetailViewModel @Inject constructor(
     val publishError: StateFlow<PublishError?> = _publishError.asStateFlow()
 
     /**
+     * True when the copy in the feed is known to differ from this board.
+     *
+     * Only ever said with proof: a board published before what was sent was
+     * recorded reads as false here, and the row offers to send it again
+     * anyway. Claiming it is behind and offering to fix it are different
+     * promises with different burdens.
+     */
+    private val _publishedIsBehind = MutableStateFlow(false)
+    val publishedIsBehind: StateFlow<Boolean> = _publishedIsBehind.asStateFlow()
+
+    /**
      * What the switch should read while the request is in flight. Waiting for
      * the server to answer left it sitting on the old position for a second,
      * which reads as a tap that missed.
@@ -82,6 +93,24 @@ class TierDetailViewModel @Inject constructor(
 
     init {
         loadTierList()
+    }
+
+    /**
+     * Sends the board over the copy already in the feed.
+     *
+     * Offered here rather than only under the account, because this is where
+     * somebody is standing when they have just changed the board -- and it is
+     * the same act as publishing, over the same id, so the link somebody was
+     * given goes on working.
+     */
+    fun updatePublished() = setPublic(true)
+
+    private fun refreshPublishedStanding() {
+        viewModelScope.launch {
+            val standing = runCatching { repository.publishedStanding() }.getOrNull() ?: return@launch
+            val id = (_state.value as? TierDetailUiState.Success)?.list?.publishedId
+            _publishedIsBehind.value = id != null && id in standing.knownBehind
+        }
     }
 
     fun setPublic(public: Boolean) {
@@ -115,6 +144,8 @@ class TierDetailViewModel @Inject constructor(
                     // cleared below, so the switch would spring back to the old
                     // position for a frame or two. The id is all that changed.
                     if (recorded) showPublishedId(published?.id)
+                    // Just sent, so nothing is behind any more.
+                    _publishedIsBehind.value = false
                 },
                 onFailure = { failure ->
                     _publishError.value = (failure as? PublishRefused)?.error ?: PublishError.Unknown
@@ -300,6 +331,7 @@ class TierDetailViewModel @Inject constructor(
             val list = repository.getTierListById(tierListId)
             _state.value = if (list != null) {
                 dropSettledPublishError(list)
+                if (list.publishedId != null) refreshPublishedStanding()
                 TierDetailUiState.Success(list)
             } else {
                 TierDetailUiState.Error
