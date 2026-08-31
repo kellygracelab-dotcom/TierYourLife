@@ -32,12 +32,10 @@ interface CommunityRepository {
     suspend fun open(id: String): Result<PublishedList>
 
     /**
-     * Publishes a snapshot and answers with the id it was stored under. Passing
-     * the previous id replaces that snapshot instead of adding another.
-     */
-    /**
-     * Answers with the id the feed keeps it under and a record of what was
-     * sent, so the board can later tell whether it has moved on.
+     * Publishes a snapshot and answers with the id it was stored under, along
+     * with a record of what was sent, so the board can later tell whether it
+     * has moved on. Passing the previous id replaces that snapshot instead of
+     * adding another.
      */
     suspend fun publish(list: TierList): Result<Published>
 

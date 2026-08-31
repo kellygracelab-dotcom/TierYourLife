@@ -67,6 +67,10 @@ interface AppPreferences {
      * allowance, so they wait for Wi-Fi by default. The boards themselves are
      * text and go whenever.
      */
+    fun picturesOnWifiOnly(): Boolean
+
+    fun setPicturesOnWifiOnly(wifiOnly: Boolean)
+
     /**
      * Whether Your lists is drawn as pictures rather than as rows.
      *
@@ -77,10 +81,6 @@ interface AppPreferences {
     fun boardsAsPictures(): Boolean
 
     fun setBoardsAsPictures(asPictures: Boolean)
-
-    fun picturesOnWifiOnly(): Boolean
-
-    fun setPicturesOnWifiOnly(wifiOnly: Boolean)
 
     /** When a sync run last got through, or null while none ever has. */
     fun lastSyncedAtMs(): Long?
