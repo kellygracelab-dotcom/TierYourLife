@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -91,7 +90,7 @@ fun TierListsScreen(
      * Bumped when the rail's button is pressed. A count rather than a callback
      * because the rail sits above every screen and cannot reach into this one.
      */
-    newBoardRequests: Int = 0,
+    makeBoard: Boolean = false,
     onTierListClick: (Long) -> Unit,
     onCommunityListClick: (String) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
@@ -111,13 +110,13 @@ fun TierListsScreen(
     LaunchedEffect(startOnCommunity) {
         viewModel.selectTab(if (startOnCommunity) HomeTab.Community else HomeTab.Mine)
     }
-    // Counted rather than flagged, and the count is remembered across the
-    // trip into the new board: coming back re-enters this composition, and a
-    // flag would make a second board every time somebody pressed back.
-    var boardsMade by rememberSaveable { mutableIntStateOf(0) }
-    LaunchedEffect(newBoardRequests) {
-        if (newBoardRequests > boardsMade) {
-            boardsMade = newBoardRequests
+    // Remembered rather than acted on every time: coming back from the new
+    // board re-enters this composition, and the arrival still says it wanted
+    // one. Asking again would make a board on every press of back.
+    var boardMade by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        if (makeBoard && !boardMade) {
+            boardMade = true
             viewModel.createTierList(defaultListTitle, onNewListCreated)
         }
     }

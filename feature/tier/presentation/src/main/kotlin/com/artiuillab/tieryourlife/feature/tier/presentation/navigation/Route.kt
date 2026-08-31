@@ -10,7 +10,14 @@ sealed interface Route {
      * works from one of them.
      */
     @Serializable
-    data class TierLists(val community: Boolean = false) : Route
+    /**
+     * [makeBoard] is the rail's new-board button arriving. It rides in the
+     * route rather than in a counter above the graph so that exactly one
+     * screen sees it: the one this navigation opened. A number kept above the
+     * graph is read by the lists screen being left as well as the one
+     * arriving, and both of them answered it.
+     */
+    data class TierLists(val community: Boolean = false, val makeBoard: Boolean = false) : Route
 
     @Serializable
     data class TierDetail(val tierListId: Long) : Route
