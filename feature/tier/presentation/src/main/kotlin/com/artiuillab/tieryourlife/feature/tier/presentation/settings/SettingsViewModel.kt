@@ -120,9 +120,12 @@ class SettingsViewModel @Inject constructor(
             // a moderator with no signal has not stopped being one.
             community.reports()
                 .onFailure { Timber.i(it, "Not showing the report queue") }
+                // Remembered before it is shown, not after. The screen opens
+                // from what was remembered, so a gap the other way round is a
+                // moment where the screen is ahead of its own memory.
                 .onSuccess { reports ->
-                    _pendingReports.value = reports.size
                     preferences.setLastKnownPendingReports(reports.size)
+                    _pendingReports.value = reports.size
                 }
         }
     }
@@ -131,8 +134,8 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             logFailures("Counting trashed entries") {
                 val count = repository.getTrashEntries().size
-                _trashCount.value = count
                 preferences.setLastKnownTrashCount(count)
+                _trashCount.value = count
             }
         }
     }
