@@ -1,10 +1,8 @@
 package com.artiuillab.tieryourlife.feature.tier.data.repository
 
-import com.artiuillab.tieryourlife.feature.tier.data.remote.api.IgdbApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataSparqlApi
-import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.GameSearchResponseDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.MovieDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.MovieSearchResponseDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.WikidataSearchResponseDto
@@ -78,12 +76,7 @@ class CatalogueSearchRepositoryPagingTest {
     private fun repositoryWith(
         tmdb: TmdbApi,
         wikidata: FakeWikidataApi = FakeWikidataApi(),
-    ) = CatalogueSearchRepositoryImpl(tmdb, wikidata, FakeWikidataSparqlApi(), SilentIgdbApi)
-}
-
-/** Nothing to say: these tests are about paging through TMDB. */
-private object SilentIgdbApi : IgdbApi {
-    override suspend fun searchGames(query: String) = GameSearchResponseDto()
+    ) = CatalogueSearchRepositoryImpl(tmdb, wikidata, FakeWikidataSparqlApi())
 }
 
 private class FakeTmdbApi(private val totalPages: Int) : TmdbApi {
