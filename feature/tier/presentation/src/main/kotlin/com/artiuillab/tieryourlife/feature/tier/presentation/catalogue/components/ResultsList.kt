@@ -75,13 +75,7 @@ internal fun ResultsList(
                         .padding(horizontal = 16.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    AsyncImage(
-                        model = item.imageUrl,
-                        contentDescription = item.title,
-                        modifier = Modifier
-                            .size(width = 44.dp, height = 64.dp)
-                            .clip(RoundedCornerShape(6.dp)),
-                    )
+                    Thumbnail(item.imageUrl, item.title)
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -120,3 +114,27 @@ internal fun ResultsList(
         }
     }
 }
+
+/**
+ * A poster, or the space one would have taken.
+ *
+ * Whole subjects have no free picture anywhere -- a game's cover, a book's
+ * jacket, an album's sleeve -- and those results are worth showing anyway. An
+ * empty frame keeps the titles in one column instead of letting every
+ * illustrated row start further right than the ones without.
+ */
+@Composable
+private fun Thumbnail(imageUrl: String?, title: String) {
+    val shape = RoundedCornerShape(6.dp)
+    val modifier = Modifier
+        .size(width = THUMBNAIL_WIDTH, height = THUMBNAIL_HEIGHT)
+        .clip(shape)
+    if (imageUrl.isNullOrBlank()) {
+        Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant))
+    } else {
+        AsyncImage(model = imageUrl, contentDescription = title, modifier = modifier)
+    }
+}
+
+private val THUMBNAIL_WIDTH = 44.dp
+private val THUMBNAIL_HEIGHT = 64.dp
