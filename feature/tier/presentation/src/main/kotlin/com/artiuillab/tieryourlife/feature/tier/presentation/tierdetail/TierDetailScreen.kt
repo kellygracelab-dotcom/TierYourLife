@@ -196,6 +196,7 @@ internal fun TierDetailScreenContent(
     readOnly: Boolean = false,
     subtitle: String? = null,
     onReaderMoreClick: (() -> Unit)? = null,
+    belowTopBar: (@Composable () -> Unit)? = null,
 ) {
     // Beside the board rather than a screen away, once there is room for both.
     // Held back on a short window as well as a narrow one: a phone in
@@ -215,7 +216,7 @@ internal fun TierDetailScreenContent(
                     onSelect = onOpenList,
                 )
             }
-            TierDetailPane(state, actions, addedItemIds, userMessages, readOnly, subtitle, onReaderMoreClick)
+            TierDetailPane(state, actions, addedItemIds, userMessages, readOnly, subtitle, onReaderMoreClick, belowTopBar)
         }
     }
 }
@@ -236,6 +237,7 @@ private fun TierDetailPane(
     readOnly: Boolean,
     subtitle: String?,
     onReaderMoreClick: (() -> Unit)?,
+    belowTopBar: (@Composable () -> Unit)?,
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -269,6 +271,7 @@ private fun TierDetailPane(
                     readOnly = readOnly,
                     subtitle = subtitle,
                     onReaderMoreClick = onReaderMoreClick,
+                    belowTopBar = belowTopBar,
                 )
             }
 
@@ -295,6 +298,7 @@ private fun TierScreenBody(
     readOnly: Boolean = false,
     subtitle: String? = null,
     onReaderMoreClick: (() -> Unit)? = null,
+    belowTopBar: (@Composable () -> Unit)? = null,
 ) {
     val onBack = actions.onBack
     val onAddClick = actions.onAddClick
@@ -484,6 +488,10 @@ private fun TierScreenBody(
                 subtitle = subtitle,
                 onReaderMoreClick = onReaderMoreClick,
             )
+
+            // Under the bar, never over it: the bar carries the status-bar
+            // inset, so anything placed above it sits beneath the clock.
+            belowTopBar?.invoke()
 
             CenteredContent(max = ContentWidth.Board, modifier = Modifier.weight(1f)) {
                 if (list.displayMode == TierListDisplayMode.FLAT_RANKED) {
