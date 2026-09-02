@@ -21,8 +21,11 @@ class CatalogueSearchMergerTest {
         linkedTmdbId = linkedTmdbId,
     )
 
+    // A game's cover, a book's jacket and an album's sleeve are all somebody
+    // else's property, and no free catalogue holds them. Dropping what has no
+    // picture dropped those subjects out of the app altogether.
     @Test
-    fun `drops results that have no image, from either source`() {
+    fun `keeps results that have no image, from either source`() {
         val tmdbResult = Result.success(
             listOf(tmdb(1, "With poster"), tmdb(2, "No poster", imageUrl = null)),
         )
@@ -35,26 +38,35 @@ class CatalogueSearchMergerTest {
 
         val result = CatalogueSearchMerger.merge("x", tmdbResult, wikidataResult)
 
-        assertEquals(listOf("tmdb:1", "wikidata:Q1"), result.getOrThrow().map { it.id })
+        assertEquals(
+            listOf("tmdb:1", "wikidata:Q1", "tmdb:2", "wikidata:Q2"),
+            result.getOrThrow().map { it.id },
+        )
     }
 
     @Test
-    fun `treats a blank image url as no image`() {
-        val tmdbResult = Result.success(listOf(tmdb(1, "Blank", imageUrl = "   ")))
+    fun `a blank image url sorts as no image, not as a picture`() {
+        val tmdbResult = Result.success(
+            listOf(tmdb(1, "Thing", imageUrl = "   "), tmdb(2, "Thing")),
+        )
 
-        val result = CatalogueSearchMerger.merge("blank", tmdbResult, Result.success(emptyList()))
+        val result = CatalogueSearchMerger.merge("thing", tmdbResult, Result.success(emptyList()))
 
-        assertEquals(emptyList<String>(), result.getOrThrow().map { it.id })
+        assertEquals(listOf("tmdb:2", "tmdb:1"), result.getOrThrow().map { it.id })
     }
 
+    // What somebody typed beats what happens to be illustrated: an exact name
+    // with no cover is the thing they came for, and a stranger with a poster
+    // is not.
     @Test
-    fun `is still a success when every result was filtered out`() {
-        val tmdbResult = Result.success(listOf(tmdb(1, "No poster", imageUrl = null)))
+    fun `a better match with no picture still outranks a worse match with one`() {
+        val tmdbResult = Result.success(
+            listOf(tmdb(1, "Something else entirely"), tmdb(2, "Silksong", imageUrl = null)),
+        )
 
-        val result = CatalogueSearchMerger.merge("x", tmdbResult, Result.success(emptyList()))
+        val result = CatalogueSearchMerger.merge("Silksong", tmdbResult, Result.success(emptyList()))
 
-        assertTrue(result.isSuccess)
-        assertEquals(emptyList<String>(), result.getOrThrow())
+        assertEquals(listOf("tmdb:2", "tmdb:1"), result.getOrThrow().map { it.id })
     }
 
     @Test

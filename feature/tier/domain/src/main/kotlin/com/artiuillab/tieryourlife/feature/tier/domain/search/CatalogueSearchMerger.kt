@@ -22,9 +22,8 @@ object CatalogueSearchMerger {
             )
         }
 
-        val tmdbItems = tmdbResult.getOrDefault(emptyList()).filter { it.hasImage() }
+        val tmdbItems = tmdbResult.getOrDefault(emptyList())
         val wikidataCandidates = wikidataResult.getOrDefault(emptyList())
-            .filter { it.item.hasImage() }
 
         val presentTmdbIds = tmdbItems.mapNotNull { it.tmdbNumericId() }.toSet()
 
@@ -39,10 +38,20 @@ object CatalogueSearchMerger {
      * Which of these are worth showing, best match first. A later page is
      * ranked on its own and appended, so the rows already under the reader's
      * finger keep their order and their ticks.
+     *
+     * A picture is the second question, not the first. Whole subjects have no
+     * free picture anywhere -- a game's cover, a book's jacket and an album's
+     * sleeve are all somebody's property, and Commons will not hold them --
+     * so a catalogue filtered down to what is illustrated is a catalogue with
+     * games, books and records missing from it entirely. Sorting by the match
+     * first keeps what somebody actually typed at the top, and letting the
+     * picture break the tie keeps the shelf looking like a shelf.
      */
     fun rank(query: String, items: List<CatalogueItem>): List<CatalogueItem> {
         val trimmedQuery = query.trim()
-        return items.filter { it.hasImage() }.sortedBy { score(it.title, trimmedQuery) }
+        return items.sortedWith(
+            compareBy({ score(it.title, trimmedQuery) }, { if (it.hasImage()) 0 else 1 }),
+        )
     }
 
     private fun CatalogueItem.hasImage(): Boolean = !imageUrl.isNullOrBlank()
