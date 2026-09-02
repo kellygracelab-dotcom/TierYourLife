@@ -90,15 +90,15 @@ private class FakeTmdbApi(private val totalPages: Int) : TmdbApi {
 
     val requestedPages = mutableListOf<Int>()
 
-    override suspend fun searchMovies(query: String, language: String, page: Int): MovieSearchResponseDto {
+    override suspend fun searchMulti(query: String, language: String, page: Int): MovieSearchResponseDto {
         requestedPages += page
         return MovieSearchResponseDto(
             page = page,
             results = List(2) { index ->
                 MovieDto(
                     id = (page * 100 + index).toLong(),
+                    mediaType = "movie",
                     title = "Film $page-$index",
-                    overview = "",
                     posterPath = "/poster$page$index.jpg",
                 )
             },
@@ -108,7 +108,7 @@ private class FakeTmdbApi(private val totalPages: Int) : TmdbApi {
 }
 
 private class FailingTmdbApi : TmdbApi {
-    override suspend fun searchMovies(query: String, language: String, page: Int): MovieSearchResponseDto =
+    override suspend fun searchMulti(query: String, language: String, page: Int): MovieSearchResponseDto =
         throw java.io.IOException("offline")
 }
 
