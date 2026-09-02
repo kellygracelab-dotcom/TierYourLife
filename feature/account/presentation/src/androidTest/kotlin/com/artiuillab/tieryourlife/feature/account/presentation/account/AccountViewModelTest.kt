@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
@@ -33,6 +34,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assume.assumeFalse
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -127,8 +130,12 @@ class AccountViewModelTest {
         assertEquals(1, credential.requests)
     }
 
+    // Both halves of the switch, so whichever way it is thrown one of them is
+    // running. The waiting one is skipped rather than deleted: a test that
+    // asserts on a balance nobody reads waits for it forever.
     @Test
     fun whileSignedIn_theBalanceIsRead() = runBlocking {
+        assumeTrue(Features.GENERATION_OFFERED)
         val repository = FakeAccountRepository(
             initial = Account.SignedIn(email = "someone@example.com", photoUrl = null),
         )
@@ -137,6 +144,21 @@ class AccountViewModelTest {
         val state = viewModel.state.first { it.credits != null }
 
         assertEquals(12, state.credits)
+    }
+
+    @Test
+    fun whileGenerationIsHeldBack_theBalanceIsNotAskedFor() = runBlocking {
+        assumeFalse(Features.GENERATION_OFFERED)
+        val repository = FakeAccountRepository(
+            initial = Account.SignedIn(email = "someone@example.com", photoUrl = null),
+        )
+        val credits = FakeGenerationCredits(balance = 12)
+        val viewModel = viewModel(repository, credits = credits)
+
+        val state = viewModel.state.first { it.account is Account.SignedIn }
+
+        assertEquals(0, credits.reads)
+        assertEquals(null, state.credits)
     }
 
     // A guest has a balance too, but this screen is not where it belongs: the
