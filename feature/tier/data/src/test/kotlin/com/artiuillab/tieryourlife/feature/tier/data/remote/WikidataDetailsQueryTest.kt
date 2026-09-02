@@ -14,14 +14,17 @@ class WikidataDetailsQueryTest {
         assertTrue(query.contains("wd:Q11788"))
         assertTrue(query.contains("wd:Q243359"))
         assertTrue(query.contains("wdt:P18"))
+        assertTrue(query.contains("wdt:P154"))
         assertTrue(query.contains("wdt:P4947"))
     }
 
+    // Optional every one: a subject with no picture and no link is still a
+    // row, and a required clause would drop it from the answer entirely.
     @Test
-    fun query_asksForBothPropertiesOptionally() {
+    fun query_asksForEveryPropertyOptionally() {
         val query = wikidataDetailsQuery(listOf("Q11788"))
 
-        assertEquals(2, Regex("OPTIONAL").findAll(query).count())
+        assertEquals(3, Regex("OPTIONAL").findAll(query).count())
     }
 
     @Test

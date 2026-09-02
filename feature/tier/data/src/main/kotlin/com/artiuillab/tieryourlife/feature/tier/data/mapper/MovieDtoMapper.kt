@@ -28,8 +28,10 @@ internal fun MovieDto.toDomain(): CatalogueItem? {
         id = "$TMDB_ID_PREFIX$id",
         title = name,
         subtitle = subtitle(),
-        // A person's picture is of them; everything else has a poster.
-        imageUrl = (if (mediaType == MEDIA_PERSON) profilePath else posterPath)
+        // A person's picture is of them. Everything else has a poster, and
+        // where it has none -- an old film, something just announced -- a
+        // still from it is a better card than an empty frame.
+        imageUrl = (if (mediaType == MEDIA_PERSON) profilePath else posterPath ?: backdropPath)
             ?.let { "$TMDB_IMAGE_BASE_URL$it" },
     )
 }
