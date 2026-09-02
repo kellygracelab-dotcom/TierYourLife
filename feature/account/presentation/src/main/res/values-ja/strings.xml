@@ -57,4 +57,10 @@
     <string name="merge_name_suffix">（この端末から）</string>
     <string name="account_sign_out_title">ログアウトしますか？</string>
     <string name="account_sign_out_helper">ボードはこの端末にもアカウントにも残ります。ログアウト後の変更は同期されません。 クレジットと購入はここで待っています。</string>
+    <string name="account_action_delete">アカウントを削除</string>
+    <string name="account_delete_title">アカウントを削除しますか？</string>
+    <string name="account_delete_body">アカウントが削除され、ボードの控え、公開したもの、それに使われた画像もなくなります。元に戻すことはできません。</string>
+    <string name="account_delete_keeps_local">この端末のボードはそのまま残ります。</string>
+    <string name="account_delete_confirm">完全に削除</string>
+    <string name="account_error_not_deleted">アカウントを削除できませんでした。もう一度お試しください。</string>
 </resources>

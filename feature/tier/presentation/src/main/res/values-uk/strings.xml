@@ -325,6 +325,7 @@
     <string name="settings_account_offer_action">Увійти</string>
     <string name="settings_account_signed_in">Вхід виконано</string>
     <string name="settings_version">Версія %1$s</string>
+    <string name="settings_privacy">Політика конфіденційності</string>
     <string name="home_start_with">Почніть з</string>
     <string name="home_start_hint">Дошка створиться одразу. Торкніться назви, щоб перейменувати.</string>
     <string name="home_new_list">Новий список</string>

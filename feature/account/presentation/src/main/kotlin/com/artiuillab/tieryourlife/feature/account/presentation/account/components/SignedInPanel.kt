@@ -15,6 +15,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,11 +48,14 @@ internal fun SignedInPanel(
     onOpenPublished: () -> Unit,
     onDone: () -> Unit,
     onSignOut: () -> Unit,
+    onDeleteAccount: () -> Unit = {},
+    deleting: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val name = displayName?.takeIf { it.isNotBlank() } ?: stringResource(R.string.account_signed_in)
 
     var confirming by rememberSaveable { mutableStateOf(false) }
+    var deleteConfirming by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -160,11 +164,37 @@ internal fun SignedInPanel(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
+
+        // Quieter than signing out and further from it, because it is the one
+        // thing here that cannot be undone. Plain text rather than a second
+        // outlined button: two bordered buttons in a column read as a pair of
+        // equals, and these two are not.
+        Spacer(Modifier.height(24.dp))
+        TextButton(
+            onClick = { deleteConfirming = true },
+            enabled = !deleting,
+            modifier = Modifier.testTag(AccountTestTags.DELETE_ACCOUNT),
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = MaterialTheme.colorScheme.error,
+            ),
+        ) {
+            Text(stringResource(R.string.account_action_delete))
+        }
     }
 
     // Only exists because sync exists. Before boards were kept, signing out
     // changed nothing about anybody's data and a confirmation would have been
     // a speed bump for its own sake.
+    if (deleteConfirming) {
+        DeleteAccountDialog(
+            onConfirm = {
+                deleteConfirming = false
+                onDeleteAccount()
+            },
+            onDismiss = { deleteConfirming = false },
+        )
+    }
+
     if (confirming) {
         SignOutDialog(
             onConfirm = {

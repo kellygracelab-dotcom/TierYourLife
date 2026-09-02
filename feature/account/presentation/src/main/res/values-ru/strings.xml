@@ -66,4 +66,10 @@
     <string name="merge_name_suffix">(с этого телефона)</string>
     <string name="account_sign_out_title">Выйти?</string>
     <string name="account_sign_out_helper">Доски останутся и на телефоне, и в аккаунте. Правки после выхода туда не попадут. Кредиты и покупки дождутся вас здесь.</string>
+    <string name="account_action_delete">Удалить аккаунт</string>
+    <string name="account_delete_title">Удалить аккаунт?</string>
+    <string name="account_delete_body">Аккаунт исчезнет, а вместе с ним копия ваших досок, всё опубликованное и картинки к нему. Отменить это нельзя.</string>
+    <string name="account_delete_keeps_local">Доски на этом телефоне остаются на месте.</string>
+    <string name="account_delete_confirm">Удалить навсегда</string>
+    <string name="account_error_not_deleted">Аккаунт не удалён. Попробуйте ещё раз.</string>
 </resources>

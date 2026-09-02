@@ -7,6 +7,7 @@ import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
+import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
@@ -34,6 +35,7 @@ class AccountViewModel @Inject constructor(
     private val community: CommunityRepository,
     private val preferences: AppPreferences,
     private val merge: BoardMerge,
+    private val erasure: AccountErasure,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -91,6 +93,31 @@ class AccountViewModel @Inject constructor(
         viewModelScope.launch {
             repository.signOut()
             _state.update { it.copy(notice = null) }
+        }
+    }
+
+    /**
+     * Ends the account, then signs out of what is no longer there.
+     *
+     * In that order and not the other way round: signing out first would take
+     * away the identity the request is made with, and a failure would leave
+     * somebody unable to sign back in and unable to try again. If the server
+     * refuses, nothing has happened and the notice says so.
+     */
+    fun deleteAccount() {
+        if (_state.value.deleting) return
+        _state.update { it.copy(deleting = true, notice = null) }
+        viewModelScope.launch {
+            erasure.erase().fold(
+                onSuccess = {
+                    repository.signOut()
+                    _state.update { it.copy(deleting = false) }
+                },
+                onFailure = { error ->
+                    Timber.w(error, "Deleting the account failed")
+                    _state.update { it.copy(deleting = false, notice = AccountNotice.NotDeleted) }
+                },
+            )
         }
     }
 

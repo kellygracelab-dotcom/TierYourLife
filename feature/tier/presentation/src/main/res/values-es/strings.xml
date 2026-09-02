@@ -300,6 +300,7 @@
     <string name="settings_account_offer_action">Iniciar sesión</string>
     <string name="settings_account_signed_in">Sesión iniciada</string>
     <string name="settings_version">Versión %1$s</string>
+    <string name="settings_privacy">Política de privacidad</string>
     <string name="home_start_with">Empieza con</string>
     <string name="home_start_hint">Crea el tablero al instante. Toca su título para cambiarlo.</string>
     <string name="home_new_list">Nueva lista</string>

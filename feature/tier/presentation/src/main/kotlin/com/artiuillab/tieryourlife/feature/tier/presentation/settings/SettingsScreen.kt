@@ -6,13 +6,16 @@ import android.net.Uri
 import android.text.format.DateUtils
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -25,6 +28,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -44,6 +49,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
@@ -284,6 +290,11 @@ internal fun SettingsScreenContent(
                 Column(
                     Modifier
                         .verticalScroll(rememberScrollState())
+                        // The bar at the top already keeps clear of the status
+                        // bar; the bottom of a scrolling column has to keep
+                        // clear of the navigation bar the same way, or the last
+                        // row ends underneath it.
+                        .navigationBarsPadding()
                         .padding(bottom = 32.dp),
                 ) {
                     SettingsGroup(
@@ -364,15 +375,51 @@ private fun SettingsTopBar(onBack: () -> Unit) {
 
 @Composable
 private fun VersionLine(versionName: String) {
-    Text(
-        text = String.format(stringResource(R.string.settings_version), versionName),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 32.dp),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.outline,
-        textAlign = TextAlign.Center,
-    )
+    val context = LocalContext.current
+    Column(Modifier.fillMaxWidth().padding(top = 32.dp)) {
+        Text(
+            text = String.format(stringResource(R.string.settings_version), versionName),
+            modifier = Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+            textAlign = TextAlign.Center,
+        )
+        // Where the store listing points too, so the two can never disagree.
+        TextButton(
+            onClick = { openPrivacyPolicy(context) },
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .testTag(SettingsTestTags.PRIVACY),
+        ) {
+            Text(
+                text = stringResource(R.string.settings_privacy),
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+        // Their mark above their wording, both required by the licence the
+        // film search runs on. Not tinted and not themed: the terms forbid
+        // recolouring it, so it stays their blue in either theme.
+        Spacer(Modifier.height(12.dp))
+        Image(
+            painter = painterResource(R.drawable.tmdb_logo),
+            contentDescription = "The Movie Database",
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .height(16.dp),
+        )
+        // Required by the people whose catalogue the search reads, in their
+        // own words. Left in English on purpose: a translated legal notice is
+        // a different legal notice.
+        Text(
+            text = stringResource(R.string.tmdb_attribution),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, start = 32.dp, end = 32.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+            textAlign = TextAlign.Center,
+        )
+    }
 }
 
 private fun versionName(context: Context): String = runCatching {
@@ -502,3 +549,12 @@ private fun SettingsScreenDarkPreview() = TierYourLifeTheme(true) {
         onExportClick = {},
     )
 }
+
+/** The same page the store listing names, so nobody has to keep two in step. */
+private fun openPrivacyPolicy(context: Context) {
+    runCatching {
+        context.startActivity(Intent(Intent.ACTION_VIEW, PRIVACY_POLICY.toUri()))
+    }.onFailure { Timber.w(it, "No browser to open the privacy policy") }
+}
+
+private const val PRIVACY_POLICY = "https://tieryourlife.web.app/privacy.html"

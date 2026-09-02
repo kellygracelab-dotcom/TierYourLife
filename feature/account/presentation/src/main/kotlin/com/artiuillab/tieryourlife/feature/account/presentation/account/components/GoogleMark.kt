@@ -1,41 +1,29 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
-private val GOOGLE_BLUE = Color(0xFF4285F4)
-
 /**
- * A stand-in, not Google's mark.
+ * Google's mark, from Google.
  *
- * The four-colour G is their trademark and their branding guidelines require
- * their own asset rather than a redrawing of it. Drop the official file in here
- * before release — the button around it already carries the size and spacing
- * those guidelines ask for.
+ * Their four-colour G is a trademark and their guidelines ask for their own
+ * asset rather than a redrawing of it -- a close copy is still a modified
+ * trademark, which is the thing being forbidden. This is the file they ship in
+ * `play-services-base`, which arrives with the credential library the sign-in
+ * already uses, so nothing is copied, resized or recoloured on the way here.
+ *
+ * Eighteen density-independent pixels because that is the size the asset is
+ * drawn for, and the size their guidelines pair with this button height.
  */
 @Composable
 internal fun GoogleMark(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .size(20.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surface),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = "G",
-            style = MaterialTheme.typography.labelLarge,
-            color = GOOGLE_BLUE,
-        )
-    }
+    Image(
+        painter = painterResource(com.google.android.gms.base.R.drawable.googleg_standard_color_18),
+        contentDescription = null,
+        modifier = modifier.size(18.dp),
+    )
 }

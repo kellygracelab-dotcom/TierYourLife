@@ -66,4 +66,10 @@
     <string name="merge_name_suffix">(z tego telefonu)</string>
     <string name="account_sign_out_title">Wylogować?</string>
     <string name="account_sign_out_helper">Tablice zostają i na tym telefonie, i na koncie. Zmiany po wylogowaniu nie trafią na konto. Kredyty i zakupy czekają tu na ciebie.</string>
+    <string name="account_action_delete">Usuń konto</string>
+    <string name="account_delete_title">Usunąć konto?</string>
+    <string name="account_delete_body">Konto zniknie, a wraz z nim kopia Twoich list, wszystko, co opublikowałeś, i powiązane obrazy. Tego nie można cofnąć.</string>
+    <string name="account_delete_keeps_local">Listy na tym telefonie zostają na miejscu.</string>
+    <string name="account_delete_confirm">Usuń na zawsze</string>
+    <string name="account_error_not_deleted">Konto nie zostało usunięte. Spróbuj ponownie.</string>
 </resources>

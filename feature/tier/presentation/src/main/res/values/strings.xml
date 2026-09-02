@@ -275,6 +275,8 @@
     <string name="settings_account_offer_action">Sign in</string>
     <string name="settings_account_signed_in">Signed in</string>
     <string name="settings_version">Version %1$s</string>
+    <string name="settings_privacy">Privacy policy</string>
+    <string name="tmdb_attribution" translatable="false">This product uses the TMDB API but is not endorsed or certified by TMDB.</string>
     <string name="home_start_with">Start with</string>
     <string name="home_start_hint">Creates a board straight away. Tap its title to rename.</string>
     <string name="home_new_list">New list</string>

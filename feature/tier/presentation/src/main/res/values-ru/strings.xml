@@ -325,6 +325,7 @@
     <string name="settings_account_offer_action">Войти</string>
     <string name="settings_account_signed_in">Вход выполнен</string>
     <string name="settings_version">Версия %1$s</string>
+    <string name="settings_privacy">Политика конфиденциальности</string>
     <string name="home_start_with">Начните с</string>
     <string name="home_start_hint">Доска создастся сразу. Коснитесь названия, чтобы переименовать.</string>
     <string name="home_new_list">Новый список</string>

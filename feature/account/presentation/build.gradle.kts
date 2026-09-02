@@ -28,6 +28,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
+    // Google's own sign-in mark; their guidelines forbid a redrawing.
+    implementation(libs.play.services.base)
     implementation(libs.googleid)
     implementation(libs.coil.compose)
 }

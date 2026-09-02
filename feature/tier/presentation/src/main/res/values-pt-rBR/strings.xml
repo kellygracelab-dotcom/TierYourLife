@@ -300,6 +300,7 @@
     <string name="settings_account_offer_action">Entrar</string>
     <string name="settings_account_signed_in">Conectado</string>
     <string name="settings_version">Versão %1$s</string>
+    <string name="settings_privacy">Política de privacidade</string>
     <string name="home_start_with">Comece com</string>
     <string name="home_start_hint">Cria o quadro na hora. Toque no título para renomear.</string>
     <string name="home_new_list">Nova lista</string>

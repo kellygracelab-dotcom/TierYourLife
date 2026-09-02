@@ -62,4 +62,10 @@
     <string name="merge_name_suffix">(deste telefone)</string>
     <string name="account_sign_out_title">Sair?</string>
     <string name="account_sign_out_helper">Seus quadros ficam neste telefone e na sua conta. Mudanças feitas depois de sair não serão sincronizadas. Créditos e compras esperam por você aqui.</string>
+    <string name="account_action_delete">Excluir a conta</string>
+    <string name="account_delete_title">Excluir esta conta?</string>
+    <string name="account_delete_body">A conta some, e com ela a cópia dos seus quadros, tudo o que você publicou e as imagens ligadas a isso. Não dá para desfazer.</string>
+    <string name="account_delete_keeps_local">Os quadros neste telefone continuam onde estão.</string>
+    <string name="account_delete_confirm">Excluir para sempre</string>
+    <string name="account_error_not_deleted">A conta não foi excluída. Tente de novo.</string>
 </resources>
