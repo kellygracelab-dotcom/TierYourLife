@@ -128,9 +128,14 @@ jobs:
             # gives it away as the report going astray rather than a test
             # failing. Retried only on that one symptom: anything else is a
             # real failure and is reported the first time, undoubled.
-            set -o pipefail
-            ./gradlew connectedDebugAndroidTest 2>&1 | tee instrumentation.log && exit 0
-            grep -q "Could not load test results" instrumentation.log || exit 1
+            # Written to a file and printed after, rather than piped: the
+            # runner's shell has no `pipefail`, so a pipe would hand back the
+            # exit code of `tee` and every run would look successful.
+            ./gradlew connectedDebugAndroidTest > instrumentation.log 2>&1
+            status=$?
+            cat instrumentation.log
+            if [ $status -eq 0 ]; then exit 0; fi
+            grep -q "Could not load test results" instrumentation.log || exit $status
             echo "Retrying: a results file went missing, which is the emulator losing a report."
             ./gradlew connectedDebugAndroidTest
 
