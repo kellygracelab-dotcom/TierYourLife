@@ -16,6 +16,7 @@ data class WikidataSparqlResultsDto(
 data class WikidataSparqlBindingDto(
     val item: WikidataSparqlValueDto? = null,
     val image: WikidataSparqlValueDto? = null,
+    val logo: WikidataSparqlValueDto? = null,
     val tmdb: WikidataSparqlValueDto? = null,
 )
 

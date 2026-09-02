@@ -55,6 +55,42 @@ class MovieDtoMapperTest {
         assertNull(item.imageUrl)
     }
 
+    // An old film, or one just announced, often has a still and no poster.
+    // A still is a better card than an empty frame.
+    @Test
+    fun `a film with no poster falls back to a still from it`() {
+        val item = firstOf(
+            """
+            {
+              "id": 7,
+              "media_type": "movie",
+              "title": "Unpostered",
+              "poster_path": null,
+              "backdrop_path": "/still.jpg"
+            }
+            """.trimIndent(),
+        )!!
+
+        assertEquals("https://image.tmdb.org/t/p/w500/still.jpg", item.imageUrl)
+    }
+
+    @Test
+    fun `a poster is preferred to a still`() {
+        val item = firstOf(
+            """
+            {
+              "id": 8,
+              "media_type": "movie",
+              "title": "Postered",
+              "poster_path": "/poster.jpg",
+              "backdrop_path": "/still.jpg"
+            }
+            """.trimIndent(),
+        )!!
+
+        assertEquals("https://image.tmdb.org/t/p/w500/poster.jpg", item.imageUrl)
+    }
+
     // A series is named `name` and dated `first_air_date`, and nothing else
     // about it differs -- which is the whole reason the search can be one
     // request rather than two.

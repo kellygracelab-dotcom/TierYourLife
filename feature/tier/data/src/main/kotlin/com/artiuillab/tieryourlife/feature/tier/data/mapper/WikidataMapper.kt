@@ -21,9 +21,13 @@ internal fun WikidataSparqlResponseDto.toDetailsByQid(): Map<String, WikidataIte
         val qid = binding.item?.value?.let { qidFromEntityUri(it) } ?: return@forEach
         val existing = detailsByQid[qid]
 
+        // The photograph first and the logo only after it: a company may have
+        // both, and a picture of the building is the better card.
+        val picture = binding.image?.value ?: binding.logo?.value
+
         detailsByQid[qid] = WikidataItemDetails(
             imageUrl = existing?.imageUrl
-                ?: binding.image?.value?.takeIf { it.isNotEmpty() }?.let { commonsThumbnailUrl(it) },
+                ?: picture?.takeIf { it.isNotEmpty() }?.let { commonsThumbnailUrl(it) },
             linkedTmdbId = existing?.linkedTmdbId ?: binding.tmdb?.value?.toLongOrNull(),
         )
     }

@@ -22,6 +22,9 @@ data class MovieDto(
     val name: String? = null,
     @SerialName("poster_path")
     val posterPath: String? = null,
+    /** A still, used only when there is no poster. */
+    @SerialName("backdrop_path")
+    val backdropPath: String? = null,
     /** People, whose picture is of them rather than of a poster. */
     @SerialName("profile_path")
     val profilePath: String? = null,

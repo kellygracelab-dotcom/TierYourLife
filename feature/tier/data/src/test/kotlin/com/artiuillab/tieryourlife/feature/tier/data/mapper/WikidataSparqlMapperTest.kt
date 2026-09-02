@@ -29,6 +29,45 @@ class WikidataSparqlMapperTest {
         assertNull(details.getValue("Q11788").linkedTmdbId)
     }
 
+    // A club, a company, a competition: no photograph of the thing itself
+    // exists, and the badge is the only picture there is.
+    @Test
+    fun binding_withOnlyALogo_usesTheLogo() {
+        val details = parse(
+            """
+            {"results":{"bindings":[
+              {"item":{"value":"http://www.wikidata.org/entity/Q476"},
+               "logo":{"value":"http://commons.wikimedia.org/wiki/Special:FilePath/Badge.svg"}}
+            ]}}
+            """.trimIndent(),
+        ).toDetailsByQid()
+
+        assertEquals(
+            "https://commons.wikimedia.org/wiki/Special:FilePath/Badge.svg?width=500",
+            details.getValue("Q476").imageUrl,
+        )
+    }
+
+    // Something can have both. A photograph of the building says more than
+    // the wordmark above its door.
+    @Test
+    fun binding_withBoth_prefersThePhotograph() {
+        val details = parse(
+            """
+            {"results":{"bindings":[
+              {"item":{"value":"http://www.wikidata.org/entity/Q95"},
+               "image":{"value":"http://commons.wikimedia.org/wiki/Special:FilePath/Office.jpg"},
+               "logo":{"value":"http://commons.wikimedia.org/wiki/Special:FilePath/Wordmark.svg"}}
+            ]}}
+            """.trimIndent(),
+        ).toDetailsByQid()
+
+        assertEquals(
+            "https://commons.wikimedia.org/wiki/Special:FilePath/Office.jpg?width=500",
+            details.getValue("Q95").imageUrl,
+        )
+    }
+
     @Test
     fun binding_withNoImage_leavesTheUrlNull() {
         val details = parse(
