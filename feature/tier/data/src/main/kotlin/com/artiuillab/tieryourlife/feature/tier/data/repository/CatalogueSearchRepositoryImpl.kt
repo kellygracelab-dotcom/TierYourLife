@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.repository
 
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDetailsByQid
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
+import com.artiuillab.tieryourlife.feature.tier.data.remote.api.IgdbApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataSparqlApi
@@ -34,6 +35,7 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val wikidataApi: WikidataApi,
     private val wikidataSparqlApi: WikidataSparqlApi,
+    private val igdbApi: IgdbApi,
 ) : CatalogueSearchRepository {
 
     override suspend fun search(
@@ -63,6 +65,7 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
         return coroutineScope {
             val tmdbDeferred = async { fetchTmdb(normalizedQuery, resolvedLanguage, page) }
             val wikidataDeferred = async { fetchWikidata(normalizedQuery, resolvedLanguage) }
+            val gamesDeferred = async { fetchGames(normalizedQuery) }
 
             val tmdb = tmdbDeferred.await()
 
@@ -70,6 +73,7 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
                 query = normalizedQuery,
                 tmdbResult = tmdb.map { it.items },
                 wikidataResult = wikidataDeferred.await(),
+                gamesResult = gamesDeferred.await(),
             ).map { items ->
                 CatalogueSearchPage(items = items, hasMore = tmdb.getOrNull()?.hasMore == true)
             }
@@ -106,6 +110,25 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
             }
         }
         return timedOut ?: Result.failure(TimeoutException("Wikidata search timed out"))
+    }
+
+    /**
+     * Games, which no other catalogue here can show: a cover belongs to
+     * whoever published it, so the free encyclopaedias have none. Given its
+     * own timeout like the others, so a slow answer costs the search nothing
+     * more than the games.
+     */
+    private suspend fun fetchGames(query: String): Result<List<CatalogueItem>> {
+        val timedOut = withTimeoutOrNull(SEARCH_TIMEOUT_MILLIS) {
+            try {
+                Result.success(igdbApi.searchGames(query).results.map { it.toDomain() })
+            } catch (exception: IOException) {
+                Result.failure(exception)
+            } catch (exception: HttpException) {
+                Result.failure(exception)
+            }
+        }
+        return timedOut ?: Result.failure(TimeoutException("Games search timed out"))
     }
 
     private suspend fun fetchWikidataCandidates(query: String, language: String): List<WikidataCandidate> {
