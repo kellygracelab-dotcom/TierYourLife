@@ -119,24 +119,94 @@ jobs:
           disk-size: 4096M
           # The package verifier occasionally holds the install long enough for
           # ddmlib to give up; nothing here needs verifying.
+          script: bash .github/scripts/instrumentation.sh
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-reports
+          path: |
+            **/build/reports/tests/**
+            **/build/reports/lint-results-*.html
+          retention-days: 7
+
+  instrumentation:
+    name: Instrumentation tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # 24 is minSdk and 34 is close to what the app actually targets. The two
+        # differ in ways this app touches — scoped storage, per-app language,
+        # ImageDecoder — so a pass on one says little about the other.
+        api-level: [24, 34]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # The emulator runs unusably slowly without hardware acceleration, and the
+      # GitHub runner ships KVM present but not readable by the build user.
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Booting a cold emulator costs more than running the tests on it. The
+      # snapshot is built once per image and restored on every run after.
+      - name: Cache the emulator snapshot
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}-x86_64-4096M
+
+      - name: Build the snapshot when there is nothing to restore
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.api-level >= 30 && 'google_apis' || 'default' }}
+          arch: x86_64
+          force-avd-creation: false
+          disable-animations: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disk-size: 4096M
+          script: echo "Snapshot written."
+
+      - name: Run instrumentation tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.api-level >= 30 && 'google_apis' || 'default' }}
+          arch: x86_64
+          force-avd-creation: false
+          disable-animations: true
+          # -no-snapshot-save so a run cannot leave its own leftovers in the
+          # cached image and change what the next one starts from.
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          # The default 800M image fills up while installing five test APKs, and a
+          # full disk surfaces as an opaque "Failed to install-write all apks".
+          disk-size: 4096M
+          # The package verifier occasionally holds the install long enough for
+          # ddmlib to give up; nothing here needs verifying.
           script: |
             adb shell settings put global verifier_verify_adb_installs 0
-            # Every so often the emulator finishes a module's tests and the
-            # results file never appears, so Gradle fails a run in which every
-            # test passed -- "294/294 completed, 0 failed" and then a missing
-            # XML. It lands on a different module each time, which is what
-            # gives it away as the report going astray rather than a test
-            # failing. Retried only on that one symptom: anything else is a
-            # real failure and is reported the first time, undoubled.
-            # Written to a file and printed after, rather than piped: the
-            # runner's shell has no `pipefail`, so a pipe would hand back the
-            # exit code of `tee` and every run would look successful.
-            ./gradlew connectedDebugAndroidTest > instrumentation.log 2>&1
-            status=$?
-            cat instrumentation.log
-            if [ $status -eq 0 ]; then exit 0; fi
-            grep -q "Could not load test results" instrumentation.log || exit $status
-            echo "Retrying: a results file went missing, which is the emulator losing a report."
             ./gradlew connectedDebugAndroidTest
 
       - name: Upload reports
