@@ -367,6 +367,7 @@ internal fun TierListsScreenContent(
                         mode is HomeMode.Searching -> SearchResults(
                             lists = lists,
                             query = mode.query,
+                            asPictures = asPictures,
                             onTierListClick = onTierListClick,
                         )
 
@@ -636,7 +637,12 @@ private fun BoardTiles(
 }
 
 @Composable
-private fun SearchResults(lists: List<TierList>, query: String, onTierListClick: (Long) -> Unit) {
+private fun SearchResults(
+    lists: List<TierList>,
+    query: String,
+    asPictures: Boolean,
+    onTierListClick: (Long) -> Unit,
+) {
     if (lists.isEmpty()) {
         HomeEmptyStateLayout(
             icon = { SearchOffIcon(28.dp, MaterialTheme.colorScheme.outline) },
@@ -661,6 +667,27 @@ private fun SearchResults(lists: List<TierList>, query: String, onTierListClick:
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        // The same shape the boards had a moment ago. Searching narrows which
+        // boards are on screen; it does not change what a board looks like,
+        // and having them turn from pictures into rows made the results read
+        // as somebody else's list rather than a subset of your own.
+        if (asPictures) {
+            BoardTiles(
+                lists = lists,
+                here = null,
+                conflict = null,
+                isSelecting = false,
+                selectedIds = emptySet(),
+                onTierListClick = onTierListClick,
+                onLongPressCard = {},
+                onToggleSelected = {},
+                onSignInClick = {},
+                onDismissSignInOffer = {},
+                onDismissConflictNotice = {},
+            )
+            return
+        }
+
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp),

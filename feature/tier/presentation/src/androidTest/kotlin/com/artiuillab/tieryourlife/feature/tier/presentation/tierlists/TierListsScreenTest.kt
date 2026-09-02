@@ -298,6 +298,40 @@ class TierListsScreenTest {
         composeRule.onNodeWithTag(TierListsTestTags.suggestion(0)).assertDoesNotExist()
     }
 
+    // Searching narrows which boards are on screen. It does not change what a
+    // board looks like -- and having them turn from pictures into rows made
+    // the results read as somebody else's list rather than a subset of yours.
+    @Test
+    fun searching_keepsTheBoardsAsPicturesWhenThatIsHowTheyWereShown() {
+        setScreen(
+            TierListsUiState.Success(
+                lists = listOf(tierList(1, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 0))),
+                totalListCount = 1,
+                rankedCount = 1,
+                mode = HomeMode.Searching("sci"),
+                asPictures = true,
+            ),
+        )
+
+        composeRule.onNodeWithTag(TierListsTestTags.tile(1)).assertIsDisplayed()
+    }
+
+    @Test
+    fun searching_keepsTheBoardsAsRowsWhenThatIsHowTheyWereShown() {
+        setScreen(
+            TierListsUiState.Success(
+                lists = listOf(tierList(1, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 0))),
+                totalListCount = 1,
+                rankedCount = 1,
+                mode = HomeMode.Searching("sci"),
+                asPictures = false,
+            ),
+        )
+
+        composeRule.onNodeWithTag(TierListsTestTags.tile(1)).assertDoesNotExist()
+        composeRule.onNodeWithText("Sci-fi films").assertIsDisplayed()
+    }
+
     private fun setScreen(
         state: TierListsUiState,
         onTierListClick: (Long) -> Unit = {},
