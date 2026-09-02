@@ -72,4 +72,10 @@
     <string name="merge_name_suffix">(من هذا الهاتف)</string>
     <string name="account_sign_out_title">تسجيل الخروج؟</string>
     <string name="account_sign_out_helper">تبقى لوحاتك على هذا الهاتف وفي حسابك. التغييرات بعد تسجيل الخروج لن تُزامن. الأرصدة والمشتريات تنتظرك هنا.</string>
+    <string name="account_action_delete">حذف الحساب</string>
+    <string name="account_delete_title">حذف هذا الحساب؟</string>
+    <string name="account_delete_body">سيُحذف الحساب، ومعه نسخة لوحاتك وكل ما نشرته والصور المرتبطة به. لا يمكن التراجع عن ذلك.</string>
+    <string name="account_delete_keeps_local">تبقى اللوحات الموجودة على هذا الهاتف كما هي.</string>
+    <string name="account_delete_confirm">حذف نهائي</string>
+    <string name="account_error_not_deleted">لم يُحذف الحساب. حاول مرة أخرى.</string>
 </resources>

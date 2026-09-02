@@ -250,6 +250,7 @@
     <string name="settings_account_offer_action">ログイン</string>
     <string name="settings_account_signed_in">ログイン済み</string>
     <string name="settings_version">バージョン %1$s</string>
+    <string name="settings_privacy">プライバシーポリシー</string>
     <string name="home_start_with">まずは</string>
     <string name="home_start_hint">すぐにボードを作ります。名前はタイトルをタップして変更できます。</string>
     <string name="home_new_list">新しいリスト</string>

@@ -375,6 +375,7 @@
     <string name="settings_account_offer_action">تسجيل الدخول</string>
     <string name="settings_account_signed_in">تم تسجيل الدخول</string>
     <string name="settings_version">الإصدار %1$s</string>
+    <string name="settings_privacy">سياسة الخصوصية</string>
     <string name="home_start_with">ابدأ بـ</string>
     <string name="home_start_hint">تُنشئ اللوحة فورًا. اضغط على العنوان لتغيير الاسم.</string>
     <string name="home_new_list">قائمة جديدة</string>

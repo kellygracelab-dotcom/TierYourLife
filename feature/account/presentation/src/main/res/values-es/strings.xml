@@ -62,4 +62,10 @@
     <string name="merge_name_suffix">(de este teléfono)</string>
     <string name="account_sign_out_title">¿Cerrar sesión?</string>
     <string name="account_sign_out_helper">Tus tableros siguen en este teléfono y en tu cuenta. Los cambios que hagas tras cerrar sesión no se sincronizarán. Los créditos y las compras te esperan aquí.</string>
+    <string name="account_action_delete">Eliminar la cuenta</string>
+    <string name="account_delete_title">¿Eliminar la cuenta?</string>
+    <string name="account_delete_body">La cuenta desaparece, y con ella la copia de tus tableros, todo lo que publicaste y sus imágenes. Esto no se puede deshacer.</string>
+    <string name="account_delete_keeps_local">Los tableros de este teléfono se quedan donde están.</string>
+    <string name="account_delete_confirm">Eliminar para siempre</string>
+    <string name="account_error_not_deleted">La cuenta no se eliminó. Inténtalo de nuevo.</string>
 </resources>

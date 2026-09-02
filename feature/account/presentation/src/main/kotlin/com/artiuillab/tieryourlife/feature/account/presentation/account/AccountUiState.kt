@@ -18,6 +18,8 @@ data class AccountUiState(
     /** True while a picture of their own is being made into a face. */
     val makingFace: Boolean = false,
     val notice: AccountNotice? = null,
+    /** True while the account is being removed; nothing else can be pressed. */
+    val deleting: Boolean = false,
     /**
      * Set only while the question is open: somebody has signed into an account
      * that already holds boards, and nothing has been written either way yet.
@@ -38,4 +40,7 @@ enum class AccountNotice {
 
     /** The picture was refused, or would not copy. The old face stays. */
     FaceNotMade,
+
+    /** The account is still there. Saying nothing would read as "it worked". */
+    NotDeleted,
 }

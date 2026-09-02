@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
+import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
@@ -187,12 +188,64 @@ class AccountViewModelTest {
         assertEquals(Account.Guest, state.account)
     }
 
+    // The account has to be gone before the identity that asked is given up.
+    // Signing out first would take away the very thing the request is made
+    // with, and a failure then leaves somebody unable to sign back in and
+    // unable to try again.
+    @Test
+    fun deletingAnAccount_endsItBeforeSigningOut() = runBlocking {
+        val order = mutableListOf<String>()
+        val repository = FakeAccountRepository(
+            initial = Account.SignedIn(email = "someone@example.com", photoUrl = null),
+            onSignOut = { order += "signed out" },
+        )
+        val viewModel = viewModel(
+            repository = repository,
+            erasure = RecordingErasure(onErase = { order += "erased" }),
+        )
+
+        viewModel.deleteAccount()
+        viewModel.state.first { !it.deleting && it.notice == null && order.size == 2 }
+
+        assertEquals(listOf("erased", "signed out"), order)
+    }
+
+    // Nothing has happened, so the account must still be usable and the person
+    // must be told. Silence here reads as "it worked".
+    @Test
+    fun anAccountTheServerWouldNotDelete_staysSignedIn() = runBlocking {
+        var signedOut = false
+        val repository = FakeAccountRepository(
+            initial = Account.SignedIn(email = "someone@example.com", photoUrl = null),
+            onSignOut = { signedOut = true },
+        )
+        val viewModel = viewModel(repository = repository, erasure = RefusingErasure)
+
+        viewModel.deleteAccount()
+        val state = viewModel.state.first { it.notice == AccountNotice.NotDeleted }
+
+        assertEquals(false, signedOut)
+        assertEquals(false, state.deleting)
+    }
+
     private fun viewModel(
         repository: AccountRepository = FakeAccountRepository(),
         credential: GoogleCredential = FakeGoogleCredential(GoogleCredentialResult.Cancelled),
         credits: GenerationCredits = FakeGenerationCredits(),
         publishedLists: OwnLists = FakeOwnLists(),
-    ) = AccountViewModel(repository, credential, credits, publishedLists, FakeCommunityForAccount(), FakeAppPreferences(), NoMerge)
+        erasure: AccountErasure = NoErasure,
+    ) = AccountViewModel(repository, credential, credits, publishedLists, FakeCommunityForAccount(), FakeAppPreferences(), NoMerge, erasure)
+}
+
+private class RecordingErasure(private val onErase: () -> Unit) : AccountErasure {
+    override suspend fun erase(): Result<Unit> {
+        onErase()
+        return Result.success(Unit)
+    }
+}
+
+private object RefusingErasure : AccountErasure {
+    override suspend fun erase(): Result<Unit> = Result.failure(IllegalStateException("offline"))
 }
 
 private class FakeCommunityForAccount : CommunityRepository {
@@ -253,6 +306,7 @@ private class FakeOwnLists(private val published: Int = 0, private val boards: I
 private class FakeAccountRepository(
     initial: Account = Account.Guest,
     private val outcome: SignInOutcome = SignInOutcome.Success,
+    private val onSignOut: () -> Unit = {},
 ) : AccountRepository {
 
     val tokens = mutableListOf<String>()
@@ -273,6 +327,7 @@ private class FakeAccountRepository(
     override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
 
     override suspend fun signOut() {
+        onSignOut()
         state.value = Account.Guest
     }
 }
@@ -357,4 +412,9 @@ private class FakeAppPreferences : AppPreferences {
     override fun conflictsSeen(): Set<String> = emptySet()
 
     override fun markConflictSeen(listUid: String) = Unit
+}
+
+/** Ending an account is its own test; here it must simply exist. */
+private object NoErasure : AccountErasure {
+    override suspend fun erase(): Result<Unit> = Result.success(Unit)
 }

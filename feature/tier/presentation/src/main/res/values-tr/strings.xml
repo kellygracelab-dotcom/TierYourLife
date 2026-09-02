@@ -275,6 +275,7 @@
     <string name="settings_account_offer_action">Oturum aç</string>
     <string name="settings_account_signed_in">Oturum açıldı</string>
     <string name="settings_version">Sürüm %1$s</string>
+    <string name="settings_privacy">Gizlilik politikası</string>
     <string name="home_start_with">Şununla başla</string>
     <string name="home_start_hint">Panoyu hemen oluşturur. Adını değiştirmek için başlığa dokun.</string>
     <string name="home_new_list">Yeni liste</string>

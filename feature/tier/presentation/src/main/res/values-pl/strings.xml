@@ -325,6 +325,7 @@
     <string name="settings_account_offer_action">Zaloguj się</string>
     <string name="settings_account_signed_in">Zalogowano</string>
     <string name="settings_version">Wersja %1$s</string>
+    <string name="settings_privacy">Polityka prywatności</string>
     <string name="home_start_with">Zacznij od</string>
     <string name="home_start_hint">Tablica powstaje od razu. Dotknij tytułu, aby zmienić nazwę.</string>
     <string name="home_new_list">Nowa lista</string>

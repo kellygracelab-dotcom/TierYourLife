@@ -1,6 +1,8 @@
 package com.artiuillab.tieryourlife.feature.tier.data.di
 
+import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
 import com.artiuillab.tieryourlife.feature.tier.data.repository.CatalogueSearchRepositoryImpl
+import com.artiuillab.tieryourlife.feature.tier.data.repository.RetrofitAccountErasure
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RetrofitCommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomOwnLists
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
@@ -41,6 +43,12 @@ abstract class RepositoryModule {
     abstract fun bindCommunityRepository(
         implementation: RetrofitCommunityRepository,
     ): CommunityRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAccountErasure(
+        implementation: RetrofitAccountErasure,
+    ): AccountErasure
 
     @Binds
     @Singleton

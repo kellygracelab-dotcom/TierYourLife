@@ -60,4 +60,10 @@
     <string name="merge_name_suffix">(von diesem Telefon)</string>
     <string name="account_sign_out_title">Abmelden?</string>
     <string name="account_sign_out_helper">Deine Boards bleiben auf diesem Telefon und in deinem Konto. Änderungen nach dem Abmelden werden nicht mehr übertragen. Credits und Käufe warten hier auf dich.</string>
+    <string name="account_action_delete">Konto löschen</string>
+    <string name="account_delete_title">Konto löschen?</string>
+    <string name="account_delete_body">Das Konto verschwindet, und mit ihm die Kopie deiner Boards, alles Veröffentlichte und die zugehörigen Bilder. Das lässt sich nicht rückgängig machen.</string>
+    <string name="account_delete_keeps_local">Die Boards auf diesem Telefon bleiben, wo sie sind.</string>
+    <string name="account_delete_confirm">Endgültig löschen</string>
+    <string name="account_error_not_deleted">Das Konto wurde nicht gelöscht. Versuche es erneut.</string>
 </resources>

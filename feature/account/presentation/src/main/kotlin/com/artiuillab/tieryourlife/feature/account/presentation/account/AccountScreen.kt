@@ -66,6 +66,7 @@ fun AccountScreen(
         onClose = onClose,
         onSignIn = { viewModel.signIn(context) },
         onSignOut = viewModel::signOut,
+        onDeleteAccount = viewModel::deleteAccount,
         onSetName = viewModel::setDisplayName,
         onSetPhoto = viewModel::setPhoto,
         onNoticeShown = viewModel::dismissNotice,
@@ -82,6 +83,7 @@ internal fun AccountScreenContent(
     onClose: () -> Unit,
     onSignIn: () -> Unit,
     onSignOut: () -> Unit,
+    onDeleteAccount: () -> Unit = {},
     modifier: Modifier = Modifier,
     onSetName: (String) -> Unit = {},
     onSetPhoto: (String?) -> Unit = {},
@@ -155,6 +157,8 @@ internal fun AccountScreenContent(
                         onOpenPublished = onOpenPublished,
                         onDone = onClose,
                         onSignOut = onSignOut,
+                        onDeleteAccount = onDeleteAccount,
+                        deleting = state.deleting,
                     )
                     }
                 }
@@ -226,6 +230,7 @@ private fun AccountNotice.messageRes(): Int = when (this) {
     AccountNotice.SignedInToExistingAccount -> R.string.account_notice_existing_account
     AccountNotice.FaceNotMade -> R.string.account_error_face_not_made
     AccountNotice.NameNotSaved -> R.string.account_error_name_not_saved
+    AccountNotice.NotDeleted -> R.string.account_error_not_deleted
 }
 
 @TierYourLifeDevicePreviews

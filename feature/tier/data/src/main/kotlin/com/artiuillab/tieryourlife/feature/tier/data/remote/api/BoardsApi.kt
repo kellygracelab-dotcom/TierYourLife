@@ -35,4 +35,11 @@ interface BoardsApi {
 
     @DELETE("boards/{uid}")
     suspend fun forget(@Path("uid") uid: String)
+
+    /**
+     * The account itself, not a board. "account" cannot collide with a board
+     * uid, which is always Firestore's twenty characters.
+     */
+    @DELETE("boards/account")
+    suspend fun eraseAccount()
 }

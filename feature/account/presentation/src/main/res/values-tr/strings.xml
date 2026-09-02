@@ -60,4 +60,10 @@
     <string name="merge_name_suffix">(bu telefondan)</string>
     <string name="account_sign_out_title">Çıkış yapılsın mı?</string>
     <string name="account_sign_out_helper">Panoların hem bu telefonda hem hesabında kalır. Çıkış yaptıktan sonraki değişiklikler eşitlenmez. Krediler ve satın almalar burada seni bekler.</string>
+    <string name="account_action_delete">Hesabı sil</string>
+    <string name="account_delete_title">Hesap silinsin mi?</string>
+    <string name="account_delete_body">Hesap silinir; onunla birlikte panolarınızın kopyası, yayımladığınız her şey ve bunlara ait görseller de gider. Bu geri alınamaz.</string>
+    <string name="account_delete_keeps_local">Bu telefondaki panolar yerinde kalır.</string>
+    <string name="account_delete_confirm">Kalıcı olarak sil</string>
+    <string name="account_error_not_deleted">Hesap silinmedi. Yeniden deneyin.</string>
 </resources>
