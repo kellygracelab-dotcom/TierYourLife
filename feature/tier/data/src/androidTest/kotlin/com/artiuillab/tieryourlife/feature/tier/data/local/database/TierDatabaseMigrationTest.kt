@@ -289,6 +289,28 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    // Every board that already exists is one nobody has starred, which is what
+    // the absence of the column meant all along.
+    @Test
+    fun migration9To10_leavesEveryExistingBoardUnstarred() {
+        helper.createDatabase(TEST_DB, 9).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, " +
+                    "publishedFingerprint, authorName, category, coverImageUrl, uid, arrivedFrom, editedAt) " +
+                    "VALUES (1, 'Films', NULL, 'WRAP', NULL, NULL, NULL, NULL, NULL, 'board-1', NULL, 1)",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 10, true, MIGRATION_9_10)
+
+        migratedDb.query("SELECT title, favouritedAt FROM tier_lists WHERE id = 1").use {
+            check(it.moveToFirst())
+            assertEquals("Films", it.getString(0))
+            assertTrue("a board nobody starred", it.isNull(1))
+        }
+    }
+
     private fun editedAt(db: androidx.sqlite.db.SupportSQLiteDatabase): Long =
         db.query("SELECT editedAt FROM tier_lists WHERE id = 1").use {
             check(it.moveToFirst())

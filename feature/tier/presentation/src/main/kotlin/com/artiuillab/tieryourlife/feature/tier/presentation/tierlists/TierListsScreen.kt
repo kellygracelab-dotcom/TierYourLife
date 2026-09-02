@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.activity.compose.BackHandler
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -57,6 +58,8 @@ import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.ui.UserMessage
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -72,6 +75,8 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.community.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardControlsRow
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardFiltersSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardTile
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.CommunityFeedList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ConflictBanner
@@ -158,6 +163,9 @@ fun TierListsScreen(
         onSelectCommunitySort = viewModel::selectCommunitySort,
         onFollowAuthor = viewModel::followSuggested,
         onToggleView = viewModel::toggleBoardsAsPictures,
+        onSelectBoardSort = viewModel::selectBoardSort,
+        onApplyBoardFilters = viewModel::applyBoardFilters,
+        onToggleFavourite = viewModel::toggleFavourite,
         onHideCommunityList = viewModel::hideCommunityList,
         onHideCommunityAuthor = viewModel::hideCommunityAuthor,
         onReportCommunityList = viewModel::reportCommunityList,
@@ -196,6 +204,9 @@ internal fun TierListsScreenContent(
     onHideCommunityAuthor: (uid: String, name: String) -> Unit = { _, _ -> },
     onReportCommunityList: (PublishedListSummary, ReportReason, String?) -> Unit = { _, _, _ -> },
     onToggleView: () -> Unit = {},
+    onSelectBoardSort: (BoardSort) -> Unit = {},
+    onApplyBoardFilters: (BoardFilters) -> Unit = {},
+    onToggleFavourite: (Long) -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val success = state as? TierListsUiState.Success
@@ -212,6 +223,11 @@ internal fun TierListsScreenContent(
     val restoringPictures = success?.restoringPictures ?: PictureRestore.Progress.Idle
     val conflict = success?.conflict
     val asPictures = success?.asPictures ?: false
+    val boardSort = success?.boardSort ?: BoardSort.Newest
+    val boardFilters = success?.boardFilters ?: BoardFilters()
+    val favourites = success?.favourites.orEmpty()
+    val grouped = success?.grouped ?: false
+    var filtersOpen by rememberSaveable { mutableStateOf(false) }
     val hasRail = currentWindowShape.hasRail
     var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var reportFor by remember { mutableStateOf<PublishedListSummary?>(null) }
@@ -287,10 +303,10 @@ internal fun TierListsScreenContent(
                         // tablet layout starts looking unconsidered.
                         onSettingsClick = onSettingsClick.takeUnless { hasRail },
                         asPictures = asPictures,
-                        // Only over your own boards: the feed has one shape,
-                        // and a control that changes nothing is a control that
-                        // teaches people to distrust the others.
-                        onToggleView = onToggleView.takeIf { tab == HomeTab.Mine },
+                        // Now in the controls row below, beside the sort and
+                        // the filters it belongs with. A fourth action in the
+                        // bar costs the title about two words.
+                        onToggleView = null,
                     )
                 }
 
@@ -310,6 +326,22 @@ internal fun TierListsScreenContent(
                 }
                 if (mode !is HomeMode.Searching && hasRail && tab == HomeTab.Mine) {
                     HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
+                }
+
+                // Nothing to order or narrow until there is more than one
+                // board, and a control over a single thing is a control that
+                // teaches people the others might be pointless too.
+                if (mode !is HomeMode.Searching && tab == HomeTab.Mine && totalListCount > 1) {
+                    BoardControlsRow(
+                        sort = boardSort,
+                        filters = boardFilters,
+                        asPictures = asPictures,
+                        onSelectSort = onSelectBoardSort,
+                        onOpenFilters = { filtersOpen = true },
+                        onClearCategory = { onApplyBoardFilters(boardFilters.copy(category = null)) },
+                        onClearPublished = { onApplyBoardFilters(boardFilters.copy(published = null)) },
+                        onToggleView = onToggleView,
+                    )
                 }
 
                 when (state) {
@@ -367,6 +399,7 @@ internal fun TierListsScreenContent(
                         mode is HomeMode.Searching -> SearchResults(
                             lists = lists,
                             query = mode.query,
+                            asPictures = asPictures,
                             onTierListClick = onTierListClick,
                         )
 
@@ -375,6 +408,9 @@ internal fun TierListsScreenContent(
                         else -> HomeContent(
                             lists = lists,
                             asPictures = asPictures,
+                            favourites = favourites,
+                            grouped = grouped,
+                            onToggleFavourite = onToggleFavourite,
                             mode = mode,
                             localOnly = localOnly,
                             conflict = conflict,
@@ -468,6 +504,14 @@ internal fun TierListsScreenContent(
                 )
             }
 
+            if (filtersOpen) {
+                BoardFiltersSheet(
+                    filters = boardFilters,
+                    onFilters = onApplyBoardFilters,
+                    onDismiss = { filtersOpen = false },
+                )
+            }
+
             DeletedItemSnackbarHost(
                 hostState = snackbarHostState,
                 modifier = Modifier
@@ -483,6 +527,9 @@ internal fun TierListsScreenContent(
 private fun HomeContent(
     lists: List<TierList>,
     asPictures: Boolean,
+    favourites: List<TierList>,
+    grouped: Boolean,
+    onToggleFavourite: (Long) -> Unit,
     mode: HomeMode,
     localOnly: LocalOnly,
     conflict: TierList?,
@@ -500,6 +547,9 @@ private fun HomeContent(
     if (asPictures) {
         BoardTiles(
             lists = lists,
+            favourites = favourites,
+            grouped = grouped,
+            onToggleFavourite = onToggleFavourite,
             here = here,
             conflict = conflict?.takeUnless { isSelecting },
             isSelecting = isSelecting,
@@ -547,21 +597,35 @@ private fun HomeContent(
                 }
             }
         }
-        items(lists, key = { it.id }) { list ->
-            val isSelected = list.id in selectedIds
-            CenteredContent(ContentWidth.Reading, Modifier.padding(horizontal = 16.dp)) {
-                TierListCard(
+        if (grouped) {
+            item(key = "favourites-heading") {
+                GroupHeading(R.string.lists_group_favourites, TierListsTestTags.FAVOURITES_HEADING)
+            }
+            items(favourites, key = { starredKey(it.id) }) { list ->
+                BoardRow(
                     list = list,
-                    onClick = {
-                        if (isSelecting) onToggleSelected(list.id) else onTierListClick(list.id)
-                    },
-                    onLongClick = {
-                        if (!isSelecting) onLongPressCard(list.id)
-                    },
-                    selectionMode = isSelecting,
-                    selected = isSelected,
+                    isSelecting = isSelecting,
+                    isSelected = list.id in selectedIds,
+                    onTierListClick = onTierListClick,
+                    onLongPressCard = onLongPressCard,
+                    onToggleSelected = onToggleSelected,
+                    onToggleFavourite = onToggleFavourite,
                 )
             }
+            item(key = "others-heading") {
+                GroupHeading(R.string.lists_group_others, TierListsTestTags.OTHERS_HEADING)
+            }
+        }
+        items(lists, key = { it.id }) { list ->
+            BoardRow(
+                list = list,
+                isSelecting = isSelecting,
+                isSelected = list.id in selectedIds,
+                onTierListClick = onTierListClick,
+                onLongPressCard = onLongPressCard,
+                onToggleSelected = onToggleSelected,
+                onToggleFavourite = onToggleFavourite,
+            )
         }
         if (here != null) {
             item(key = "local-only-footer") {
@@ -583,6 +647,9 @@ private fun HomeContent(
 @Composable
 private fun BoardTiles(
     lists: List<TierList>,
+    favourites: List<TierList>,
+    grouped: Boolean,
+    onToggleFavourite: (Long) -> Unit,
     here: LocalOnly.Here?,
     conflict: TierList?,
     isSelecting: Boolean,
@@ -618,6 +685,24 @@ private fun BoardTiles(
                 )
             }
         }
+        if (grouped) {
+            item(key = "favourites-heading", span = { GridItemSpan(maxLineSpan) }) {
+                GroupHeading(R.string.lists_group_favourites, TierListsTestTags.FAVOURITES_HEADING)
+            }
+            items(favourites, key = { starredKey(it.id) }) { list ->
+                BoardTile(
+                    list = list,
+                    onClick = { if (isSelecting) onToggleSelected(list.id) else onTierListClick(list.id) },
+                    onLongClick = { if (!isSelecting) onLongPressCard(list.id) },
+                    selectionMode = isSelecting,
+                    selected = list.id in selectedIds,
+                    onToggleFavourite = { onToggleFavourite(list.id) },
+                )
+            }
+            item(key = "others-heading", span = { GridItemSpan(maxLineSpan) }) {
+                GroupHeading(R.string.lists_group_others, TierListsTestTags.OTHERS_HEADING)
+            }
+        }
         items(lists, key = { it.id }) { list ->
             BoardTile(
                 list = list,
@@ -625,6 +710,7 @@ private fun BoardTiles(
                 onLongClick = { if (!isSelecting) onLongPressCard(list.id) },
                 selectionMode = isSelecting,
                 selected = list.id in selectedIds,
+                onToggleFavourite = { onToggleFavourite(list.id) },
             )
         }
         if (here != null) {
@@ -636,7 +722,12 @@ private fun BoardTiles(
 }
 
 @Composable
-private fun SearchResults(lists: List<TierList>, query: String, onTierListClick: (Long) -> Unit) {
+private fun SearchResults(
+    lists: List<TierList>,
+    query: String,
+    asPictures: Boolean,
+    onTierListClick: (Long) -> Unit,
+) {
     if (lists.isEmpty()) {
         HomeEmptyStateLayout(
             icon = { SearchOffIcon(28.dp, MaterialTheme.colorScheme.outline) },
@@ -661,6 +752,30 @@ private fun SearchResults(lists: List<TierList>, query: String, onTierListClick:
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        // The same shape the boards had a moment ago. Searching narrows which
+        // boards are on screen; it does not change what a board looks like,
+        // and having them turn from pictures into rows made the results read
+        // as somebody else's list rather than a subset of your own.
+        if (asPictures) {
+            BoardTiles(
+                lists = lists,
+                favourites = emptyList(),
+                grouped = false,
+                onToggleFavourite = {},
+                here = null,
+                conflict = null,
+                isSelecting = false,
+                selectedIds = emptySet(),
+                onTierListClick = onTierListClick,
+                onLongPressCard = {},
+                onToggleSelected = {},
+                onSignInClick = {},
+                onDismissSignInOffer = {},
+                onDismissConflictNotice = {},
+            )
+            return
+        }
+
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp),
@@ -745,4 +860,50 @@ private fun TierListsEmptyPreview() = TierYourLifeTheme(false) {
         state = TierListsUiState.Success(emptyList(), 0, 0),
         onTierListClick = {},
     )
+}
+
+/** A starred board appears in its own group, so its key has to differ. */
+private fun starredKey(id: Long): String = "starred-$id"
+
+/**
+ * Which of the two groups this is.
+ *
+ * Without them the top cards read as the newest, and the sort control sitting
+ * directly above says exactly that -- somebody switches to Oldest, sees the
+ * same boards on top, and concludes the sort is broken.
+ */
+@Composable
+private fun GroupHeading(@StringRes labelRes: Int, testTag: String) {
+    CenteredContent(ContentWidth.Reading, Modifier.padding(horizontal = 16.dp)) {
+        Text(
+            text = stringResource(labelRes),
+            modifier = Modifier
+                .padding(top = 6.dp, bottom = 2.dp)
+                .testTag(testTag),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun BoardRow(
+    list: TierList,
+    isSelecting: Boolean,
+    isSelected: Boolean,
+    onTierListClick: (Long) -> Unit,
+    onLongPressCard: (Long) -> Unit,
+    onToggleSelected: (Long) -> Unit,
+    onToggleFavourite: (Long) -> Unit,
+) {
+    CenteredContent(ContentWidth.Reading, Modifier.padding(horizontal = 16.dp)) {
+        TierListCard(
+            list = list,
+            onClick = { if (isSelecting) onToggleSelected(list.id) else onTierListClick(list.id) },
+            onLongClick = { if (!isSelecting) onLongPressCard(list.id) },
+            selectionMode = isSelecting,
+            selected = isSelected,
+            onToggleFavourite = { onToggleFavourite(list.id) },
+        )
+    }
 }

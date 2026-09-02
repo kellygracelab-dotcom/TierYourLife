@@ -4,6 +4,20 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
+ * A board somebody wants at the top of their own list.
+ *
+ * Nullable rather than a boolean with a default: null is "not starred", and a
+ * time gives the starred ones an order among themselves for free. Every
+ * existing board starts unstarred, which is what the absence of the column
+ * already meant.
+ */
+val MIGRATION_9_10 = object : Migration(9, 10) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN favouritedAt INTEGER")
+    }
+}
+
+/**
  * Records when a board was last touched, and does it in SQL.
  *
  * Triggers rather than a call at every place that edits something. A rename, a

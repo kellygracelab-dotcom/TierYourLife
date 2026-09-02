@@ -68,6 +68,7 @@ internal fun TierListCard(
     onLongClick: () -> Unit = {},
     selectionMode: Boolean = false,
     selected: Boolean = false,
+    onToggleFavourite: (() -> Unit)? = null,
 ) {
     val ranked = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
     val inPool = list.tiers.firstOrNull { it.isPool }?.items?.size ?: 0
@@ -94,6 +95,9 @@ internal fun TierListCard(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Row(verticalAlignment = Alignment.Top) {
+            // Trailing, so the stars line up in a column of their own. The
+            // leading edge is where a name starts, and a column of stars there
+            // would push every title across for the sake of two boards.
             if (list.coverImageUrl != null) {
                 // Own lists are known by their name; the cover is a reminder,
                 // not the whole card.
@@ -155,6 +159,12 @@ internal fun TierListCard(
             if (selectionMode) {
                 SelectionCheckbox(selected)
             } else {
+                // Out of the way while boards are being picked to delete: two
+                // things to tap on one card, asking different questions, is
+                // one too many.
+                if (onToggleFavourite != null) {
+                    StarButton(on = list.favouritedAt != null, id = list.id, onClick = onToggleFavourite)
+                }
                 ChevronIcon()
             }
         }

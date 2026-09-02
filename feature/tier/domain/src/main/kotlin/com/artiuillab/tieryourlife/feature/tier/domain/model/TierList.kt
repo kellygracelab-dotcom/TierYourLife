@@ -31,6 +31,11 @@ data class TierList(
     val arrivedFrom: String? = null,
     /** When anything about this board last changed. */
     val editedAt: Long? = null,
+    /**
+     * When this board was starred, or null for one that is not. Starred boards
+     * come first however the rest are sorted, most recently starred first.
+     */
+    val favouritedAt: Long? = null,
     /** True while this board and one beside it are two versions of the same thing. */
     val hasTwin: Boolean = false,
 )

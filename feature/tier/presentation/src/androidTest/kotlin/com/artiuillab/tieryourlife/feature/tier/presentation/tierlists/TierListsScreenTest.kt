@@ -298,11 +298,149 @@ class TierListsScreenTest {
         composeRule.onNodeWithTag(TierListsTestTags.suggestion(0)).assertDoesNotExist()
     }
 
+    // Searching narrows which boards are on screen. It does not change what a
+    // board looks like -- and having them turn from pictures into rows made
+    // the results read as somebody else's list rather than a subset of yours.
+    @Test
+    fun searching_keepsTheBoardsAsPicturesWhenThatIsHowTheyWereShown() {
+        setScreen(
+            TierListsUiState.Success(
+                lists = listOf(tierList(1, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 0))),
+                totalListCount = 1,
+                rankedCount = 1,
+                mode = HomeMode.Searching("sci"),
+                asPictures = true,
+            ),
+        )
+
+        composeRule.onNodeWithTag(TierListsTestTags.tile(1)).assertIsDisplayed()
+    }
+
+    @Test
+    fun searching_keepsTheBoardsAsRowsWhenThatIsHowTheyWereShown() {
+        setScreen(
+            TierListsUiState.Success(
+                lists = listOf(tierList(1, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 0))),
+                totalListCount = 1,
+                rankedCount = 1,
+                mode = HomeMode.Searching("sci"),
+                asPictures = false,
+            ),
+        )
+
+        composeRule.onNodeWithTag(TierListsTestTags.tile(1)).assertDoesNotExist()
+        composeRule.onNodeWithText("Sci-fi films").assertIsDisplayed()
+    }
+
+    // Without headings the top cards read as the newest, and the sort control
+    // directly above says exactly that.
+    @Test
+    fun starredBoards_areShownUnderTheirOwnHeading() {
+        setScreen(
+            TierListsUiState.Success(
+                lists = listOf(tierList(2, "Ordinary", intArrayOf(1, 0, 0, 0, 0, 0))),
+                totalListCount = 2,
+                rankedCount = 2,
+                favourites = listOf(tierList(1, "Kept at the top", intArrayOf(1, 0, 0, 0, 0, 0))),
+                grouped = true,
+            ),
+        )
+
+        composeRule.onNodeWithTag(TierListsTestTags.FAVOURITES_HEADING).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.OTHERS_HEADING).assertIsDisplayed()
+        composeRule.onNodeWithText("Kept at the top").assertIsDisplayed()
+    }
+
+    @Test
+    fun withNothingStarred_thereAreNoHeadings() {
+        setScreen(
+            TierListsUiState.Success(
+                lists = listOf(tierList(1, "Ordinary", intArrayOf(1, 0, 0, 0, 0, 0))),
+                totalListCount = 1,
+                rankedCount = 1,
+            ),
+        )
+
+        composeRule.onNodeWithTag(TierListsTestTags.FAVOURITES_HEADING).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierListsTestTags.OTHERS_HEADING).assertDoesNotExist()
+    }
+
+    // Nothing to order or narrow until there is more than one board.
+    @Test
+    fun withOneBoard_thereIsNothingToSortOrFilter() {
+        setScreen(
+            TierListsUiState.Success(
+                lists = listOf(tierList(1, "Only one", intArrayOf(1, 0, 0, 0, 0, 0))),
+                totalListCount = 1,
+                rankedCount = 1,
+            ),
+        )
+
+        composeRule.onNodeWithTag(TierListsTestTags.BOARD_CONTROLS).assertDoesNotExist()
+    }
+
+    @Test
+    fun withSeveralBoards_theSortAndTheFiltersAreThere() {
+        setScreen(
+            TierListsUiState.Success(
+                lists = listOf(
+                    tierList(1, "One", intArrayOf(1, 0, 0, 0, 0, 0)),
+                    tierList(2, "Two", intArrayOf(1, 0, 0, 0, 0, 0)),
+                ),
+                totalListCount = 2,
+                rankedCount = 2,
+            ),
+        )
+
+        composeRule.onNodeWithTag(TierListsTestTags.BOARD_SORT).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.BOARD_FILTER_BUTTON).assertIsDisplayed()
+    }
+
+    // The star has to be visible on a board that is not starred, or there is
+    // no way to star one.
+    @Test
+    fun everyBoard_carriesAStarWhetherOrNotItIsStarred() {
+        setScreen(
+            TierListsUiState.Success(
+                lists = listOf(
+                    tierList(1, "One", intArrayOf(1, 0, 0, 0, 0, 0)),
+                    tierList(2, "Two", intArrayOf(1, 0, 0, 0, 0, 0)),
+                ),
+                totalListCount = 2,
+                rankedCount = 2,
+            ),
+        )
+
+        composeRule.onNodeWithTag(TierListsTestTags.star(1)).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.star(2)).assertIsDisplayed()
+    }
+
+    @Test
+    fun tappingAStar_asksForThatBoard() {
+        var starred: Long? = null
+        setScreen(
+            TierListsUiState.Success(
+                lists = listOf(
+                    tierList(1, "One", intArrayOf(1, 0, 0, 0, 0, 0)),
+                    tierList(7, "Seven", intArrayOf(1, 0, 0, 0, 0, 0)),
+                ),
+                totalListCount = 2,
+                rankedCount = 2,
+            ),
+            onToggleFavourite = { starred = it },
+        )
+
+        composeRule.onNodeWithTag(TierListsTestTags.star(7)).performClick()
+
+        assertEquals(7L, starred)
+    }
+
     private fun setScreen(
         state: TierListsUiState,
         onTierListClick: (Long) -> Unit = {},
         onSettingsClick: () -> Unit = {},
         onCreateNamedList: (String) -> Unit = {},
+        onToggleFavourite: (Long) -> Unit = {},
     ) {
         composeRule.setContent {
             TierYourLifeTheme {
@@ -311,6 +449,7 @@ class TierListsScreenTest {
                     onTierListClick = onTierListClick,
                     onSettingsClick = onSettingsClick,
                     onCreateNamedList = onCreateNamedList,
+                    onToggleFavourite = onToggleFavourite,
                 )
             }
         }

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +41,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierLists
  * same thing would drift apart within a month.
  */
 @OptIn(ExperimentalFoundationApi::class)
+/** A disc under the star, so an outline survives a pale poster. */
+private val SCRIM_DISC = 32.dp
+private const val SCRIM_ALPHA = 0.35f
+
 @Composable
 internal fun BoardTile(
     list: TierList,
@@ -45,6 +52,7 @@ internal fun BoardTile(
     onLongClick: () -> Unit = {},
     selectionMode: Boolean = false,
     selected: Boolean = false,
+    onToggleFavourite: (() -> Unit)? = null,
 ) {
     val ranked = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
 
@@ -78,6 +86,24 @@ internal fun BoardTile(
             )
             if (selectionMode) {
                 Box(Modifier.padding(8.dp)) { SelectionCheckbox(selected) }
+            } else if (onToggleFavourite != null) {
+                // On a disc of its own, because the art underneath is somebody
+                // else's picture and a bare outline disappears into a pale one.
+                Box(
+                    Modifier
+                        .padding(6.dp)
+                        .size(SCRIM_DISC)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = SCRIM_ALPHA)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    StarButton(
+                        on = list.favouritedAt != null,
+                        id = list.id,
+                        onClick = onToggleFavourite,
+                        size = SCRIM_DISC,
+                    )
+                }
             }
         }
         Text(

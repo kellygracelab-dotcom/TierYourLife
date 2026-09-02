@@ -163,3 +163,80 @@ internal fun ChevronDownIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) 
     drawLine(color, Offset(6f * scale, 9f * scale), Offset(12f * scale, 15f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(12f * scale, 15f * scale), Offset(18f * scale, 9f * scale), stroke, StrokeCap.Round)
 }
+
+/**
+ * A funnel, filled once something is caught in it.
+ *
+ * Filled rather than badged: a dot beside an icon says "there is news", and
+ * a filter that is on is not news, it is a state the screen is already in.
+ */
+@Composable
+internal fun FilterIcon(on: Boolean) {
+    val color = if (on) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    VectorIcon(24.dp) { scale ->
+        val funnel = Path().apply {
+            moveTo(4f * scale, 5f * scale)
+            lineTo(20f * scale, 5f * scale)
+            lineTo(14f * scale, 12f * scale)
+            lineTo(14f * scale, 19f * scale)
+            lineTo(10f * scale, 16.5f * scale)
+            lineTo(10f * scale, 12f * scale)
+            close()
+        }
+        if (on) {
+            drawPath(funnel, color)
+        } else {
+            drawPath(funnel, color, style = Stroke(1.7f * scale, join = StrokeJoin.Round))
+        }
+    }
+}
+
+/** The mark of a menu that opens downwards, beside the value it would change. */
+@Composable
+internal fun ChevronDownIcon() {
+    val color = MaterialTheme.colorScheme.onSurfaceVariant
+    VectorIcon(18.dp) { scale ->
+        val stroke = 1.7f * scale
+        drawLine(color, Offset(6f * scale, 9.5f * scale), Offset(12f * scale, 15f * scale), stroke, StrokeCap.Round)
+        drawLine(color, Offset(18f * scale, 9.5f * scale), Offset(12f * scale, 15f * scale), stroke, StrokeCap.Round)
+    }
+}
+
+/**
+ * A star, hollow until it is earned.
+ *
+ * Drawn either way rather than only when it is on: showing it only on the
+ * starred boards would hide the way to star the others.
+ */
+@Composable
+internal fun StarIcon(on: Boolean, size: Dp = 24.dp) {
+    val color = if (on) {
+        MaterialTheme.colorScheme.tertiary
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    VectorIcon(size) { scale ->
+        val centre = 12f * scale
+        val outer = 8f * scale
+        val inner = 3.4f * scale
+        val star = Path().apply {
+            repeat(10) { step ->
+                val radius = if (step % 2 == 0) outer else inner
+                val angle = (-90f + step * 36f) * (Math.PI / 180f).toFloat()
+                val x = centre + radius * cos(angle)
+                val y = centre + radius * sin(angle)
+                if (step == 0) moveTo(x, y) else lineTo(x, y)
+            }
+            close()
+        }
+        if (on) {
+            drawPath(star, color)
+        } else {
+            drawPath(star, color, style = Stroke(1.6f * scale, join = StrokeJoin.Round))
+        }
+    }
+}

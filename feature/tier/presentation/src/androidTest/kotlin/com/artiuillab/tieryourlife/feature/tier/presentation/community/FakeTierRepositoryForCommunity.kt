@@ -44,6 +44,8 @@ internal class FakeTierRepositoryForCommunity(
 
     override suspend fun boardPublishedAs(publishedId: String): TierList? = null
 
+    override suspend fun setFavouritedAt(id: Long, at: Long?) = Unit
+
     override suspend fun setCategory(id: Long, category: ListCategory?) = Unit
 
     override suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?) = Unit

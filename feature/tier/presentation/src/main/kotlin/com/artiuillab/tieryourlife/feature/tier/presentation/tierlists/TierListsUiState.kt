@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -20,6 +22,12 @@ sealed interface TierListsUiState {
         val tab: HomeTab = HomeTab.Mine,
         /** Your own boards drawn as pictures rather than as rows. */
         val asPictures: Boolean = false,
+        /** Starred boards, already in the order they belong in. */
+        val favourites: List<TierList> = emptyList(),
+        /** True when the two groups are drawn apart, with a heading each. */
+        val grouped: Boolean = false,
+        val boardSort: BoardSort = BoardSort.Newest,
+        val boardFilters: BoardFilters = BoardFilters(),
         val community: CommunityFeed = CommunityFeed.Loading,
         val communityCategory: ListCategory? = null,
         /** Whose lists, and in what order. The category answers a third question. */

@@ -48,6 +48,9 @@ interface TierRepository {
 
     suspend fun setCategory(id: Long, category: ListCategory?)
 
+    /** Starred at [at], or unstarred when it is null. */
+    suspend fun setFavouritedAt(id: Long, at: Long?)
+
     suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?)
 
     suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode)

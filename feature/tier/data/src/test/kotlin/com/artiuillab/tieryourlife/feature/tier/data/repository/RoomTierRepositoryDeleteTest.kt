@@ -48,6 +48,8 @@ class RoomTierRepositoryDeleteTest {
 }
 
 private class RecordingTierDao : TierDao {
+    override suspend fun setFavouritedAt(id: Long, at: Long?) = Unit
+
     override suspend fun setCategory(id: Long, category: String?) = Unit
 
     override suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?) = Unit
