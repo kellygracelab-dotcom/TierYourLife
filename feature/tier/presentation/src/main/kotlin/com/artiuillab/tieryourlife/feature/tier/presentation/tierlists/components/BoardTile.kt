@@ -43,7 +43,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierLists
 @OptIn(ExperimentalFoundationApi::class)
 /** A disc under the star, so an outline survives a pale poster. */
 private val SCRIM_DISC = 32.dp
-private const val SCRIM_ALPHA = 0.35f
+
+/** Amber, and the same amber in both themes: the disc under it is always dark. */
+private val STAR_ON = Color(0xFFFFC94D)
+private const val SCRIM_ALPHA = 0.55f
 
 @Composable
 internal fun BoardTile(
@@ -102,6 +105,11 @@ internal fun BoardTile(
                         id = list.id,
                         onClick = onToggleFavourite,
                         size = SCRIM_DISC,
+                        // Not the theme's grey: on a light poster in the light
+                        // theme it vanished. White on a darker disc reads on
+                        // any picture and in either theme, and the amber for a
+                        // starred one is bright enough to keep.
+                        colorOverride = if (list.favouritedAt != null) STAR_ON else Color.White,
                     )
                 }
             }

@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.settings
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FollowState
@@ -117,7 +118,7 @@ private class FakeModerationRepository(
     override suspend fun reports(): Result<List<ModerationReport>> =
         if (readable) Result.success(queue) else Result.failure(IllegalStateException("not yours"))
 
-    override suspend fun takeDown(publishedId: String): Result<Unit> {
+    override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> {
         if (actionsFail) return Result.failure(IllegalStateException("offline"))
         takenDown += publishedId
         return Result.success(Unit)

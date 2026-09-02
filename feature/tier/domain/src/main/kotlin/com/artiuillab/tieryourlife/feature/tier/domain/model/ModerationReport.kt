@@ -9,6 +9,13 @@ data class ModerationReport(
     val listId: String,
     val listTitle: String,
     val authorName: String,
+    val authorUid: String? = null,
+    val authorPhotoUrl: String? = null,
+    /**
+     * What the feed showed. Often the whole complaint is the picture, and
+     * making somebody open the list to see it is making them decide blind.
+     */
+    val coverImageUrl: String? = null,
     /** Every reason given, newest first. As many as there were complaints. */
     val reasons: List<ReportReason>,
     /** What the people who complained wrote, verbatim. Newest first. */

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -25,7 +26,13 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierLists
  * one it is in.
  */
 @Composable
-internal fun StarButton(on: Boolean, id: Long, onClick: () -> Unit, size: Dp = 48.dp) {
+internal fun StarButton(
+    on: Boolean,
+    id: Long,
+    onClick: () -> Unit,
+    size: Dp = 48.dp,
+    colorOverride: Color? = null,
+) {
     val description = stringResource(
         if (on) R.string.lists_favourite_remove else R.string.lists_favourite_add,
     )
@@ -40,6 +47,6 @@ internal fun StarButton(on: Boolean, id: Long, onClick: () -> Unit, size: Dp = 4
             }
             .testTag(TierListsTestTags.star(id)),
     ) {
-        StarIcon(on = on)
+        StarIcon(on = on, colorOverride = colorOverride)
     }
 }

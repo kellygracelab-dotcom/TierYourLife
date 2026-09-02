@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FollowState
@@ -58,7 +59,7 @@ internal class FakeCommunityRepositoryForDetail(
         note: String?,
     ): Result<Unit> = Result.success(Unit)
     override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
-    override suspend fun takeDown(publishedId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> = Result.success(Unit)
     override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun follow(authorUid: String): Result<Unit> = Result.success(Unit)

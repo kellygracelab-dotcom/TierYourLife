@@ -213,8 +213,8 @@ internal fun ChevronDownIcon() {
  * starred boards would hide the way to star the others.
  */
 @Composable
-internal fun StarIcon(on: Boolean, size: Dp = 24.dp) {
-    val color = if (on) {
+internal fun StarIcon(on: Boolean, size: Dp = 24.dp, colorOverride: Color? = null) {
+    val color = colorOverride ?: if (on) {
         MaterialTheme.colorScheme.tertiary
     } else {
         MaterialTheme.colorScheme.onSurfaceVariant

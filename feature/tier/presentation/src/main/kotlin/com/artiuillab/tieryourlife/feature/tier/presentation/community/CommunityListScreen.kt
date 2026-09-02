@@ -149,7 +149,11 @@ internal fun CommunityListScreenContent(
                         // is a promise the screen cannot keep.
                         state = TierDetailUiState.Success(state.shown),
                         actions = TierDetailActions(onBack = onBack, onMoveItem = onMoveItem),
-                        readOnly = true,
+                        // Theirs is theirs: a card that slides under your
+                        // finger and springs back is a promise the screen
+                        // cannot keep. Your own half is yours to arrange, and
+                        // what you save is whichever of the two is on screen.
+                        readOnly = state.showing == Showing.Theirs,
                         onReaderMoreClick = { actionsVisible = true },
                         belowTopBar = {
                             AuthorLine(

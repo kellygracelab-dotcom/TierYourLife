@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSource
@@ -262,7 +263,7 @@ internal class RecordingCommunity(
         Result.success(Unit)
 
     override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
-    override suspend fun takeDown(publishedId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> = Result.success(Unit)
     override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
 }
 

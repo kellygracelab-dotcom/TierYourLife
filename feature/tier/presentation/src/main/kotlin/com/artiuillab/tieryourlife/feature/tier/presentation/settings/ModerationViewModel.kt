@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -106,7 +107,12 @@ class ModerationViewModel @Inject constructor(
         }
     }
 
-    fun takeDown(listId: String) = settle(listId) { community.takeDown(listId) }
+    /**
+     * The list goes and, when a length is given, its author waits before
+     * publishing again. One call, because there must be no moment in which
+     * the list is gone and nobody has answered for it.
+     */
+    fun takeDown(listId: String, ban: BanLength? = null) = settle(listId) { community.takeDown(listId, ban) }
 
     fun dismiss(listId: String) = settle(listId) { community.dismissReports(listId) }
 
