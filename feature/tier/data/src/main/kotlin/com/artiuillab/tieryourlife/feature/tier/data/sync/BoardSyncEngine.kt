@@ -201,6 +201,16 @@ class BoardSyncEngine @Inject constructor(
             return
         }
 
+        // Our own board coming back, because the answer to the last write
+        // never arrived -- the app was killed, or the network went, between
+        // the account storing it and this phone writing down the number. The
+        // content is identical, so there is nothing to keep beside anything:
+        // take the number we missed and stop. Without this, being killed at
+        // the wrong moment leaves a second copy of your own board every time.
+        if (theirs.fingerprint != null && theirs.fingerprint == fingerprint) {
+            return remember(uid, theirs.revision, fingerprint)
+        }
+
         adopt(theirs, asCopy = true)
         val second = api.keep(uid, request(board, fingerprint, basedOn = theirs.revision))
         if (second.isSuccessful) {
