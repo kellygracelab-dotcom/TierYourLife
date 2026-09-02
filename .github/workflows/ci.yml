@@ -119,9 +119,7 @@ jobs:
           disk-size: 4096M
           # The package verifier occasionally holds the install long enough for
           # ddmlib to give up; nothing here needs verifying.
-          script: |
-            adb shell settings put global verifier_verify_adb_installs 0
-            ./gradlew connectedDebugAndroidTest
+          script: bash .github/scripts/instrumentation.sh
 
       - name: Upload reports
         if: always()

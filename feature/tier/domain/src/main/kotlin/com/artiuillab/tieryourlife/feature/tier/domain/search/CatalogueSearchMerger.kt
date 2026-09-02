@@ -15,33 +15,22 @@ object CatalogueSearchMerger {
         query: String,
         tmdbResult: Result<List<CatalogueItem>>,
         wikidataResult: Result<List<WikidataCandidate>>,
-        gamesResult: Result<List<CatalogueItem>>,
     ): Result<List<CatalogueItem>> {
-        val sources = listOf(tmdbResult, wikidataResult, gamesResult)
+        val sources = listOf(tmdbResult, wikidataResult)
         if (sources.all { it.isFailure }) {
             return Result.failure(sources.firstNotNullOf { it.exceptionOrNull() })
         }
 
         val tmdbItems = tmdbResult.getOrDefault(emptyList())
         val wikidataCandidates = wikidataResult.getOrDefault(emptyList())
-        val gameItems = gamesResult.getOrDefault(emptyList())
 
         val presentTmdbIds = tmdbItems.mapNotNull { it.tmdbNumericId() }.toSet()
-
-        // Wikidata knows a great many games by name and has a picture for
-        // almost none of them, so the same game arrives twice: once from IGDB
-        // with its cover and once from Wikidata without. The illustrated one
-        // is the one worth keeping.
-        val namesWithCovers = gameItems.mapNotNullTo(mutableSetOf()) { item ->
-            item.title.trim().lowercase().takeIf { !item.imageUrl.isNullOrBlank() }
-        }
 
         val wikidataItems = wikidataCandidates
             .filter { it.linkedTmdbId == null || it.linkedTmdbId !in presentTmdbIds }
             .map { it.item }
-            .filter { it.title.trim().lowercase() !in namesWithCovers }
 
-        return Result.success(rank(query, interleave(tmdbItems, wikidataItems, gameItems)))
+        return Result.success(rank(query, interleave(tmdbItems, wikidataItems)))
     }
 
     /**

@@ -5,7 +5,6 @@ import com.artiuillab.tieryourlife.core.network.IdTokenInterceptor
 import com.artiuillab.tieryourlife.feature.tier.data.BuildConfig
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.CommunityApi
-import com.artiuillab.tieryourlife.feature.tier.data.remote.api.IgdbApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataSparqlApi
@@ -34,10 +33,6 @@ annotation class CommunityOkHttp
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class CommunityRetrofit
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class GamesRetrofit
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -148,27 +143,6 @@ object NetworkModule {
         return retrofit.create(TmdbApi::class.java)
     }
 
-    // The same client as TMDB: another catalogue behind the same proxy, paid
-    // for by nobody's account, so App Check alone is what it carries.
-    @GamesRetrofit
-    @Provides
-    @Singleton
-    fun provideGamesRetrofit(
-        @TmdbOkHttp okHttpClient: OkHttpClient,
-        json: Json,
-    ): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(BuildConfig.PROXY_BASE_URL.ifBlank { PLACEHOLDER_BASE_URL } + GAMES_PATH_PREFIX)
-            .client(okHttpClient)
-            .addConverterFactory(json.asConverterFactory(JSON_MEDIA_TYPE.toMediaType()))
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideIgdbApi(@GamesRetrofit retrofit: Retrofit): IgdbApi =
-        retrofit.create(IgdbApi::class.java)
-
     @WikidataRetrofit
     @Provides
     @Singleton
@@ -223,7 +197,6 @@ object NetworkModule {
 
     private const val PLACEHOLDER_BASE_URL = "https://example.invalid/"
     private const val TMDB_PATH_PREFIX = "tmdb/"
-    private const val GAMES_PATH_PREFIX = "games/"
     private const val WIKIDATA_BASE_URL = "https://www.wikidata.org/w/"
     private const val WIKIDATA_SPARQL_BASE_URL = "https://query.wikidata.org/"
     private const val JSON_MEDIA_TYPE = "application/json"
