@@ -74,6 +74,10 @@ class RoomTierRepository internal constructor(
             .map { it.toDomain() }
             .firstOrNull { board -> board.publishedId == publishedId }
 
+    override suspend fun setFavouritedAt(id: Long, at: Long?) {
+        dao.setFavouritedAt(id, at)
+    }
+
     override suspend fun setCategory(id: Long, category: ListCategory?) {
         dao.setCategory(id, category?.id)
     }

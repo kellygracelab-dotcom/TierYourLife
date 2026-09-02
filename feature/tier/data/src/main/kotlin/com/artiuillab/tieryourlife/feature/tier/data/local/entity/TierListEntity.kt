@@ -55,4 +55,14 @@ data class TierListEntity(
      * two copies have to be told apart.
      */
     val editedAt: Long? = null,
+    /**
+     * When this board was starred, or null for one that is not.
+     *
+     * A time rather than a flag, so that several starred boards have an order
+     * among themselves -- the one starred most recently first -- without a
+     * second column to say so. Deliberately not watched by the edited-at
+     * trigger: starring a board is not editing it, and it should not make a
+     * board look freshly changed to the screen that compares two copies.
+     */
+    val favouritedAt: Long? = null,
 )

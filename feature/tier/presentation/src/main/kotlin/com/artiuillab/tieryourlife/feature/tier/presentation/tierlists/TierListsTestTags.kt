@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.PublishedFilter
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 
@@ -7,6 +9,12 @@ internal object TierListsTestTags {
     const val LOADING = "tier_lists_loading"
     const val LISTS = "tier_lists"
     const val VIEW_TOGGLE = "tier_lists_view_toggle"
+    const val BOARD_CONTROLS = "tier_lists_controls"
+    const val BOARD_SORT = "tier_lists_sort"
+    const val BOARD_FILTER_BUTTON = "tier_lists_filter_button"
+    const val BOARD_FILTER_SHEET = "tier_lists_filter_sheet"
+    const val FAVOURITES_HEADING = "tier_lists_favourites_heading"
+    const val OTHERS_HEADING = "tier_lists_others_heading"
     const val SEARCH_FIELD = "home_search_field"
     const val SEARCH_CLOSE = "home_search_close"
     const val SEARCH_CLEAR = "home_search_clear"
@@ -45,6 +53,18 @@ internal object TierListsTestTags {
     const val REPORT_SEND = "community_report_send"
     fun tierListCard(id: Long): String = "tier_list_card_$id"
     fun tile(id: Long): String = "tier_list_tile_$id"
+
+    fun star(id: Long): String = "tier_list_star_$id"
+
+    fun boardSortOption(sort: BoardSort): String = "tier_lists_sort_${sort.name.lowercase()}"
+
+    fun appliedFilter(key: String): String = "tier_lists_applied_$key"
+
+    fun filterCategory(category: ListCategory?): String =
+        "tier_lists_filter_category_${category?.id ?: "any"}"
+
+    fun filterPublished(published: PublishedFilter?): String =
+        "tier_lists_filter_published_${published?.name?.lowercase() ?: "any"}"
     fun communityCard(id: String): String = "community_card_$id"
 
     fun communityCardAuthor(id: String): String = "community_card_author_$id"

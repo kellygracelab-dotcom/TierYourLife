@@ -141,6 +141,11 @@ interface TierDao {
     @Query("UPDATE tier_lists SET category = :category WHERE id = :id")
     suspend fun setCategory(id: Long, category: String?)
 
+    // A time, not a flag: several starred boards need an order among
+    // themselves, and null already means "not starred".
+    @Query("UPDATE tier_lists SET favouritedAt = :at WHERE id = :id")
+    suspend fun setFavouritedAt(id: Long, at: Long?)
+
     @Query("UPDATE tier_lists SET coverImageUrl = :coverImageUrl WHERE id = :id")
     suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?)
 

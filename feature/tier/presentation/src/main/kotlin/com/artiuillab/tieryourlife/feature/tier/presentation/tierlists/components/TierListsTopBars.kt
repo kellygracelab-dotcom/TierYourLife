@@ -223,7 +223,7 @@ internal fun SelectionTopBar(count: Int, onClose: () -> Unit, onDelete: () -> Un
 }
 
 @Composable
-private fun HomeIconButton(
+internal fun HomeIconButton(
     contentDescription: String,
     onClick: () -> Unit,
     testTag: String? = null,

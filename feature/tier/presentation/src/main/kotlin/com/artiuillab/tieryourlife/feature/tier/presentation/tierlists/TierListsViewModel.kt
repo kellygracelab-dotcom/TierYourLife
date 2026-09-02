@@ -9,6 +9,9 @@ import com.artiuillab.tieryourlife.core.ui.guard
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardOrder
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -57,6 +60,8 @@ class TierListsViewModel @Inject constructor(
     private var lastLoadedLists: List<TierList> = emptyList()
 
     private var mode: HomeMode = HomeMode.Browsing
+    private var boardSort: BoardSort = BoardSort.Newest
+    private var boardFilters: BoardFilters = BoardFilters()
     private var tab: HomeTab = HomeTab.Mine
 
     /** What the feed on screen was already filtered against. */
@@ -193,17 +198,25 @@ class TierListsViewModel @Inject constructor(
 
     private fun emitSuccess() {
         val query = (mode as? HomeMode.Searching)?.query
-        val filtered = if (query != null) {
+        val matching = if (query != null) {
             lastLoadedLists.filter { it.title.contains(query, ignoreCase = true) }
         } else {
             lastLoadedLists
         }
-        val paired = withTwins(filtered)
+        val arranged = BoardOrder.arrange(withTwins(matching), boardSort, boardFilters)
+        // A search or a filter makes the screen an answer to a question, and
+        // nothing is pinned above an answer.
+        val grouped = BoardOrder.shouldGroup(arranged, narrowed = query != null || boardFilters.any)
+        val paired = if (grouped) arranged.rest else arranged.all
         val rankedCount = lastLoadedLists.sumOf { list ->
             list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
         }
         _state.value = TierListsUiState.Success(
             lists = paired,
+            favourites = if (grouped) arranged.favourites else emptyList(),
+            grouped = grouped,
+            boardSort = boardSort,
+            boardFilters = boardFilters,
             totalListCount = lastLoadedLists.size,
             rankedCount = rankedCount,
             mode = mode,
@@ -235,6 +248,31 @@ class TierListsViewModel @Inject constructor(
      * Rows or pictures, remembered. A property of the screen rather than of
      * the person, but somebody who chose pictures once meant it.
      */
+    fun selectBoardSort(sort: BoardSort) {
+        if (boardSort == sort) return
+        boardSort = sort
+        emitSuccess()
+    }
+
+    fun applyBoardFilters(filters: BoardFilters) {
+        if (boardFilters == filters) return
+        boardFilters = filters
+        emitSuccess()
+    }
+
+    /**
+     * The star, both ways. The time is taken here rather than in the database
+     * so that several boards starred in one sitting still come out in the
+     * order they were starred.
+     */
+    fun toggleFavourite(id: Long) {
+        val list = lastLoadedLists.firstOrNull { it.id == id } ?: return
+        viewModelScope.launch {
+            repository.setFavouritedAt(id, if (list.favouritedAt == null) System.currentTimeMillis() else null)
+            loadTierLists()
+        }
+    }
+
     fun toggleBoardsAsPictures() {
         preferences.setBoardsAsPictures(!preferences.boardsAsPictures())
         emitSuccess()
