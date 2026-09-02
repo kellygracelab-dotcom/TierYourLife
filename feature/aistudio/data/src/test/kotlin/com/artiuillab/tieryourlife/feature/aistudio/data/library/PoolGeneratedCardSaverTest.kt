@@ -36,6 +36,8 @@ class PoolGeneratedCardSaverTest {
 private data class AddCall(val tierListId: Long, val title: String, val imageUrl: String?, val source: TierItemSource)
 
 private class FakeTierRepository : TierRepository {
+    override suspend fun setFavouritedAt(id: Long, at: Long?) = Unit
+
     override suspend fun setCategory(id: Long, category: ListCategory?) = Unit
 
     override suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?) = Unit

@@ -404,6 +404,8 @@ private class FakeTierRepository(
 
     override suspend fun boardPublishedAs(publishedId: String): TierList? = null
 
+    override suspend fun setFavouritedAt(id: Long, at: Long?) = Unit
+
     override suspend fun setCategory(id: Long, category: ListCategory?) {
         list = list.copy(category = category)
     }
