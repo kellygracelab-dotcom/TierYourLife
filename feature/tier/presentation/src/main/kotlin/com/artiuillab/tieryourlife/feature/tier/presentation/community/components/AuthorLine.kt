@@ -4,9 +4,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +28,12 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.community.Community
  * The second of the two places following lives. The profile is where somebody
  * decides, having seen everything an author has; this is the moment they most
  * want to and have least reason to leave the screen for.
+ *
+ * Directly under the board's own bar, and pinned there. Above it the bar's
+ * status-bar inset would be over its head, and the reading order would run
+ * whose it is before what it is. It stays put while the board scrolls because
+ * it is the only mark that the board is not yours, and the moment that most
+ * needs saying is the one where you are halfway through rearranging it.
  */
 @Composable
 internal fun AuthorLine(
@@ -39,7 +47,8 @@ internal fun AuthorLine(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+            .height(AUTHOR_LINE_HEIGHT)
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -78,4 +87,7 @@ internal fun AuthorLine(
             )
         }
     }
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 }
+
+private val AUTHOR_LINE_HEIGHT = 56.dp

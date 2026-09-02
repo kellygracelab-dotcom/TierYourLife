@@ -141,13 +141,6 @@ internal fun CommunityListScreenContent(
                     .fillMaxSize()
                     .testTag(CommunityTestTags.SCREEN),
             ) {
-                AuthorLine(
-                    name = state.authorName,
-                    photoUrl = state.authorPhotoUrl,
-                    follow = state.follow,
-                    onOpenAuthor = { onAuthorClick(state.authorUid, state.authorName, state.authorPhotoUrl) },
-                    onToggleFollow = onToggleFollow,
-                )
                 Box(Modifier.weight(1f)) {
                     TierDetailScreenContent(
                         // Read-only while their arrangement is on screen: it
@@ -158,6 +151,17 @@ internal fun CommunityListScreenContent(
                         actions = TierDetailActions(onBack = onBack, onMoveItem = onMoveItem),
                         readOnly = true,
                         onReaderMoreClick = { actionsVisible = true },
+                        belowTopBar = {
+                            AuthorLine(
+                                name = state.authorName,
+                                photoUrl = state.authorPhotoUrl,
+                                follow = state.follow,
+                                onOpenAuthor = {
+                                    onAuthorClick(state.authorUid, state.authorName, state.authorPhotoUrl)
+                                },
+                                onToggleFollow = onToggleFollow,
+                            )
+                        },
                     )
                 }
                 // Only where there is something to switch to. A snapshot from
