@@ -9,8 +9,10 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListSummaryDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ReportRequestDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.TakeDownRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.sync.PictureSync
 import com.artiuillab.tieryourlife.feature.tier.data.sync.PublishFingerprint
+import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FollowState
@@ -139,9 +141,10 @@ class RetrofitCommunityRepository @Inject constructor(
         api.reports().reports.map { it.toDomain() }
     }
 
-    override suspend fun takeDown(publishedId: String): Result<Unit> = attempt("Taking a reported list down") {
-        api.takeDown(publishedId)
-    }
+    override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> =
+        attempt("Taking a reported list down") {
+            api.takeDown(publishedId, TakeDownRequestDto(ban?.id))
+        }
 
     override suspend fun dismissReports(publishedId: String): Result<Unit> = attempt("Dismissing the reports on a list") {
         api.dismissReports(publishedId)
@@ -151,6 +154,9 @@ class RetrofitCommunityRepository @Inject constructor(
         listId = listId,
         listTitle = listTitle,
         authorName = authorName,
+        authorUid = authorUid,
+        authorPhotoUrl = authorPhotoUrl,
+        coverImageUrl = coverImageUrl,
         // A reason we do not recognise is still a complaint worth reading.
         reasons = reasons.map { given ->
             ReportReason.entries.firstOrNull { it.id == given } ?: ReportReason.Other

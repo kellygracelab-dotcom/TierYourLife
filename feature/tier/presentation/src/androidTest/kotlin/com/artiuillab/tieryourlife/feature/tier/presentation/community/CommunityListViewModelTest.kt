@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.community
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FollowState
@@ -63,16 +64,73 @@ class CommunityListViewModelTest {
         val tiers = FakeTierRepositoryForCommunity()
         val viewModel = viewModel(tiers = tiers)
         val loaded = viewModel.state.first { it is CommunityListUiState.Success } as CommunityListUiState.Success
-        val poolItem = loaded.list.tiers.first { it.isPool }.items.first()
-        val target = loaded.list.tiers.first { !it.isPool }
+        viewModel.show(Showing.Mine)
+        val poolItem = loaded.mine.tiers.first { it.isPool }.items.first()
+        val target = loaded.mine.tiers.first { !it.isPool }
 
         viewModel.moveItem(poolItem.id, target.id, 0)
         val ranked = viewModel.state.first {
             (it as? CommunityListUiState.Success)?.arranged == true
         } as CommunityListUiState.Success
 
-        assertEquals(1, ranked.list.tiers.first { it.id == target.id }.items.size)
+        assertEquals(1, ranked.mine.tiers.first { it.id == target.id }.items.size)
         assertTrue(tiers.templates.isEmpty())
+    }
+
+    // The bug this replaces: a card dragged while the author's arrangement was
+    // on screen landed in the author's board, which is not the one being
+    // drawn -- so it sprang back to the pool on the next glance.
+    @Test
+    fun draggingWhileTheirArrangementIsShown_movesNothing() = runBlocking {
+        val viewModel = viewModel()
+        val loaded = viewModel.state.first { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        viewModel.show(Showing.Theirs)
+        val poolItem = loaded.mine.tiers.first { it.isPool }.items.first()
+        val target = loaded.mine.tiers.first { !it.isPool }
+
+        viewModel.moveItem(poolItem.id, target.id, 0)
+
+        val after = viewModel.state.first { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        assertEquals(false, after.arranged)
+        assertEquals(loaded.list.tiers.map { tier -> tier.items.size }, after.list.tiers.map { it.items.size })
+    }
+
+    @Test
+    fun draggingWhileYourOwnIsShown_movesTheCardAndLeavesTheirsAlone() = runBlocking {
+        val viewModel = viewModel()
+        val loaded = viewModel.state.first { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        viewModel.show(Showing.Mine)
+        val poolItem = loaded.mine.tiers.first { it.isPool }.items.first()
+        val target = loaded.mine.tiers.first { !it.isPool }
+
+        viewModel.moveItem(poolItem.id, target.id, 0)
+
+        val after = viewModel.state.first {
+            (it as? CommunityListUiState.Success)?.arranged == true
+        } as CommunityListUiState.Success
+        assertEquals(1, after.mine.tiers.first { it.id == target.id }.items.size)
+        assertEquals(loaded.list.tiers.map { tier -> tier.items.size }, after.list.tiers.map { it.items.size })
+    }
+
+    // Keeping a list the way its author ranked it is a reason to save it, not
+    // a mistake to correct.
+    @Test
+    fun saving_keepsWhicheverArrangementIsOnScreen() = runBlocking {
+        val tiers = FakeTierRepositoryForCommunity()
+        val viewModel = viewModel(tiers = tiers)
+        viewModel.state.first { it is CommunityListUiState.Success }
+        viewModel.show(Showing.Theirs)
+
+        val savedId = CompletableDeferred<Long>()
+        viewModel.saveToMyLists { savedId.complete(it) }
+        savedId.await()
+
+        val theirs = viewModel.state.first { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        val template = tiers.templates.single()
+        assertEquals(
+            theirs.list.tiers.filterNot { it.isPool }.map { it.items.size },
+            template.tiers.map { tier -> tier.items.size },
+        )
     }
 
     @Test
@@ -141,7 +199,7 @@ private class FakeCommunityRepository : CommunityRepository {
         note: String?,
     ): Result<Unit> = Result.success(Unit)
     override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
-    override suspend fun takeDown(publishedId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> = Result.success(Unit)
     override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun follow(authorUid: String): Result<Unit> = Result.success(Unit)
@@ -180,7 +238,7 @@ private class FailingCommunityRepository : CommunityRepository {
         note: String?,
     ): Result<Unit> = Result.success(Unit)
     override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
-    override suspend fun takeDown(publishedId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> = Result.success(Unit)
     override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun follow(authorUid: String): Result<Unit> = Result.success(Unit)

@@ -7,6 +7,9 @@ data class ModerationReportDto(
     val listId: String,
     val listTitle: String = "",
     val authorName: String = "",
+    val authorUid: String? = null,
+    val authorPhotoUrl: String? = null,
+    val coverImageUrl: String? = null,
     /** Newest first. One per person who complained. */
     val reasons: List<String> = emptyList(),
     val notes: List<String> = emptyList(),
@@ -26,3 +29,10 @@ data class ModerationQueueDto(
 /** Where a picture of somebody's own ended up once it was made a face. */
 @Serializable
 data class FaceDto(val url: String)
+
+/**
+ * What a takedown asks for. Null bans nobody, which is what taking down a
+ * list without judging its author means.
+ */
+@Serializable
+data class TakeDownRequestDto(val ban: String? = null)

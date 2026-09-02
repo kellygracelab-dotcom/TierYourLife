@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.community
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FollowState
@@ -126,7 +127,7 @@ private class FakePublishedRepository(
     ): Result<Unit> = Result.success(Unit)
 
     override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
-    override suspend fun takeDown(publishedId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> = Result.success(Unit)
     override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun follow(authorUid: String): Result<Unit> = Result.success(Unit)

@@ -134,8 +134,13 @@ class CommunityListViewModel @Inject constructor(
     fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
         _state.update { current ->
             if (current !is CommunityListUiState.Success) return@update current
+            // Their arrangement is theirs. A card dragged while it is on
+            // screen used to land in the author's board and snap back on the
+            // reader's next glance, because the two are different boards and
+            // only one of them was being drawn.
+            if (current.showing == Showing.Theirs) return@update current
             current.copy(
-                list = current.list.withItemMoved(itemId, toTierId, toPosition),
+                mine = current.mine.withItemMoved(itemId, toTierId, toPosition),
                 arranged = true,
             )
         }
@@ -149,11 +154,16 @@ class CommunityListViewModel @Inject constructor(
         viewModelScope.launch {
             var newId: Long? = null
             val saved = messages.guard("Saving a community list") {
+                // Whichever board is on screen. Somebody looking at the
+                // author's arrangement and pressing save means that one --
+                // keeping a list the way its author ranked it is a reason to
+                // save it, not a mistake to correct.
+                val keeping = current.shown
                 newId = tiers.createFromTemplate(
-                    title = current.list.title,
+                    title = keeping.title,
                     authorName = current.authorName,
-                    tiers = current.list.tiers.filterNot { it.isPool },
-                    items = current.list.tiers.flatMap { it.items },
+                    tiers = keeping.tiers.filterNot { it.isPool },
+                    items = keeping.tiers.flatMap { it.items },
                 )
             }
             _state.update { (it as CommunityListUiState.Success).copy(saving = false) }

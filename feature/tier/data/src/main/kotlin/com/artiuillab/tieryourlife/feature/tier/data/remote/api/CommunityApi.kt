@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedIdDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ReportRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.SuggestedAuthorsDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.TakeDownRequestDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -51,7 +52,7 @@ interface CommunityApi {
     suspend fun reports(): ModerationQueueDto
 
     @POST("lists/{id}/takedown")
-    suspend fun takeDown(@Path("id") id: String)
+    suspend fun takeDown(@Path("id") id: String, @Body ban: TakeDownRequestDto)
 
     @POST("lists/{id}/dismiss")
     suspend fun dismissReports(@Path("id") id: String)

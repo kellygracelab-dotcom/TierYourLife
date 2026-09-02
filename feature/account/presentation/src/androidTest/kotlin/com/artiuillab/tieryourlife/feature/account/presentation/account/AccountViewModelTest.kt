@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
+import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FollowState
@@ -260,7 +261,7 @@ private class FakeCommunityForAccount : CommunityRepository {
 
     override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
 
-    override suspend fun takeDown(publishedId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> = Result.success(Unit)
 
     override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
 

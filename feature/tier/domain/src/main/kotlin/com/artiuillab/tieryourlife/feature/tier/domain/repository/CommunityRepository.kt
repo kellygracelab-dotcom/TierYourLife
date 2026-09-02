@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.repository
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FollowState
@@ -97,8 +98,13 @@ interface CommunityRepository {
      */
     suspend fun reports(): Result<List<ModerationReport>>
 
-    /** Removes a reported list for everyone and closes its complaints. */
-    suspend fun takeDown(publishedId: String): Result<Unit>
+    /**
+     * Takes the list out of the feed for good, and optionally keeps its
+     * author from publishing for a while. One request rather than two: there
+     * must be no moment in which the list is gone and the author is not yet
+     * answered for.
+     */
+    suspend fun takeDown(publishedId: String, ban: BanLength? = null): Result<Unit>
 
     /** Closes the complaints about a list and leaves the list alone. */
     suspend fun dismissReports(publishedId: String): Result<Unit>
