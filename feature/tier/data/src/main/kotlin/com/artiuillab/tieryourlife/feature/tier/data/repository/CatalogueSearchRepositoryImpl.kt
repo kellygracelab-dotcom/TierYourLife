@@ -83,10 +83,10 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
     private suspend fun fetchTmdb(query: String, language: String, page: Int): Result<TmdbPage> {
         val timedOut = withTimeoutOrNull(SEARCH_TIMEOUT_MILLIS) {
             try {
-                val response = tmdbApi.searchMovies(query = query, language = language, page = page)
+                val response = tmdbApi.searchMulti(query = query, language = language, page = page)
                 Result.success(
                     TmdbPage(
-                        items = response.results.map { it.toDomain() },
+                        items = response.results.mapNotNull { it.toDomain() },
                         hasMore = response.page < minOf(response.totalPages, LAST_TMDB_PAGE),
                     ),
                 )
