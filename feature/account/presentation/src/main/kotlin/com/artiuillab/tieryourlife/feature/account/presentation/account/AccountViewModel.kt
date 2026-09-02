@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
@@ -208,6 +209,7 @@ class AccountViewModel @Inject constructor(
     }
 
     private suspend fun refreshCredits() {
+        if (!Features.GENERATION_OFFERED) return
         if (_state.value.account !is Account.SignedIn) return
         val remaining = runCatching { credits.remaining() }.getOrNull()
         _state.update { it.copy(credits = remaining) }

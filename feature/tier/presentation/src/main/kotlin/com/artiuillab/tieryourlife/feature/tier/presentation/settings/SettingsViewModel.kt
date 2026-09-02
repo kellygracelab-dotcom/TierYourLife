@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.core.ui.UserMessages
 import com.artiuillab.tieryourlife.core.ui.guard
@@ -43,7 +44,11 @@ class SettingsViewModel @Inject constructor(
     val account: StateFlow<Account> = accountRepository.account
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), Account.Unknown)
 
-    private val _credits = MutableStateFlow(generationCredits.lastKnown())
+    // Null while generation is not offered, which the account row already knows
+    // how to draw: a balance for something nobody can spend is a puzzle.
+    private val _credits = MutableStateFlow(
+        generationCredits.lastKnown().takeIf { Features.GENERATION_OFFERED },
+    )
     val credits: StateFlow<Int?> = _credits.asStateFlow()
 
     private val _trashCount = MutableStateFlow(preferences.lastKnownTrashCount())
@@ -104,6 +109,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun loadCredits() {
+        if (!Features.GENERATION_OFFERED) return
         viewModelScope.launch {
             logFailures("Reading generation credits") {
                 _credits.value = generationCredits.remaining()
