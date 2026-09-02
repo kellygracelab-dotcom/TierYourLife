@@ -35,6 +35,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -132,7 +133,9 @@ internal fun PoolPanel(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     AddChip(onClick = onAddClick)
-                    GenerateChip(onClick = onGenerateClick)
+                    if (Features.GENERATION_OFFERED) {
+                        GenerateChip(onClick = onGenerateClick)
+                    }
                 }
             }
         }

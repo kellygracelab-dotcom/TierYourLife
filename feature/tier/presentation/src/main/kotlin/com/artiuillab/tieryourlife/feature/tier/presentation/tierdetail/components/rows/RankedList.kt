@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
@@ -235,7 +236,9 @@ internal fun RankedPoolSection(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 if (!readOnly) {
                     CollapsedPoolAddChip(onClick = onAddClick)
-                    GenerateChip(onClick = onGenerateClick, compact = true)
+                    if (Features.GENERATION_OFFERED) {
+                        GenerateChip(onClick = onGenerateClick, compact = true)
+                    }
                 }
             }
         }
