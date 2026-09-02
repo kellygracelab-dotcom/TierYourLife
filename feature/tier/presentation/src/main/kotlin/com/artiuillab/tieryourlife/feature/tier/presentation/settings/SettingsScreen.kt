@@ -419,6 +419,18 @@ private fun VersionLine(versionName: String) {
             color = MaterialTheme.colorScheme.outline,
             textAlign = TextAlign.Center,
         )
+        // The catalogue the games come from, credited on the same terms and
+        // for the same reason. English on purpose, as above.
+        Text(
+            text = stringResource(R.string.igdb_attribution),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, start = 32.dp, end = 32.dp)
+                .testTag(SettingsTestTags.IGDB_CREDIT),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 

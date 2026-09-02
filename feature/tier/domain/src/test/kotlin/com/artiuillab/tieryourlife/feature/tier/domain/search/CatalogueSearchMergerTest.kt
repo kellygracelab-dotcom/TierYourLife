@@ -11,6 +11,12 @@ class CatalogueSearchMergerTest {
     private fun tmdb(id: Long, title: String, imageUrl: String? = "https://example.test/$id.jpg") =
         CatalogueItem(id = "tmdb:$id", title = title, subtitle = null, imageUrl = imageUrl)
 
+    private fun game(id: Long, title: String, imageUrl: String? = "https://example.test/g$id.jpg") =
+        CatalogueItem(id = "igdb:$id", title = title, subtitle = null, imageUrl = imageUrl)
+
+    /** No games, for the tests that are about the other two catalogues. */
+    private val games = Result.success(emptyList<CatalogueItem>())
+
     private fun wikidata(
         qid: String,
         title: String,
@@ -36,7 +42,7 @@ class CatalogueSearchMergerTest {
             ),
         )
 
-        val result = CatalogueSearchMerger.merge("x", tmdbResult, wikidataResult)
+        val result = CatalogueSearchMerger.merge("x", tmdbResult, wikidataResult, games)
 
         assertEquals(
             listOf("tmdb:1", "wikidata:Q1", "tmdb:2", "wikidata:Q2"),
@@ -50,7 +56,7 @@ class CatalogueSearchMergerTest {
             listOf(tmdb(1, "Thing", imageUrl = "   "), tmdb(2, "Thing")),
         )
 
-        val result = CatalogueSearchMerger.merge("thing", tmdbResult, Result.success(emptyList()))
+        val result = CatalogueSearchMerger.merge("thing", tmdbResult, Result.success(emptyList()), games)
 
         assertEquals(listOf("tmdb:2", "tmdb:1"), result.getOrThrow().map { it.id })
     }
@@ -64,7 +70,7 @@ class CatalogueSearchMergerTest {
             listOf(tmdb(1, "Something else entirely"), tmdb(2, "Silksong", imageUrl = null)),
         )
 
-        val result = CatalogueSearchMerger.merge("Silksong", tmdbResult, Result.success(emptyList()))
+        val result = CatalogueSearchMerger.merge("Silksong", tmdbResult, Result.success(emptyList()), games)
 
         assertEquals(listOf("tmdb:2", "tmdb:1"), result.getOrThrow().map { it.id })
     }
@@ -74,7 +80,7 @@ class CatalogueSearchMergerTest {
         val tmdbResult = Result.success(listOf(tmdb(157336, "Interstellar")))
         val wikidataResult = Result.success(listOf(wikidata("Q206529", "Interstellar", linkedTmdbId = 157336)))
 
-        val result = CatalogueSearchMerger.merge("interstellar", tmdbResult, wikidataResult)
+        val result = CatalogueSearchMerger.merge("interstellar", tmdbResult, wikidataResult, games)
 
         assertEquals(listOf("tmdb:157336"), result.getOrThrow().map { it.id })
     }
@@ -84,7 +90,7 @@ class CatalogueSearchMergerTest {
         val tmdbResult = Result.success(listOf(tmdb(1, "Something Else")))
         val wikidataResult = Result.success(listOf(wikidata("Q1", "Bears", linkedTmdbId = 999)))
 
-        val result = CatalogueSearchMerger.merge("bears", tmdbResult, wikidataResult)
+        val result = CatalogueSearchMerger.merge("bears", tmdbResult, wikidataResult, games)
 
         assertEquals(setOf("tmdb:1", "wikidata:Q1"), result.getOrThrow().map { it.id }.toSet())
     }
@@ -94,7 +100,7 @@ class CatalogueSearchMergerTest {
         val tmdbResult = Result.success(listOf(tmdb(1, "Unrelated")))
         val wikidataResult = Result.success(listOf(wikidata("Q1", "Bears", linkedTmdbId = null)))
 
-        val result = CatalogueSearchMerger.merge("bears", tmdbResult, wikidataResult)
+        val result = CatalogueSearchMerger.merge("bears", tmdbResult, wikidataResult, games)
 
         assertEquals(setOf("tmdb:1", "wikidata:Q1"), result.getOrThrow().map { it.id }.toSet())
     }
@@ -109,7 +115,7 @@ class CatalogueSearchMergerTest {
             ),
         )
 
-        val result = CatalogueSearchMerger.merge("dune", tmdbResult, Result.success(emptyList()))
+        val result = CatalogueSearchMerger.merge("dune", tmdbResult, Result.success(emptyList()), games)
 
         assertEquals(listOf("tmdb:3", "tmdb:1", "tmdb:2"), result.getOrThrow().map { it.id })
     }
@@ -118,7 +124,7 @@ class CatalogueSearchMergerTest {
     fun `ranking is case insensitive`() {
         val tmdbResult = Result.success(listOf(tmdb(1, "Not It"), tmdb(2, "DUNE")))
 
-        val result = CatalogueSearchMerger.merge("dune", tmdbResult, Result.success(emptyList()))
+        val result = CatalogueSearchMerger.merge("dune", tmdbResult, Result.success(emptyList()), games)
 
         assertEquals("tmdb:2", result.getOrThrow().first().id)
     }
@@ -128,7 +134,7 @@ class CatalogueSearchMergerTest {
         val tmdbResult = Result.success(listOf(tmdb(1, "T1"), tmdb(2, "T2"), tmdb(3, "T3")))
         val wikidataResult = Result.success(listOf(wikidata("Q1", "W1"), wikidata("Q2", "W2")))
 
-        val result = CatalogueSearchMerger.merge("nomatch", tmdbResult, wikidataResult)
+        val result = CatalogueSearchMerger.merge("nomatch", tmdbResult, wikidataResult, games)
 
         assertEquals(
             listOf("tmdb:1", "wikidata:Q1", "tmdb:2", "wikidata:Q2", "tmdb:3"),
@@ -141,7 +147,7 @@ class CatalogueSearchMergerTest {
         val tmdbResult = Result.success(listOf(tmdb(1, "Something Unrelated")))
         val wikidataResult = Result.success(listOf(wikidata("Q1", "Bears")))
 
-        val result = CatalogueSearchMerger.merge("bears", tmdbResult, wikidataResult)
+        val result = CatalogueSearchMerger.merge("bears", tmdbResult, wikidataResult, games)
 
         assertEquals("wikidata:Q1", result.getOrThrow().first().id)
     }
@@ -150,7 +156,7 @@ class CatalogueSearchMergerTest {
     fun `one source empty still returns the other source's items as a success`() {
         val tmdbResult = Result.success(listOf(tmdb(1, "Solo")))
 
-        val result = CatalogueSearchMerger.merge("solo", tmdbResult, Result.success(emptyList()))
+        val result = CatalogueSearchMerger.merge("solo", tmdbResult, Result.success(emptyList()), games)
 
         assertTrue(result.isSuccess)
         assertEquals(listOf("tmdb:1"), result.getOrThrow().map { it.id })
@@ -161,7 +167,7 @@ class CatalogueSearchMergerTest {
         val tmdbResult = Result.success(listOf(tmdb(1, "Solo")))
         val wikidataResult = Result.failure<List<WikidataCandidate>>(IOException("wikidata down"))
 
-        val result = CatalogueSearchMerger.merge("solo", tmdbResult, wikidataResult)
+        val result = CatalogueSearchMerger.merge("solo", tmdbResult, wikidataResult, games)
 
         assertTrue(result.isSuccess)
         assertEquals(listOf("tmdb:1"), result.getOrThrow().map { it.id })
@@ -172,22 +178,63 @@ class CatalogueSearchMergerTest {
         val tmdbResult = Result.success(emptyList<CatalogueItem>())
         val wikidataResult = Result.failure<List<WikidataCandidate>>(IOException("wikidata down"))
 
-        val result = CatalogueSearchMerger.merge("nothing", tmdbResult, wikidataResult)
+        val result = CatalogueSearchMerger.merge("nothing", tmdbResult, wikidataResult, games)
 
         assertTrue(result.isSuccess)
         assertTrue(result.getOrThrow().isEmpty())
     }
 
     @Test
-    fun `both sources failed is a failure`() {
+    fun `every source failed is a failure`() {
         val tmdbFailure = IOException("tmdb down")
         val tmdbResult = Result.failure<List<CatalogueItem>>(tmdbFailure)
         val wikidataResult = Result.failure<List<WikidataCandidate>>(IOException("wikidata down"))
+        val gamesResult = Result.failure<List<CatalogueItem>>(IOException("igdb down"))
 
-        val result = CatalogueSearchMerger.merge("anything", tmdbResult, wikidataResult)
+        val result = CatalogueSearchMerger.merge("anything", tmdbResult, wikidataResult, gamesResult)
 
         assertTrue(result.isFailure)
         assertEquals(tmdbFailure, result.exceptionOrNull())
+    }
+
+    // Otherwise an outage at two catalogues reads as "nothing matched", and
+    // the one still standing is the only reason anybody would know better.
+    @Test
+    fun `one source still answering keeps the search a success`() {
+        val result = CatalogueSearchMerger.merge(
+            "silksong",
+            Result.failure(IOException("tmdb down")),
+            Result.failure(IOException("wikidata down")),
+            Result.success(listOf(game(1, "Silksong"))),
+        )
+
+        assertEquals(listOf("igdb:1"), result.getOrThrow().map { it.id })
+    }
+
+    // Wikidata knows the game by name and has no picture of it; IGDB has both.
+    // Two rows for one game, one of them blank, is worse than one row.
+    @Test
+    fun `a game IGDB illustrated hides the same game from wikidata`() {
+        val result = CatalogueSearchMerger.merge(
+            "silksong",
+            Result.success(emptyList()),
+            Result.success(listOf(wikidata("Q1", "Silksong", imageUrl = null))),
+            Result.success(listOf(game(1, "Silksong"))),
+        )
+
+        assertEquals(listOf("igdb:1"), result.getOrThrow().map { it.id })
+    }
+
+    @Test
+    fun `a game IGDB could not illustrate leaves wikidata alone`() {
+        val result = CatalogueSearchMerger.merge(
+            "silksong",
+            Result.success(emptyList()),
+            Result.success(listOf(wikidata("Q1", "Silksong"))),
+            Result.success(listOf(game(1, "Silksong", imageUrl = null))),
+        )
+
+        assertEquals(listOf("wikidata:Q1", "igdb:1"), result.getOrThrow().map { it.id })
     }
 
     @Test
@@ -196,6 +243,7 @@ class CatalogueSearchMergerTest {
             "nothing",
             Result.success(emptyList()),
             Result.success(emptyList()),
+            games,
         )
 
         assertTrue(result.isSuccess)
@@ -206,7 +254,7 @@ class CatalogueSearchMergerTest {
     fun `blank query never claims an exact or prefix match`() {
         val tmdbResult = Result.success(listOf(tmdb(1, ""), tmdb(2, "Anything")))
 
-        val result = CatalogueSearchMerger.merge("   ", tmdbResult, Result.success(emptyList()))
+        val result = CatalogueSearchMerger.merge("   ", tmdbResult, Result.success(emptyList()), games)
 
         assertEquals(listOf("tmdb:1", "tmdb:2"), result.getOrThrow().map { it.id })
     }
