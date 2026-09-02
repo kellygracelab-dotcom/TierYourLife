@@ -121,6 +121,17 @@ jobs:
           # ddmlib to give up; nothing here needs verifying.
           script: |
             adb shell settings put global verifier_verify_adb_installs 0
+            # Every so often the emulator finishes a module's tests and the
+            # results file never appears, so Gradle fails a run in which every
+            # test passed -- "294/294 completed, 0 failed" and then a missing
+            # XML. It lands on a different module each time, which is what
+            # gives it away as the report going astray rather than a test
+            # failing. Retried only on that one symptom: anything else is a
+            # real failure and is reported the first time, undoubled.
+            set -o pipefail
+            ./gradlew connectedDebugAndroidTest 2>&1 | tee instrumentation.log && exit 0
+            grep -q "Could not load test results" instrumentation.log || exit 1
+            echo "Retrying: a results file went missing, which is the emulator losing a report."
             ./gradlew connectedDebugAndroidTest
 
       - name: Upload reports
