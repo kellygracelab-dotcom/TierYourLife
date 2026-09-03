@@ -27,6 +27,7 @@ internal object TierListsTestTags {
     const val EMPTY_STATE = "home_empty_state"
     const val COMMUNITY_LOADING = "home_community_loading"
     const val COMMUNITY_FAILED = "home_community_failed"
+    const val COMMUNITY_UNVERIFIED = "home_community_unverified"
     const val COMMUNITY_EMPTY = "home_community_empty"
     const val COMMUNITY_LOADING_MORE = "home_community_loading_more"
     const val COMMUNITY_HIDDEN_TILE = "home_community_hidden_tile"

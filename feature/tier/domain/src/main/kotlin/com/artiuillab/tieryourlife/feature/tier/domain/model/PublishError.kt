@@ -11,6 +11,10 @@ enum class PublishError {
     PictureRefused,
 
     Offline,
+
+    /** Play would not vouch for this installation. Retrying will not help. */
+    NotVerified,
+
     Unknown,
 }
 

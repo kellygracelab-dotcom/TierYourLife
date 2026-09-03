@@ -305,6 +305,9 @@
     </plurals>
     <string name="home_community_failed">Topluluk yüklenemedi</string>
     <string name="home_community_failed_body">Bağlantını kontrol et.</string>
+    <string name="home_community_unverified">Bu kopya doğrulanamadı</string>
+    <string name="home_community_unverified_body">Google Play, topluluk açılmadan önce kurulumu doğrular. Play\'den kurduysanız genellikle kendiliğinden geçer.</string>
+    <string name="list_settings_public_unverified">Google Play bu kurulumu doğrulayamadı, bu yüzden buradan hiçbir şey yayınlanamaz.</string>
     <string name="community_by_author">%1$s tarafından</string>
     <string name="community_showing_theirs">Onun sıralaması</string>
     <string name="community_showing_mine">Benimki</string>

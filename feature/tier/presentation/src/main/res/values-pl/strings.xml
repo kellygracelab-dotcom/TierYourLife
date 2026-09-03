@@ -357,6 +357,9 @@
     </plurals>
     <string name="home_community_failed">Nie udało się wczytać społeczności</string>
     <string name="home_community_failed_body">Sprawdź połączenie.</string>
+    <string name="home_community_unverified">Nie udało się zweryfikować tej kopii</string>
+    <string name="home_community_unverified_body">Google Play potwierdza instalację, zanim otworzy społeczność. Jeśli aplikacja pochodzi z Play, zwykle mija samo.</string>
+    <string name="list_settings_public_unverified">Google Play nie potwierdził tej instalacji, więc nie można z niej nic opublikować.</string>
     <string name="community_by_author">od %1$s</string>
     <string name="community_showing_theirs">Jego układ</string>
     <string name="community_showing_mine">Mój</string>

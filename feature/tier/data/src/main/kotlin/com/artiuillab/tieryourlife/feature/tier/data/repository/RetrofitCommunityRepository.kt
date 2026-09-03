@@ -10,8 +10,10 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedListSum
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PublishedTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.ReportRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.TakeDownRequestDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.isAppUnverified
 import com.artiuillab.tieryourlife.feature.tier.data.sync.PictureSync
 import com.artiuillab.tieryourlife.feature.tier.data.sync.PublishFingerprint
+import com.artiuillab.tieryourlife.feature.tier.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
@@ -176,9 +178,18 @@ class RetrofitCommunityRepository @Inject constructor(
  * the token", which is a real evening this cost.
  */
 private inline fun <T> attempt(what: String, block: () -> T): Result<T> =
-    runCatching(block).onFailure { Timber.w(it, "%s failed", what) }
+    runCatching(block).fold(
+        onSuccess = { Result.success(it) },
+        onFailure = { failure ->
+            Timber.w(failure, "%s failed", what)
+            // Named here rather than at each screen: every caller of this file
+            // gets the same refusal, and none of them can read an HTTP body.
+            Result.failure(if (failure.isAppUnverified()) AppUnverified() else failure)
+        },
+    )
 
 private fun Throwable.asPublishError(): PublishError = when {
+    isAppUnverified() -> PublishError.NotVerified
     this is HttpException -> when (code()) {
         403 -> PublishError.NotSignedIn
         409 -> PublishError.TooManyLists

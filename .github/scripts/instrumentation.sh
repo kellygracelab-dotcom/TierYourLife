@@ -18,14 +18,18 @@ set -u
 
 adb shell settings put global verifier_verify_adb_installs 0
 
+# Read straight off the run and before anything else, not after an `if`. A
+# failed `if` with no `else` is itself a success, so `status=$?` there read 0
+# and this script reported every red run green -- which it did, for two
+# merges, with a genuinely failing test in both.
 log=instrumentation.log
-if ./gradlew connectedDebugAndroidTest > "$log" 2>&1; then
-  cat "$log"
-  exit 0
-fi
-
+./gradlew connectedDebugAndroidTest > "$log" 2>&1
 status=$?
 cat "$log"
+
+if [ "$status" -eq 0 ]; then
+  exit 0
+fi
 
 if ! grep -q "Could not load test results" "$log"; then
   exit "$status"

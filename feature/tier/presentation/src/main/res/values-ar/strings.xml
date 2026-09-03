@@ -409,6 +409,9 @@
     </plurals>
     <string name="home_community_failed">تعذّر تحميل المجتمع</string>
     <string name="home_community_failed_body">تحقق من اتصالك.</string>
+    <string name="home_community_unverified">تعذّر التحقق من هذه النسخة</string>
+    <string name="home_community_unverified_body">يتحقق Google Play من التثبيت قبل فتح المجتمع. إذا كان التثبيت من Play، فعادةً ما تُحل المسألة من تلقاء نفسها.</string>
+    <string name="list_settings_public_unverified">لم يتمكن Google Play من تأكيد هذا التثبيت، لذا لا يمكن النشر منه.</string>
     <string name="community_by_author">من %1$s</string>
     <string name="community_showing_theirs">ترتيبه</string>
     <string name="community_showing_mine">ترتيبي</string>
