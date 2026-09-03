@@ -97,4 +97,13 @@ sealed interface CommunityFeed {
     ) : CommunityFeed
 
     data object Failed : CommunityFeed
+
+    /**
+     * Play would not vouch for this installation, so the server turned it
+     * away. Apart from [Failed] because the two want opposite things said:
+     * that one asks the reader to check their connection and try again, and
+     * here the connection is fine and trying again is exactly what will not
+     * work.
+     */
+    data object Unverified : CommunityFeed
 }

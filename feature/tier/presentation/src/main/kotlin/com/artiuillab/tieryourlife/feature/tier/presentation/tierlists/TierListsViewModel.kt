@@ -11,6 +11,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardOrder
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
+import com.artiuillab.tieryourlife.feature.tier.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSource
@@ -374,7 +375,7 @@ class TierListsViewModel @Inject constructor(
             onFailure = { error ->
                 Timber.w(error, "Loading the community feed failed")
                 communityCursor = null
-                CommunityFeed.Failed
+                if (error is AppUnverified) CommunityFeed.Unverified else CommunityFeed.Failed
             },
         )
         emitSuccess()

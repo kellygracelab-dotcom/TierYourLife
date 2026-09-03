@@ -138,6 +138,15 @@ internal fun CommunityFeedList(
                 testTag = TierListsTestTags.COMMUNITY_FAILED,
             )
 
+            // No Try again. The button would be honest only if pressing it
+            // could change the answer, and here nothing the reader does on
+            // this screen can.
+            CommunityFeed.Unverified -> CommunityMessage(
+                title = stringResource(R.string.home_community_unverified),
+                body = stringResource(R.string.home_community_unverified_body),
+                testTag = TierListsTestTags.COMMUNITY_UNVERIFIED,
+            )
+
             is CommunityFeed.FollowingNobody -> FollowingNobody(
                 authors = feed.authors,
                 loading = feed.loading,
@@ -336,9 +345,9 @@ private fun CommunityCard(
 private fun CommunityMessage(
     title: String,
     body: String,
-    action: String?,
-    onAction: () -> Unit,
     testTag: String,
+    action: String? = null,
+    onAction: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Box(

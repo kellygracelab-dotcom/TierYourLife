@@ -500,5 +500,6 @@ private fun PublishError.messageRes(): Int = when (this) {
     PublishError.TooLarge -> R.string.list_settings_public_too_large
     PublishError.PictureRefused -> R.string.list_settings_public_picture_refused
     PublishError.Offline -> R.string.list_settings_public_offline
+    PublishError.NotVerified -> R.string.list_settings_public_unverified
     PublishError.Unknown -> R.string.list_settings_public_failed
 }

@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
@@ -46,16 +47,20 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class TierListsViewModelTest {
 
+    // Edited-at is spelled out because the screen opens on Newest, and two
+    // boards without one are ordered by the tie-break rather than by anything
+    // this test means to say.
     @Test
     fun loadTierLists_showsExactlyWhatTheRepositoryReturned_noneAdded() = runBlocking {
         val repository = FakeTierRepository(
             initial = listOf(
-                fakeList(id = 1, title = "Existing list"),
-                fakeList(id = 2, title = "Another list"),
+                fakeList(id = 1, title = "Existing list", editedAt = 2),
+                fakeList(id = 2, title = "Another list", editedAt = 1),
             ),
         )
         val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
@@ -305,6 +310,32 @@ class TierListsViewModelTest {
         assertEquals(listOf("b"), feed.lists.map { it.id })
     }
 
+    // The two refusals want opposite sentences, so the screen has to be able
+    // to tell them apart before it says either.
+    @Test
+    fun whenPlayWillNotVouchForTheInstall_theFeedSaysSoRatherThanBlamingTheConnection() = runBlocking {
+        val community = FakeCommunityRepository(firstPageFails = AppUnverified())
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        viewModel.selectTab(HomeTab.Community)
+
+        val feed = viewModel.state.first {
+            (it as? TierListsUiState.Success)?.community is CommunityFeed.Unverified
+        }
+        assertEquals(CommunityFeed.Unverified, (feed as TierListsUiState.Success).community)
+    }
+
+    @Test
+    fun whenTheFeedSimplyDidNotArrive_itStaysTheOneWithATryAgain() = runBlocking {
+        val community = FakeCommunityRepository(firstPageFails = IOException("offline"))
+        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        viewModel.selectTab(HomeTab.Community)
+
+        val feed = viewModel.state.first {
+            (it as? TierListsUiState.Success)?.community is CommunityFeed.Failed
+        }
+        assertEquals(CommunityFeed.Failed, (feed as TierListsUiState.Success).community)
+    }
+
     @Test
     fun comingBackWithNothingHidden_leavesTheFeedAlone() = runBlocking {
         val community = FakeCommunityRepository(feed = listOf(published("a", "Sci-fi films")))
@@ -471,8 +502,8 @@ class TierListsViewModelTest {
         updatedAtMillis = 0,
     )
 
-    private fun fakeList(id: Long, title: String, publishedId: String? = null): TierList =
-        TierList(id = id, title = title, tiers = emptyList(), publishedId = publishedId)
+    private fun fakeList(id: Long, title: String, publishedId: String? = null, editedAt: Long? = null): TierList =
+        TierList(id = id, title = title, tiers = emptyList(), publishedId = publishedId, editedAt = editedAt)
 
     private class RecordedStates(val values: MutableList<TierListsUiState>, val job: Job) {
         suspend fun awaitUntil(predicate: (TierListsUiState) -> Boolean) {
@@ -598,6 +629,8 @@ private class FakeCommunityRepository(
     /** Pages after the first, in order. The cursor to each is its index. */
     private val nextPages: List<List<PublishedListSummary>> = emptyList(),
     private val laterPagesFail: Boolean = false,
+    /** What the first page comes back as, when it does not come back. */
+    private val firstPageFails: Throwable? = null,
 ) : CommunityRepository {
     val takenDown = mutableListOf<String>()
     val cursorsAsked = mutableListOf<String?>()
@@ -610,6 +643,7 @@ private class FakeCommunityRepository(
         following: Boolean,
     ): Result<CommunityPage> {
         cursorsAsked += after
+        if (after == null && firstPageFails != null) return Result.failure(firstPageFails)
         if (after != null && laterPagesFail) return Result.failure(IllegalStateException("offline"))
         val index = after?.toInt()?.plus(1) ?: 0
         val lists = if (index == 0) feed else nextPages.getOrElse(index - 1) { emptyList() }

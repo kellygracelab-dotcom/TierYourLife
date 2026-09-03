@@ -357,6 +357,9 @@
     </plurals>
     <string name="home_community_failed">Не вдалося завантажити спільноту</string>
     <string name="home_community_failed_body">Перевірте з\'єднання.</string>
+    <string name="home_community_unverified">Цю копію не вдалося перевірити</string>
+    <string name="home_community_unverified_body">Google Play підтверджує встановлення, перш ніж відкрити спільноту. Якщо застосунок із Play, зазвичай минає само.</string>
+    <string name="list_settings_public_unverified">Google Play не підтвердив це встановлення, тому публікувати з нього не можна.</string>
     <string name="community_by_author">від %1$s</string>
     <string name="community_showing_theirs">Його розташування</string>
     <string name="community_showing_mine">Моє</string>
