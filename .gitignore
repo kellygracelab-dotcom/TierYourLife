@@ -10,3 +10,4 @@ build/
 .cxx
 local.properties
 instrumentation.log
+/release
