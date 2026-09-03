@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "709407647012-eqslia5k9lvjpom9e5jsl8hbc5k38gq0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.artiuillab.tieryourlife",
+            "certificate_hash": "52bab1c7b232d4de62818114b330126a3ffe8268"
+          }
+        },
+        {
+          "client_id": "709407647012-p50cqfnrvf0djff7eo7k1gpmot0bho7t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.artiuillab.tieryourlife",
+            "certificate_hash": "ec46b018a0a987821b66de37e8990d697968e901"
+          }
+        },
+        {
           "client_id": "709407647012-0ioe1vc7fcat4kn15tu81p093nk0vds2.apps.googleusercontent.com",
           "client_type": 3
         }
