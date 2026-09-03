@@ -331,6 +331,9 @@
     </plurals>
     <string name="home_community_failed">Impossible de charger la communauté</string>
     <string name="home_community_failed_body">Vérifiez votre connexion.</string>
+    <string name="home_community_unverified">Cette copie n\'a pas pu être vérifiée</string>
+    <string name="home_community_unverified_body">Google Play confirme l\'installation avant d\'ouvrir la communauté. Si elle vient de Play, cela se règle en général tout seul.</string>
+    <string name="list_settings_public_unverified">Google Play n\'a pas pu confirmer cette installation, donc rien ne peut être publié depuis celle-ci.</string>
     <string name="community_by_author">de %1$s</string>
     <string name="community_showing_theirs">Son classement</string>
     <string name="community_showing_mine">Le mien</string>

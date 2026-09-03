@@ -279,6 +279,9 @@
     </plurals>
     <string name="home_community_failed">コミュニティを読み込めませんでした</string>
     <string name="home_community_failed_body">接続を確認してください。</string>
+    <string name="home_community_unverified">このコピーを確認できませんでした</string>
+    <string name="home_community_unverified_body">コミュニティを開く前に、Google Play がインストールを確認します。Play から入れた場合は、たいてい自然に解消します。</string>
+    <string name="list_settings_public_unverified">Google Play がこのインストールを確認できないため、ここからは公開できません。</string>
     <string name="community_by_author">%1$s さん</string>
     <string name="community_showing_theirs">作者の並べ方</string>
     <string name="community_showing_mine">自分の並べ方</string>
