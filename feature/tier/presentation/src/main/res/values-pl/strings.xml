@@ -423,6 +423,11 @@
     <string name="list_settings_cover">Okładka</string>
     <string name="list_settings_cover_none_set">Brak</string>
     <string name="list_settings_cover_set">Wybrana</string>
+    <string name="list_settings_share">Udostępnij jako obraz</string>
+    <string name="list_settings_share_sub">Obraz tej tablicy z linkiem do aplikacji</string>
+    <string name="share_caption">%1$s — ułożone w TierYourLife\n%2$s</string>
+    <string name="share_footer">Zrobione w TierYourLife</string>
+    <string name="share_failed">Nie udało się utworzyć obrazu</string>
     <string name="list_settings_cover_body">Wybierz jedną z kart tej listy albo obraz z galerii.</string>
     <string name="list_settings_cover_no_cards">Żadna karta tej listy nie ma jeszcze obrazu.</string>
     <string name="list_settings_cover_gallery">Wybierz z galerii</string>

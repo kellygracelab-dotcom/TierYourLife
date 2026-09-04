@@ -397,6 +397,11 @@
     <string name="list_settings_cover">Couverture</string>
     <string name="list_settings_cover_none_set">Aucune</string>
     <string name="list_settings_cover_set">Choisie</string>
+    <string name="list_settings_share">Partager en image</string>
+    <string name="list_settings_share_sub">Une image de ce tableau, avec un lien vers l\'app</string>
+    <string name="share_caption">%1$s — classé dans TierYourLife\n%2$s</string>
+    <string name="share_footer">Fait avec TierYourLife</string>
+    <string name="share_failed">Impossible de créer l\'image</string>
     <string name="list_settings_cover_body">Choisissez une carte de cette liste ou une image de votre galerie.</string>
     <string name="list_settings_cover_no_cards">Aucune carte de cette liste n\'a encore d\'image.</string>
     <string name="list_settings_cover_gallery">Choisir dans la galerie</string>

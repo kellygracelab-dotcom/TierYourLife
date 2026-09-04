@@ -397,6 +397,11 @@
     <string name="list_settings_cover">Portada</string>
     <string name="list_settings_cover_none_set">Ninguna</string>
     <string name="list_settings_cover_set">Elegida</string>
+    <string name="list_settings_share">Compartir como imagen</string>
+    <string name="list_settings_share_sub">Una imagen de este tablero, con enlace a la app</string>
+    <string name="share_caption">%1$s — ordenado en TierYourLife\n%2$s</string>
+    <string name="share_footer">Hecho en TierYourLife</string>
+    <string name="share_failed">No se pudo crear la imagen</string>
     <string name="list_settings_cover_body">Elige una de las tarjetas de la lista o una imagen de tu galería.</string>
     <string name="list_settings_cover_no_cards">Ninguna tarjeta de la lista tiene imagen todavía.</string>
     <string name="list_settings_cover_gallery">Elegir de la galería</string>

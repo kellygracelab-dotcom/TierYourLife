@@ -42,6 +42,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalResources
@@ -54,6 +55,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
@@ -63,6 +65,9 @@ import com.artiuillab.tieryourlife.core.ui.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.share.BoardPalette
+import com.artiuillab.tieryourlife.feature.tier.presentation.share.SHARE_LINK
+import com.artiuillab.tieryourlife.feature.tier.presentation.share.shareBoard
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BoardIndex
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.drag.FloatingDragTile
@@ -318,6 +323,21 @@ private fun TierScreenBody(
 
     BackHandler(enabled = listSettingsVisible) { listSettingsVisible = false }
 
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val media = TierYourLifeMedia.current
+    val palette = BoardPalette(
+        surface = MaterialTheme.colorScheme.surface,
+        onSurface = MaterialTheme.colorScheme.onSurface,
+        onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant,
+        outlineVariant = MaterialTheme.colorScheme.outlineVariant,
+        onBand = media.onTierBand,
+        unrankedBand = media.unrankedRibbon,
+        isDark = media.isDark,
+    )
+    val shareCaption = stringResource(R.string.share_caption, list.title, SHARE_LINK)
+    val shareFooter = stringResource(R.string.share_footer)
+
     if (listSettingsVisible) {
         TierListSettingsScreenContent(
             list = list,
@@ -339,6 +359,7 @@ private fun TierScreenBody(
                 listSettingsVisible = false
                 actions.onAddClick()
             },
+            onShare = { scope.launch { shareBoard(context, list, palette, shareCaption, shareFooter) } },
         )
         return
     }

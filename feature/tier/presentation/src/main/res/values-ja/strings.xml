@@ -345,6 +345,11 @@
     <string name="list_settings_cover">カバー</string>
     <string name="list_settings_cover_none_set">なし</string>
     <string name="list_settings_cover_set">選択済み</string>
+    <string name="list_settings_share">画像として共有</string>
+    <string name="list_settings_share_sub">このボードの画像とアプリへのリンク</string>
+    <string name="share_caption">%1$s — TierYourLife でランク付け\n%2$s</string>
+    <string name="share_footer">TierYourLife で作成</string>
+    <string name="share_failed">画像を作成できませんでした</string>
     <string name="list_settings_cover_body">このリストのカード、またはギャラリーの画像から選べます。</string>
     <string name="list_settings_cover_no_cards">このリストのカードにはまだ画像がありません。</string>
     <string name="list_settings_cover_gallery">ギャラリーから選ぶ</string>

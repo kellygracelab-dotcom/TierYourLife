@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The one folder a shared picture is handed out from. Nothing else in the
+     cache, and nothing outside it, is reachable through the provider. -->
+<paths>
+    <cache-path name="shared" path="shared/" />
+</paths>

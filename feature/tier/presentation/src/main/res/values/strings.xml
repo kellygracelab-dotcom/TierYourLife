@@ -373,6 +373,11 @@
     <string name="list_settings_cover">Cover</string>
     <string name="list_settings_cover_none_set">None</string>
     <string name="list_settings_cover_set">Chosen</string>
+    <string name="list_settings_share">Share as image</string>
+    <string name="list_settings_share_sub">A picture of this board, with a link to the app</string>
+    <string name="share_caption">%1$s — ranked in TierYourLife\n%2$s</string>
+    <string name="share_footer">Made in TierYourLife</string>
+    <string name="share_failed">Couldn\'t make the picture</string>
     <string name="list_settings_cover_body">Pick one of this list\'s cards, or a picture from your gallery.</string>
     <string name="list_settings_cover_no_cards">None of this list\'s cards have a picture yet.</string>
     <string name="list_settings_cover_gallery">Choose from gallery</string>

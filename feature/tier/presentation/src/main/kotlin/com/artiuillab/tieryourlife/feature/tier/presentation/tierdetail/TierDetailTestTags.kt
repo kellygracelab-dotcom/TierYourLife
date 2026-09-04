@@ -26,6 +26,7 @@ internal object TierDetailTestTags {
     const val CATEGORY_ROW = "tier_detail_category_row"
     const val CATEGORY_SHEET = "tier_detail_category_sheet"
     const val COVER_ROW = "tier_detail_cover_row"
+    const val SHARE_ROW = "tier_detail_share_row"
     const val COVER_SHEET = "tier_detail_cover_sheet"
     const val COVER_FROM_GALLERY = "tier_detail_cover_gallery"
     const val COVER_CLEAR = "tier_detail_cover_clear"

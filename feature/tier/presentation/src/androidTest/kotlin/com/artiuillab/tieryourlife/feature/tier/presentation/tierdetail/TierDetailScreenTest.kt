@@ -980,7 +980,7 @@ class TierDetailScreenTest {
         openListSettings()
 
         composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_SCREEN).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -1137,7 +1137,7 @@ class TierDetailScreenTest {
         composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_WRAP).assertIsDisplayed()
         composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_STRIP).assertIsDisplayed()
         composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_RANKED).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -2035,7 +2035,7 @@ class TierDetailScreenTest {
 
     private fun openTierEditor() {
         openListSettings()
-        composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).performScrollTo().performClick()
     }
 
     private fun string(resourceId: Int, vararg formatArgs: Any): String =

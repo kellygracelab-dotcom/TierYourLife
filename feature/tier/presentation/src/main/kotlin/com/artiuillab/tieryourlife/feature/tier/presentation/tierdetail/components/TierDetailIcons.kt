@@ -237,3 +237,14 @@ internal fun DrawScope.drawSparkle(
     path.close()
     drawPath(path, color)
 }
+
+@Composable
+internal fun ShareIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.8f * scale
+    val right = Offset(18f * scale, 5f * scale)
+    val left = Offset(6f * scale, 12f * scale)
+    val bottom = Offset(18f * scale, 19f * scale)
+    drawLine(color, right, left, stroke, StrokeCap.Round)
+    drawLine(color, left, bottom, stroke, StrokeCap.Round)
+    for (node in listOf(right, left, bottom)) drawCircle(color, radius = 2.6f * scale, center = node)
+}
