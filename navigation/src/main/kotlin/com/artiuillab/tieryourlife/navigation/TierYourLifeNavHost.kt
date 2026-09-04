@@ -79,16 +79,24 @@ fun TierYourLifeNavHost(
  * selected is honest about being somewhere the rail did not take you.
  */
 private fun railDestinationOf(entry: NavBackStackEntry?): RailDestination? {
-    val route = entry?.destination?.route ?: return null
-    return when {
-        route.contains("TierLists") -> {
-            val onCommunity = runCatching { entry.toRoute<Route.TierLists>().community }.getOrDefault(false)
-            if (onCommunity) RailDestination.Community else RailDestination.Lists
-        }
+    val route = entry?.destination?.route
+    // Read only when the route is the one that carries it: toRoute on any
+    // other destination throws, and a board is not a place to crash.
+    val onCommunity = route?.contains("TierLists") == true &&
+        runCatching { entry.toRoute<Route.TierLists>().community }.getOrDefault(false)
+    return railDestinationFor(route, onCommunity)
+}
 
-        route.contains("Settings") -> RailDestination.Settings
-        else -> null
-    }
+/**
+ * The rule on its own, with the back stack left out so it can be argued with
+ * in a unit test. Type-safe routes serialise to their class name plus
+ * arguments, which is why this matches on the name rather than the string.
+ */
+internal fun railDestinationFor(route: String?, onCommunity: Boolean): RailDestination? = when {
+    route == null -> null
+    route.contains("TierLists") -> if (onCommunity) RailDestination.Community else RailDestination.Lists
+    route.contains("Settings") -> RailDestination.Settings
+    else -> null
 }
 
 private fun NavHostController.goTo(destination: RailDestination) {

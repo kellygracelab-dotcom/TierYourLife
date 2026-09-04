@@ -262,7 +262,7 @@ private fun buildExportStrings(context: Context): TierListsExportStrings {
 }
 
 @Composable
-internal fun SettingsScreenContent(
+fun SettingsScreenContent(
     account: Account,
     credits: Int?,
     onAccountClick: () -> Unit,

@@ -33,12 +33,29 @@ python -c "from PIL import Image; import sys; [Image.open(p).convert('RGB').resi
 ```
 
 The picture is the size of whatever drew it, so use a device with an ordinary phone window — the
-committed set came from a 1080×2400 phone at 420dpi. Run it a second time against a tablet and copy
-`board-light`, `community-light` and `settings-dark` into `docs/screenshots/tablet/` for the
-tablet section.
+committed set came from a 1080×2400 phone at 420dpi.
 
-Gradle clears that output directory at the start of each run, so copy the phone set out before
-starting the tablet one.
+## The tablet pictures
+
+They come from a different test in a different module, because the rail does:
+
+```bash
+ANDROID_SERIAL=<tablet> ./gradlew :navigation:connectedDebugAndroidTest   -Pandroid.testInstrumentationRunnerArguments.class=com.artiuillab.tieryourlife.navigation.ReadmeTabletScreenshotTest
+```
+
+`ReadmeTabletScreenshotTest` draws the same composition `TierYourLifeNavHost` makes — the rail,
+then the screen beside it — with fixtures where the view models would be. The screens themselves
+belong to `feature:tier:presentation`, which cannot see the rail and should not: a screen does
+not know what the app puts beside it. For a while the tablet section showed that module's
+pictures stretched to tablet width, under a paragraph about a rail they did not contain.
+
+The files land under
+`navigation/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected/<device>/readme-tablet/`.
+Copy `board-light`, `community-light` and `settings-dark` into `docs/screenshots/tablet/` and
+shrink them to 600px wide. The committed set came from a 2560×1600 tablet at 320dpi.
+
+Run on a phone, the test measures the window, finds no rail, logs that and draws nothing — rather
+than writing phone-shaped pictures into a folder called tablet.
 
 ## Two things it depends on
 
