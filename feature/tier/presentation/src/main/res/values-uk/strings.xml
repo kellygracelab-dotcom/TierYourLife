@@ -423,6 +423,11 @@
     <string name="list_settings_cover">Обкладинка</string>
     <string name="list_settings_cover_none_set">Немає</string>
     <string name="list_settings_cover_set">Вибрана</string>
+    <string name="list_settings_share">Поділитися картинкою</string>
+    <string name="list_settings_share_sub">Картинка цієї дошки та посилання на застосунок</string>
+    <string name="share_caption">%1$s — розкладено в TierYourLife\n%2$s</string>
+    <string name="share_footer">Зроблено в TierYourLife</string>
+    <string name="share_failed">Не вдалося зібрати картинку</string>
     <string name="list_settings_cover_body">Виберіть одну з карток списку або зображення з галереї.</string>
     <string name="list_settings_cover_no_cards">Жодна картка списку ще не має зображення.</string>
     <string name="list_settings_cover_gallery">Вибрати з галереї</string>

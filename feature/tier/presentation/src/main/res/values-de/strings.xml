@@ -371,6 +371,11 @@
     <string name="list_settings_cover">Titelbild</string>
     <string name="list_settings_cover_none_set">Keins</string>
     <string name="list_settings_cover_set">Gewählt</string>
+    <string name="list_settings_share">Als Bild teilen</string>
+    <string name="list_settings_share_sub">Ein Bild dieses Boards, mit Link zur App</string>
+    <string name="share_caption">%1$s — eingeordnet in TierYourLife\n%2$s</string>
+    <string name="share_footer">Erstellt mit TierYourLife</string>
+    <string name="share_failed">Das Bild konnte nicht erstellt werden</string>
     <string name="list_settings_cover_body">Wähle eine Karte aus dieser Liste oder ein Bild aus deiner Galerie.</string>
     <string name="list_settings_cover_no_cards">Noch keine Karte dieser Liste hat ein Bild.</string>
     <string name="list_settings_cover_gallery">Aus der Galerie wählen</string>

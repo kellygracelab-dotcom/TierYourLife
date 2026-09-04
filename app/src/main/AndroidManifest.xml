@@ -42,6 +42,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+            How a picture of a board reaches another app. A content URI with a
+            one-off read grant, never a file path: other apps cannot read this
+            app's cache, and should not be able to read anything but the one
+            picture being sent.
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.share"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/share_paths" />
+        </provider>
     </application>
 
 </manifest>

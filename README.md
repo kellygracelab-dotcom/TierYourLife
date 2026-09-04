@@ -95,7 +95,10 @@ camera cutout in the corner is a worse version of a gesture that works one fold 
   with it.
 - **The community.** Browse by category, search across it, follow authors, open anyone's profile,
   save a copy of any board.
-- **Export** any list to a text file through the system share sheet.
+- **Share a board as a picture.** Drawn, not screenshotted — the whole board at one width with a
+  line at the foot saying where it was made — and sent with a caption that carries the link, so
+  the friend who gets it in a chat can tap their way to the app. Export writes every list to a
+  text file through the same system sheet.
 - **Eleven languages**, switchable inside the app without a restart. Arabic is fully right-to-left:
   layout, icon mirroring and drag arithmetic.
 
@@ -215,7 +218,7 @@ satisfied by every copy equally and cannot count.
 
 - Native-speaker review of the Arabic, Japanese and Turkish translations
 - Ranking history: what moved between tiers and when
-- Share a board as an image
+- A link to a published list that opens it in the app — needs the Play signing key, for App Links
 
 ---
 

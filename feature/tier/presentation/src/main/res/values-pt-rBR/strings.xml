@@ -397,6 +397,11 @@
     <string name="list_settings_cover">Capa</string>
     <string name="list_settings_cover_none_set">Nenhuma</string>
     <string name="list_settings_cover_set">Escolhida</string>
+    <string name="list_settings_share">Compartilhar como imagem</string>
+    <string name="list_settings_share_sub">Uma imagem deste quadro, com link para o app</string>
+    <string name="share_caption">%1$s — classificado no TierYourLife\n%2$s</string>
+    <string name="share_footer">Feito no TierYourLife</string>
+    <string name="share_failed">Não foi possível criar a imagem</string>
     <string name="list_settings_cover_body">Escolha um dos cards da lista ou uma imagem da sua galeria.</string>
     <string name="list_settings_cover_no_cards">Nenhum card desta lista tem imagem ainda.</string>
     <string name="list_settings_cover_gallery">Escolher da galeria</string>

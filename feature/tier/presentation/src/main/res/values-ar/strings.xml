@@ -475,6 +475,11 @@
     <string name="list_settings_cover">الغلاف</string>
     <string name="list_settings_cover_none_set">لا يوجد</string>
     <string name="list_settings_cover_set">مُختار</string>
+    <string name="list_settings_share">مشاركة كصورة</string>
+    <string name="list_settings_share_sub">صورة لهذه اللوحة مع رابط للتطبيق</string>
+    <string name="share_caption">%1$s — مرتّبة في TierYourLife\n%2$s</string>
+    <string name="share_footer">صُنع في TierYourLife</string>
+    <string name="share_failed">تعذّر إنشاء الصورة</string>
     <string name="list_settings_cover_body">اختر إحدى بطاقات هذه القائمة أو صورة من معرضك.</string>
     <string name="list_settings_cover_no_cards">لا تحتوي أي بطاقة في هذه القائمة على صورة بعد.</string>
     <string name="list_settings_cover_gallery">الاختيار من المعرض</string>

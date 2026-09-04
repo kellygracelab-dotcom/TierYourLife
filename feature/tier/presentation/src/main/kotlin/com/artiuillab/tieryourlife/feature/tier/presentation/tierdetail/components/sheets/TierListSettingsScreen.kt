@@ -62,6 +62,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CoverIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.FormatListNumberedIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.GridViewIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ShareIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ViewCarouselIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.rows.captionsExcept
@@ -87,6 +88,7 @@ internal fun TierListSettingsScreenContent(
     onCategoryNotChosen: () -> Unit = {},
     onSetCover: (String?) -> Unit = {},
     onAddCards: () -> Unit = {},
+    onShare: () -> Unit = {},
 ) {
     var tierEditorVisible by remember { mutableStateOf(false) }
     var categorySheetVisible by remember { mutableStateOf(false) }
@@ -114,6 +116,10 @@ internal fun TierListSettingsScreenContent(
             // lists -- which is why it stays available to a guest.
             CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
             CoverRow(coverImageUrl = list.coverImageUrl, onClick = { coverSheetVisible = true })
+            // Beside the cover rather than under Publish: sending a picture
+            // to a friend is not publishing, needs no account, and works on
+            // a board nobody else will ever see.
+            ShareRow(onClick = onShare)
 
             DisplayModeSection(selected = list.displayMode, onSelect = onSetDisplayMode)
 
@@ -354,6 +360,17 @@ private fun CoverRow(coverImageUrl: String?, onClick: () -> Unit) {
         ),
         onClick = onClick,
         testTag = TierDetailTestTags.COVER_ROW,
+    )
+}
+
+@Composable
+private fun ShareRow(onClick: () -> Unit) {
+    SettingsActionRow(
+        icon = { ShareIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = stringResource(R.string.list_settings_share),
+        subtitle = stringResource(R.string.list_settings_share_sub),
+        onClick = onClick,
+        testTag = TierDetailTestTags.SHARE_ROW,
     )
 }
 
