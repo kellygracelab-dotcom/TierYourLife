@@ -91,6 +91,11 @@ that works perfectly one fold away.
 |:---:|:---:|:---:|
 | <img src="docs/screenshots/tablet/board-light.png" width="300"> | <img src="docs/screenshots/tablet/community-light.png" width="300"> | <img src="docs/screenshots/tablet/settings-dark.png" width="300"> |
 
+The rail is missing from those three on purpose: it belongs to `navigation`, which composes the
+features together, and these are drawn from inside `feature:tier:presentation`, which cannot see
+it. What they do show is each screen having given the rail its job — no tabs, no settings icon,
+no corner button — and the content holding its measure instead of stretching to the glass.
+
 Upright is asked for only while the window is compact, so a phone stays a phone — including a
 folding one, which is two different answers in one body — and a tablet turns freely.
 
