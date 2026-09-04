@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -98,7 +100,10 @@ internal fun TierListSettingsScreenContent(
     Column(Modifier.fillMaxSize().testTag(TierDetailTestTags.LIST_SETTINGS_SCREEN)) {
         ListSettingsTopBar(onBack = onBack)
 
-        CenteredContent(ContentWidth.Reading) {
+        // One scrolling column, as the spec says. It was not scrolling, and
+        // the rows below Publish fell off the bottom of an ordinary phone
+        // the moment one more was added above them.
+        CenteredContent(ContentWidth.Reading, modifier = Modifier.verticalScroll(rememberScrollState())) {
             PublishSection(
                 published = publicPending ?: (list.publishedId != null),
                 signedIn = signedIn,
