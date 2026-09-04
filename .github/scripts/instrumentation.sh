@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The instrumentation run, with one retry for one specific mishap.
+# The instrumentation run, with one retry for two specific mishaps.
 #
 # Every so often the emulator finishes a module's tests and the results file
 # never appears, so Gradle fails a run in which every test passed: "296/296
@@ -7,8 +7,13 @@
 # each time, which is what gives it away as the report going astray rather
 # than a test going red.
 #
-# Retried on that symptom and no other. A failing test fails twice and is
-# reported the first time, so this cannot turn a real failure green.
+# The API 24 image has a second one: "Failed to install-write all apks", an
+# install session the emulator drops before a single test has run. Three
+# times in one day on pull requests that changed only documentation, and
+# each time a manual re-run went straight through.
+#
+# Retried on those two symptoms and no other. A failing test fails twice and
+# is reported the first time, so this cannot turn a real failure green.
 #
 # In a file rather than inline in the workflow because the emulator runner
 # runs an inline script one line per shell: a variable set on one line is
@@ -31,9 +36,12 @@ if [ "$status" -eq 0 ]; then
   exit 0
 fi
 
-if ! grep -q "Could not load test results" "$log"; then
+if grep -q "Could not load test results" "$log"; then
+  echo "Retrying: a results file went missing, which is the emulator losing a report rather than a test failing."
+elif grep -q "Failed to install-write all apks" "$log"; then
+  echo "Retrying: the emulator dropped an install session before any test ran."
+else
   exit "$status"
 fi
 
-echo "Retrying: a results file went missing, which is the emulator losing a report rather than a test failing."
 ./gradlew connectedDebugAndroidTest
