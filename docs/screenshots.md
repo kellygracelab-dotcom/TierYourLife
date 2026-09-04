@@ -73,6 +73,6 @@ edge rather than a picture of a sheet.
 
 ## What is still taken by hand
 
-`drag.gif`, and the three AI-studio pictures. The gif is a recording, and the studio needs a live
-generator. If those are ever re-taken, take them on a device signed into an account that is not a
-real person's.
+`drag.gif`. It is a recording, and if it is ever re-taken, take it on a device signed into an
+account that is not a real person's. The AI-studio pictures used to be here too; they went when
+the README stopped showing a feature the first release switches off.
