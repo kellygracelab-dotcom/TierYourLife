@@ -17,7 +17,11 @@ interface TierRepository {
 
     suspend fun createTierList(title: String): Long
 
-    /** Builds a list from someone else's published template, items unranked. */
+    /**
+     * Builds a board from somebody else's published list, keeping the ranking
+     * it was handed: each of [tiers] arrives with the cards ranked into it,
+     * and [items] are the ones left in the pool.
+     */
     suspend fun createFromTemplate(
         title: String,
         authorName: String,

@@ -40,6 +40,32 @@ class TierDaoTest {
         database.close()
     }
 
+    // The ranking a reader made on somebody else's list has to reach the
+    // database as a ranking. It used to reach it as a pool: every card went
+    // to Unranked whatever tier it had been dragged into, and the copy the
+    // reader opened had empty tiers under a full pool.
+    @Test
+    fun a_board_built_from_a_template_keeps_each_card_in_its_tier() = runBlocking {
+        val id = dao.createTierListFromTemplate(
+            title = "Films I make people watch",
+            authorName = "Olena M.",
+            tiers = listOf(
+                NewTemplateTier("S", "Masterpiece", "#B03A32", "#F1948C", items = listOf(NewPoolItem("The Godfather", null))),
+                NewTemplateTier("A", "Great", "#C06A25", "#E9A867", items = listOf(NewPoolItem("Inception", null), NewPoolItem("Interstellar", null))),
+                NewTemplateTier("B", "Good", "#A98B1F", "#D8C05A"),
+            ),
+            items = listOf(NewPoolItem("Whiplash", null)),
+        )
+
+        val board = dao.getTierListWithTiers(id)!!
+        val byLabel = board.tiers.associate { it.tier.label to it.items.sortedBy { item -> item.position }.map { item -> item.title } }
+
+        assertEquals(listOf("The Godfather"), byLabel["S"])
+        assertEquals(listOf("Inception", "Interstellar"), byLabel["A"])
+        assertEquals(emptyList<String>(), byLabel["B"])
+        assertEquals(listOf("Whiplash"), board.tiers.single { it.tier.isPool }.items.map { it.title })
+    }
+
     @Test
     fun insert_tier_list_and_read_it_by_generated_id_returns_saved_data() = runBlocking {
         val films = tierList()
