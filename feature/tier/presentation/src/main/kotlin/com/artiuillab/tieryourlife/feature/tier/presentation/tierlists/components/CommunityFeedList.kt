@@ -346,9 +346,9 @@ private fun CommunityMessage(
     title: String,
     body: String,
     testTag: String,
+    modifier: Modifier = Modifier,
     action: String? = null,
     onAction: () -> Unit = {},
-    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier

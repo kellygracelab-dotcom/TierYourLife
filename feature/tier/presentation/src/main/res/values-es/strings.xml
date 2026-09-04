@@ -477,6 +477,7 @@
     </plurals>
     <plurals name="board_count">
         <item quantity="one">1 tablero</item>
+        <item quantity="many">%1$d tableros</item>
         <item quantity="other">%1$d tableros</item>
     </plurals>
     <string name="local_only_footer">%1$s, solo en este teléfono</string>
