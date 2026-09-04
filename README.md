@@ -60,7 +60,9 @@ and both can be undone from Settings.
 | <img src="docs/screenshots/hidden-light.png" width="240"> | <img src="docs/screenshots/moderation-light.png" width="240"> | <img src="docs/screenshots/my-published-light.png" width="240"> |
 
 Opening someone else's board gives you their cards and their tiers and an empty board, and the
-author is a person you can open rather than a line of text.
+author is a person you can open rather than a line of text. Their arrangement and yours are two
+tabs on the same board — saving keeps whichever one you are looking at, because keeping a list
+the way its author ranked it is a reason to save it rather than a mistake to correct.
 
 | Someone else's board | Their profile |
 |:---:|:---:|
@@ -108,11 +110,25 @@ folding one, which is two different answers in one body — and a tablet turns f
   removed and a one-tap restore. Deleting a tier does not take its trashed items with it.
 - **Publish a board.** Make one public and it joins the community feed under a category, with a
   cover you choose. Deleting your list takes it down; a copy someone already saved stays theirs.
-- **The community.** Browse by category, search across it, open anyone's profile and see
-  everything they have published, and save a copy of any board into your own library.
+- **Sort, filter, and keep one at the top.** Newest or oldest, by category, public or private,
+  and a star that pins a board above the rest. Starring is a time rather than a flag, so several
+  starred boards have an order among themselves without a second thing to set.
+- **The community.** Browse by category, search across it, follow authors and read a feed of
+  only them, open anyone's profile, and save a copy of any board into your own library.
+- **Boards that follow you.** Sign in and your boards are kept in your account and come back on
+  the next phone. Two versions of one board are never merged — the order of the cards *is* the
+  content, so the copy from the account arrives as a second board that says where it came from,
+  and you decide. Changes are noticed by a fingerprint of the board rather than a dirty flag: a
+  flag would have to be set in dozens of places, and the first one forgotten is a board that
+  quietly stopped being kept.
 - **Report or hide.** Long-press a card, or use the overflow inside a list or on a profile.
   Reporting hides it for you at once and files a complaint for a person to read; hiding does the
   first half without the accusation. Both are listed in Settings and can be undone.
+- **One person reads the reports.** The queue leads with the cover the feed showed, because most
+  of the time the complaint *is* the picture and making the reader open the list is making them
+  decide blind. Taking a list down and how long its author waits before publishing again are one
+  sheet, because they are one decision — a week, a month, three, six, or for good, and only the
+  last of those asks twice.
 - **Export.** Any list to a text file, then share it through the system sheet.
 - **Eleven languages** — English, Ukrainian, Russian, Spanish, Portuguese (BR), German, French,
   Polish, Turkish, Japanese, Arabic — switchable inside the app without a restart or a flash of
@@ -152,6 +168,12 @@ screen, the view model and every test are identical either way.
 Generation through the proxy is metered: the studio shows what is left, and running out is its own
 state rather than an error, because "no generations left" and "that didn't work" are answered
 differently. The stub counts nothing and shows no number — its images never leave the phone.
+
+The studio is built and tested but **not offered in the first release** — one flag in
+`core:settings` hides the entrance, and the server refuses the request regardless, because hiding
+a button does not stop one being sent. Every generation costs money and nothing charges for one
+yet. The code, its screens and its tests stay compiled and run so that nothing rots while it
+waits; turning it back on is a one-line change.
 
 ## Architecture
 
@@ -272,8 +294,6 @@ so with it as the only gate one person could spend without limit.
 
 ## What's next
 
-- [ ] **Boards that follow you.** Everything is on one phone today, so a new phone starts empty.
-      The row ids that make syncing possible are already in the schema; the sync itself is not.
 - [ ] Native-speaker review of the Arabic, Japanese and Turkish translations
 - [ ] Ranking history: what moved between tiers and when
 - [ ] Share a board as an image

@@ -109,7 +109,11 @@ class ReadmeScreenshotTest {
     private fun Screen(name: String): Unit = when (name) {
         "home" -> TierListsScreenContent(
             state = TierListsUiState.Success(
-                lists = listOf(filmBoard(), ramenBoard(), albumBoard()),
+                lists = listOf(ramenBoard(), albumBoard()),
+                // Starred, and it has to say so: the star on the card is drawn
+                // from the board, not from which list it arrived in.
+                favourites = listOf(filmBoard().copy(favouritedAt = 1)),
+                grouped = true,
                 totalListCount = 3,
                 rankedCount = 2,
             ),
@@ -240,11 +244,13 @@ class ReadmeScreenshotTest {
                         listId = "1",
                         listTitle = "Films I make people watch",
                         authorName = "Olena M.",
+                        authorUid = "u1",
+                        coverImageUrl = Poster.PORTRAIT,
                         reasons = listOf(ReportReason.Violence),
                         notes = listOf("The third card is a photograph of an injury."),
                         reportCount = 1,
                         newestAtMillis = 0,
-                        hidden = false,
+                        hidden = true,
                         reviewed = false,
                     ),
                 ),
@@ -358,6 +364,11 @@ class ReadmeScreenshotTest {
 
         val DIALOGS = setOf("list-actions", "report")
 
+        // The take-down sheet is deliberately absent. It is a ModalBottomSheet,
+        // so its window is the whole screen -- a scrim with the sheet at the
+        // bottom -- and captured through isDialog() it comes out as a grey
+        // field with the sheet clipped by the window edge. A picture that
+        // needs an apology is worse than a paragraph.
         val SCREENS = listOf(
             "home", "home-empty", "board", "settings", "community", "list-actions",
             "report", "community-list", "author", "my-published", "hidden", "moderation",
