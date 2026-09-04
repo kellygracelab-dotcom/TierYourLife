@@ -186,7 +186,7 @@ fun TierDetailScreen(
 }
 
 @Composable
-internal fun TierDetailScreenContent(
+fun TierDetailScreenContent(
     allLists: List<TierList> = emptyList(),
     onOpenList: (Long) -> Unit = {},
     state: TierDetailUiState,

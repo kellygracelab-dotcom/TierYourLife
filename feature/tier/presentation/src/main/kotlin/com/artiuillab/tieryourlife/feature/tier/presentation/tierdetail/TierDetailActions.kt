@@ -4,7 +4,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 
-internal data class TierDetailActions(
+/** Public because [TierDetailScreenContent] is, and this is its default. */
+data class TierDetailActions(
     val onBack: () -> Unit = {},
     val signedIn: Boolean = false,
     val publishing: Boolean = false,

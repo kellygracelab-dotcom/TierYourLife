@@ -2,10 +2,12 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.common
 
 import android.graphics.Bitmap
 import android.os.Build
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -20,6 +22,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
+import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
@@ -84,7 +88,18 @@ class ReadmeScreenshotTest {
                 // drew it rather than a box floating on a strip of background.
                 // Which phone is written down in docs/screenshots.md.
                 Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-                    Screen(screen)
+                    // Measured here for the same reason the app measures it in
+                    // AppRoot: every screen below reads it, and the default is
+                    // Narrow. Without this the tablet run drew the phone layout
+                    // at tablet size -- top tabs and no rail -- for long enough
+                    // that the README described a rail beside a picture of
+                    // tabs.
+                    BoxWithConstraints {
+                        val shape = WindowShape.of(width = maxWidth, height = maxHeight)
+                        CompositionLocalProvider(LocalWindowShape provides shape) {
+                            Screen(screen)
+                        }
+                    }
                 }
             }
         }
@@ -109,7 +124,11 @@ class ReadmeScreenshotTest {
     private fun Screen(name: String): Unit = when (name) {
         "home" -> TierListsScreenContent(
             state = TierListsUiState.Success(
-                lists = listOf(filmBoard(), ramenBoard(), albumBoard()),
+                lists = listOf(ramenBoard(), albumBoard()),
+                // Starred, and it has to say so: the star on the card is drawn
+                // from the board, not from which list it arrived in.
+                favourites = listOf(filmBoard().copy(favouritedAt = 1)),
+                grouped = true,
                 totalListCount = 3,
                 rankedCount = 2,
             ),
@@ -240,11 +259,13 @@ class ReadmeScreenshotTest {
                         listId = "1",
                         listTitle = "Films I make people watch",
                         authorName = "Olena M.",
+                        authorUid = "u1",
+                        coverImageUrl = Poster.PORTRAIT,
                         reasons = listOf(ReportReason.Violence),
                         notes = listOf("The third card is a photograph of an injury."),
                         reportCount = 1,
                         newestAtMillis = 0,
-                        hidden = false,
+                        hidden = true,
                         reviewed = false,
                     ),
                 ),
@@ -358,6 +379,11 @@ class ReadmeScreenshotTest {
 
         val DIALOGS = setOf("list-actions", "report")
 
+        // The take-down sheet is deliberately absent. It is a ModalBottomSheet,
+        // so its window is the whole screen -- a scrim with the sheet at the
+        // bottom -- and captured through isDialog() it comes out as a grey
+        // field with the sheet clipped by the window edge. A picture that
+        // needs an apology is worse than a paragraph.
         val SCREENS = listOf(
             "home", "home-empty", "board", "settings", "community", "list-actions",
             "report", "community-list", "author", "my-published", "hidden", "moderation",

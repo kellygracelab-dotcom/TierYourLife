@@ -173,8 +173,14 @@ fun TierListsScreen(
     )
 }
 
+/**
+ * Public rather than internal, like the other stateless screens: the app is
+ * composed one module up, and whoever composes it has to be able to draw it
+ * without a view model -- which is how the tablet pictures in the README
+ * get their rail.
+ */
 @Composable
-internal fun TierListsScreenContent(
+fun TierListsScreenContent(
     state: TierListsUiState,
     onTierListClick: (Long) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit = { _, _, _ -> },
