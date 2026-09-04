@@ -65,7 +65,7 @@ interface TierDao {
         val tierListId = insertTierList(TierListEntity(title = title, authorName = authorName))
 
         tiers.forEachIndexed { index, tier ->
-            insertTier(
+            val tierId = insertTier(
                 TierEntity(
                     tierListId = tierListId,
                     position = index,
@@ -75,6 +75,7 @@ interface TierDao {
                     colorDark = tier.colorDark,
                 ),
             )
+            tier.items.forEachIndexed { position, item -> insertTierItem(templateItem(tierId, position, item)) }
         }
 
         val poolTierId = insertTier(
@@ -88,20 +89,18 @@ interface TierDao {
             ),
         )
 
-        items.forEachIndexed { index, item ->
-            insertTierItem(
-                TierItemEntity(
-                    tierId = poolTierId,
-                    position = index,
-                    title = item.title,
-                    imageUrl = item.imageUrl,
-                    source = if (item.imageUrl?.startsWith("http") == true) "TMDB" else "MANUAL",
-                ),
-            )
-        }
+        items.forEachIndexed { index, item -> insertTierItem(templateItem(poolTierId, index, item)) }
 
         return tierListId
     }
+
+    private fun templateItem(tierId: Long, position: Int, item: NewPoolItem) = TierItemEntity(
+        tierId = tierId,
+        position = position,
+        title = item.title,
+        imageUrl = item.imageUrl,
+        source = if (item.imageUrl?.startsWith("http") == true) "TMDB" else "MANUAL",
+    )
 
     @Query("SELECT COUNT(*) FROM tier_lists WHERE publishedId IS NOT NULL AND deletedAt IS NULL")
     suspend fun countPublishedLists(): Int

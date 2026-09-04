@@ -47,7 +47,15 @@ class RoomTierRepository internal constructor(
     ): Long = dao.createTierListFromTemplate(
         title = title,
         authorName = authorName,
-        tiers = tiers.map { NewTemplateTier(it.label, it.caption, it.colorLight, it.colorDark) },
+        tiers = tiers.map { tier ->
+            NewTemplateTier(
+                label = tier.label,
+                caption = tier.caption,
+                colorLight = tier.colorLight,
+                colorDark = tier.colorDark,
+                items = tier.items.map { NewPoolItem(it.title, it.imageUrl) },
+            )
+        },
         items = items.map { NewPoolItem(it.title, it.imageUrl) },
     )
 

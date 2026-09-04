@@ -163,7 +163,7 @@ class CommunityListViewModel @Inject constructor(
                     title = keeping.title,
                     authorName = current.authorName,
                     tiers = keeping.tiers.filterNot { it.isPool },
-                    items = keeping.tiers.flatMap { it.items },
+                    items = keeping.tiers.filter { it.isPool }.flatMap { it.items },
                 )
             }
             _state.update { (it as CommunityListUiState.Success).copy(saving = false) }

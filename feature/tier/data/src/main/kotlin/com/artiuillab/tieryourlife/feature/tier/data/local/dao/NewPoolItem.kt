@@ -10,4 +10,6 @@ data class NewTemplateTier(
     val caption: String?,
     val colorLight: String,
     val colorDark: String,
+    /** The cards ranked into this tier, in order. Empty for a tier nobody has filled. */
+    val items: List<NewPoolItem> = emptyList(),
 )

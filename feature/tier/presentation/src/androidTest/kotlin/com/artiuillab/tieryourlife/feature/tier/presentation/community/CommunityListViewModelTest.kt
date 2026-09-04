@@ -131,6 +131,9 @@ class CommunityListViewModelTest {
             theirs.list.tiers.filterNot { it.isPool }.map { it.items.size },
             template.tiers.map { tier -> tier.items.size },
         )
+        // Only what was left unranked goes to the pool. Every card used to,
+        // which is how a saved copy came out with its tiers empty.
+        assertEquals(theirs.list.tiers.first { it.isPool }.items.map { it.title }, template.items.map { it.title })
     }
 
     @Test
