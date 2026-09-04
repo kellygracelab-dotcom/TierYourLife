@@ -26,11 +26,13 @@ class DeviceName @Inject constructor(
      */
     fun current(): String? = chosenName() ?: Build.MODEL?.takeIf(::readable)
 
-    private fun chosenName(): String? =
-        runCatching { Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME) }
+    private fun chosenName(): String? {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return null
+        return runCatching { Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME) }
             .getOrNull()
             ?.trim()
             ?.takeIf { it.isNotEmpty() }
+    }
 
     private companion object {
 

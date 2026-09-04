@@ -48,9 +48,9 @@ internal fun SignedInPanel(
     onOpenPublished: () -> Unit,
     onDone: () -> Unit,
     onSignOut: () -> Unit,
+    modifier: Modifier = Modifier,
     onDeleteAccount: () -> Unit = {},
     deleting: Boolean = false,
-    modifier: Modifier = Modifier,
 ) {
     val name = displayName?.takeIf { it.isNotBlank() } ?: stringResource(R.string.account_signed_in)
 

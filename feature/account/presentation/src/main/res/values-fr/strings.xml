@@ -48,6 +48,7 @@
     <string name="account_sign_out_body_2">Les crédits et les achats vous attendent ici.</string>
     <plurals name="account_board_count">
         <item quantity="one">%1$d tableau</item>
+        <item quantity="many">%1$d tableaux</item>
         <item quantity="other">%1$d tableaux</item>
     </plurals>
     <string name="merge_title">Vous avez déjà utilisé ce compte</string>

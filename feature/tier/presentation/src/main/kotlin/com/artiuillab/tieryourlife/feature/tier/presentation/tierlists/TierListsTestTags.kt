@@ -52,7 +52,6 @@ internal object TierListsTestTags {
     const val REPORT_DIALOG = "community_report_dialog"
     const val REPORT_NOTE = "community_report_note"
     const val REPORT_SEND = "community_report_send"
-    fun tierListCard(id: Long): String = "tier_list_card_$id"
     fun tile(id: Long): String = "tier_list_tile_$id"
 
     fun star(id: Long): String = "tier_list_star_$id"

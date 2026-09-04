@@ -147,15 +147,6 @@ internal fun SearchOffIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { 
     drawLine(color, Offset(4f * scale, 4f * scale), Offset(20f * scale, 20f * scale), 1.7f * scale, StrokeCap.Round)
 }
 
-@Composable
-internal fun FormatListBulletedIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
-    repeat(3) { row ->
-        val y = (6f + row * 6f) * scale
-        drawCircle(color, radius = 1.2f * scale, center = Offset(5f * scale, y))
-        drawLine(color, Offset(9f * scale, y), Offset(20f * scale, y), 1.7f * scale, StrokeCap.Round)
-    }
-}
-
 /** The chevron on a control that opens a menu rather than navigating. */
 @Composable
 internal fun ChevronDownIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->

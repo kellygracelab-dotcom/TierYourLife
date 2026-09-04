@@ -32,6 +32,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -276,7 +277,7 @@ private fun BoardDots(count: Int, shown: Int) {
 @Composable
 private fun tierColour(tier: Tier): Color {
     val hex = if (MaterialTheme.colorScheme.surface.luminance() > 0.5f) tier.colorLight else tier.colorDark
-    return runCatching { Color(android.graphics.Color.parseColor(hex)) }
+    return runCatching { Color(hex.toColorInt()) }
         .getOrDefault(MaterialTheme.colorScheme.surfaceContainerHighest)
 }
 

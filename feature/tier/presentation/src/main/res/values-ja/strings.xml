@@ -425,7 +425,7 @@
     <string name="local_only_card_body_many">機種変更や再インストールで消えます。アカウントがあれば残ります。</string>
     <string name="local_only_card_not_now">今はしない</string>
     <string name="local_only_card_sign_in">ログイン</string>
-    <string name="restoring_one_picture">画像を復元しています · %2$d 件中 %1$d 件</string>
+    <string name="restoring_one_picture">画像を復元しています</string>
     <string name="restoring_pictures">画像を復元しています · %2$d 件中 %1$d 件</string>
     <string name="settings_backup_label">ボードをバックアップ</string>
     <string name="settings_backup_sub">ティア、カード、説明</string>
