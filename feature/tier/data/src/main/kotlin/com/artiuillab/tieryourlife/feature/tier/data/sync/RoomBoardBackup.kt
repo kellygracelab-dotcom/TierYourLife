@@ -34,13 +34,9 @@ class RoomBoardBackup @Inject constructor(
     }
 
     /**
-     * Off means gone. Every board is turned into a marker and every picture is
-     * dropped from the record of what has been sent, so turning it back on
-     * later sends everything again rather than trusting a ledger about files
-     * that are no longer there.
-     *
-     * Nothing local is touched, and that is the whole promise: the boards stay
-     * exactly where they were, minus somebody else's computer.
+     * Off means gone: every board becomes a marker and every picture leaves
+     * the sent record, so turning it back on sends everything again. Nothing
+     * local is touched.
      */
     override suspend fun stopAndDelete(): Boolean {
         preferences.setBackUpBoards(false)
@@ -52,19 +48,12 @@ class RoomBoardBackup @Inject constructor(
             dao.forgetEveryPicture()
             preferences.setLastSyncedAtMs(null)
         }.onFailure { failure ->
-            // The switch is already off, so nothing more goes up. What is
-            // still up there will be taken down by the next attempt, and the
-            // account holds nothing anybody else can see either way.
+            // The switch is already off; what is still up there goes with the next attempt.
             Timber.w(failure, "Could not delete every kept board")
         }.isSuccess
     }
 
-    /**
-     * Measured from the files this phone sent rather than asked of Storage.
-     * The answer is the same, costs nothing, and works with no connection --
-     * and a number that only appears when the network is up is worse than a
-     * number that is occasionally a few kilobytes stale.
-     */
+    /** Measured from the files this phone sent, not asked of Storage: same answer, no connection needed. */
     private suspend fun storedBytes(): Long =
         dao.sentPictureIds().sumOf { pictureId -> images.sizeOf(pictureId) }
 }

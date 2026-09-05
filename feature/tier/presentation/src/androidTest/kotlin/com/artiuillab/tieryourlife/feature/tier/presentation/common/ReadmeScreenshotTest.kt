@@ -59,16 +59,10 @@ import java.io.File
 private const val SHOT_ROOT = "readme"
 
 /**
- * The pictures in the README, drawn rather than photographed.
- *
- * They used to be screenshots of whoever was holding the phone: their boards,
- * their name, their half-finished test data. That is a poor advertisement and
- * a worse habit -- a public README is the last place a real person's name
- * should arrive by accident. These are the same screens with invented content,
- * and they can be redrawn from a command whenever the app changes, which the
- * old ones could not.
- *
- * `docs/screenshots.md` says how to run it and where the files go.
+ * The pictures in the README, drawn with invented content rather than
+ * photographed off somebody's phone, and redrawable from a command whenever
+ * the app changes. `docs/screenshots.md` says how to run it and where the
+ * files go.
  */
 @RunWith(AndroidJUnit4::class)
 class ReadmeScreenshotTest {
@@ -84,16 +78,11 @@ class ReadmeScreenshotTest {
         composeRule.setContent {
             val (screen, dark) = shot
             TierYourLifeTheme(darkTheme = dark) {
-                // The whole window, so the picture is the size of the phone that
-                // drew it rather than a box floating on a strip of background.
-                // Which phone is written down in docs/screenshots.md.
+                // The whole window, so the picture is the size of the phone
+                // that drew it (which phone: docs/screenshots.md).
                 Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-                    // Measured here for the same reason the app measures it in
-                    // AppRoot: every screen below reads it, and the default is
-                    // Narrow. Without this the tablet run drew the phone layout
-                    // at tablet size -- top tabs and no rail -- for long enough
-                    // that the README described a rail beside a picture of
-                    // tabs.
+                    // Measured as AppRoot measures it: the default is Narrow,
+                    // and without this the tablet run drew the phone layout.
                     BoxWithConstraints {
                         val shape = WindowShape.of(width = maxWidth, height = maxHeight)
                         CompositionLocalProvider(LocalWindowShape provides shape) {
@@ -108,8 +97,7 @@ class ReadmeScreenshotTest {
             composeRule.runOnUiThread { shot = next }
             composeRule.waitForIdle()
             // Compose is idle the moment it has asked for the artwork, not when
-            // the artwork is there. Nothing here asserts, so waiting is cheaper
-            // than a picture full of placeholders.
+            // it is there; waiting is cheaper than a picture of placeholders.
             Thread.sleep(ARTWORK_MILLIS)
             composeRule.waitForIdle()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -230,10 +218,8 @@ class ReadmeScreenshotTest {
             onBack = {},
         )
 
-        // Both of these are dialogs. They draw in their own window, so they are
-        // captured from that rather than from the screen -- but the feed is
-        // still drawn behind them, because a scrim over nothing is not what
-        // anybody sees.
+        // Dialogs draw in their own window and are captured from it; the feed
+        // is still drawn behind, because a scrim over nothing is not what anybody sees.
         "list-actions" -> {
             Screen("community")
             ListActionsSheet(
@@ -274,9 +260,8 @@ class ReadmeScreenshotTest {
         )
     }
 
-    // Real artwork, because a tier list with grey rectangles in it is not what
-    // the app looks like. TMDB serves these; if one does not arrive the tile
-    // falls back to the title, so a flat network cannot fail this.
+    // Real artwork, served by TMDB; if one does not arrive the tile falls back
+    // to the title, so a flat network cannot fail this.
     private object Poster {
         const val GODFATHER = "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg"
         const val SPIRITED_AWAY = "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg"
@@ -379,11 +364,8 @@ class ReadmeScreenshotTest {
 
         val DIALOGS = setOf("list-actions", "report")
 
-        // The take-down sheet is deliberately absent. It is a ModalBottomSheet,
-        // so its window is the whole screen -- a scrim with the sheet at the
-        // bottom -- and captured through isDialog() it comes out as a grey
-        // field with the sheet clipped by the window edge. A picture that
-        // needs an apology is worse than a paragraph.
+        // No take-down sheet: a ModalBottomSheet's window is the whole screen,
+        // and captured through isDialog() it comes out as a grey field.
         val SCREENS = listOf(
             "home", "home-empty", "board", "settings", "community", "list-actions",
             "report", "community-list", "author", "my-published", "hidden", "moderation",

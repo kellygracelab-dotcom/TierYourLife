@@ -46,16 +46,10 @@ private val PILL_SIZE = 32.dp
 private val FAB_SIZE = 56.dp
 
 /**
- * The app's top-level navigation once there is room for it beside the content
- * rather than under it.
- *
- * Replaces the tabs rather than joining them. They are the same job -- choosing
- * between top-level destinations -- and two navigation systems on one screen is
- * exactly what makes tablet layouts fall apart. Settings comes up out of the
- * app bar's icon while it is here: a rail with two items looks unfinished, and
- * settings is an honest destination.
- *
- * The new-board button is the phone's, moved. Not a second way to make a board.
+ * Replaces the tabs rather than joining them: two navigation systems on one
+ * screen is what makes tablet layouts fall apart. Settings joins the rail
+ * because a rail with two items looks unfinished. The new-board button is the
+ * phone's, moved.
  */
 @Composable
 internal fun HomeRail(

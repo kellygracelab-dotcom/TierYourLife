@@ -92,9 +92,8 @@ class BoardSyncPlanTest {
         assertEquals(listOf(SyncStep.Forget(board)), steps)
     }
 
-    // The scenario this whole fingerprint exists for: the database comes home
-    // from a system backup, so both sides hold the board and nothing records
-    // that they ever agreed. Without the comparison every board doubles.
+    // The scenario the fingerprint exists for: the database comes home from a
+    // system backup, and without the comparison every board doubles.
     @Test
     fun `a database back from a system backup does not duplicate anything`() {
         val steps = planSync(local("aaa"), remote(revision = 2, fingerprint = "aaa"), synced = emptyList())

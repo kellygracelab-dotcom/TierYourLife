@@ -36,15 +36,10 @@ private val LOCALES = listOf("en", "ru", "uk", "de", "es", "fr", "pl", "pt-BR", 
 private val SURFACES = listOf("report", "list-actions", "author-actions")
 
 /**
- * Renders every reporting surface in every language we ship. Failing here
- * means a translation cannot be rendered at all -- a mangled format argument,
- * an unescaped apostrophe -- which is a real and recurring way to break a
- * screen nobody on the team reads.
- *
- * On API 28 and up it also writes each one out, because whether long wording
- * *fits* is a question only looking answers. Mirroring is not among them: a bottom sheet
- * lives in its own window and takes its direction from the activity, which
- * this harness cannot swap, so RTL has to be judged on a device set to it.
+ * Renders every reporting surface in every language; failing here means a
+ * translation cannot be rendered at all. On API 28 and up it also writes each
+ * one out. Mirroring is not judged here: a bottom sheet takes its direction
+ * from the activity, which this harness cannot swap.
  */
 @RunWith(AndroidJUnit4::class)
 class ReportingInEveryLanguageTest {

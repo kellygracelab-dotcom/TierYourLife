@@ -16,13 +16,8 @@ import com.artiuillab.tieryourlife.feature.account.presentation.R
 import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountTestTags
 
 /**
- * Asked only because the boards are kept somewhere now.
- *
- * Two paragraphs rather than one sentence, because they answer two different
- * fears. The first is "am I about to lose my work" -- no, it stays in both
- * places, and only what happens next stops travelling. The second is "am I
- * about to lose what I paid for", and it is short because the answer is
- * simply no.
+ * Asked only because the boards are kept somewhere now. Two paragraphs for
+ * two fears: losing the work, and losing what was paid for.
  */
 @Composable
 internal fun SignOutDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {

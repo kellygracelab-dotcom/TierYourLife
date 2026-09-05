@@ -32,18 +32,9 @@ interface TierRepository {
     suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?)
 
     /**
-     * How each published copy stands against the board it came from.
-     *
-     * Two different questions, because they have different answers for a board
-     * published before any of this was recorded: that copy *can* be sent again
-     * -- there is a board right here to send -- but nobody knows whether it
-     * needs to be.
-     *
-     * The first mistake here was treating "we do not know" as "do not offer".
-     * That is honest about the line of type and wrong about the button: the
-     * cost of an unnecessary update is one republish, and the cost of never
-     * offering one is that everybody who published before the change can never
-     * update anything again.
+     * Two questions, because a board published before this was recorded can
+     * be sent again but nobody knows whether it needs to be; "we do not know"
+     * must not mean "do not offer".
      */
     suspend fun publishedStanding(): PublishedStanding
 

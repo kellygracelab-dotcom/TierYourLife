@@ -30,11 +30,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Following from inside somebody's list, and what the popular ordering counts.
- *
- * The button answers before the server does, because a control that waits for
- * a round trip reads as broken. What matters is that it goes back when the
- * server refuses.
+ * The button answers before the server does, because a control that waits
+ * for a round trip reads as broken; what matters is that it goes back when
+ * the server refuses.
  */
 @RunWith(AndroidJUnit4::class)
 class FollowingAnAuthorTest {
@@ -119,12 +117,7 @@ class FollowingAnAuthorTest {
         assertTrue(eventually("the board to be saved") { savedId } > 0)
     }
 
-    /**
-     * Waits for something a coroutine will do, rather than assuming it already
-     * has. The button answers before the server does on purpose, so a check on
-     * what reached the server has to wait for it -- on a machine where the
-     * launch does not happen to run inline, it has not.
-     */
+    /** The button answers before the server does on purpose, so a check on what reached the server has to wait for it. */
     private suspend fun <T : Any> eventually(what: String, get: () -> T?): T =
         withTimeoutOrNull(WAIT_MILLIS) {
             var seen = get()

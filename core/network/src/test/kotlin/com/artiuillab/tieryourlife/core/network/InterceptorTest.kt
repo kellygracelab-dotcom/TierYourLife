@@ -10,11 +10,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-/**
- * These two decide whether the proxy will speak to us at all, and an evening
- * was spent on a night they quietly stopped: every screen said something
- * different and none of them said "no token".
- */
+/** These two decide whether the proxy speaks to us at all; when they quietly stopped, no screen said "no token". */
 class InterceptorTest {
 
     @Test
@@ -24,9 +20,8 @@ class InterceptorTest {
         assertEquals("token-1", sent.header(APP_CHECK_HEADER))
     }
 
-    // Sent bare rather than not sent: the refusal is the server's to make, and
-    // the server names the reason. Dropping the call here would leave the app
-    // guessing about a network that is fine.
+    // Sent bare rather than not sent: the refusal is the server's to make,
+    // and it names the reason.
     @Test
     fun appCheck_withNoToken_stillSendsTheRequest() {
         val sent = send(AppCheckInterceptor { null })
@@ -35,9 +30,8 @@ class InterceptorTest {
         assertEquals("https://example.test/feed", sent.url.toString())
     }
 
-    // An empty string is what a token source returns when it half-worked, and
-    // an empty header reads to the server as a malformed token rather than as
-    // an absent one.
+    // An empty string is what a half-worked token source returns, and an
+    // empty header reads to the server as malformed, not absent.
     @Test
     fun appCheck_withAnEmptyToken_sendsNoHeaderAtAll() {
         val sent = send(AppCheckInterceptor { "" })

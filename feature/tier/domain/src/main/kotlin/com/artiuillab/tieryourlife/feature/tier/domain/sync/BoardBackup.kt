@@ -1,14 +1,9 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.sync
 
 /**
- * The two questions somebody can answer about the copy of their boards, and
- * the one fact worth reporting.
- *
- * There is deliberately no "everything is fine" here. A state that is working
- * does not need announcing, and a screen that says "backed up · 2 minutes ago"
- * teaches people to check it. [stuckSince] is the opposite case, and the only
- * one worth interrupting for: silence while nothing has gone up for a week is
- * the silence that costs somebody their boards.
+ * No "everything is fine" here: a working state needs no announcing, and a
+ * screen saying "backed up · 2 minutes ago" teaches people to check it.
+ * [stuckSince] is the one case worth interrupting for.
  */
 data class BackupSettings(
     val on: Boolean,
@@ -19,11 +14,7 @@ data class BackupSettings(
     val lastSyncedAtMs: Long?,
 ) {
 
-    /**
-     * When the account was last known to be up to date, if that was long
-     * enough ago to be worth saying. A day, because anything shorter catches
-     * a phone that was simply switched off overnight.
-     */
+    /** A day: anything shorter catches a phone that was switched off overnight. */
     fun stuckSince(nowMs: Long): Long? =
         lastSyncedAtMs?.takeIf { on && nowMs - it >= STUCK_AFTER_MS }
 
@@ -38,19 +29,9 @@ interface BoardBackup {
 
     fun setPicturesOnWifiOnly(wifiOnly: Boolean)
 
-    /**
-     * Turns it on. Nothing else has to happen: the next run works out what the
-     * account is missing and sends it.
-     */
+    /** Nothing else has to happen: the next run sends what the account is missing. */
     fun start()
 
-    /**
-     * Turns it off and removes what is already up there.
-     *
-     * "Off" has to mean the copy is gone, or the switch is a lie: somebody who
-     * turns this off has decided their boards are not going to be on somebody
-     * else's computer, and leaving them there is the opposite of what they
-     * asked for. Nothing local is touched.
-     */
+    /** "Off" has to mean the copy is gone, or the switch is a lie. Nothing local is touched. */
     suspend fun stopAndDelete(): Boolean
 }

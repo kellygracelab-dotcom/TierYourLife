@@ -28,15 +28,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
 /**
- * Which boards are shown, put away behind a button.
- *
- * Applied at once rather than behind an Apply button: there are two questions
- * here and both are undone by tapping the same chip again, so a step that
- * only says "yes, I meant it" earns nothing.
- *
- * Deliberately without a "favourites" value. Starred boards are already
- * pinned to the top; a filter that showed only them would contradict the
- * pinning the moment both were on.
+ * Applied at once, no Apply button: both questions are undone by tapping the
+ * same chip again. No "favourites" value: starred boards are already pinned,
+ * and a filter showing only them would contradict the pinning.
  */
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable

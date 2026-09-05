@@ -40,14 +40,7 @@ class ModerationViewModel @Inject constructor(
     private val _state = MutableStateFlow<ModerationUiState>(ModerationUiState.Loading)
     val state: StateFlow<ModerationUiState> = _state.asStateFlow()
 
-    /**
-     * The board being complained about, for the pane beside the queue.
-     *
-     * Deciding without seeing it was possible while the queue only hid a list
-     * after somebody had already found it in the feed. Once a complaint takes
-     * the list out of the feed, the feed is no longer somewhere it can be
-     * looked at -- so the queue has to be.
-     */
+    /** For the pane beside the queue: a complaint takes the list out of the feed, so the queue is the only place it can be looked at. */
     private val _looking = MutableStateFlow<CommunityListUiState>(CommunityListUiState.Loading)
     val looking: StateFlow<CommunityListUiState> = _looking.asStateFlow()
 
@@ -59,10 +52,7 @@ class ModerationViewModel @Inject constructor(
         viewModelScope.launch {
             _looking.value = community.open(listId).fold(
                 onSuccess = { published ->
-                    // Shown exactly as a reader would see it: the author's
-                    // tiers and their cards. Where the author put each card is
-                    // not published at all, so there is nothing else to show
-                    // and nothing being withheld.
+                    // Exactly as a reader sees it: the author's tiers and cards.
                     CommunityListUiState.Success(
                         list = TierList(
                             id = 0,
@@ -107,20 +97,12 @@ class ModerationViewModel @Inject constructor(
         }
     }
 
-    /**
-     * The list goes and, when a length is given, its author waits before
-     * publishing again. One call, because there must be no moment in which
-     * the list is gone and nobody has answered for it.
-     */
+    /** One call: no moment in which the list is gone and nobody has answered for it. */
     fun takeDown(listId: String, ban: BanLength? = null) = settle(listId) { community.takeDown(listId, ban) }
 
     fun dismiss(listId: String) = settle(listId) { community.dismissReports(listId) }
 
-    /**
-     * Both endings close every complaint about the list, so every row for it
-     * leaves together. Failing leaves them all where they were: a queue that
-     * quietly loses entries is worse than one that will not budge.
-     */
+    /** Both endings close every complaint about the list. Failing leaves them all: a queue that quietly loses entries is worse than one that will not budge. */
     private fun settle(listId: String, act: suspend () -> Result<Unit>) {
         val shown = _state.value as? ModerationUiState.Ready ?: return
         if (shown.settling != null) return
@@ -131,8 +113,7 @@ class ModerationViewModel @Inject constructor(
                 onSuccess = {
                     val left = shown.reports.filterNot { it.listId == listId }
                     _state.value = ModerationUiState.Ready(left)
-                    // The pane was showing the one just settled. Move it on
-                    // rather than leaving a board nobody is being asked about.
+                    // The pane was showing the one just settled; move it on.
                     left.firstOrNull()?.let { look(it.listId) }
                 },
                 onFailure = { error ->

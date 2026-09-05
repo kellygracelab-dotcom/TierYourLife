@@ -3,20 +3,13 @@ package com.artiuillab.tieryourlife.feature.tier.domain.lists
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
-/**
- * What order somebody's own boards come in, and which of them are shown.
- *
- * Pure, so the rules can be argued with in a unit test rather than through a
- * screen. The screen decides how it looks; this decides what it holds.
- */
+/** Order and filters for somebody's own boards. Pure, so the rules are argued with in a unit test. */
 object BoardOrder {
 
     /**
-     * Starred boards first, then the rest, each in the chosen order.
-     *
-     * Whether the two are *drawn* as separate groups is a separate question --
-     * see [shouldGroup] -- but the order is the same either way, so switching
-     * a filter on and off never reshuffles what stays on screen.
+     * Starred first, then the rest, each in the chosen order. Whether the two
+     * are drawn apart is [shouldGroup]'s question; the order is the same either
+     * way, so a filter never reshuffles what stays on screen.
      */
     fun arrange(
         lists: List<TierList>,
@@ -32,15 +25,10 @@ object BoardOrder {
     }
 
     /**
-     * Whether the two groups get headings.
-     *
-     * Without them the top two cards read as the two newest, and the sort
-     * control sitting directly above says so: somebody switches to Oldest,
-     * sees the same two on top, and concludes the sort is broken.
-     *
-     * Off while a filter or a search is narrowing things down. There the
-     * screen is an answer to a question, and pinning something above the
-     * answer is a second question nobody asked.
+     * Without headings the top cards read as the newest, and the sort control
+     * above says so: switch to Oldest, same cards on top, sort looks broken.
+     * Off while a filter or search narrows: the screen is an answer, and
+     * pinning something above it is a second question nobody asked.
      */
     fun shouldGroup(arrangement: BoardArrangement, narrowed: Boolean): Boolean =
         !narrowed && arrangement.favourites.isNotEmpty() && arrangement.rest.isNotEmpty()
@@ -59,11 +47,7 @@ enum class BoardSort {
     Oldest,
     ;
 
-    /**
-     * By when the board was last touched, and by its id where that is not
-     * known -- a board made before the app recorded the time still has to sit
-     * somewhere, and the id is the order they were made in.
-     */
+    /** By last touch, then by id: a board made before the time was recorded still has to sit somewhere. */
     internal val comparator: Comparator<TierList>
         get() = when (this) {
             Newest -> compareByDescending<TierList> { it.editedAt ?: 0L }.thenByDescending { it.id }
@@ -71,11 +55,7 @@ enum class BoardSort {
         }
 }
 
-/**
- * Deliberately without a "favourites" value: starred boards are already
- * pinned to the top, and a filter that showed only them would contradict the
- * pinning the moment both were on.
- */
+/** No "favourites" value: starred boards are already pinned, and a filter for them would contradict the pinning. */
 data class BoardFilters(
     val category: ListCategory? = null,
     val published: PublishedFilter? = null,

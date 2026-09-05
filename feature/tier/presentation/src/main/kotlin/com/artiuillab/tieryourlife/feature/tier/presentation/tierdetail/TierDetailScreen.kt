@@ -203,10 +203,8 @@ fun TierDetailScreenContent(
     onReaderMoreClick: (() -> Unit)? = null,
     belowTopBar: (@Composable () -> Unit)? = null,
 ) {
-    // Beside the board rather than a screen away, once there is room for both.
-    // Held back on a short window as well as a narrow one: a phone in
-    // landscape is wide enough for the column and has nothing left over
-    // underneath it for the board.
+    // Beside the board once there is room. Held back on a short window too: a
+    // phone in landscape is wide enough for the column and too short for the board.
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val showsIndex = !readOnly &&
             currentWindowShape.holdsTwoPanes &&
@@ -226,11 +224,7 @@ fun TierDetailScreenContent(
     }
 }
 
-/**
- * Tall enough for a board to be worth showing under its own bar. A phone
- * turned sideways clears the width for the column and then has 360dp of height
- * left, which is a board nobody can rank in.
- */
+/** A phone turned sideways clears the width and has 360dp of height left, which is a board nobody can rank in. */
 private val INDEX_NEEDS_HEIGHT = 480.dp
 
 @Composable

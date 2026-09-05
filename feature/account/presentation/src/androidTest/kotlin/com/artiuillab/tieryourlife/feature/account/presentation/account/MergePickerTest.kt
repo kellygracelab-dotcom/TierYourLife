@@ -17,10 +17,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- * The one question worth asking on the way into an account, and the cases
- * where it must not be asked at all.
- */
+/** The one question worth asking on the way into an account, and the cases where it must not be asked. */
 @RunWith(AndroidJUnit4::class)
 class MergePickerTest {
 

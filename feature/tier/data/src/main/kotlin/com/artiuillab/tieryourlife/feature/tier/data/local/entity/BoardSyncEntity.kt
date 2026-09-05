@@ -4,13 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * What this phone and the account last agreed about one board.
- *
- * Deliberately not a column on `tier_lists` and deliberately without a foreign
- * key: the row has to outlive the board. A board emptied out of the trash here
- * leaves nothing behind to compare, and this row is the only way the next run
- * can tell "thrown away" from "never sent" -- without it a delete comes
- * straight back from the account.
+ * What this phone and the account last agreed about one board. No foreign
+ * key on purpose: the row has to outlive the board, being the only way the
+ * next run tells "thrown away" from "never sent".
  */
 @Entity(tableName = "board_sync")
 data class BoardSyncEntity(

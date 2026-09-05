@@ -16,22 +16,10 @@ import javax.inject.Singleton
 /** What this phone is connected by, and when that changes. */
 interface Connection {
 
-    /**
-     * Emits once every time a network becomes usable.
-     *
-     * This is what makes "it will go up when you are back online" true without
-     * a button. Sync otherwise only wakes on the way back to the list, so
-     * somebody who lost signal inside a board and got it back would sit there
-     * with nothing happening and no way to ask.
-     */
+    /** Emits when a network becomes usable: what makes "it will go up when you are back online" true without a button. */
     val available: Flow<Unit>
 
-    /**
-     * True on anything that is not somebody's data allowance -- Wi-Fi,
-     * ethernet, a laptop sharing its connection. Asked the other way round on
-     * purpose: an unknown network is treated as metered, because guessing
-     * wrong in the other direction spends somebody's money.
-     */
+    /** An unknown network is treated as metered on purpose: guessing wrong the other way spends somebody's money. */
     fun unmetered(): Boolean
 }
 

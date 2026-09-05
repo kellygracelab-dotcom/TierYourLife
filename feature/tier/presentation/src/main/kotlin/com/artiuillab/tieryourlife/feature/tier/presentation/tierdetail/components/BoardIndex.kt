@@ -41,17 +41,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.component
 internal val BOARD_INDEX_WIDTH: Dp = 320.dp
 
 /**
- * Every board, standing beside the one that is open.
- *
- * Text rather than pictures, and that is the whole argument for it: these are
- * four to ten boards somebody made and knows by name, so a line of type finds
- * one faster than a wall of thumbnails. The Community feed gets no such column
- * at any width -- there the lists are strangers' and the picture *is* the
- * identifier, so an index of unfamiliar titles would be a worse copy of the
- * grid standing next to it.
- *
- * No chevron on the rows. Selection is shown, so pointing at it as well would
- * be telling somebody twice.
+ * Every board beside the open one, as text: boards somebody knows by name are
+ * found faster by a line of type. The feed gets no such column -- there the
+ * picture is the identifier. No chevron: selection is already shown.
  */
 @Composable
 internal fun BoardIndex(
@@ -78,9 +70,8 @@ internal fun BoardIndex(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                // Its own scroll. Moving the board must not move this, and
-                // choosing a board must not throw away where somebody had
-                // scrolled to in order to choose it.
+                // Its own scroll: choosing a board must not throw away where
+                // somebody scrolled to.
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth().selectableGroup(),
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),

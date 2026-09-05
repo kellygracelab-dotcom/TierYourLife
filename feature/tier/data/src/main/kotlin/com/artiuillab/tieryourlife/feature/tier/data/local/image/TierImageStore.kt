@@ -29,12 +29,8 @@ class TierImageStore internal constructor(
     )
 
     /**
-     * What a picture is called, wherever it happens to sit.
-     *
-     * The file name is already a fresh id and already means the same thing on
-     * a second phone; the directory around it does not, so this is the only
-     * part of a path worth sending anywhere. A picture on somebody else's
-     * server is not one of ours and has no id.
+     * The file name is a fresh id that means the same on a second phone; the
+     * directory does not. A picture on somebody else's server has no id.
      */
     fun pictureIdOf(imageUrl: String?): String? {
         if (imageUrl == null || imageUrl.startsWith("http")) return null
@@ -52,11 +48,7 @@ class TierImageStore internal constructor(
     fun read(pictureId: String): ByteArray? =
         File(directory, pictureId).takeIf { it.length() > 0 }?.readBytes()
 
-    /**
-     * Written beside the target and moved into place, so a download that stops
-     * halfway leaves nothing behind that looks like a picture. Half a file
-     * would be indistinguishable from a whole one that is simply here.
-     */
+    /** Written beside the target and moved into place: half a file would be indistinguishable from a whole one. */
     fun write(pictureId: String, bytes: ByteArray): String {
         directory.mkdirs()
         val target = File(directory, pictureId)

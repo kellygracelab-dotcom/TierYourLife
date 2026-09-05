@@ -12,16 +12,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * How wide content is allowed to get.
- *
- * A phone answers this by being narrow. A tablet does not, and filling its
- * width is not the same as using it: a row 1500dp across puts a label at one
- * edge and the switch it belongs to at the other, and no one can hold the two
- * together. Content gets a measure, and the window keeps the rest.
- *
- * The numbers are the widest a kind of content stays readable at, not the
- * width it always takes. Below them nothing changes, which is why a phone sees
- * none of this.
+ * How wide content may get. Filling a tablet's width is not using it: a row
+ * 1500dp across puts a label at one edge and its switch at the other. Below
+ * these numbers nothing changes, so a phone sees none of this.
  */
 object ContentWidth {
 
@@ -32,10 +25,9 @@ object ContentWidth {
     val Reading: Dp = 640.dp
 
     /**
-     * A board. Wider than everything else on purpose -- a tier is a horizontal
-     * strip of cards, and width is the one thing it can spend. Past this the
-     * band of colour on the left and the last card on the right stop being
-     * read as one row.
+     * A board: a tier is a horizontal strip of cards, and width is the one
+     * thing it can spend. Past this the band and the last card stop reading
+     * as one row.
      */
     val Board: Dp = 1080.dp
 
@@ -46,13 +38,7 @@ object ContentWidth {
     val Message: Dp = 360.dp
 }
 
-/**
- * Content at its own measure, centred, with the window keeping the rest.
- *
- * Take this rather than `widthIn` at a call site: it also centres, and the two
- * belong together -- a capped column pinned to the left edge of a tablet is
- * the same problem in a different shape.
- */
+/** Capped and centred together: a capped column pinned to a tablet's left edge is the same problem in a different shape. */
 @Composable
 fun CenteredContent(
     max: Dp,
@@ -69,9 +55,5 @@ fun CenteredContent(
     }
 }
 
-/**
- * The same cap for something that places itself -- a bar, a sheet, a row that
- * already has its own container. Centring is the caller's, because these are
- * usually inside a Column or Box that is already doing it.
- */
+/** The same cap for something that places itself; centring is the caller's. */
 fun Modifier.atMost(max: Dp): Modifier = widthIn(max = max).fillMaxWidth()

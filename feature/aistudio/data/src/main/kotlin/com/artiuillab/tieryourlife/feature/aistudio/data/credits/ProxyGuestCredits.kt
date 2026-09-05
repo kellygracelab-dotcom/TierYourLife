@@ -21,10 +21,8 @@ class ProxyGuestCredits @Inject constructor(
     private val preferences: AppPreferences,
 ) : GuestCredits {
 
-    // A balance that did not move is not a failure, and neither is a request
-    // that never arrived: the guest's credits stay where they are and the next
-    // sign-in can try again. Saying so out loud would be an error message
-    // about something nobody asked for.
+    // Neither a balance that did not move nor a request that never arrived is
+    // a failure: the guest's credits stay put and the next sign-in can try again.
     override suspend fun carryOver(guestIdToken: String): Boolean = try {
         val adopted = api.adoptGuestCredits(AdoptGuestCreditsRequestDto(guestIdToken))
         adopted.credits?.let(preferences::setLastKnownCredits)

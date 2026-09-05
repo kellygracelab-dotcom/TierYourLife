@@ -33,16 +33,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Carries out a sync run.
- *
- * The thinking is in [planSync], which is pure and tested on its own. This
- * file is the plumbing around it: read the phone, read the account, do what
- * the plan says.
- *
- * Nothing here is clever about failure. A step that throws is logged and the
- * run carries on with the next board, because one board the account will not
- * take is no reason to stop backing up the other forty. The next run tries
- * again from the same three lists, so nothing needs remembering in between.
+ * Carries out a sync run; the thinking is in [planSync], which is pure. A step
+ * that throws is logged and the run carries on with the next board -- the next
+ * run recomputes from the same lists, so nothing is remembered in between.
  */
 @Singleton
 class BoardSyncEngine @Inject constructor(
@@ -71,9 +64,8 @@ class BoardSyncEngine @Inject constructor(
             synced = dao.allSyncRecords().map { SyncedBoard(it.listUid, it.revision, it.fingerprint) },
         )
 
-        // Before the boards, so that a board naming a picture is followed by a
-        // picture that is already there. The other way round leaves a window
-        // where the second phone is told about something it cannot fetch.
+        // Pictures before boards, so no board ever names a picture the other
+        // phone cannot fetch yet.
         runCatching { pictures.push() }
             .onFailure { failure -> Timber.w(failure, "Pictures did not go up") }
 
@@ -93,9 +85,8 @@ class BoardSyncEngine @Inject constructor(
         runCatching { forgetWhatIsNoLongerPublished() }
             .onFailure { failure -> Timber.w(failure, "Could not reconcile what is published") }
 
-        // Only when the whole run got through. A partial run leaves the
-        // account behind on something, and the one line this timestamp feeds
-        // exists to say exactly that.
+        // Only after a complete run: a partial one leaves the account behind,
+        // which is what this timestamp is there to report.
         if (refused == 0) {
             preferences.setLastSyncedAtMs(System.currentTimeMillis())
         }
@@ -104,14 +95,9 @@ class BoardSyncEngine @Inject constructor(
     }
 
     /**
-     * Drops a published id the account has never heard of.
-     *
-     * A snapshot can go without this phone doing it: taken down after a
-     * complaint, or unpublished from another device. Until now the board went
-     * on saying it was public, the switch went on showing it on, and nothing
-     * said why it was not in the feed -- and because the switch was already
-     * on, the one action that would have fixed it was the one nobody would
-     * think to take.
+     * Drops a published id the account no longer has: a snapshot can vanish
+     * without this phone (taken down, or unpublished elsewhere), and a board
+     * still claiming to be public hides the one switch that would fix it.
      */
     private suspend fun forgetWhatIsNoLongerPublished() {
         val claimed = dao.allBoards().mapNotNull { it.publishedId }.distinct()
@@ -124,11 +110,7 @@ class BoardSyncEngine @Inject constructor(
         }
     }
 
-    /**
-     * Cards whose picture is meant to be here. Read off the database rather
-     * than remembered from the run that fetched the board, so a download that
-     * failed last week is simply tried again today.
-     */
+    /** Read from the database each run, so a download that failed last week is tried again. */
     private suspend fun wantedPictures(): Map<String, String> = dao.allBoards()
         .flatMap { board -> dao.itemsOf(board.id) }
         .mapNotNull { item ->
@@ -160,9 +142,8 @@ class BoardSyncEngine @Inject constructor(
             is SyncStep.Create -> send(step.uid, basedOn = null, fingerprints = fingerprints)
             is SyncStep.Update -> send(step.uid, basedOn = step.basedOn, fingerprints = fingerprints)
             is SyncStep.KeepBoth -> {
-                // Theirs comes down first and lands beside ours, so that if
-                // the write below never happens their afternoon is already
-                // safe on this phone.
+                // Theirs comes down first, so it is safe here even if the
+                // write below never happens.
                 adopt(api.board(step.uid), asCopy = true)
                 send(step.uid, basedOn = step.basedOn, fingerprints = fingerprints)
             }
@@ -181,11 +162,8 @@ class BoardSyncEngine @Inject constructor(
     }
 
     /**
-     * A refused write is the interesting one. The account hands back what it
-     * already had, that copy is kept beside this phone's own under a new uid,
-     * and then this phone's version goes up against the revision the refusal
-     * named -- so the slot ends up holding what is on the screen in front of
-     * whoever is syncing.
+     * On a refused write the account's copy is kept beside ours under a new
+     * uid, then ours goes up against the revision the refusal named.
      */
     private suspend fun send(uid: String, basedOn: Int?, fingerprints: Map<String, String>) {
         val board = dao.boardByUid(uid) ?: return
@@ -201,12 +179,9 @@ class BoardSyncEngine @Inject constructor(
             return
         }
 
-        // Our own board coming back, because the answer to the last write
-        // never arrived -- the app was killed, or the network went, between
-        // the account storing it and this phone writing down the number. The
-        // content is identical, so there is nothing to keep beside anything:
-        // take the number we missed and stop. Without this, being killed at
-        // the wrong moment leaves a second copy of your own board every time.
+        // Our own board coming back: the last write's answer never arrived.
+        // Same content, so take the missed number and stop -- otherwise a
+        // kill at the wrong moment leaves a copy of your own board every time.
         if (theirs.fingerprint != null && theirs.fingerprint == fingerprint) {
             return remember(uid, theirs.revision, fingerprint)
         }
@@ -232,26 +207,21 @@ class BoardSyncEngine @Inject constructor(
     }
 
     /**
-     * A board arrives that this phone does not have. As itself when it is
-     * simply news from another device; as a second board with a new uid when
-     * it lost a fight with the copy already here, because two boards is a
-     * thing a person can sort out and a silent overwrite is not.
+     * As itself when it is news from another device; as a copy with a new uid
+     * when it lost to the board already here -- two boards a person can sort
+     * out, a silent overwrite they cannot.
      */
     private suspend fun adopt(incoming: KeptBoardDto, asCopy: Boolean = false) {
         val uid = if (asCopy) UUID.randomUUID().toString() else incoming.uid
         dao.addBoard(
             board = incoming.toEntity(id = 0, uid = uid).copy(
-                // Null rather than a placeholder: the phrase for a board
-                // that cannot say where it came from belongs to whatever is
-                // showing it, not to the database.
+                // Null rather than a placeholder: the wording belongs to the screen.
                 arrivedFrom = if (asCopy) incoming.deviceName else null,
                 // A copy is not the published list; two boards pointing at one
                 // published id would fight over it on the next publish.
                 publishedId = if (asCopy) null else incoming.publishedId,
             ),
-            // A copy stands beside a board that still holds the original ids,
-            // and every uid in the database is unique. Renaming the rows is
-            // the price of having both.
+            // Renamed: every uid is unique and the original board still holds them.
             tiers = incoming.tiers(images::pathFor, renamed = asCopy),
         )
         if (asCopy) return
@@ -336,11 +306,7 @@ private fun KeptBoardDto.toEntity(id: Long, uid: String) = TierListEntity(
     uid = uid,
 )
 
-/**
- * Cards are handed back to their tiers by uid. A card naming a tier that is
- * not here is dropped rather than guessed at -- the account refuses to store
- * one, so this only ever happens to a board written by something else.
- */
+/** A card naming a tier that is not here is dropped, not guessed at; the account never stores one. */
 private fun KeptBoardDto.tiers(
     pathFor: (String) -> String,
     renamed: Boolean = false,
@@ -365,10 +331,8 @@ private fun KeptBoardDto.tiers(
                     tierId = index.toLong(),
                     position = item.position,
                     title = item.title,
-                    // A picture of their own is written as the place it will
-                    // live once it arrives. Until then the card shows its
-                    // title on a plain tile, which is what a card with no
-                    // picture has always looked like.
+                    // Written as the path it will live at once fetched; until
+                    // then the tile shows the title, like any card without one.
                     imageUrl = item.pictureId?.let(pathFor) ?: item.imageUrl,
                     source = item.source,
                     deletedAt = item.deletedAt,

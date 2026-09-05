@@ -121,14 +121,9 @@ interface TierDao {
         """,
     )
     /**
-     * Pictures a face may be made from: catalogue art, which already has an
-     * address, and pictures this app generated, which do not and are copied
-     * when one is chosen.
-     *
-     * Photographs out of somebody's gallery are excluded, and that is the
-     * whole point of the source condition. A face sits beside every list
-     * somebody publishes and beside every report they file, and a face is not
-     * where a personal photograph should first become public.
+     * Pictures a face may be made from: catalogue art and generated pictures.
+     * Gallery photographs are excluded on purpose -- a face is public, and a
+     * personal photograph should not first become public there.
      */
     suspend fun cardImageUrls(limit: Int): List<String>
 

@@ -96,13 +96,12 @@ internal fun ModerationScreenContent(
     onOpenList: (String) -> Unit = {},
     onLook: (String) -> Unit = {},
 ) {
-    // Kept for as long as the screen is open, and no longer. A queue that
-    // remembers which covers you uncovered is a queue that leaks.
+    // Session-scoped: a queue that remembers which covers you uncovered leaks.
     var coversShown by rememberSaveable { mutableStateOf(true) }
     var takingDown by remember { mutableStateOf<ModerationReport?>(null) }
 
-    // Beside the queue once there is room. A complaint now takes a list out of
-    // the feed, so the feed is no longer where it can be looked at -- this is.
+    // Beside the queue once there is room: a reported list is out of the
+    // feed, so this is where it can be looked at.
     val besideIt = currentWindowShape.holdsTwoPanes
     if (besideIt) {
         Row(Modifier.fillMaxSize().testTag(ModerationTestTags.SCREEN)) {
@@ -192,8 +191,7 @@ private fun ColumnScope.Queue(
                     )
                 } else {
                     LaunchedEffect(besideIt, state.reports.firstOrNull()?.listId) {
-                        // The pane needs something in it the moment the queue
-                        // arrives; nobody should have to tap to see the first.
+                        // Something in the pane the moment the queue arrives.
                         if (besideIt) state.reports.firstOrNull()?.let { onChoose(it.listId) }
                     }
                     LazyColumn(
@@ -242,11 +240,8 @@ private fun TopBar(onBack: () -> Unit, coversShown: Boolean, onToggleCovers: () 
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        // For the whole session rather than per card: covering one card at a
-        // time is two gestures on every card, for ever, to protect the one
-        // person who chose this work. Not tied to the reason either --
-        // covering exactly what was reported as sexual would hide precisely
-        // what has to be looked at.
+        // For the whole session, not per card, and not tied to the reason:
+        // covering exactly what was reported would hide what has to be looked at.
         TextButton(
             onClick = onToggleCovers,
             modifier = Modifier.testTag(ModerationTestTags.COVERS_TOGGLE),
@@ -284,9 +279,8 @@ private fun ReportCard(
             .clickable(onClick = onOpen)
             .testTag(ModerationTestTags.reportCard(report.listId)),
     ) {
-        // The whole complaint is often the picture, and making somebody open
-        // the list to see it is making them decide blind. Edge to edge, at the
-        // top, before a word of it is read.
+        // The whole complaint is often the picture; making somebody open the
+        // list to see it is making them decide blind.
         Cover(report = report, shown = coversShown)
 
         Column(Modifier.padding(16.dp)) {
@@ -297,8 +291,8 @@ private fun ReportCard(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
-        // The person, not only their name: the decision is about them now, and
-        // a face is how a borderline case stops being an abstraction.
+        // The person, not only the name: a face is how a borderline case
+        // stops being an abstraction.
         Row(
             modifier = Modifier.padding(top = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -317,8 +311,7 @@ private fun ReportCard(
         Row(verticalAlignment = Alignment.CenterVertically) {
             FlagIcon(18.dp, MaterialTheme.colorScheme.error)
             Text(
-                // How many complained is the useful part: it is the difference
-                // between one person taking offence and a queue forming.
+                // The difference between one person taking offence and a queue forming.
                 text = if (report.reportCount > 1) {
                     stringResource(
                         R.string.moderation_reason_and_count,
@@ -337,8 +330,7 @@ private fun ReportCard(
                 color = MaterialTheme.colorScheme.error,
             )
         }
-        // Every note, verbatim. It is the only evidence there is, and the one
-        // somebody bothered to type is rarely the first.
+        // Every note, verbatim: the only evidence there is.
         report.notes.forEach { note ->
             Spacer(Modifier.height(8.dp))
             Text(
@@ -355,9 +347,8 @@ private fun ReportCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        // Said before the buttons rather than found out afterwards: taking a
-        // list out of the feed is a decision about somebody else's work, and
-        // the one thing the person making it needs to know is how far it goes.
+        // Said before the buttons: the one thing the decider needs to know is
+        // how far it goes.
         Spacer(Modifier.height(12.dp))
         Text(
             text = stringResource(R.string.moderation_consequence),
@@ -393,11 +384,9 @@ private fun ReportCard(
 }
 
 /**
- * The picture the feed showed, or a stated absence of one.
- *
- * When covers are put away the picture is not drawn at all rather than
- * blurred: a blur is only a blur above Android 12, and below it the same code
- * would quietly show the thing it was meant to hide.
+ * Not drawn at all rather than blurred when covers are put away: a blur is
+ * only a blur above Android 12, and below it the same code would show the
+ * thing it was meant to hide.
  */
 @Composable
 private fun Cover(report: ModerationReport, shown: Boolean) {
@@ -425,8 +414,7 @@ private fun Cover(report: ModerationReport, shown: Boolean) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        // On the picture rather than above the title: this is the only place
-        // the sentence can be misread, so it stands where the misreading is.
+        // On the picture: the only place the sentence can be misread.
         if (report.hidden) {
             Text(
                 text = stringResource(R.string.moderation_hidden_pill),

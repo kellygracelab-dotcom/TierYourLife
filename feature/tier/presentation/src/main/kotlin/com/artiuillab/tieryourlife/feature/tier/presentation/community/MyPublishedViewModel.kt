@@ -64,11 +64,7 @@ class MyPublishedViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Taking one down also clears the id from the local copy if this phone
-     * still holds one. Leaving it behind would let the settings screen offer
-     * to unpublish something that is no longer there.
-     */
+    /** Also clears the id from the local copy, or the settings screen would offer to unpublish something no longer there. */
     fun takeDown(publishedId: String) {
         val shown = _state.value as? MyPublishedUiState.Ready ?: return
         if (shown.removing != null) return
@@ -88,14 +84,7 @@ class MyPublishedViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Sends the board again, over the copy already in the feed.
-     *
-     * The same id, so the same link: anybody who has it keeps it, and the
-     * people who saw the list yesterday find the same list today. Taking it
-     * down and publishing again would work and would break every link given
-     * out, which is the one thing publishing is for.
-     */
+    /** Over the same id, so the same link: taking it down and publishing again would break every link given out. */
     fun update(publishedId: String) {
         val shown = _state.value as? MyPublishedUiState.Ready ?: return
         if (shown.updating != null || shown.removing != null) return
@@ -104,9 +93,7 @@ class MyPublishedViewModel @Inject constructor(
         viewModelScope.launch {
             val board = runCatching { tiers.boardPublishedAs(publishedId) }.getOrNull()
             if (board == null) {
-                // Published from a phone this one no longer is. There is
-                // nothing here to send, and saying so beats a button that
-                // fails silently.
+                // Published from a phone this one no longer is: nothing here to send.
                 _state.value = shown.copy(updating = null)
                 return@launch
             }

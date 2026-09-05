@@ -46,16 +46,10 @@ private val TILE_WIDTH = 28.dp
 private val TILE_HEIGHT = 40.dp
 
 /**
- * A board on a folding phone's cover screen.
- *
- * Read-only, and that is a decision rather than a shortcut. Ranking is a drag,
- * and a drag across 46dp rows with a camera cutout in the corner is a worse
- * version of a gesture that works perfectly one fold away. So the cover shows
- * what somebody already made and says so plainly when they reach for anything
- * else.
- *
- * Captions are dropped. At this size the letter is the tier and the words
- * under it are the first thing to cost a row its cards.
+ * A board on a folding phone's cover screen. Read-only by decision: a drag
+ * across 46dp rows with a camera cutout is a worse version of a gesture that
+ * works one fold away. Captions dropped: at this size they are the first
+ * thing to cost a row its cards.
  */
 @Composable
 internal fun CoverBoard(
@@ -83,10 +77,8 @@ internal fun CoverBoard(
                 modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                // The board is shown in the mode its owner chose. A ranked
-                // board is a numbered column, and squashing it into a grid of
-                // coloured strips here would be answering a question nobody
-                // asked -- at this size a numbered list reads better anyway.
+                // In the mode its owner chose: a ranked board is a numbered
+                // column, which reads better at this size anyway.
                 if (board.displayMode == TierListDisplayMode.FLAT_RANKED) {
                     rankedRows(board).take(RANKED_ROWS).forEach { (place, item, tier) ->
                         CoverRankedRow(place = place, item = item, tier = tier)
@@ -242,10 +234,7 @@ private fun CoverTile(item: TierItem) {
     }
 }
 
-/**
- * Which board of several, in the only space left: 40dp along the bottom, and
- * nothing in the corner where the camera is.
- */
+/** Which board of several: 40dp along the bottom, nothing in the camera's corner. */
 @Composable
 private fun BoardDots(count: Int, shown: Int) {
     if (count <= 1) {

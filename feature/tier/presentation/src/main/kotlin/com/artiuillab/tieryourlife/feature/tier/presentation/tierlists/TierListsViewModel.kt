@@ -75,13 +75,7 @@ class TierListsViewModel @Inject constructor(
     private var communityCategory: ListCategory? = null
     private var communitySource: FeedSource = FeedSource.Everyone
 
-    /**
-     * The order each source was last read in, remembered separately.
-     *
-     * They open on different orders and for a reason, so one shared setting
-     * would make switching source silently change the order too. Somebody who
-     * chose Newest among everybody expects it back when they come back.
-     */
+    /** Per source: switching source must not change the order the other was left in. */
     private val communitySort = mutableMapOf(
         FeedSource.Everyone to FeedSource.Everyone.opensOn,
         FeedSource.Following to FeedSource.Following.opensOn,
@@ -90,10 +84,7 @@ class TierListsViewModel @Inject constructor(
 
     private var account: Account = Account.Unknown
 
-    /**
-     * Read once and kept, because it is consulted on every redraw and a
-     * preferences file is not a thing to reach for on every frame.
-     */
+    /** Read once: consulted on every redraw. */
     private var conflictsSeen: Set<String> = emptySet()
     private var offerAnswered: Boolean = false
     private var syncJob: Job? = null
@@ -112,22 +103,15 @@ class TierListsViewModel @Inject constructor(
         viewModelScope.launch {
             accounts.account.collectLatest { current ->
                 account = current
-                // Redraws a screen that is already up; it does not put one
-                // there. Firebase answers before the first read of the
-                // database finishes, and emitting here turned "still loading"
-                // into "you have no boards" for as long as that took.
+                // Redraws a screen that is already up. Emitting before the first
+                // database read finished turned "loading" into "no boards".
                 if (_state.value is TierListsUiState.Success) emitSuccess()
                 if (current is Account.SignedIn) keepBoards()
             }
         }
     }
 
-    /**
-     * Runs on the way back to the list, which is where somebody arrives after
-     * changing a board. Cancelled if they leave again mid-run, and that is
-     * fine: the next run works out the same answer from the same three lists,
-     * so nothing is lost by stopping halfway.
-     */
+    /** Cancelled mid-run is fine: the next run recomputes from the same lists. */
     private fun keepBoards() {
         if (account !is Account.SignedIn || !preferences.backUpBoards()) return
         if (syncJob?.isActive == true) return
@@ -137,11 +121,7 @@ class TierListsViewModel @Inject constructor(
         }
     }
 
-    /**
-     * "Not now" is answered once and for all. A card that returns is a card
-     * people learn to dismiss without reading, and the footer line goes on
-     * saying the same thing for as long as it is true.
-     */
+    /** Answered once: a card that keeps returning is one people dismiss unread. */
     private fun seenConflict(list: TierList): Boolean = conflictsSeen.contains(list.title)
 
     fun dismissConflictNotice(title: String) {
@@ -183,12 +163,7 @@ class TierListsViewModel @Inject constructor(
         }
     }
 
-    /**
-     * A board that arrived from another phone is only half the story; the
-     * other half is the copy it landed beside. Marked as a pair here rather
-     * than in the database, because it stops being a pair the moment somebody
-     * deletes one -- a fact about what is on screen, not about the board.
-     */
+    /** Paired on screen, not in the database: the pair ends the moment either is deleted. */
     private fun withTwins(lists: List<TierList>): List<TierList> {
         val byTitle = lists.groupBy { it.title.removeSuffix(" ${it.arrivedFrom.orEmpty()}").trim() }
         return lists.map { list ->
@@ -233,11 +208,7 @@ class TierListsViewModel @Inject constructor(
         )
     }
 
-    /**
-     * The offer waits for a board to exist. Somebody who has not made one has
-     * nothing to lose yet, and asking them to sign in for the sake of an empty
-     * screen is the advertisement this is trying not to be.
-     */
+    /** The sign-in offer waits for a first board: with nothing to lose there is nothing to offer. */
     private fun whereTheseLive(): LocalOnly = when {
         account is Account.Unknown -> LocalOnly.Unknown
         account is Account.SignedIn -> LocalOnly.Kept
@@ -245,10 +216,6 @@ class TierListsViewModel @Inject constructor(
         else -> LocalOnly.Here(offerSignIn = !offerAnswered)
     }
 
-    /**
-     * Rows or pictures, remembered. A property of the screen rather than of
-     * the person, but somebody who chose pictures once meant it.
-     */
     fun selectBoardSort(sort: BoardSort) {
         if (boardSort == sort) return
         boardSort = sort
@@ -261,11 +228,7 @@ class TierListsViewModel @Inject constructor(
         emitSuccess()
     }
 
-    /**
-     * The star, both ways. The time is taken here rather than in the database
-     * so that several boards starred in one sitting still come out in the
-     * order they were starred.
-     */
+    /** The time is taken here so boards starred in one sitting keep their order. */
     fun toggleFavourite(id: Long) {
         val list = lastLoadedLists.firstOrNull { it.id == id } ?: return
         viewModelScope.launch {
@@ -286,10 +249,7 @@ class TierListsViewModel @Inject constructor(
         if (selected == HomeTab.Community) loadCommunityFeed()
     }
 
-    /**
-     * Searching the community is a request, not a filter over what is already
-     * on screen, so it waits for the typing to settle first.
-     */
+    /** A request, not a filter over what is on screen: waits for the typing to settle. */
     private fun searchCommunity(query: String) {
         communitySearch?.cancel()
         communityFeed = CommunityFeed.Loading
@@ -326,13 +286,7 @@ class TierListsViewModel @Inject constructor(
 
     private fun sortNow(): FeedSort = communitySort.getValue(communitySource)
 
-    /**
-     * Follows somebody from the screen that offered them.
-     *
-     * Their card stays where it is rather than disappearing: a list that
-     * removes what you just touched makes the next tap land on somebody else.
-     * The feed behind it is left alone until the screen is opened again.
-     */
+    /** The card stays put: a list that removes what was just tapped makes the next tap land elsewhere. */
     fun followSuggested(authorUid: String) {
         val shown = communityFeed as? CommunityFeed.FollowingNobody ?: return
         communityFeed = shown.copy(followed = shown.followed + authorUid)
@@ -379,10 +333,8 @@ class TierListsViewModel @Inject constructor(
             },
         )
         emitSuccess()
-        // Asked for only once the state above is in place. Started any earlier
-        // and a fast answer -- a cached one, or a failure -- arrives while the
-        // screen is still Loading, finds nothing of its own to fill in, and
-        // leaves the spinner up for good.
+        // Only once the state above is set: an early answer arrives while
+        // still Loading and leaves the spinner up for good.
         if (communityFeed is CommunityFeed.FollowingNobody) {
             loadSuggestedAuthors()
         }
@@ -448,12 +400,7 @@ class TierListsViewModel @Inject constructor(
     private fun isHidden(summary: PublishedListSummary): Boolean =
         summary.id in preferences.hiddenListIds() || summary.authorUid in preferences.hiddenAuthorUids()
 
-    /**
-     * Hiding and unhiding both happen on other screens -- inside a list, on an
-     * author's profile, in Settings -- while the feed here is already loaded.
-     * Something newly hidden can be dropped from what we hold; something
-     * unhidden is not in it to put back, so that costs a fetch.
-     */
+    /** Newly hidden can be dropped from what is held; unhidden is not here to put back, so it refetches. */
     fun refreshHidden() {
         val hiddenNow = preferences.hiddenListIds() + preferences.hiddenAuthorUids()
         if ((appliedHidden - hiddenNow).isNotEmpty()) {
@@ -474,10 +421,7 @@ class TierListsViewModel @Inject constructor(
         dropFromFeed { it.authorUid == authorUid }
     }
 
-    /**
-     * Reporting hides the list here at once. Taking it down for everyone is a
-     * person's decision, and the screen says so rather than pretending.
-     */
+    /** Hides it here at once; taking it down for everyone is a person's decision. */
     fun reportCommunityList(summary: PublishedListSummary, reason: ReportReason, note: String?) {
         preferences.hideList(summary.id, summary.title)
         noteHidden(summary.id, reported = true)
@@ -528,10 +472,8 @@ class TierListsViewModel @Inject constructor(
     fun exitSelection() = setMode(HomeMode.Browsing)
 
     /**
-     * A published snapshot that outlives the list it came from is one its owner
-     * believes they deleted, so the community copy comes down first. If it
-     * cannot, the list stays where it is: a delete that leaves the thing public
-     * is worse than a delete that did not happen.
+     * The community copy comes down first. If it cannot, the list stays: a
+     * delete that leaves it public is worse than one that did not happen.
      */
     fun deleteTierLists(ids: List<Long>) {
         setMode(HomeMode.Browsing)

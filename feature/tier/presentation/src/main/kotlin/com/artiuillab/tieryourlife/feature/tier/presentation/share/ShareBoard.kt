@@ -21,24 +21,16 @@ import java.io.File
 private const val SHARED_DIR = "shared"
 private const val AUTHORITY_SUFFIX = ".share"
 
-/** A poster that has not arrived in this long is drawn as its title instead. */
+/** The width posters are fetched at; a tile is 132px. */
 private const val PICTURE_WIDTH = 264
 
-/**
- * Where the caption points. The store listing replaces this the day it exists;
- * until then the site, which is where the store link will lead anyway.
- */
+/** Where the caption points. The store listing replaces this the day it exists. */
 const val SHARE_LINK = "https://tieryourlife.web.app"
 
 /**
- * Sends a board as a picture, with a line of text beside it.
- *
- * The text matters as much as the picture: a chat app shows it as the caption,
- * and it is the only part of the message a friend can tap. The picture says
- * what the board is; the caption says where it was made and how to get there.
- *
- * Returns false when the picture could not be made or handed over, so the
- * screen can say so; nothing here throws at a person.
+ * The caption matters as much as the picture: a chat app shows it under the
+ * photo, and it is the only part a friend can tap. Returns false when nothing
+ * could be made or handed over.
  */
 suspend fun shareBoard(context: Context, list: TierList, palette: BoardPalette, caption: String, footer: String): Boolean {
     val pictures = loadPictures(context, list)
@@ -46,8 +38,7 @@ suspend fun shareBoard(context: Context, list: TierList, palette: BoardPalette, 
     val file = withContext(Dispatchers.IO) {
         runCatching {
             val dir = File(context.cacheDir, SHARED_DIR).apply { mkdirs() }
-            // One file, overwritten: a share is a moment, not a library, and
-            // the cache is not a place to leave a picture per press.
+            // One file, overwritten: a share is a moment, not a library.
             File(dir, "board.png").also { file ->
                 file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
             }
@@ -69,11 +60,7 @@ suspend fun shareBoard(context: Context, list: TierList, palette: BoardPalette, 
         .isSuccess
 }
 
-/**
- * Every card's picture, fetched together. A card whose picture does not come
- * is simply absent from the map and drawn as its title -- a friend gets the
- * board a little plainer rather than not at all.
- */
+/** Fetched together. A card whose picture does not come is drawn as its title. */
 private suspend fun loadPictures(context: Context, list: TierList): Map<Long, Bitmap> = coroutineScope {
     val loader = SingletonImageLoader.get(context)
     list.tiers.flatMap { it.items }

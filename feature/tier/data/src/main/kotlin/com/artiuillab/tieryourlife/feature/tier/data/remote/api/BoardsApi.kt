@@ -13,11 +13,8 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
- * The copy of someone's boards that outlives their phone.
- *
- * Writing answers with the whole response rather than the body alone: a
- * refused write carries the board that was already there, and that body is
- * the point of the refusal.
+ * Writing answers with the whole response, not the body alone: a refused
+ * write carries the board that was already there.
  */
 interface BoardsApi {
 

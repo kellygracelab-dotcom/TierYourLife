@@ -7,13 +7,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Where a card's own picture is kept once it has somewhere to go.
- *
- * The only thing in this app that touches a Google service directly instead of
- * going through the proxy. The reason is size: a picture is megabytes, and a
- * Cloud Function moving megabytes it does nothing with is a pipe billed by the
- * second. `storage.rules` opens exactly one door -- this person's folder,
- * images, four megabytes -- and nothing behind it can reach the ledger.
+ * The only thing that touches a Google service directly: a picture is
+ * megabytes, and a function moving megabytes it does nothing with is a pipe
+ * billed by the second. `storage.rules` opens one door -- this person's
+ * folder, images, four megabytes.
  */
 interface Pictures {
 
@@ -38,10 +35,7 @@ class PictureVault @Inject constructor(
         return runCatching { reference.getBytes(MAX_PICTURE_BYTES).await() }.getOrNull()
     }
 
-    /**
-     * Null rather than an exception for a guest: pictures follow boards, and
-     * boards are only kept for somebody signed in. Asking is not an error.
-     */
+    /** Null for a guest: boards are only kept for somebody signed in, and asking is not an error. */
     private fun referenceTo(pictureId: String) = auth.currentUser
         ?.takeIf { !it.isAnonymous }
         ?.let { user -> storage.reference.child("users/${user.uid}/pictures/$pictureId") }

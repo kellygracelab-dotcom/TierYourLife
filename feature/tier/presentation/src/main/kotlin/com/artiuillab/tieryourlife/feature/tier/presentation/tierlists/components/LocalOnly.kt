@@ -32,17 +32,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.VectorIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
 /**
- * Said once, when there is finally something to lose.
- *
- * A card in the list rather than a dialog. It fires on arriving at a screen
- * instead of on doing something, and anything that fires on arrival and blocks
- * the way reads as an advertisement. On a list with one board this sits at the
- * top of a nearly empty screen, so it is as visible as a dialog would be at
- * none of the cost.
- *
- * "Not now" means never, not next week. A card somebody has to swat repeatedly
- * teaches them to swat it; [LocalOnlyFooter] carries on saying the same thing
- * quietly for as long as it stays true.
+ * Said once, when there is finally something to lose. A card, not a dialog:
+ * anything that fires on arrival and blocks the way reads as an advertisement.
+ * "Not now" means never; [LocalOnlyFooter] keeps saying it quietly.
  */
 @Composable
 internal fun LocalOnlySignInCard(
@@ -104,13 +96,9 @@ internal fun LocalOnlySignInCard(
 }
 
 /**
- * The permanent half. A fact with no button on it, which is the point: it
- * reports where the boards are and asks for nothing.
- *
- * Never shown to somebody signed in. It is a warning about being in one place
- * only, and once the boards are kept it is simply false -- there is no
- * "backed up" counterpart, because a state that is fine does not need
- * reporting.
+ * The permanent half: a fact with no button on it. Never shown to somebody
+ * signed in, and there is no "backed up" counterpart -- a fine state needs
+ * no reporting.
  */
 @Composable
 internal fun LocalOnlyFooter(boardCount: Int, modifier: Modifier = Modifier) {
@@ -134,11 +122,7 @@ internal fun LocalOnlyFooter(boardCount: Int, modifier: Modifier = Modifier) {
     }
 }
 
-/**
- * Two strings rather than a plural: neither of them shows the number, and a
- * plural whose message never mentions its count is a translation trap -- in
- * French "one" also covers zero.
- */
+/** Two strings rather than a plural: neither shows the number, and in French "one" also covers zero. */
 private fun oneBoard(boardCount: Int, one: Int, many: Int): Int = if (boardCount == 1) one else many
 
 @Composable

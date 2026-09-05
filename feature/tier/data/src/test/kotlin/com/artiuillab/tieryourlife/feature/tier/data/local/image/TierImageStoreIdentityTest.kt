@@ -10,12 +10,7 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
 
-/**
- * What a picture is called, and whether this phone has it.
- *
- * The whole of sync's picture half rests on one claim: the file's name means
- * the same thing on a second phone and the path around it does not.
- */
+/** Sync's picture half rests on one claim: the file's name means the same on a second phone and the path does not. */
 class TierImageStoreIdentityTest {
 
     @get:Rule
@@ -82,9 +77,8 @@ class TierImageStoreIdentityTest {
         assertArrayEquals(byteArrayOf(7, 8, 9), store.read("pic-1"))
     }
 
-    // Written beside the target and moved into place. Half a file is
-    // indistinguishable from a whole one, and would be shown as a broken
-    // picture forever rather than fetched again.
+    // Written beside the target and moved into place: half a file would be
+    // shown as a broken picture forever rather than fetched again.
     @Test
     fun `an empty file does not count as a picture`() {
         val store = store()

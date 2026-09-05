@@ -28,14 +28,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
-/**
- * Whose lists, and in what order, on one line.
- *
- * Three controls is one more than a feed carries, and the category row is
- * already the third. Source and order share this line because they are the two
- * that change together; the category answers a different question and keeps
- * its own row below.
- */
+/** Source and order share a line because they change together; the category answers a different question and keeps its own row. */
 @Composable
 internal fun FeedControlsRow(
     source: FeedSource,
@@ -83,13 +76,7 @@ private fun SourceChip(label: String, selected: Boolean, onClick: () -> Unit, te
     )
 }
 
-/**
- * The order, as a menu rather than two more chips.
- *
- * There are only two orders today, but they are not a choice of the same kind
- * as the source: the source is where you are, the order is how it is arranged.
- * Four chips in a row would read as four places to be.
- */
+/** A menu, not two more chips: the source is where you are, the order is how it is arranged, and four chips would read as four places. */
 @Composable
 private fun SortMenu(sort: FeedSort, onSelect: (FeedSort) -> Unit, modifier: Modifier = Modifier) {
     var open by remember { mutableStateOf(false) }

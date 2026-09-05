@@ -132,9 +132,8 @@ class AccountViewModelTest {
         assertEquals(1, credential.requests)
     }
 
-    // Both halves of the switch, so whichever way it is thrown one of them is
-    // running. The waiting one is skipped rather than deleted: a test that
-    // asserts on a balance nobody reads waits for it forever.
+    // Both halves of the switch, so one of them is running whichever way it
+    // is thrown; the waiting one is skipped, not deleted.
     @Test
     fun whileSignedIn_theBalanceIsRead() = runBlocking {
         assumeTrue(Features.GENERATION_OFFERED)
@@ -189,10 +188,8 @@ class AccountViewModelTest {
         assertEquals(Account.Guest, state.account)
     }
 
-    // The account has to be gone before the identity that asked is given up.
-    // Signing out first would take away the very thing the request is made
-    // with, and a failure then leaves somebody unable to sign back in and
-    // unable to try again.
+    // The account has to be gone before the identity that asked is given up,
+    // or a failure leaves somebody unable to sign back in or try again.
     @Test
     fun deletingAnAccount_endsItBeforeSigningOut() = runBlocking {
         val order = mutableListOf<String>()

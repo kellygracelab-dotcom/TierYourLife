@@ -34,14 +34,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.MergeChoice
 private val BUTTON_HEIGHT = 52.dp
 
 /**
- * Asked once, and only in the case that genuinely has two answers: somebody
- * built boards without an account, then signed into one they had used before.
- * An account with nothing on it takes this phone's boards silently, because
- * there is nothing to weigh them against.
- *
- * Neither option deletes anything, and the footnote says so out loud. The
- * difference is only which set is in use afterwards -- the other one is either
- * renamed or in the trash, and both can be walked back.
+ * Asked once, only when there are two answers: boards built without an
+ * account, then a sign-in to one used before. Neither option deletes anything;
+ * the other set is renamed or in the trash, and both can be walked back.
  */
 @Composable
 internal fun MergePicker(

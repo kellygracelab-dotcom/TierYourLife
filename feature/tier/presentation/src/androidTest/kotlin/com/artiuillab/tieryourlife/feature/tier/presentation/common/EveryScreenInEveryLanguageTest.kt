@@ -56,13 +56,10 @@ private const val SHOT_ROOT = "screens-by-locale"
 private val LOCALES = listOf("en", "ru", "uk", "de", "es", "fr", "pl", "pt-BR", "tr", "ja", "ar")
 
 /**
- * Renders every screen in every language we ship. Failing here means a
- * translation cannot be rendered at all -- a mangled format argument, a
- * plural with no matching quantity -- which breaks a screen nobody on the
- * team reads.
- *
- * It also writes each one out. Whether long wording *fits* is a question only
- * looking answers, and long wording is the usual way a layout gives.
+ * Renders every screen in every language. Failing here means a translation
+ * cannot be rendered at all -- a mangled format argument, a plural with no
+ * matching quantity. It also writes each one out: whether long wording fits
+ * is a question only looking answers.
  */
 @RunWith(AndroidJUnit4::class)
 class EveryScreenInEveryLanguageTest {

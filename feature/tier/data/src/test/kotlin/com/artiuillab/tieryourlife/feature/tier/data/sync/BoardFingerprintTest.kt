@@ -137,9 +137,8 @@ class BoardFingerprintTest {
         assertNotEquals(split, joined)
     }
 
-    // Without this two phones holding the same board would never agree that
-    // they do, and would hand each other copies of it forever: the directory
-    // around a picture is this phone's, and the name inside it is everyone's.
+    // The directory around a picture is this phone's, the name inside it is
+    // everyone's; without this two phones would hand each other copies forever.
     @Test
     fun `the same picture under two different paths is the same picture`() {
         val here = listOf(items[0].copy(imageUrl = "/data/user/0/app/files/tier_images/pic-1"), items[1])

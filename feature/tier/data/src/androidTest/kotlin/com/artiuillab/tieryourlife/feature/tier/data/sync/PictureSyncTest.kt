@@ -27,11 +27,8 @@ import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 
 /**
- * Getting a card's own picture to the account and back.
- *
- * Neither direction keeps a queue, and these are the cases that prove it: what
- * still has to move is worked out from the database and the disk every time, so
- * a run that failed yesterday is simply a shorter run today.
+ * Neither direction keeps a queue: what still has to move is worked out from
+ * the database and the disk every time, so a failed run is a shorter run tomorrow.
  */
 @RunWith(AndroidJUnit4::class)
 class PictureSyncTest {
@@ -213,10 +210,7 @@ class PictureSyncTest {
     }
 }
 
-/**
- * Wi-Fi, always, because these cases are about what moves rather than about
- * when it is allowed to.
- */
+/** Wi-Fi always: these cases are about what moves, not when it is allowed to. */
 private object OnWifiAlways : AppPreferences, Connection {
     override val available = MutableStateFlow(Unit)
     override fun unmetered(): Boolean = true

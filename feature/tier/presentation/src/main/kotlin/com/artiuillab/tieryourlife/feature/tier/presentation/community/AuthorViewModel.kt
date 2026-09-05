@@ -66,13 +66,7 @@ class AuthorViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Follows or stops, showing the answer before the server gives it.
-     *
-     * The count moves with the button, because the two are one fact and a
-     * button that changes while the number beside it does not reads as a bug.
-     * Both go back if the request fails.
-     */
+    /** Answers before the server does; the count moves with the button, and both go back if the request fails. */
     fun toggleFollow() {
         val current = _state.value as? AuthorUiState.Ready ?: return
         val was = current.follow ?: return

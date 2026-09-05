@@ -16,10 +16,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.parseTierCol
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.rowTintFor
 import kotlin.math.max
 
-/**
- * The colours a picture of a board is drawn in. A snapshot of the theme,
- * taken in composition and handed to a renderer that has no composition.
- */
+/** A snapshot of the theme, taken in composition and handed to a renderer that has none. */
 data class BoardPalette(
     val surface: Color,
     val onSurface: Color,
@@ -31,18 +28,9 @@ data class BoardPalette(
 )
 
 /**
- * A board as a picture: the rows, the cards, and a line at the foot saying
- * where it came from.
- *
- * Drawn with a Canvas rather than by photographing the screen. The screen
- * scrolls, is cut by the pool sheet and the status bar, and shows whatever
- * width the phone has; a picture sent to a friend wants the whole board at
- * one width, top to bottom, and nothing of the phone around it. Drawing it
- * is also the only way the result can be the same on every device and be
- * checked by a test.
- *
- * The geometry echoes the screen -- the same band beside the same tiles --
- * scaled to a width that reads well in a chat.
+ * A board as a picture, drawn with a Canvas rather than photographed: the
+ * screen scrolls and is cut by the pool sheet, a picture wants the whole
+ * board at one width, and drawing it is the only way a test can check it.
  */
 object BoardPicture {
 
@@ -167,8 +155,7 @@ object BoardPicture {
         val right = WIDTH - PADDING
         val bottom = top + row.height
 
-        // The row: the band's own colour at a whisper over the surface, the
-        // same rule the screen draws by.
+        // Band colour at a whisper over the surface, the screen's own rule.
         val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = rowTintFor(band, palette.surface).toArgb() }
         canvas.drawRoundRect(RectF(left, top, right, bottom), ROW_RADIUS, ROW_RADIUS, fill)
 

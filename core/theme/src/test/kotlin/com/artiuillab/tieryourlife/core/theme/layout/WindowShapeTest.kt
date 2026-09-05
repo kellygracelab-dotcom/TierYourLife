@@ -7,12 +7,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Which windows get which layout.
- *
- * Every case here is a real device in a real position, because the mistake
- * this class exists to stop is a layout that asks about devices: a phone in
- * split view is not a tablet, and a folding phone is three of these within a
- * second.
+ * Every case is a real device in a real position: a phone in split view is
+ * not a tablet, and a folding phone is three of these within a second.
  */
 class WindowShapeTest {
 
@@ -22,10 +18,8 @@ class WindowShapeTest {
         assertEquals(WindowShape.Narrow, WindowShape.of(320.dp, 720.dp))
     }
 
-    // Wide enough for the rail, and that is the one rule the two form factors
-    // share: a rail takes less width than a row of tabs. A big phone on its
-    // side even measures as wide as a tablet -- the column beside a board is
-    // held back by a separate height condition rather than by this.
+    // Wide enough for the rail, the one rule both form factors share; the
+    // column beside a board has its own height condition.
     @Test
     fun `a phone on its side has room for the rail`() {
         assertEquals(WindowShape.Medium, WindowShape.of(800.dp, 360.dp))
@@ -52,9 +46,8 @@ class WindowShapeTest {
         assertEquals(WindowShape.Cover, WindowShape.of(352.dp, 339.dp))
     }
 
-    // The case a width alone would get wrong. A small phone held sideways is
-    // still a phone: it can be typed on, and treating it as a cover would take
-    // away everything somebody went there to do.
+    // A small phone held sideways is still a phone: treating it as a cover
+    // would take away everything somebody went there to do.
     @Test
     fun `a small phone on its side is not a cover`() {
         assertEquals(WindowShape.Narrow, WindowShape.of(560.dp, 300.dp))
@@ -72,10 +65,8 @@ class WindowShapeTest {
         assertEquals(WindowShape.Narrow, WindowShape.of(352.dp))
     }
 
-    // Size and shape cannot separate these two: half a phone in split view is
-    // small in both directions and roughly square, exactly like a cover. Being
-    // wrong here takes the whole app away from somebody running two at once,
-    // so a shared window is never a cover.
+    // Half a phone in split view is small and roughly square, exactly like a
+    // cover; being wrong takes the whole app away, so a shared window never is.
     @Test
     fun `half a phone in split view is not a cover`() {
         assertEquals(WindowShape.Cover, WindowShape.of(360.dp, 400.dp))
