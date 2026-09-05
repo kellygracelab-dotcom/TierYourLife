@@ -1,5 +1,6 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components
+package com.artiuillab.tieryourlife.feature.tier.presentation.community.components
 
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
 /**
  * Following, from somebody who follows nobody yet.
@@ -49,7 +49,7 @@ internal fun FollowingNobody(
     onOpenAuthor: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.fillMaxSize().testTag(TierListsTestTags.FOLLOWING_NOBODY)) {
+    Column(modifier.fillMaxSize().testTag(CommunityTestTags.FOLLOWING_NOBODY)) {
         Text(
             text = stringResource(R.string.home_following_nobody),
             style = MaterialTheme.typography.titleMedium,
@@ -98,7 +98,7 @@ private fun AuthorRow(
         onClick = onOpen,
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
-        modifier = Modifier.fillMaxWidth().testTag(TierListsTestTags.SUGGESTED_AUTHOR),
+        modifier = Modifier.fillMaxWidth().testTag(CommunityTestTags.SUGGESTED_AUTHOR),
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),

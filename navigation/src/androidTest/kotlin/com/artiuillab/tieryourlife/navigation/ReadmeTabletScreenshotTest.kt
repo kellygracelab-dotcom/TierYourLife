@@ -35,7 +35,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailUiState
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.CommunityFeed
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityFeed
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.HomeTab
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsUiState

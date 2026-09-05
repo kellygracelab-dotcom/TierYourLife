@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.community.components
 
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,7 +32,6 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
 internal const val REPORT_NOTE_MAX_LENGTH = 500
 
@@ -55,7 +55,7 @@ internal fun ReportDialog(
             Column(
                 Modifier
                     .verticalScroll(rememberScrollState())
-                    .testTag(TierListsTestTags.REPORT_DIALOG),
+                    .testTag(CommunityTestTags.REPORT_DIALOG),
             ) {
                 Column(Modifier.selectableGroup()) {
                     ReportReason.entries.forEach { option ->
@@ -74,7 +74,7 @@ internal fun ReportDialog(
                     onValueChange = { if (it.length <= REPORT_NOTE_MAX_LENGTH) note = it },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(TierListsTestTags.REPORT_NOTE),
+                        .testTag(CommunityTestTags.REPORT_NOTE),
                     label = { Text(stringResource(R.string.report_note_label)) },
                     minLines = 2,
                 )
@@ -90,7 +90,7 @@ internal fun ReportDialog(
             TextButton(
                 onClick = { reason?.let { onSend(it, note.trim().takeIf(String::isNotEmpty)) } },
                 enabled = reason != null,
-                modifier = Modifier.testTag(TierListsTestTags.REPORT_SEND),
+                modifier = Modifier.testTag(CommunityTestTags.REPORT_SEND),
             ) {
                 Text(stringResource(R.string.report_action_send))
             }
@@ -107,7 +107,7 @@ private fun ReasonRow(option: ReportReason, selected: Boolean, onSelect: () -> U
         Modifier
             .fillMaxWidth()
             .selectable(selected = selected, onClick = onSelect, role = Role.RadioButton)
-            .testTag(TierListsTestTags.reportReason(option))
+            .testTag(CommunityTestTags.reportReason(option))
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

@@ -42,7 +42,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.settings.HiddenScre
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.HiddenUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailUiState
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.CommunityFeed
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityFeed
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.HomeTab
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsUiState

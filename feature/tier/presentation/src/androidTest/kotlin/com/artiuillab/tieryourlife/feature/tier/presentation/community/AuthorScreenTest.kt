@@ -14,7 +14,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -60,13 +59,13 @@ class AuthorScreenTest {
     fun longPressOnAList_offersReporting_withoutOfferingTheProfileYouAreAlreadyOn() {
         setScreen()
 
-        composeRule.onNodeWithTag(TierListsTestTags.communityCard("1"))
+        composeRule.onNodeWithTag(CommunityTestTags.communityCard("1"))
             .performTouchInput { longClick() }
 
-        composeRule.onNodeWithTag(TierListsTestTags.LIST_ACTIONS_SHEET).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierListsTestTags.ACTION_HIDE).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierListsTestTags.ACTION_REPORT).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierListsTestTags.ACTION_VIEW_AUTHOR).assertDoesNotExist()
+        composeRule.onNodeWithTag(CommunityTestTags.LIST_ACTIONS_SHEET).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_HIDE).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_REPORT).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_VIEW_AUTHOR).assertDoesNotExist()
     }
 
     @Test
@@ -74,11 +73,11 @@ class AuthorScreenTest {
         var reportedId: String? = null
         setScreen(onReport = { id, _, _, _ -> reportedId = id })
 
-        composeRule.onNodeWithTag(TierListsTestTags.communityCard("1"))
+        composeRule.onNodeWithTag(CommunityTestTags.communityCard("1"))
             .performTouchInput { longClick() }
-        composeRule.onNodeWithTag(TierListsTestTags.ACTION_REPORT).performClick()
-        composeRule.onNodeWithTag(TierListsTestTags.reportReason(ReportReason.Hate)).performClick()
-        composeRule.onNodeWithTag(TierListsTestTags.REPORT_SEND).performClick()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_REPORT).performClick()
+        composeRule.onNodeWithTag(CommunityTestTags.reportReason(ReportReason.Hate)).performClick()
+        composeRule.onNodeWithTag(CommunityTestTags.REPORT_SEND).performClick()
 
         composeRule.runOnIdle { assertEquals("1", reportedId) }
     }

@@ -11,15 +11,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardOrder
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
-import com.artiuillab.tieryourlife.feature.tier.domain.model.AppUnverified
-import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
-import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
-import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSource
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
-import com.artiuillab.tieryourlife.feature.tier.domain.model.opensOn
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
@@ -27,7 +19,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,8 +29,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 import javax.inject.Inject
-
-private const val COMMUNITY_SEARCH_DELAY_MILLIS = 300L
 
 @HiltViewModel
 class TierListsViewModel @Inject constructor(
@@ -63,24 +52,6 @@ class TierListsViewModel @Inject constructor(
     private var mode: HomeMode = HomeMode.Browsing
     private var boardSort: BoardSort = BoardSort.Newest
     private var boardFilters: BoardFilters = BoardFilters()
-    private var tab: HomeTab = HomeTab.Mine
-
-    /** What the feed on screen was already filtered against. */
-    private var appliedHidden: Set<String> = emptySet()
-
-    /** What to ask for to get the page after the one on screen. */
-    private var communityCursor: String? = null
-    private var moreJob: Job? = null
-    private var communityFeed: CommunityFeed = CommunityFeed.Loading
-    private var communityCategory: ListCategory? = null
-    private var communitySource: FeedSource = FeedSource.Everyone
-
-    /** Per source: switching source must not change the order the other was left in. */
-    private val communitySort = mutableMapOf(
-        FeedSource.Everyone to FeedSource.Everyone.opensOn,
-        FeedSource.Following to FeedSource.Following.opensOn,
-    )
-    private var communitySearch: Job? = null
 
     private var account: Account = Account.Unknown
 
@@ -196,12 +167,7 @@ class TierListsViewModel @Inject constructor(
             totalListCount = lastLoadedLists.size,
             rankedCount = rankedCount,
             mode = mode,
-            tab = tab,
             asPictures = preferences.boardsAsPictures(),
-            community = communityFeed,
-            communityCategory = communityCategory,
-            communitySource = communitySource,
-            communitySort = sortNow(),
             localOnly = whereTheseLive(),
             restoringPictures = restoringPictures,
             conflict = paired.firstOrNull { it.hasTwin && it.arrivedFrom != null && !seenConflict(it) },
@@ -242,209 +208,6 @@ class TierListsViewModel @Inject constructor(
         emitSuccess()
     }
 
-    fun selectTab(selected: HomeTab) {
-        if (tab == selected) return
-        tab = selected
-        emitSuccess()
-        if (selected == HomeTab.Community) loadCommunityFeed()
-    }
-
-    /** A request, not a filter over what is on screen: waits for the typing to settle. */
-    private fun searchCommunity(query: String) {
-        communitySearch?.cancel()
-        communityFeed = CommunityFeed.Loading
-        emitSuccess()
-        communitySearch = viewModelScope.launch {
-            delay(COMMUNITY_SEARCH_DELAY_MILLIS)
-            loadCommunityFeedNow(query)
-        }
-    }
-
-    fun selectCommunityCategory(category: ListCategory?) {
-        if (communityCategory == category) return
-        communityCategory = category
-        communityFeed = CommunityFeed.Loading
-        emitSuccess()
-        loadCommunityFeed()
-    }
-
-    fun selectCommunitySource(source: FeedSource) {
-        if (communitySource == source) return
-        communitySource = source
-        communityFeed = CommunityFeed.Loading
-        emitSuccess()
-        loadCommunityFeed()
-    }
-
-    fun selectCommunitySort(sort: FeedSort) {
-        if (sortNow() == sort) return
-        communitySort[communitySource] = sort
-        communityFeed = CommunityFeed.Loading
-        emitSuccess()
-        loadCommunityFeed()
-    }
-
-    private fun sortNow(): FeedSort = communitySort.getValue(communitySource)
-
-    /** The card stays put: a list that removes what was just tapped makes the next tap land elsewhere. */
-    fun followSuggested(authorUid: String) {
-        val shown = communityFeed as? CommunityFeed.FollowingNobody ?: return
-        communityFeed = shown.copy(followed = shown.followed + authorUid)
-        emitSuccess()
-        viewModelScope.launch {
-            community.follow(authorUid).onFailure { error ->
-                Timber.w(error, "Following an author failed")
-                val now = communityFeed as? CommunityFeed.FollowingNobody ?: return@onFailure
-                communityFeed = now.copy(followed = now.followed - authorUid)
-                emitSuccess()
-            }
-        }
-    }
-
-    fun loadCommunityFeed() {
-        communitySearch?.cancel()
-        viewModelScope.launch { loadCommunityFeedNow((mode as? HomeMode.Searching)?.query) }
-    }
-
-    private suspend fun loadCommunityFeedNow(query: String?) {
-        moreJob?.cancel()
-        appliedHidden = preferences.hiddenListIds() + preferences.hiddenAuthorUids()
-        communityFeed = community.feed(
-            category = communityCategory,
-            query = query,
-            sort = sortNow(),
-            following = communitySource == FeedSource.Following,
-        ).fold(
-            onSuccess = { page ->
-                communityCursor = page.nextCursor
-                if (page.followingNobody) {
-                    CommunityFeed.FollowingNobody()
-                } else {
-                    CommunityFeed.Ready(
-                        lists = page.lists.filterNot(::isHidden),
-                        canLoadMore = page.nextCursor != null,
-                    )
-                }
-            },
-            onFailure = { error ->
-                Timber.w(error, "Loading the community feed failed")
-                communityCursor = null
-                if (error is AppUnverified) CommunityFeed.Unverified else CommunityFeed.Failed
-            },
-        )
-        emitSuccess()
-        // Only once the state above is set: an early answer arrives while
-        // still Loading and leaves the spinner up for good.
-        if (communityFeed is CommunityFeed.FollowingNobody) {
-            loadSuggestedAuthors()
-        }
-    }
-
-    private fun loadSuggestedAuthors() {
-        viewModelScope.launch {
-            val authors = community.suggestedAuthors()
-                .onFailure { Timber.w(it, "Reading who to follow failed") }
-                .getOrDefault(emptyList())
-            // Only if the screen is still the one that asked. Switching back to
-            // everybody while this was in flight must not put it back.
-            val shown = communityFeed as? CommunityFeed.FollowingNobody ?: return@launch
-            communityFeed = shown.copy(authors = authors, loading = false)
-            emitSuccess()
-        }
-    }
-
-    fun loadMoreCommunity() {
-        val shown = communityFeed as? CommunityFeed.Ready ?: return
-        val cursor = communityCursor ?: return
-        if (shown.loadingMore) return
-
-        communityFeed = shown.copy(loadingMore = true)
-        emitSuccess()
-        moreJob = viewModelScope.launch {
-            community.feed(
-                category = communityCategory,
-                query = (mode as? HomeMode.Searching)?.query,
-                after = cursor,
-                sort = sortNow(),
-                following = communitySource == FeedSource.Following,
-            )
-                .onSuccess { page -> appendPage(page) }
-                // A page that never arrived is no reason to take away the
-                // ones that did. The next scroll asks again.
-                .onFailure { error ->
-                    Timber.w(error, "Loading another page of the community feed failed")
-                    stopWaitingForMore()
-                }
-        }
-    }
-
-    private fun appendPage(page: CommunityPage) {
-        val shown = communityFeed as? CommunityFeed.Ready ?: return
-        communityCursor = page.nextCursor
-        val alreadyShown = shown.lists.mapTo(mutableSetOf()) { it.id }
-        communityFeed = shown.copy(
-            lists = shown.lists + page.lists.filterNot { it.id in alreadyShown || isHidden(it) },
-            canLoadMore = page.nextCursor != null,
-            loadingMore = false,
-        )
-        emitSuccess()
-    }
-
-    private fun stopWaitingForMore() {
-        val shown = communityFeed as? CommunityFeed.Ready ?: return
-        communityFeed = shown.copy(loadingMore = false)
-        emitSuccess()
-    }
-
-    /** Hiding is local and silent: the author is never told. */
-    private fun isHidden(summary: PublishedListSummary): Boolean =
-        summary.id in preferences.hiddenListIds() || summary.authorUid in preferences.hiddenAuthorUids()
-
-    /** Newly hidden can be dropped from what is held; unhidden is not here to put back, so it refetches. */
-    fun refreshHidden() {
-        val hiddenNow = preferences.hiddenListIds() + preferences.hiddenAuthorUids()
-        if ((appliedHidden - hiddenNow).isNotEmpty()) {
-            loadCommunityFeed()
-            return
-        }
-        appliedHidden = hiddenNow
-        dropFromFeed(::isHidden)
-    }
-
-    fun hideCommunityList(summary: PublishedListSummary) {
-        preferences.hideList(summary.id, summary.title)
-        noteHidden(summary.id, reported = false)
-    }
-
-    fun hideCommunityAuthor(authorUid: String, name: String) {
-        preferences.hideAuthor(authorUid, name)
-        dropFromFeed { it.authorUid == authorUid }
-    }
-
-    /** Hides it here at once; taking it down for everyone is a person's decision. */
-    fun reportCommunityList(summary: PublishedListSummary, reason: ReportReason, note: String?) {
-        preferences.hideList(summary.id, summary.title)
-        noteHidden(summary.id, reported = true)
-        viewModelScope.launch {
-            community.report(summary.id, reason, note)
-                .onFailure { Timber.w(it, "Could not file the report") }
-        }
-    }
-
-    private fun noteHidden(publishedId: String, reported: Boolean) {
-        val current = communityFeed as? CommunityFeed.Ready ?: return
-        communityFeed = current.copy(justHidden = current.justHidden + (publishedId to reported))
-        emitSuccess()
-    }
-
-    private fun dropFromFeed(matching: (PublishedListSummary) -> Boolean) {
-        val current = communityFeed as? CommunityFeed.Ready ?: return
-        val kept = current.lists.filterNot(matching)
-        if (kept.size == current.lists.size) return
-        communityFeed = current.copy(lists = kept)
-        emitSuccess()
-    }
-
     private fun setMode(newMode: HomeMode) {
         mode = newMode
         if (_state.value is TierListsUiState.Success) {
@@ -454,10 +217,7 @@ class TierListsViewModel @Inject constructor(
 
     fun enterSearch() = setMode(HomeMode.Searching(""))
 
-    fun updateSearchQuery(query: String) {
-        setMode(HomeMode.Searching(query))
-        if (tab == HomeTab.Community) searchCommunity(query)
-    }
+    fun updateSearchQuery(query: String) = setMode(HomeMode.Searching(query))
 
     fun exitSearch() = setMode(HomeMode.Browsing)
 

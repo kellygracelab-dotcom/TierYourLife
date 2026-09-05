@@ -15,7 +15,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -34,10 +33,10 @@ class CommunityListScreenTest {
 
         openOverflow()
 
-        composeRule.onNodeWithTag(TierListsTestTags.LIST_ACTIONS_SHEET).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierListsTestTags.ACTION_VIEW_AUTHOR).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierListsTestTags.ACTION_HIDE).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierListsTestTags.ACTION_REPORT).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityTestTags.LIST_ACTIONS_SHEET).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_VIEW_AUTHOR).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_HIDE).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_REPORT).assertIsDisplayed()
     }
 
     @Test
@@ -46,7 +45,7 @@ class CommunityListScreenTest {
         setScreen(onHide = { hidden = true })
 
         openOverflow()
-        composeRule.onNodeWithTag(TierListsTestTags.ACTION_HIDE).performClick()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_HIDE).performClick()
 
         composeRule.runOnIdle { assertTrue(hidden) }
     }
@@ -56,10 +55,10 @@ class CommunityListScreenTest {
         setScreen()
 
         openOverflow()
-        composeRule.onNodeWithTag(TierListsTestTags.ACTION_REPORT).performClick()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_REPORT).performClick()
 
-        composeRule.onNodeWithTag(TierListsTestTags.REPORT_DIALOG).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierListsTestTags.REPORT_SEND).assertIsNotEnabled()
+        composeRule.onNodeWithTag(CommunityTestTags.REPORT_DIALOG).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityTestTags.REPORT_SEND).assertIsNotEnabled()
     }
 
     @Test
@@ -68,9 +67,9 @@ class CommunityListScreenTest {
         setScreen(onReport = { reason, _ -> reported = reason })
 
         openOverflow()
-        composeRule.onNodeWithTag(TierListsTestTags.ACTION_REPORT).performClick()
-        composeRule.onNodeWithTag(TierListsTestTags.reportReason(ReportReason.Spam)).performClick()
-        composeRule.onNodeWithTag(TierListsTestTags.REPORT_SEND).performClick()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_REPORT).performClick()
+        composeRule.onNodeWithTag(CommunityTestTags.reportReason(ReportReason.Spam)).performClick()
+        composeRule.onNodeWithTag(CommunityTestTags.REPORT_SEND).performClick()
 
         composeRule.runOnIdle { assertEquals(ReportReason.Spam, reported) }
         composeRule.onNodeWithText(string(R.string.report_sent_title)).assertIsDisplayed()

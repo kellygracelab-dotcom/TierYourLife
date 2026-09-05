@@ -1,9 +1,6 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
+package com.artiuillab.tieryourlife.feature.tier.presentation.community
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.artiuillab.tieryourlife.feature.account.domain.model.Account
-import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
-import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
@@ -18,15 +15,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.Published
-import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
-import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
-import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncReport
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.FakeAppPreferences
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
@@ -49,8 +40,8 @@ class FeedControlsTest {
 
         val shown = ready(viewModel)
 
-        assertEquals(FeedSource.Everyone, shown.communitySource)
-        assertEquals(FeedSort.Popular, shown.communitySort)
+        assertEquals(FeedSource.Everyone, shown.source)
+        assertEquals(FeedSort.Popular, shown.sort)
         assertEquals(FeedSort.Popular, eventually("a feed request") { community.asked.lastOrNull() }.sort)
     }
 
@@ -63,10 +54,10 @@ class FeedControlsTest {
         val viewModel = started(community)
         ready(viewModel)
 
-        viewModel.selectCommunitySource(FeedSource.Following)
-        val shown = ready(viewModel) { it.communitySource == FeedSource.Following }
+        viewModel.selectSource(FeedSource.Following)
+        val shown = ready(viewModel) { it.source == FeedSource.Following }
 
-        assertEquals(FeedSort.Recent, shown.communitySort)
+        assertEquals(FeedSort.Recent, shown.sort)
         val sent = eventually("a request for the people followed") {
             community.asked.lastOrNull()?.takeIf { it.following }
         }
@@ -79,14 +70,14 @@ class FeedControlsTest {
         val viewModel = started(community)
         ready(viewModel)
 
-        viewModel.selectCommunitySort(FeedSort.Recent)
-        ready(viewModel) { it.communitySort == FeedSort.Recent }
-        viewModel.selectCommunitySource(FeedSource.Following)
-        ready(viewModel) { it.communitySource == FeedSource.Following }
-        viewModel.selectCommunitySource(FeedSource.Everyone)
-        val back = ready(viewModel) { it.communitySource == FeedSource.Everyone }
+        viewModel.selectSort(FeedSort.Recent)
+        ready(viewModel) { it.sort == FeedSort.Recent }
+        viewModel.selectSource(FeedSource.Following)
+        ready(viewModel) { it.source == FeedSource.Following }
+        viewModel.selectSource(FeedSource.Everyone)
+        val back = ready(viewModel) { it.source == FeedSource.Everyone }
 
-        assertEquals(FeedSort.Recent, back.communitySort)
+        assertEquals(FeedSort.Recent, back.sort)
     }
 
     // The category answers a third question and keeps its own row. Switching
@@ -97,12 +88,12 @@ class FeedControlsTest {
         val viewModel = started(community)
         ready(viewModel)
 
-        viewModel.selectCommunityCategory(ListCategory.Games)
-        ready(viewModel) { it.communityCategory == ListCategory.Games }
-        viewModel.selectCommunitySource(FeedSource.Following)
-        val shown = ready(viewModel) { it.communitySource == FeedSource.Following }
+        viewModel.selectCategory(ListCategory.Games)
+        ready(viewModel) { it.category == ListCategory.Games }
+        viewModel.selectSource(FeedSource.Following)
+        val shown = ready(viewModel) { it.source == FeedSource.Following }
 
-        assertEquals(ListCategory.Games, shown.communityCategory)
+        assertEquals(ListCategory.Games, shown.category)
         val sent = eventually("a request narrowed to games") {
             community.asked.lastOrNull()?.takeIf { it.following }
         }
@@ -115,7 +106,7 @@ class FeedControlsTest {
         val viewModel = started(community)
         ready(viewModel)
 
-        viewModel.selectCommunitySource(FeedSource.Following)
+        viewModel.selectSource(FeedSource.Following)
         val offered = feed(viewModel) { it is CommunityFeed.FollowingNobody && !it.loading }
 
         assertEquals(listOf("a", "b"), (offered as CommunityFeed.FollowingNobody).authors.map { it.uid })
@@ -128,7 +119,7 @@ class FeedControlsTest {
         val community = RecordingCommunity(followsNobody = true, suggestions = listOf(author("a")))
         val viewModel = started(community)
         ready(viewModel)
-        viewModel.selectCommunitySource(FeedSource.Following)
+        viewModel.selectSource(FeedSource.Following)
         feed(viewModel) { it is CommunityFeed.FollowingNobody && !it.loading }
 
         viewModel.followSuggested("a")
@@ -149,7 +140,7 @@ class FeedControlsTest {
         )
         val viewModel = started(community)
         ready(viewModel)
-        viewModel.selectCommunitySource(FeedSource.Following)
+        viewModel.selectSource(FeedSource.Following)
         feed(viewModel) { it is CommunityFeed.FollowingNobody && !it.loading }
 
         viewModel.followSuggested("a")
@@ -160,12 +151,7 @@ class FeedControlsTest {
         assertFalse("a" in after.followed)
     }
 
-    /**
-     * Waits for something a coroutine will do, rather than assuming it already
-     * has. The screen answers before the server does on purpose, so a check on
-     * what reached the server has to wait for it -- on a machine where the
-     * launch does not happen to run inline, it has not.
-     */
+    /** The screen answers before the server does on purpose, so a check on what reached the server has to wait for it. */
     private suspend fun <T : Any> eventually(what: String, get: () -> T?): T =
         withTimeoutOrNull(WAIT_MILLIS) {
             var seen = get()
@@ -181,31 +167,20 @@ class FeedControlsTest {
      * got stuck on instead of hanging the whole run.
      */
     private suspend fun ready(
-        viewModel: TierListsViewModel,
-        until: (TierListsUiState.Success) -> Boolean = { true },
-    ): TierListsUiState.Success = withTimeoutOrNull(WAIT_MILLIS) {
-        viewModel.state.first { it is TierListsUiState.Success && until(it) } as TierListsUiState.Success
+        viewModel: CommunityFeedViewModel,
+        until: (CommunityFeedUiState) -> Boolean = { true },
+    ): CommunityFeedUiState = withTimeoutOrNull(WAIT_MILLIS) {
+        viewModel.state.first { it.feed !is CommunityFeed.Loading && until(it) }
     } ?: error("Waited for a state that never came. Last was ${viewModel.state.value}")
 
     private suspend fun feed(
-        viewModel: TierListsViewModel,
+        viewModel: CommunityFeedViewModel,
         until: (CommunityFeed) -> Boolean,
-    ): CommunityFeed = ready(viewModel) { until(it.community) }.community
+    ): CommunityFeed = ready(viewModel) { until(it.feed) }.feed
 
     /** Nothing loads on construction; the screen asks, so the test does too. */
-    private fun started(community: CommunityRepository) = viewModel(community).also {
-        it.loadTierLists()
-        it.loadCommunityFeed()
-    }
-
-    private fun viewModel(community: CommunityRepository) = TierListsViewModel(
-        FakeTierRepository(emptyList()),
-        community,
-        FakeAppPreferences(),
-        GuestAccount,
-        NoSync,
-        NoRestore,
-    )
+    private fun started(community: CommunityRepository) =
+        CommunityFeedViewModel(community, FakeAppPreferences()).also { it.load() }
 
     private fun author(uid: String) =
         SuggestedAuthor(uid = uid, name = uid.uppercase(), photoUrl = null, takeCount = 3)
@@ -265,22 +240,6 @@ internal class RecordingCommunity(
     override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
     override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> = Result.success(Unit)
     override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
-}
-
-private object GuestAccount : AccountRepository {
-    override val account: Flow<Account> = flowOf(Account.Guest)
-    override suspend fun signInWithGoogle(idToken: String): SignInOutcome = SignInOutcome.Success
-    override suspend fun setDisplayName(name: String): Boolean = true
-    override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
-    override suspend fun signOut() = Unit
-}
-
-private object NoSync : BoardSync {
-    override suspend fun sync(): SyncReport = SyncReport(signedIn = false)
-}
-
-private object NoRestore : PictureRestore {
-    override val restoring = MutableStateFlow(PictureRestore.Progress.Idle)
 }
 
 private const val WAIT_MILLIS = 5_000L

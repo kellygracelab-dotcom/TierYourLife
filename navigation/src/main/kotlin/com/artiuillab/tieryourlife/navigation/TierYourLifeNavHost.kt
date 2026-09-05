@@ -9,8 +9,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
@@ -20,6 +22,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.navigation.accou
 import com.artiuillab.tieryourlife.feature.account.presentation.navigation.navigateToAccount
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.aiStudioScreen
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.navigateToAiStudio
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityFeedScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.ADDED_ITEMS_RESULT_KEY
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.authorScreen
@@ -37,8 +40,8 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigate
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTrash
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.settingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierListsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.trashScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreen
 
 @Composable
 fun TierYourLifeNavHost(
@@ -97,6 +100,34 @@ private fun NavHostController.goTo(destination: RailDestination) {
     }
 }
 
+/** The two halves of the home screen live in two features; only this module sees both, so it is the one that puts them behind one route. */
+private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
+    composable<Route.TierLists> { backStackEntry ->
+        val route = backStackEntry.toRoute<Route.TierLists>()
+        HomeScreen(
+            startOnCommunity = route.community,
+            mine = { tabs ->
+                TierListsScreen(
+                    makeBoard = route.makeBoard,
+                    onTierListClick = { id -> navController.navigateToTierDetail(id) },
+                    onSettingsClick = { navController.navigateToSettings() },
+                    onSignInClick = { navController.navigateToAccount() },
+                    onNewListCreated = { id -> navController.navigateToTierDetail(id) },
+                    tabs = tabs,
+                )
+            },
+            community = { tabs ->
+                CommunityFeedScreen(
+                    onOpenList = { id -> navController.navigateToCommunityList(id) },
+                    onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
+                    onSettingsClick = { navController.navigateToSettings() },
+                    tabs = tabs,
+                )
+            },
+        )
+    }
+}
+
 /** Top-level destinations replace each other rather than piling up. */
 private fun NavHostController.navigateToHome(community: Boolean, makeBoard: Boolean = false) {
     navigate(Route.TierLists(community, makeBoard)) {
@@ -122,14 +153,7 @@ private fun NavContent(
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None },
     ) {
-        tierListsScreen(
-            onTierListClick = { id -> navController.navigateToTierDetail(id) },
-            onCommunityListClick = { id -> navController.navigateToCommunityList(id) },
-            onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
-            onSettingsClick = { navController.navigateToSettings() },
-            onSignInClick = { navController.navigateToAccount() },
-            onNewListCreated = { id -> navController.navigateToTierDetail(id) },
-        )
+        homeScreen(navController)
         tierDetailScreen(
             onBack = { navController.popBackStack() },
             // Replaces the board rather than stacking: the column beside it
