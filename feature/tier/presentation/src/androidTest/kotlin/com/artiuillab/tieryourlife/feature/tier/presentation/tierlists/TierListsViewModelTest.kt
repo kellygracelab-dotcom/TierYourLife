@@ -5,7 +5,6 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
-import com.artiuillab.tieryourlife.feature.tier.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
@@ -47,7 +46,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class TierListsViewModelTest {
@@ -291,217 +289,6 @@ class TierListsViewModelTest {
         assertEquals(listOf(1L), state.lists.map { it.id })
     }
 
-    @Test
-    fun aListHiddenOnAnotherScreen_isGoneWhenTheFeedComesBackIntoView() = runBlocking {
-        val preferences = FakeAppPreferences()
-        val community = FakeCommunityRepository(
-            feed = listOf(published("a", "Sci-fi films"), published("b", "Every A24 film")),
-        )
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences, guestAccount(), NoBoardSync, NoPictureRestore)
-        viewModel.selectTab(HomeTab.Community)
-        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
-
-        // What opening the list and hiding it from in there leaves behind.
-        preferences.hideList("a", "Sci-fi films")
-        viewModel.refreshHidden()
-
-        val feed = (viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success)
-            .community as CommunityFeed.Ready
-        assertEquals(listOf("b"), feed.lists.map { it.id })
-    }
-
-    // The two refusals want opposite sentences, so the screen has to be able
-    // to tell them apart before it says either.
-    @Test
-    fun whenPlayWillNotVouchForTheInstall_theFeedSaysSoRatherThanBlamingTheConnection() = runBlocking {
-        val community = FakeCommunityRepository(firstPageFails = AppUnverified())
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
-        viewModel.selectTab(HomeTab.Community)
-
-        val feed = viewModel.state.first {
-            (it as? TierListsUiState.Success)?.community is CommunityFeed.Unverified
-        }
-        assertEquals(CommunityFeed.Unverified, (feed as TierListsUiState.Success).community)
-    }
-
-    @Test
-    fun whenTheFeedSimplyDidNotArrive_itStaysTheOneWithATryAgain() = runBlocking {
-        val community = FakeCommunityRepository(firstPageFails = IOException("offline"))
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
-        viewModel.selectTab(HomeTab.Community)
-
-        val feed = viewModel.state.first {
-            (it as? TierListsUiState.Success)?.community is CommunityFeed.Failed
-        }
-        assertEquals(CommunityFeed.Failed, (feed as TierListsUiState.Success).community)
-    }
-
-    @Test
-    fun comingBackWithNothingHidden_leavesTheFeedAlone() = runBlocking {
-        val community = FakeCommunityRepository(feed = listOf(published("a", "Sci-fi films")))
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
-        viewModel.selectTab(HomeTab.Community)
-        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
-
-        viewModel.refreshHidden()
-
-        val feed = (viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success)
-            .community as CommunityFeed.Ready
-        assertEquals(listOf("a"), feed.lists.map { it.id })
-    }
-
-    // Undoing a hide happens in Settings, where the feed is not on screen and
-    // what we hold has already had the card taken out of it.
-    @Test
-    fun aListPutBack_returnsToTheFeed() = runBlocking {
-        val preferences = FakeAppPreferences()
-        val community = FakeCommunityRepository(
-            feed = listOf(published("a", "Sci-fi films"), published("b", "Every A24 film")),
-        )
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences, guestAccount(), NoBoardSync, NoPictureRestore)
-        viewModel.selectTab(HomeTab.Community)
-        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
-
-        preferences.hideList("a", "Sci-fi films")
-        viewModel.refreshHidden()
-        assertEquals(listOf("b"), shownIds(viewModel))
-
-        preferences.unhideList("a")
-        viewModel.refreshHidden()
-        val back = viewModel.state.first {
-            ((it as? TierListsUiState.Success)?.community as? CommunityFeed.Ready)?.lists?.size == 2
-        }
-        assertEquals(listOf("a", "b"), ((back as TierListsUiState.Success).community as CommunityFeed.Ready).lists.map { it.id })
-    }
-
-    private fun shownIds(viewModel: TierListsViewModel): List<String> =
-        ((viewModel.state.value as TierListsUiState.Success).community as CommunityFeed.Ready).lists.map { it.id }
-
-    @Test
-    fun theNextPage_isPutUnderWhatIsAlreadyThere() = runBlocking {
-        val community = FakeCommunityRepository(
-            feed = listOf(published("a", "One")),
-            nextPages = listOf(listOf(published("b", "Two"))),
-        )
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
-        viewModel.selectTab(HomeTab.Community)
-        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
-
-        viewModel.loadMoreCommunity()
-        viewModel.state.first { readyFeed(it)?.loadingMore == false && readyFeed(it)?.lists?.size == 2 }
-
-        assertEquals(listOf("a", "b"), shownIds(viewModel))
-        assertEquals(listOf(null, "0"), community.cursorsAsked)
-    }
-
-    @Test
-    fun theLastPage_isNotFollowedByAnotherRequest() = runBlocking {
-        val community = FakeCommunityRepository(feed = listOf(published("a", "One")))
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
-        viewModel.selectTab(HomeTab.Community)
-        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
-
-        viewModel.loadMoreCommunity()
-
-        assertEquals(listOf(null), community.cursorsAsked)
-        assertEquals(false, readyFeed(viewModel.state.value)?.canLoadMore)
-    }
-
-    // Losing the page someone is looking at because the one after it did not
-    // arrive would be a worse answer than no more lists.
-    @Test
-    fun aPageThatFails_leavesTheFeedAsItIs() = runBlocking {
-        val community = FakeCommunityRepository(
-            feed = listOf(published("a", "One")),
-            nextPages = listOf(listOf(published("b", "Two"))),
-            laterPagesFail = true,
-        )
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
-        viewModel.selectTab(HomeTab.Community)
-        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
-
-        viewModel.loadMoreCommunity()
-        viewModel.state.first { readyFeed(it)?.loadingMore == false }
-
-        assertEquals(listOf("a"), shownIds(viewModel))
-    }
-
-    @Test
-    fun aListHiddenBefore_doesNotArriveWithALaterPage() = runBlocking {
-        val preferences = FakeAppPreferences()
-        preferences.hideList("b", "Two")
-        val community = FakeCommunityRepository(
-            feed = listOf(published("a", "One")),
-            nextPages = listOf(listOf(published("b", "Two"), published("c", "Three"))),
-        )
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences, guestAccount(), NoBoardSync, NoPictureRestore)
-        viewModel.selectTab(HomeTab.Community)
-        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
-
-        viewModel.loadMoreCommunity()
-        viewModel.state.first { readyFeed(it)?.loadingMore == false && readyFeed(it)?.lists?.size == 2 }
-
-        assertEquals(listOf("a", "c"), shownIds(viewModel))
-    }
-
-    // Design asked for a quiet note where the card was, not a silent gap:
-    // vanishing reads as "deleted", which is not what happened.
-    @Test
-    fun hidingFromTheFeed_leavesANoteWhereTheCardWas() = runBlocking {
-        val community = FakeCommunityRepository(feed = listOf(published("a", "One"), published("b", "Two")))
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
-        viewModel.selectTab(HomeTab.Community)
-        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
-
-        viewModel.hideCommunityList(published("a", "One"))
-
-        val feed = readyFeed(viewModel.state.value)!!
-        assertEquals(listOf("a", "b"), feed.lists.map { it.id })
-        assertEquals(mapOf("a" to false), feed.justHidden)
-    }
-
-    @Test
-    fun reportingFromTheFeed_saysSoInTheNote() = runBlocking {
-        val community = FakeCommunityRepository(feed = listOf(published("a", "One")))
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
-        viewModel.selectTab(HomeTab.Community)
-        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
-
-        viewModel.reportCommunityList(published("a", "One"), ReportReason.Spam, null)
-
-        assertEquals(mapOf("a" to true), readyFeed(viewModel.state.value)!!.justHidden)
-    }
-
-    @Test
-    fun theNextLoad_carriesNoNotes() = runBlocking {
-        val preferences = FakeAppPreferences()
-        val community = FakeCommunityRepository(feed = listOf(published("a", "One"), published("b", "Two")))
-        val viewModel = TierListsViewModel(FakeTierRepository(emptyList()), community, preferences, guestAccount(), NoBoardSync, NoPictureRestore)
-        viewModel.selectTab(HomeTab.Community)
-        viewModel.state.first { (it as? TierListsUiState.Success)?.community is CommunityFeed.Ready }
-        viewModel.hideCommunityList(published("a", "One"))
-
-        viewModel.loadCommunityFeed()
-        val reloaded = viewModel.state.first {
-            readyFeed(it)?.justHidden?.isEmpty() == true && readyFeed(it)?.lists?.size == 1
-        }
-
-        assertEquals(listOf("b"), readyFeed(reloaded)!!.lists.map { it.id })
-    }
-
-    private fun readyFeed(state: TierListsUiState): CommunityFeed.Ready? =
-        (state as? TierListsUiState.Success)?.community as? CommunityFeed.Ready
-
-    private fun published(id: String, title: String) = PublishedListSummary(
-        id = id,
-        title = title,
-        authorUid = "author-$id",
-        authorName = "Olena M.",
-        category = ListCategory.FilmTv,
-        itemCount = 12,
-        updatedAtMillis = 0,
-    )
-
     private fun fakeList(id: Long, title: String, publishedId: String? = null, editedAt: Long? = null): TierList =
         TierList(id = id, title = title, tiers = emptyList(), publishedId = publishedId, editedAt = editedAt)
 
@@ -624,16 +411,9 @@ internal class FakeTierRepository(initial: List<TierList>) : TierRepository {
 }
 
 private class FakeCommunityRepository(
-    private val feed: List<PublishedListSummary> = emptyList(),
     private val unpublishResult: Result<Unit> = Result.success(Unit),
-    /** Pages after the first, in order. The cursor to each is its index. */
-    private val nextPages: List<List<PublishedListSummary>> = emptyList(),
-    private val laterPagesFail: Boolean = false,
-    /** What the first page comes back as, when it does not come back. */
-    private val firstPageFails: Throwable? = null,
 ) : CommunityRepository {
     val takenDown = mutableListOf<String>()
-    val cursorsAsked = mutableListOf<String?>()
     override suspend fun feed(
         category: ListCategory?,
         query: String?,
@@ -641,20 +421,11 @@ private class FakeCommunityRepository(
         after: String?,
         sort: FeedSort,
         following: Boolean,
-    ): Result<CommunityPage> {
-        cursorsAsked += after
-        if (after == null && firstPageFails != null) return Result.failure(firstPageFails)
-        if (after != null && laterPagesFail) return Result.failure(IllegalStateException("offline"))
-        val index = after?.toInt()?.plus(1) ?: 0
-        val lists = if (index == 0) feed else nextPages.getOrElse(index - 1) { emptyList() }
-        val more = index < nextPages.size
-        return Result.success(CommunityPage(lists, nextCursor = if (more) index.toString() else null))
-    }
+    ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
     override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(emptyList())
 
     override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
-    override suspend fun publish(list: com.artiuillab.tieryourlife.feature.tier.domain.model.TierList): Result<Published> =
-        Result.failure(IllegalStateException())
+    override suspend fun publish(list: TierList): Result<Published> = Result.failure(IllegalStateException())
     override suspend fun unpublish(publishedId: String): Result<Unit> {
         takenDown += publishedId
         return unpublishResult

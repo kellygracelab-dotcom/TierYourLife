@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.community.components
 
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,7 +25,9 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ChevronDownIcon
 
 /** Source and order share a line because they change together; the category answers a different question and keeps its own row. */
 @Composable

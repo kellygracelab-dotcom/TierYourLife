@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.community.components
 
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 
 /**
  * Following, from somebody who follows nobody yet.

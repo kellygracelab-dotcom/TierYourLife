@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.community.components
 
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -51,6 +50,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummar
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityFeed
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ListArt
 
 private const val CARD_ART_ASPECT = 1f
 

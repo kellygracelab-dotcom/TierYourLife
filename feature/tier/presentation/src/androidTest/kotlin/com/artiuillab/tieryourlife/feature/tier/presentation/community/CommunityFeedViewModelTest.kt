@@ -29,7 +29,7 @@ class CommunityFeedViewModelTest {
     @Test
     fun aListHiddenOnAnotherScreen_isGoneWhenTheFeedComesBackIntoView() = runBlocking {
         val preferences = FakeAppPreferences()
-        val community = FakeCommunityRepository(
+        val community = FakeFeedRepository(
             feed = listOf(published("a", "Sci-fi films"), published("b", "Every A24 film")),
         )
         val viewModel = CommunityFeedViewModel(community, preferences)
@@ -47,7 +47,7 @@ class CommunityFeedViewModelTest {
     // to tell them apart before it says either.
     @Test
     fun whenPlayWillNotVouchForTheInstall_theFeedSaysSoRatherThanBlamingTheConnection() = runBlocking {
-        val community = FakeCommunityRepository(firstPageFails = AppUnverified())
+        val community = FakeFeedRepository(firstPageFails = AppUnverified())
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
 
@@ -57,7 +57,7 @@ class CommunityFeedViewModelTest {
 
     @Test
     fun whenTheFeedSimplyDidNotArrive_itStaysTheOneWithATryAgain() = runBlocking {
-        val community = FakeCommunityRepository(firstPageFails = IOException("offline"))
+        val community = FakeFeedRepository(firstPageFails = IOException("offline"))
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
 
@@ -67,7 +67,7 @@ class CommunityFeedViewModelTest {
 
     @Test
     fun comingBackWithNothingHidden_leavesTheFeedAlone() = runBlocking {
-        val community = FakeCommunityRepository(feed = listOf(published("a", "Sci-fi films")))
+        val community = FakeFeedRepository(feed = listOf(published("a", "Sci-fi films")))
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
         viewModel.state.first { it.feed is CommunityFeed.Ready }
@@ -82,7 +82,7 @@ class CommunityFeedViewModelTest {
     @Test
     fun aListPutBack_returnsToTheFeed() = runBlocking {
         val preferences = FakeAppPreferences()
-        val community = FakeCommunityRepository(
+        val community = FakeFeedRepository(
             feed = listOf(published("a", "Sci-fi films"), published("b", "Every A24 film")),
         )
         val viewModel = CommunityFeedViewModel(community, preferences)
@@ -101,7 +101,7 @@ class CommunityFeedViewModelTest {
 
     @Test
     fun theNextPage_isPutUnderWhatIsAlreadyThere() = runBlocking {
-        val community = FakeCommunityRepository(
+        val community = FakeFeedRepository(
             feed = listOf(published("a", "One")),
             nextPages = listOf(listOf(published("b", "Two"))),
         )
@@ -118,7 +118,7 @@ class CommunityFeedViewModelTest {
 
     @Test
     fun theLastPage_isNotFollowedByAnotherRequest() = runBlocking {
-        val community = FakeCommunityRepository(feed = listOf(published("a", "One")))
+        val community = FakeFeedRepository(feed = listOf(published("a", "One")))
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
         viewModel.state.first { it.feed is CommunityFeed.Ready }
@@ -133,7 +133,7 @@ class CommunityFeedViewModelTest {
     // arrive would be a worse answer than no more lists.
     @Test
     fun aPageThatFails_leavesTheFeedAsItIs() = runBlocking {
-        val community = FakeCommunityRepository(
+        val community = FakeFeedRepository(
             feed = listOf(published("a", "One")),
             nextPages = listOf(listOf(published("b", "Two"))),
             laterPagesFail = true,
@@ -152,7 +152,7 @@ class CommunityFeedViewModelTest {
     fun aListHiddenBefore_doesNotArriveWithALaterPage() = runBlocking {
         val preferences = FakeAppPreferences()
         preferences.hideList("b", "Two")
-        val community = FakeCommunityRepository(
+        val community = FakeFeedRepository(
             feed = listOf(published("a", "One")),
             nextPages = listOf(listOf(published("b", "Two"), published("c", "Three"))),
         )
@@ -170,7 +170,7 @@ class CommunityFeedViewModelTest {
     // vanishing reads as "deleted", which is not what happened.
     @Test
     fun hidingFromTheFeed_leavesANoteWhereTheCardWas() = runBlocking {
-        val community = FakeCommunityRepository(feed = listOf(published("a", "One"), published("b", "Two")))
+        val community = FakeFeedRepository(feed = listOf(published("a", "One"), published("b", "Two")))
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
         viewModel.state.first { it.feed is CommunityFeed.Ready }
@@ -184,7 +184,7 @@ class CommunityFeedViewModelTest {
 
     @Test
     fun reportingFromTheFeed_saysSoInTheNote() = runBlocking {
-        val community = FakeCommunityRepository(feed = listOf(published("a", "One")))
+        val community = FakeFeedRepository(feed = listOf(published("a", "One")))
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
         viewModel.state.first { it.feed is CommunityFeed.Ready }
@@ -196,7 +196,7 @@ class CommunityFeedViewModelTest {
 
     @Test
     fun theNextLoad_carriesNoNotes() = runBlocking {
-        val community = FakeCommunityRepository(feed = listOf(published("a", "One"), published("b", "Two")))
+        val community = FakeFeedRepository(feed = listOf(published("a", "One"), published("b", "Two")))
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
         viewModel.state.first { it.feed is CommunityFeed.Ready }
@@ -214,7 +214,7 @@ class CommunityFeedViewModelTest {
     // and closing the search puts the whole feed back.
     @Test
     fun aSearch_goesToTheServer_andClosingItBringsTheFeedBack() = runBlocking {
-        val community = FakeCommunityRepository(feed = listOf(published("a", "One")))
+        val community = FakeFeedRepository(feed = listOf(published("a", "One")))
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
         viewModel.state.first { it.feed is CommunityFeed.Ready }
@@ -245,7 +245,7 @@ class CommunityFeedViewModelTest {
     )
 }
 
-private class FakeCommunityRepository(
+private class FakeFeedRepository(
     private val feed: List<PublishedListSummary> = emptyList(),
     /** Pages after the first, in order. The cursor to each is its index. */
     private val nextPages: List<List<PublishedListSummary>> = emptyList(),

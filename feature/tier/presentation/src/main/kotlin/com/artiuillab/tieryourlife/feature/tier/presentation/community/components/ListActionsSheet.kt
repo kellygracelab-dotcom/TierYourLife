@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.community.components
 
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 
 /**
  * Mild to sharp, in that order. Hiding sits next to reporting on purpose: most

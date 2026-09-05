@@ -32,6 +32,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.AuthorScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.AuthorUiState
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityFeed
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityFeedScreenContent
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityFeedUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.ModerationScreenContent
@@ -42,10 +45,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.settings.HiddenScre
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.HiddenUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailUiState
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityFeed
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.HomeTab
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsUiState
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTabs
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -93,6 +96,7 @@ class EveryScreenInEveryLanguageTest {
         "home-empty" -> TierListsScreenContent(
             state = TierListsUiState.Success(emptyList(), totalListCount = 0, rankedCount = 0),
             onTierListClick = {},
+            tabs = { HomeTabs(selected = HomeTab.Mine, onSelect = {}) },
         )
 
         "home-lists" -> TierListsScreenContent(
@@ -102,17 +106,12 @@ class EveryScreenInEveryLanguageTest {
                 rankedCount = 2,
             ),
             onTierListClick = {},
+            tabs = { HomeTabs(selected = HomeTab.Mine, onSelect = {}) },
         )
 
-        "home-community" -> TierListsScreenContent(
-            state = TierListsUiState.Success(
-                lists = emptyList(),
-                totalListCount = 0,
-                rankedCount = 0,
-                tab = HomeTab.Community,
-                community = CommunityFeed.Ready(listOf(summary("1"), summary("2"))),
-            ),
-            onTierListClick = {},
+        "home-community" -> CommunityFeedScreenContent(
+            state = CommunityFeedUiState(feed = CommunityFeed.Ready(listOf(summary("1"), summary("2")))),
+            tabs = { HomeTabs(selected = HomeTab.Community, onSelect = {}) },
         )
 
         "detail" -> TierDetailScreenContent(state = TierDetailUiState.Success(bigBoard()))

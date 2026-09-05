@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.community.components
 
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
 
 /** Null is All, which is a filter state rather than a ninth category. */
