@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.settings
+package com.artiuillab.tieryourlife.feature.tier.presentation.community
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength

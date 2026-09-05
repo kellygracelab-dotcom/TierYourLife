@@ -3,9 +3,9 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
-import com.artiuillab.tieryourlife.core.ui.UserMessage
-import com.artiuillab.tieryourlife.core.ui.UserMessages
-import com.artiuillab.tieryourlife.core.ui.guard
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
+import com.artiuillab.tieryourlife.core.theme.messages.guard
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters

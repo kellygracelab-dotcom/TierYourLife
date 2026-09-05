@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.settings
+package com.artiuillab.tieryourlife.feature.tier.presentation.community
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -59,8 +59,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListScreenContent
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.AuthorFace
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.FlagIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon

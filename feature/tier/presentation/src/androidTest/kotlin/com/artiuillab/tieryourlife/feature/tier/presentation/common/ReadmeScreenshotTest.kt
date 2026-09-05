@@ -36,14 +36,14 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.community.AuthorScr
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.AuthorUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListUiState
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.ModerationScreenContent
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.ModerationUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.MyPublishedScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.MyPublishedUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.HiddenScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.HiddenUiState
-import com.artiuillab.tieryourlife.feature.tier.presentation.settings.ModerationScreenContent
-import com.artiuillab.tieryourlife.feature.tier.presentation.settings.ModerationUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailUiState

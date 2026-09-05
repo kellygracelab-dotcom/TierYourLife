@@ -4,10 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.artiuillab.tieryourlife.core.ui.UserMessage
-import com.artiuillab.tieryourlife.core.ui.UserMessages
-import com.artiuillab.tieryourlife.core.ui.guard
-import com.artiuillab.tieryourlife.core.ui.logFailures
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
+import com.artiuillab.tieryourlife.core.theme.messages.guard
+import com.artiuillab.tieryourlife.core.theme.messages.logFailures
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.GenerationOutcome
