@@ -40,10 +40,8 @@ class TierDaoTest {
         database.close()
     }
 
-    // The ranking a reader made on somebody else's list has to reach the
-    // database as a ranking. It used to reach it as a pool: every card went
-    // to Unranked whatever tier it had been dragged into, and the copy the
-    // reader opened had empty tiers under a full pool.
+    // A reader's ranking has to reach the database as a ranking. It used to
+    // arrive as a pool: every card went to Unranked whatever tier it was in.
     @Test
     fun a_board_built_from_a_template_keeps_each_card_in_its_tier() = runBlocking {
         val id = dao.createTierListFromTemplate(

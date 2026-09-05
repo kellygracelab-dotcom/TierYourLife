@@ -16,12 +16,9 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 data class IncomingTier(val tier: TierEntity, val items: List<TierItemEntity>)
 
 /**
- * Everything sync reads and writes, kept apart from [TierDao].
- *
- * The queries here differ from the app's in one way that matters: they include
- * what is in the trash. The app hides trashed boards and cards because nobody
- * wants to look at them, but a backup that dropped them would throw away
- * someone's undo along with their phone.
+ * Sync's own queries, apart from [TierDao] in the one way that matters: they
+ * include the trash. A backup that dropped it would throw away someone's undo
+ * along with their phone.
  */
 @Dao
 interface BoardSyncDao {
@@ -44,11 +41,7 @@ interface BoardSyncDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun rememberPicture(record: PictureSyncEntity)
 
-    /**
-     * Every picture on the phone, trashed cards included. A card in the trash
-     * can be restored for thirty days, and restoring it to a blank tile is not
-     * restoring it.
-     */
+    /** Trashed cards included: restoring one to a blank tile is not restoring it. */
     @Query("SELECT DISTINCT imageUrl FROM tier_items WHERE imageUrl IS NOT NULL")
     suspend fun allImageUrls(): List<String>
 
@@ -61,13 +54,7 @@ interface BoardSyncDao {
     @Query("SELECT * FROM tier_lists WHERE deletedAt IS NULL")
     suspend fun boardsInUse(): List<TierListEntity>
 
-    /**
-     * Forgets a published id the account no longer knows about.
-     *
-     * Deliberately not touching editedAt: nothing about the board changed, and
-     * stamping it would make every phone in the account re-send a board whose
-     * contents are identical.
-     */
+    /** Not touching editedAt: nothing about the board changed, and stamping it would make every phone re-send an identical board. */
     @Query("UPDATE tier_lists SET publishedId = NULL WHERE publishedId IN (:goneIds)")
     suspend fun forgetPublished(goneIds: List<String>)
 
@@ -118,12 +105,9 @@ interface BoardSyncDao {
     }
 
     /**
-     * Replaces a board's contents, keeping its row and its uid.
-     *
-     * Row by row would be the same work with much more of it: a board coming
-     * back from the account is the whole board, and matching card against card
-     * to find which three moved buys nothing when every one of them is written
-     * either way. The cards go with their tiers -- `tiers` cascades.
+     * Replaces a board's contents, keeping its row and uid. Whole board, not
+     * row by row: matching card against card buys nothing when every one is
+     * written either way. `tiers` cascades to the cards.
      */
     @Transaction
     suspend fun replaceContents(board: TierListEntity, tiers: List<IncomingTier>) {

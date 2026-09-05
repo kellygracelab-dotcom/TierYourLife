@@ -6,21 +6,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * How much room the window has, in the only three amounts this app treats
- * differently.
- *
- * Named after what a screen may do rather than after a device. There is no
- * "tablet" here on purpose: a phone in split view is not a tablet and a folding
- * phone is both within a second, and every layout that asked "is this a tablet"
- * got one of those wrong.
+ * How much room the window has, in the three amounts this app treats
+ * differently. Named after what a layout may do, not after a device: a phone
+ * in split view is not a tablet, and a folding phone is both within a second.
  */
 enum class WindowShape {
 
     /**
-     * A folding phone's cover screen. Barely taller than it is wide, which no
-     * phone is, and with a camera cutout in one corner -- so it is not "a very
-     * small phone", it is a surface that can show a board and cannot be used
-     * to build one.
+     * A folding phone's cover screen: roughly square, camera cutout in a
+     * corner. A surface that can show a board and cannot be used to build one.
      */
     Cover,
 
@@ -30,11 +24,7 @@ enum class WindowShape {
      */
     Narrow,
 
-    /**
-     * Room for a second thing beside the first, but not much of it. A small
-     * tablet, or half of a large one. The rail arrives here because it takes
-     * less width than a row of tabs, not because the window is grand.
-     */
+    /** Room for a second thing beside the first. The rail arrives here because it takes less width than a row of tabs. */
     Medium,
 
     /** A tablet held as a tablet. A list beside its detail fits without either being cramped. */
@@ -55,35 +45,20 @@ enum class WindowShape {
 
     companion object {
 
-        /**
-         * Material's own thresholds, and worth keeping rather than inventing:
-         * they are what every other Android app is measured against, so a
-         * window that behaves differently here behaves differently from the
-         * rest of the phone.
-         */
+        /** Material's thresholds, kept rather than invented: a window that behaves differently here behaves differently from the rest of the phone. */
         val MediumFrom: Dp = 600.dp
         val WideFrom: Dp = 840.dp
 
         /**
-         * A cover is recognised by being small in both directions and roughly
-         * square. Width alone cannot find it -- 352dp is an ordinary narrow
-         * phone -- and shape alone would catch a small phone held sideways,
-         * which is a phone and can be typed on.
-         *
-         * Measured off a Z Flip 7: 352 x 339dp, a ratio of 0.96. A phone in
-         * landscape is nearer 0.45, and upright nearer 2.2.
+         * Small in both directions and roughly square: width alone is an
+         * ordinary narrow phone, shape alone a phone held sideways. A Z Flip 7
+         * cover is 352 x 339dp; a phone in landscape is nearer 0.45.
          */
         val CoverMaxHeight: Dp = 480.dp
         const val COVER_MIN_RATIO = 0.8f
         const val COVER_MAX_RATIO = 1.5f
 
-        /**
-         * [shareable] is false when the app has the screen to itself. Size and
-         * shape alone cannot tell a cover from half a phone in split view --
-         * 360 x 400dp is both -- and getting that wrong takes the whole app
-         * away from somebody who was only using two apps at once. A window the
-         * system is sharing is never a cover.
-         */
+        /** [shareable]: 360 x 400dp is both a cover and half a phone in split view, and a shared window is never a cover. */
         fun of(
             width: Dp,
             height: Dp = Dp.Unspecified,
@@ -102,11 +77,7 @@ enum class WindowShape {
     }
 }
 
-/**
- * Read rather than passed down. A screen four levels deep needs the same answer
- * as the one at the top, and threading it through every signature in between
- * makes every one of them about layout.
- */
+/** Read rather than passed down: a screen four levels deep needs the same answer as the top. */
 val LocalWindowShape = staticCompositionLocalOf { WindowShape.Narrow }
 
 val currentWindowShape: WindowShape

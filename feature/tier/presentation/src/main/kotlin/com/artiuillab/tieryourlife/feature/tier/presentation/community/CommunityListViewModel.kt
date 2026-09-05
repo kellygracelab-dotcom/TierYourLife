@@ -60,11 +60,7 @@ class CommunityListViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Follows or stops, showing the answer before the server gives it and
-     * putting it back if the server refuses. Nothing else on the screen
-     * depends on it, so there is nothing else to undo.
-     */
+    /** Shown before the server answers, put back if it refuses. */
     fun toggleFollow() {
         val current = _state.value as? CommunityListUiState.Success ?: return
         val was = current.follow ?: return
@@ -97,9 +93,7 @@ class CommunityListViewModel @Inject constructor(
                     CommunityListUiState.Success(
                         list = asTheAuthorLeftIt(published),
                         mine = emptied(published),
-                        // What somebody came for: the list as its author
-                        // ranked it. Handing over a pile of cards instead
-                        // answers a question they did not ask.
+                        // What somebody came for: the list as its author ranked it.
                         showing = if (published.arrangement.isEmpty()) Showing.Mine else Showing.Theirs,
                         knowsTheirs = published.arrangement.isNotEmpty(),
                         authorName = published.summary.authorName,
@@ -113,31 +107,19 @@ class CommunityListViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Switches between the author's arrangement and your own.
-     *
-     * Two boards kept side by side rather than one rebuilt: somebody who has
-     * spent ten minutes ranking a list and glances at the author's should find
-     * their own work where they left it.
-     */
+    /** Two boards kept side by side: your own work stays where you left it while you glance at the author's. */
     fun show(which: Showing) {
         _state.update { current ->
             if (current !is CommunityListUiState.Success) current else current.copy(showing = which)
         }
     }
 
-    /**
-     * Ranking happens entirely in memory. Nothing reaches the database until
-     * the reader asks for a copy, so backing out costs them nothing they were
-     * promised.
-     */
+    /** In memory only until a copy is asked for, so backing out costs nothing. */
     fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
         _state.update { current ->
             if (current !is CommunityListUiState.Success) return@update current
-            // Their arrangement is theirs. A card dragged while it is on
-            // screen used to land in the author's board and snap back on the
-            // reader's next glance, because the two are different boards and
-            // only one of them was being drawn.
+            // Their arrangement is theirs. A drag while it was on screen used
+            // to land in the author's board and snap back.
             if (current.showing == Showing.Theirs) return@update current
             current.copy(
                 mine = current.mine.withItemMoved(itemId, toTierId, toPosition),
@@ -154,10 +136,8 @@ class CommunityListViewModel @Inject constructor(
         viewModelScope.launch {
             var newId: Long? = null
             val saved = messages.guard("Saving a community list") {
-                // Whichever board is on screen. Somebody looking at the
-                // author's arrangement and pressing save means that one --
-                // keeping a list the way its author ranked it is a reason to
-                // save it, not a mistake to correct.
+                // Whichever board is on screen: keeping the author's ranking
+                // is a reason to save, not a mistake to correct.
                 val keeping = current.shown
                 newId = tiers.createFromTemplate(
                     title = keeping.title,
@@ -168,10 +148,8 @@ class CommunityListViewModel @Inject constructor(
             }
             _state.update { (it as CommunityListUiState.Success).copy(saving = false) }
             if (saved) {
-                // What the popular ordering counts. Told after the board
-                // exists, and its failure is not this person's problem: they
-                // have their copy either way, and a number that missed one
-                // take is not worth an error on a screen.
+                // What the popular ordering counts. Its failure is not this
+                // person's problem: they have their copy either way.
                 community.noteTaken(publishedId)
                     .onFailure { Timber.i(it, "Not counting this list as taken") }
                 newId?.let(onSaved)
@@ -188,10 +166,7 @@ class CommunityListViewModel @Inject constructor(
         preferences.hideAuthor(authorUid, name)
     }
 
-    /**
-     * Same bargain as the feed: it goes off this reader's screen at once,
-     * and whether it comes down for everyone is a person's decision.
-     */
+    /** Off this reader's screen at once; whether it comes down for everyone is a person's decision. */
     fun report(reason: ReportReason, note: String?) {
         hide()
         viewModelScope.launch {
@@ -200,13 +175,7 @@ class CommunityListViewModel @Inject constructor(
         }
     }
 
-    /**
-     * The board as its author left it.
-     *
-     * A card whose tier the snapshot does not know goes to the pool, which is
-     * also where the author's own unranked cards sit -- the two are the same
-     * thing to look at, and inventing a tier for them would be worse.
-     */
+    /** As the author left it. A card whose tier the snapshot does not know goes to the pool, beside the author's own unranked cards. */
     private fun asTheAuthorLeftIt(published: PublishedList): TierList {
         val where = published.arrangement
         val ranked = published.tiers.mapIndexed { index, tier ->

@@ -155,12 +155,7 @@ internal fun ChevronDownIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) 
     drawLine(color, Offset(12f * scale, 15f * scale), Offset(18f * scale, 9f * scale), stroke, StrokeCap.Round)
 }
 
-/**
- * A funnel, filled once something is caught in it.
- *
- * Filled rather than badged: a dot beside an icon says "there is news", and
- * a filter that is on is not news, it is a state the screen is already in.
- */
+/** Filled rather than badged: a dot says "there is news", and a filter that is on is a state, not news. */
 @Composable
 internal fun FilterIcon(on: Boolean) {
     val color = if (on) {
@@ -197,12 +192,7 @@ internal fun ChevronDownIcon() {
     }
 }
 
-/**
- * A star, hollow until it is earned.
- *
- * Drawn either way rather than only when it is on: showing it only on the
- * starred boards would hide the way to star the others.
- */
+/** Drawn hollow too: showing it only on starred boards would hide the way to star the others. */
 @Composable
 internal fun StarIcon(on: Boolean, size: Dp = 24.dp, colorOverride: Color? = null) {
     val color = colorOverride ?: if (on) {

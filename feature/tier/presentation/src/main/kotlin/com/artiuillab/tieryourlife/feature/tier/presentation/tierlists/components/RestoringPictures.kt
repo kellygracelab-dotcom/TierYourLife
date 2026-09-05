@@ -30,13 +30,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.VectorIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
 /**
- * A new phone: the boards arrived in one request and the pictures take as long
- * as they take.
- *
- * Shown only while something is actually coming down, and gone the moment it
- * stops -- with no message saying so. A card whose picture has not landed yet
- * looks exactly like a card that never had one, which is honest but silent,
- * and the count is the only thing that tells somebody the holes are temporary.
+ * A new phone: boards arrived in one request, pictures take as long as they
+ * take. Shown only while something is coming down; the count is the only
+ * thing that says the holes are temporary.
  */
 @Composable
 internal fun RestoringPictures(progress: PictureRestore.Progress, modifier: Modifier = Modifier) {
@@ -62,11 +58,8 @@ internal fun RestoringPictures(progress: PictureRestore.Progress, modifier: Modi
         ) {
             CloudDownloadIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
-                // Counted on the total rather than on the counter: with a
-                // single picture "1 of 1" reads as a joke, so the singular
-                // shows no number at all. Two strings rather than a plural,
-                // because a plural whose message never mentions its count is a
-                // translation trap -- in French "one" also covers zero.
+                // The singular shows no number ("1 of 1" reads as a joke). Two
+                // strings rather than a plural: in French "one" also covers zero.
                 text = if (progress.total == 1) {
                     stringResource(R.string.restoring_one_picture)
                 } else {

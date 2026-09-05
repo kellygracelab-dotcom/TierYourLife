@@ -143,16 +143,11 @@ internal fun CommunityListScreenContent(
             ) {
                 Box(Modifier.weight(1f)) {
                     TierDetailScreenContent(
-                        // Read-only while their arrangement is on screen: it
-                        // is theirs, and a card that slides under your finger
-                        // and then springs back on the way to your own board
-                        // is a promise the screen cannot keep.
+                        // Read-only while their arrangement is on screen.
                         state = TierDetailUiState.Success(state.shown),
                         actions = TierDetailActions(onBack = onBack, onMoveItem = onMoveItem),
-                        // Theirs is theirs: a card that slides under your
-                        // finger and springs back is a promise the screen
-                        // cannot keep. Your own half is yours to arrange, and
-                        // what you save is whichever of the two is on screen.
+                        // Theirs is theirs; yours is yours to arrange, and what
+                        // you save is whichever is on screen.
                         readOnly = state.showing == Showing.Theirs,
                         onReaderMoreClick = { actionsVisible = true },
                         belowTopBar = {
@@ -168,9 +163,8 @@ internal fun CommunityListScreenContent(
                         },
                     )
                 }
-                // Only where there is something to switch to. A snapshot from
-                // before the author's arrangement was recorded has one half,
-                // and a control over an empty choice is a control that lies.
+                // Only where there is something to switch to: a snapshot without
+                // the author's arrangement has one half.
                 if (state.knowsTheirs) {
                     WhoseArrangement(showing = state.showing, onShow = onShow)
                 }
@@ -212,8 +206,7 @@ internal fun CommunityListScreenContent(
                 )
             }
 
-            // Backing out only once the reader has read it: the list is already
-            // gone from their feed, and leaving first would say so silently.
+            // Backing out only once the reader has read it: the list is already gone from their feed.
             if (reportedFrom) {
                 ReportSentDialog(
                     authorName = loaded.authorName,
@@ -231,12 +224,7 @@ internal fun CommunityListScreenContent(
     }
 }
 
-/**
- * Whose ranking is on screen: the author's, or the reader's own.
- *
- * Two boards rather than one, so a reader who has spent ten minutes on theirs
- * and glances at the author's finds their work where they left it.
- */
+/** Two boards, not one: a reader who glances at the author's finds their own work where they left it. */
 @Composable
 private fun WhoseArrangement(showing: Showing, onShow: (Showing) -> Unit) {
     SingleChoiceSegmentedButtonRow(
@@ -268,9 +256,7 @@ private fun WhoseArrangement(showing: Showing, onShow: (Showing) -> Unit) {
 
 @Composable
 private fun SaveBar(arranged: Boolean, saving: Boolean, onSave: () -> Unit) {
-    // Both halves are allowed two lines and the bar grows to fit: "Save to my
-    // lists" is half again as long in German and nearly twice in French, and a
-    // fixed-height row spent that on the sentence beside it.
+    // Two lines each and the bar grows: "Save to my lists" is half again as long in German.
     Row(
         modifier = Modifier
             .fillMaxWidth()

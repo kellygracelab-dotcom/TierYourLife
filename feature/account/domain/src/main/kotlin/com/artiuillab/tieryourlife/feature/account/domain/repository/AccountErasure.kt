@@ -1,20 +1,12 @@
 package com.artiuillab.tieryourlife.feature.account.domain.repository
 
 /**
- * Ending an account, as opposed to stepping away from one.
- *
- * Separate from [AccountRepository] because it is a different promise. Signing
- * out leaves everything where it is and is undone by signing back in; this
- * removes the account, the copy of the boards kept for it, the lists it
- * published and the pictures behind them, and cannot be undone by anything.
+ * A different promise from [AccountRepository]: signing out is undone by
+ * signing in; this removes the account, its copy of the boards, its published
+ * lists and their pictures, and cannot be undone.
  */
 interface AccountErasure {
 
-    /**
-     * Removes the account and everything the service holds about it.
-     *
-     * Boards on this phone are not touched. They were made here and they stay
-     * here -- the account was where they were copied to, not where they lived.
-     */
+    /** Boards on this phone are not touched: the account was where they were copied to, not where they lived. */
     suspend fun erase(): Result<Unit>
 }

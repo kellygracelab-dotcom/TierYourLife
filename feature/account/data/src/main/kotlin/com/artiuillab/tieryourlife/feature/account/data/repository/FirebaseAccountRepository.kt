@@ -31,11 +31,7 @@ class FirebaseAccountRepository @Inject constructor(
     private val guestCredits: GuestCredits,
 ) : AccountRepository {
 
-    /**
-     * Renaming or changing the picture leaves the auth state alone, so a screen
-     * watching only Firebase would keep showing the old face. Those edits say so
-     * here instead.
-     */
+    /** Renaming or changing the picture leaves the auth state alone, so those edits say so here. */
     private val profileEdits = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     override val account: Flow<Account> = merge(
@@ -52,10 +48,8 @@ class FirebaseAccountRepository @Inject constructor(
         val guest = auth.currentUser?.takeIf { it.isAnonymous }
 
         if (guest != null) {
-            // Taken before anything is attempted. If the sign-in turns into a
-            // switch of identity rather than a link, this is the only thing
-            // left that can prove the guest was this person -- afterwards the
-            // guest is signed out and unreachable, with its balance on it.
+            // Taken before anything is attempted: if the sign-in becomes a switch
+            // of identity, this is the only proof left that the guest was this person.
             val guestToken = runCatching { guest.getIdToken(false).await().token }.getOrNull()
             try {
                 guest.linkWithCredential(credential).await()
@@ -86,9 +80,8 @@ class FirebaseAccountRepository @Inject constructor(
     ): SignInOutcome = try {
         auth.signInWithCredential(credential).await()
         adoptGoogleProfile()
-        // The guest is gone from this phone now, but its balance is not gone
-        // from the ledger, and this is the last moment anybody can say whose
-        // it was.
+        // The guest is gone from this phone but not from the ledger; the last
+        // moment anybody can say whose balance it was.
         val carried = guestToken != null && guestCredits.carryOver(guestToken)
         SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = carried)
     } catch (e: Exception) {
@@ -114,10 +107,7 @@ class FirebaseAccountRepository @Inject constructor(
         }
     }
 
-    /**
-     * The chosen face lives in the Firebase profile, so it reaches the proxy in
-     * the ID token and needs no storage of ours.
-     */
+    /** In the Firebase profile, so it reaches the proxy in the ID token. */
     override suspend fun setPhotoUrl(photoUrl: String?): Boolean {
         val user = auth.currentUser ?: return false
         val uri = photoUrl?.takeIf { it.startsWith("https://") }?.toUri()
@@ -139,12 +129,7 @@ class FirebaseAccountRepository @Inject constructor(
             .onFailure { Timber.w(it, "Could not return to a guest identity") }
     }
 
-    /**
-     * Linking a Google credential onto a guest leaves the top-level profile
-     * empty — the name and picture arrive only inside the provider record. Copy
-     * them across so the account has a face, and so the ID token carries the
-     * name the community will show.
-     */
+    /** Linking a Google credential onto a guest leaves the top-level profile empty; the name and picture arrive only inside the provider record. */
     private suspend fun adoptGoogleProfile() {
         val user = auth.currentUser ?: return
         val google = user.providerData.firstOrNull { it.providerId == GOOGLE_PROVIDER } ?: return

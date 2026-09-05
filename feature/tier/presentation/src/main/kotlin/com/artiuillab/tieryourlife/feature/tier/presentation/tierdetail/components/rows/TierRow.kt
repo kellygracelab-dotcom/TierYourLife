@@ -77,13 +77,9 @@ private val MIN_TIER_ROW_HEIGHT = 84.dp
 private val MIN_TIER_BAND_WIDTH = 56.dp
 
 /**
- * A third of the row was the whole ceiling, which is the right shape on a
- * phone and the wrong one on a board 1080dp wide: there a third is 360dp, and
- * a long caption would be allowed to grow the band to five times what the same
- * caption gets on a phone, for no reason anyone could name. A caption is a
- * caption at any window size, so the ceiling is a number. The fraction stays
- * as well, and the tighter of the two wins -- on a narrow screen a third is
- * still less than the number.
+ * A third of the row is the right ceiling on a phone and the wrong one on a
+ * 1080dp board, where a third is 360dp. The tighter of the fraction and this
+ * number wins.
  */
 private val MAX_TIER_BAND_WIDTH = 128.dp
 private const val MAX_TIER_BAND_FRACTION = 1f / 3f
@@ -100,17 +96,9 @@ internal fun TierList.captionsExcept(tierId: Long?): List<String> = tiers
     .mapNotNull { it.caption?.takeIf(String::isNotBlank) }
 
 /**
- * One width for every band on a board, from the longest caption among them.
- *
- * The letters down the left are the spine of a tier list: they are what the
- * eye runs along, and they only work as a column if they sit in one. Letting
- * each band hug its own caption puts a saw down that edge, and the varying
- * width means nothing -- it is the length of a word, not a quantity. A caption
- * is the subordinate element here, so it does not get to move the main one.
- *
- * The answer is different in Arabic than in English because the longest word
- * is different. That is fine: what has to agree is one board, not two
- * translations of it.
+ * One width for every band on a board, from the longest caption: the letters
+ * down the left are the spine of a tier list and only work as a column. The
+ * answer differs between languages; what has to agree is one board.
  */
 @Composable
 internal fun rememberBandContentWidth(tiers: List<Tier>): Dp =
@@ -123,9 +111,8 @@ internal fun rememberBandContentWidth(
     style: TextStyle = TierYourLifeType.current.tierBandCaption,
 ): Dp {
     val density = LocalDensity.current
-    // Density and fontScale are read rather than passed: a caption measured at
-    // one text size is the wrong answer at another, and both can change while
-    // the board is open.
+    // Density and fontScale are read, not passed: both can change while the
+    // board is open.
     return remember(captions, style, density.density, density.fontScale) {
         val widest = captions.maxOfOrNull { measurer.measure(it, style, maxLines = 1).size.width } ?: 0
         with(density) { widest.toDp() } + BAND_CAPTION_PADDING * 2
@@ -288,9 +275,8 @@ internal fun TierRow(
                     .testTag(TierDetailTestTags.tierItems(tier.id)),
             )
         } else if (displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
-            // Lazy, like the pool: a strip only ever shows a handful, and the
-            // drag controller works out the drop from the list's own layout
-            // rather than from every tile having reported where it sits.
+            // Lazy, like the pool: the drag controller works out the drop from
+            // the list's own layout.
             LazyRow(
                 state = stripState,
                 modifier = Modifier

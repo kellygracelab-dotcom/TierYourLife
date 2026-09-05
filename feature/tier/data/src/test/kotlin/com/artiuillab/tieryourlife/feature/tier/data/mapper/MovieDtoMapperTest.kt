@@ -92,8 +92,7 @@ class MovieDtoMapperTest {
     }
 
     // A series is named `name` and dated `first_air_date`, and nothing else
-    // about it differs -- which is the whole reason the search can be one
-    // request rather than two.
+    // differs -- why the search can be one request rather than two.
     @Test
     fun `a series is read from the fields a series uses`() {
         val item = firstOf(

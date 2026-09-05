@@ -3,20 +3,9 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.navigation
 import kotlinx.serialization.Serializable
 
 sealed interface Route {
-    /**
-     * [community] is the tab to open on. Carried by the route rather than kept
-     * in the screen because the rail on a wide window navigates here to switch
-     * tabs, and a rail that could not say which tab would be a rail that only
-     * works from one of them.
-     */
+    /** [community] rides in the route: the rail navigates here to switch tabs, and a rail that could not say which would work from one of them only. */
     @Serializable
-    /**
-     * [makeBoard] is the rail's new-board button arriving. It rides in the
-     * route rather than in a counter above the graph so that exactly one
-     * screen sees it: the one this navigation opened. A number kept above the
-     * graph is read by the lists screen being left as well as the one
-     * arriving, and both of them answered it.
-     */
+    /** [makeBoard] rides in the route so exactly one screen sees it; a counter above the graph was read by the screen being left as well. */
     data class TierLists(val community: Boolean = false, val makeBoard: Boolean = false) : Route
 
     @Serializable

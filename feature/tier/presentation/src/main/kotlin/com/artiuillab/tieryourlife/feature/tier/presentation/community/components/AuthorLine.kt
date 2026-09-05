@@ -23,17 +23,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 
 /**
- * Whose list this is, and the one thing a reader can do about it.
- *
- * The second of the two places following lives. The profile is where somebody
- * decides, having seen everything an author has; this is the moment they most
- * want to and have least reason to leave the screen for.
- *
- * Directly under the board's own bar, and pinned there. Above it the bar's
- * status-bar inset would be over its head, and the reading order would run
- * whose it is before what it is. It stays put while the board scrolls because
- * it is the only mark that the board is not yours, and the moment that most
- * needs saying is the one where you are halfway through rearranging it.
+ * The second place following lives: the moment somebody most wants to and
+ * least wants to leave the screen for. Pinned under the board's bar, because
+ * it is the only mark that the board is not yours.
  */
 @Composable
 internal fun AuthorLine(

@@ -101,10 +101,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TierListsScreen(
     startOnCommunity: Boolean = false,
-    /**
-     * Bumped when the rail's button is pressed. A count rather than a callback
-     * because the rail sits above every screen and cannot reach into this one.
-     */
+    /** From the rail's button. A flag in the route rather than a callback: the rail sits above every screen and cannot reach into this one. */
     makeBoard: Boolean = false,
     onTierListClick: (Long) -> Unit,
     onCommunityListClick: (String) -> Unit,
@@ -125,9 +122,8 @@ fun TierListsScreen(
     LaunchedEffect(startOnCommunity) {
         viewModel.selectTab(if (startOnCommunity) HomeTab.Community else HomeTab.Mine)
     }
-    // Remembered rather than acted on every time: coming back from the new
-    // board re-enters this composition, and the arrival still says it wanted
-    // one. Asking again would make a board on every press of back.
+    // Remembered: coming back from the new board re-enters this composition
+    // with the arrival still saying it wanted one.
     var boardMade by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         if (makeBoard && !boardMade) {
@@ -173,12 +169,7 @@ fun TierListsScreen(
     )
 }
 
-/**
- * Public rather than internal, like the other stateless screens: the app is
- * composed one module up, and whoever composes it has to be able to draw it
- * without a view model -- which is how the tablet pictures in the README
- * get their rail.
- */
+/** Public, like the other stateless screens: the app is composed one module up and must be drawable without a view model. */
 @Composable
 fun TierListsScreenContent(
     state: TierListsUiState,
@@ -304,28 +295,21 @@ fun TierListsScreenContent(
 
                     HomeMode.Browsing -> HomeTopBar(
                         onSearchClick = onSearchClick,
-                        // Promoted into the rail where there is one. Two ways
-                        // to the same screen, one of them a leftover, is how a
-                        // tablet layout starts looking unconsidered.
+                        // Promoted into the rail where there is one.
                         onSettingsClick = onSettingsClick.takeUnless { hasRail },
                         asPictures = asPictures,
-                        // Now in the controls row below, beside the sort and
-                        // the filters it belongs with. A fourth action in the
-                        // bar costs the title about two words.
+                        // In the controls row below, beside sort and filters.
                         onToggleView = null,
                     )
                 }
 
-                // Directly under the bar, and above the tabs: it is about
-                // everything below it, not about whichever tab is showing.
+                // Under the bar, above the tabs: it is about everything below it.
                 RestoringPictures(restoringPictures)
 
-                // The rail is doing this job. Two navigation systems on one
-                // screen is exactly what makes tablet layouts fall apart.
+                // The rail is doing this job.
                 if (mode !is HomeMode.Searching && !hasRail) {
                     HomeTabs(selected = tab, onSelect = onSelectTab)
-                    // The counters describe this phone's lists, which says
-                    // nothing about the feed the Community tab is showing.
+                    // The counters describe this phone's lists, not the feed.
                     if (tab == HomeTab.Mine) {
                         HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
                     }
@@ -334,9 +318,7 @@ fun TierListsScreenContent(
                     HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
                 }
 
-                // Nothing to order or narrow until there is more than one
-                // board, and a control over a single thing is a control that
-                // teaches people the others might be pointless too.
+                // Nothing to order or narrow until there is more than one board.
                 if (mode !is HomeMode.Searching && tab == HomeTab.Mine && totalListCount > 1) {
                     BoardControlsRow(
                         sort = boardSort,
@@ -365,8 +347,7 @@ fun TierListsScreenContent(
                     )
 
                     is TierListsUiState.Success -> when {
-                        // Searching on this tab asks the server, so the same
-                        // feed answers; it is not the local lists filtered.
+                        // Searching this tab asks the server, not the local lists.
                         tab == HomeTab.Community -> CommunityFeedList(
                             feed = communityFeed,
                             category = communityCategory,
@@ -382,9 +363,8 @@ fun TierListsScreenContent(
                                 if (summary != null) {
                                     onAuthorClick(uid, summary.authorName, summary.authorPhotoUrl)
                                 } else {
-                                    // Offered rather than found in the feed: the
-                                    // empty following screen has authors the feed
-                                    // by definition does not carry.
+                                    // Offered, not found in the feed: the empty
+                                    // following screen has authors the feed does not carry.
                                     val offered = (communityFeed as? CommunityFeed.FollowingNobody)
                                         ?.authors
                                         ?.firstOrNull { it.uid == uid }
@@ -431,8 +411,7 @@ fun TierListsScreenContent(
                 }
             }
 
-            // The button moved into the rail, and a board is made from one
-            // place at a time.
+            // The button moved into the rail.
             if (mode == HomeMode.Browsing && tab == HomeTab.Mine && !hasRail) {
                 val newListDescription = stringResource(R.string.cd_new_list)
                 val fabModifier = Modifier
@@ -577,11 +556,8 @@ private fun HomeContent(
         contentPadding = PaddingValues(bottom = 96.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        // Above the boards, because it is about all of them. Out of the way
-        // while somebody is picking boards to delete: two sets of buttons
-        // asking different questions is one too many.
-        // Above everything, including the sign-in offer: two copies of one
-        // board is news, and the offer can wait a screen.
+        // Above the boards and above the sign-in offer: two copies of one
+        // board is news. Hidden while selecting: two sets of buttons is one too many.
         if (conflict != null && !isSelecting) {
             item(key = "conflict-banner") {
                 CenteredContent(ContentWidth.Reading, Modifier.padding(horizontal = 16.dp)) {
@@ -643,13 +619,7 @@ private fun HomeContent(
     }
 }
 
-/**
- * The same boards as pictures.
- *
- * Everything above them -- the conflict notice, the offer to sign in -- spans
- * the grid rather than sitting in a column of its own: those are about all the
- * boards, and a notice the width of one tile reads as being about that tile.
- */
+/** The same boards as pictures. Notices span the grid: one the width of a tile reads as being about that tile. */
 @Composable
 private fun BoardTiles(
     lists: List<TierList>,
@@ -758,10 +728,8 @@ private fun SearchResults(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        // The same shape the boards had a moment ago. Searching narrows which
-        // boards are on screen; it does not change what a board looks like,
-        // and having them turn from pictures into rows made the results read
-        // as somebody else's list rather than a subset of your own.
+        // The same shape the boards had a moment ago: searching narrows, it
+        // does not change what a board looks like.
         if (asPictures) {
             BoardTiles(
                 lists = lists,
@@ -872,11 +840,8 @@ private fun TierListsEmptyPreview() = TierYourLifeTheme(false) {
 private fun starredKey(id: Long): String = "starred-$id"
 
 /**
- * Which of the two groups this is.
- *
- * Without them the top cards read as the newest, and the sort control sitting
- * directly above says exactly that -- somebody switches to Oldest, sees the
- * same boards on top, and concludes the sort is broken.
+ * Without headings the top cards read as the newest, and the sort control
+ * above says so: switch to Oldest, same cards on top, sort looks broken.
  */
 @Composable
 private fun GroupHeading(@StringRes labelRes: Int, testTag: String) {

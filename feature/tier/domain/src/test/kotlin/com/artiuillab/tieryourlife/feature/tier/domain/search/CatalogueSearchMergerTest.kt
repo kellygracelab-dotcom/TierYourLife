@@ -21,9 +21,8 @@ class CatalogueSearchMergerTest {
         linkedTmdbId = linkedTmdbId,
     )
 
-    // A game's cover, a book's jacket and an album's sleeve are all somebody
-    // else's property, and no free catalogue holds them. Dropping what has no
-    // picture dropped those subjects out of the app altogether.
+    // Covers, jackets and sleeves are somebody else's property and no free
+    // catalogue holds them; dropping the pictureless dropped those subjects.
     @Test
     fun `keeps results that have no image, from either source`() {
         val tmdbResult = Result.success(
@@ -56,8 +55,7 @@ class CatalogueSearchMergerTest {
     }
 
     // What somebody typed beats what happens to be illustrated: an exact name
-    // with no cover is the thing they came for, and a stranger with a poster
-    // is not.
+    // with no cover is the thing they came for.
     @Test
     fun `a better match with no picture still outranks a worse match with one`() {
         val tmdbResult = Result.success(

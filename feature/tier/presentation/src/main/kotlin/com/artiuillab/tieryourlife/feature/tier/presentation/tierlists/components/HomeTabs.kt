@@ -44,13 +44,9 @@ private val INDICATOR_HEIGHT = 3.dp
 private val INDICATOR_SHAPE = RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp)
 
 /**
- * Written out rather than taken from [androidx.compose.material3.PrimaryTabRow]
- * for one reason: the indicator has to be as wide as the label. Material's own
- * asks for that too, but it takes the tab's intrinsic width and subtracts 32dp
- * for padding a tab whose content is a bare Text does not have. That leaves
- * 34dp under "Community" and hits the 24dp floor under "Your lists" -- a stub
- * centred beneath a word three times its length. The label is the only thing
- * in this bar whose size a translation changes, so it is measured.
+ * Not [androidx.compose.material3.PrimaryTabRow]: its indicator subtracts 32dp
+ * of padding a bare Text does not have, leaving a stub under "Your lists".
+ * The label is the only thing here a translation resizes, so it is measured.
  */
 @Composable
 internal fun HomeTabs(selected: HomeTab, onSelect: (HomeTab) -> Unit, modifier: Modifier = Modifier) {
@@ -61,11 +57,9 @@ internal fun HomeTabs(selected: HomeTab, onSelect: (HomeTab) -> Unit, modifier: 
 
     Surface(modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surface) {
         Column {
-            // The bar and its divider cross the window; the tabs do not. Two
-            // tabs across 1600dp are two 800dp targets with a word in the
-            // middle of each. The cap goes here so the arithmetic below --
-            // tab width, and the indicator offset built from it -- divides a
-            // measure instead of the window.
+            // The bar crosses the window; the tabs do not -- two tabs across
+            // 1600dp are two 800dp targets. The cap goes here so the arithmetic
+            // below divides a measure, not the window.
             BoxWithConstraints(
                 Modifier
                     .align(Alignment.CenterHorizontally)
@@ -102,10 +96,8 @@ internal fun HomeTabs(selected: HomeTab, onSelect: (HomeTab) -> Unit, modifier: 
                         }
                     }
                 }
-                // Held back until the label has been measured. Composed at zero
-                // and then animated, it grew out from the middle of the tab on
-                // every entry to the screen -- a flourish nobody asked for,
-                // where the point is that the bar is simply already there.
+                // Held until the label is measured: composed at zero and then
+                // animated, it grew out of the middle of the tab on every entry.
                 val selectedWidth = labelWidths[selectedIndex]
                 if (selectedWidth > 0.dp) {
                     Indicator(
@@ -126,10 +118,9 @@ private fun Indicator(width: Dp, start: Dp, modifier: Modifier = Modifier) {
     val animatedStart by animateDpAsState(start, label = "indicatorStart")
     Box(
         modifier
-            // The lambda overload reads the animation during placement rather
-            // than recomposing the bar around it. It still places relative to
-            // the layout direction, so Arabic mirrors on its own -- doing it
-            // here as well put the indicator off the edge of the screen.
+            // The lambda overload reads the animation during placement. It
+            // places relative to the layout direction, so Arabic mirrors on its
+            // own; mirroring here as well put the indicator off the screen.
             .offset { IntOffset(animatedStart.roundToPx(), 0) }
             .width(animatedWidth)
             .height(INDICATOR_HEIGHT)

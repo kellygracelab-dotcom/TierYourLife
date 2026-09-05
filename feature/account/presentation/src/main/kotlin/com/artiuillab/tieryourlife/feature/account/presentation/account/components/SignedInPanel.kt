@@ -152,12 +152,9 @@ internal fun SignedInPanel(
             Text(stringResource(R.string.account_action_sign_out))
         }
         Spacer(Modifier.height(8.dp))
-        // The same three facts the question asks, run together as one line:
-        // read before pressing anything it is reassurance, and the dialog
-        // breaks them apart only because that is the moment they are being
-        // weighed. Both replaced "your lists stay on this phone", which was
-        // true when this was the only place they lived and became a
-        // half-truth that read as a threat.
+        // The same three facts the dialog asks, as one line of reassurance.
+        // Replaced "your lists stay on this phone", which became a half-truth
+        // once they also lived in the account.
         Text(
             text = stringResource(R.string.account_sign_out_helper),
             style = MaterialTheme.typography.bodySmall,
@@ -165,10 +162,8 @@ internal fun SignedInPanel(
             textAlign = TextAlign.Center,
         )
 
-        // Quieter than signing out and further from it, because it is the one
-        // thing here that cannot be undone. Plain text rather than a second
-        // outlined button: two bordered buttons in a column read as a pair of
-        // equals, and these two are not.
+        // Quieter than signing out and further from it: the one thing here
+        // that cannot be undone, and not an equal of the button above.
         Spacer(Modifier.height(24.dp))
         TextButton(
             onClick = { deleteConfirming = true },

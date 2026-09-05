@@ -10,10 +10,8 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Test
 
 /**
- * The question this answers is "is the copy in the feed still what this board
- * says", so it has to notice everything publishing sends and nothing else.
- * Noticing too much is the worse failure: it puts an Update button on a board
- * that has nothing to send.
+ * Has to notice everything publishing sends and nothing else. Noticing too
+ * much is worse: it puts an Update button on a board with nothing to send.
  */
 class PublishFingerprintTest {
 
@@ -62,9 +60,8 @@ class PublishFingerprintTest {
         assertNotEquals(print(board()), print(board(cardImage = "https://example.test/new.jpg")))
     }
 
-    // The display mode is a property of the board and never travels to the
-    // feed. Saying the published copy was behind because of it would send
-    // somebody to republish a list that was already right.
+    // The display mode never travels to the feed; saying the copy was behind
+    // because of it would send somebody to republish a right list.
     @Test
     fun changingHowTiersAreDrawn_doesNot() {
         assertEquals(print(board()), print(board(mode = TierListDisplayMode.FLAT_RANKED)))
@@ -73,15 +70,13 @@ class PublishFingerprintTest {
     // Where the author put each card is not published either.
     @Test
     fun whatSitsInThePool_isCountedLikeAnythingElse() {
-        // Not a claim that position is ignored -- the cards are sent as one
-        // list, so moving one between tiers does change what is sent. This
-        // only pins that a card in the pool is part of it.
+        // Not a claim that position is ignored: the cards are sent as one list.
+        // This only pins that a card in the pool is part of it.
         assertNotEquals(print(board()), print(board(poolCard = true)))
     }
 
-    // Two phones hold the same photograph at two different paths. The name is
-    // the same, so the published copy is the same, and neither phone should be
-    // told it is behind because of where it keeps its files.
+    // The same photograph at two paths is the same published copy; neither
+    // phone should be told it is behind because of where it keeps its files.
     @Test
     fun theSamePhotographUnderTwoPaths_looksTheSame() {
         val here = board(cardImage = "/data/user/0/app/files/tier_images/abc")

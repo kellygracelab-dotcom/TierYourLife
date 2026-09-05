@@ -10,24 +10,15 @@ interface AppPreferences {
 
     fun setLanguageTag(tag: String?)
 
-    /**
-     * The balance the server last reported. Shown while a fresh one is fetched,
-     * so the number does not appear a moment after the screen it belongs to.
-     * The server stays the authority: nothing is spent against this.
-     */
+    /** Shown while a fresh balance is fetched. The server stays the authority. */
     fun lastKnownCredits(): Int?
 
     fun setLastKnownCredits(credits: Int?)
 
     /**
-     * How many complaints were waiting the last time the queue answered, or
-     * null for everyone it has never answered for -- which is everyone who
-     * does not read them.
-     *
-     * Kept for the same reason as the credit balance, and one more: whether
-     * the row exists at all is the answer to a question only the server can
-     * settle, so without this the settings screen has to grow a row halfway
-     * through being looked at.
+     * Null for everyone the queue never answered for. Whether the row exists is
+     * the server's answer; without this the settings screen grows a row while
+     * being looked at.
      */
     fun lastKnownPendingReports(): Int?
 
@@ -38,12 +29,7 @@ interface AppPreferences {
 
     fun setLastKnownTrashCount(count: Int)
 
-    /**
-     * Community lists this phone has hidden, and authors it has hidden
-     * entirely. Both are local: nobody is told they were hidden, and hiding is
-     * not an accusation. Both can be undone, which is why a name is kept
-     * alongside the id.
-     */
+    /** Local: nobody is told. Undoable, hence the name kept beside the id. */
     fun hiddenListIds(): Set<String>
 
     fun hiddenLists(): List<HiddenEntry>
@@ -60,43 +46,22 @@ interface AppPreferences {
 
     fun unhideAuthor(authorUid: String)
 
-    /**
-     * Whether this account's boards are kept anywhere but this phone.
-     *
-     * On by default, and only ever consulted once somebody is signed in: a
-     * guest has nowhere to keep them. Turning it off has to mean the copy is
-     * gone, or the switch is a lie.
-     */
+    /** On by default; consulted only once signed in. Off has to mean the copy is gone, or the switch is a lie. */
     fun backUpBoards(): Boolean
 
     fun setBackUpBoards(backUp: Boolean)
 
-    /**
-     * Set once the offer to sign in has been made and answered. "Not now"
-     * means never again rather than not this week -- a card that comes back is
-     * a card somebody learns to swat, and the footer line says the same thing
-     * quietly for as long as it stays true.
-     */
+    /** "Not now" means never again: a card that comes back gets swatted unread. */
     fun signInOfferAnswered(): Boolean
 
     fun markSignInOfferAnswered()
 
-    /**
-     * Pictures are the part of a board that costs somebody their data
-     * allowance, so they wait for Wi-Fi by default. The boards themselves are
-     * text and go whenever.
-     */
+    /** Pictures cost data allowance, so they wait for Wi-Fi by default; boards are text and go regardless. */
     fun picturesOnWifiOnly(): Boolean
 
     fun setPicturesOnWifiOnly(wifiOnly: Boolean)
 
-    /**
-     * Whether Your lists is drawn as pictures rather than as rows.
-     *
-     * A property of the screen rather than of the person, but remembered all
-     * the same: somebody who chose pictures once meant it, and asking again on
-     * every visit would be the app forgetting on purpose.
-     */
+    /** Rows or pictures. A property of the screen, remembered all the same: somebody who chose pictures meant it. */
     fun boardsAsPictures(): Boolean
 
     fun setBoardsAsPictures(asPictures: Boolean)
@@ -106,11 +71,7 @@ interface AppPreferences {
 
     fun setLastSyncedAtMs(atMs: Long?)
 
-    /**
-     * Boards whose "changed on two phones" notice has been read. Kept by uid
-     * rather than as one flag, because a second conflict months later is news
-     * again and deserves saying.
-     */
+    /** By uid rather than one flag: a second conflict months later is news again. */
     fun conflictsSeen(): Set<String>
 
     fun markConflictSeen(listUid: String)

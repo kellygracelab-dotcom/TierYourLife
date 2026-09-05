@@ -57,10 +57,9 @@ data class PublishedItemDto(
     val title: String,
     val imageUrl: String? = null,
     /**
-     * A photograph of this person's own, named rather than addressed: it lives
-     * in their private folder, which nobody else may read, so the server
-     * copies it into the feed's own folder and puts that address in the
-     * snapshot. Null for a poster, which already has an address of its own.
+     * The person's own photograph, named rather than addressed: it lives in
+     * their private folder, so the server copies it into the feed's folder.
+     * Null for a poster, which has an address already.
      */
     val pictureId: String? = null,
     /**

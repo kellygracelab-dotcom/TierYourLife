@@ -13,13 +13,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Getting a card's own picture to the account and back.
- *
- * Neither direction keeps a queue. What still has to go up is every picture on
- * the phone minus the ones already sent; what still has to come down is every
- * picture a board names and the phone does not hold. Both are read off what is
- * already there, so a run that dies halfway leaves nothing to repair -- the
- * next one asks the same question and gets a shorter answer.
+ * A card's own picture, to the account and back. Neither direction keeps a
+ * queue: what still has to go is read off what is already there, so a run
+ * that dies halfway leaves nothing to repair.
  */
 @Singleton
 class PictureSync @Inject constructor(
@@ -33,17 +29,9 @@ class PictureSync @Inject constructor(
     private val _restoring = MutableStateFlow(PictureRestore.Progress.Idle)
     override val restoring: StateFlow<PictureRestore.Progress> = _restoring.asStateFlow()
 
-    /**
-     * Sends what the account does not have yet.
-     *
-     * A picture that will not go stays unrecorded, so the next run tries it
-     * again. Recording it anyway would lose it quietly, which is the one
-     * outcome this whole thing exists to prevent.
-     */
+    /** A picture that will not go stays unrecorded, so the next run tries again; recording it would lose it quietly. */
     suspend fun push() {
-        // Pictures are the part of a board that costs somebody their data
-        // allowance. The boards themselves are text and go regardless, so
-        // waiting here never delays the thing that matters most.
+        // Pictures cost data allowance; boards are text and go regardless.
         if (preferences.picturesOnWifiOnly() && !connection.unmetered()) {
             Timber.d("Pictures are waiting for Wi-Fi")
             return
@@ -62,13 +50,9 @@ class PictureSync @Inject constructor(
     }
 
     /**
-     * Sends these particular pictures, now, whatever the Wi-Fi rule says.
-     *
-     * Publishing is not the background trickle [push] exists for. Somebody
-     * pressed a button and is watching for the result, and a board that
-     * reaches the feed with blank tiles because the phone was on mobile data
-     * is a failure they cannot see the reason for. Answers with the ones that
-     * are up -- everything already sent, plus everything sent just now.
+     * Now, whatever the Wi-Fi rule says: publishing is a button somebody
+     * pressed, and blank tiles in the feed would be a failure with no visible
+     * reason. Answers with what is up.
      */
     suspend fun sendNow(pictureIds: List<String>): Set<String> {
         if (pictureIds.isEmpty()) return emptySet()
@@ -87,12 +71,8 @@ class PictureSync @Inject constructor(
     }
 
     /**
-     * Fetches what a board says should be here and is not.
-     *
-     * The gap is what a new phone looks like: the boards arrive in one request
-     * and the pictures take as long as they take. Until each one lands the card
-     * shows its title on a plain tile, which is what a card with no picture has
-     * always looked like -- not an error, just not finished.
+     * What a new phone looks like: boards arrive in one request, pictures take
+     * as long as they take, and until then a tile shows its title.
      */
     suspend fun pull(wanted: Map<String, String>) {
         if (preferences.picturesOnWifiOnly() && !connection.unmetered()) {

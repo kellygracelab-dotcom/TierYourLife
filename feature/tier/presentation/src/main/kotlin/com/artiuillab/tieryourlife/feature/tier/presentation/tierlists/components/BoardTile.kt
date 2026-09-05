@@ -29,16 +29,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
 /**
- * One of your own boards, drawn the way the community feed draws a stranger's.
- *
- * The rows next door say how many cards are ranked and how many still wait,
- * which is the more useful thing most of the time and is why they are the
- * default. This is for the other times: twenty boards of album covers are told
- * apart by their art faster than by their names.
- *
- * Deliberately the same art as the feed, from [ListArt]: a board should look
- * the same to you as it does to everybody else, and two ways of drawing the
- * same thing would drift apart within a month.
+ * Your own board drawn the way the feed draws a stranger's: twenty boards of
+ * album covers are told apart by their art faster than by name. The same art
+ * as the feed, from [ListArt], so two ways of drawing one thing cannot drift.
  */
 @OptIn(ExperimentalFoundationApi::class)
 /** A disc under the star, so an outline survives a pale poster. */
@@ -77,9 +70,8 @@ internal fun BoardTile(
         Box(Modifier.fillMaxWidth().aspectRatio(ART_RATIO), contentAlignment = Alignment.TopEnd) {
             ListArt(
                 coverImageUrl = list.coverImageUrl,
-                // A local photograph is drawn here just as it is on the board.
-                // Publishing is where a picture has to have travelled; looking
-                // at your own boards is not.
+                // A local photograph is drawn as it is on the board; only
+                // publishing needs a picture to have travelled.
                 previewImages = list.tiers
                     .flatMap { tier -> tier.items }
                     .mapNotNull { item -> item.imageUrl }
@@ -90,8 +82,7 @@ internal fun BoardTile(
             if (selectionMode) {
                 Box(Modifier.padding(8.dp)) { SelectionCheckbox(selected) }
             } else if (onToggleFavourite != null) {
-                // On a disc of its own, because the art underneath is somebody
-                // else's picture and a bare outline disappears into a pale one.
+                // On a disc: a bare outline disappears into a pale poster.
                 Box(
                     Modifier
                         .padding(6.dp)
@@ -105,10 +96,8 @@ internal fun BoardTile(
                         id = list.id,
                         onClick = onToggleFavourite,
                         size = SCRIM_DISC,
-                        // Not the theme's grey: on a light poster in the light
-                        // theme it vanished. White on a darker disc reads on
-                        // any picture and in either theme, and the amber for a
-                        // starred one is bright enough to keep.
+                        // Not the theme's grey, which vanished on a light poster:
+                        // white on a dark disc reads on any picture.
                         colorOverride = if (list.favouritedAt != null) STAR_ON else Color.White,
                     )
                 }

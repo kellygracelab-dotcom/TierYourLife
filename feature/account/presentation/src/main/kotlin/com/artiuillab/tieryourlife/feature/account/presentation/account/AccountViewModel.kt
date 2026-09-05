@@ -54,11 +54,7 @@ class AccountViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Answered before signing in, so nothing has gone up yet and nothing has
-     * to be undone. Turning it off later is a different question with a
-     * different answer, and it is asked in Settings where the copy exists.
-     */
+    /** Answered before signing in, so nothing has gone up yet. Turning it off later is asked in Settings, where the copy exists. */
     fun setBackUpBoards(backUp: Boolean) {
         preferences.setBackUpBoards(backUp)
         _state.update { it.copy(backUpBoards = backUp) }
@@ -97,12 +93,9 @@ class AccountViewModel @Inject constructor(
     }
 
     /**
-     * Ends the account, then signs out of what is no longer there.
-     *
-     * In that order and not the other way round: signing out first would take
-     * away the identity the request is made with, and a failure would leave
-     * somebody unable to sign back in and unable to try again. If the server
-     * refuses, nothing has happened and the notice says so.
+     * Account first, then sign out: signing out first would take away the
+     * identity the request is made with, and a failure would leave somebody
+     * unable to sign in or to try again.
      */
     fun deleteAccount() {
         if (_state.value.deleting) return
@@ -139,11 +132,7 @@ class AccountViewModel @Inject constructor(
         askAboutMergeIfNeeded()
     }
 
-    /**
-     * Asked only when both sides hold something. An account with nothing on it
-     * takes this phone's boards silently, because there is nothing to weigh
-     * them against, and a question with one possible answer is a delay.
-     */
+    /** Asked only when both sides hold something; an empty account takes this phone's boards silently. */
     private suspend fun askAboutMergeIfNeeded() {
         if (!preferences.backUpBoards()) return
         val choice = merge.choice()
@@ -167,10 +156,7 @@ class AccountViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Closing the question leaves them signed out with nothing written, which
-     * is the only honest reading of a person who did not answer it.
-     */
+    /** Closing the question leaves them signed out with nothing written. */
     fun abandonMerge() {
         _state.update { it.copy(merge = null) }
         signOut()
@@ -180,10 +166,7 @@ class AccountViewModel @Inject constructor(
         _state.update { it.copy(signingIn = false, notice = notice) }
     }
 
-    /**
-     * Best effort: the profile is already saved, and a stale face on an old
-     * list is not worth refusing the change over.
-     */
+    /** Best effort: a stale face on an old list is not worth refusing the change over. */
     private suspend fun refreshPublishedAuthor() {
         community.refreshAuthor().onFailure {
             Timber.w(it, "Could not bring the author up to date on published lists")
@@ -192,8 +175,7 @@ class AccountViewModel @Inject constructor(
 
     private suspend fun refreshOwnLists() {
         if (_state.value.account !is Account.SignedIn) return
-        // Asked of the server, not of this phone: a list published from a
-        // device that is gone is still out there, and counting locally hid it.
+        // Asked of the server: a list published from a device that is gone is still out there.
         val count = community.myPublished()
             .onFailure { Timber.w(it, "Counting published lists failed") }
             .getOrNull()
@@ -211,12 +193,9 @@ class AccountViewModel @Inject constructor(
     }
 
     /**
-     * A face is either an address already or a picture of this person's own.
-     *
-     * Catalogue art is hosted by somebody else and can be used as it stands.
-     * A picture this app generated is a file in a folder only its owner may
-     * read, so the server copies it somewhere the community can see -- after
-     * looking at it, on the same terms as a published board's pictures.
+     * Catalogue art has an address already. A generated picture lives in a
+     * folder only its owner may read, so the server copies it somewhere the
+     * community can see -- after looking at it, as with a published board.
      */
     fun setPhoto(photoUrl: String?) {
         viewModelScope.launch {

@@ -100,9 +100,8 @@ internal fun TierListSettingsScreenContent(
     Column(Modifier.fillMaxSize().testTag(TierDetailTestTags.LIST_SETTINGS_SCREEN)) {
         ListSettingsTopBar(onBack = onBack)
 
-        // One scrolling column, as the spec says. It was not scrolling, and
-        // the rows below Publish fell off the bottom of an ordinary phone
-        // the moment one more was added above them.
+        // One scrolling column: without it, one more row above Publish pushed
+        // New tier off the bottom of an ordinary phone.
         CenteredContent(ContentWidth.Reading, modifier = Modifier.verticalScroll(rememberScrollState())) {
             PublishSection(
                 published = publicPending ?: (list.publishedId != null),
@@ -116,14 +115,11 @@ internal fun TierListSettingsScreenContent(
                 onAddCards = onAddCards,
             )
 
-            // A category exists only for the feed, so it belongs with the switch. A
-            // cover does not -- it is also what the list's own card wears in Your
-            // lists -- which is why it stays available to a guest.
+            // A category exists only for the feed; a cover is also the card's
+            // own art, so it stays available to a guest.
             CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
             CoverRow(coverImageUrl = list.coverImageUrl, onClick = { coverSheetVisible = true })
-            // Beside the cover rather than under Publish: sending a picture
-            // to a friend is not publishing, needs no account, and works on
-            // a board nobody else will ever see.
+            // Beside the cover: sharing is not publishing and needs no account.
             ShareRow(onClick = onShare)
 
             DisplayModeSection(selected = list.displayMode, onSelect = onSetDisplayMode)
@@ -432,9 +428,8 @@ private fun PublishSection(
 
     Column(
         Modifier
-            // An empty list cannot be published, and the switch says so by
-            // being off. Tapping the row still goes somewhere: to the cards it
-            // is asking for, rather than to a refusal.
+            // An empty list: the switch says no by being off, and the row leads
+            // to the cards it is asking for.
             .then(if (signedIn && !hasItems) Modifier.clickable(onClick = onAddCards) else Modifier)
             .padding(horizontal = 20.dp, vertical = 16.dp),
     ) {
@@ -454,10 +449,8 @@ private fun PublishSection(
             Switch(
                 checked = published,
                 onCheckedChange = onSetPublic,
-                // Off with nothing to publish, because the only thing this tap
-                // could do is refuse. The reason is already under it, said
-                // before the tap rather than instead of it, and the row leads
-                // to the fix.
+                // Off with nothing to publish: the reason is under it, and the
+                // row leads to the fix.
                 enabled = signedIn && hasItems && !busy,
                 modifier = Modifier.testTag(TierDetailTestTags.PUBLIC_SWITCH),
             )
@@ -471,11 +464,8 @@ private fun PublishSection(
                 color = MaterialTheme.colorScheme.error,
             )
         }
-        // Where somebody actually is when they have just changed the board:
-        // in its own settings, not three taps away under the account. The
-        // published copy is a snapshot and stays as it was published, which is
-        // right and is exactly why there has to be a way to send a new one
-        // from here.
+        // Where somebody is after changing the board. The published copy is a
+        // snapshot, which is why a new one has to be sendable from here.
         if (published) {
             Spacer(Modifier.height(14.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {

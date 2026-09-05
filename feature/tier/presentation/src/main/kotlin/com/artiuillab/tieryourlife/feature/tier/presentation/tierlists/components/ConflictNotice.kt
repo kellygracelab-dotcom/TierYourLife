@@ -26,14 +26,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.VectorIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
-/**
- * Two phones changed the same board apart from each other, so both versions
- * are here.
- *
- * Not an error, and coloured accordingly: nothing failed and nothing is lost.
- * The only thing a person has to do is look at the two and decide, which is
- * exactly what the text says.
- */
+/** Two phones changed the same board apart, so both versions are here. Not an error: nothing failed and nothing is lost. */
 @Composable
 internal fun ConflictBanner(title: String, onGotIt: () -> Unit, modifier: Modifier = Modifier) {
     OutlinedCard(
@@ -70,11 +63,7 @@ internal fun ConflictBanner(title: String, onGotIt: () -> Unit, modifier: Modifi
     }
 }
 
-/**
- * Beside the title of the copy that arrived. Deliberately not in the primary
- * colour: it is a fact about where a board came from, not a state anybody has
- * to act on.
- */
+/** Not in the primary colour: a fact about where a board came from, not a state to act on. */
 @Composable
 internal fun ArrivedFromChip(deviceName: String?, modifier: Modifier = Modifier) {
     Surface(

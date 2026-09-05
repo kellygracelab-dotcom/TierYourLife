@@ -3,14 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.local.database
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-/**
- * A board somebody wants at the top of their own list.
- *
- * Nullable rather than a boolean with a default: null is "not starred", and a
- * time gives the starred ones an order among themselves for free. Every
- * existing board starts unstarred, which is what the absence of the column
- * already meant.
- */
+/** Starred boards. A time rather than a boolean: null is "not starred", and the time orders the starred ones for free. */
 val MIGRATION_9_10 = object : Migration(9, 10) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE tier_lists ADD COLUMN favouritedAt INTEGER")
@@ -18,26 +11,16 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
 }
 
 /**
- * Records when a board was last touched, and does it in SQL.
- *
- * Triggers rather than a call at every place that edits something. A rename, a
- * drag, a colour, emptying a tier, restoring a card from the trash -- there are
- * dozens of them, and the first one anybody forgets is a board whose age is
- * quietly wrong on the one screen where two copies have to be told apart. The
- * database cannot forget.
- *
- * The board's own trigger names the columns it watches. Room turns recursive
- * triggers on, so a trigger that fired on any update would fire on the stamp it
- * had just written -- and within the same second the new value equals the old
- * one, so no comparison can stop it. Naming the columns does.
+ * Stamped by SQL triggers rather than at every edit site: the first site
+ * forgotten is a board whose age is quietly wrong. The board's trigger names
+ * its columns because Room enables recursive triggers, and one firing on any
+ * update would fire on the stamp it had just written.
  */
 val MIGRATION_8_9 = object : Migration(8, 9) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE tier_lists ADD COLUMN publishedFingerprint TEXT")
-        // Left null on boards that are already published. Null reads as "we do
-        // not know what was sent", and the screen says nothing rather than
-        // guessing -- claiming a copy is stale when it is not would send
-        // somebody to republish a list that was already right.
+        // Null on boards already published: the screen says nothing rather
+        // than claim a copy is stale when it is not.
     }
 }
 
@@ -80,13 +63,7 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
     }
 }
 
-/**
- * Remembers which pictures have already gone up.
- *
- * No foreign key here either, and for the mirror of the reason board_sync has
- * none: the row is about a file, and the card that used to point at it may be
- * long gone while the file is still up there waiting to be swept.
- */
+/** Which pictures have gone up. No foreign key: the row is about a file that outlives the card pointing at it. */
 val MIGRATION_6_7 = object : Migration(6, 7) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
@@ -98,18 +75,14 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
 }
 
 /**
- * Makes room for the copy an account keeps.
- *
- * `board_sync` has no foreign key on purpose: the row has to outlive the
- * board. A board emptied out of the trash leaves nothing behind to compare,
- * and this row is the only thing that can tell "thrown away here" from "never
- * sent" -- without it, a delete comes straight back from the account.
+ * The copy an account keeps. `board_sync` has no foreign key on purpose: the
+ * row must outlive the board, being the only thing that tells "thrown away
+ * here" from "never sent".
  */
 val MIGRATION_5_6 = object : Migration(5, 6) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE tier_lists ADD COLUMN arrivedFrom TEXT")
-        // Written the way Room writes it, so the migration test compares like
-        // with like rather than arguing about where the primary key is said.
+        // Written the way Room writes it, so the migration test compares like with like.
         db.execSQL(
             "CREATE TABLE IF NOT EXISTS `board_sync` (" +
                 "`listUid` TEXT NOT NULL, `revision` INTEGER NOT NULL, " +
@@ -120,13 +93,9 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
 }
 
 /**
- * Gives every row a name that means the same thing on another device. The
- * primary keys are this database's own counters: two phones each hand out
- * id 1, so nothing can be matched up across them.
- *
- * Backfilled in SQL rather than in Kotlin so a large library does not have
- * to be read into memory during an upgrade. randomblob is evaluated per
- * row, which is what makes the values differ.
+ * A uid per row that means the same on another device; primary keys are this
+ * database's own counters, so two phones both hand out id 1. Backfilled in
+ * SQL so a large library is not read into memory; randomblob is per row.
  */
 val MIGRATION_4_5 = object : Migration(4, 5) {
     override fun migrate(db: SupportSQLiteDatabase) {

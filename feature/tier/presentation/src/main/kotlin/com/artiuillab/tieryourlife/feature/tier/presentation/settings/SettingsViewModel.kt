@@ -44,8 +44,7 @@ class SettingsViewModel @Inject constructor(
     val account: StateFlow<Account> = accountRepository.account
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), Account.Unknown)
 
-    // Null while generation is not offered, which the account row already knows
-    // how to draw: a balance for something nobody can spend is a puzzle.
+    // Null while generation is not offered: a balance nobody can spend is a puzzle.
     private val _credits = MutableStateFlow(
         generationCredits.lastKnown().takeIf { Features.GENERATION_OFFERED },
     )
@@ -55,12 +54,9 @@ class SettingsViewModel @Inject constructor(
     val trashCount: StateFlow<Int> = _trashCount.asStateFlow()
 
     /**
-     * How many complaints are waiting, or null for everyone who is not the
-     * person who reads them. Being turned away is how the app finds out.
-     *
-     * Opens with the last answer, because this one decides whether a row
-     * exists: asked fresh every time, the screen grows a row a moment after
-     * somebody has started reading it.
+     * Null for everyone who is not the reader; being turned away is how the
+     * app finds out. Opens with the last answer, because it decides whether
+     * a row exists.
      */
     private val _pendingReports = MutableStateFlow(preferences.lastKnownPendingReports())
     val pendingReports: StateFlow<Int?> = _pendingReports.asStateFlow()
@@ -75,9 +71,8 @@ class SettingsViewModel @Inject constructor(
 
     /**
      * Waits for the account rather than sampling it: on the way in it is
-     * [Account.Unknown] for a frame or two, and asking then answered "no
-     * account, no copy" for a signed-in person and left the section out
-     * altogether.
+     * [Account.Unknown] for a frame, and asking then left the section out for
+     * a signed-in person.
      */
     fun loadBackupSettings() {
         viewModelScope.launch {
@@ -91,11 +86,7 @@ class SettingsViewModel @Inject constructor(
         loadBackupSettings()
     }
 
-    /**
-     * Confirmed on the way off, never on the way on. Turning it on has nothing
-     * to warn about; turning it off deletes the copy, and that is the promise
-     * the word "off" is making.
-     */
+    /** Confirmed on the way off only: turning it off deletes the copy. */
     fun stopBackingUp() {
         viewModelScope.launch {
             backup.stopAndDelete()
@@ -119,16 +110,12 @@ class SettingsViewModel @Inject constructor(
 
     fun loadPendingReports() {
         viewModelScope.launch {
-            // Being turned away is the ordinary answer for everyone who does not
-            // read reports, but it looks the same as the network being down, so
-            // the reason is written down rather than swallowed. It is also why
-            // a failure leaves the last answer standing instead of clearing it:
-            // a moderator with no signal has not stopped being one.
+            // Being turned away is the ordinary answer for non-readers but looks
+            // like the network being down, so the reason is logged and a
+            // failure leaves the last answer standing.
             community.reports()
                 .onFailure { Timber.i(it, "Not showing the report queue") }
-                // Remembered before it is shown, not after. The screen opens
-                // from what was remembered, so a gap the other way round is a
-                // moment where the screen is ahead of its own memory.
+                // Remembered before it is shown: the screen opens from what was remembered.
                 .onSuccess { reports ->
                     preferences.setLastKnownPendingReports(reports.size)
                     _pendingReports.value = reports.size

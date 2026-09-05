@@ -9,13 +9,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 
 /**
- * The one way this app names a group of rows. A section heading does nothing,
- * so it must not wear the accent colour -- that belongs to the things that do:
- * a switch that is on, a chip that is chosen, a button that acts.
- *
- * Caps are a bonus for the alphabets that have them. Arabic and Japanese have
- * no case at all, so the colour and the tracking carry the signal there, and
- * uppercasing simply passes the text through.
+ * A section heading does nothing, so it must not wear the accent colour.
+ * Caps are a bonus for alphabets that have them; Arabic and Japanese rely on
+ * the colour and tracking.
  */
 @Composable
 internal fun SectionLabel(text: String, modifier: Modifier = Modifier) {

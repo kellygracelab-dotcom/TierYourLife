@@ -16,13 +16,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- * A board on a folding phone's cover screen.
- *
- * The rule underneath every case: the cover shows what somebody already made,
- * in the mode they chose, and refuses everything else in one sentence rather
- * than with a screen full of controls that all fail.
- */
+/** The cover shows what somebody already made, in the mode they chose, and refuses everything else in one sentence. */
 @RunWith(AndroidJUnit4::class)
 class CoverBoardTest {
 

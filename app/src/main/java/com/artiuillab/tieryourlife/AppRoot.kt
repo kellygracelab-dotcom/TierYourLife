@@ -31,24 +31,16 @@ fun AppRoot(
     }
 
     TierYourLifeTheme(darkTheme = darkTheme) {
-        // The app draws under the system bars and pads for them itself, screen
-        // by screen -- but only ever at the top and the bottom, which is where
-        // they are on an upright phone. Turn the window sideways, or open a
-        // folding phone's cover screen, and the navigation bar moves to an edge
-        // nothing was padding for and lands on top of the content.
-        //
-        // Horizontal only: the top and bottom are already somebody's job, and
-        // doing them again here would pad everything twice. On an upright phone
-        // this measures zero, which is why it has been invisible.
+        // Screens pad for the system bars at the top and bottom only; sideways,
+        // or on a cover screen, the navigation bar moves to an edge nothing
+        // padded for. Horizontal only, so nothing is padded twice; on an
+        // upright phone this measures zero.
         BoxWithConstraints(
             Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
-            // Measured once, here, and read wherever it is needed. Measured
-            // after the insets rather than before, because the width a layout
-            // can actually use is what is left over -- and on a folded phone
-            // in landscape that is a different answer.
-            // A cover screen and half a phone in split view measure the same;
-            // only the system knows which is which.
+            // Measured once, after the insets: the width a layout can use is
+            // what is left over. A cover screen and half a phone in split view
+            // measure the same; only the system knows which is which.
             val activity = LocalActivity.current
             val shape = WindowShape.of(
                 width = maxWidth,
@@ -56,10 +48,8 @@ fun AppRoot(
                 shareable = activity?.isInMultiWindowMode == true,
             )
             CompositionLocalProvider(LocalWindowShape provides shape) {
-                // A cover screen is not a very small phone; it is a surface
-                // that can show a board and cannot be used to build one. It
-                // gets its own screen rather than the app with most of its
-                // controls refusing.
+                // A cover screen gets its own screen rather than the app with
+                // most of its controls refusing.
                 if (shape.isGlanceable) {
                     CoverScreen()
                 } else {

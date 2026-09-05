@@ -34,17 +34,10 @@ object CatalogueSearchMerger {
     }
 
     /**
-     * Which of these are worth showing, best match first. A later page is
-     * ranked on its own and appended, so the rows already under the reader's
-     * finger keep their order and their ticks.
-     *
-     * A picture is the second question, not the first. Whole subjects have no
-     * free picture anywhere -- a game's cover, a book's jacket and an album's
-     * sleeve are all somebody's property, and Commons will not hold them --
-     * so a catalogue filtered down to what is illustrated is a catalogue with
-     * games, books and records missing from it entirely. Sorting by the match
-     * first keeps what somebody actually typed at the top, and letting the
-     * picture break the tie keeps the shelf looking like a shelf.
+     * Best match first; a later page is ranked on its own and appended, so
+     * rows under the reader's finger keep their order. A picture is the second
+     * question: games, books and records have no free cover anywhere, so
+     * filtering to the illustrated drops them entirely. The picture breaks ties.
      */
     fun rank(query: String, items: List<CatalogueItem>): List<CatalogueItem> {
         val trimmedQuery = query.trim()
@@ -58,10 +51,7 @@ object CatalogueSearchMerger {
     private fun CatalogueItem.tmdbNumericId(): Long? =
         if (id.startsWith(TMDB_ID_PREFIX)) id.removePrefix(TMDB_ID_PREFIX).toLongOrNull() else null
 
-    /**
-     * One from each catalogue in turn, so that ranking, which is stable, has
-     * no reason to prefer whichever one happened to be asked first.
-     */
+    /** One from each catalogue in turn, so stable ranking has no reason to prefer whichever was asked first. */
     private fun interleave(vararg lists: List<CatalogueItem>): List<CatalogueItem> {
         val result = ArrayList<CatalogueItem>(lists.sumOf { it.size })
         val longest = lists.maxOfOrNull { it.size } ?: 0

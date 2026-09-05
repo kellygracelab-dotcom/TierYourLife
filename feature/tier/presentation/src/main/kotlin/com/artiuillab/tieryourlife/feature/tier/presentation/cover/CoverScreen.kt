@@ -17,15 +17,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierLists
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsViewModel
 
 /**
- * The whole app, on a folding phone's cover screen.
- *
- * One surface and one answer. Boards are shown; everything else -- ranking,
- * adding, settings, Community -- either needs typing, needs a drag, or is a
- * decision with consequences, and none of those belong on a screen somebody
- * is glancing at with the phone still shut.
- *
- * A tap anywhere that is not a swipe between boards says so once and gets out
- * of the way, rather than a screen full of controls that all refuse.
+ * The whole app on a cover screen: boards are shown, and everything else
+ * needs typing, a drag or a decision, none of which belong on a shut phone.
+ * A tap on anything else says so once and gets out of the way.
  */
 @Composable
 fun CoverScreen(viewModel: TierListsViewModel = hiltViewModel()) {
@@ -33,10 +27,8 @@ fun CoverScreen(viewModel: TierListsViewModel = hiltViewModel()) {
     var explaining by remember { mutableStateOf(false) }
     OnResumeEffect {
         viewModel.loadTierLists()
-        // The notice leaves after four seconds, but a cover screen is closed
-        // rather than dismissed: shutting the phone mid-notice and opening it
-        // again should show the board, not the remainder of an answer to a tap
-        // nobody remembers making.
+        // A cover screen is closed, not dismissed: reopening should show the
+        // board, not the remainder of a notice.
         explaining = false
     }
 

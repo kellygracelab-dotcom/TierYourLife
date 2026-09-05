@@ -3,18 +3,12 @@ package com.artiuillab.tieryourlife.core.theme.preview
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
- * The windows a screen has to survive, so that the answer arrives while it is
- * being written rather than on somebody's phone.
- *
- * Ordered by how much room they give. The cover screen comes first because it
- * is the one that takes room away in the direction nothing else does: every
- * other window here is at least twice as tall as it is.
+ * The windows a screen has to survive, ordered by how much room they give.
+ * The cover comes first: every other window is at least twice as tall.
  */
 @Preview(
-    // A Samsung Flip's cover screen, measured off a Z Flip 7: 748x720 physical
-    // at 340dpi. Barely taller than it is wide, which no phone is, and 339dp is
-    // less than half of what the shortest phone below gives. A screen that only
-    // works because there is always more height is caught here.
+    // A Z Flip 7 cover: 748x720 physical at 340dpi. A screen that only works
+    // because there is always more height is caught here.
     name = "Flip cover",
     device = "spec:width=352dp,height=339dp,dpi=340",
     showSystemUi = false,

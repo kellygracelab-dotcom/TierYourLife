@@ -1,11 +1,9 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.model
 
 /**
- * The two questions a feed asks that are not "about what".
- *
- * [FeedSource] is whose lists, [FeedSort] is in what order, and the category
- * filter is the third and keeps its own row. They are separate because they
- * are answered separately: switching one must not quietly reset another.
+ * [FeedSource] is whose lists, [FeedSort] in what order; the category is the
+ * third question and keeps its own row. Separate, so switching one never
+ * quietly resets another.
  */
 enum class FeedSource { Following, Everyone }
 
@@ -18,13 +16,9 @@ enum class FeedSort(val id: String) {
 }
 
 /**
- * Which order a source opens on.
- *
- * Everyone opens on the popular ordering because a stranger's feed with no
- * signal in it is a wall of names. Following opens on the newest, because
- * somebody who followed these people has already vouched for them, and
- * popularity there would bury a good list by an author with twelve followers
- * for ever.
+ * Everyone opens on popular: a stranger's feed with no signal is a wall of
+ * names. Following opens on newest: popularity there would bury a good list
+ * by an author with twelve followers for ever.
  */
 val FeedSource.opensOn: FeedSort
     get() = if (this == FeedSource.Following) FeedSort.Recent else FeedSort.Popular

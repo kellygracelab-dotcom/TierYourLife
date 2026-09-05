@@ -32,9 +32,8 @@ class ManifestContractTest {
         )
     }
 
-    // Upright is right for a phone and wrong for a tablet, so it cannot be
-    // declared once here. The activity asks per window size instead, which the
-    // manifest must leave room for.
+    // Upright is right for a phone and wrong for a tablet, so the activity
+    // asks per window size, which the manifest must leave room for.
     @Test
     fun mainActivity_declaresNoOrientation_soTheWindowCanDecide() {
         val declared = context.packageManager

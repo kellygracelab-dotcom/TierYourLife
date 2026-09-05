@@ -4,10 +4,8 @@ package com.artiuillab.tieryourlife.core.settings
 private const val SEPARATOR = '\u001F'
 
 /**
- * How a hidden thing is written down: its id, and the name to offer it back
- * by. Kept apart from the preferences it lives in so the awkward parts -- an
- * entry written before names were kept, a title with a separator in it, two
- * hides of the same list -- can be read and tested without a phone.
+ * How a hidden thing is written down: its id and the name to offer it back
+ * by. Apart from the preferences so the awkward cases can be tested without a phone.
  */
 internal object HiddenRecords {
 

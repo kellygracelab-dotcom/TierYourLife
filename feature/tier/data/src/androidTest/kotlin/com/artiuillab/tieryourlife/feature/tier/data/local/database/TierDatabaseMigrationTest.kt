@@ -86,9 +86,8 @@ class TierDatabaseMigrationTest {
         assertEquals("S", tierLabel)
     }
 
-    // A list that predates categories keeps its rows; it simply has no category
-    // until its owner picks one, which is what blocks publishing rather than a
-    // silent default.
+    // A list that predates categories keeps its rows and has no category until
+    // its owner picks one, which is what blocks publishing.
     @Test
     fun migrate_3_to_4_adds_category_and_cover_without_touching_existing_lists() {
         helper.createDatabase(TEST_DB, 3).apply {
@@ -264,11 +263,7 @@ class TierDatabaseMigrationTest {
         assertTrue("renaming the board should age it", editedAt(migratedDb) > 1)
     }
 
-    /**
-     * A board published before this column existed says nothing about what was
-     * sent, and null is the right answer: claiming its published copy is
-     * behind would send somebody to republish a list that was already right.
-     */
+    /** Null for a board published before this column existed: claiming its copy is behind would send somebody to republish a right list. */
     @Test
     fun migration8To9_leavesAnAlreadyPublishedBoardSayingNothingAboutWhatWasSent() {
         helper.createDatabase(TEST_DB, 8).apply {

@@ -45,12 +45,7 @@ class TierDetailViewModel @Inject constructor(
         .map { it is Account.SignedIn }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), false)
 
-    /**
-     * Every board, for the column that stands beside this one on a wide
-     * window. Read here rather than shared with the list screen because that
-     * screen is not on the stack when this one is: they are two destinations,
-     * not one with a panel.
-     */
+    /** For the column beside this board on a wide window. Read here: the list screen is not on the stack when this one is. */
     private val _allLists = MutableStateFlow<List<TierList>>(emptyList())
     val allLists: StateFlow<List<TierList>> = _allLists.asStateFlow()
 
@@ -61,21 +56,13 @@ class TierDetailViewModel @Inject constructor(
     val publishError: StateFlow<PublishError?> = _publishError.asStateFlow()
 
     /**
-     * True when the copy in the feed is known to differ from this board.
-     *
      * Only ever said with proof: a board published before what was sent was
-     * recorded reads as false here, and the row offers to send it again
-     * anyway. Claiming it is behind and offering to fix it are different
-     * promises with different burdens.
+     * recorded reads as false, and the row offers to send it again anyway.
      */
     private val _publishedIsBehind = MutableStateFlow(false)
     val publishedIsBehind: StateFlow<Boolean> = _publishedIsBehind.asStateFlow()
 
-    /**
-     * What the switch should read while the request is in flight. Waiting for
-     * the server to answer left it sitting on the old position for a second,
-     * which reads as a tap that missed.
-     */
+    /** What the switch reads while the request is in flight; waiting for the server read as a tap that missed. */
     private val _publicPending = MutableStateFlow<Boolean?>(null)
     val publicPending: StateFlow<Boolean?> = _publicPending.asStateFlow()
 
@@ -95,14 +82,7 @@ class TierDetailViewModel @Inject constructor(
         loadTierList()
     }
 
-    /**
-     * Sends the board over the copy already in the feed.
-     *
-     * Offered here rather than only under the account, because this is where
-     * somebody is standing when they have just changed the board -- and it is
-     * the same act as publishing, over the same id, so the link somebody was
-     * given goes on working.
-     */
+    /** Offered where somebody stands after changing the board. The same act as publishing, over the same id, so the link keeps working. */
     fun updatePublished() = setPublic(true)
 
     private fun refreshPublishedStanding() {
@@ -140,9 +120,8 @@ class TierDetailViewModel @Inject constructor(
                     val recorded = messages.guard("Recording the published list") {
                         repository.setPublished(tierListId, published?.id, published?.fingerprint)
                     }
-                    // Reading the list back would land after publicPending is
-                    // cleared below, so the switch would spring back to the old
-                    // position for a frame or two. The id is all that changed.
+                    // Reading the list back would land after publicPending clears
+                    // and spring the switch back for a frame. The id is all that changed.
                     if (recorded) showPublishedId(published?.id)
                     // Just sent, so nothing is behind any more.
                     _publishedIsBehind.value = false
@@ -156,10 +135,7 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Choosing one finishes the publish that asked for it. A tap on the switch
-     * turning into two taps is a smaller thing than a tap that only refuses.
-     */
+    /** Finishes the publish that asked for it: a tap becoming two is smaller than a tap that only refuses. */
     fun setCategory(category: ListCategory) {
         val publishNext = _categoryWanted.value
         _categoryWanted.value = false
@@ -307,11 +283,7 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    /**
-     * A message telling you to add a card has to stop saying that once you
-     * have. Only the one the list itself can answer is dropped; a refusal from
-     * the server stands until the next attempt.
-     */
+    /** Only the message the list itself can answer is dropped; a server refusal stands until the next attempt. */
     private fun dropSettledPublishError(list: TierList) {
         val settled = _publishError.value == PublishError.NothingToPublish &&
             list.tiers.any { it.items.isNotEmpty() }

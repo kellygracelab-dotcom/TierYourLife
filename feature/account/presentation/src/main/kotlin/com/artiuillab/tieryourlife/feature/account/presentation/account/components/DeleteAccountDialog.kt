@@ -16,13 +16,9 @@ import com.artiuillab.tieryourlife.feature.account.presentation.R
 import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountTestTags
 
 /**
- * The last question this app asks that has no answer afterwards.
- *
- * Says what goes before it says what stays, in that order: somebody reading it
- * needs the bad news to be unmissable, and the reassurance is worth nothing if
- * it is read first and the warning skimmed. The confirming word is "Delete for
- * good" rather than "OK", so the button itself carries the meaning for anybody
- * who pressed before reading.
+ * Says what goes before what stays, so the bad news is unmissable. The
+ * confirming word is "Delete for good", not "OK", for anybody who pressed
+ * before reading.
  */
 @Composable
 internal fun DeleteAccountDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {

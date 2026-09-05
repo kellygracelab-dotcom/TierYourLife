@@ -4,9 +4,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * A board as the account keeps it. Not [PublishListRequestDto] -- that is a
- * picture arranged for strangers, this is the board someone would lose with
- * their phone, trash and pool and the order of everything included.
+ * A board as the account keeps it, trash and pool and order included -- not
+ * [PublishListRequestDto], which is a picture arranged for strangers.
  */
 @Serializable
 data class KeptBoardDto(
@@ -41,10 +40,7 @@ data class KeptTierDto(
 @Serializable
 data class KeptItemDto(
     val uid: String,
-    /**
-     * A picture of this person's own, by the file's own name. The path around
-     * it means nothing on a second phone, so only this travels.
-     */
+    /** This person's own picture, by the file's name: the path means nothing on a second phone. */
     val pictureId: String? = null,
     /** Which tier it sits in, by that tier's uid rather than a row number. */
     val tierUid: String,
@@ -79,10 +75,7 @@ data class KeptBoardIndexDto(
 @Serializable
 data class KeptBoardRevisionDto(val uid: String, val revision: Int)
 
-/**
- * The body of a refused write. The board that was already there comes back
- * with it, so the phone can keep both without a second request.
- */
+/** A refused write: the board already there comes back with it, so the phone can keep both without a second request. */
 @Serializable
 data class BoardConflictDto(
     val error: String = "",
@@ -91,9 +84,8 @@ data class BoardConflictDto(
 )
 
 /**
- * A board on its way up. [basedOn] is the revision this phone was working
- * from; the account refuses the write if it has moved on since, which is what
- * turns a silent overwrite into a second board somebody can look at.
+ * [basedOn] is the revision this phone worked from; the account refuses the
+ * write if it has moved on, which turns a silent overwrite into a second board.
  */
 @Serializable
 data class KeepBoardRequestDto(

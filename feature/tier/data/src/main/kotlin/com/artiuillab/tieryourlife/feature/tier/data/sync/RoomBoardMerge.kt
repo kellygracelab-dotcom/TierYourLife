@@ -27,10 +27,9 @@ class RoomBoardMerge @Inject constructor(
     }
 
     /**
-     * Nothing is moved and nothing is sent. The boards on this phone have uids
-     * the account has never seen, so the next run simply creates them beside
-     * what is already there; the only thing that has to happen first is making
-     * the two sets tellable apart.
+     * Nothing is moved or sent: the boards here have uids the account has never
+     * seen, so the next run creates them beside what is there. Only the two
+     * sets have to be made tellable apart first.
      */
     override suspend fun keepEverything(fromThisPhone: String) {
         val theirs = runCatching { api.index().boards.filterNot { it.deleted }.map { it.title } }

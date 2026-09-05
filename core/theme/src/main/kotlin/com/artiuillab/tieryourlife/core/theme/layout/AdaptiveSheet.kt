@@ -21,12 +21,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
 /**
- * How wide a task gets when it stops being a sheet.
- *
- * Two sizes, because there are two kinds of task. One is work -- searching a
- * catalogue, building a tier -- with a list to scroll and something to type.
- * The other is a choice from a handful of options, and a radio list 560dp wide
- * puts its label a thumb's width from the control it belongs to.
+ * Two widths for two kinds of task: work, with a list to scroll and something
+ * to type; and a choice from a few options, where a 560dp radio list puts its
+ * label a thumb's width from the control.
  */
 object SheetWidth {
     val Working: Dp = 560.dp
@@ -34,16 +31,8 @@ object SheetWidth {
 }
 
 /**
- * A task that arrives from the bottom on a phone and in the middle on anything
- * wider.
- *
- * A bottom sheet is a phone shape: it is thumb-reachable, and it covers the
- * bottom of a screen that is mostly out of reach anyway. Neither is true on a
- * tablet, where the same sheet becomes a strip of content along the bottom
- * edge of a mostly empty window, as far from the eye as the layout can manage.
- *
- * Docked surfaces are not sheets and do not come through here -- the pool at
- * the bottom of a board stays exactly where it is at every width.
+ * From the bottom on a phone, in the middle on anything wider: on a tablet a
+ * bottom sheet becomes a strip along the bottom of an empty window.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

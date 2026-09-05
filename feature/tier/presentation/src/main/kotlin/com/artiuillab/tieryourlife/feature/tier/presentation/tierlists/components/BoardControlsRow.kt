@@ -42,18 +42,10 @@ private val ROW_HEIGHT = 52.dp
 private val FADE_WIDTH = 24.dp
 
 /**
- * How the boards are ordered and which of them are shown.
- *
- * The sort is out here and the filters are behind a button, because the two
- * are different kinds of question. A sort changes the order and not the
- * contents, is undone at a glance, and its current value is itself worth
- * reading. A filter changes what is on screen, which the screen already
- * shows -- so it costs nothing to put away, and the ones that are on come
- * back out as chips.
- *
- * Only the chips may scroll out of reach. The filter button is the only way
- * back into the sheet and the view toggle is the only way to change the view;
- * neither can be the thing that went off the edge.
+ * The sort is out here and the filters behind a button: a sort is undone at
+ * a glance and its value is worth reading; a filter changes what is on
+ * screen, which the screen already shows, and the ones that are on come back
+ * as chips. Only the chips may scroll out of reach.
  */
 @Composable
 internal fun BoardControlsRow(

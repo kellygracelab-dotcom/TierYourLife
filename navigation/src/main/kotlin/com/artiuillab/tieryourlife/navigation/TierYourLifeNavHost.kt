@@ -48,19 +48,16 @@ fun TierYourLifeNavHost(
     onLanguageTagChange: (String?) -> Unit,
     navController: NavHostController = rememberNavController(),
 ) {
-    // Once there is room beside the content rather than under it, the rail is
-    // the app's navigation and the tabs are gone. Outside the NavHost so it
-    // stays put while destinations change under it -- a rail that redrew on
-    // every navigation would be a rail that flickers.
+    // The rail replaces the tabs once there is room beside the content.
+    // Outside the NavHost so it stays put while destinations change under it.
     Row(Modifier.fillMaxSize()) {
         if (currentWindowShape.hasRail) {
             val entry by navController.currentBackStackEntryAsState()
             HomeRail(
                 selected = railDestinationOf(entry),
                 onSelect = { destination -> navController.goTo(destination) },
-                // The rail's button is the phone's, moved. It asks by
-                // navigating, and the request travels in the route, so the
-                // lists screen this opens is the only one that hears it.
+                // The phone's corner button, moved. The request travels in the
+                // route, so only the lists screen it opens hears it.
                 onNewList = { navController.navigateToHome(community = false, makeBoard = true) },
             )
         }
@@ -74,10 +71,7 @@ fun TierYourLifeNavHost(
     }
 }
 
-/**
- * Which rail item is lit. Null on everything else, because a rail with nothing
- * selected is honest about being somewhere the rail did not take you.
- */
+/** Null off the rail's own destinations: a rail with nothing lit is honest about being somewhere it did not take you. */
 private fun railDestinationOf(entry: NavBackStackEntry?): RailDestination? {
     val route = entry?.destination?.route
     // Read only when the route is the one that carries it: toRoute on any
@@ -87,11 +81,7 @@ private fun railDestinationOf(entry: NavBackStackEntry?): RailDestination? {
     return railDestinationFor(route, onCommunity)
 }
 
-/**
- * The rule on its own, with the back stack left out so it can be argued with
- * in a unit test. Type-safe routes serialise to their class name plus
- * arguments, which is why this matches on the name rather than the string.
- */
+/** The rule on its own, so it can be unit-tested. Type-safe routes serialise to class name plus arguments, hence the match on the name. */
 internal fun railDestinationFor(route: String?, onCommunity: Boolean): RailDestination? = when {
     route == null -> null
     route.contains("TierLists") -> if (onCommunity) RailDestination.Community else RailDestination.Lists
@@ -107,11 +97,7 @@ private fun NavHostController.goTo(destination: RailDestination) {
     }
 }
 
-/**
- * Top-level destinations replace each other rather than piling up: tapping
- * Community then Lists then Community should not leave three screens of back
- * stack behind.
- */
+/** Top-level destinations replace each other rather than piling up. */
 private fun NavHostController.navigateToHome(community: Boolean, makeBoard: Boolean = false) {
     navigate(Route.TierLists(community, makeBoard)) {
         popUpTo(graph.startDestinationId) { inclusive = true }
@@ -146,8 +132,8 @@ private fun NavContent(
         )
         tierDetailScreen(
             onBack = { navController.popBackStack() },
-            // Replaces the board rather than stacking on it: the column beside
-            // it is a way of switching boards, not of going deeper.
+            // Replaces the board rather than stacking: the column beside it
+            // switches boards, it does not go deeper.
             onOpenList = { id ->
                 navController.navigate(Route.TierDetail(id)) {
                     popUpTo<Route.TierDetail> { inclusive = true }
@@ -170,9 +156,7 @@ private fun NavContent(
         hiddenScreen(onBack = { navController.popBackStack() })
         moderationScreen(
             onBack = { navController.popBackStack() },
-            // Only reachable on a window too narrow to stand the board beside
-            // the queue. Where there is room, the pane shows it without going
-            // anywhere.
+            // Only reachable on a window too narrow for the pane beside the queue.
             onOpenList = { id -> navController.navigateToCommunityList(id) },
         )
         accountScreen(

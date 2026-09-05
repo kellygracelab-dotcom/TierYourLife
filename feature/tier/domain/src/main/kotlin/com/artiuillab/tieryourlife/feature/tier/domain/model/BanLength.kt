@@ -1,12 +1,8 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.model
 
 /**
- * How long somebody is kept from publishing.
- *
- * [id] is what travels to the server. A ban stops publishing and nothing
- * else: their boards stay on their phone, they go on making and ranking, and
- * their account is untouched. What stops is putting things in front of other
- * people, which is the only thing that was misused.
+ * How long somebody is kept from publishing. [id] travels to the server. A ban
+ * stops publishing and nothing else: boards, ranking and the account are untouched.
  */
 enum class BanLength(val id: String) {
     Week("week"),

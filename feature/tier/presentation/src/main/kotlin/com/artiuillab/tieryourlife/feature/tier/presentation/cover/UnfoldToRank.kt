@@ -32,15 +32,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.common.VectorIcon
 import kotlinx.coroutines.delay
 
 /**
- * What the cover says when somebody reaches for something it cannot do.
- *
- * No buttons: unfolding is the action, and the phone already knows how. The
- * board stays visible underneath so nothing is lost -- this is an answer, not
- * a screen somebody arrived on.
- *
- * It leaves on its own after a few seconds. A notice that waits to be
- * dismissed makes the person do work to get back to what they were looking at,
- * which is the opposite of glancing.
+ * What the cover says when somebody reaches for something it cannot do. No
+ * buttons: unfolding is the action. Leaves on its own, because a notice that
+ * waits to be dismissed is the opposite of glancing.
  */
 @Composable
 internal fun UnfoldToRank(onDismiss: () -> Unit, modifier: Modifier = Modifier) {

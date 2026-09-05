@@ -56,15 +56,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierLists
 private const val CARD_ART_ASPECT = 1f
 
 /**
- * Two cards on a phone, counted rather than measured. An Adaptive grid counts
- * columns at every width, and one left to run on a phone quietly finds a third
- * somewhere around 464dp -- which the display-size setting alone is enough to
- * reach.
- *
- * Past the breakpoint it does the counting, and 200dp is what it counts by: two
- * at 600dp, three near 760, four at 1024, five near 1280, with no table of
- * widths to keep in step with anything. A hard-coded "four on a tablet" is
- * right for exactly one tablet.
+ * Two cards on a phone, counted rather than measured: an Adaptive grid finds a
+ * third column near 464dp, which the display-size setting alone reaches. Past
+ * 600dp it counts by 200dp -- two, three near 760, four at 1024 -- with no
+ * table of widths to keep in step.
  */
 private val WIDE_CARD_MIN_WIDTH = 200.dp
 private val WIDE_ENOUGH_FOR_MORE_COLUMNS = 600.dp
@@ -138,9 +133,7 @@ internal fun CommunityFeedList(
                 testTag = TierListsTestTags.COMMUNITY_FAILED,
             )
 
-            // No Try again. The button would be honest only if pressing it
-            // could change the answer, and here nothing the reader does on
-            // this screen can.
+            // No Try again: nothing the reader does on this screen can change the answer.
             CommunityFeed.Unverified -> CommunityMessage(
                 title = stringResource(R.string.home_community_unverified),
                 body = stringResource(R.string.home_community_unverified_body),
@@ -158,9 +151,6 @@ internal fun CommunityFeedList(
             is CommunityFeed.Ready -> if (feed.lists.isEmpty()) {
                 CommunityMessage(
                     // Following says who is missing, everybody says what is.
-                    // "No lists" from a feed you built yourself is the wrong
-                    // sentence: the lists are not missing, these people have
-                    // not published any.
                     title = if (controls?.source == FeedSource.Following) {
                         followingEmptyTitle(category)
                     } else {
@@ -230,11 +220,7 @@ internal fun CommunityFeedList(
     }
 }
 
-/**
- * What is left where a card was. Vanishing silently reads as "deleted",
- * which is not what happened, and a card that stayed would read as though
- * nothing had. It goes on the next load.
- */
+/** Left where the card was: vanishing reads as deleted. Gone on the next load. */
 @Composable
 private fun HiddenTile(reported: Boolean) {
     Column(
@@ -305,8 +291,7 @@ private fun CommunityCard(
             }
         }
         Column(Modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
-            // On an author's own profile the name is already the heading, so
-            // repeating it on every card of theirs says nothing.
+            // On an author's own profile the name is already the heading.
             if (showAuthor) {
                 AuthorPill(
                     name = summary.authorName,
@@ -317,10 +302,8 @@ private fun CommunityCard(
             }
             Text(
                 modifier = Modifier.padding(start = 8.dp, top = 2.dp),
-                // How many cards, and -- once anybody has taken it -- how many
-                // people have. The second number is what the popular ordering
-                // sorts by, so a reader can see why a list is where it is
-                // rather than having to trust the word "popular".
+                // Cards, and once anybody has taken it, people: the second
+                // number is what the popular ordering sorts by.
                 text = pluralStringResource(
                     R.plurals.community_item_count,
                     summary.itemCount,
@@ -445,11 +428,7 @@ private fun CommunityFeedEmptyDarkPreview() = TierYourLifeTheme(true) {
     )
 }
 
-/**
- * What the feed's two other questions are answered with, and how to change
- * them. Absent on the screens where they make no sense: one author's lists are
- * already one author's, and your own published lists are your own.
- */
+/** Source and order. Absent where they make no sense: one author's lists, or your own. */
 internal data class FeedControls(
     val source: FeedSource,
     val sort: FeedSort,

@@ -14,30 +14,20 @@ data class PublishedListSummary(
     /** The author's palette, for a card with neither a cover nor card art. */
     val tierColors: List<String> = emptyList(),
     val updatedAtMillis: Long,
-    /**
-     * How many people have taken this list to rank for themselves. The card
-     * says the number the popular ordering sorts by, so that what a reader
-     * sees and what put it there are the same thing.
-     */
+    /** How many people have taken this list: the number the popular ordering sorts by, so what a reader sees and what put it there agree. */
     val takeCount: Int = 0,
 )
 
-/**
- * Someone else's list as it arrives: their cards and their tier definitions,
- * with no ranking. Where it goes is the reader's business.
- */
+/** Their cards and tier definitions, with no ranking; where it goes is the reader's business. */
 data class PublishedList(
     val summary: PublishedListSummary,
     val tiers: List<Tier>,
     val items: List<TierItem>,
     /**
-     * Where the author put each card, aligned with [items]: the position of a
-     * tier in [tiers], or null for one they left unranked.
-     *
-     * Empty on a snapshot published before this was recorded. Empty is not the
-     * same as all-null: the first means nobody knows what the author thought,
-     * the second means they thought nothing, and the screen says different
-     * things about them.
+     * Where the author put each card, aligned with [items]: a tier's position
+     * in [tiers], or null for unranked. Empty on a snapshot published before
+     * this was recorded -- not the same as all-null: nobody knows, versus they
+     * ranked nothing.
      */
     val arrangement: List<Int?> = emptyList(),
 )

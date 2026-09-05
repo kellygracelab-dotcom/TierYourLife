@@ -23,14 +23,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsTestTags
 
 /**
- * Two switches, a size, and one line that only appears when something is
- * wrong.
- *
- * There is no status here on purpose. A screen that says "backed up · 2
- * minutes ago" teaches people to come and check, which is exactly what a
- * working backup should never need. The reverse holds though: silence while
- * nothing has gone up for a week is the silence that costs somebody their
- * boards, so that one line is worth the interruption.
+ * No status on purpose: "backed up · 2 minutes ago" teaches people to come
+ * and check. The one line that does appear is for the silence that costs
+ * somebody their boards.
  */
 @Composable
 internal fun BackupSection(
@@ -69,8 +64,7 @@ internal fun BackupSection(
                 color = MaterialTheme.colorScheme.error,
             )
         }
-        // A privacy boundary rather than a description of a feature: what
-        // leaves the phone, and where it never turns up.
+        // A privacy boundary, not a feature description.
         Text(
             text = stringResource(R.string.settings_backup_note),
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
@@ -80,12 +74,7 @@ internal fun BackupSection(
     }
 }
 
-/**
- * Asked only on the way off, and only because "off" has to mean the copy is
- * gone. Somebody turning this off has decided their boards are not going to
- * sit on somebody else's computer, and leaving them there is the opposite of
- * what they asked for.
- */
+/** Asked only on the way off: "off" has to mean the copy is gone. */
 @Composable
 internal fun StopBackingUpDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
@@ -144,10 +133,7 @@ private fun SwitchRow(
     }
 }
 
-/**
- * Whole megabytes above a megabyte, because nobody reads the decimal and
- * "142 MB" is the number they are deciding about.
- */
+/** Whole megabytes above a megabyte: nobody reads the decimal. */
 internal fun readableSize(bytes: Long): String = when {
     bytes >= 1024L * 1024L -> "${bytes / (1024L * 1024L)} MB"
     bytes > 0 -> "${(bytes + 1023) / 1024} KB"

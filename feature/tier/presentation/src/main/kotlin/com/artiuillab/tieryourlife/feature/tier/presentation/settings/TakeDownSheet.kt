@@ -37,15 +37,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 private val CHOICE_HEIGHT = 52.dp
 
 /**
- * Taking a list down, and how long its author waits before publishing again.
- *
- * One sheet rather than two steps: the list going and the person answering
- * for it are one decision, and splitting them leaves a moment where the list
- * is gone and nobody has judged the author.
- *
- * Forever is not the fifth item in a list of five. It sits below a rule, in
- * the colour of a mistake, and asks again -- it is the only choice here with
- * no natural end, and the only one a slipped thumb could not undo.
+ * One sheet, not two steps: the list going and the person answering for it
+ * are one decision. Forever sits below a rule, in the colour of a mistake,
+ * and asks again -- the only choice here with no end.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,9 +49,8 @@ internal fun TakeDownSheet(
     onTakeDown: (BanLength?) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    // A month rather than nothing: making the choice compulsory adds a tap to
-    // every takedown, and a gentle default makes a slipped double-tap the
-    // least damaging thing it could have been.
+    // A month rather than nothing: a gentle default makes a slipped
+    // double-tap the least damaging thing it could be.
     var chosen by remember { mutableStateOf<BanLength?>(BanLength.Month) }
     var askingForever by remember { mutableStateOf(false) }
 
@@ -95,8 +88,7 @@ internal fun TakeDownSheet(
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
-            // Its own row, its own colour, and its own question. Nothing about
-            // it should be reachable by aiming at something else.
+            // Its own row and colour: nothing about it reachable by aiming at something else.
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -132,8 +124,7 @@ internal fun TakeDownSheet(
                     contentColor = MaterialTheme.colorScheme.onError,
                 ),
             ) {
-                // The button says what will happen, so the choice above does
-                // not have to be remembered while reaching for it.
+                // The button says what will happen.
                 Text(
                     text = chosen?.let {
                         stringResource(R.string.moderation_take_down_with, stringResource(it.labelRes))
@@ -148,8 +139,7 @@ internal fun TakeDownSheet(
             onDismissRequest = { askingForever = false },
             modifier = Modifier.testTag(ModerationTestTags.BAN_FOREVER_DIALOG),
             title = { Text(stringResource(R.string.ban_forever_confirm_title, authorName)) },
-            // Names the person, names how far it goes, and names what it does
-            // not touch. A decision without an end has to be readable in full.
+            // A decision without an end has to be readable in full.
             text = { Text(stringResource(R.string.ban_forever_confirm_body)) },
             confirmButton = {
                 TextButton(

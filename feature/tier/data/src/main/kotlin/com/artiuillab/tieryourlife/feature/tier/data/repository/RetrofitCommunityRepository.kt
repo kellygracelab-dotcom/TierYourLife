@@ -58,8 +58,8 @@ class RetrofitCommunityRepository @Inject constructor(
             author = author,
             after = after,
             sort = sort.id,
-            // Sent only when it is wanted, so an ordinary feed carries no
-            // parameter the server has to read as a false.
+            // Sent only when wanted: an ordinary feed carries no parameter
+            // the server has to read as false.
             following = "1".takeIf { following },
         )
         CommunityPage(
@@ -103,11 +103,9 @@ class RetrofitCommunityRepository @Inject constructor(
     }
 
     override suspend fun publish(list: TierList): Result<Published> = try {
-        // The server copies a photograph out of this account's folder, so it
-        // has to be in that folder first. Sending them here rather than
-        // trusting the background trickle: publishing is a button somebody
-        // pressed, and blank tiles in the feed would be the only sign that it
-        // half worked.
+        // The server copies pictures out of this account's folder, so they
+        // must be there first. Sent now rather than by the background trickle:
+        // publishing is a button somebody pressed.
         val up = pictures.sendNow(list.ownPictureIds(images))
         val request = list.toRequest(images, up)
         val existing = list.publishedId
@@ -123,8 +121,7 @@ class RetrofitCommunityRepository @Inject constructor(
     }
 
     override suspend fun makeFace(pictureId: String): Result<String> = attempt("Making that picture a face") {
-        // Sent up first, the same as publishing: the server copies it out of
-        // this account's folder, so it has to be in that folder.
+        // Sent up first, as for publishing.
         pictures.sendNow(listOf(pictureId))
         api.makeFace(pictureId).url
     }
@@ -172,10 +169,8 @@ class RetrofitCommunityRepository @Inject constructor(
 }
 
 /**
- * Every call here answers with a Result the screen turns into a sentence, and
- * that sentence never says which of the ten it was or why. One line in the log
- * is the difference between "the community is broken" and "App Check refused
- * the token", which is a real evening this cost.
+ * Every Result becomes one sentence on a screen; the log line is the only
+ * place that says which of the ten calls failed, and why.
  */
 private inline fun <T> attempt(what: String, block: () -> T): Result<T> =
     runCatching(block).fold(
@@ -244,21 +239,14 @@ private fun PublishedListDto.toDomain() = PublishedList(
     items = items.mapIndexed { index, item ->
         TierItem(id = index.toLong(), title = item.title, imageUrl = item.imageUrl)
     },
-    // Null on everything published before the snapshot remembered this, which
-    // reads as "the author's arrangement is unknown" rather than as "they
-    // ranked nothing".
+    // Null on snapshots published before this was remembered: "arrangement
+    // unknown", not "ranked nothing".
     arrangement = items.map { it.tierIndex },
 )
 
 /**
- * Every picture of this person's own that the board wears, each one once.
- *
- * A poster has an address of its own and is nobody's to upload; a photograph
- * out of the gallery is a file in this app's folder, and its name is the only
- * part of its path worth sending anywhere.
- *
- * Only the tier definitions and the cards travel; where the author put them is
- * theirs, and the reader ranks from scratch.
+ * This person's own pictures, each once: a poster has its own address, a
+ * gallery photo is a file whose name is the only part worth sending.
  */
 private fun TierList.ownPictureIds(images: TierImageStore): List<String> =
     (tiers.flatMap { tier -> tier.items.map { it.imageUrl } } + coverImageUrl)
@@ -274,11 +262,8 @@ private fun TierList.toRequest(images: TierImageStore, uploaded: Set<String>) = 
         PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark)
     },
     // A picture that would not upload is left unnamed rather than named and
-    // missing: the server would look for it, not find it, and the card would
-    // end up exactly as bare either way.
-    // Numbered against the published tiers, which are the board's minus the
-    // pool: a card in the pool is one the author did not rank, and says so
-    // with null rather than by pointing at a tier the reader cannot see.
+    // missing. Tier indexes count the published tiers (the board's minus the
+    // pool); a card in the pool says so with null.
     items = run {
         val ranked = tiers.filterNot { it.isPool }
         tiers.flatMap { tier ->

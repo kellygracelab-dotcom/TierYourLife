@@ -30,7 +30,7 @@ sealed interface TierListsUiState {
         val boardFilters: BoardFilters = BoardFilters(),
         val community: CommunityFeed = CommunityFeed.Loading,
         val communityCategory: ListCategory? = null,
-        /** Whose lists, and in what order. The category answers a third question. */
+        /** Whose lists, and in what order. */
         val communitySource: FeedSource = FeedSource.Everyone,
         val communitySort: FeedSort = FeedSource.Everyone.opensOn,
         val localOnly: LocalOnly = LocalOnly.Unknown,
@@ -51,11 +51,8 @@ sealed interface HomeMode {
 enum class HomeTab { Mine, Community }
 
 /**
- * Where these boards are kept, as far as the list screen is concerned.
- *
- * [Unknown] is not the same as [Kept]: Firebase answers a moment after the
- * screen appears, and treating the two as one made the footer line flash on
- * every start for somebody who is signed in.
+ * [Unknown] is not [Kept]: Firebase answers a moment after the screen appears,
+ * and treating them as one flashed the footer on every start.
  */
 sealed interface LocalOnly {
     data object Unknown : LocalOnly
@@ -73,22 +70,11 @@ sealed interface CommunityFeed {
         val lists: List<PublishedListSummary>,
         val canLoadMore: Boolean = false,
         val loadingMore: Boolean = false,
-        /**
-         * Put away in this sitting, id to whether it was also reported.
-         * Their cards become a quiet note rather than vanishing: silence
-         * reads as "deleted", which is not what happened. The notes are
-         * gone by the next load, so the feed keeps no scars.
-         */
+        /** Put away in this sitting, id to whether it was also reported. A quiet note rather than vanishing; gone by the next load. */
         val justHidden: Map<String, Boolean> = emptyMap(),
     ) : CommunityFeed
 
-    /**
-     * Following, from somebody who follows nobody yet.
-     *
-     * Its own state rather than an empty [Ready], because the two want
-     * opposite things on screen: an empty feed says there is nothing, and this
-     * one has to say who there is.
-     */
+    /** Its own state, not an empty [Ready]: an empty feed says there is nothing, this one has to say who there is. */
     data class FollowingNobody(
         val authors: List<SuggestedAuthor> = emptyList(),
         val loading: Boolean = true,
@@ -99,11 +85,9 @@ sealed interface CommunityFeed {
     data object Failed : CommunityFeed
 
     /**
-     * Play would not vouch for this installation, so the server turned it
-     * away. Apart from [Failed] because the two want opposite things said:
-     * that one asks the reader to check their connection and try again, and
-     * here the connection is fine and trying again is exactly what will not
-     * work.
+     * Play would not vouch for this installation. Apart from [Failed]: that
+     * one says check your connection and try again, and here the connection
+     * is fine and trying again is what will not work.
      */
     data object Unverified : CommunityFeed
 }
