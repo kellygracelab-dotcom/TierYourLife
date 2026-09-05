@@ -118,10 +118,9 @@ server refuses the request regardless, because hiding a button does not stop one
 app                          ← Application, Activity, theme + locale bootstrap
 navigation                   ← the NavHost, and the rail that replaces the tabs on wide windows
 core:settings                ← theme, language, feature flags, what this phone has hidden
-core:theme                   ← Material 3 colour scheme and typography; WindowShape
+core:theme                   ← Material 3 colour scheme and typography; WindowShape; user messages
 core:logging                 ← Timber, and the only module that knows a crash reporter exists
 core:network                 ← App Check and ID-token interceptors shared by every caller
-core:ui                      ← the pieces more than one feature draws
 feature:tier:domain          ← models, repository ports, pure decision logic (no Android)
 feature:tier:data            ← Room, Retrofit, image store, board sync, Hilt wiring
 feature:tier:presentation    ← Compose screens, view models, strings

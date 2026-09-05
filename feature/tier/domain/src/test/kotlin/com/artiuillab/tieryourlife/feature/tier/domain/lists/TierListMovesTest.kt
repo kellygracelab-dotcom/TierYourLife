@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.domain.ordering
+package com.artiuillab.tieryourlife.feature.tier.domain.lists
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem

@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.settings
+package com.artiuillab.tieryourlife.feature.tier.presentation.community
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.core.ui
+package com.artiuillab.tieryourlife.core.theme.messages
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel

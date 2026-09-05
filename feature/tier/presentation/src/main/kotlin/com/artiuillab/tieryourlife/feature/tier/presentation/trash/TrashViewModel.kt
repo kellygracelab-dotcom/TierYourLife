@@ -2,9 +2,9 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.trash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.artiuillab.tieryourlife.core.ui.UserMessage
-import com.artiuillab.tieryourlife.core.ui.UserMessages
-import com.artiuillab.tieryourlife.core.ui.guard
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
+import com.artiuillab.tieryourlife.core.theme.messages.guard
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
