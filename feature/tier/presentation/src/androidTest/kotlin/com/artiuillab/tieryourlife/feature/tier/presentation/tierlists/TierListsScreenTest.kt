@@ -30,6 +30,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTabs
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -450,6 +451,8 @@ class TierListsScreenTest {
                     onSettingsClick = onSettingsClick,
                     onCreateNamedList = onCreateNamedList,
                     onToggleFavourite = onToggleFavourite,
+                    // The tab row is the home screen's, handed in the way the app does on a phone.
+                    tabs = { HomeTabs(selected = HomeTab.Mine, onSelect = {}) },
                 )
             }
         }
@@ -497,6 +500,7 @@ class TierListsScreenTest {
                     onUndoDelete = { ids ->
                         lists = lists + initialLists.filter { it.id in ids }
                     },
+                    tabs = { HomeTabs(selected = HomeTab.Mine, onSelect = {}) },
                 )
             }
         }

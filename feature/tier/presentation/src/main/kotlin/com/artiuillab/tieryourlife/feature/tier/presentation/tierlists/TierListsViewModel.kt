@@ -113,6 +113,20 @@ class TierListsViewModel @Inject constructor(
         }
     }
 
+    private var lastArrival: Any? = null
+
+    /**
+     * Loads once per arrival: the screen hands over the same token while it
+     * is only re-entering composition (a tab switch), and a new one when it
+     * was arrived at or resumed. Loading on every re-entry also synced, and a
+     * tab tap is not a reason to talk to the account.
+     */
+    fun onArrival(token: Any) {
+        if (token === lastArrival) return
+        lastArrival = token
+        loadTierLists()
+    }
+
     private suspend fun loadTierListsInternal() = loadMutex.withLock {
         val hasVisibleList = _state.value is TierListsUiState.Success
 

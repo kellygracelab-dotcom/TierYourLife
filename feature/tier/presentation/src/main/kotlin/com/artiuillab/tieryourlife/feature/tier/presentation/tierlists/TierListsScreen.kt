@@ -63,8 +63,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.rememberArrival
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardControlsRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardFiltersSheet
@@ -100,11 +100,15 @@ fun TierListsScreen(
     onSignInClick: () -> Unit,
     onNewListCreated: (Long) -> Unit,
     tabs: @Composable () -> Unit = {},
+    /** From the home screen, which outlives a tab switch; null when this screen stands alone. */
+    arrival: Any? = null,
     viewModel: TierListsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val defaultListTitle = stringResource(R.string.default_tier_list_title)
-    OnResumeEffect { viewModel.loadTierLists() }
+    val ownArrival = rememberArrival()
+    val arrivedWith = arrival ?: ownArrival
+    LaunchedEffect(arrivedWith) { arrivedWith?.let(viewModel::onArrival) }
     // Remembered: coming back from the new board re-enters this composition
     // with the arrival still saying it wanted one.
     var boardMade by rememberSaveable { mutableStateOf(false) }

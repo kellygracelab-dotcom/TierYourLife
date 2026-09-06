@@ -100,13 +100,13 @@ private fun NavHostController.goTo(destination: RailDestination) {
     }
 }
 
-/** The two halves of the home screen live in two features; only this module sees both, so it is the one that puts them behind one route. */
+/** The two halves of the home screen are joined here rather than in a feature: they are on their way into two, and only this module will see both. */
 private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
     composable<Route.TierLists> { backStackEntry ->
         val route = backStackEntry.toRoute<Route.TierLists>()
         HomeScreen(
             startOnCommunity = route.community,
-            mine = { tabs ->
+            mine = { tabs, arrival ->
                 TierListsScreen(
                     makeBoard = route.makeBoard,
                     onTierListClick = { id -> navController.navigateToTierDetail(id) },
@@ -114,6 +114,7 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
                     onSignInClick = { navController.navigateToAccount() },
                     onNewListCreated = { id -> navController.navigateToTierDetail(id) },
                     tabs = tabs,
+                    arrival = arrival,
                 )
             },
             community = { tabs ->
