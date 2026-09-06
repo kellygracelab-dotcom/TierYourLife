@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components
+package com.artiuillab.tieryourlife.feature.tier.presentation.community.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -49,9 +49,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.labelRes
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.AuthorPill
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.CommunityFeed
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityFeed
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ListArt
 
 private const val CARD_ART_ASPECT = 1f
 
@@ -122,7 +122,7 @@ internal fun CommunityFeedList(
 
         when (feed) {
             CommunityFeed.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(Modifier.testTag(TierListsTestTags.COMMUNITY_LOADING))
+                CircularProgressIndicator(Modifier.testTag(CommunityTestTags.COMMUNITY_LOADING))
             }
 
             CommunityFeed.Failed -> CommunityMessage(
@@ -130,14 +130,14 @@ internal fun CommunityFeedList(
                 body = stringResource(R.string.home_community_failed_body),
                 action = stringResource(R.string.action_try_again),
                 onAction = onRetry,
-                testTag = TierListsTestTags.COMMUNITY_FAILED,
+                testTag = CommunityTestTags.COMMUNITY_FAILED,
             )
 
             // No Try again: nothing the reader does on this screen can change the answer.
             CommunityFeed.Unverified -> CommunityMessage(
                 title = stringResource(R.string.home_community_unverified),
                 body = stringResource(R.string.home_community_unverified_body),
-                testTag = TierListsTestTags.COMMUNITY_UNVERIFIED,
+                testTag = CommunityTestTags.COMMUNITY_UNVERIFIED,
             )
 
             is CommunityFeed.FollowingNobody -> FollowingNobody(
@@ -163,7 +163,7 @@ internal fun CommunityFeedList(
                     },
                     action = null,
                     onAction = {},
-                    testTag = TierListsTestTags.COMMUNITY_EMPTY,
+                    testTag = CommunityTestTags.COMMUNITY_EMPTY,
                 )
             } else {
                 LazyVerticalGrid(
@@ -201,13 +201,13 @@ internal fun CommunityFeedList(
 
                     if (feed.loadingMore) {
                         item(
-                            key = TierListsTestTags.COMMUNITY_LOADING_MORE,
+                            key = CommunityTestTags.COMMUNITY_LOADING_MORE,
                             span = { GridItemSpan(maxLineSpan) },
                         ) {
                             Box(
                                 Modifier
                                     .fillMaxWidth()
-                                    .testTag(TierListsTestTags.COMMUNITY_LOADING_MORE)
+                                    .testTag(CommunityTestTags.COMMUNITY_LOADING_MORE)
                                     .padding(vertical = 16.dp),
                                 contentAlignment = Alignment.Center,
                             ) { CircularProgressIndicator(Modifier.size(24.dp)) }
@@ -228,7 +228,7 @@ private fun HiddenTile(reported: Boolean) {
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f))
-            .testTag(TierListsTestTags.COMMUNITY_HIDDEN_TILE)
+            .testTag(CommunityTestTags.COMMUNITY_HIDDEN_TILE)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
@@ -261,7 +261,7 @@ private fun CommunityCard(
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
-            .testTag(TierListsTestTags.communityCard(summary.id)),
+            .testTag(CommunityTestTags.communityCard(summary.id)),
     ) {
         Box(
             Modifier
@@ -297,7 +297,7 @@ private fun CommunityCard(
                     name = summary.authorName,
                     photoUrl = summary.authorPhotoUrl,
                     onClick = onAuthorClick,
-                    testTag = TierListsTestTags.communityCardAuthor(summary.id),
+                    testTag = CommunityTestTags.communityCardAuthor(summary.id),
                 )
             }
             Text(

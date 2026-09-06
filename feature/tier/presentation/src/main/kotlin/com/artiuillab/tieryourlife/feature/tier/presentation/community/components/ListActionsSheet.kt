@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 
 /**
  * Mild to sharp, in that order. Hiding sits next to reporting on purpose: most
@@ -52,7 +52,7 @@ internal fun ListActionsSheet(
         Column(
             Modifier
                 .navigationBarsPadding()
-                .testTag(TierListsTestTags.LIST_ACTIONS_SHEET),
+                .testTag(CommunityTestTags.LIST_ACTIONS_SHEET),
         ) {
             Row(
                 Modifier
@@ -89,20 +89,20 @@ internal fun ListActionsSheet(
             if (onOpenAuthor != null) {
                 ActionRow(
                     text = stringResource(R.string.community_action_view_author, authorName),
-                    testTag = TierListsTestTags.ACTION_VIEW_AUTHOR,
+                    testTag = CommunityTestTags.ACTION_VIEW_AUTHOR,
                     onClick = onOpenAuthor,
                     icon = { size, tint -> PersonIcon(size, tint) },
                 )
             }
             ActionRow(
                 text = stringResource(R.string.community_action_hide),
-                testTag = TierListsTestTags.ACTION_HIDE,
+                testTag = CommunityTestTags.ACTION_HIDE,
                 onClick = onHide,
                 icon = { size, tint -> HideIcon(size, tint) },
             )
             ActionRow(
                 text = stringResource(R.string.community_action_report),
-                testTag = TierListsTestTags.ACTION_REPORT,
+                testTag = CommunityTestTags.ACTION_REPORT,
                 onClick = onReport,
                 icon = { size, tint -> FlagIcon(size, tint) },
                 color = MaterialTheme.colorScheme.error,

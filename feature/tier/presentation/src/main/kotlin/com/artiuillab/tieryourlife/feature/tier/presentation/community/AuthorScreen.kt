@@ -48,12 +48,11 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.AuthorActionsSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.AuthorFace
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.CommunityFeedList
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.CommunityFeed
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.CommunityFeedList
 
 private val PORTRAIT_SIZE = 80.dp
 

@@ -14,7 +14,6 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.community.MyPublish
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.HiddenScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashScreen
 
 fun NavGraphBuilder.communityListScreen(
@@ -42,29 +41,6 @@ fun NavGraphBuilder.authorScreen(
 
 fun NavController.navigateToAuthor(uid: String, name: String, photoUrl: String?) {
     navigate(Route.Author(uid, name, photoUrl))
-}
-
-fun NavGraphBuilder.tierListsScreen(
-    onTierListClick: (Long) -> Unit,
-    onCommunityListClick: (String) -> Unit,
-    onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
-    onSettingsClick: () -> Unit,
-    onSignInClick: () -> Unit,
-    onNewListCreated: (Long) -> Unit,
-) {
-    composable<Route.TierLists> { backStackEntry ->
-        val route = backStackEntry.toRoute<Route.TierLists>()
-        TierListsScreen(
-            startOnCommunity = route.community,
-            makeBoard = route.makeBoard,
-            onTierListClick = onTierListClick,
-            onCommunityListClick = onCommunityListClick,
-            onAuthorClick = onAuthorClick,
-            onSettingsClick = onSettingsClick,
-            onSignInClick = onSignInClick,
-            onNewListCreated = onNewListCreated,
-        )
-    }
 }
 
 const val ADDED_ITEMS_RESULT_KEY = "ai_added_item_ids"

@@ -49,7 +49,7 @@ private val INDICATOR_SHAPE = RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp)
  * The label is the only thing here a translation resizes, so it is measured.
  */
 @Composable
-internal fun HomeTabs(selected: HomeTab, onSelect: (HomeTab) -> Unit, modifier: Modifier = Modifier) {
+fun HomeTabs(selected: HomeTab, onSelect: (HomeTab) -> Unit, modifier: Modifier = Modifier) {
     val tabs = HomeTab.entries
     val density = LocalDensity.current
     val labelWidths = remember { mutableStateListOf(*Array(tabs.size) { 0.dp }) }

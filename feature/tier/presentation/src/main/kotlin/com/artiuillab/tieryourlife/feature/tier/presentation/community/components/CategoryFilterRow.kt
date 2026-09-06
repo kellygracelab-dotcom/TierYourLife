@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components
+package com.artiuillab.tieryourlife.feature.tier.presentation.community.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
 /** Null is All, which is a filter state rather than a ninth category. */
 @Composable
@@ -31,7 +31,7 @@ internal fun CategoryFilterRow(
     LazyRow(
         modifier = modifier
             .fillMaxWidth()
-            .testTag(TierListsTestTags.CATEGORY_FILTERS),
+            .testTag(CommunityTestTags.CATEGORY_FILTERS),
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -47,7 +47,7 @@ internal fun CategoryFilterRow(
                 } else {
                     null
                 },
-                modifier = Modifier.testTag(TierListsTestTags.categoryFilter(category)),
+                modifier = Modifier.testTag(CommunityTestTags.categoryFilter(category)),
             )
         }
     }

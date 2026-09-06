@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components
+package com.artiuillab.tieryourlife.feature.tier.presentation.community.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -25,8 +25,9 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ChevronDownIcon
 
 /** Source and order share a line because they change together; the category answers a different question and keeps its own row. */
 @Composable
@@ -48,13 +49,13 @@ internal fun FeedControlsRow(
             label = stringResource(R.string.feed_source_following),
             selected = source == FeedSource.Following,
             onClick = { onSelectSource(FeedSource.Following) },
-            testTag = TierListsTestTags.FEED_SOURCE_FOLLOWING,
+            testTag = CommunityTestTags.FEED_SOURCE_FOLLOWING,
         )
         SourceChip(
             label = stringResource(R.string.feed_source_everyone),
             selected = source == FeedSource.Everyone,
             onClick = { onSelectSource(FeedSource.Everyone) },
-            testTag = TierListsTestTags.FEED_SOURCE_EVERYONE,
+            testTag = CommunityTestTags.FEED_SOURCE_EVERYONE,
         )
         SortMenu(sort = sort, onSelect = onSelectSort, modifier = Modifier.weight(1f))
     }
@@ -90,7 +91,7 @@ private fun SortMenu(sort: FeedSort, onSelect: (FeedSort) -> Unit, modifier: Mod
             trailingIcon = { ChevronDownIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
             modifier = Modifier
                 .semantics { contentDescription = description }
-                .testTag(TierListsTestTags.FEED_SORT),
+                .testTag(CommunityTestTags.FEED_SORT),
         )
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             FeedSort.entries.forEach { option ->

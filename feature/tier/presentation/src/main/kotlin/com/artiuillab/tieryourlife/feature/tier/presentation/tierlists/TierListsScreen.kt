@@ -60,30 +60,18 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
-import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSort
-import com.artiuillab.tieryourlife.feature.tier.domain.model.FeedSource
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummary
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
-import com.artiuillab.tieryourlife.feature.tier.domain.model.opensOn
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ListActionsSheet
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportDialog
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.ReportSentDialog
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.rememberArrival
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardControlsRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardFiltersSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardTile
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.CommunityFeedList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ConflictBanner
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.FeedControls
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeEmptyState
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeHeader
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTabs
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlyFooter
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlySignInCard
@@ -98,30 +86,29 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 
+/**
+ * This phone's own boards: the half of the home screen that is yours. [tabs]
+ * is the row that switches halves, drawn under the bar by whichever half is on
+ * screen; the home screen passes nothing on a window whose rail does that job.
+ */
 @Composable
 fun TierListsScreen(
-    startOnCommunity: Boolean = false,
     /** From the rail's button. A flag in the route rather than a callback: the rail sits above every screen and cannot reach into this one. */
     makeBoard: Boolean = false,
     onTierListClick: (Long) -> Unit,
-    onCommunityListClick: (String) -> Unit,
-    onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onSettingsClick: () -> Unit,
     onSignInClick: () -> Unit,
     onNewListCreated: (Long) -> Unit,
+    tabs: @Composable () -> Unit = {},
+    /** From the home screen, which outlives a tab switch; null when this screen stands alone. */
+    arrival: Any? = null,
     viewModel: TierListsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val defaultListTitle = stringResource(R.string.default_tier_list_title)
-    OnResumeEffect {
-        viewModel.loadTierLists()
-        viewModel.refreshHidden()
-    }
-    // Arriving here from the rail is how tabs are chosen on a wide window, and
-    // the rail says which one by navigating.
-    LaunchedEffect(startOnCommunity) {
-        viewModel.selectTab(if (startOnCommunity) HomeTab.Community else HomeTab.Mine)
-    }
+    val ownArrival = rememberArrival()
+    val arrivedWith = arrival ?: ownArrival
+    LaunchedEffect(arrivedWith) { arrivedWith?.let(viewModel::onArrival) }
     // Remembered: coming back from the new board re-enters this composition
     // with the arrival still saying it wanted one.
     var boardMade by rememberSaveable { mutableStateOf(false) }
@@ -135,7 +122,6 @@ fun TierListsScreen(
     TierListsScreenContent(
         state = state,
         onTierListClick = onTierListClick,
-        onAuthorClick = onAuthorClick,
         onSettingsClick = onSettingsClick,
         onSignInClick = onSignInClick,
         onDismissSignInOffer = viewModel::dismissSignInOffer,
@@ -150,22 +136,12 @@ fun TierListsScreen(
         onUndoDelete = viewModel::restoreTierLists,
         onCreateList = { viewModel.createTierList(defaultListTitle, onNewListCreated) },
         onCreateNamedList = { title -> viewModel.createTierList(title, onNewListCreated) },
-        onSelectTab = viewModel::selectTab,
-        onOpenCommunityList = onCommunityListClick,
-        onRetryCommunity = viewModel::loadCommunityFeed,
-        onLoadMoreCommunity = viewModel::loadMoreCommunity,
-        onSelectCommunityCategory = viewModel::selectCommunityCategory,
-        onSelectCommunitySource = viewModel::selectCommunitySource,
-        onSelectCommunitySort = viewModel::selectCommunitySort,
-        onFollowAuthor = viewModel::followSuggested,
         onToggleView = viewModel::toggleBoardsAsPictures,
         onSelectBoardSort = viewModel::selectBoardSort,
         onApplyBoardFilters = viewModel::applyBoardFilters,
         onToggleFavourite = viewModel::toggleFavourite,
-        onHideCommunityList = viewModel::hideCommunityList,
-        onHideCommunityAuthor = viewModel::hideCommunityAuthor,
-        onReportCommunityList = viewModel::reportCommunityList,
         userMessages = viewModel.userMessages,
+        tabs = tabs,
     )
 }
 
@@ -174,7 +150,6 @@ fun TierListsScreen(
 fun TierListsScreenContent(
     state: TierListsUiState,
     onTierListClick: (Long) -> Unit,
-    onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit = { _, _, _ -> },
     onSettingsClick: () -> Unit = {},
     onSignInClick: () -> Unit = {},
     onDismissSignInOffer: () -> Unit = {},
@@ -189,33 +164,18 @@ fun TierListsScreenContent(
     onUndoDelete: (List<Long>) -> Unit = {},
     onCreateList: () -> Unit = {},
     onCreateNamedList: (String) -> Unit = {},
-    onSelectTab: (HomeTab) -> Unit = {},
-    onOpenCommunityList: (String) -> Unit = {},
-    onRetryCommunity: () -> Unit = {},
-    onLoadMoreCommunity: () -> Unit = {},
-    onSelectCommunityCategory: (ListCategory?) -> Unit = {},
-    onSelectCommunitySource: (FeedSource) -> Unit = {},
-    onSelectCommunitySort: (FeedSort) -> Unit = {},
-    onFollowAuthor: (String) -> Unit = {},
-    onHideCommunityList: (PublishedListSummary) -> Unit = {},
-    onHideCommunityAuthor: (uid: String, name: String) -> Unit = { _, _ -> },
-    onReportCommunityList: (PublishedListSummary, ReportReason, String?) -> Unit = { _, _, _ -> },
     onToggleView: () -> Unit = {},
     onSelectBoardSort: (BoardSort) -> Unit = {},
     onApplyBoardFilters: (BoardFilters) -> Unit = {},
     onToggleFavourite: (Long) -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
+    tabs: @Composable () -> Unit = {},
 ) {
     val success = state as? TierListsUiState.Success
     val mode = success?.mode ?: HomeMode.Browsing
     val lists = success?.lists.orEmpty()
     val totalListCount = success?.totalListCount ?: 0
     val rankedCount = success?.rankedCount ?: 0
-    val tab = success?.tab ?: HomeTab.Mine
-    val communityFeed = success?.community ?: CommunityFeed.Loading
-    val communityCategory = success?.communityCategory
-    val communitySource = success?.communitySource ?: FeedSource.Everyone
-    val communitySort = success?.communitySort ?: FeedSource.Everyone.opensOn
     val localOnly = success?.localOnly ?: LocalOnly.Unknown
     val restoringPictures = success?.restoringPictures ?: PictureRestore.Progress.Idle
     val conflict = success?.conflict
@@ -226,9 +186,6 @@ fun TierListsScreenContent(
     val grouped = success?.grouped ?: false
     var filtersOpen by rememberSaveable { mutableStateOf(false) }
     val hasRail = currentWindowShape.hasRail
-    var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
-    var reportFor by remember { mutableStateOf<PublishedListSummary?>(null) }
-    var reportedFrom by remember { mutableStateOf<PublishedListSummary?>(null) }
 
     BackHandler(enabled = mode !is HomeMode.Browsing) {
         when (mode) {
@@ -274,7 +231,6 @@ fun TierListsScreenContent(
 
     val showsEmptyState = state is TierListsUiState.Success &&
         mode !is HomeMode.Searching &&
-        tab == HomeTab.Mine &&
         totalListCount == 0
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
@@ -306,20 +262,13 @@ fun TierListsScreenContent(
                 // Under the bar, above the tabs: it is about everything below it.
                 RestoringPictures(restoringPictures)
 
-                // The rail is doing this job.
-                if (mode !is HomeMode.Searching && !hasRail) {
-                    HomeTabs(selected = tab, onSelect = onSelectTab)
-                    // The counters describe this phone's lists, not the feed.
-                    if (tab == HomeTab.Mine) {
-                        HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
-                    }
-                }
-                if (mode !is HomeMode.Searching && hasRail && tab == HomeTab.Mine) {
+                if (mode !is HomeMode.Searching) {
+                    tabs()
                     HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
                 }
 
                 // Nothing to order or narrow until there is more than one board.
-                if (mode !is HomeMode.Searching && tab == HomeTab.Mine && totalListCount > 1) {
+                if (mode !is HomeMode.Searching && totalListCount > 1) {
                     BoardControlsRow(
                         sort = boardSort,
                         filters = boardFilters,
@@ -347,41 +296,6 @@ fun TierListsScreenContent(
                     )
 
                     is TierListsUiState.Success -> when {
-                        // Searching this tab asks the server, not the local lists.
-                        tab == HomeTab.Community -> CommunityFeedList(
-                            feed = communityFeed,
-                            category = communityCategory,
-                            onSelectCategory = onSelectCommunityCategory,
-                            onOpen = onOpenCommunityList,
-                            onRetry = onRetryCommunity,
-                            onNearEnd = onLoadMoreCommunity,
-                            onLongPress = { actionsFor = it },
-                            onOpenAuthor = { uid ->
-                                val summary = (communityFeed as? CommunityFeed.Ready)
-                                    ?.lists
-                                    ?.firstOrNull { it.authorUid == uid }
-                                if (summary != null) {
-                                    onAuthorClick(uid, summary.authorName, summary.authorPhotoUrl)
-                                } else {
-                                    // Offered, not found in the feed: the empty
-                                    // following screen has authors the feed does not carry.
-                                    val offered = (communityFeed as? CommunityFeed.FollowingNobody)
-                                        ?.authors
-                                        ?.firstOrNull { it.uid == uid }
-                                    if (offered != null) {
-                                        onAuthorClick(uid, offered.name, offered.photoUrl)
-                                    }
-                                }
-                            },
-                            controls = FeedControls(
-                                source = communitySource,
-                                sort = communitySort,
-                                onSelectSource = onSelectCommunitySource,
-                                onSelectSort = onSelectCommunitySort,
-                                onFollow = onFollowAuthor,
-                            ),
-                        )
-
                         mode is HomeMode.Searching -> SearchResults(
                             lists = lists,
                             query = mode.query,
@@ -412,7 +326,7 @@ fun TierListsScreenContent(
             }
 
             // The button moved into the rail.
-            if (mode == HomeMode.Browsing && tab == HomeTab.Mine && !hasRail) {
+            if (mode == HomeMode.Browsing && !hasRail) {
                 val newListDescription = stringResource(R.string.cd_new_list)
                 val fabModifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -444,49 +358,6 @@ fun TierListsScreenContent(
                         PlusIcon(24.dp, MaterialTheme.colorScheme.onPrimaryContainer)
                     }
                 }
-            }
-
-            actionsFor?.let { summary ->
-                ListActionsSheet(
-                    title = summary.title,
-                    authorName = summary.authorName,
-                    authorPhotoUrl = summary.authorPhotoUrl,
-                    onDismiss = { actionsFor = null },
-                    onOpenAuthor = {
-                        actionsFor = null
-                        onAuthorClick(summary.authorUid, summary.authorName, summary.authorPhotoUrl)
-                    },
-                    onHide = {
-                        actionsFor = null
-                        onHideCommunityList(summary)
-                    },
-                    onReport = {
-                        actionsFor = null
-                        reportFor = summary
-                    },
-                )
-            }
-
-            reportFor?.let { summary ->
-                ReportDialog(
-                    onDismiss = { reportFor = null },
-                    onSend = { reason, note ->
-                        reportFor = null
-                        onReportCommunityList(summary, reason, note)
-                        reportedFrom = summary
-                    },
-                )
-            }
-
-            reportedFrom?.let { summary ->
-                ReportSentDialog(
-                    authorName = summary.authorName,
-                    onDismiss = { reportedFrom = null },
-                    onHideAuthor = {
-                        reportedFrom = null
-                        onHideCommunityAuthor(summary.authorUid, summary.authorName)
-                    },
-                )
             }
 
             if (filtersOpen) {

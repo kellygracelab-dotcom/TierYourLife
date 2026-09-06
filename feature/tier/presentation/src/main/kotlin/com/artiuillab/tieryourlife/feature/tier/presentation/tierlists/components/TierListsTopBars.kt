@@ -89,7 +89,7 @@ internal fun HomeTopBar(
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            // Null on the Community tab, where the feed has one shape and the
+            // Null on the community half, where the feed has one shape and the
             // choice would be a control that changes nothing.
             if (onToggleView != null) {
                 HomeIconButton(

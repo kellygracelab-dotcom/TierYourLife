@@ -32,13 +32,12 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishedListSummar
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityFeed
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityFeedScreenContent
+import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityFeedUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailUiState
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.CommunityFeed
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.HomeTab
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreenContent
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsUiState
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -129,13 +128,9 @@ class ReadmeTabletScreenshotTest {
     private fun Screen(name: String): Unit = when (name) {
         "board" -> TierDetailScreenContent(state = TierDetailUiState.Success(filmBoard()))
 
-        "community" -> TierListsScreenContent(
-            state = TierListsUiState.Success(
-                lists = emptyList(),
-                totalListCount = 0,
-                rankedCount = 0,
-                tab = HomeTab.Community,
-                community = CommunityFeed.Ready(
+        "community" -> CommunityFeedScreenContent(
+            state = CommunityFeedUiState(
+                feed = CommunityFeed.Ready(
                     listOf(
                         summary("1", "Films I make people watch", "Olena M.", ListCategory.FilmTv, 34, cover = Poster.GODFATHER),
                         summary(
@@ -147,7 +142,6 @@ class ReadmeTabletScreenshotTest {
                     ),
                 ),
             ),
-            onTierListClick = {},
         )
 
         else -> SettingsScreenContent(
