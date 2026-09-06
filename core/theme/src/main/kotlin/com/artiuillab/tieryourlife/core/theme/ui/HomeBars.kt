@@ -34,8 +34,6 @@ import com.artiuillab.tieryourlife.core.theme.layout.atMost
 fun HomeTopBar(
     onSearchClick: () -> Unit,
     onSettingsClick: (() -> Unit)?,
-    asPictures: Boolean = false,
-    onToggleView: (() -> Unit)? = null,
 ) {
     // The bar spans the window; the title and the buttons it belongs with do
     // not, or the two end up a window apart.
@@ -60,23 +58,6 @@ fun HomeTopBar(
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            // Null on the community half, where the feed has one shape and the
-            // choice would be a control that changes nothing.
-            if (onToggleView != null) {
-                HomeIconButton(
-                    stringResource(
-                        if (asPictures) {
-                            R.string.tier_lists_content_description_as_rows
-                        } else {
-                            R.string.tier_lists_content_description_as_pictures
-                        },
-                    ),
-                    onToggleView,
-                    HomeBarTestTags.VIEW_TOGGLE,
-                ) {
-                    if (asPictures) RowsIcon() else PicturesIcon()
-                }
-            }
             HomeIconButton(stringResource(R.string.tier_lists_content_description_search), onSearchClick) {
                 SearchIcon()
             }

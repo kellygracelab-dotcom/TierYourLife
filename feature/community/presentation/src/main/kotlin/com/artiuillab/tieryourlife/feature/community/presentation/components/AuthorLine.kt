@@ -19,8 +19,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
-import com.artiuillab.tieryourlife.feature.community.presentation.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.R
+import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListTestTags
 
 /**
  * The second place following lives: the moment somebody most wants to and
@@ -75,7 +75,7 @@ internal fun AuthorLine(
                         labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     )
                 },
-                modifier = Modifier.testTag(CommunityTestTags.FOLLOW),
+                modifier = Modifier.testTag(CommunityListTestTags.FOLLOW),
             )
         }
     }

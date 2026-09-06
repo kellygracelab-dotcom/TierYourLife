@@ -255,9 +255,6 @@ fun TierListsScreenContent(
                         onSearchClick = onSearchClick,
                         // Promoted into the rail where there is one.
                         onSettingsClick = onSettingsClick.takeUnless { hasRail },
-                        asPictures = asPictures,
-                        // In the controls row below, beside sort and filters.
-                        onToggleView = null,
                     )
                 }
 

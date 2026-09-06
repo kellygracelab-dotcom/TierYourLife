@@ -14,7 +14,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
-import com.artiuillab.tieryourlife.feature.community.presentation.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory

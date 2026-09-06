@@ -22,7 +22,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.navigation.accou
 import com.artiuillab.tieryourlife.feature.account.presentation.navigation.navigateToAccount
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.aiStudioScreen
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.navigateToAiStudio
-import com.artiuillab.tieryourlife.feature.community.presentation.CommunityFeedScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.authorScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.moderationScreen

@@ -28,9 +28,9 @@ import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
-import com.artiuillab.tieryourlife.feature.community.presentation.CommunityFeed
-import com.artiuillab.tieryourlife.feature.community.presentation.CommunityFeedScreenContent
-import com.artiuillab.tieryourlife.feature.community.presentation.CommunityFeedUiState
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedScreenContent
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedUiState
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState

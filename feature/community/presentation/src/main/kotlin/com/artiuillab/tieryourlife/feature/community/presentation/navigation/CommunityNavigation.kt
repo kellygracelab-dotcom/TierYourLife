@@ -3,10 +3,10 @@ package com.artiuillab.tieryourlife.feature.community.presentation.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.artiuillab.tieryourlife.feature.community.presentation.AuthorScreen
-import com.artiuillab.tieryourlife.feature.community.presentation.CommunityListScreen
-import com.artiuillab.tieryourlife.feature.community.presentation.ModerationScreen
-import com.artiuillab.tieryourlife.feature.community.presentation.MyPublishedScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.author.AuthorScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.moderation.ModerationScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.published.MyPublishedScreen
 
 fun NavGraphBuilder.communityListScreen(
     onBack: () -> Unit,

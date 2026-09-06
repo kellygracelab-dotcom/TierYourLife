@@ -46,9 +46,10 @@ import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
-import com.artiuillab.tieryourlife.feature.community.presentation.CommunityFeed
-import com.artiuillab.tieryourlife.feature.community.presentation.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.R
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.FeedControlsRow
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.FollowingNobody
 import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory

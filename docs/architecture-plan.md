@@ -43,6 +43,12 @@ renames. Step 2 is the only one that changes logic.
 | 5 | `EveryScreenInEveryLanguageTest` and `ReadmeScreenshotTest` from `tier/presentation/common` to `navigation/androidTest`, the only module that sees every screen. They call `internal` screen contents, which become public on the way; README screenshots regenerated | done with step 3, since the tests could no longer see the community screens from the tier module |
 | 6 | Optional, later: the board renderer into `feature/tier/board` so `community.presentation` no longer depends on `tier.presentation` | done; the icons, section label, home bars, deleted-item snackbar and the generic strings went to `core/theme` on the way, so `settings.presentation` dropped the dependency too. Only `navigation` still sees `tier.presentation` |
 
+Afterwards, one more pass laid the two new modules out by the screen-package
+law of `docs/architecture-presentation.md`: `community` has `feed/`, `list/`,
+`author/`, `published/` and `moderation/`, `settings` has `hidden/`, every
+test-tag object has its own file, and the icon files in `core/theme/ui` are
+named by what they hold.
+
 Before step 3: if `RetrofitCommunityRepository` or `BoardSyncEngine` writes
 `publishedId` straight into `TierDao`, add a method on `TierRepository` first,
 or `community.data` would pull in `tier.data`.

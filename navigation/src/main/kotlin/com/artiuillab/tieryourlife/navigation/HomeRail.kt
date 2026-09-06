@@ -161,12 +161,6 @@ private fun RailDestination.labelRes(): Int = when (this) {
     RailDestination.Settings -> R.string.rail_settings
 }
 
-internal object RailTestTags {
-    const val RAIL = "home_rail"
-    const val NEW_LIST = "home_rail_new_list"
-    fun item(destination: RailDestination): String = "home_rail_${destination.name.lowercase()}"
-}
-
 @Composable
 private fun RailIcon(destination: RailDestination, add: Boolean, color: Color, size: Dp = 24.dp) {
     Canvas(Modifier.size(size)) {

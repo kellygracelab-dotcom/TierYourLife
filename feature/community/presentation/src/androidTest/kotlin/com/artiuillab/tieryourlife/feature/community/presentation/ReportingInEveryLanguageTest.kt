@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
-import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorActionsSheet
+import com.artiuillab.tieryourlife.feature.community.presentation.author.components.AuthorActionsSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import org.junit.Rule
