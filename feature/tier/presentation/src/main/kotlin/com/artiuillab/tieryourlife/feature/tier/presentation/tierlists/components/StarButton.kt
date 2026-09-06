@@ -15,6 +15,7 @@ import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.ui.StarIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 

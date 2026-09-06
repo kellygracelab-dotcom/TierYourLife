@@ -58,6 +58,14 @@ import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
+import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
+import com.artiuillab.tieryourlife.core.theme.ui.ChevronRightIcon
+import com.artiuillab.tieryourlife.core.theme.ui.DeleteOutlineIcon
+import com.artiuillab.tieryourlife.core.theme.ui.DeletedItemSnackbarHost
+import com.artiuillab.tieryourlife.core.theme.ui.FileDownloadIcon
+import com.artiuillab.tieryourlife.core.theme.ui.FlagIcon
+import com.artiuillab.tieryourlife.core.theme.ui.HideIcon
+import com.artiuillab.tieryourlife.core.theme.ui.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.AccountRow
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.BackupSection
@@ -68,21 +76,13 @@ import com.artiuillab.tieryourlife.feature.settings.presentation.components.Stop
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.ThemeSection
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.TierListsExportStrings
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupSettings
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.FileDownloadIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.FlagIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.HideIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ChevronRightIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeleteOutlineIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import com.artiuillab.tieryourlife.feature.tier.presentation.R as TierR
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 @Composable
 fun SettingsScreen(
@@ -112,8 +112,8 @@ fun SettingsScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val failedMessage = stringResource(R.string.snack_export_failed)
-    val actionFailedMessage = stringResource(TierR.string.snack_action_failed)
-    val tryAgainLabel = stringResource(TierR.string.action_try_again)
+    val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
+    val tryAgainLabel = stringResource(ThemeR.string.action_try_again)
     val shareLabel = stringResource(R.string.action_share)
     val exportStrings = buildExportStrings(context)
 
@@ -249,9 +249,9 @@ private fun buildExportStrings(context: Context): TierListsExportStrings {
     return TierListsExportStrings(
         header = context.getString(R.string.export_file_header),
         exportedOn = String.format(exportedOnFormat, localizedDate),
-        listCountText = { count -> context.resources.getQuantityString(TierR.plurals.tier_lists_count, count, count) },
+        listCountText = { count -> context.resources.getQuantityString(ThemeR.plurals.tier_lists_count, count, count) },
         rankedCountText = { count ->
-            context.resources.getQuantityString(TierR.plurals.tier_lists_ranked_count, count, count)
+            context.resources.getQuantityString(ThemeR.plurals.tier_lists_ranked_count, count, count)
         },
         unrankedCountText = { count -> context.resources.getQuantityString(R.plurals.unranked_count, count, count) },
         tierWithCaptionFormat = context.getString(R.string.export_tier_with_caption),
@@ -431,7 +431,7 @@ private fun TrashRow(trashCount: Int, onClick: () -> Unit) {
     val subtitle = if (trashCount == 0) {
         stringResource(R.string.settings_trash_empty)
     } else {
-        pluralStringResource(TierR.plurals.list_items_count, trashCount, trashCount)
+        pluralStringResource(ThemeR.plurals.list_items_count, trashCount, trashCount)
     }
     SettingsRow(
         icon = { DeleteOutlineIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },

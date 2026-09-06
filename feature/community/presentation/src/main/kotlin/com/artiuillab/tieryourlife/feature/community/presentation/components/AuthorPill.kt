@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ChevronRightIcon
+import com.artiuillab.tieryourlife.core.theme.ui.ChevronRightIcon
 
 private val PILL_HEIGHT = 32.dp
 private val FACE_SIZE = 18.dp

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_clear_query">Очистить поиск</string>
+    <string name="cd_close_search">Закрыть поиск</string>
+    <string name="home_search_hint">Поиск по вашим спискам</string>
+    <string name="tier_lists_content_description_as_pictures">Показать доски картинками</string>
+    <string name="tier_lists_content_description_as_rows">Показать доски списком</string>
+    <string name="tier_lists_content_description_search">Поиск по вашим спискам</string>
+    <string name="tier_lists_content_description_settings">Настройки</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_try_again">Повторить</string>
+    <plurals name="list_items_count">
+        <item quantity="one">%1$d элемент</item>
+        <item quantity="few">%1$d элемента</item>
+        <item quantity="many">%1$d элементов</item>
+        <item quantity="other">%1$d элемента</item>
+    </plurals>
+    <plurals name="tier_lists_rankings_count">
+        <item quantity="one">%d рейтинг</item>
+        <item quantity="few">%d рейтинга</item>
+        <item quantity="many">%d рейтингов</item>
+        <item quantity="other">%d рейтинга</item>
+    </plurals>
+    <string name="snack_action_failed">Не удалось сохранить изменение</string>
+    <string name="tier_detail_content_description_back">Назад</string>
+    <string name="tier_detail_content_description_more">Больше опций</string>
+    <plurals name="tier_lists_count">
+        <item quantity="one">%d список</item>
+        <item quantity="few">%d списка</item>
+        <item quantity="many">%d списков</item>
+        <item quantity="other">%d списка</item>
+    </plurals>
+    <plurals name="tier_lists_ranked_count">
+        <item quantity="one">%d оценено</item>
+        <item quantity="few">%d оценено</item>
+        <item quantity="many">%d оценено</item>
+        <item quantity="other">%d оценено</item>
+    </plurals>
+    <string name="tier_lists_title">Ваши списки</string>
+</resources>

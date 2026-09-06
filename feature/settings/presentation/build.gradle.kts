@@ -19,8 +19,6 @@ dependencies {
     implementation(projects.feature.account.domain)
     implementation(projects.feature.aistudio.domain)
     implementation(projects.feature.community.domain)
-    // The icons and the section label the whole app draws still live with the boards.
-    implementation(projects.feature.tier.presentation)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

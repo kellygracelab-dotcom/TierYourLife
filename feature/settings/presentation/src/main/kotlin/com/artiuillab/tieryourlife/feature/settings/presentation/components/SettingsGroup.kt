@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.SectionLabel
+import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
 
 private val CARD_SHAPE = RoundedCornerShape(20.dp)
 

@@ -37,6 +37,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.trash.components.Tr
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.components.previewTrashEntries
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 @Composable
 fun TrashScreen(
@@ -73,7 +74,7 @@ internal fun TrashScreenContent(
     var emptyDialogVisible by remember { mutableStateOf(false) }
     var removeTarget by remember { mutableStateOf<TrashEntry?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
-    val actionFailedMessage = stringResource(R.string.snack_action_failed)
+    val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
 
     LaunchedEffect(Unit) {
         userMessages.collect { snackbarHostState.showSnackbar(actionFailedMessage) }

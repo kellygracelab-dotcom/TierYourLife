@@ -31,12 +31,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.ui.DeleteIcon
+import com.artiuillab.tieryourlife.core.theme.ui.RestoreIcon
+import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.DeleteIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.RestoreIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashTestTags
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 @Composable
 internal fun TrashList(
@@ -71,7 +72,7 @@ private fun TrashListRow(entry: TrashEntry.DeletedList, onRestore: () -> Unit, o
         title = entry.title,
         meta = stringResource(
             R.string.trash_row_list_meta,
-            pluralStringResource(R.plurals.list_items_count, entry.itemCount, entry.itemCount),
+            pluralStringResource(ThemeR.plurals.list_items_count, entry.itemCount, entry.itemCount),
             relativeTimeText(entry.deletedAtMillis),
         ),
         entry = entry,

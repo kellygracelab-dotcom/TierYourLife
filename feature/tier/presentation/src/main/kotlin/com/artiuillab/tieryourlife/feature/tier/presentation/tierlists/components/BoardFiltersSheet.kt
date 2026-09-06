@@ -20,11 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.PublishedFilter
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
 /**

@@ -32,12 +32,12 @@ import com.artiuillab.tieryourlife.feature.community.presentation.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.CommunityFeedScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.CommunityFeedUiState
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsScreenContent
+import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
+import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreenContent
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailUiState
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

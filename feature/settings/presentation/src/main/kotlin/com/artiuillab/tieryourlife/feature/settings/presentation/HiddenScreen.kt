@@ -39,10 +39,10 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.HideIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.SectionLabel
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.R as TierR
+import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
+import com.artiuillab.tieryourlife.core.theme.ui.HideIcon
+import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private val SectionLabelPadding =
     Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 4.dp)
@@ -115,7 +115,7 @@ fun HiddenScreenContent(
 
 @Composable
 private fun TopBar(onBack: () -> Unit) {
-    val backDescription = stringResource(TierR.string.tier_detail_content_description_back)
+    val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     Row(
         modifier = Modifier
             .fillMaxWidth()

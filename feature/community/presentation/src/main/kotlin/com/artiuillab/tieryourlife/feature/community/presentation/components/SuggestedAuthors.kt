@@ -31,7 +31,7 @@ import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.presentation.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.R as TierR
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 /**
  * Following, from somebody who follows nobody yet.
@@ -117,7 +117,7 @@ private fun AuthorRow(
                 )
                 Text(
                     text = pluralStringResource(
-                        TierR.plurals.tier_lists_rankings_count,
+                        ThemeR.plurals.tier_lists_rankings_count,
                         author.takeCount,
                         author.takeCount,
                     ),

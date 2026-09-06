@@ -1,40 +1,9 @@
 <resources>
-    <string name="tier_lists_title">Ваши списки</string>
     <string name="tier_lists_private">приватно</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
-    <plurals name="tier_lists_count">
-        <item quantity="one">%d список</item>
-        <item quantity="few">%d списка</item>
-        <item quantity="many">%d списков</item>
-        <item quantity="other">%d списка</item>
-    </plurals>
-    <plurals name="tier_lists_rankings_count">
-        <item quantity="one">%d рейтинг</item>
-        <item quantity="few">%d рейтинга</item>
-        <item quantity="many">%d рейтингов</item>
-        <item quantity="other">%d рейтинга</item>
-    </plurals>
-    <plurals name="tier_lists_ranked_count">
-        <item quantity="one">%d оценено</item>
-        <item quantity="few">%d оценено</item>
-        <item quantity="many">%d оценено</item>
-        <item quantity="other">%d оценено</item>
-    </plurals>
-    <plurals name="tier_lists_in_pool_count">
-        <item quantity="one">%d в пуле</item>
-        <item quantity="few">%d в пуле</item>
-        <item quantity="many">%d в пуле</item>
-        <item quantity="other">%d в пуле</item>
-    </plurals>
-    <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · пока ничего не оценено</string>
     <string name="tier_lists_status_start_dragging">Перетащите, чтобы оценить</string>
-    <string name="tier_lists_content_description_search">Поиск по вашим спискам</string>
-    <string name="tier_lists_content_description_as_pictures">Показать доски картинками</string>
-    <string name="tier_lists_content_description_as_rows">Показать доски списком</string>
-    <string name="tier_lists_content_description_settings">Настройки</string>
 
-    <string name="home_search_hint">Поиск по вашим спискам</string>
     <plurals name="search_results_count">
         <item quantity="one">%1$d список</item>
         <item quantity="few">%1$d списка</item>
@@ -43,8 +12,6 @@
     </plurals>
     <string name="search_no_results_title">Нет списков по запросу «%1$s»</string>
     <string name="search_no_results_body">Попробуйте более короткое слово или проверьте орфографию.</string>
-    <string name="cd_close_search">Закрыть поиск</string>
-    <string name="cd_clear_query">Очистить поиск</string>
 
     <plurals name="selection_count">
         <item quantity="one">%1$d выбрано</item>
@@ -68,102 +35,14 @@
     <string name="default_tier_list_title">Список без названия</string>
     <string name="tier_lists_load_error">Не удалось загрузить списки.</string>
 
-    <string name="tier_detail_add">Добавить</string>
-    <string name="tier_detail_not_found">Список не найден.</string>
-    <string name="tier_detail_content_description_back">Назад</string>
-    <string name="tier_detail_content_description_manual_add">Добавить элемент вручную</string>
-    <string name="tier_detail_content_description_more">Больше опций</string>
-    <string name="tier_detail_content_description_edit_title">Изменить название списка</string>
-    <plurals name="tier_detail_pool_unranked_count">
-        <item quantity="one">Пул · %d без оценки</item>
-        <item quantity="few">Пул · %d без оценки</item>
-        <item quantity="many">Пул · %d без оценки</item>
-        <item quantity="other">Пул · %d без оценки</item>
-    </plurals>
 
-    <string name="tier_detail_move_sheet_subtitle">Переместить на уровень</string>
-    <string name="tier_detail_move_sheet_current_tier">Сейчас здесь</string>
-    <string name="tier_detail_move_sheet_remove_title">Удалить из списка</string>
-    <string name="tier_detail_move_sheet_remove_subtitle">Попадает в корзину</string>
-    <string name="tier_detail_move_sheet_pool_title">Вернуть в пул</string>
-    <string name="tier_detail_move_sheet_pool_subtitle">Без оценки, остаётся в списке</string>
 
-    <string name="tier_detail_trash_target_label">Удалить</string>
 
-    <string name="tier_detail_item_moved_to_trash">«%1$s» перемещён в корзину</string>
-    <string name="tier_detail_tier_moved_to_trash">Уровень %1$s перемещён в корзину</string>
-    <string name="tier_detail_snackbar_undo">Отменить</string>
-    <plurals name="tier_detail_items_added_to_pool">
-        <item quantity="one">%1$d элемент добавлен в пул</item>
-        <item quantity="few">%1$d элемента добавлено в пул</item>
-        <item quantity="many">%1$d элементов добавлено в пул</item>
-        <item quantity="other">%1$d элемента добавлено в пул</item>
-    </plurals>
 
-    <string name="ai_chip">Сгенерировать</string>
-    <string name="cd_ai_chip">Сгенерировать изображение с помощью ИИ</string>
 
-    <plurals name="tier_detail_collapsed_item_count">
-        <item quantity="one">%1$d элемент</item>
-        <item quantity="few">%1$d элемента</item>
-        <item quantity="many">%1$d элементов</item>
-        <item quantity="other">%1$d элемента</item>
-    </plurals>
 
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="one">%1$d оценено · от лучшего к худшему</item>
-        <item quantity="few">%1$d оценено · от лучшего к худшему</item>
-        <item quantity="many">%1$d оценено · от лучшего к худшему</item>
-        <item quantity="other">%1$d оценено · от лучшего к худшему</item>
-    </plurals>
-    <string name="tier_detail_ranked_header_empty">Пока ничего не оценено</string>
-    <string name="tier_detail_ranked_row_description">Место %1$d, %2$s, уровень %3$s.</string>
-    <plurals name="tier_detail_ranked_pool_collapsed_description">
-        <item quantity="one">Пул, %1$d без оценки. Развернуть.</item>
-        <item quantity="few">Пул, %1$d без оценки. Развернуть.</item>
-        <item quantity="many">Пул, %1$d без оценки. Развернуть.</item>
-        <item quantity="other">Пул, %1$d без оценки. Развернуть.</item>
-    </plurals>
-    <plurals name="tier_detail_ranked_pool_expanded_description">
-        <item quantity="one">Пул, %1$d без оценки. Свернуть.</item>
-        <item quantity="few">Пул, %1$d без оценки. Свернуть.</item>
-        <item quantity="many">Пул, %1$d без оценки. Свернуть.</item>
-        <item quantity="other">Пул, %1$d без оценки. Свернуть.</item>
-    </plurals>
 
-    <string name="tier_list_settings_title">Настройки списка</string>
-    <string name="tier_list_settings_display_section">Отображение</string>
-    <string name="tier_list_settings_display_section_caption">Как показаны уровни в этом списке. На другие списки это не влияет.</string>
-    <string name="tier_list_settings_mode_wrapped">Строки с переносом</string>
-    <string name="tier_list_settings_mode_wrapped_sub">Виден каждый элемент, строки становятся выше</string>
-    <string name="tier_list_settings_mode_strip">Одна полоса</string>
-    <string name="tier_list_settings_mode_strip_sub">Одна строка на уровень, прокрутка вбок</string>
-    <string name="tier_list_settings_mode_ranked">Список по местам</string>
-    <string name="tier_list_settings_mode_ranked_sub">Одна колонка, от лучшего к худшему, без уровней</string>
-    <string name="tier_list_settings_new_tier_title">Новый уровень</string>
-    <plurals name="tier_list_settings_tier_count">
-        <item quantity="one">%d уровень</item>
-        <item quantity="few">%d уровня</item>
-        <item quantity="many">%d уровней</item>
-        <item quantity="other">%d уровня</item>
-    </plurals>
 
-    <string name="tier_editor_title">Изменить уровень</string>
-    <string name="tier_editor_add_title">Добавить уровень</string>
-    <string name="tier_editor_label_field">Метка</string>
-    <string name="tier_editor_caption_field">Подпись</string>
-    <string name="tier_editor_color_section_title">Цвет</string>
-    <string name="tier_editor_color_section_caption">Свой · задайте светлый и тёмный цвет отдельно</string>
-    <string name="tier_editor_theme_light">Светлая</string>
-    <string name="tier_editor_theme_dark">Тёмная</string>
-    <string name="tier_editor_hue_label">Оттенок</string>
-    <string name="tier_editor_saturation_label">Насыщенность</string>
-    <string name="tier_editor_lightness_label">Яркость</string>
-    <string name="tier_editor_hex_label">Hex</string>
-    <string name="tier_editor_cancel">Отмена</string>
-    <string name="tier_editor_save">Сохранить</string>
-    <string name="tier_editor_preset_color_description">Готовый цвет %1$d</string>
-    <string name="tier_editor_custom_color_description">Свой цвет</string>
 
     <string name="item_search_field_label">Поиск</string>
     <string name="item_search_close_content_description">Закрыть поиск</string>
@@ -189,29 +68,6 @@
     </plurals>
     <string name="item_search_add_disabled">Добавить</string>
 
-    <string name="manual_dialog_title">Добавить элемент</string>
-    <string name="manual_dialog_body">Попадает в пул. Потом можно перетащить его на уровень.</string>
-    <string name="manual_dialog_field_name">Название</string>
-    <string name="manual_dialog_photo_optional">Фото не обязательно.</string>
-    <string name="manual_dialog_choose_photo">Выбрать фото</string>
-    <string name="manual_dialog_replace_photo">Заменить фото</string>
-    <string name="manual_dialog_cancel">Отмена</string>
-    <string name="manual_dialog_add">Добавить</string>
-    <string name="manual_dialog_photo_frame_empty">Фото не выбрано</string>
-    <string name="manual_dialog_photo_frame_chosen">Фото выбрано. Нажмите «Заменить фото», чтобы изменить.</string>
-    <plurals name="manual_dialog_photos_chosen">
-        <item quantity="one">выбрано %1$d фото</item>
-        <item quantity="few">выбрано %1$d фото</item>
-        <item quantity="many">выбрано %1$d фото</item>
-        <item quantity="other">выбрано %1$d фото</item>
-    </plurals>
-    <plurals name="manual_dialog_add_many">
-        <item quantity="one">Добавить %1$d элемент</item>
-        <item quantity="few">Добавить %1$d элемента</item>
-        <item quantity="many">Добавить %1$d элементов</item>
-        <item quantity="other">Добавить %1$d элементов</item>
-    </plurals>
-    <string name="manual_dialog_remove_photo">Удалить фото</string>
 
 
     <string name="trash_title">Корзина</string>
@@ -219,12 +75,6 @@
     <string name="trash_subtitle">Удалённые списки и элементы остаются здесь, пока вы их не уберёте.</string>
     <string name="trash_row_list_meta">Список · %1$s · удалён %2$s</string>
     <string name="trash_row_item_meta">Элемент · из %1$s · удалён %2$s</string>
-    <plurals name="list_items_count">
-        <item quantity="one">%1$d элемент</item>
-        <item quantity="few">%1$d элемента</item>
-        <item quantity="many">%1$d элементов</item>
-        <item quantity="other">%1$d элемента</item>
-    </plurals>
     <string name="trash_time_just_now">только что</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">%1$d мин назад</item>
@@ -252,7 +102,6 @@
     <string name="remove_dialog_body_item">«%1$s» будет удалён с этого устройства. Это нельзя отменить.</string>
     <string name="menu_empty_trash">Очистить корзину</string>
     <string name="action_empty_trash">Очистить корзину</string>
-    <string name="action_cancel">Отмена</string>
     <string name="empty_trash_dialog_title">Очистить корзину?</string>
     <string name="empty_trash_dialog_body">%1$s будет удалено с этого устройства. Это нельзя отменить.</string>
     <plurals name="trash_entry_count">
@@ -270,8 +119,6 @@
 
     <string name="export_file_totals">%1$s · %2$s · %3$s</string>
     <string name="export_list_counts">%1$s · %2$s</string>
-    <string name="action_try_again">Повторить</string>
-    <string name="snack_action_failed">Не удалось сохранить изменение</string>
     <string name="home_start_with">Начните с</string>
     <string name="home_start_hint">Доска создастся сразу. Коснитесь названия, чтобы переименовать.</string>
     <string name="home_new_list">Новый список</string>
@@ -282,26 +129,7 @@
     <string name="home_suggestion_books">Книги</string>
     <string name="home_tab_mine">Ваши списки</string>
     <string name="home_tab_community">Сообщество</string>
-    <string name="list_settings_public_unverified">Google Play не подтвердил эту установку, поэтому публиковать с неё нельзя.</string>
     <string name="community_saved">Сохранено в ваши списки</string>
-    <string name="list_settings_public">Публичный</string>
-    <string name="list_settings_public_body">Любой сможет открыть этот список и разложить его по-своему.</string>
-    <string name="list_settings_public_needs_account">Войдите через Google, чтобы публиковать. Читать и сохранять чужие можно без аккаунта.</string>
-    <string name="list_settings_public_images">Едут только изображения, которые уже лежат в сети. Фото и сгенерированное остаются на телефоне.</string>
-    <string name="list_settings_update_published">Опубликованная версия</string>
-    <string name="list_settings_update_published_body">Отправить доску заново, по той же ссылке.</string>
-    <string name="list_settings_public_needs_items">Добавьте хотя бы одну карточку, прежде чем публиковать список.</string>
-    <string name="list_settings_public_too_many">Опубликовано максимальное число списков. Снимите один с публикации, чтобы освободить место.</string>
-    <string name="list_settings_public_offline">Нет соединения. Попробуйте снова, когда сеть вернётся.</string>
-    <string name="list_settings_public_failed">Не удалось опубликовать список. Попробуйте ещё раз.</string>
-    <string name="category_anime">Аниме</string>
-    <string name="category_film_tv">Кино и сериалы</string>
-    <string name="category_games">Игры</string>
-    <string name="category_music">Музыка</string>
-    <string name="category_food">Еда</string>
-    <string name="category_sport">Спорт</string>
-    <string name="category_people">Люди</string>
-    <string name="category_other">Другое</string>
     <string name="lists_sort_newest">Сначала новые</string>
     <string name="lists_sort_oldest">Сначала старые</string>
     <string name="lists_filter">Фильтр досок</string>
@@ -316,27 +144,9 @@
     <string name="lists_group_others">Все доски</string>
     <string name="lists_favourite_add">В избранное</string>
     <string name="lists_favourite_remove">Убрать из избранного</string>
-    <string name="list_settings_category">Категория</string>
-    <string name="list_settings_category_none">Пока не выбрана</string>
-    <string name="list_settings_cover">Обложка</string>
-    <string name="list_settings_cover_none_set">Нет</string>
-    <string name="list_settings_cover_set">Выбрана</string>
-    <string name="list_settings_share">Поделиться картинкой</string>
-    <string name="list_settings_share_sub">Картинка этой доски и ссылка на приложение</string>
-    <string name="share_caption">%1$s — расставлено в TierYourLife\n%2$s</string>
-    <string name="share_footer">Сделано в TierYourLife</string>
     <string name="share_failed">Не удалось собрать картинку</string>
-    <string name="list_settings_cover_body">Выберите одну из карточек списка или картинку из галереи.</string>
-    <string name="list_settings_cover_no_cards">Ни у одной карточки списка пока нет картинки.</string>
-    <string name="list_settings_cover_gallery">Выбрать из галереи</string>
-    <string name="list_settings_cover_gallery_note">Картинка из галереи остаётся на этом телефоне. В сообществе список покажет свои карточки.</string>
-    <string name="list_settings_cover_none">Убрать обложку</string>
     <string name="snack_published_list_still_public">Список оставлен, а не удалён: публичную копию не удалось снять. Попробуйте снова, когда будет сеть.</string>
-    <string name="list_settings_public_too_large">Список слишком большой для публикации: не больше 1000 карточек и 20 тиров.</string>
-    <string name="list_settings_public_picture_refused">Одно из ваших фото нельзя показывать в общей ленте. Уберите его или оставьте список личным.</string>
     <string name="settings_hidden_none">Ничего не скрыто</string>
-    <string name="my_published_behind">Опубликованная версия отстала от вашей доски.</string>
-    <string name="my_published_action_update">Обновить</string>
     <plurals name="board_count">
         <item quantity="one">%1$d доска</item>
         <item quantity="few">%1$d доски</item>

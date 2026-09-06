@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_clear_query">Wyczyść wyszukiwanie</string>
+    <string name="cd_close_search">Zamknij wyszukiwanie</string>
+    <string name="home_search_hint">Szukaj w swoich listach</string>
+    <string name="tier_lists_content_description_as_pictures">Pokaż listy jako obrazy</string>
+    <string name="tier_lists_content_description_as_rows">Pokaż listy jako wiersze</string>
+    <string name="tier_lists_content_description_search">Szukaj w swoich listach</string>
+    <string name="tier_lists_content_description_settings">Ustawienia</string>
+    <string name="action_cancel">Anuluj</string>
+    <string name="action_try_again">Spróbuj ponownie</string>
+    <plurals name="list_items_count">
+        <item quantity="one">%1$d element</item>
+        <item quantity="few">%1$d elementy</item>
+        <item quantity="many">%1$d elementów</item>
+        <item quantity="other">%1$d elementu</item>
+    </plurals>
+    <plurals name="tier_lists_rankings_count">
+        <item quantity="one">%d ranking</item>
+        <item quantity="few">%d rankingi</item>
+        <item quantity="many">%d rankingów</item>
+        <item quantity="other">%d rankingu</item>
+    </plurals>
+    <string name="snack_action_failed">Nie udało się zapisać zmiany</string>
+    <string name="tier_detail_content_description_back">Wstecz</string>
+    <string name="tier_detail_content_description_more">Więcej opcji</string>
+    <plurals name="tier_lists_count">
+        <item quantity="one">%d lista</item>
+        <item quantity="few">%d listy</item>
+        <item quantity="many">%d list</item>
+        <item quantity="other">%d listy</item>
+    </plurals>
+    <plurals name="tier_lists_ranked_count">
+        <item quantity="one">%d ocenione</item>
+        <item quantity="few">%d ocenione</item>
+        <item quantity="many">%d ocenione</item>
+        <item quantity="other">%d ocenione</item>
+    </plurals>
+    <string name="tier_lists_title">Twoje listy</string>
+</resources>

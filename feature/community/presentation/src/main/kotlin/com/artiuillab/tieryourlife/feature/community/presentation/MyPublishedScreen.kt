@@ -43,11 +43,12 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
+import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
+import com.artiuillab.tieryourlife.core.theme.ui.CoverIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CoverIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.R as TierR
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
+import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 
 @Composable
 fun MyPublishedScreen(
@@ -87,7 +88,7 @@ fun MyPublishedScreenContent(
                 MyPublishedUiState.Failed -> Message(
                     title = stringResource(R.string.my_published_failed),
                     body = stringResource(R.string.home_community_failed_body),
-                    action = stringResource(TierR.string.action_try_again),
+                    action = stringResource(ThemeR.string.action_try_again),
                     onAction = onRetry,
                 )
 
@@ -131,7 +132,7 @@ fun MyPublishedScreenContent(
 
 @Composable
 private fun TopBar(onBack: () -> Unit) {
-    val backDescription = stringResource(TierR.string.tier_detail_content_description_back)
+    val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -193,7 +194,7 @@ private fun PublishedRow(
         if (behind) {
             Spacer(Modifier.height(6.dp))
             Text(
-                text = stringResource(TierR.string.my_published_behind),
+                text = stringResource(BoardR.string.my_published_behind),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -212,7 +213,7 @@ private fun PublishedRow(
                     onClick = onUpdate,
                     enabled = !busy,
                     modifier = Modifier.testTag(MyPublishedTestTags.update(summary.id)),
-                ) { Text(stringResource(TierR.string.my_published_action_update)) }
+                ) { Text(stringResource(BoardR.string.my_published_action_update)) }
             }
             TextButton(
                 onClick = onTakeDown,

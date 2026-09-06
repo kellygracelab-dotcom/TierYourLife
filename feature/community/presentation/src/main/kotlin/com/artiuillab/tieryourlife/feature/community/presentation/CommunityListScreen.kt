@@ -45,13 +45,13 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Aut
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
+import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
+import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
+import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailActions
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreenContent
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailUiState
-import com.artiuillab.tieryourlife.feature.tier.presentation.R as TierR
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private val SAVE_BAR_MIN_HEIGHT = 72.dp
 private val SAVE_BUTTON_MAX_WIDTH = 180.dp
@@ -132,7 +132,7 @@ fun CommunityListScreenContent(
                         textAlign = TextAlign.Center,
                     )
                     Spacer(Modifier.height(12.dp))
-                    TextButton(onClick = onRetry) { Text(stringResource(TierR.string.action_try_again)) }
+                    TextButton(onClick = onRetry) { Text(stringResource(ThemeR.string.action_try_again)) }
                 }
             }
 

@@ -7,9 +7,11 @@ when a rule and a file disagree, one of them is wrong and it is usually the file
 
 Every feature is three Gradle modules: `feature:X:domain` (pure JVM — models and ports),
 `feature:X:data` (implementations, storage, DI bindings), `feature:X:presentation`
-(Compose UI, ViewModels, resources). Presentation depends on domain only. Features never
-depend on each other's presentation; the `:navigation` module composes them into a graph,
-and `app` is bootstrap — Application, Activity, DI wiring.
+(Compose UI, ViewModels, resources). `feature:tier` has a fourth, `board`: the renderer of a
+board, which its own screens and the community's draw alike. Presentation depends on domain
+and on `core:theme`, which holds the icons, bars and generic strings every screen shares.
+Features never depend on each other's presentation; the `:navigation` module composes them
+into a graph, and `app` is bootstrap — Application, Activity, DI wiring.
 
 ## The screen package law
 

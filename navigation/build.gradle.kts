@@ -12,6 +12,7 @@ dependencies {
     implementation(projects.core.settings)
     implementation(projects.core.theme)
     implementation(projects.feature.tier.presentation)
+    implementation(projects.feature.tier.board)
     implementation(projects.feature.community.presentation)
     implementation(projects.feature.settings.presentation)
     implementation(projects.feature.account.presentation)

@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
+import com.artiuillab.tieryourlife.core.theme.ui.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsViewModel
 

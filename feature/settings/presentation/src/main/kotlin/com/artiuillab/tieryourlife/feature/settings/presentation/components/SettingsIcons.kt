@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.VectorIcon
+import com.artiuillab.tieryourlife.core.theme.ui.VectorIcon
 
 @Composable
 internal fun AccountCircleIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->

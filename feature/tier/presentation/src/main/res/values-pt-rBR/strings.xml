@@ -1,36 +1,9 @@
 ﻿<resources>
-    <string name="tier_lists_title">Suas listas</string>
     <string name="tier_lists_private">privado</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
-    <plurals name="tier_lists_count">
-        <item quantity="one">%d lista</item>
-        <item quantity="many">%d listas</item>
-        <item quantity="other">%d listas</item>
-    </plurals>
-    <plurals name="tier_lists_rankings_count">
-        <item quantity="one">%d classificação</item>
-        <item quantity="many">%d classificações</item>
-        <item quantity="other">%d classificações</item>
-    </plurals>
-    <plurals name="tier_lists_ranked_count">
-        <item quantity="one">%d classificado</item>
-        <item quantity="many">%d classificados</item>
-        <item quantity="other">%d classificados</item>
-    </plurals>
-    <plurals name="tier_lists_in_pool_count">
-        <item quantity="one">%d no grupo</item>
-        <item quantity="many">%d no grupo</item>
-        <item quantity="other">%d no grupo</item>
-    </plurals>
-    <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · nada classificado ainda</string>
     <string name="tier_lists_status_start_dragging">Arraste para classificar</string>
-    <string name="tier_lists_content_description_search">Pesquisar em suas listas</string>
-    <string name="tier_lists_content_description_as_pictures">Mostrar os quadros como imagens</string>
-    <string name="tier_lists_content_description_as_rows">Mostrar os quadros como linhas</string>
-    <string name="tier_lists_content_description_settings">Configurações</string>
 
-    <string name="home_search_hint">Pesquisar em suas listas</string>
     <plurals name="search_results_count">
         <item quantity="one">%1$d lista</item>
         <item quantity="many">%1$d listas</item>
@@ -38,8 +11,6 @@
     </plurals>
     <string name="search_no_results_title">Nenhuma lista corresponde a \"%1$s\"</string>
     <string name="search_no_results_body">Tente uma palavra mais curta ou verifique a ortografia.</string>
-    <string name="cd_close_search">Fechar pesquisa</string>
-    <string name="cd_clear_query">Limpar pesquisa</string>
 
     <plurals name="selection_count">
         <item quantity="one">%1$d selecionado</item>
@@ -61,95 +32,14 @@
     <string name="default_tier_list_title">Lista sem título</string>
     <string name="tier_lists_load_error">Não foi possível carregar as listas.</string>
 
-    <string name="tier_detail_add">Adicionar</string>
-    <string name="tier_detail_not_found">Lista não encontrada.</string>
-    <string name="tier_detail_content_description_back">Voltar</string>
-    <string name="tier_detail_content_description_manual_add">Adicionar um item manualmente</string>
-    <string name="tier_detail_content_description_more">Mais opções</string>
-    <string name="tier_detail_content_description_edit_title">Editar o nome da lista</string>
-    <plurals name="tier_detail_pool_unranked_count">
-        <item quantity="one">Grupo · %d sem classificação</item>
-        <item quantity="many">Grupo · %d sem classificação</item>
-        <item quantity="other">Grupo · %d sem classificação</item>
-    </plurals>
 
-    <string name="tier_detail_move_sheet_subtitle">Mover para um nível</string>
-    <string name="tier_detail_move_sheet_current_tier">Está aqui agora</string>
-    <string name="tier_detail_move_sheet_remove_title">Remover da lista</string>
-    <string name="tier_detail_move_sheet_remove_subtitle">Vai para a lixeira</string>
-    <string name="tier_detail_move_sheet_pool_title">Voltar para o grupo</string>
-    <string name="tier_detail_move_sheet_pool_subtitle">Sem classificação, permanece na lista</string>
 
-    <string name="tier_detail_trash_target_label">Remover</string>
 
-    <string name="tier_detail_item_moved_to_trash">%1$s foi movido para a lixeira</string>
-    <string name="tier_detail_tier_moved_to_trash">O nível %1$s foi movido para a lixeira</string>
-    <string name="tier_detail_snackbar_undo">Desfazer</string>
-    <plurals name="tier_detail_items_added_to_pool">
-        <item quantity="one">%1$d item adicionado ao grupo</item>
-        <item quantity="many">%1$d itens adicionados ao grupo</item>
-        <item quantity="other">%1$d itens adicionados ao grupo</item>
-    </plurals>
 
-    <string name="ai_chip">Gerar</string>
-    <string name="cd_ai_chip">Gerar uma imagem com IA</string>
 
-    <plurals name="tier_detail_collapsed_item_count">
-        <item quantity="one">%1$d item</item>
-        <item quantity="many">%1$d itens</item>
-        <item quantity="other">%1$d itens</item>
-    </plurals>
 
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="one">%1$d classificado · do melhor ao pior</item>
-        <item quantity="many">%1$d classificados · do melhor ao pior</item>
-        <item quantity="other">%1$d classificados · do melhor ao pior</item>
-    </plurals>
-    <string name="tier_detail_ranked_header_empty">Nada classificado ainda</string>
-    <string name="tier_detail_ranked_row_description">Posição %1$d, %2$s, nível %3$s.</string>
-    <plurals name="tier_detail_ranked_pool_collapsed_description">
-        <item quantity="one">Grupo, %1$d sem classificação. Expandir.</item>
-        <item quantity="many">Grupo, %1$d sem classificação. Expandir.</item>
-        <item quantity="other">Grupo, %1$d sem classificação. Expandir.</item>
-    </plurals>
-    <plurals name="tier_detail_ranked_pool_expanded_description">
-        <item quantity="one">Grupo, %1$d sem classificação. Recolher.</item>
-        <item quantity="many">Grupo, %1$d sem classificação. Recolher.</item>
-        <item quantity="other">Grupo, %1$d sem classificação. Recolher.</item>
-    </plurals>
 
-    <string name="tier_list_settings_title">Configurações da lista</string>
-    <string name="tier_list_settings_display_section">Exibição</string>
-    <string name="tier_list_settings_display_section_caption">Como os níveis são exibidos nesta lista. As outras listas não são afetadas.</string>
-    <string name="tier_list_settings_mode_wrapped">Linhas com quebra</string>
-    <string name="tier_list_settings_mode_wrapped_sub">Cada item visível, as linhas ficam mais altas</string>
-    <string name="tier_list_settings_mode_strip">Uma única faixa</string>
-    <string name="tier_list_settings_mode_strip_sub">Uma linha por nível, rolagem lateral</string>
-    <string name="tier_list_settings_mode_ranked">Lista classificada</string>
-    <string name="tier_list_settings_mode_ranked_sub">Uma coluna, do melhor ao pior, sem níveis</string>
-    <string name="tier_list_settings_new_tier_title">Novo nível</string>
-    <plurals name="tier_list_settings_tier_count">
-        <item quantity="one">%d nível</item>
-        <item quantity="many">%d níveis</item>
-        <item quantity="other">%d níveis</item>
-    </plurals>
 
-    <string name="tier_editor_title">Editar nível</string>
-    <string name="tier_editor_add_title">Adicionar nível</string>
-    <string name="tier_editor_label_field">Rótulo</string>
-    <string name="tier_editor_caption_field">Legenda</string>
-    <string name="tier_editor_color_section_title">Cor</string>
-    <string name="tier_editor_color_section_caption">Personalizado · defina a cor clara e a escura separadamente</string>
-    <string name="tier_editor_theme_light">Claro</string>
-    <string name="tier_editor_theme_dark">Escuro</string>
-    <string name="tier_editor_hue_label">Matiz</string>
-    <string name="tier_editor_saturation_label">Saturação</string>
-    <string name="tier_editor_lightness_label">Luminosidade</string>
-    <string name="tier_editor_hex_label">Hex</string>
-    <string name="tier_editor_cancel">Cancelar</string>
-    <string name="tier_editor_save">Salvar</string>
-    <string name="tier_editor_preset_color_description">Cor predefinida %1$d</string>
-    <string name="tier_editor_custom_color_description">Cor personalizada</string>
 
     <string name="item_search_field_label">Pesquisar</string>
     <string name="item_search_close_content_description">Fechar pesquisa</string>
@@ -173,27 +63,6 @@
     </plurals>
     <string name="item_search_add_disabled">Adicionar</string>
 
-    <string name="manual_dialog_title">Adicionar um item</string>
-    <string name="manual_dialog_body">Vai para o grupo. Depois você pode arrastá-lo para um nível.</string>
-    <string name="manual_dialog_field_name">Nome</string>
-    <string name="manual_dialog_photo_optional">A foto é opcional.</string>
-    <string name="manual_dialog_choose_photo">Escolher foto</string>
-    <string name="manual_dialog_replace_photo">Trocar foto</string>
-    <string name="manual_dialog_cancel">Cancelar</string>
-    <string name="manual_dialog_add">Adicionar</string>
-    <string name="manual_dialog_photo_frame_empty">Nenhuma foto escolhida</string>
-    <string name="manual_dialog_photo_frame_chosen">Foto escolhida. Toque em \"Trocar foto\" para alterá-la.</string>
-    <plurals name="manual_dialog_photos_chosen">
-        <item quantity="one">%1$d foto selecionada</item>
-        <item quantity="many">%1$d fotos selecionadas</item>
-        <item quantity="other">%1$d fotos selecionadas</item>
-    </plurals>
-    <plurals name="manual_dialog_add_many">
-        <item quantity="one">Adicionar %1$d item</item>
-        <item quantity="many">Adicionar %1$d itens</item>
-        <item quantity="other">Adicionar %1$d itens</item>
-    </plurals>
-    <string name="manual_dialog_remove_photo">Remover foto</string>
 
 
     <string name="trash_title">Lixeira</string>
@@ -201,11 +70,6 @@
     <string name="trash_subtitle">Listas e itens excluídos permanecem aqui até que você os remova.</string>
     <string name="trash_row_list_meta">Lista · %1$s · excluída %2$s</string>
     <string name="trash_row_item_meta">Item · de %1$s · excluído %2$s</string>
-    <plurals name="list_items_count">
-        <item quantity="one">%1$d item</item>
-        <item quantity="many">%1$d itens</item>
-        <item quantity="other">%1$d itens</item>
-    </plurals>
     <string name="trash_time_just_now">agora mesmo</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">há %1$d min</item>
@@ -230,7 +94,6 @@
     <string name="remove_dialog_body_item">%1$s será excluído deste dispositivo. Isso não pode ser desfeito.</string>
     <string name="menu_empty_trash">Esvaziar lixeira</string>
     <string name="action_empty_trash">Esvaziar lixeira</string>
-    <string name="action_cancel">Cancelar</string>
     <string name="empty_trash_dialog_title">Esvaziar a lixeira?</string>
     <string name="empty_trash_dialog_body">%1$s serão excluídos deste dispositivo. Isso não pode ser desfeito.</string>
     <plurals name="trash_entry_count">
@@ -247,8 +110,6 @@
 
     <string name="export_file_totals">%1$s · %2$s · %3$s</string>
     <string name="export_list_counts">%1$s · %2$s</string>
-    <string name="action_try_again">Tentar novamente</string>
-    <string name="snack_action_failed">Não foi possível salvar a alteração</string>
     <string name="home_start_with">Comece com</string>
     <string name="home_start_hint">Cria o quadro na hora. Toque no título para renomear.</string>
     <string name="home_new_list">Nova lista</string>
@@ -259,26 +120,7 @@
     <string name="home_suggestion_books">Livros</string>
     <string name="home_tab_mine">Suas listas</string>
     <string name="home_tab_community">Comunidade</string>
-    <string name="list_settings_public_unverified">O Google Play não confirmou esta instalação, então nada pode ser publicado a partir dela.</string>
     <string name="community_saved">Salva nas suas listas</string>
-    <string name="list_settings_public">Pública</string>
-    <string name="list_settings_public_body">Qualquer pessoa pode abrir esta lista e organizá-la do seu jeito.</string>
-    <string name="list_settings_public_needs_account">Entre com o Google para publicar. Ler e salvar as dos outros não precisa de conta.</string>
-    <string name="list_settings_public_images">Só viajam as imagens que já estão na web. Fotos e arte gerada ficam neste telefone.</string>
-    <string name="list_settings_update_published">Versão publicada</string>
-    <string name="list_settings_update_published_body">Enviar este quadro de novo, no mesmo link.</string>
-    <string name="list_settings_public_needs_items">Adicione ao menos um card antes de publicar a lista.</string>
-    <string name="list_settings_public_too_many">Você já publicou o número máximo de listas. Retire uma para abrir espaço.</string>
-    <string name="list_settings_public_offline">Sem conexão. Tente de novo quando voltar a ficar online.</string>
-    <string name="list_settings_public_failed">Não foi possível publicar esta lista. Tente de novo.</string>
-    <string name="category_anime">Anime</string>
-    <string name="category_film_tv">Cinema e TV</string>
-    <string name="category_games">Jogos</string>
-    <string name="category_music">Música</string>
-    <string name="category_food">Comida</string>
-    <string name="category_sport">Esporte</string>
-    <string name="category_people">Pessoas</string>
-    <string name="category_other">Outros</string>
     <string name="lists_sort_newest">Mais recentes</string>
     <string name="lists_sort_oldest">Mais antigas</string>
     <string name="lists_filter">Filtrar listas</string>
@@ -293,27 +135,9 @@
     <string name="lists_group_others">Todas as listas</string>
     <string name="lists_favourite_add">Adicionar aos favoritos</string>
     <string name="lists_favourite_remove">Remover dos favoritos</string>
-    <string name="list_settings_category">Categoria</string>
-    <string name="list_settings_category_none">Ainda não escolhida</string>
-    <string name="list_settings_cover">Capa</string>
-    <string name="list_settings_cover_none_set">Nenhuma</string>
-    <string name="list_settings_cover_set">Escolhida</string>
-    <string name="list_settings_share">Compartilhar como imagem</string>
-    <string name="list_settings_share_sub">Uma imagem deste quadro, com link para o app</string>
-    <string name="share_caption">%1$s — classificado no TierYourLife\n%2$s</string>
-    <string name="share_footer">Feito no TierYourLife</string>
     <string name="share_failed">Não foi possível criar a imagem</string>
-    <string name="list_settings_cover_body">Escolha um dos cards da lista ou uma imagem da sua galeria.</string>
-    <string name="list_settings_cover_no_cards">Nenhum card desta lista tem imagem ainda.</string>
-    <string name="list_settings_cover_gallery">Escolher da galeria</string>
-    <string name="list_settings_cover_gallery_note">Uma imagem da galeria fica neste telefone. Na comunidade a lista mostra seus cards.</string>
-    <string name="list_settings_cover_none">Remover capa</string>
     <string name="snack_published_list_still_public">Mantida, não excluída: não foi possível retirar a cópia pública. Tente de novo quando estiver online.</string>
-    <string name="list_settings_public_too_large">Esta lista é grande demais para publicar: no máximo 1000 cards e 20 níveis.</string>
-    <string name="list_settings_public_picture_refused">Uma das suas fotos não pode aparecer no feed público. Remova-a ou mantenha a lista privada.</string>
     <string name="settings_hidden_none">Nada oculto</string>
-    <string name="my_published_behind">A versão publicada está desatualizada.</string>
-    <string name="my_published_action_update">Atualizar</string>
     <plurals name="board_count">
         <item quantity="one">%1$d quadro</item>
         <item quantity="many">%1$d quadros</item>

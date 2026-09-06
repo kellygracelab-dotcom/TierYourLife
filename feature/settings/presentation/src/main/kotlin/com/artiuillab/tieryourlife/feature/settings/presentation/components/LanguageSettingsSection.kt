@@ -38,10 +38,10 @@ import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
+import com.artiuillab.tieryourlife.core.theme.ui.VectorIcon
 import com.artiuillab.tieryourlife.feature.settings.presentation.R
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsRow
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsTestTags
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.VectorIcon
 
 private val LanguageOptionSelectedTintLight = Color(0xFFEDEBFA)
 private val LanguageOptionSelectedTintDark = Color(0xFF2E2F45)

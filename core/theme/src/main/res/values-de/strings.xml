@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_clear_query">Suche leeren</string>
+    <string name="cd_close_search">Suche schließen</string>
+    <string name="home_search_hint">Deine Listen durchsuchen</string>
+    <string name="tier_lists_content_description_as_pictures">Boards als Bilder zeigen</string>
+    <string name="tier_lists_content_description_as_rows">Boards als Zeilen zeigen</string>
+    <string name="tier_lists_content_description_search">Deine Listen durchsuchen</string>
+    <string name="tier_lists_content_description_settings">Einstellungen</string>
+    <string name="action_cancel">Abbrechen</string>
+    <string name="action_try_again">Erneut versuchen</string>
+    <plurals name="list_items_count">
+        <item quantity="one">%1$d Element</item>
+        <item quantity="other">%1$d Elemente</item>
+    </plurals>
+    <plurals name="tier_lists_rankings_count">
+        <item quantity="one">%d Rangliste</item>
+        <item quantity="other">%d Ranglisten</item>
+    </plurals>
+    <string name="snack_action_failed">Änderung konnte nicht gespeichert werden</string>
+    <string name="tier_detail_content_description_back">Zurück</string>
+    <string name="tier_detail_content_description_more">Weitere Optionen</string>
+    <plurals name="tier_lists_count">
+        <item quantity="one">%d Liste</item>
+        <item quantity="other">%d Listen</item>
+    </plurals>
+    <plurals name="tier_lists_ranked_count">
+        <item quantity="one">%d eingestuft</item>
+        <item quantity="other">%d eingestuft</item>
+    </plurals>
+    <string name="tier_lists_title">Deine Listen</string>
+</resources>

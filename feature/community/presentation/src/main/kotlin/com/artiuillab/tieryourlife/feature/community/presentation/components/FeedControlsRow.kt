@@ -22,12 +22,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
+import com.artiuillab.tieryourlife.core.theme.ui.ChevronDownIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.community.presentation.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ChevronDownIcon
 
 /** Source and order share a line because they change together; the category answers a different question and keeps its own row. */
 @Composable

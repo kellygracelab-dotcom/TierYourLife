@@ -11,20 +11,22 @@ is not touched.
 ## Target
 
 ```
-feature/tier        boards, tiers, drag, catalogue, trash, cover, sync
+feature/tier        domain, data, board (the renderer), presentation (your lists, catalogue, trash, cover)
 feature/community   feed, author, someone else's list, my published, reports, moderation, bans
 feature/settings    settings, hidden lists, language, theme, backup, account row
 feature/account     unchanged
 feature/aistudio    unchanged
 navigation          HomeScreen (tabs/rail) + graph; the every-screen tests live here
+core/theme          theme, layout, messages, and the icons, bars and generic strings every screen shares
 core/…              without core/ui
 ```
 
 Dependencies stay one-way: `community.domain -> tier.domain` (a published list
-is built from a `TierList`), `community.presentation -> tier.presentation` (a
+is built from a `TierList`), `community.presentation -> tier.board` (a
 stranger's list is drawn by `TierDetailScreenContent`),
 `settings.presentation -> tier/account/community.domain`. No `data` module
-reaches another feature's `data`.
+reaches another feature's `data`, and no feature's `presentation` reaches
+another's: only `navigation` sees them all.
 
 ## Steps
 
@@ -39,7 +41,7 @@ renames. Step 2 is the only one that changes logic.
 | 3 | New modules `feature/community/{domain,data,presentation}`: the models (`PublishedList`, `CommunityPage`, `Following`, `ModerationReport`, `BanLength`, `ReportReason`, `PublishError`, `CommunityRepository`), `CommunityApi` + DTOs + `RetrofitCommunityRepository`, the whole `community` package and the feed from step 2. The shared network client stays in `core/network`; the repository binding travels. Seven androidTests move | done; the proxy `Retrofit` moved into `core/network`, publishing reaches this phone's pictures through the `OwnPictures` port in `tier.domain`, and `PublishFingerprint` moved to `tier.domain` with it |
 | 4 | `feature/settings/presentation`: `SettingsScreen`, its sections, `HiddenScreen`; four tests with them | done; 70 strings and the TMDB logo went with it, and the rail now lights a destination by its route's last name rather than a substring, since `SettingsRoute.Hidden` carries "Settings" too |
 | 5 | `EveryScreenInEveryLanguageTest` and `ReadmeScreenshotTest` from `tier/presentation/common` to `navigation/androidTest`, the only module that sees every screen. They call `internal` screen contents, which become public on the way; README screenshots regenerated | done with step 3, since the tests could no longer see the community screens from the tier module |
-| 6 | Optional, later: the board renderer into `feature/tier/board` so `community.presentation` no longer depends on `tier.presentation` | |
+| 6 | Optional, later: the board renderer into `feature/tier/board` so `community.presentation` no longer depends on `tier.presentation` | done; the icons, section label, home bars, deleted-item snackbar and the generic strings went to `core/theme` on the way, so `settings.presentation` dropped the dependency too. Only `navigation` still sees `tier.presentation` |
 
 Before step 3: if `RetrofitCommunityRepository` or `BoardSyncEngine` writes
 `publishedId` straight into `TierDao`, add a method on `TierRepository` first,

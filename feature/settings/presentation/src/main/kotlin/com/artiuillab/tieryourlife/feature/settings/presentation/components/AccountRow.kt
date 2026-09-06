@@ -28,10 +28,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.ui.ChevronRightIcon
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.settings.presentation.R
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsTestTags
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.ChevronRightIcon
 
 private val AVATAR_SIZE = 40.dp
 

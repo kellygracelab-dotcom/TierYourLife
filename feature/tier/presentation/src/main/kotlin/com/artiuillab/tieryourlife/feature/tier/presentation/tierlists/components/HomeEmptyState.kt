@@ -36,8 +36,8 @@ import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
 private val BOARD_WIDTH = 232.dp

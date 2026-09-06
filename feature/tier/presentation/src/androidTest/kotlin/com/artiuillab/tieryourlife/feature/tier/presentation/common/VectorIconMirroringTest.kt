@@ -18,7 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
+import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
+import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test

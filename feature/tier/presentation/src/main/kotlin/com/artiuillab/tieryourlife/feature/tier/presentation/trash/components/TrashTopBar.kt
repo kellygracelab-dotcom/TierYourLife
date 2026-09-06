@@ -22,10 +22,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
+import com.artiuillab.tieryourlife.core.theme.ui.DeleteSweepIcon
+import com.artiuillab.tieryourlife.core.theme.ui.MoreIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.DeleteSweepIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashTestTags
 
 @Composable

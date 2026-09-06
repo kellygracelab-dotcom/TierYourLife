@@ -24,9 +24,10 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
-import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 /**
  * Your own board drawn the way the feed draws a stranger's: twenty boards of
@@ -113,7 +114,7 @@ internal fun BoardTile(
             overflow = TextOverflow.Ellipsis,
         )
         Text(
-            text = pluralStringResource(R.plurals.tier_lists_ranked_count, ranked, ranked),
+            text = pluralStringResource(ThemeR.plurals.tier_lists_ranked_count, ranked, ranked),
             modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 2.dp, bottom = 12.dp),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

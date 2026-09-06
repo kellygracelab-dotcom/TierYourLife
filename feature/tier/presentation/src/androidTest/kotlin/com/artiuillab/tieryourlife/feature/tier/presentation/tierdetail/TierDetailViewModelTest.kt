@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
+import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier

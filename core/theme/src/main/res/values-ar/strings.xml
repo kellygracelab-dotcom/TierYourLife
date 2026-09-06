@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_clear_query">مسح البحث</string>
+    <string name="cd_close_search">إغلاق البحث</string>
+    <string name="home_search_hint">البحث في قوائمك</string>
+    <string name="tier_lists_content_description_as_pictures">عرض اللوحات كصور</string>
+    <string name="tier_lists_content_description_as_rows">عرض اللوحات كقائمة</string>
+    <string name="tier_lists_content_description_search">البحث في قوائمك</string>
+    <string name="tier_lists_content_description_settings">الإعدادات</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_try_again">المحاولة مرة أخرى</string>
+    <plurals name="list_items_count">
+        <item quantity="zero">لا عناصر</item>
+        <item quantity="one">عنصر واحد</item>
+        <item quantity="two">عنصران</item>
+        <item quantity="few">%1$d عناصر</item>
+        <item quantity="many">%1$d عنصرًا</item>
+        <item quantity="other">%1$d عنصر</item>
+    </plurals>
+    <plurals name="tier_lists_rankings_count">
+        <item quantity="zero">لا تصنيفات</item>
+        <item quantity="one">تصنيف واحد</item>
+        <item quantity="two">تصنيفان</item>
+        <item quantity="few">%d تصنيفات</item>
+        <item quantity="many">%d تصنيفًا</item>
+        <item quantity="other">%d تصنيف</item>
+    </plurals>
+    <string name="snack_action_failed">تعذّر حفظ التغيير</string>
+    <string name="tier_detail_content_description_back">رجوع</string>
+    <string name="tier_detail_content_description_more">خيارات أخرى</string>
+    <plurals name="tier_lists_count">
+        <item quantity="zero">لا قوائم</item>
+        <item quantity="one">قائمة واحدة</item>
+        <item quantity="two">قائمتان</item>
+        <item quantity="few">%d قوائم</item>
+        <item quantity="many">%d قائمة</item>
+        <item quantity="other">%d قائمة</item>
+    </plurals>
+    <plurals name="tier_lists_ranked_count">
+        <item quantity="zero">لم يُصنَّف شيء</item>
+        <item quantity="one">مصنَّف واحد</item>
+        <item quantity="two">مصنَّفان</item>
+        <item quantity="few">%d مصنَّفة</item>
+        <item quantity="many">%d مصنَّفًا</item>
+        <item quantity="other">%d مصنَّف</item>
+    </plurals>
+    <string name="tier_lists_title">قوائمك</string>
+</resources>

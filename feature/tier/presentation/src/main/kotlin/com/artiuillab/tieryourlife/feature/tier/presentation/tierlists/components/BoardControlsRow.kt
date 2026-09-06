@@ -28,13 +28,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.ui.ChevronDownIcon
+import com.artiuillab.tieryourlife.core.theme.ui.ClearIcon
+import com.artiuillab.tieryourlife.core.theme.ui.FilterIcon
+import com.artiuillab.tieryourlife.core.theme.ui.HomeIconButton
+import com.artiuillab.tieryourlife.core.theme.ui.PicturesIcon
+import com.artiuillab.tieryourlife.core.theme.ui.RowsIcon
+import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.PublishedFilter
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.ClearIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private val ROW_HEIGHT = 52.dp
 
@@ -105,9 +111,9 @@ internal fun BoardControlsRow(
         HomeIconButton(
             contentDescription = stringResource(
                 if (asPictures) {
-                    R.string.tier_lists_content_description_as_rows
+                    ThemeR.string.tier_lists_content_description_as_rows
                 } else {
-                    R.string.tier_lists_content_description_as_pictures
+                    ThemeR.string.tier_lists_content_description_as_pictures
                 },
             ),
             onClick = onToggleView,

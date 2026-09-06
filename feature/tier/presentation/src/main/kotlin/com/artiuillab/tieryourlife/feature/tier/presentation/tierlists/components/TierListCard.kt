@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -37,14 +35,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
-import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
+import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
+import com.artiuillab.tieryourlife.core.theme.ui.ChevronIcon
+import com.artiuillab.tieryourlife.core.theme.ui.DragIcon
+import com.artiuillab.tieryourlife.feature.tier.board.components.TierRibbon
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.tierRowColors
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
-
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
+import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 private val COVER_THUMBNAIL = 56.dp
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -72,8 +71,8 @@ internal fun TierListCard(
 ) {
     val ranked = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
     val inPool = list.tiers.firstOrNull { it.isPool }?.items?.size ?: 0
-    val rankedText = pluralStringResource(R.plurals.tier_lists_ranked_count, ranked, ranked)
-    val inPoolText = pluralStringResource(R.plurals.tier_lists_in_pool_count, inPool, inPool)
+    val rankedText = pluralStringResource(ThemeR.plurals.tier_lists_ranked_count, ranked, ranked)
+    val inPoolText = pluralStringResource(BoardR.plurals.tier_lists_in_pool_count, inPool, inPool)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -136,7 +135,7 @@ internal fun TierListCard(
                         stringResource(R.string.tier_lists_card_nothing_ranked_yet, inPoolText)
                     } else {
                         stringResource(
-                            R.string.tier_lists_card_ranked_and_in_pool,
+                            BoardR.string.tier_lists_card_ranked_and_in_pool,
                             rankedText,
                             inPoolText,
                         )
@@ -204,54 +203,6 @@ internal fun SelectionCheckbox(selected: Boolean) {
     ) {
         if (selected) {
             CheckIcon(18.dp, onPrimary)
-        }
-    }
-}
-
-@Composable
-internal fun TierRibbon(tiers: List<Tier>) {
-    val rankedTiers = tiers.filterNot { it.isPool }
-    val pool = tiers.firstOrNull { it.isPool }
-    val total = tiers.sumOf { it.items.size }
-    val media = TierYourLifeMedia.current
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-        if (total == 0) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(media.unrankedRibbon),
-            )
-        } else {
-            rankedTiers.filter { it.items.isNotEmpty() }.forEachIndexed { index, tier ->
-                val band = tierRowColors(tier.colorLight, tier.colorDark).band
-                Box(
-                    Modifier
-                        .weight(tier.items.size.toFloat())
-                        .height(8.dp)
-                        .clip(
-                            if (index == 0) RoundedCornerShape(
-                                topStart = 4.dp,
-                                bottomStart = 4.dp,
-                            ) else RoundedCornerShape(0.dp),
-                        )
-                        .background(band),
-                )
-            }
-            if (pool != null && pool.items.isNotEmpty()) {
-                Box(
-                    Modifier
-                        .weight(pool.items.size.toFloat())
-                        .height(8.dp)
-                        .clip(RoundedCornerShape(topEnd = 4.dp, bottomEnd = 4.dp))
-                        .background(media.unrankedRibbon),
-                )
-            }
         }
     }
 }

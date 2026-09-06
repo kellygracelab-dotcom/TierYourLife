@@ -19,8 +19,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.ui.DeleteOutlineIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeleteOutlineIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashTestTags
 
 @Composable

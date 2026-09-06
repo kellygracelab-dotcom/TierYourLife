@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
+import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft

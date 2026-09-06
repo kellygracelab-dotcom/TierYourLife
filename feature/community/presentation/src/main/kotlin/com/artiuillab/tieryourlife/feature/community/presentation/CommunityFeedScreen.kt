@@ -18,6 +18,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
+import com.artiuillab.tieryourlife.core.theme.ui.HomeTopBar
+import com.artiuillab.tieryourlife.core.theme.ui.OnResumeEffect
+import com.artiuillab.tieryourlife.core.theme.ui.SearchTopBar
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -28,9 +31,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Lis
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTopBar
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchTopBar
 
 /**
  * The community half of the home screen: everybody's published lists, or the
