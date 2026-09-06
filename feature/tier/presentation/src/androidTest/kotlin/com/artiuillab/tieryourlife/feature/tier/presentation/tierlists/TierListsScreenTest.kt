@@ -25,6 +25,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.ui.HomeBarTestTags
 import com.artiuillab.tieryourlife.core.theme.ui.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -117,7 +118,7 @@ class TierListsScreenTest {
         composeRule.onNodeWithContentDescription(
             string(ThemeR.string.tier_lists_content_description_search),
         ).performClick()
-        composeRule.onNodeWithTag(TierListsTestTags.SEARCH_FIELD).performTextInput("piz")
+        composeRule.onNodeWithTag(HomeBarTestTags.SEARCH_FIELD).performTextInput("piz")
 
         composeRule.onNodeWithText("Pizza in Lisbon").assertIsDisplayed()
         composeRule.onNodeWithText("Sushi tour").assertDoesNotExist()
@@ -132,7 +133,7 @@ class TierListsScreenTest {
         composeRule.onNodeWithContentDescription(
             string(ThemeR.string.tier_lists_content_description_search),
         ).performClick()
-        composeRule.onNodeWithTag(TierListsTestTags.SEARCH_FIELD).performTextInput("sushi")
+        composeRule.onNodeWithTag(HomeBarTestTags.SEARCH_FIELD).performTextInput("sushi")
 
         composeRule.onNodeWithTag(TierListsTestTags.SEARCH_NO_RESULTS).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.search_no_results_title, "sushi")).assertIsDisplayed()
@@ -146,7 +147,7 @@ class TierListsScreenTest {
         composeRule.onNodeWithContentDescription(
             string(ThemeR.string.tier_lists_content_description_search),
         ).performClick()
-        composeRule.onNodeWithTag(TierListsTestTags.SEARCH_CLOSE).performClick()
+        composeRule.onNodeWithTag(HomeBarTestTags.SEARCH_CLOSE).performClick()
 
         composeRule.onNodeWithTag(TierListsTestTags.FAB).assertIsDisplayed()
         composeRule.onNodeWithText(string(ThemeR.string.tier_lists_title)).assertIsDisplayed()

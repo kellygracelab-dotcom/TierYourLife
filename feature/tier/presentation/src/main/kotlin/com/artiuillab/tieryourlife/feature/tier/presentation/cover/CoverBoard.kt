@@ -272,11 +272,6 @@ private fun tierColour(tier: Tier): Color {
 
 private fun Color.luminance(): Float = 0.299f * red + 0.587f * green + 0.114f * blue
 
-internal object CoverTestTags {
-    const val BOARD = "cover_board"
-    const val UNFOLD = "cover_unfold"
-}
-
 /** Five rows is what 339dp holds under a header and above the dots. */
 private const val VISIBLE_ROWS = 5
 

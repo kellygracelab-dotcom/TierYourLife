@@ -4,8 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
-import com.artiuillab.tieryourlife.feature.settings.presentation.HiddenScreen
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsScreen
+import com.artiuillab.tieryourlife.feature.settings.presentation.hidden.HiddenScreen
 
 fun NavGraphBuilder.settingsScreen(
     onBack: () -> Unit,
