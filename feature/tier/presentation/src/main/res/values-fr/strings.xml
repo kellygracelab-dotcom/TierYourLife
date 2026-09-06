@@ -87,7 +87,6 @@
         <item quantity="many">il y a %1$d jours</item>
         <item quantity="other">il y a %1$d jours</item>
     </plurals>
-    <string name="action_restore">Restaurer</string>
     <string name="action_remove">Retirer</string>
     <string name="remove_dialog_title">Supprimer définitivement ?</string>
     <string name="remove_dialog_body_list">%1$s et ses %2$s seront supprimés de cet appareil. Cette action est irréversible.</string>
@@ -108,8 +107,6 @@
     <string name="cd_remove">Supprimer %1$s définitivement</string>
     <string name="cd_trash_back">Retour</string>
 
-    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <string name="export_list_counts">%1$s · %2$s</string>
     <string name="home_start_with">Commencez par</string>
     <string name="home_start_hint">Crée le tableau tout de suite. Touchez son titre pour le renommer.</string>
     <string name="home_new_list">Nouvelle liste</string>
@@ -120,7 +117,6 @@
     <string name="home_suggestion_books">Livres</string>
     <string name="home_tab_mine">Vos listes</string>
     <string name="home_tab_community">Communauté</string>
-    <string name="community_saved">Enregistrée dans vos listes</string>
     <string name="lists_sort_newest">Plus récentes</string>
     <string name="lists_sort_oldest">Plus anciennes</string>
     <string name="lists_filter">Filtrer les tableaux</string>
@@ -135,9 +131,7 @@
     <string name="lists_group_others">Tous les tableaux</string>
     <string name="lists_favourite_add">Ajouter aux favoris</string>
     <string name="lists_favourite_remove">Retirer des favoris</string>
-    <string name="share_failed">Impossible de créer l\'image</string>
     <string name="snack_published_list_still_public">Conservée, pas supprimée : sa copie publique n\'a pas pu être retirée. Réessayez une fois en ligne.</string>
-    <string name="settings_hidden_none">Rien de masqué</string>
     <plurals name="board_count">
         <item quantity="one">%1$d tableau</item>
         <item quantity="many">%1$d tableaux</item>
@@ -158,9 +152,7 @@
     <string name="conflict_tag">de %1$s</string>
     <string name="conflict_tag_unknown">d’un autre téléphone</string>
     <string name="conflict_edited_there">Modifié sur %1$s %2$s</string>
-    <string name="conflict_edited_there_unknown">Modifié sur un autre téléphone %1$s</string>
     <string name="conflict_edited_here">Modifié ici %1$s</string>
     <string name="cover_unfold_title">Dépliez pour classer</string>
     <string name="cover_unfold_body">Déplacer les cartes demande l’écran intérieur.</string>
-    <string name="moderation_hidden_now">Personne ne le voit tant qu’il attend</string>
 </resources>

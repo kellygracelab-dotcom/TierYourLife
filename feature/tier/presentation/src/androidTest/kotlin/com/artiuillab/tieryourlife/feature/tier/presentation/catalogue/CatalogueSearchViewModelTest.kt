@@ -1,10 +1,10 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.catalogue
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueSearchPage
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.FakeAppPreferences
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals

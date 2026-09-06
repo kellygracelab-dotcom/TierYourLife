@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
@@ -13,8 +14,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
-import com.artiuillab.tieryourlife.feature.community.presentation.FakeAppPreferences
-import com.artiuillab.tieryourlife.feature.community.presentation.FakeTierRepositoryForCommunity
+import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -108,7 +108,7 @@ class FollowingAnAuthorTest {
     @Test
     fun aCountThatCannotBeSent_doesNotSpoilTheSave() = runBlocking {
         val community = FollowRecorder(takeFails = true)
-        val tiers = FakeTierRepositoryForCommunity()
+        val tiers = RecordingTierRepository()
         val viewModel = viewModel(community, tiers)
         ready(viewModel)
 
@@ -139,7 +139,7 @@ class FollowingAnAuthorTest {
 
     private fun viewModel(
         community: CommunityRepository,
-        tiers: FakeTierRepositoryForCommunity = FakeTierRepositoryForCommunity(),
+        tiers: RecordingTierRepository = RecordingTierRepository(),
     ) = CommunityListViewModel(
         community = community,
         tiers = tiers,

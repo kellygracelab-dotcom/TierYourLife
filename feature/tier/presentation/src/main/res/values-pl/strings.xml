@@ -95,7 +95,6 @@
         <item quantity="many">%1$d dni temu</item>
         <item quantity="other">%1$d dnia temu</item>
     </plurals>
-    <string name="action_restore">Przywróć</string>
     <string name="action_remove">Usuń</string>
     <string name="remove_dialog_title">Usunąć na stałe?</string>
     <string name="remove_dialog_body_list">%1$s i jego %2$s zostaną usunięte z tego urządzenia. Tego nie można cofnąć.</string>
@@ -117,8 +116,6 @@
     <string name="cd_remove">Usuń %1$s na stałe</string>
     <string name="cd_trash_back">Wstecz</string>
 
-    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <string name="export_list_counts">%1$s · %2$s</string>
     <string name="home_start_with">Zacznij od</string>
     <string name="home_start_hint">Tablica powstaje od razu. Dotknij tytułu, aby zmienić nazwę.</string>
     <string name="home_new_list">Nowa lista</string>
@@ -129,7 +126,6 @@
     <string name="home_suggestion_books">Książki</string>
     <string name="home_tab_mine">Twoje listy</string>
     <string name="home_tab_community">Społeczność</string>
-    <string name="community_saved">Zapisano na twoich listach</string>
     <string name="lists_sort_newest">Najnowsze</string>
     <string name="lists_sort_oldest">Najstarsze</string>
     <string name="lists_filter">Filtruj tablice</string>
@@ -144,9 +140,7 @@
     <string name="lists_group_others">Wszystkie tablice</string>
     <string name="lists_favourite_add">Dodaj do ulubionych</string>
     <string name="lists_favourite_remove">Usuń z ulubionych</string>
-    <string name="share_failed">Nie udało się utworzyć obrazu</string>
     <string name="snack_published_list_still_public">Zachowana, nie usunięta: nie udało się wycofać jej publicznej kopii. Spróbuj ponownie, gdy będziesz online.</string>
-    <string name="settings_hidden_none">Nic nie ukryto</string>
     <plurals name="board_count">
         <item quantity="one">%1$d tablica</item>
         <item quantity="few">%1$d tablice</item>
@@ -168,9 +162,7 @@
     <string name="conflict_tag">z %1$s</string>
     <string name="conflict_tag_unknown">z innego telefonu</string>
     <string name="conflict_edited_there">Zmieniono na %1$s %2$s</string>
-    <string name="conflict_edited_there_unknown">Zmieniono na innym telefonie %1$s</string>
     <string name="conflict_edited_here">Zmieniono tutaj %1$s</string>
     <string name="cover_unfold_title">Rozłóż, aby uporządkować</string>
     <string name="cover_unfold_body">Przeciąganie kart wymaga wewnętrznego ekranu.</string>
-    <string name="moderation_hidden_now">Nikt tego nie widzi, dopóki czeka</string>
 </resources>

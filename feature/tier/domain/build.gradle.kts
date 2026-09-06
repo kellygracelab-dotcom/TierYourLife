@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
 
 plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm)
+    `java-test-fixtures`
 }
 java {
     sourceCompatibility = JavaVersion.VERSION_11

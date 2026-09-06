@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets
+package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable

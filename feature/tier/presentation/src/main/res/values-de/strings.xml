@@ -79,7 +79,6 @@
         <item quantity="one">vor %1$d Tag</item>
         <item quantity="other">vor %1$d Tagen</item>
     </plurals>
-    <string name="action_restore">Wiederherstellen</string>
     <string name="action_remove">Entfernen</string>
     <string name="remove_dialog_title">Endgültig entfernen?</string>
     <string name="remove_dialog_body_list">%1$s und die %2$s werden von diesem Gerät gelöscht. Das kann nicht rückgängig gemacht werden.</string>
@@ -99,8 +98,6 @@
     <string name="cd_remove">%1$s endgültig entfernen</string>
     <string name="cd_trash_back">Zurück</string>
 
-    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <string name="export_list_counts">%1$s · %2$s</string>
     <string name="home_start_with">Beginne mit</string>
     <string name="home_start_hint">Erstellt das Board sofort. Tippe auf den Titel, um ihn zu ändern.</string>
     <string name="home_new_list">Neue Liste</string>
@@ -111,7 +108,6 @@
     <string name="home_suggestion_books">Bücher</string>
     <string name="home_tab_mine">Deine Listen</string>
     <string name="home_tab_community">Community</string>
-    <string name="community_saved">In deinen Listen gespeichert</string>
     <string name="lists_sort_newest">Neueste zuerst</string>
     <string name="lists_sort_oldest">Älteste zuerst</string>
     <string name="lists_filter">Boards filtern</string>
@@ -126,9 +122,7 @@
     <string name="lists_group_others">Alle Boards</string>
     <string name="lists_favourite_add">Zu Favoriten hinzufügen</string>
     <string name="lists_favourite_remove">Aus Favoriten entfernen</string>
-    <string name="share_failed">Das Bild konnte nicht erstellt werden</string>
     <string name="snack_published_list_still_public">Behalten statt gelöscht: Die öffentliche Kopie ließ sich nicht entfernen. Versuche es erneut, sobald du online bist.</string>
-    <string name="settings_hidden_none">Nichts ausgeblendet</string>
     <plurals name="board_count">
         <item quantity="one">1 Board</item>
         <item quantity="other">%1$d Boards</item>
@@ -148,9 +142,7 @@
     <string name="conflict_tag">von %1$s</string>
     <string name="conflict_tag_unknown">von einem anderen Telefon</string>
     <string name="conflict_edited_there">Geändert auf %1$s %2$s</string>
-    <string name="conflict_edited_there_unknown">Geändert auf einem anderen Telefon %1$s</string>
     <string name="conflict_edited_here">Hier geändert %1$s</string>
     <string name="cover_unfold_title">Zum Sortieren aufklappen</string>
     <string name="cover_unfold_body">Karten verschieben geht nur auf dem inneren Display.</string>
-    <string name="moderation_hidden_now">Solange es wartet, sieht es niemand</string>
 </resources>

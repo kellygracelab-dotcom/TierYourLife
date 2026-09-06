@@ -12,7 +12,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.ManualEntryDialog
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.sheets.AddItemsSheet
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddItemsSheet
 
 @Composable
 fun TierDetailScreen(

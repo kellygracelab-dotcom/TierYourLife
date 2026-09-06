@@ -71,6 +71,7 @@ Place code where its audience is:
 | Code↔test contract (test tags) | `XTestTags.kt` in the screen package |
 | Helper consumed across screen packages | the module's `common/` |
 | Preview fixtures | one `XPreviewData.kt` per surface, in `components/` |
+| Fake of a port that tests in 2+ modules need | `testFixtures` of the module that owns the port (`FakeAppPreferences` in `core:settings`, `RecordingTierRepository` in `feature:tier:domain`) |
 
 A screen file may keep: the entry, Content, `private` pieces used once, and previews.
 

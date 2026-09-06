@@ -12,7 +12,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
-import com.artiuillab.tieryourlife.feature.community.presentation.FakeTierRepositoryForCommunity
+import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.flow.first
@@ -26,7 +26,7 @@ class MyPublishedViewModelTest {
 
     @Test
     fun theListComesFromTheServer_notFromThisPhone() = runBlocking {
-        val tiers = FakeTierRepositoryForCommunity()
+        val tiers = RecordingTierRepository()
         val viewModel = MyPublishedViewModel(FakePublishedRepository(listOf(mine("a"), mine("b"))), tiers)
 
         val ready = viewModel.state.first { it is MyPublishedUiState.Ready } as MyPublishedUiState.Ready
@@ -37,7 +37,7 @@ class MyPublishedViewModelTest {
     @Test
     fun takingOneDown_removesItAndForgetsTheIdLocally() = runBlocking {
         val community = FakePublishedRepository(listOf(mine("a"), mine("b")))
-        val tiers = FakeTierRepositoryForCommunity(publishedIdOfFirstList = "a")
+        val tiers = RecordingTierRepository(publishedIdOfFirstList = "a")
         val viewModel = MyPublishedViewModel(community, tiers)
         viewModel.state.first { it is MyPublishedUiState.Ready }
 
@@ -55,7 +55,7 @@ class MyPublishedViewModelTest {
     @Test
     fun takingDownSomethingThisPhoneNeverHad_stillWorks() = runBlocking {
         val community = FakePublishedRepository(listOf(mine("orphan")))
-        val viewModel = MyPublishedViewModel(community, FakeTierRepositoryForCommunity())
+        val viewModel = MyPublishedViewModel(community, RecordingTierRepository())
         viewModel.state.first { it is MyPublishedUiState.Ready }
 
         viewModel.takeDown("orphan")
@@ -70,7 +70,7 @@ class MyPublishedViewModelTest {
     @Test
     fun aTakeDownThatFails_leavesTheListWhereItWas() = runBlocking {
         val community = FakePublishedRepository(listOf(mine("a")), takeDownFails = true)
-        val viewModel = MyPublishedViewModel(community, FakeTierRepositoryForCommunity())
+        val viewModel = MyPublishedViewModel(community, RecordingTierRepository())
         viewModel.state.first { it is MyPublishedUiState.Ready }
 
         viewModel.takeDown("a")

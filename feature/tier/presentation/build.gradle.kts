@@ -17,7 +17,6 @@ dependencies {
     implementation(projects.feature.tier.domain)
     implementation(projects.feature.community.domain)
     implementation(projects.feature.account.domain)
-    implementation(projects.feature.aistudio.domain)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -25,4 +24,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    androidTestImplementation(testFixtures(projects.core.settings))
 }

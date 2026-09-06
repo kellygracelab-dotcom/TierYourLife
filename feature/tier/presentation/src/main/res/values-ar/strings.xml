@@ -111,7 +111,6 @@
         <item quantity="many">قبل %1$d يومًا</item>
         <item quantity="other">قبل %1$d يوم</item>
     </plurals>
-    <string name="action_restore">استعادة</string>
     <string name="action_remove">إزالة</string>
     <string name="remove_dialog_title">الإزالة نهائيًا؟</string>
     <string name="remove_dialog_body_list">سيتم حذف %1$s و%2$s من هذا الجهاز. لا يمكن التراجع عن هذا.</string>
@@ -135,8 +134,6 @@
     <string name="cd_remove">إزالة %1$s نهائيًا</string>
     <string name="cd_trash_back">رجوع</string>
 
-    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <string name="export_list_counts">%1$s · %2$s</string>
     <string name="home_start_with">ابدأ بـ</string>
     <string name="home_start_hint">تُنشئ اللوحة فورًا. اضغط على العنوان لتغيير الاسم.</string>
     <string name="home_new_list">قائمة جديدة</string>
@@ -147,7 +144,6 @@
     <string name="home_suggestion_books">كتب</string>
     <string name="home_tab_mine">قوائمك</string>
     <string name="home_tab_community">المجتمع</string>
-    <string name="community_saved">حُفظت في قوائمك</string>
     <string name="lists_sort_newest">الأحدث أولاً</string>
     <string name="lists_sort_oldest">الأقدم أولاً</string>
     <string name="lists_filter">تصفية اللوحات</string>
@@ -162,9 +158,7 @@
     <string name="lists_group_others">كل اللوحات</string>
     <string name="lists_favourite_add">أضف إلى المفضلة</string>
     <string name="lists_favourite_remove">أزل من المفضلة</string>
-    <string name="share_failed">تعذّر إنشاء الصورة</string>
     <string name="snack_published_list_still_public">أُبقيت ولم تُحذف: تعذّر سحب نسختها العامة. أعد المحاولة عند الاتصال بالإنترنت.</string>
-    <string name="settings_hidden_none">لا شيء مخفي</string>
     <plurals name="board_count">
         <item quantity="zero">لا لوحات</item>
         <item quantity="one">لوحة واحدة</item>
@@ -188,9 +182,7 @@
     <string name="conflict_tag">من %1$s</string>
     <string name="conflict_tag_unknown">من هاتف آخر</string>
     <string name="conflict_edited_there">حُرّرت على %1$s %2$s</string>
-    <string name="conflict_edited_there_unknown">حُرّرت على هاتف آخر %1$s</string>
     <string name="conflict_edited_here">حُرّرت هنا %1$s</string>
     <string name="cover_unfold_title">افتح الهاتف للترتيب</string>
     <string name="cover_unfold_body">تحريك البطاقات يحتاج إلى الشاشة الداخلية.</string>
-    <string name="moderation_hidden_now">لا يراه أحد ريثما ينتظر القرار</string>
 </resources>

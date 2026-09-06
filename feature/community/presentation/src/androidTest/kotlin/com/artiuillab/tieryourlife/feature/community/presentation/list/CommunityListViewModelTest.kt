@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
@@ -13,8 +14,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
-import com.artiuillab.tieryourlife.feature.community.presentation.FakeAppPreferences
-import com.artiuillab.tieryourlife.feature.community.presentation.FakeTierRepositoryForCommunity
+import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -62,7 +62,7 @@ class CommunityListViewModelTest {
     // reader only the arrangement they were told was unsaved.
     @Test
     fun ranking_changesNothingInTheDatabase() = runBlocking {
-        val tiers = FakeTierRepositoryForCommunity()
+        val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
         val loaded = viewModel.state.first { it is CommunityListUiState.Success } as CommunityListUiState.Success
         viewModel.show(Showing.Mine)
@@ -117,7 +117,7 @@ class CommunityListViewModelTest {
     // a mistake to correct.
     @Test
     fun saving_keepsWhicheverArrangementIsOnScreen() = runBlocking {
-        val tiers = FakeTierRepositoryForCommunity()
+        val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
         viewModel.state.first { it is CommunityListUiState.Success }
         viewModel.show(Showing.Theirs)
@@ -139,7 +139,7 @@ class CommunityListViewModelTest {
 
     @Test
     fun saving_copiesTheListUnderTheReadersOwnRoof_withTheAuthorAttached() = runBlocking {
-        val tiers = FakeTierRepositoryForCommunity()
+        val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
         viewModel.state.first { it is CommunityListUiState.Success }
 
@@ -167,7 +167,7 @@ class CommunityListViewModelTest {
 
     private fun viewModel(
         community: CommunityRepository = FakeCommunityRepository(),
-        tiers: FakeTierRepositoryForCommunity = FakeTierRepositoryForCommunity(),
+        tiers: RecordingTierRepository = RecordingTierRepository(),
     ) = CommunityListViewModel(
         community = community,
         tiers = tiers,

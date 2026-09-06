@@ -5,6 +5,10 @@ plugins {
 
 android {
     namespace = "com.artiuillab.tieryourlife.core.settings"
+
+    testFixtures {
+        enable = true
+    }
 }
 
 dependencies {

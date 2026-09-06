@@ -95,7 +95,6 @@
         <item quantity="many">%1$d дней назад</item>
         <item quantity="other">%1$d дня назад</item>
     </plurals>
-    <string name="action_restore">Восстановить</string>
     <string name="action_remove">Удалить</string>
     <string name="remove_dialog_title">Удалить навсегда?</string>
     <string name="remove_dialog_body_list">«%1$s» и его %2$s будут удалены с этого устройства. Это нельзя отменить.</string>
@@ -117,8 +116,6 @@
     <string name="cd_remove">Удалить %1$s навсегда</string>
     <string name="cd_trash_back">Назад</string>
 
-    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <string name="export_list_counts">%1$s · %2$s</string>
     <string name="home_start_with">Начните с</string>
     <string name="home_start_hint">Доска создастся сразу. Коснитесь названия, чтобы переименовать.</string>
     <string name="home_new_list">Новый список</string>
@@ -129,7 +126,6 @@
     <string name="home_suggestion_books">Книги</string>
     <string name="home_tab_mine">Ваши списки</string>
     <string name="home_tab_community">Сообщество</string>
-    <string name="community_saved">Сохранено в ваши списки</string>
     <string name="lists_sort_newest">Сначала новые</string>
     <string name="lists_sort_oldest">Сначала старые</string>
     <string name="lists_filter">Фильтр досок</string>
@@ -144,9 +140,7 @@
     <string name="lists_group_others">Все доски</string>
     <string name="lists_favourite_add">В избранное</string>
     <string name="lists_favourite_remove">Убрать из избранного</string>
-    <string name="share_failed">Не удалось собрать картинку</string>
     <string name="snack_published_list_still_public">Список оставлен, а не удалён: публичную копию не удалось снять. Попробуйте снова, когда будет сеть.</string>
-    <string name="settings_hidden_none">Ничего не скрыто</string>
     <plurals name="board_count">
         <item quantity="one">%1$d доска</item>
         <item quantity="few">%1$d доски</item>
@@ -168,9 +162,7 @@
     <string name="conflict_tag">с %1$s</string>
     <string name="conflict_tag_unknown">с другого телефона</string>
     <string name="conflict_edited_there">Правлена на %1$s %2$s</string>
-    <string name="conflict_edited_there_unknown">Правлена на другом телефоне %1$s</string>
     <string name="conflict_edited_here">Правлена здесь %1$s</string>
     <string name="cover_unfold_title">Разложите, чтобы расставить</string>
     <string name="cover_unfold_body">Перетаскивать карточки можно только на внутреннем экране.</string>
-    <string name="moderation_hidden_now">Пока ждёт решения, его не видно никому</string>
 </resources>
