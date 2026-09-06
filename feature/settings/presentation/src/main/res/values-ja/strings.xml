@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_share">共有</string>
+    <string name="action_show_again">再表示</string>
+    <string name="cd_settings_back">戻る</string>
+    <string name="export_file_date">%1$s にエクスポート</string>
+    <string name="export_file_header">TierYourLife</string>
+    <string name="export_filename">TierYourLife %1$s.txt</string>
+    <string name="export_tier_empty">（空）</string>
+    <string name="export_tier_plain">%1$s</string>
+    <string name="export_tier_with_caption">%1$s — %2$s</string>
+    <string name="export_unranked_heading">未評価</string>
+    <string name="hidden_empty_body">コミュニティで非表示にしたリストと人は、気が変わったときのためにここに残ります。</string>
+    <string name="hidden_empty_title">すべて表示されています</string>
+    <string name="hidden_lists">リスト</string>
+    <string name="hidden_people">ユーザー</string>
+    <string name="hidden_subtitle">あなたにだけ非表示です。</string>
+    <string name="hidden_title">非表示にしたもの</string>
+    <string name="hidden_unnamed_list">非表示にしたリスト</string>
+    <string name="hidden_unnamed_person">非表示にした人</string>
+    <string name="language_default">デフォルト</string>
+    <string name="language_name_ar">アラビア語 · 右から左</string>
+    <string name="language_name_de">ドイツ語</string>
+    <string name="language_name_es">スペイン語</string>
+    <string name="language_name_fr">フランス語</string>
+    <string name="language_name_ja">日本語</string>
+    <string name="language_name_pl">ポーランド語</string>
+    <string name="language_name_pt_br">ポルトガル語（ブラジル）</string>
+    <string name="language_name_ru">ロシア語</string>
+    <string name="language_name_tr">トルコ語</string>
+    <string name="language_name_uk">ウクライナ語</string>
+    <plurals name="moderation_waiting">
+        <item quantity="other">%d件が未対応</item>
+    </plurals>
+    <string name="settings_account">アカウント</string>
+    <string name="settings_account_offer_action">ログイン</string>
+    <string name="settings_account_offer_body">アカウントがなくても全機能が使えます。</string>
+    <string name="settings_account_offer_title">生成回数を残す</string>
+    <string name="settings_account_signed_in">ログイン済み</string>
+    <plurals name="settings_account_signed_in_credits">
+        <item quantity="other">ログイン済み · %1$d クレジット</item>
+    </plurals>
+    <string name="settings_backup_label">ボードをバックアップ</string>
+    <string name="settings_backup_note">写真と生成カードはあなたのアカウントに保存され、見られるのはあなただけです。公開すると画像はフィードに複製され、誰でも見られます。</string>
+    <string name="settings_backup_off_body">ボードはこの端末に残ります。アカウント内のコピーは削除され、新しい端末は空の状態から始まります。</string>
+    <string name="settings_backup_off_cancel">キャンセル</string>
+    <string name="settings_backup_off_confirm">停止して削除</string>
+    <string name="settings_backup_off_title">バックアップを停止しますか？</string>
+    <string name="settings_backup_pictures_label">画像はWi-Fiのみ</string>
+    <string name="settings_backup_pictures_sub">アカウント内 %1$s</string>
+    <string name="settings_backup_stuck">%1$sからバックアップされていません。接続を確認してください。</string>
+    <string name="settings_backup_sub">ティア、カード、説明</string>
+    <string name="settings_export">データをエクスポート</string>
+    <string name="settings_export_sub">各リストの読みやすいコピーを保存</string>
+    <string name="settings_group_appearance">表示</string>
+    <string name="settings_group_data">データ</string>
+    <string name="settings_hidden">非表示にしたもの</string>
+    <string name="settings_hidden_sub">表示しなくしたリストと人</string>
+    <string name="settings_language">言語</string>
+    <string name="settings_language_caption">アプリ自体のテキストのみが変わります。あなたが入力した名前はそのまま残ります。</string>
+    <string name="settings_moderation">報告</string>
+    <string name="settings_moderation_none">待ちはありません</string>
+    <string name="settings_privacy">プライバシーポリシー</string>
+    <string name="settings_theme">テーマ</string>
+    <string name="settings_theme_sub">「システム」はAndroidの設定を使用します。</string>
+    <string name="settings_title">設定</string>
+    <string name="settings_trash">ゴミ箱</string>
+    <string name="settings_trash_empty">空です</string>
+    <string name="settings_version">バージョン %1$s</string>
+    <plurals name="snack_export_done">
+        <item quantity="other">%1$d件のリストをエクスポートしました</item>
+    </plurals>
+    <string name="snack_export_failed">ファイルを保存できませんでした</string>
+    <string name="theme_dark">ダーク</string>
+    <string name="theme_light">ライト</string>
+    <string name="theme_system">システム</string>
+    <plurals name="unranked_count">
+        <item quantity="other">%1$d件未評価</item>
+    </plurals>
+</resources>

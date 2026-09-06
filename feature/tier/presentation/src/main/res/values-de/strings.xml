@@ -177,30 +177,6 @@
     </plurals>
     <string name="manual_dialog_remove_photo">Foto entfernen</string>
 
-    <string name="settings_title">Einstellungen</string>
-    <string name="settings_theme">Design</string>
-    <string name="settings_theme_sub">„System“ verwendet deine Android-Einstellung.</string>
-    <string name="theme_light">Hell</string>
-    <string name="theme_dark">Dunkel</string>
-    <string name="theme_system">System</string>
-    <string name="settings_language">Sprache</string>
-    <string name="settings_language_caption">Ändert nur den Text der App. Von dir eingegebene Namen bleiben unverändert.</string>
-    <string name="language_default">Standard</string>
-    <string name="language_name_uk">Ukrainisch</string>
-    <string name="language_name_ru">Russisch</string>
-    <string name="language_name_es">Spanisch</string>
-    <string name="language_name_pt_br">Portugiesisch (Brasilien)</string>
-    <string name="language_name_de">Deutsch</string>
-    <string name="language_name_fr">Französisch</string>
-    <string name="language_name_pl">Polnisch</string>
-    <string name="language_name_tr">Türkisch</string>
-    <string name="language_name_ja">Japanisch</string>
-    <string name="language_name_ar">Arabisch · von rechts nach links</string>
-    <string name="settings_trash">Papierkorb</string>
-    <string name="settings_trash_empty">Leer</string>
-    <string name="settings_export">Daten exportieren</string>
-    <string name="settings_export_sub">Eine lesbare Kopie jeder Liste speichern</string>
-    <string name="cd_settings_back">Zurück</string>
 
     <string name="trash_title">Papierkorb</string>
     <string name="trash_load_error">Papierkorb konnte nicht geladen werden.</string>
@@ -246,36 +222,10 @@
     <string name="cd_remove">%1$s endgültig entfernen</string>
     <string name="cd_trash_back">Zurück</string>
 
-    <string name="export_filename">TierYourLife %1$s.txt</string>
-    <string name="export_file_header">TierYourLife</string>
-    <string name="export_file_date">Exportiert am %1$s</string>
     <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <plurals name="unranked_count">
-        <item quantity="one">%1$d nicht eingestuft</item>
-        <item quantity="other">%1$d nicht eingestuft</item>
-    </plurals>
     <string name="export_list_counts">%1$s · %2$s</string>
-    <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_tier_plain">%1$s</string>
-    <string name="export_tier_empty">(leer)</string>
-    <string name="export_unranked_heading">Nicht eingestuft</string>
-    <plurals name="snack_export_done">
-        <item quantity="one">1 Liste exportiert</item>
-        <item quantity="other">%1$d Listen exportiert</item>
-    </plurals>
-    <string name="action_share">Teilen</string>
-    <string name="snack_export_failed">Datei konnte nicht gespeichert werden</string>
     <string name="action_try_again">Erneut versuchen</string>
     <string name="snack_action_failed">Änderung konnte nicht gespeichert werden</string>
-    <string name="settings_account">Konto</string>
-    <string name="settings_group_appearance">Darstellung</string>
-    <string name="settings_group_data">Deine Daten</string>
-    <string name="settings_account_offer_title">Behalte dein Guthaben</string>
-    <string name="settings_account_offer_body">Die App funktioniert auch ohne vollständig.</string>
-    <string name="settings_account_offer_action">Anmelden</string>
-    <string name="settings_account_signed_in">Angemeldet</string>
-    <string name="settings_version">Version %1$s</string>
-    <string name="settings_privacy">Datenschutzerklärung</string>
     <string name="home_start_with">Beginne mit</string>
     <string name="home_start_hint">Erstellt das Board sofort. Tippe auf den Titel, um ihn zu ändern.</string>
     <string name="home_new_list">Neue Liste</string>
@@ -338,30 +288,9 @@
     <string name="snack_published_list_still_public">Behalten statt gelöscht: Die öffentliche Kopie ließ sich nicht entfernen. Versuche es erneut, sobald du online bist.</string>
     <string name="list_settings_public_too_large">Diese Liste ist zu groß zum Veröffentlichen: höchstens 1000 Karten und 20 Stufen.</string>
     <string name="list_settings_public_picture_refused">Eines deiner Fotos darf nicht in den öffentlichen Feed. Entferne es oder behalte die Liste privat.</string>
-    <string name="settings_hidden">Ausgeblendet</string>
-    <string name="settings_hidden_sub">Listen und Menschen, die du nicht mehr siehst</string>
     <string name="settings_hidden_none">Nichts ausgeblendet</string>
-    <string name="hidden_title">Ausgeblendet</string>
-    <string name="hidden_subtitle">Nur für dich ausgeblendet.</string>
-    <string name="hidden_lists">LISTEN</string>
-    <string name="hidden_people">MENSCHEN</string>
-    <string name="action_show_again">Wieder anzeigen</string>
-    <string name="hidden_empty_title">Alles ist sichtbar</string>
-    <string name="hidden_empty_body">Listen und Menschen, die du in der Community ausblendest, warten hier, falls du es dir anders überlegst.</string>
-    <string name="hidden_unnamed_list">Eine Liste, die du ausgeblendet hast</string>
-    <string name="hidden_unnamed_person">Jemand, den du ausgeblendet hast</string>
-    <string name="settings_moderation">Meldungen</string>
-    <string name="settings_moderation_none">Nichts offen</string>
-    <plurals name="moderation_waiting">
-        <item quantity="one">%d offen</item>
-        <item quantity="other">%d offen</item>
-    </plurals>
     <string name="my_published_behind">Die veröffentlichte Fassung ist älter als dieses Board.</string>
     <string name="my_published_action_update">Aktualisieren</string>
-    <plurals name="settings_account_signed_in_credits">
-        <item quantity="one">Angemeldet · %1$d Guthaben</item>
-        <item quantity="other">Angemeldet · %1$d Guthaben</item>
-    </plurals>
     <plurals name="board_count">
         <item quantity="one">1 Board</item>
         <item quantity="other">%1$d Boards</item>
@@ -375,16 +304,6 @@
     <string name="local_only_card_sign_in">Anmelden</string>
     <string name="restoring_one_picture">Bild wird wiederhergestellt</string>
     <string name="restoring_pictures">Bilder werden wiederhergestellt · %1$d von %2$d</string>
-    <string name="settings_backup_label">Meine Boards sichern</string>
-    <string name="settings_backup_sub">Stufen, Karten und Beschriftungen</string>
-    <string name="settings_backup_pictures_label">Bilder nur über WLAN</string>
-    <string name="settings_backup_pictures_sub">%1$s in deinem Konto</string>
-    <string name="settings_backup_note">Deine Fotos und erzeugten Karten liegen in deinem Konto, wo nur du sie siehst. Beim Veröffentlichen werden die Bilder in den Feed kopiert, wo alle sie sehen.</string>
-    <string name="settings_backup_stuck">Seit %1$s nicht gesichert. Prüfe deine Verbindung.</string>
-    <string name="settings_backup_off_title">Sicherung beenden?</string>
-    <string name="settings_backup_off_body">Deine Boards bleiben auf diesem Telefon. Die Kopie in deinem Konto wird gelöscht, und ein neues Telefon fängt leer an.</string>
-    <string name="settings_backup_off_confirm">Beenden und löschen</string>
-    <string name="settings_backup_off_cancel">Abbrechen</string>
     <string name="conflict_title">„%1$s“ wurde auf zwei Telefonen geändert</string>
     <string name="conflict_body">Beide Fassungen sind hier. Öffne sie, behalte die richtige, lösche die andere.</string>
     <string name="conflict_got_it">Verstanden</string>

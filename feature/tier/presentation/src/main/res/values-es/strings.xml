@@ -195,30 +195,6 @@
     </plurals>
     <string name="manual_dialog_remove_photo">Quitar foto</string>
 
-    <string name="settings_title">Ajustes</string>
-    <string name="settings_theme">Tema</string>
-    <string name="settings_theme_sub">«Sistema» usa tu configuración de Android.</string>
-    <string name="theme_light">Claro</string>
-    <string name="theme_dark">Oscuro</string>
-    <string name="theme_system">Sistema</string>
-    <string name="settings_language">Idioma</string>
-    <string name="settings_language_caption">Cambia solo el texto de la app. Los nombres que escribiste tú se mantienen igual.</string>
-    <string name="language_default">Predeterminado</string>
-    <string name="language_name_uk">Ucraniano</string>
-    <string name="language_name_ru">Ruso</string>
-    <string name="language_name_es">Español</string>
-    <string name="language_name_pt_br">Portugués (Brasil)</string>
-    <string name="language_name_de">Alemán</string>
-    <string name="language_name_fr">Francés</string>
-    <string name="language_name_pl">Polaco</string>
-    <string name="language_name_tr">Turco</string>
-    <string name="language_name_ja">Japonés</string>
-    <string name="language_name_ar">Árabe · de derecha a izquierda</string>
-    <string name="settings_trash">Papelera</string>
-    <string name="settings_trash_empty">Vacía</string>
-    <string name="settings_export">Exportar datos</string>
-    <string name="settings_export_sub">Guardar una copia legible de cada lista</string>
-    <string name="cd_settings_back">Volver</string>
 
     <string name="trash_title">Papelera</string>
     <string name="trash_load_error">No se pudo cargar la papelera.</string>
@@ -269,38 +245,10 @@
     <string name="cd_remove">Eliminar %1$s definitivamente</string>
     <string name="cd_trash_back">Volver</string>
 
-    <string name="export_filename">TierYourLife %1$s.txt</string>
-    <string name="export_file_header">TierYourLife</string>
-    <string name="export_file_date">Exportado el %1$s</string>
     <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <plurals name="unranked_count">
-        <item quantity="one">%1$d sin clasificar</item>
-        <item quantity="many">%1$d sin clasificar</item>
-        <item quantity="other">%1$d sin clasificar</item>
-    </plurals>
     <string name="export_list_counts">%1$s · %2$s</string>
-    <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_tier_plain">%1$s</string>
-    <string name="export_tier_empty">(vacío)</string>
-    <string name="export_unranked_heading">Sin clasificar</string>
-    <plurals name="snack_export_done">
-        <item quantity="one">Se exportó 1 lista</item>
-        <item quantity="many">Se exportaron %1$d listas</item>
-        <item quantity="other">Se exportaron %1$d listas</item>
-    </plurals>
-    <string name="action_share">Compartir</string>
-    <string name="snack_export_failed">No se pudo guardar el archivo</string>
     <string name="action_try_again">Intentar de nuevo</string>
     <string name="snack_action_failed">No se pudo guardar el cambio</string>
-    <string name="settings_account">Cuenta</string>
-    <string name="settings_group_appearance">Apariencia</string>
-    <string name="settings_group_data">Tus datos</string>
-    <string name="settings_account_offer_title">Conserva tus créditos</string>
-    <string name="settings_account_offer_body">La app funciona por completo sin cuenta.</string>
-    <string name="settings_account_offer_action">Iniciar sesión</string>
-    <string name="settings_account_signed_in">Sesión iniciada</string>
-    <string name="settings_version">Versión %1$s</string>
-    <string name="settings_privacy">Política de privacidad</string>
     <string name="home_start_with">Empieza con</string>
     <string name="home_start_hint">Crea el tablero al instante. Toca su título para cambiarlo.</string>
     <string name="home_new_list">Nueva lista</string>
@@ -363,32 +311,9 @@
     <string name="snack_published_list_still_public">Se conservó en vez de borrarse: no se pudo retirar su copia pública. Inténtalo de nuevo cuando estés en línea.</string>
     <string name="list_settings_public_too_large">Esta lista es demasiado grande para publicarse: como máximo 1000 tarjetas y 20 niveles.</string>
     <string name="list_settings_public_picture_refused">Una de tus fotos no puede aparecer en el feed público. Quítala o mantén la lista privada.</string>
-    <string name="settings_hidden">Oculto</string>
-    <string name="settings_hidden_sub">Listas y personas que dejaste de ver</string>
     <string name="settings_hidden_none">Nada oculto</string>
-    <string name="hidden_title">Oculto</string>
-    <string name="hidden_subtitle">Oculto solo para ti.</string>
-    <string name="hidden_lists">LISTAS</string>
-    <string name="hidden_people">PERSONAS</string>
-    <string name="action_show_again">Mostrar de nuevo</string>
-    <string name="hidden_empty_title">Todo está a la vista</string>
-    <string name="hidden_empty_body">Las listas y personas que ocultes en la comunidad esperan aquí, por si cambias de idea.</string>
-    <string name="hidden_unnamed_list">Una lista que ocultaste</string>
-    <string name="hidden_unnamed_person">Alguien que ocultaste</string>
-    <string name="settings_moderation">Denuncias</string>
-    <string name="settings_moderation_none">Nada pendiente</string>
-    <plurals name="moderation_waiting">
-        <item quantity="one">%d pendiente</item>
-        <item quantity="other">%d pendientes</item>
-        <item quantity="many">%d pendientes</item>
-    </plurals>
     <string name="my_published_behind">La versión publicada está desactualizada.</string>
     <string name="my_published_action_update">Actualizar</string>
-    <plurals name="settings_account_signed_in_credits">
-        <item quantity="one">Sesión iniciada · %1$d crédito</item>
-        <item quantity="many">Sesión iniciada · %1$d créditos</item>
-        <item quantity="other">Sesión iniciada · %1$d créditos</item>
-    </plurals>
     <plurals name="board_count">
         <item quantity="one">1 tablero</item>
         <item quantity="many">%1$d tableros</item>
@@ -403,16 +328,6 @@
     <string name="local_only_card_sign_in">Iniciar sesión</string>
     <string name="restoring_one_picture">Restaurando la imagen</string>
     <string name="restoring_pictures">Restaurando imágenes · %1$d de %2$d</string>
-    <string name="settings_backup_label">Guardar copia de mis tableros</string>
-    <string name="settings_backup_sub">Niveles, tarjetas y notas</string>
-    <string name="settings_backup_pictures_label">Imágenes solo por Wi-Fi</string>
-    <string name="settings_backup_pictures_sub">%1$s en tu cuenta</string>
-    <string name="settings_backup_note">Tus fotos y tarjetas generadas van a tu cuenta, donde solo tú las ves. Publicar copia las imágenes al feed, donde las ve cualquiera.</string>
-    <string name="settings_backup_stuck">Sin copia desde %1$s. Revisa tu conexión.</string>
-    <string name="settings_backup_off_title">¿Dejar de guardar copia?</string>
-    <string name="settings_backup_off_body">Tus tableros siguen en este teléfono. La copia de tu cuenta se elimina, y un teléfono nuevo empezará vacío.</string>
-    <string name="settings_backup_off_confirm">Detener y eliminar</string>
-    <string name="settings_backup_off_cancel">Cancelar</string>
     <string name="conflict_title">“%1$s” cambió en dos teléfonos</string>
     <string name="conflict_body">Las dos versiones están aquí. Ábrelas, quédate con la que quieras y borra la otra.</string>
     <string name="conflict_got_it">Entendido</string>

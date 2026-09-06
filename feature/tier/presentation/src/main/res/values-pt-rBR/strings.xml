@@ -195,30 +195,6 @@
     </plurals>
     <string name="manual_dialog_remove_photo">Remover foto</string>
 
-    <string name="settings_title">Configurações</string>
-    <string name="settings_theme">Tema</string>
-    <string name="settings_theme_sub">\"Sistema\" usa a configuração do Android.</string>
-    <string name="theme_light">Claro</string>
-    <string name="theme_dark">Escuro</string>
-    <string name="theme_system">Sistema</string>
-    <string name="settings_language">Idioma</string>
-    <string name="settings_language_caption">Muda apenas o texto do app. Os nomes que você digitou permanecem como estão.</string>
-    <string name="language_default">Padrão</string>
-    <string name="language_name_uk">Ucraniano</string>
-    <string name="language_name_ru">Russo</string>
-    <string name="language_name_es">Espanhol</string>
-    <string name="language_name_pt_br">Português (Brasil)</string>
-    <string name="language_name_de">Alemão</string>
-    <string name="language_name_fr">Francês</string>
-    <string name="language_name_pl">Polonês</string>
-    <string name="language_name_tr">Turco</string>
-    <string name="language_name_ja">Japonês</string>
-    <string name="language_name_ar">Árabe · da direita para a esquerda</string>
-    <string name="settings_trash">Lixeira</string>
-    <string name="settings_trash_empty">Vazia</string>
-    <string name="settings_export">Exportar dados</string>
-    <string name="settings_export_sub">Salvar uma cópia legível de cada lista</string>
-    <string name="cd_settings_back">Voltar</string>
 
     <string name="trash_title">Lixeira</string>
     <string name="trash_load_error">Não foi possível carregar a lixeira.</string>
@@ -269,38 +245,10 @@
     <string name="cd_remove">Excluir %1$s permanentemente</string>
     <string name="cd_trash_back">Voltar</string>
 
-    <string name="export_filename">TierYourLife %1$s.txt</string>
-    <string name="export_file_header">TierYourLife</string>
-    <string name="export_file_date">Exportado em %1$s</string>
     <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <plurals name="unranked_count">
-        <item quantity="one">%1$d sem classificação</item>
-        <item quantity="many">%1$d sem classificação</item>
-        <item quantity="other">%1$d sem classificação</item>
-    </plurals>
     <string name="export_list_counts">%1$s · %2$s</string>
-    <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_tier_plain">%1$s</string>
-    <string name="export_tier_empty">(vazio)</string>
-    <string name="export_unranked_heading">Sem classificação</string>
-    <plurals name="snack_export_done">
-        <item quantity="one">%1$d lista exportada</item>
-        <item quantity="many">%1$d listas exportadas</item>
-        <item quantity="other">%1$d listas exportadas</item>
-    </plurals>
-    <string name="action_share">Compartilhar</string>
-    <string name="snack_export_failed">Não foi possível salvar o arquivo</string>
     <string name="action_try_again">Tentar novamente</string>
     <string name="snack_action_failed">Não foi possível salvar a alteração</string>
-    <string name="settings_account">Conta</string>
-    <string name="settings_group_appearance">Aparência</string>
-    <string name="settings_group_data">Seus dados</string>
-    <string name="settings_account_offer_title">Mantenha seus créditos</string>
-    <string name="settings_account_offer_body">O app funciona por completo sem conta.</string>
-    <string name="settings_account_offer_action">Entrar</string>
-    <string name="settings_account_signed_in">Conectado</string>
-    <string name="settings_version">Versão %1$s</string>
-    <string name="settings_privacy">Política de privacidade</string>
     <string name="home_start_with">Comece com</string>
     <string name="home_start_hint">Cria o quadro na hora. Toque no título para renomear.</string>
     <string name="home_new_list">Nova lista</string>
@@ -363,32 +311,9 @@
     <string name="snack_published_list_still_public">Mantida, não excluída: não foi possível retirar a cópia pública. Tente de novo quando estiver online.</string>
     <string name="list_settings_public_too_large">Esta lista é grande demais para publicar: no máximo 1000 cards e 20 níveis.</string>
     <string name="list_settings_public_picture_refused">Uma das suas fotos não pode aparecer no feed público. Remova-a ou mantenha a lista privada.</string>
-    <string name="settings_hidden">Oculto</string>
-    <string name="settings_hidden_sub">Listas e pessoas que você deixou de ver</string>
     <string name="settings_hidden_none">Nada oculto</string>
-    <string name="hidden_title">Oculto</string>
-    <string name="hidden_subtitle">Oculto apenas para você.</string>
-    <string name="hidden_lists">LISTAS</string>
-    <string name="hidden_people">PESSOAS</string>
-    <string name="action_show_again">Mostrar de novo</string>
-    <string name="hidden_empty_title">Tudo está visível</string>
-    <string name="hidden_empty_body">As listas e pessoas que você ocultar na comunidade esperam aqui, caso mude de ideia.</string>
-    <string name="hidden_unnamed_list">Uma lista que você ocultou</string>
-    <string name="hidden_unnamed_person">Alguém que você ocultou</string>
-    <string name="settings_moderation">Denúncias</string>
-    <string name="settings_moderation_none">Nada pendente</string>
-    <plurals name="moderation_waiting">
-        <item quantity="one">%d pendente</item>
-        <item quantity="other">%d pendentes</item>
-        <item quantity="many">%d pendentes</item>
-    </plurals>
     <string name="my_published_behind">A versão publicada está desatualizada.</string>
     <string name="my_published_action_update">Atualizar</string>
-    <plurals name="settings_account_signed_in_credits">
-        <item quantity="one">Conectado · %1$d crédito</item>
-        <item quantity="many">Conectado · %1$d créditos</item>
-        <item quantity="other">Conectado · %1$d créditos</item>
-    </plurals>
     <plurals name="board_count">
         <item quantity="one">%1$d quadro</item>
         <item quantity="many">%1$d quadros</item>
@@ -403,16 +328,6 @@
     <string name="local_only_card_sign_in">Entrar</string>
     <string name="restoring_one_picture">Restaurando a imagem</string>
     <string name="restoring_pictures">Restaurando imagens · %1$d de %2$d</string>
-    <string name="settings_backup_label">Guardar meus quadros</string>
-    <string name="settings_backup_sub">Níveis, cartões e legendas</string>
-    <string name="settings_backup_pictures_label">Imagens só no Wi-Fi</string>
-    <string name="settings_backup_pictures_sub">%1$s na sua conta</string>
-    <string name="settings_backup_note">Suas fotos e cartas geradas vão para sua conta, onde só você as vê. Publicar copia as imagens para o feed, onde qualquer um as vê.</string>
-    <string name="settings_backup_stuck">Sem cópia desde %1$s. Verifique sua conexão.</string>
-    <string name="settings_backup_off_title">Parar de guardar cópia?</string>
-    <string name="settings_backup_off_body">Seus quadros ficam neste telefone. A cópia na sua conta é apagada, e um telefone novo começará vazio.</string>
-    <string name="settings_backup_off_confirm">Parar e apagar</string>
-    <string name="settings_backup_off_cancel">Cancelar</string>
     <string name="conflict_title">“%1$s” mudou em dois telefones</string>
     <string name="conflict_body">As duas versões estão aqui. Abra, fique com a que quiser e apague a outra.</string>
     <string name="conflict_got_it">Entendi</string>

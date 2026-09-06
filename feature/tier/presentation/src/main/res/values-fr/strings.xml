@@ -195,30 +195,6 @@
     </plurals>
     <string name="manual_dialog_remove_photo">Retirer la photo</string>
 
-    <string name="settings_title">Paramètres</string>
-    <string name="settings_theme">Thème</string>
-    <string name="settings_theme_sub">« Système » utilise le réglage de votre Android.</string>
-    <string name="theme_light">Clair</string>
-    <string name="theme_dark">Sombre</string>
-    <string name="theme_system">Système</string>
-    <string name="settings_language">Langue</string>
-    <string name="settings_language_caption">Modifie uniquement le texte de l\'application. Les noms que vous avez saisis restent inchangés.</string>
-    <string name="language_default">Par défaut</string>
-    <string name="language_name_uk">Ukrainien</string>
-    <string name="language_name_ru">Russe</string>
-    <string name="language_name_es">Espagnol</string>
-    <string name="language_name_pt_br">Portugais (Brésil)</string>
-    <string name="language_name_de">Allemand</string>
-    <string name="language_name_fr">Français</string>
-    <string name="language_name_pl">Polonais</string>
-    <string name="language_name_tr">Turc</string>
-    <string name="language_name_ja">Japonais</string>
-    <string name="language_name_ar">Arabe · de droite à gauche</string>
-    <string name="settings_trash">Corbeille</string>
-    <string name="settings_trash_empty">Vide</string>
-    <string name="settings_export">Exporter les données</string>
-    <string name="settings_export_sub">Enregistrer une copie lisible de chaque liste</string>
-    <string name="cd_settings_back">Retour</string>
 
     <string name="trash_title">Corbeille</string>
     <string name="trash_load_error">Impossible de charger la corbeille.</string>
@@ -269,38 +245,10 @@
     <string name="cd_remove">Supprimer %1$s définitivement</string>
     <string name="cd_trash_back">Retour</string>
 
-    <string name="export_filename">TierYourLife %1$s.txt</string>
-    <string name="export_file_header">TierYourLife</string>
-    <string name="export_file_date">Exporté le %1$s</string>
     <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <plurals name="unranked_count">
-        <item quantity="one">%1$d non classé</item>
-        <item quantity="many">%1$d non classé</item>
-        <item quantity="other">%1$d non classé</item>
-    </plurals>
     <string name="export_list_counts">%1$s · %2$s</string>
-    <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_tier_plain">%1$s</string>
-    <string name="export_tier_empty">(vide)</string>
-    <string name="export_unranked_heading">Non classé</string>
-    <plurals name="snack_export_done">
-        <item quantity="one">%1$d liste exportée</item>
-        <item quantity="many">%1$d listes exportées</item>
-        <item quantity="other">%1$d listes exportées</item>
-    </plurals>
-    <string name="action_share">Partager</string>
-    <string name="snack_export_failed">Impossible d\'enregistrer le fichier</string>
     <string name="action_try_again">Réessayer</string>
     <string name="snack_action_failed">Modification non enregistrée</string>
-    <string name="settings_account">Compte</string>
-    <string name="settings_group_appearance">Apparence</string>
-    <string name="settings_group_data">Vos données</string>
-    <string name="settings_account_offer_title">Gardez vos crédits</string>
-    <string name="settings_account_offer_body">L\'application fonctionne entièrement sans compte.</string>
-    <string name="settings_account_offer_action">Se connecter</string>
-    <string name="settings_account_signed_in">Connecté</string>
-    <string name="settings_version">Version %1$s</string>
-    <string name="settings_privacy">Politique de confidentialité</string>
     <string name="home_start_with">Commencez par</string>
     <string name="home_start_hint">Crée le tableau tout de suite. Touchez son titre pour le renommer.</string>
     <string name="home_new_list">Nouvelle liste</string>
@@ -363,32 +311,9 @@
     <string name="snack_published_list_still_public">Conservée, pas supprimée : sa copie publique n\'a pas pu être retirée. Réessayez une fois en ligne.</string>
     <string name="list_settings_public_too_large">Cette liste est trop grande pour être publiée : 1000 cartes et 20 rangs au maximum.</string>
     <string name="list_settings_public_picture_refused">Une de vos photos ne peut pas figurer dans le fil public. Retirez-la ou gardez la liste privée.</string>
-    <string name="settings_hidden">Masqué</string>
-    <string name="settings_hidden_sub">Listes et personnes que vous ne voyez plus</string>
     <string name="settings_hidden_none">Rien de masqué</string>
-    <string name="hidden_title">Masqué</string>
-    <string name="hidden_subtitle">Masqué seulement pour vous.</string>
-    <string name="hidden_lists">LISTES</string>
-    <string name="hidden_people">PERSONNES</string>
-    <string name="action_show_again">Réafficher</string>
-    <string name="hidden_empty_title">Tout est visible</string>
-    <string name="hidden_empty_body">Les listes et les personnes que vous masquez dans la communauté attendent ici, au cas où vous changeriez d\'avis.</string>
-    <string name="hidden_unnamed_list">Une liste que vous avez masquée</string>
-    <string name="hidden_unnamed_person">Quelqu’un que vous avez masqué</string>
-    <string name="settings_moderation">Signalements</string>
-    <string name="settings_moderation_none">Rien en attente</string>
-    <plurals name="moderation_waiting">
-        <item quantity="one">%d en attente</item>
-        <item quantity="other">%d en attente</item>
-        <item quantity="many">%d en attente</item>
-    </plurals>
     <string name="my_published_behind">La version publiée est en retard sur ce tableau.</string>
     <string name="my_published_action_update">Mettre à jour</string>
-    <plurals name="settings_account_signed_in_credits">
-        <item quantity="one">Connecté · %1$d crédit</item>
-        <item quantity="many">Connecté · %1$d crédits</item>
-        <item quantity="other">Connecté · %1$d crédits</item>
-    </plurals>
     <plurals name="board_count">
         <item quantity="one">%1$d tableau</item>
         <item quantity="many">%1$d tableaux</item>
@@ -403,16 +328,6 @@
     <string name="local_only_card_sign_in">Se connecter</string>
     <string name="restoring_one_picture">Restauration de l’image</string>
     <string name="restoring_pictures">Restauration des images · %1$d sur %2$d</string>
-    <string name="settings_backup_label">Sauvegarder mes tableaux</string>
-    <string name="settings_backup_sub">Niveaux, cartes et légendes</string>
-    <string name="settings_backup_pictures_label">Images en Wi-Fi seulement</string>
-    <string name="settings_backup_pictures_sub">%1$s dans votre compte</string>
-    <string name="settings_backup_note">Vos photos et cartes générées vont dans votre compte, où vous seul les voyez. Publier copie les images dans le fil, où tout le monde les voit.</string>
-    <string name="settings_backup_stuck">Pas de sauvegarde depuis %1$s. Vérifiez votre connexion.</string>
-    <string name="settings_backup_off_title">Arrêter la sauvegarde ?</string>
-    <string name="settings_backup_off_body">Vos tableaux restent sur ce téléphone. La copie dans votre compte est supprimée, et un nouveau téléphone démarrera vide.</string>
-    <string name="settings_backup_off_confirm">Arrêter et supprimer</string>
-    <string name="settings_backup_off_cancel">Annuler</string>
     <string name="conflict_title">« %1$s » a changé sur deux téléphones</string>
     <string name="conflict_body">Les deux versions sont là. Ouvrez-les, gardez celle que vous voulez, supprimez l’autre.</string>
     <string name="conflict_got_it">Compris</string>

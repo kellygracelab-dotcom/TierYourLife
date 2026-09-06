@@ -6,9 +6,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.artiuillab.tieryourlife.core.settings.ThemeChoice
-import com.artiuillab.tieryourlife.feature.tier.presentation.settings.HiddenScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashScreen
 
@@ -34,42 +31,6 @@ fun NavGraphBuilder.tierDetailScreen(
     }
 }
 
-fun NavGraphBuilder.settingsScreen(
-    onBack: () -> Unit,
-    onTrashClick: () -> Unit,
-    onHiddenClick: () -> Unit,
-    onModerationClick: () -> Unit,
-    onAccountClick: () -> Unit,
-    themeChoice: ThemeChoice,
-    onThemeChoiceChange: (ThemeChoice) -> Unit,
-    languageTag: String?,
-    onLanguageTagChange: (String?) -> Unit,
-) {
-    composable<Route.Settings> {
-        SettingsScreen(
-            onBack = onBack,
-            onTrashClick = onTrashClick,
-            onHiddenClick = onHiddenClick,
-            onModerationClick = onModerationClick,
-            onAccountClick = onAccountClick,
-            themeChoice = themeChoice,
-            onThemeChoiceChange = onThemeChoiceChange,
-            languageTag = languageTag,
-            onLanguageTagChange = onLanguageTagChange,
-        )
-    }
-}
-
-fun NavGraphBuilder.hiddenScreen(onBack: () -> Unit) {
-    composable<Route.Hidden> {
-        HiddenScreen(onBack = onBack)
-    }
-}
-
-fun NavController.navigateToHidden() {
-    navigate(Route.Hidden)
-}
-
 fun NavGraphBuilder.trashScreen(onBack: () -> Unit) {
     composable<Route.Trash> {
         TrashScreen(onBack = onBack)
@@ -78,10 +39,6 @@ fun NavGraphBuilder.trashScreen(onBack: () -> Unit) {
 
 fun NavController.navigateToTierDetail(id: Long) {
     navigate(Route.TierDetail(id))
-}
-
-fun NavController.navigateToSettings() {
-    navigate(Route.Settings)
 }
 
 fun NavController.navigateToTrash() {

@@ -12,11 +12,5 @@ sealed interface Route {
     data class TierDetail(val tierListId: Long) : Route
 
     @Serializable
-    data object Settings : Route
-
-    @Serializable
     data object Trash : Route
-
-    @Serializable
-    data object Hidden : Route
 }

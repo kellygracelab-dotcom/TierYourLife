@@ -125,6 +125,7 @@ feature:tier:domain          ← models, repository ports, pure decision logic (
 feature:tier:data            ← Room, Retrofit, image store, board sync, Hilt wiring
 feature:tier:presentation    ← Compose screens, view models, strings
 feature:community:*          ← the published feed, authors, moderation: what other people see
+feature:settings:presentation ← settings, hidden lists, language, theme, backup, export
 feature:account:*            ← who is signed in, as three states rather than a nullable user
 feature:aistudio:*           ← generation and library ports, Gemini client, stub, credits
 build-logic                  ← convention plugins: library, compose, hilt, room, network, navigation
