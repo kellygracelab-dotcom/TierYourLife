@@ -26,4 +26,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    androidTestImplementation(testFixtures(projects.core.settings))
+    androidTestImplementation(testFixtures(projects.feature.tier.domain))
 }

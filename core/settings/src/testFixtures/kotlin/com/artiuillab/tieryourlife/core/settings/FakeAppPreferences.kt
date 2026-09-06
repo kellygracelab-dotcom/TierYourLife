@@ -1,10 +1,6 @@
-package com.artiuillab.tieryourlife.feature.tier.presentation.common
+package com.artiuillab.tieryourlife.core.settings
 
-import com.artiuillab.tieryourlife.core.settings.AppPreferences
-import com.artiuillab.tieryourlife.core.settings.HiddenEntry
-import com.artiuillab.tieryourlife.core.settings.ThemeChoice
-
-internal class FakeAppPreferences(
+class FakeAppPreferences(
     private var backUpBoards: Boolean = true,
     private var offerAnswered: Boolean = false,
     private var pendingReports: Int? = null,

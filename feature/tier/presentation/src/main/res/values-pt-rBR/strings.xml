@@ -87,7 +87,6 @@
         <item quantity="many">há %1$d dias</item>
         <item quantity="other">há %1$d dias</item>
     </plurals>
-    <string name="action_restore">Restaurar</string>
     <string name="action_remove">Remover</string>
     <string name="remove_dialog_title">Remover permanentemente?</string>
     <string name="remove_dialog_body_list">%1$s e seus %2$s serão excluídos deste dispositivo. Isso não pode ser desfeito.</string>
@@ -108,8 +107,6 @@
     <string name="cd_remove">Excluir %1$s permanentemente</string>
     <string name="cd_trash_back">Voltar</string>
 
-    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <string name="export_list_counts">%1$s · %2$s</string>
     <string name="home_start_with">Comece com</string>
     <string name="home_start_hint">Cria o quadro na hora. Toque no título para renomear.</string>
     <string name="home_new_list">Nova lista</string>
@@ -120,7 +117,6 @@
     <string name="home_suggestion_books">Livros</string>
     <string name="home_tab_mine">Suas listas</string>
     <string name="home_tab_community">Comunidade</string>
-    <string name="community_saved">Salva nas suas listas</string>
     <string name="lists_sort_newest">Mais recentes</string>
     <string name="lists_sort_oldest">Mais antigas</string>
     <string name="lists_filter">Filtrar listas</string>
@@ -135,9 +131,7 @@
     <string name="lists_group_others">Todas as listas</string>
     <string name="lists_favourite_add">Adicionar aos favoritos</string>
     <string name="lists_favourite_remove">Remover dos favoritos</string>
-    <string name="share_failed">Não foi possível criar a imagem</string>
     <string name="snack_published_list_still_public">Mantida, não excluída: não foi possível retirar a cópia pública. Tente de novo quando estiver online.</string>
-    <string name="settings_hidden_none">Nada oculto</string>
     <plurals name="board_count">
         <item quantity="one">%1$d quadro</item>
         <item quantity="many">%1$d quadros</item>
@@ -158,9 +152,7 @@
     <string name="conflict_tag">de %1$s</string>
     <string name="conflict_tag_unknown">de outro telefone</string>
     <string name="conflict_edited_there">Editado em %1$s %2$s</string>
-    <string name="conflict_edited_there_unknown">Editado em outro telefone %1$s</string>
     <string name="conflict_edited_here">Editado aqui %1$s</string>
     <string name="cover_unfold_title">Abra para ordenar</string>
     <string name="cover_unfold_body">Mover cartões precisa da tela interna.</string>
-    <string name="moderation_hidden_now">Ninguém vê isto enquanto espera</string>
 </resources>

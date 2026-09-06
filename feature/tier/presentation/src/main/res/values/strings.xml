@@ -79,7 +79,6 @@
         <item quantity="one">%1$d day ago</item>
         <item quantity="other">%1$d days ago</item>
     </plurals>
-    <string name="action_restore">Restore</string>
     <string name="action_remove">Remove</string>
     <string name="remove_dialog_title">Remove permanently?</string>
     <string name="remove_dialog_body_list">%1$s and its %2$s will be deleted from this device. This can\'t be undone.</string>
@@ -99,8 +98,6 @@
     <string name="cd_remove">Remove %1$s permanently</string>
     <string name="cd_trash_back">Navigate back</string>
 
-    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <string name="export_list_counts">%1$s · %2$s</string>
     <string name="home_start_with">Start with</string>
     <string name="home_start_hint">Creates a board straight away. Tap its title to rename.</string>
     <string name="home_new_list">New list</string>
@@ -111,7 +108,6 @@
     <string name="home_suggestion_books">Books</string>
     <string name="home_tab_mine">Your lists</string>
     <string name="home_tab_community">Community</string>
-    <string name="community_saved">Saved to your lists</string>
     <string name="lists_sort_newest">Newest</string>
     <string name="lists_sort_oldest">Oldest</string>
     <string name="lists_filter">Filter boards</string>
@@ -126,10 +122,7 @@
     <string name="lists_group_others">All boards</string>
     <string name="lists_favourite_add">Add to favourites</string>
     <string name="lists_favourite_remove">Remove from favourites</string>
-    <string name="share_failed">Couldn\'t make the picture</string>
     <string name="snack_published_list_still_public">Kept, not deleted: its public copy could not be taken down. Try again when you are online.</string>
-    <string name="settings_hidden_none">Nothing hidden</string>
-    <string name="moderation_hidden_now">Nobody can see this while it waits</string>
     <plurals name="board_count">
         <item quantity="one">1 board</item>
         <item quantity="other">%1$d boards</item>
@@ -149,7 +142,6 @@
     <string name="conflict_tag">from %1$s</string>
     <string name="conflict_tag_unknown">from another phone</string>
     <string name="conflict_edited_there">Edited on %1$s %2$s</string>
-    <string name="conflict_edited_there_unknown">Edited on another phone %1$s</string>
     <string name="conflict_edited_here">Edited here %1$s</string>
     <string name="cover_unfold_title">Unfold to rank</string>
     <string name="cover_unfold_body">Moving cards needs the inner screen.</string>

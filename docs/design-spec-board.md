@@ -36,7 +36,7 @@ that changes on save.
 
 ## 2. Colour
 
-The Material 3 roles live in `core/theme/Color.kt`, named after the roles and with their
+The Material 3 roles live in `core/theme/src/main/kotlin/com/artiuillab/tieryourlife/core/theme/color/Color.kt`, named after the roles and with their
 origin in the design system noted on the file. Three rules matter beyond the palette:
 
 - **A row's fill is its band colour at 12% over the surface** (`ROW_TINT_ALPHA`), never a

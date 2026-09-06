@@ -95,7 +95,6 @@
         <item quantity="many">%1$d днів тому</item>
         <item quantity="other">%1$d дня тому</item>
     </plurals>
-    <string name="action_restore">Відновити</string>
     <string name="action_remove">Видалити</string>
     <string name="remove_dialog_title">Видалити назавжди?</string>
     <string name="remove_dialog_body_list">«%1$s» та його %2$s буде видалено з цього пристрою. Це неможливо скасувати.</string>
@@ -117,8 +116,6 @@
     <string name="cd_remove">Видалити %1$s назавжди</string>
     <string name="cd_trash_back">Назад</string>
 
-    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <string name="export_list_counts">%1$s · %2$s</string>
     <string name="home_start_with">Почніть з</string>
     <string name="home_start_hint">Дошка створиться одразу. Торкніться назви, щоб перейменувати.</string>
     <string name="home_new_list">Новий список</string>
@@ -129,7 +126,6 @@
     <string name="home_suggestion_books">Книги</string>
     <string name="home_tab_mine">Ваші списки</string>
     <string name="home_tab_community">Спільнота</string>
-    <string name="community_saved">Збережено до ваших списків</string>
     <string name="lists_sort_newest">Спочатку нові</string>
     <string name="lists_sort_oldest">Спочатку старі</string>
     <string name="lists_filter">Фільтр дощок</string>
@@ -144,9 +140,7 @@
     <string name="lists_group_others">Усі дошки</string>
     <string name="lists_favourite_add">До обраних</string>
     <string name="lists_favourite_remove">Прибрати з обраних</string>
-    <string name="share_failed">Не вдалося зібрати картинку</string>
     <string name="snack_published_list_still_public">Список залишено, а не видалено: публічну копію не вдалося зняти. Спробуйте знову, коли буде мережа.</string>
-    <string name="settings_hidden_none">Нічого не сховано</string>
     <plurals name="board_count">
         <item quantity="one">%1$d дошка</item>
         <item quantity="few">%1$d дошки</item>
@@ -168,9 +162,7 @@
     <string name="conflict_tag">з %1$s</string>
     <string name="conflict_tag_unknown">з іншого телефона</string>
     <string name="conflict_edited_there">Змінено на %1$s %2$s</string>
-    <string name="conflict_edited_there_unknown">Змінено на іншому телефоні %1$s</string>
     <string name="conflict_edited_here">Змінено тут %1$s</string>
     <string name="cover_unfold_title">Розкладіть, щоб розставити</string>
     <string name="cover_unfold_body">Перетягувати картки можна лише на внутрішньому екрані.</string>
-    <string name="moderation_hidden_now">Поки чекає рішення, його не бачить ніхто</string>
 </resources>

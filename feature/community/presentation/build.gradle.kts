@@ -17,7 +17,6 @@ dependencies {
     implementation(projects.feature.tier.domain)
     // A stranger's list is drawn by the board renderer.
     implementation(projects.feature.tier.board)
-    implementation(projects.feature.account.domain)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -25,4 +24,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    androidTestImplementation(testFixtures(projects.core.settings))
+    androidTestImplementation(testFixtures(projects.feature.tier.domain))
 }

@@ -1,7 +1,7 @@
 package com.artiuillab.tieryourlife.feature.settings.presentation.hidden
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.artiuillab.tieryourlife.feature.settings.presentation.FakeAppPreferences
+import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test

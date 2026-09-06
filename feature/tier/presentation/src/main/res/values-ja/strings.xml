@@ -71,7 +71,6 @@
     <plurals name="trash_time_days_ago">
         <item quantity="other">%1$d日前</item>
     </plurals>
-    <string name="action_restore">復元</string>
     <string name="action_remove">削除</string>
     <string name="remove_dialog_title">完全に削除しますか？</string>
     <string name="remove_dialog_body_list">%1$s とその %2$s がこの端末から削除されます。これは元に戻せません。</string>
@@ -90,8 +89,6 @@
     <string name="cd_remove">%1$s を完全に削除</string>
     <string name="cd_trash_back">戻る</string>
 
-    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <string name="export_list_counts">%1$s · %2$s</string>
     <string name="home_start_with">まずは</string>
     <string name="home_start_hint">すぐにボードを作ります。名前はタイトルをタップして変更できます。</string>
     <string name="home_new_list">新しいリスト</string>
@@ -102,7 +99,6 @@
     <string name="home_suggestion_books">本</string>
     <string name="home_tab_mine">あなたのリスト</string>
     <string name="home_tab_community">コミュニティ</string>
-    <string name="community_saved">リストに保存しました</string>
     <string name="lists_sort_newest">新しい順</string>
     <string name="lists_sort_oldest">古い順</string>
     <string name="lists_filter">ボードを絞り込む</string>
@@ -117,9 +113,7 @@
     <string name="lists_group_others">すべてのボード</string>
     <string name="lists_favourite_add">お気に入りに追加</string>
     <string name="lists_favourite_remove">お気に入りから削除</string>
-    <string name="share_failed">画像を作成できませんでした</string>
     <string name="snack_published_list_still_public">削除せず残しました。公開コピーを取り下げられませんでした。オンラインのときにもう一度お試しください。</string>
-    <string name="settings_hidden_none">非表示はありません</string>
     <plurals name="board_count">
         <item quantity="other">%1$d 件のボード</item>
     </plurals>
@@ -138,9 +132,7 @@
     <string name="conflict_tag">%1$sから</string>
     <string name="conflict_tag_unknown">別の端末から</string>
     <string name="conflict_edited_there">%1$sで編集 %2$s</string>
-    <string name="conflict_edited_there_unknown">別の端末で編集 %1$s</string>
     <string name="conflict_edited_here">ここで編集 %1$s</string>
     <string name="cover_unfold_title">開いて並べ替え</string>
     <string name="cover_unfold_body">カードの移動には内側の画面が必要です。</string>
-    <string name="moderation_hidden_now">判断待ちの間、誰にも表示されません</string>
 </resources>

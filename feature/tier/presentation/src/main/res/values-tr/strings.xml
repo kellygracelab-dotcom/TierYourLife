@@ -79,7 +79,6 @@
         <item quantity="one">%1$d gün önce</item>
         <item quantity="other">%1$d gün önce</item>
     </plurals>
-    <string name="action_restore">Geri yükle</string>
     <string name="action_remove">Kaldır</string>
     <string name="remove_dialog_title">Kalıcı olarak kaldırılsın mı?</string>
     <string name="remove_dialog_body_list">%1$s ve %2$s bu cihazdan silinecek. Bu geri alınamaz.</string>
@@ -99,8 +98,6 @@
     <string name="cd_remove">%1$s öğesini kalıcı olarak kaldır</string>
     <string name="cd_trash_back">Geri git</string>
 
-    <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <string name="export_list_counts">%1$s · %2$s</string>
     <string name="home_start_with">Şununla başla</string>
     <string name="home_start_hint">Panoyu hemen oluşturur. Adını değiştirmek için başlığa dokun.</string>
     <string name="home_new_list">Yeni liste</string>
@@ -111,7 +108,6 @@
     <string name="home_suggestion_books">Kitaplar</string>
     <string name="home_tab_mine">Listelerin</string>
     <string name="home_tab_community">Topluluk</string>
-    <string name="community_saved">Listelerine kaydedildi</string>
     <string name="lists_sort_newest">En yeni</string>
     <string name="lists_sort_oldest">En eski</string>
     <string name="lists_filter">Panoları filtrele</string>
@@ -126,9 +122,7 @@
     <string name="lists_group_others">Tüm panolar</string>
     <string name="lists_favourite_add">Favorilere ekle</string>
     <string name="lists_favourite_remove">Favorilerden çıkar</string>
-    <string name="share_failed">Görsel oluşturulamadı</string>
     <string name="snack_published_list_still_public">Silinmedi, korundu: herkese açık kopyası kaldırılamadı. Çevrimiçi olduğunuzda yeniden deneyin.</string>
-    <string name="settings_hidden_none">Gizlenen bir şey yok</string>
     <plurals name="board_count">
         <item quantity="one">1 pano</item>
         <item quantity="other">%1$d pano</item>
@@ -148,9 +142,7 @@
     <string name="conflict_tag">%1$s’dan</string>
     <string name="conflict_tag_unknown">başka bir telefondan</string>
     <string name="conflict_edited_there">%1$s üzerinde düzenlendi %2$s</string>
-    <string name="conflict_edited_there_unknown">Başka bir telefonda düzenlendi %1$s</string>
     <string name="conflict_edited_here">Burada düzenlendi %1$s</string>
     <string name="cover_unfold_title">Sıralamak için aç</string>
     <string name="cover_unfold_body">Kartları taşımak iç ekranı gerektirir.</string>
-    <string name="moderation_hidden_now">Beklerken bunu kimse göremez</string>
 </resources>

@@ -14,11 +14,11 @@ dependencies {
     implementation(projects.feature.tier.domain)
     // A board's settings sheet publishes it, and says why it could not.
     implementation(projects.feature.community.domain)
-    implementation(projects.feature.account.domain)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    androidTestImplementation(testFixtures(projects.core.settings))
 }

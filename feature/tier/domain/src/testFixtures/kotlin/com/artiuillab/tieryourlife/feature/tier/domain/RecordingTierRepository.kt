@@ -1,4 +1,4 @@
-package com.artiuillab.tieryourlife.feature.community.presentation
+package com.artiuillab.tieryourlife.feature.tier.domain
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
@@ -11,14 +11,14 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 
-internal data class SavedTemplate(
+data class SavedTemplate(
     val title: String,
     val authorName: String,
     val tiers: List<Tier>,
     val items: List<TierItem>,
 )
 
-internal class FakeTierRepositoryForCommunity(
+class RecordingTierRepository(
     /** Stands in for a local copy that knows it was published. */
     private val publishedIdOfFirstList: String? = null,
 ) : TierRepository {

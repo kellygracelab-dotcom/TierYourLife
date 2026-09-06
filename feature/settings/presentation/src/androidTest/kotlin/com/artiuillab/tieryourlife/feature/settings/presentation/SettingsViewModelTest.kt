@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.settings.presentation
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
@@ -16,6 +17,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
+import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupSettings
@@ -117,7 +119,7 @@ class SettingsViewModelTest {
         community: CommunityRepository = FakeCommunity(),
         account: AccountRepository = FakeAccountRepository(MutableStateFlow(Account.Guest)),
     ) = SettingsViewModel(
-        repository = FakeTierRepositoryForCommunity(),
+        repository = RecordingTierRepository(),
         accountRepository = account,
         generationCredits = NoCredits,
         community = community,
