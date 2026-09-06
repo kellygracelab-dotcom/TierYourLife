@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.sync
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.IncomingTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.BoardSyncEntity
@@ -16,7 +17,6 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequest
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
-import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.LocalBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.RemoteBoard

@@ -7,41 +7,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.AuthorScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityListScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.ModerationScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.MyPublishedScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.HiddenScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashScreen
-
-fun NavGraphBuilder.communityListScreen(
-    onBack: () -> Unit,
-    onSaved: (Long) -> Unit,
-    onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
-) {
-    composable<Route.CommunityList> {
-        CommunityListScreen(onBack = onBack, onSaved = onSaved, onAuthorClick = onAuthorClick)
-    }
-}
-
-fun NavController.navigateToCommunityList(publishedId: String) {
-    navigate(Route.CommunityList(publishedId))
-}
-
-fun NavGraphBuilder.authorScreen(
-    onBack: () -> Unit,
-    onOpenList: (String) -> Unit,
-) {
-    composable<Route.Author> {
-        AuthorScreen(onBack = onBack, onOpenList = onOpenList)
-    }
-}
-
-fun NavController.navigateToAuthor(uid: String, name: String, photoUrl: String?) {
-    navigate(Route.Author(uid, name, photoUrl))
-}
 
 const val ADDED_ITEMS_RESULT_KEY = "ai_added_item_ids"
 
@@ -89,26 +58,6 @@ fun NavGraphBuilder.settingsScreen(
             onLanguageTagChange = onLanguageTagChange,
         )
     }
-}
-
-fun NavGraphBuilder.myPublishedScreen(onBack: () -> Unit, onOpen: (String) -> Unit) {
-    composable<Route.MyPublished> {
-        MyPublishedScreen(onBack = onBack, onOpen = onOpen)
-    }
-}
-
-fun NavController.navigateToMyPublished() {
-    navigate(Route.MyPublished)
-}
-
-fun NavGraphBuilder.moderationScreen(onBack: () -> Unit, onOpenList: (String) -> Unit) {
-    composable<Route.Moderation> {
-        ModerationScreen(onBack = onBack, onOpenList = onOpenList)
-    }
-}
-
-fun NavController.navigateToModeration() {
-    navigate(Route.Moderation)
 }
 
 fun NavGraphBuilder.hiddenScreen(onBack: () -> Unit) {

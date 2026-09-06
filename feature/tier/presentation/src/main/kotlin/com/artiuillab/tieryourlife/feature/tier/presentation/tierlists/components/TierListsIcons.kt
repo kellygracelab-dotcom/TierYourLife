@@ -149,7 +149,7 @@ internal fun SearchOffIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { 
 
 /** The chevron on a control that opens a menu rather than navigating. */
 @Composable
-internal fun ChevronDownIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+fun ChevronDownIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     val stroke = 1.7f * scale
     drawLine(color, Offset(6f * scale, 9f * scale), Offset(12f * scale, 15f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(12f * scale, 15f * scale), Offset(18f * scale, 9f * scale), stroke, StrokeCap.Round)
@@ -183,7 +183,7 @@ internal fun FilterIcon(on: Boolean) {
 
 /** The mark of a menu that opens downwards, beside the value it would change. */
 @Composable
-internal fun ChevronDownIcon() {
+fun ChevronDownIcon() {
     val color = MaterialTheme.colorScheme.onSurfaceVariant
     VectorIcon(18.dp) { scale ->
         val stroke = 1.7f * scale

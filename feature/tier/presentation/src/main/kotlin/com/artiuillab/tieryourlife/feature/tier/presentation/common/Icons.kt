@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun VectorIcon(
+fun VectorIcon(
     iconSize: Dp,
     autoMirror: Boolean = false,
     draw: DrawScope.(Float) -> Unit,
@@ -34,7 +34,7 @@ internal fun VectorIcon(
 }
 
 @Composable
-internal fun MoreIcon() = MoreVectorIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
+fun MoreIcon() = MoreVectorIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
 
 @Composable
 private fun MoreVectorIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
@@ -60,7 +60,7 @@ internal fun PlusIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale
 }
 
 @Composable
-internal fun ClearIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+fun ClearIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     val stroke = 1.7f * scale
     drawLine(color, Offset(7f * scale, 7f * scale), Offset(17f * scale, 17f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(17f * scale, 7f * scale), Offset(7f * scale, 17f * scale), stroke, StrokeCap.Round)

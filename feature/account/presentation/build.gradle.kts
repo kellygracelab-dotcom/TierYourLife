@@ -21,6 +21,7 @@ dependencies {
     // The community block counts the lists this phone has published, which the
     // tier side owns — the same domain-layer read across features.
     implementation(projects.feature.tier.domain)
+    implementation(projects.feature.community.domain)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

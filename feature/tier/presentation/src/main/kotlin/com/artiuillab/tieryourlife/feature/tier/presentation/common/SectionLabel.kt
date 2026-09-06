@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
  * the colour and tracking.
  */
 @Composable
-internal fun SectionLabel(text: String, modifier: Modifier = Modifier) {
+fun SectionLabel(text: String, modifier: Modifier = Modifier) {
     // The locale of this composition rather than the process default: the app
     // has its own language setting, and Turkish turns i into İ, not I.
     val locale = LocalResources.current.configuration.locales[0]

@@ -40,7 +40,6 @@ import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.NoteAddIcon
@@ -132,7 +131,7 @@ internal fun TierScreenTopBar(
                     modifier = Modifier
                         .size(48.dp)
                         .semantics { contentDescription = moreDescription }
-                        .testTag(CommunityTestTags.MORE),
+                        .testTag(TierDetailTestTags.MORE),
                 ) { MoreIcon() }
             }
         }

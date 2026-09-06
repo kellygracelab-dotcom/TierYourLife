@@ -1,6 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.remote.dto
 
-import com.artiuillab.tieryourlife.feature.tier.data.remote.networkJson
+import com.artiuillab.tieryourlife.core.network.networkJson
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue

@@ -5,7 +5,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 
 @get:StringRes
-internal val ListCategory.labelRes: Int
+val ListCategory.labelRes: Int
     get() = when (this) {
         ListCategory.Anime -> R.string.category_anime
         ListCategory.FilmTv -> R.string.category_film_tv

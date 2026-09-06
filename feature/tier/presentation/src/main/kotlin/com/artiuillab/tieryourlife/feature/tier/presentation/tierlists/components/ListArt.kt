@@ -27,7 +27,7 @@ private const val MOSAIC_CELLS = MOSAIC_COLUMNS * MOSAIC_ROWS
  * honest picture of what a reader is about to get.
  */
 @Composable
-internal fun ListArt(
+fun ListArt(
     coverImageUrl: String?,
     previewImages: List<String>,
     tierColors: List<String>,

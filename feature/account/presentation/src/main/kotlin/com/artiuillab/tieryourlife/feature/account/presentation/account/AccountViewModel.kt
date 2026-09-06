@@ -12,7 +12,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
-import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
 import dagger.hilt.android.lifecycle.HiltViewModel

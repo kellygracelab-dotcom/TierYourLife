@@ -1,15 +1,14 @@
 package com.artiuillab.tieryourlife.feature.tier.data.di
 
 import com.artiuillab.tieryourlife.core.network.AppCheckInterceptor
-import com.artiuillab.tieryourlife.core.network.IdTokenInterceptor
+import com.artiuillab.tieryourlife.core.network.ProxyRetrofit
+import com.artiuillab.tieryourlife.core.network.networkJson
 import com.artiuillab.tieryourlife.feature.tier.data.BuildConfig
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
-import com.artiuillab.tieryourlife.feature.tier.data.remote.api.CommunityApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataSparqlApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikimediaUserAgentInterceptor
-import com.artiuillab.tieryourlife.feature.tier.data.remote.networkJson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,14 +24,6 @@ import javax.inject.Singleton
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class TmdbOkHttp
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class CommunityOkHttp
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class CommunityRetrofit
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -77,45 +68,11 @@ object NetworkModule {
             .build()
     }
 
-    // The community endpoints count against an install, so they carry the ID
-    // token as well; TMDB does not and deliberately stays on App Check alone.
-    @CommunityOkHttp
-    @Provides
-    @Singleton
-    fun provideCommunityOkHttpClient(
-        appCheckInterceptor: AppCheckInterceptor,
-        idTokenInterceptor: IdTokenInterceptor,
-    ): OkHttpClient {
-        return OkHttpClient.Builder()
-            .addInterceptor(appCheckInterceptor)
-            .addInterceptor(idTokenInterceptor)
-            .build()
-    }
-
-    @CommunityRetrofit
-    @Provides
-    @Singleton
-    fun provideCommunityRetrofit(
-        @CommunityOkHttp okHttpClient: OkHttpClient,
-        json: Json,
-    ): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(BuildConfig.PROXY_BASE_URL.ifBlank { PLACEHOLDER_BASE_URL })
-            .client(okHttpClient)
-            .addConverterFactory(json.asConverterFactory(JSON_MEDIA_TYPE.toMediaType()))
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideCommunityApi(@CommunityRetrofit retrofit: Retrofit): CommunityApi =
-        retrofit.create(CommunityApi::class.java)
-
     // The same client as the community: both count against an account, and
     // both are refused without one.
     @Provides
     @Singleton
-    fun provideBoardsApi(@CommunityRetrofit retrofit: Retrofit): BoardsApi =
+    fun provideBoardsApi(@ProxyRetrofit retrofit: Retrofit): BoardsApi =
         retrofit.create(BoardsApi::class.java)
 
     @Provides

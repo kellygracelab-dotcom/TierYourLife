@@ -63,9 +63,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.lists.TierListsExportStri
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupSettings
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.FileDownloadIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.FlagIcon
+import com.artiuillab.tieryourlife.feature.tier.presentation.common.HideIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.FlagIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.community.components.HideIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.AccountRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.BackupSection
 import com.artiuillab.tieryourlife.feature.tier.presentation.settings.components.LanguageRow

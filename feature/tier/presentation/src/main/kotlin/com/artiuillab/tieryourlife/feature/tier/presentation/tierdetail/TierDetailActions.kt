@@ -1,7 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-import com.artiuillab.tieryourlife.feature.tier.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 
 /** Public because [TierDetailScreenContent] is, and this is its default. */

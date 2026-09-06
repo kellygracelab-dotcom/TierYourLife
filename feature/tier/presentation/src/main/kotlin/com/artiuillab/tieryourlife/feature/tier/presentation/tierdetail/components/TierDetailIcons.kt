@@ -20,7 +20,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-internal fun BackIcon() {
+fun BackIcon() {
     val color = MaterialTheme.colorScheme.onSurfaceVariant
     VectorIcon(24.dp, autoMirror = true) { scale ->
         drawLine(color, Offset(19f * scale, 12f * scale), Offset(5f * scale, 12f * scale), 1.7f * scale, StrokeCap.Round)
@@ -51,7 +51,7 @@ private fun DrawScope.drawNoteAdd(color: Color, scale: Float) {
 }
 
 @Composable
-internal fun CheckIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+fun CheckIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     val stroke = 1.8f * scale
     drawLine(color, Offset(4f * scale, 12.5f * scale), Offset(9f * scale, 17.5f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(9f * scale, 17.5f * scale), Offset(20f * scale, 6f * scale), stroke, StrokeCap.Round)
@@ -98,7 +98,7 @@ internal fun CategoryIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { s
 }
 
 @Composable
-internal fun CoverIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+fun CoverIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     val stroke = 1.7f * scale
     drawRoundRect(
         color = color,
@@ -113,7 +113,7 @@ internal fun CoverIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scal
 }
 
 @Composable
-internal fun ChevronRightIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
+fun ChevronRightIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
     val stroke = 1.7f * scale
     drawLine(color, Offset(9f * scale, 6f * scale), Offset(15f * scale, 12f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(15f * scale, 12f * scale), Offset(9f * scale, 18f * scale), stroke, StrokeCap.Round)

@@ -178,7 +178,7 @@ private fun BoardFilters.applied(): List<AppliedFilter> = buildList {
     }
 }
 
-internal val BoardSort.labelRes: Int
+val BoardSort.labelRes: Int
     get() = when (this) {
         BoardSort.Newest -> R.string.lists_sort_newest
         BoardSort.Oldest -> R.string.lists_sort_oldest

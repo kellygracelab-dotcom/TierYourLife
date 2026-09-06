@@ -120,10 +120,11 @@ navigation                   ← the NavHost, and the rail that replaces the tab
 core:settings                ← theme, language, feature flags, what this phone has hidden
 core:theme                   ← Material 3 colour scheme and typography; WindowShape; user messages
 core:logging                 ← Timber, and the only module that knows a crash reporter exists
-core:network                 ← App Check and ID-token interceptors shared by every caller
+core:network                 ← App Check and ID-token interceptors, and the proxy client every caller shares
 feature:tier:domain          ← models, repository ports, pure decision logic (no Android)
 feature:tier:data            ← Room, Retrofit, image store, board sync, Hilt wiring
 feature:tier:presentation    ← Compose screens, view models, strings
+feature:community:*          ← the published feed, authors, moderation: what other people see
 feature:account:*            ← who is signed in, as three states rather than a nullable user
 feature:aistudio:*           ← generation and library ports, Gemini client, stub, credits
 build-logic                  ← convention plugins: library, compose, hilt, room, network, navigation

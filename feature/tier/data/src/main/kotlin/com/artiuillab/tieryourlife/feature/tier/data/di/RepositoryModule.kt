@@ -3,11 +3,11 @@ package com.artiuillab.tieryourlife.feature.tier.data.di
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
 import com.artiuillab.tieryourlife.feature.tier.data.repository.CatalogueSearchRepositoryImpl
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RetrofitAccountErasure
-import com.artiuillab.tieryourlife.feature.tier.data.repository.RetrofitCommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomOwnLists
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
 import com.artiuillab.tieryourlife.feature.tier.data.sync.BoardSyncEngine
 import com.artiuillab.tieryourlife.feature.tier.data.sync.Connection
+import com.artiuillab.tieryourlife.feature.tier.data.sync.OwnPicturesOnThisPhone
 import com.artiuillab.tieryourlife.feature.tier.data.sync.PictureSync
 import com.artiuillab.tieryourlife.feature.tier.data.sync.PictureVault
 import com.artiuillab.tieryourlife.feature.tier.data.sync.Pictures
@@ -15,12 +15,12 @@ import com.artiuillab.tieryourlife.feature.tier.data.sync.RoomBoardBackup
 import com.artiuillab.tieryourlife.feature.tier.data.sync.RoomBoardMerge
 import com.artiuillab.tieryourlife.feature.tier.data.sync.SystemConnection
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
-import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardBackup
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.OwnPictures
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import dagger.Binds
 import dagger.Module
@@ -40,12 +40,6 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindCommunityRepository(
-        implementation: RetrofitCommunityRepository,
-    ): CommunityRepository
-
-    @Binds
-    @Singleton
     abstract fun bindAccountErasure(
         implementation: RetrofitAccountErasure,
     ): AccountErasure
@@ -55,6 +49,12 @@ abstract class RepositoryModule {
     abstract fun bindOwnLists(
         implementation: RoomOwnLists,
     ): OwnLists
+
+    @Binds
+    @Singleton
+    abstract fun bindOwnPictures(
+        implementation: OwnPicturesOnThisPhone,
+    ): OwnPictures
 
     @Binds
     @Singleton
