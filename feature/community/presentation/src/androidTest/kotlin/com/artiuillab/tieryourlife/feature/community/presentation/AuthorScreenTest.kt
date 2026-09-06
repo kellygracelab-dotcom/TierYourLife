@@ -18,7 +18,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.artiuillab.tieryourlife.feature.tier.presentation.R as TierR
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 @RunWith(AndroidJUnit4::class)
 class AuthorScreenTest {
@@ -31,7 +31,7 @@ class AuthorScreenTest {
         var hidden = false
         setScreen(onHideAuthor = { hidden = true })
 
-        composeRule.onNodeWithContentDescription(string(TierR.string.tier_detail_content_description_more))
+        composeRule.onNodeWithContentDescription(string(ThemeR.string.tier_detail_content_description_more))
             .performClick()
         composeRule.onNodeWithTag(AuthorTestTags.ACTIONS_SHEET).assertIsDisplayed()
         composeRule.onNodeWithTag(AuthorTestTags.ACTION_HIDE_AUTHOR).performClick()

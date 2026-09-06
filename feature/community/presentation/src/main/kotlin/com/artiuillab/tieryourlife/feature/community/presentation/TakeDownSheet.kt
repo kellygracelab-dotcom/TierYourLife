@@ -31,7 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
-import com.artiuillab.tieryourlife.feature.tier.presentation.R as TierR
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 /** Tall enough that nothing lands beside "forever" by accident. */
 private val CHOICE_HEIGHT = 52.dp
@@ -157,7 +157,7 @@ internal fun TakeDownSheet(
             },
             dismissButton = {
                 TextButton(onClick = { askingForever = false }) {
-                    Text(stringResource(TierR.string.action_cancel))
+                    Text(stringResource(ThemeR.string.action_cancel))
                 }
             },
         )

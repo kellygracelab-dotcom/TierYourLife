@@ -7,7 +7,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.rememberArrival
+import com.artiuillab.tieryourlife.core.theme.ui.rememberArrival
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.HomeTab
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTabs
 

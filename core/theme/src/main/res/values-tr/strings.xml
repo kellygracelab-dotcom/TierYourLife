@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_clear_query">Aramayı temizle</string>
+    <string name="cd_close_search">Aramayı kapat</string>
+    <string name="home_search_hint">Listelerinde ara</string>
+    <string name="tier_lists_content_description_as_pictures">Panoları görsel olarak göster</string>
+    <string name="tier_lists_content_description_as_rows">Panoları satır olarak göster</string>
+    <string name="tier_lists_content_description_search">Listelerinde ara</string>
+    <string name="tier_lists_content_description_settings">Ayarlar</string>
+    <string name="action_cancel">İptal</string>
+    <string name="action_try_again">Tekrar dene</string>
+    <plurals name="list_items_count">
+        <item quantity="one">%1$d öğe</item>
+        <item quantity="other">%1$d öğe</item>
+    </plurals>
+    <plurals name="tier_lists_rankings_count">
+        <item quantity="one">%d sıralama</item>
+        <item quantity="other">%d sıralama</item>
+    </plurals>
+    <string name="snack_action_failed">Değişiklik kaydedilemedi</string>
+    <string name="tier_detail_content_description_back">Geri git</string>
+    <string name="tier_detail_content_description_more">Diğer seçenekler</string>
+    <plurals name="tier_lists_count">
+        <item quantity="one">%d liste</item>
+        <item quantity="other">%d liste</item>
+    </plurals>
+    <plurals name="tier_lists_ranked_count">
+        <item quantity="one">%d sıralandı</item>
+        <item quantity="other">%d sıralandı</item>
+    </plurals>
+    <string name="tier_lists_title">Listelerin</string>
+</resources>

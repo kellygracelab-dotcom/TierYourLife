@@ -22,9 +22,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
+import com.artiuillab.tieryourlife.core.theme.ui.HideIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.AuthorTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.HideIcon
 
 /**
  * What a reader can do about a person rather than a list. Reporting is not

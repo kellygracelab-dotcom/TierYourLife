@@ -41,6 +41,8 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
+import com.artiuillab.tieryourlife.core.theme.ui.MoreIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorActionsSheet
@@ -50,9 +52,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Lis
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.MoreIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.R as TierR
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private val PORTRAIT_SIZE = 80.dp
 
@@ -114,7 +114,7 @@ fun AuthorScreenContent(
                 AuthorUiState.Failed -> Message(
                     title = stringResource(R.string.author_failed),
                     body = stringResource(R.string.home_community_failed_body),
-                    action = stringResource(TierR.string.action_try_again),
+                    action = stringResource(ThemeR.string.action_try_again),
                     onAction = onRetry,
                 )
 
@@ -203,8 +203,8 @@ fun AuthorScreenContent(
 
 @Composable
 private fun AuthorTopBar(onBack: () -> Unit, onMoreClick: (() -> Unit)?) {
-    val backDescription = stringResource(TierR.string.tier_detail_content_description_back)
-    val moreDescription = stringResource(TierR.string.tier_detail_content_description_more)
+    val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
+    val moreDescription = stringResource(ThemeR.string.tier_detail_content_description_more)
     Box(
         modifier = Modifier
             .fillMaxWidth()

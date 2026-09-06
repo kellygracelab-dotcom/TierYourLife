@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashTestTags
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 @Composable
 internal fun RemoveConfirmDialog(entry: TrashEntry, onDismiss: () -> Unit, onConfirm: () -> Unit) {
@@ -20,7 +21,7 @@ internal fun RemoveConfirmDialog(entry: TrashEntry, onDismiss: () -> Unit, onCon
         is TrashEntry.DeletedList -> stringResource(
             R.string.remove_dialog_body_list,
             entry.title,
-            pluralStringResource(R.plurals.list_items_count, entry.itemCount, entry.itemCount),
+            pluralStringResource(ThemeR.plurals.list_items_count, entry.itemCount, entry.itemCount),
         )
 
         is TrashEntry.DeletedItem -> stringResource(R.string.remove_dialog_body_item, entry.title)
@@ -42,7 +43,7 @@ internal fun RemoveConfirmDialog(entry: TrashEntry, onDismiss: () -> Unit, onCon
             TextButton(
                 onClick = onDismiss,
                 modifier = Modifier.testTag(TrashTestTags.REMOVE_CANCEL),
-            ) { Text(stringResource(R.string.action_cancel)) }
+            ) { Text(stringResource(ThemeR.string.action_cancel)) }
         },
     )
 }
@@ -75,7 +76,7 @@ internal fun EmptyTrashDialog(entryCount: Int, onDismiss: () -> Unit, onConfirm:
             TextButton(
                 onClick = onDismiss,
                 modifier = Modifier.testTag(TrashTestTags.EMPTY_TRASH_CANCEL),
-            ) { Text(stringResource(R.string.action_cancel)) }
+            ) { Text(stringResource(ThemeR.string.action_cancel)) }
         },
     )
 }

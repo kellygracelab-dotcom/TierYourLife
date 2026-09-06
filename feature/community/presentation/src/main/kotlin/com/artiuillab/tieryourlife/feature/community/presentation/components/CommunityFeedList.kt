@@ -49,10 +49,10 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListS
 import com.artiuillab.tieryourlife.feature.community.presentation.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.labelRes
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ListArt
-import com.artiuillab.tieryourlife.feature.tier.presentation.R as TierR
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private const val CARD_ART_ASPECT = 1f
 
@@ -129,7 +129,7 @@ internal fun CommunityFeedList(
             CommunityFeed.Failed -> CommunityMessage(
                 title = stringResource(R.string.home_community_failed),
                 body = stringResource(R.string.home_community_failed_body),
-                action = stringResource(TierR.string.action_try_again),
+                action = stringResource(ThemeR.string.action_try_again),
                 onAction = onRetry,
                 testTag = CommunityTestTags.COMMUNITY_FAILED,
             )
@@ -311,7 +311,7 @@ private fun CommunityCard(
                     summary.itemCount,
                 ) + if (summary.takeCount > 0) {
                     " · " + pluralStringResource(
-                        TierR.plurals.tier_lists_rankings_count,
+                        ThemeR.plurals.tier_lists_rankings_count,
                         summary.takeCount,
                         summary.takeCount,
                     )

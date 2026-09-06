@@ -44,12 +44,12 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Rep
 import com.artiuillab.tieryourlife.feature.settings.presentation.HiddenScreenContent
 import com.artiuillab.tieryourlife.feature.settings.presentation.HiddenUiState
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsScreenContent
+import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
+import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreenContent
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.HomeTab
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsUiState

@@ -55,13 +55,13 @@ import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
+import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
+import com.artiuillab.tieryourlife.core.theme.ui.FlagIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.FlagIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BackIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.R as TierR
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 @Composable
 fun ModerationScreen(
@@ -176,7 +176,7 @@ private fun ColumnScope.Queue(
                 ModerationUiState.Failed -> Message(
                     title = stringResource(R.string.moderation_failed),
                     body = stringResource(R.string.home_community_failed_body),
-                    action = stringResource(TierR.string.action_try_again),
+                    action = stringResource(ThemeR.string.action_try_again),
                     onAction = onRetry,
                 )
 
@@ -214,7 +214,7 @@ private fun ColumnScope.Queue(
 
 @Composable
 private fun TopBar(onBack: () -> Unit, coversShown: Boolean, onToggleCovers: () -> Unit) {
-    val backDescription = stringResource(TierR.string.tier_detail_content_description_back)
+    val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     Row(
         modifier = Modifier
             .fillMaxWidth()

@@ -24,9 +24,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.CatalogueSearchTestTags
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CheckIcon
 
 @Composable
 internal fun SelectionCheckbox(isSelected: Boolean) {

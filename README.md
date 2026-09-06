@@ -118,12 +118,13 @@ server refuses the request regardless, because hiding a button does not stop one
 app                          ← Application, Activity, theme + locale bootstrap
 navigation                   ← the NavHost, and the rail that replaces the tabs on wide windows
 core:settings                ← theme, language, feature flags, what this phone has hidden
-core:theme                   ← Material 3 colour scheme and typography; WindowShape; user messages
+core:theme                   ← Material 3 colour scheme and typography; WindowShape; the icons, bars and messages every screen shares
 core:logging                 ← Timber, and the only module that knows a crash reporter exists
 core:network                 ← App Check and ID-token interceptors, and the proxy client every caller shares
 feature:tier:domain          ← models, repository ports, pure decision logic (no Android)
 feature:tier:data            ← Room, Retrofit, image store, board sync, Hilt wiring
-feature:tier:presentation    ← Compose screens, view models, strings
+feature:tier:board           ← the board itself: rows, drag, sheets, the share picture — drawn for your lists and for strangers'
+feature:tier:presentation    ← your lists, the board's view model, catalogue, trash, cover; strings
 feature:community:*          ← the published feed, authors, moderation: what other people see
 feature:settings:presentation ← settings, hidden lists, language, theme, backup, export
 feature:account:*            ← who is signed in, as three states rather than a nullable user

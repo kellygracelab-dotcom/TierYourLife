@@ -25,16 +25,18 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.ui.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTabs
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
+import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 
 @RunWith(AndroidJUnit4::class)
 class TierListsScreenTest {
@@ -47,7 +49,7 @@ class TierListsScreenTest {
         val lists = initialLists()
         setScreen(successState(lists))
 
-        composeRule.onNodeWithText(string(R.string.tier_lists_title)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(ThemeR.string.tier_lists_title)).assertIsDisplayed()
         composeRule.onNodeWithText(summary(listCount = 2, rankedCount = 19)).assertIsDisplayed()
         composeRule.onNodeWithText("Sci-fi films").assertIsDisplayed()
         composeRule.onNodeWithText("Every A24 film").assertIsDisplayed()
@@ -61,7 +63,7 @@ class TierListsScreenTest {
         setScreen(successState(emptyList()), onSettingsClick = { calls++ })
 
         composeRule.onNodeWithContentDescription(
-            string(R.string.tier_lists_content_description_settings),
+            string(ThemeR.string.tier_lists_content_description_settings),
         ).performClick()
 
         composeRule.runOnIdle { assertEquals(1, calls) }
@@ -98,7 +100,7 @@ class TierListsScreenTest {
     fun emptySuccessState_hidesSummaryLine_andShowsTheEmptyState() {
         setScreen(successState(emptyList()))
 
-        composeRule.onNodeWithText(string(R.string.tier_lists_title)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(ThemeR.string.tier_lists_title)).assertIsDisplayed()
         composeRule.onNodeWithText(summary(listCount = 0, rankedCount = 0)).assertDoesNotExist()
         composeRule.onNodeWithTag(TierListsTestTags.EMPTY_STATE).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.home_empty_title)).assertIsDisplayed()
@@ -113,7 +115,7 @@ class TierListsScreenTest {
         setLiveScreen(lists)
 
         composeRule.onNodeWithContentDescription(
-            string(R.string.tier_lists_content_description_search),
+            string(ThemeR.string.tier_lists_content_description_search),
         ).performClick()
         composeRule.onNodeWithTag(TierListsTestTags.SEARCH_FIELD).performTextInput("piz")
 
@@ -128,7 +130,7 @@ class TierListsScreenTest {
         setLiveScreen(lists)
 
         composeRule.onNodeWithContentDescription(
-            string(R.string.tier_lists_content_description_search),
+            string(ThemeR.string.tier_lists_content_description_search),
         ).performClick()
         composeRule.onNodeWithTag(TierListsTestTags.SEARCH_FIELD).performTextInput("sushi")
 
@@ -142,12 +144,12 @@ class TierListsScreenTest {
         setLiveScreen(lists)
 
         composeRule.onNodeWithContentDescription(
-            string(R.string.tier_lists_content_description_search),
+            string(ThemeR.string.tier_lists_content_description_search),
         ).performClick()
         composeRule.onNodeWithTag(TierListsTestTags.SEARCH_CLOSE).performClick()
 
         composeRule.onNodeWithTag(TierListsTestTags.FAB).assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.tier_lists_title)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(ThemeR.string.tier_lists_title)).assertIsDisplayed()
     }
 
     @Test
@@ -198,7 +200,7 @@ class TierListsScreenTest {
         composeRule.onNodeWithTag("tier_list_card_7").performTouchInput { longClick() }
 
         composeRule.onNodeWithTag(TierListsTestTags.SELECTION_BAR).assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.tier_lists_title)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(ThemeR.string.tier_lists_title)).assertIsDisplayed()
         composeRule.onNodeWithText(summary(listCount = 1, rankedCount = 1)).assertIsDisplayed()
     }
 
@@ -513,15 +515,15 @@ class TierListsScreenTest {
 
     private fun summary(listCount: Int, rankedCount: Int): String = string(
         R.string.tier_lists_summary,
-        plural(R.plurals.tier_lists_count, listCount),
-        plural(R.plurals.tier_lists_rankings_count, rankedCount),
+        plural(ThemeR.plurals.tier_lists_count, listCount),
+        plural(ThemeR.plurals.tier_lists_rankings_count, rankedCount),
         string(R.string.tier_lists_private),
     )
 
     private fun cardCounts(ranked: Int, pool: Int): String = string(
-        R.string.tier_lists_card_ranked_and_in_pool,
-        plural(R.plurals.tier_lists_ranked_count, ranked),
-        plural(R.plurals.tier_lists_in_pool_count, pool),
+        BoardR.string.tier_lists_card_ranked_and_in_pool,
+        plural(ThemeR.plurals.tier_lists_ranked_count, ranked),
+        plural(BoardR.plurals.tier_lists_in_pool_count, pool),
     )
 
     private fun string(resourceId: Int, vararg formatArgs: Any): String =

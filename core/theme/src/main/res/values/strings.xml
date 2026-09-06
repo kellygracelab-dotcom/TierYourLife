@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name_display" translatable="false">TierYourLife</string>
+    <string name="cd_clear_query">Clear search</string>
+    <string name="cd_close_search">Close search</string>
+    <string name="home_search_hint">Search your lists</string>
+    <string name="tier_lists_content_description_as_pictures">Show boards as pictures</string>
+    <string name="tier_lists_content_description_as_rows">Show boards as rows</string>
+    <string name="tier_lists_content_description_search">Search your lists</string>
+    <string name="tier_lists_content_description_settings">Settings</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_try_again">Try again</string>
+    <plurals name="list_items_count">
+        <item quantity="one">%1$d item</item>
+        <item quantity="other">%1$d items</item>
+    </plurals>
+    <plurals name="tier_lists_rankings_count">
+        <item quantity="one">%d ranking</item>
+        <item quantity="other">%d rankings</item>
+    </plurals>
+    <string name="snack_action_failed">Change not saved</string>
+    <string name="tier_detail_content_description_back">Navigate back</string>
+    <string name="tier_detail_content_description_more">More options</string>
+    <plurals name="tier_lists_count">
+        <item quantity="one">%d list</item>
+        <item quantity="other">%d lists</item>
+    </plurals>
+    <plurals name="tier_lists_ranked_count">
+        <item quantity="one">%d ranked</item>
+        <item quantity="other">%d ranked</item>
+    </plurals>
+    <string name="tier_lists_title">Your lists</string>
+</resources>

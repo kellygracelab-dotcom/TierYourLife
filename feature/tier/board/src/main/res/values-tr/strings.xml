@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ai_chip">Oluştur</string>
+    <string name="category_anime">Anime</string>
+    <string name="category_film_tv">Film ve Dizi</string>
+    <string name="category_food">Yemek</string>
+    <string name="category_games">Oyunlar</string>
+    <string name="category_music">Müzik</string>
+    <string name="category_other">Diğer</string>
+    <string name="category_people">Kişiler</string>
+    <string name="category_sport">Spor</string>
+    <string name="cd_ai_chip">Yapay zekâ ile görsel oluştur</string>
+    <string name="list_settings_category">Kategori</string>
+    <string name="list_settings_category_none">Henüz seçilmedi</string>
+    <string name="list_settings_cover">Kapak</string>
+    <string name="list_settings_cover_body">Bu listedeki kartlardan birini ya da galerinizden bir görseli seçin.</string>
+    <string name="list_settings_cover_gallery">Galeriden seç</string>
+    <string name="list_settings_cover_gallery_note">Galeriden seçilen görsel bu telefonda kalır. Toplulukta liste bunun yerine kartlarını gösterir.</string>
+    <string name="list_settings_cover_no_cards">Bu listedeki kartların henüz görseli yok.</string>
+    <string name="list_settings_cover_none">Kapağı kaldır</string>
+    <string name="list_settings_cover_none_set">Yok</string>
+    <string name="list_settings_cover_set">Seçildi</string>
+    <string name="list_settings_public">Herkese açık</string>
+    <string name="list_settings_public_body">Herkes bu listeyi açıp kendince sıralayabilir.</string>
+    <string name="list_settings_public_failed">Bu liste yayımlanamadı. Yeniden deneyin.</string>
+    <string name="list_settings_public_images">Yalnızca zaten internette olan görseller gider. Fotoğraflar ve üretilen görseller bu telefonda kalır.</string>
+    <string name="list_settings_public_needs_account">Yayımlamak için Google ile oturum aç. Başkalarınınkini okumak ve kaydetmek hesap istemez.</string>
+    <string name="list_settings_public_needs_items">Listeyi yayımlamadan önce en az bir kart ekleyin.</string>
+    <string name="list_settings_public_offline">Bağlantı yok. Çevrimiçi olduğunuzda yeniden deneyin.</string>
+    <string name="list_settings_public_picture_refused">Fotoğraflarınızdan biri herkese açık akışta yer alamaz. Kaldırın ya da listeyi özel tutun.</string>
+    <string name="list_settings_public_too_large">Bu liste yayımlanamayacak kadar büyük: en fazla 1000 kart ve 20 kademe.</string>
+    <string name="list_settings_public_too_many">İzin verilen en fazla sayıda listeyi yayımladınız. Yer açmak için birini yayından kaldırın.</string>
+    <string name="list_settings_public_unverified">Google Play bu kurulumu doğrulayamadı, bu yüzden buradan hiçbir şey yayınlanamaz.</string>
+    <string name="list_settings_share">Görsel olarak paylaş</string>
+    <string name="list_settings_share_sub">Bu panonun görseli ve uygulama bağlantısı</string>
+    <string name="list_settings_update_published">Yayımlanan sürüm</string>
+    <string name="list_settings_update_published_body">Bu panoyu aynı bağlantıyla yeniden gönder.</string>
+    <string name="manual_dialog_add">Ekle</string>
+    <plurals name="manual_dialog_add_many">
+        <item quantity="one">%1$d öğe ekle</item>
+        <item quantity="other">%1$d öğe ekle</item>
+    </plurals>
+    <string name="manual_dialog_body">Havuza gider. Sonra bir seviyeye sürükleyebilirsin.</string>
+    <string name="manual_dialog_cancel">İptal</string>
+    <string name="manual_dialog_choose_photo">Fotoğraf seç</string>
+    <string name="manual_dialog_field_name">Ad</string>
+    <string name="manual_dialog_photo_frame_chosen">Fotoğraf seçildi. Değiştirmek için \"Fotoğrafı değiştir\" öğesine dokun.</string>
+    <string name="manual_dialog_photo_frame_empty">Fotoğraf seçilmedi</string>
+    <string name="manual_dialog_photo_optional">Fotoğraf isteğe bağlıdır.</string>
+    <plurals name="manual_dialog_photos_chosen">
+        <item quantity="one">%1$d fotoğraf seçildi</item>
+        <item quantity="other">%1$d fotoğraf seçildi</item>
+    </plurals>
+    <string name="manual_dialog_remove_photo">Fotoğrafı kaldır</string>
+    <string name="manual_dialog_replace_photo">Fotoğrafı değiştir</string>
+    <string name="manual_dialog_title">Öğe ekle</string>
+    <string name="my_published_action_update">Güncelle</string>
+    <string name="my_published_behind">Yayımlanan sürüm bu panonun gerisinde.</string>
+    <string name="share_caption">%1$s — TierYourLife\'ta sıralandı\n%2$s</string>
+    <string name="share_footer">TierYourLife ile yapıldı</string>
+    <string name="tier_detail_add">Ekle</string>
+    <plurals name="tier_detail_collapsed_item_count">
+        <item quantity="one">%1$d öğe</item>
+        <item quantity="other">%1$d öğe</item>
+    </plurals>
+    <string name="tier_detail_content_description_edit_title">Liste adını düzenle</string>
+    <string name="tier_detail_content_description_manual_add">Öğeyi elle ekle</string>
+    <string name="tier_detail_item_moved_to_trash">%1$s çöp kutusuna taşındı</string>
+    <plurals name="tier_detail_items_added_to_pool">
+        <item quantity="one">%1$d öğe havuza eklendi</item>
+        <item quantity="other">%1$d öğe havuza eklendi</item>
+    </plurals>
+    <string name="tier_detail_move_sheet_current_tier">Şu anda burada</string>
+    <string name="tier_detail_move_sheet_pool_subtitle">Sıralanmadı, listede kalır</string>
+    <string name="tier_detail_move_sheet_pool_title">Havuza geri gönder</string>
+    <string name="tier_detail_move_sheet_remove_subtitle">Çöp kutusuna gider</string>
+    <string name="tier_detail_move_sheet_remove_title">Listeden kaldır</string>
+    <string name="tier_detail_move_sheet_subtitle">Bir seviyeye taşı</string>
+    <string name="tier_detail_not_found">Liste bulunamadı.</string>
+    <plurals name="tier_detail_pool_unranked_count">
+        <item quantity="one">Havuz · %d sıralanmadı</item>
+        <item quantity="other">Havuz · %d sıralanmadı</item>
+    </plurals>
+    <plurals name="tier_detail_ranked_header">
+        <item quantity="one">%1$d sıralandı · en iyiden en kötüye</item>
+        <item quantity="other">%1$d sıralandı · en iyiden en kötüye</item>
+    </plurals>
+    <string name="tier_detail_ranked_header_empty">Henüz sıralanan yok</string>
+    <plurals name="tier_detail_ranked_pool_collapsed_description">
+        <item quantity="one">Havuz, %1$d sıralanmadı. Genişlet.</item>
+        <item quantity="other">Havuz, %1$d sıralanmadı. Genişlet.</item>
+    </plurals>
+    <plurals name="tier_detail_ranked_pool_expanded_description">
+        <item quantity="one">Havuz, %1$d sıralanmadı. Daralt.</item>
+        <item quantity="other">Havuz, %1$d sıralanmadı. Daralt.</item>
+    </plurals>
+    <string name="tier_detail_ranked_row_description">%1$d. sıra, %2$s, seviye %3$s.</string>
+    <string name="tier_detail_snackbar_undo">Geri al</string>
+    <string name="tier_detail_tier_moved_to_trash">%1$s seviyesi çöp kutusuna taşındı</string>
+    <string name="tier_detail_trash_target_label">Kaldır</string>
+    <string name="tier_editor_add_title">Seviye ekle</string>
+    <string name="tier_editor_cancel">İptal</string>
+    <string name="tier_editor_caption_field">Alt yazı</string>
+    <string name="tier_editor_color_section_caption">Özel · açık ve koyu renkleri bağımsız olarak ayarla</string>
+    <string name="tier_editor_color_section_title">Renk</string>
+    <string name="tier_editor_custom_color_description">Özel renk</string>
+    <string name="tier_editor_hex_label">Hex</string>
+    <string name="tier_editor_hue_label">Ton</string>
+    <string name="tier_editor_label_field">Etiket</string>
+    <string name="tier_editor_lightness_label">Parlaklık</string>
+    <string name="tier_editor_preset_color_description">Hazır renk %1$d</string>
+    <string name="tier_editor_saturation_label">Doygunluk</string>
+    <string name="tier_editor_save">Kaydet</string>
+    <string name="tier_editor_theme_dark">Koyu</string>
+    <string name="tier_editor_theme_light">Açık</string>
+    <string name="tier_editor_title">Seviyeyi düzenle</string>
+    <string name="tier_list_settings_display_section">Görünüm</string>
+    <string name="tier_list_settings_display_section_caption">Bu listede seviyelerin nasıl gösterildiği. Diğer listeleri etkilemez.</string>
+    <string name="tier_list_settings_mode_ranked">Sıralı liste</string>
+    <string name="tier_list_settings_mode_ranked_sub">Tek sütun, en iyiden en kötüye, seviyesiz</string>
+    <string name="tier_list_settings_mode_strip">Tek şerit</string>
+    <string name="tier_list_settings_mode_strip_sub">Seviye başına bir satır, yana kaydırılır</string>
+    <string name="tier_list_settings_mode_wrapped">Kaydırılan satırlar</string>
+    <string name="tier_list_settings_mode_wrapped_sub">Her öğe görünür, satırlar uzar</string>
+    <string name="tier_list_settings_new_tier_title">Yeni seviye</string>
+    <plurals name="tier_list_settings_tier_count">
+        <item quantity="one">%d seviye</item>
+        <item quantity="other">%d seviye</item>
+    </plurals>
+    <string name="tier_list_settings_title">Liste ayarları</string>
+    <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
+    <plurals name="tier_lists_in_pool_count">
+        <item quantity="one">%d havuzda</item>
+        <item quantity="other">%d havuzda</item>
+    </plurals>
+</resources>

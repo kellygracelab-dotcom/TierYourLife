@@ -58,26 +58,27 @@ import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
+import com.artiuillab.tieryourlife.core.theme.ui.DeletedItemSnackbarHost
+import com.artiuillab.tieryourlife.core.theme.ui.HomeTopBar
+import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
+import com.artiuillab.tieryourlife.core.theme.ui.SearchOffIcon
+import com.artiuillab.tieryourlife.core.theme.ui.SearchTopBar
+import com.artiuillab.tieryourlife.core.theme.ui.rememberArrival
+import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.PlusIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.rememberArrival
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardControlsRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardFiltersSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardTile
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ConflictBanner
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeEmptyState
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeHeader
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlyFooter
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlySignInCard
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.RestoringPictures
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchOffIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SelectionTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.TILE_MIN_WIDTH
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.TierListCard
@@ -85,6 +86,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.component
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 /**
  * This phone's own boards: the half of the home screen that is yours. [tabs]
@@ -199,7 +201,7 @@ fun TierListsScreenContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val undoLabel = stringResource(R.string.action_undo)
-    val actionFailedMessage = stringResource(R.string.snack_action_failed)
+    val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
     val stillPublicMessage = stringResource(R.string.snack_published_list_still_public)
 
     LaunchedEffect(Unit) {

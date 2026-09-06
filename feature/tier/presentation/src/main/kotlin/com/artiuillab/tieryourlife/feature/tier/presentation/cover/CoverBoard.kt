@@ -38,7 +38,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
-import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private val ROW_HEIGHT = 46.dp
 private val BAND_WIDTH = 34.dp
@@ -112,7 +112,7 @@ private fun CoverHeader(board: TierList) {
         )
         Text(
             // The plural already says the word; wrapping it said it twice.
-            text = pluralStringResource(R.plurals.tier_lists_ranked_count, ranked, ranked),
+            text = pluralStringResource(ThemeR.plurals.tier_lists_ranked_count, ranked, ranked),
             modifier = Modifier.padding(start = 8.dp),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

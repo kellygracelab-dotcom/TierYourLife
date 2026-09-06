@@ -24,11 +24,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
+import com.artiuillab.tieryourlife.core.theme.ui.FlagIcon
+import com.artiuillab.tieryourlife.core.theme.ui.HideIcon
+import com.artiuillab.tieryourlife.core.theme.ui.PersonIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.FlagIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.HideIcon
-import com.artiuillab.tieryourlife.feature.tier.presentation.common.PersonIcon
 
 /**
  * Mild to sharp, in that order. Hiding sits next to reporting on purpose: most

@@ -15,9 +15,8 @@ dependencies {
     implementation(projects.core.theme)
     implementation(projects.feature.community.domain)
     implementation(projects.feature.tier.domain)
-    // A stranger's list is drawn by the board the tier feature draws; the bars
-    // and icons the two halves of the home screen share live there as well.
-    implementation(projects.feature.tier.presentation)
+    // A stranger's list is drawn by the board renderer.
+    implementation(projects.feature.tier.board)
     implementation(projects.feature.account.domain)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)

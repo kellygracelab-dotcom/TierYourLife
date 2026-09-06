@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_clear_query">Effacer la recherche</string>
+    <string name="cd_close_search">Fermer la recherche</string>
+    <string name="home_search_hint">Rechercher dans vos listes</string>
+    <string name="tier_lists_content_description_as_pictures">Afficher les tableaux en images</string>
+    <string name="tier_lists_content_description_as_rows">Afficher les tableaux en lignes</string>
+    <string name="tier_lists_content_description_search">Rechercher dans vos listes</string>
+    <string name="tier_lists_content_description_settings">Paramètres</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_try_again">Réessayer</string>
+    <plurals name="list_items_count">
+        <item quantity="one">%1$d élément</item>
+        <item quantity="many">%1$d éléments</item>
+        <item quantity="other">%1$d éléments</item>
+    </plurals>
+    <plurals name="tier_lists_rankings_count">
+        <item quantity="one">%d classement</item>
+        <item quantity="many">%d classements</item>
+        <item quantity="other">%d classements</item>
+    </plurals>
+    <string name="snack_action_failed">Modification non enregistrée</string>
+    <string name="tier_detail_content_description_back">Retour</string>
+    <string name="tier_detail_content_description_more">Plus d\'options</string>
+    <plurals name="tier_lists_count">
+        <item quantity="one">%d liste</item>
+        <item quantity="many">%d listes</item>
+        <item quantity="other">%d listes</item>
+    </plurals>
+    <plurals name="tier_lists_ranked_count">
+        <item quantity="one">%d classé</item>
+        <item quantity="many">%d classés</item>
+        <item quantity="other">%d classés</item>
+    </plurals>
+    <string name="tier_lists_title">Vos listes</string>
+</resources>

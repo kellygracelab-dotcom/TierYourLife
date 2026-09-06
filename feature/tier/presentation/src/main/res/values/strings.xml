@@ -1,40 +1,15 @@
 <resources>
-    <string name="tier_lists_title">Your lists</string>
     <string name="tier_lists_private">private</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
-    <plurals name="tier_lists_count">
-        <item quantity="one">%d list</item>
-        <item quantity="other">%d lists</item>
-    </plurals>
-    <plurals name="tier_lists_rankings_count">
-        <item quantity="one">%d ranking</item>
-        <item quantity="other">%d rankings</item>
-    </plurals>
-    <plurals name="tier_lists_ranked_count">
-        <item quantity="one">%d ranked</item>
-        <item quantity="other">%d ranked</item>
-    </plurals>
-    <plurals name="tier_lists_in_pool_count">
-        <item quantity="one">%d in pool</item>
-        <item quantity="other">%d in pool</item>
-    </plurals>
-    <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · nothing ranked yet</string>
     <string name="tier_lists_status_start_dragging">Start dragging to rank these</string>
-    <string name="tier_lists_content_description_search">Search your lists</string>
-    <string name="tier_lists_content_description_as_pictures">Show boards as pictures</string>
-    <string name="tier_lists_content_description_as_rows">Show boards as rows</string>
-    <string name="tier_lists_content_description_settings">Settings</string>
 
-    <string name="home_search_hint">Search your lists</string>
     <plurals name="search_results_count">
         <item quantity="one">%1$d list</item>
         <item quantity="other">%1$d lists</item>
     </plurals>
     <string name="search_no_results_title">No lists match “%1$s”</string>
     <string name="search_no_results_body">Try a shorter word, or check the spelling.</string>
-    <string name="cd_close_search">Close search</string>
-    <string name="cd_clear_query">Clear search</string>
 
     <plurals name="selection_count">
         <item quantity="one">%1$d selected</item>
@@ -54,88 +29,14 @@
     <string name="default_tier_list_title">Untitled list</string>
     <string name="tier_lists_load_error">Couldn’t load your lists.</string>
 
-    <string name="tier_detail_add">Add</string>
-    <string name="tier_detail_not_found">Tier list not found.</string>
-    <string name="tier_detail_content_description_back">Navigate back</string>
-    <string name="tier_detail_content_description_manual_add">Add an item by hand</string>
-    <string name="tier_detail_content_description_more">More options</string>
-    <string name="tier_detail_content_description_edit_title">Edit list name</string>
-    <plurals name="tier_detail_pool_unranked_count">
-        <item quantity="one">Pool · %d unranked</item>
-        <item quantity="other">Pool · %d unranked</item>
-    </plurals>
 
-    <string name="tier_detail_move_sheet_subtitle">Move to a tier</string>
-    <string name="tier_detail_move_sheet_current_tier">Currently here</string>
-    <string name="tier_detail_move_sheet_remove_title">Remove from list</string>
-    <string name="tier_detail_move_sheet_remove_subtitle">Goes to the trash</string>
-    <string name="tier_detail_move_sheet_pool_title">Back to the pool</string>
-    <string name="tier_detail_move_sheet_pool_subtitle">Unranked, stays in the list</string>
 
-    <string name="tier_detail_trash_target_label">Remove</string>
 
-    <string name="tier_detail_item_moved_to_trash">%1$s moved to the trash</string>
-    <string name="tier_detail_tier_moved_to_trash">Tier %1$s moved to the trash</string>
-    <string name="tier_detail_snackbar_undo">Undo</string>
-    <plurals name="tier_detail_items_added_to_pool">
-        <item quantity="one">%1$d item added to the pool</item>
-        <item quantity="other">%1$d items added to the pool</item>
-    </plurals>
 
-    <string name="ai_chip">Generate</string>
-    <string name="cd_ai_chip">Generate an image with AI</string>
 
-    <plurals name="tier_detail_collapsed_item_count">
-        <item quantity="one">%1$d item</item>
-        <item quantity="other">%1$d items</item>
-    </plurals>
 
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="one">%1$d ranked · best to worst</item>
-        <item quantity="other">%1$d ranked · best to worst</item>
-    </plurals>
-    <string name="tier_detail_ranked_header_empty">Nothing ranked yet</string>
-    <string name="tier_detail_ranked_row_description">Rank %1$d, %2$s, tier %3$s.</string>
-    <plurals name="tier_detail_ranked_pool_collapsed_description">
-        <item quantity="one">Pool, %1$d unranked. Expand.</item>
-        <item quantity="other">Pool, %1$d unranked. Expand.</item>
-    </plurals>
-    <plurals name="tier_detail_ranked_pool_expanded_description">
-        <item quantity="one">Pool, %1$d unranked. Collapse.</item>
-        <item quantity="other">Pool, %1$d unranked. Collapse.</item>
-    </plurals>
 
-    <string name="tier_list_settings_title">List settings</string>
-    <string name="tier_list_settings_display_section">Display</string>
-    <string name="tier_list_settings_display_section_caption">How tiers are shown in this list. Other lists are unaffected.</string>
-    <string name="tier_list_settings_mode_wrapped">Wrapped rows</string>
-    <string name="tier_list_settings_mode_wrapped_sub">Every item visible, rows grow taller</string>
-    <string name="tier_list_settings_mode_strip">Single strip</string>
-    <string name="tier_list_settings_mode_strip_sub">One line per tier, scrolls sideways</string>
-    <string name="tier_list_settings_mode_ranked">Ranked list</string>
-    <string name="tier_list_settings_mode_ranked_sub">One column, best to worst, no tiers</string>
-    <string name="tier_list_settings_new_tier_title">New tier</string>
-    <plurals name="tier_list_settings_tier_count">
-        <item quantity="one">%d tier</item>
-        <item quantity="other">%d tiers</item>
-    </plurals>
 
-    <string name="tier_editor_title">Edit tier</string>
-    <string name="tier_editor_add_title">Add tier</string>
-    <string name="tier_editor_label_field">Label</string>
-    <string name="tier_editor_caption_field">Caption</string>
-    <string name="tier_editor_color_section_title">Colour</string>
-    <string name="tier_editor_color_section_caption">Custom · set the light and dark colour separately</string>
-    <string name="tier_editor_theme_light">Light</string>
-    <string name="tier_editor_theme_dark">Dark</string>
-    <string name="tier_editor_hue_label">Hue</string>
-    <string name="tier_editor_saturation_label">Saturation</string>
-    <string name="tier_editor_lightness_label">Lightness</string>
-    <string name="tier_editor_hex_label">Hex</string>
-    <string name="tier_editor_cancel">Cancel</string>
-    <string name="tier_editor_save">Save</string>
-    <string name="tier_editor_preset_color_description">Preset color %1$d</string>
-    <string name="tier_editor_custom_color_description">Custom color</string>
 
     <string name="item_search_field_label">Search</string>
     <string name="item_search_close_content_description">Close search</string>
@@ -157,25 +58,6 @@
     </plurals>
     <string name="item_search_add_disabled">Add</string>
 
-    <string name="manual_dialog_title">Add an item</string>
-    <string name="manual_dialog_body">Goes into the pool. You can drag it into a tier afterwards.</string>
-    <string name="manual_dialog_field_name">Name</string>
-    <string name="manual_dialog_photo_optional">A photo is optional.</string>
-    <string name="manual_dialog_choose_photo">Choose photo</string>
-    <string name="manual_dialog_replace_photo">Replace photo</string>
-    <string name="manual_dialog_cancel">Cancel</string>
-    <string name="manual_dialog_add">Add</string>
-    <string name="manual_dialog_photo_frame_empty">No photo chosen</string>
-    <string name="manual_dialog_photo_frame_chosen">Photo chosen. Tap Replace photo to change it.</string>
-    <plurals name="manual_dialog_photos_chosen">
-        <item quantity="one">%1$d photo chosen</item>
-        <item quantity="other">%1$d photos chosen</item>
-    </plurals>
-    <plurals name="manual_dialog_add_many">
-        <item quantity="one">Add %1$d item</item>
-        <item quantity="other">Add %1$d items</item>
-    </plurals>
-    <string name="manual_dialog_remove_photo">Remove photo</string>
 
 
     <string name="trash_title">Trash</string>
@@ -183,10 +65,6 @@
     <string name="trash_subtitle">Deleted lists and items stay here until you remove them.</string>
     <string name="trash_row_list_meta">List · %1$s · deleted %2$s</string>
     <string name="trash_row_item_meta">Item · from %1$s · deleted %2$s</string>
-    <plurals name="list_items_count">
-        <item quantity="one">%1$d item</item>
-        <item quantity="other">%1$d items</item>
-    </plurals>
     <string name="trash_time_just_now">just now</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">%1$d min ago</item>
@@ -208,7 +86,6 @@
     <string name="remove_dialog_body_item">%1$s will be deleted from this device. This can\'t be undone.</string>
     <string name="menu_empty_trash">Empty trash</string>
     <string name="action_empty_trash">Empty trash</string>
-    <string name="action_cancel">Cancel</string>
     <string name="empty_trash_dialog_title">Empty the trash?</string>
     <string name="empty_trash_dialog_body">%1$s will be deleted from this device. This can\'t be undone.</string>
     <plurals name="trash_entry_count">
@@ -224,8 +101,6 @@
 
     <string name="export_file_totals">%1$s · %2$s · %3$s</string>
     <string name="export_list_counts">%1$s · %2$s</string>
-    <string name="action_try_again">Try again</string>
-    <string name="snack_action_failed">Change not saved</string>
     <string name="home_start_with">Start with</string>
     <string name="home_start_hint">Creates a board straight away. Tap its title to rename.</string>
     <string name="home_new_list">New list</string>
@@ -234,29 +109,9 @@
     <string name="home_suggestion_restaurants">Restaurants</string>
     <string name="home_suggestion_albums">Albums</string>
     <string name="home_suggestion_books">Books</string>
-    <string name="app_name_display" translatable="false">TierYourLife</string>
     <string name="home_tab_mine">Your lists</string>
     <string name="home_tab_community">Community</string>
-    <string name="list_settings_public_unverified">Google Play could not confirm this installation, so nothing can be published from it.</string>
     <string name="community_saved">Saved to your lists</string>
-    <string name="list_settings_public">Public</string>
-    <string name="list_settings_public_body">Anyone can open this list and rank it themselves.</string>
-    <string name="list_settings_public_needs_account">Sign in with Google to publish. Reading and saving others’ lists needs no account.</string>
-    <string name="list_settings_public_images">Only pictures that already live on the web travel. Photos and generated art stay on this phone.</string>
-    <string name="list_settings_update_published">Published version</string>
-    <string name="list_settings_update_published_body">Send this board again, over the same link.</string>
-    <string name="list_settings_public_needs_items">Add at least one card before you publish this list.</string>
-    <string name="list_settings_public_too_many">You have published as many lists as we allow. Unpublish one to make room.</string>
-    <string name="list_settings_public_offline">No connection. Try again once you are back online.</string>
-    <string name="list_settings_public_failed">Could not publish this list. Try again.</string>
-    <string name="category_anime">Anime</string>
-    <string name="category_film_tv">Film &amp; TV</string>
-    <string name="category_games">Games</string>
-    <string name="category_music">Music</string>
-    <string name="category_food">Food</string>
-    <string name="category_sport">Sport</string>
-    <string name="category_people">People</string>
-    <string name="category_other">Other</string>
     <string name="lists_sort_newest">Newest</string>
     <string name="lists_sort_oldest">Oldest</string>
     <string name="lists_filter">Filter boards</string>
@@ -271,28 +126,10 @@
     <string name="lists_group_others">All boards</string>
     <string name="lists_favourite_add">Add to favourites</string>
     <string name="lists_favourite_remove">Remove from favourites</string>
-    <string name="list_settings_category">Category</string>
-    <string name="list_settings_category_none">Not chosen yet</string>
-    <string name="list_settings_cover">Cover</string>
-    <string name="list_settings_cover_none_set">None</string>
-    <string name="list_settings_cover_set">Chosen</string>
-    <string name="list_settings_share">Share as image</string>
-    <string name="list_settings_share_sub">A picture of this board, with a link to the app</string>
-    <string name="share_caption">%1$s — ranked in TierYourLife\n%2$s</string>
-    <string name="share_footer">Made in TierYourLife</string>
     <string name="share_failed">Couldn\'t make the picture</string>
-    <string name="list_settings_cover_body">Pick one of this list\'s cards, or a picture from your gallery.</string>
-    <string name="list_settings_cover_no_cards">None of this list\'s cards have a picture yet.</string>
-    <string name="list_settings_cover_gallery">Choose from gallery</string>
-    <string name="list_settings_cover_gallery_note">A gallery picture stays on this phone. In the community the list shows its cards instead.</string>
-    <string name="list_settings_cover_none">Remove cover</string>
     <string name="snack_published_list_still_public">Kept, not deleted: its public copy could not be taken down. Try again when you are online.</string>
-    <string name="list_settings_public_too_large">This list is too big to publish: at most 1000 cards and 20 tiers.</string>
-    <string name="list_settings_public_picture_refused">One of your photos cannot go in the public feed. Remove it, or keep this list private.</string>
     <string name="settings_hidden_none">Nothing hidden</string>
     <string name="moderation_hidden_now">Nobody can see this while it waits</string>
-    <string name="my_published_behind">The published copy is behind this board.</string>
-    <string name="my_published_action_update">Update</string>
     <plurals name="board_count">
         <item quantity="one">1 board</item>
         <item quantity="other">%1$d boards</item>

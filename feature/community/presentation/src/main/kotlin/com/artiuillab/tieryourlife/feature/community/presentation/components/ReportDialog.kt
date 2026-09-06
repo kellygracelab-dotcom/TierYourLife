@@ -32,7 +32,7 @@ import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.presentation.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.presentation.R as TierR
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 internal const val REPORT_NOTE_MAX_LENGTH = 500
 
@@ -97,7 +97,7 @@ fun ReportDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(TierR.string.action_cancel)) }
+            TextButton(onClick = onDismiss) { Text(stringResource(ThemeR.string.action_cancel)) }
         },
     )
 }

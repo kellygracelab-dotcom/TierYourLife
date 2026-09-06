@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_clear_query">検索をクリア</string>
+    <string name="cd_close_search">検索を閉じる</string>
+    <string name="home_search_hint">リストを検索</string>
+    <string name="tier_lists_content_description_as_pictures">ボードを画像で表示</string>
+    <string name="tier_lists_content_description_as_rows">ボードをリストで表示</string>
+    <string name="tier_lists_content_description_search">リストを検索</string>
+    <string name="tier_lists_content_description_settings">設定</string>
+    <string name="action_cancel">キャンセル</string>
+    <string name="action_try_again">もう一度試す</string>
+    <plurals name="list_items_count">
+        <item quantity="other">%1$d件</item>
+    </plurals>
+    <plurals name="tier_lists_rankings_count">
+        <item quantity="other">%d件のランキング</item>
+    </plurals>
+    <string name="snack_action_failed">変更を保存できませんでした</string>
+    <string name="tier_detail_content_description_back">戻る</string>
+    <string name="tier_detail_content_description_more">その他のオプション</string>
+    <plurals name="tier_lists_count">
+        <item quantity="other">%dリスト</item>
+    </plurals>
+    <plurals name="tier_lists_ranked_count">
+        <item quantity="other">%d件評価済み</item>
+    </plurals>
+    <string name="tier_lists_title">あなたのリスト</string>
+</resources>

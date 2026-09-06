@@ -13,6 +13,7 @@ dependencies {
     implementation(projects.core.logging)
     implementation(projects.core.settings)
     implementation(projects.core.theme)
+    implementation(projects.feature.tier.board)
     implementation(projects.feature.tier.domain)
     implementation(projects.feature.community.domain)
     implementation(projects.feature.account.domain)
