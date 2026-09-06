@@ -213,30 +213,6 @@
     </plurals>
     <string name="manual_dialog_remove_photo">Usuń zdjęcie</string>
 
-    <string name="settings_title">Ustawienia</string>
-    <string name="settings_theme">Motyw</string>
-    <string name="settings_theme_sub">„Systemowy” używa ustawienia Androida.</string>
-    <string name="theme_light">Jasny</string>
-    <string name="theme_dark">Ciemny</string>
-    <string name="theme_system">Systemowy</string>
-    <string name="settings_language">Język</string>
-    <string name="settings_language_caption">Zmienia tylko tekst aplikacji. Nazwy, które wpisałeś, pozostają bez zmian.</string>
-    <string name="language_default">Domyślny</string>
-    <string name="language_name_uk">Ukraiński</string>
-    <string name="language_name_ru">Rosyjski</string>
-    <string name="language_name_es">Hiszpański</string>
-    <string name="language_name_pt_br">Portugalski (Brazylia)</string>
-    <string name="language_name_de">Niemiecki</string>
-    <string name="language_name_fr">Francuski</string>
-    <string name="language_name_pl">Polski</string>
-    <string name="language_name_tr">Turecki</string>
-    <string name="language_name_ja">Japoński</string>
-    <string name="language_name_ar">Arabski · od prawej do lewej</string>
-    <string name="settings_trash">Kosz</string>
-    <string name="settings_trash_empty">Pusto</string>
-    <string name="settings_export">Eksportuj dane</string>
-    <string name="settings_export_sub">Zapisz czytelną kopię każdej listy</string>
-    <string name="cd_settings_back">Wstecz</string>
 
     <string name="trash_title">Kosz</string>
     <string name="trash_load_error">Nie udało się wczytać kosza.</string>
@@ -292,40 +268,10 @@
     <string name="cd_remove">Usuń %1$s na stałe</string>
     <string name="cd_trash_back">Wstecz</string>
 
-    <string name="export_filename">TierYourLife %1$s.txt</string>
-    <string name="export_file_header">TierYourLife</string>
-    <string name="export_file_date">Wyeksportowano %1$s</string>
     <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <plurals name="unranked_count">
-        <item quantity="one">%1$d nieocenione</item>
-        <item quantity="few">%1$d nieocenione</item>
-        <item quantity="many">%1$d nieocenione</item>
-        <item quantity="other">%1$d nieocenione</item>
-    </plurals>
     <string name="export_list_counts">%1$s · %2$s</string>
-    <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_tier_plain">%1$s</string>
-    <string name="export_tier_empty">(puste)</string>
-    <string name="export_unranked_heading">Nieocenione</string>
-    <plurals name="snack_export_done">
-        <item quantity="one">Wyeksportowano %1$d listę</item>
-        <item quantity="few">Wyeksportowano %1$d listy</item>
-        <item quantity="many">Wyeksportowano %1$d list</item>
-        <item quantity="other">Wyeksportowano %1$d listy</item>
-    </plurals>
-    <string name="action_share">Udostępnij</string>
-    <string name="snack_export_failed">Nie udało się zapisać pliku</string>
     <string name="action_try_again">Spróbuj ponownie</string>
     <string name="snack_action_failed">Nie udało się zapisać zmiany</string>
-    <string name="settings_account">Konto</string>
-    <string name="settings_group_appearance">Wygląd</string>
-    <string name="settings_group_data">Twoje dane</string>
-    <string name="settings_account_offer_title">Zachowaj swoje kredyty</string>
-    <string name="settings_account_offer_body">Aplikacja działa w pełni bez niego.</string>
-    <string name="settings_account_offer_action">Zaloguj się</string>
-    <string name="settings_account_signed_in">Zalogowano</string>
-    <string name="settings_version">Wersja %1$s</string>
-    <string name="settings_privacy">Polityka prywatności</string>
     <string name="home_start_with">Zacznij od</string>
     <string name="home_start_hint">Tablica powstaje od razu. Dotknij tytułu, aby zmienić nazwę.</string>
     <string name="home_new_list">Nowa lista</string>
@@ -388,34 +334,9 @@
     <string name="snack_published_list_still_public">Zachowana, nie usunięta: nie udało się wycofać jej publicznej kopii. Spróbuj ponownie, gdy będziesz online.</string>
     <string name="list_settings_public_too_large">Ta lista jest za duża, by ją opublikować: najwyżej 1000 kart i 20 poziomów.</string>
     <string name="list_settings_public_picture_refused">Jedno z Twoich zdjęć nie może trafić do publicznego kanału. Usuń je albo zostaw listę prywatną.</string>
-    <string name="settings_hidden">Ukryte</string>
-    <string name="settings_hidden_sub">Listy i osoby, których już nie widzisz</string>
     <string name="settings_hidden_none">Nic nie ukryto</string>
-    <string name="hidden_title">Ukryte</string>
-    <string name="hidden_subtitle">Ukryte tylko u ciebie.</string>
-    <string name="hidden_lists">LISTY</string>
-    <string name="hidden_people">OSOBY</string>
-    <string name="action_show_again">Pokaż ponownie</string>
-    <string name="hidden_empty_title">Wszystko jest widoczne</string>
-    <string name="hidden_empty_body">Listy i osoby ukryte w społeczności czekają tutaj, gdybyś zmienił zdanie.</string>
-    <string name="hidden_unnamed_list">Lista, którą ukryłeś</string>
-    <string name="hidden_unnamed_person">Ktoś, kogo ukryłeś</string>
-    <string name="settings_moderation">Zgłoszenia</string>
-    <string name="settings_moderation_none">Nic nie czeka</string>
-    <plurals name="moderation_waiting">
-        <item quantity="one">%d zgłoszenie czeka</item>
-        <item quantity="few">%d zgłoszenia czekają</item>
-        <item quantity="many">%d zgłoszeń czeka</item>
-        <item quantity="other">%d zgłoszenia czeka</item>
-    </plurals>
     <string name="my_published_behind">Opublikowana wersja jest starsza niż ta lista.</string>
     <string name="my_published_action_update">Aktualizuj</string>
-    <plurals name="settings_account_signed_in_credits">
-        <item quantity="one">Zalogowano · %1$d kredyt</item>
-        <item quantity="few">Zalogowano · %1$d kredyty</item>
-        <item quantity="many">Zalogowano · %1$d kredytów</item>
-        <item quantity="other">Zalogowano · %1$d kredytu</item>
-    </plurals>
     <plurals name="board_count">
         <item quantity="one">%1$d tablica</item>
         <item quantity="few">%1$d tablice</item>
@@ -431,16 +352,6 @@
     <string name="local_only_card_sign_in">Zaloguj się</string>
     <string name="restoring_one_picture">Przywracanie zdjęcia</string>
     <string name="restoring_pictures">Przywracanie zdjęć · %1$d z %2$d</string>
-    <string name="settings_backup_label">Kopia moich tablic</string>
-    <string name="settings_backup_sub">Poziomy, karty i podpisy</string>
-    <string name="settings_backup_pictures_label">Zdjęcia tylko przez Wi-Fi</string>
-    <string name="settings_backup_pictures_sub">%1$s na twoim koncie</string>
-    <string name="settings_backup_note">Twoje zdjęcia i wygenerowane karty trafiają na Twoje konto, gdzie widzisz je tylko Ty. Publikacja kopiuje obrazy listy do kanału, gdzie widzą je wszyscy.</string>
-    <string name="settings_backup_stuck">Brak kopii od %1$s. Sprawdź połączenie.</string>
-    <string name="settings_backup_off_title">Przestać tworzyć kopię?</string>
-    <string name="settings_backup_off_body">Tablice zostają na tym telefonie. Kopia na koncie zostanie usunięta, a nowy telefon zacznie od pustego.</string>
-    <string name="settings_backup_off_confirm">Usuń kopię</string>
-    <string name="settings_backup_off_cancel">Anuluj</string>
     <string name="conflict_title">„%1$s” zmieniono na dwóch telefonach</string>
     <string name="conflict_body">Obie wersje są tutaj. Otwórz je, zostaw tę właściwą, drugą usuń.</string>
     <string name="conflict_got_it">Rozumiem</string>

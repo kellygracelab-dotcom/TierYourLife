@@ -14,7 +14,8 @@ class RailDestinationTest {
 
     private val lists = "com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route.TierLists" +
         "?community={community}&makeBoard={makeBoard}"
-    private val settings = "com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route.Settings"
+    private val settings = "com.artiuillab.tieryourlife.feature.settings.presentation.navigation.SettingsRoute.Settings"
+    private val hidden = "com.artiuillab.tieryourlife.feature.settings.presentation.navigation.SettingsRoute.Hidden"
     private val board = "com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route.TierDetail/{tierListId}"
 
     @Test
@@ -33,6 +34,8 @@ class RailDestinationTest {
     @Test
     fun anywhereTheRailDidNotTakeYou_lightsNothing() {
         assertNull(railDestinationFor(board, onCommunity = false))
+        // A sibling of Settings in the same file: its name carries "Settings" and lights nothing.
+        assertNull(railDestinationFor(hidden, onCommunity = false))
         assertNull(railDestinationFor(null, onCommunity = false))
     }
 

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_share">Share</string>
+    <string name="action_show_again">Show again</string>
+    <string name="cd_settings_back">Navigate back</string>
+    <string name="export_file_date">Exported %1$s</string>
+    <string name="export_file_header">TierYourLife</string>
+    <string name="export_filename">TierYourLife %1$s.txt</string>
+    <string name="export_tier_empty">(empty)</string>
+    <string name="export_tier_plain">%1$s</string>
+    <string name="export_tier_with_caption">%1$s — %2$s</string>
+    <string name="export_unranked_heading">Unranked</string>
+    <string name="hidden_empty_body">Lists and people you hide in the community wait here, in case you change your mind.</string>
+    <string name="hidden_empty_title">Everything is showing</string>
+    <string name="hidden_lists">LISTS</string>
+    <string name="hidden_people">PEOPLE</string>
+    <string name="hidden_subtitle">Hidden only for you.</string>
+    <string name="hidden_title">Hidden</string>
+    <string name="hidden_unnamed_list">A list you hid</string>
+    <string name="hidden_unnamed_person">Someone you hid</string>
+    <string name="language_default">Default</string>
+    <string name="language_name_ar">Arabic · right-to-left</string>
+    <string name="language_name_de">German</string>
+    <string name="language_name_es">Spanish</string>
+    <string name="language_name_fr">French</string>
+    <string name="language_name_ja">Japanese</string>
+    <string name="language_name_pl">Polish</string>
+    <string name="language_name_pt_br">Portuguese (Brazil)</string>
+    <string name="language_name_ru">Russian</string>
+    <string name="language_name_tr">Turkish</string>
+    <string name="language_name_uk">Ukrainian</string>
+    <plurals name="moderation_waiting">
+        <item quantity="one">%d waiting</item>
+        <item quantity="other">%d waiting</item>
+    </plurals>
+    <string name="settings_account">Account</string>
+    <string name="settings_account_offer_action">Sign in</string>
+    <string name="settings_account_offer_body">The app works fully without one.</string>
+    <string name="settings_account_offer_title">Keep your credits</string>
+    <string name="settings_account_signed_in">Signed in</string>
+    <plurals name="settings_account_signed_in_credits">
+        <item quantity="one">Signed in · %1$d credit</item>
+        <item quantity="other">Signed in · %1$d credits</item>
+    </plurals>
+    <string name="settings_backup_label">Back up my boards</string>
+    <string name="settings_backup_note">Your photos and generated cards go to your account, where only you can see them. Publishing a list copies its pictures into the feed, where anyone can.</string>
+    <string name="settings_backup_off_body">Your boards stay on this phone. The copy in your account is deleted, and a new phone will start empty.</string>
+    <string name="settings_backup_off_cancel">Cancel</string>
+    <string name="settings_backup_off_confirm">Stop and delete</string>
+    <string name="settings_backup_off_title">Stop backing up?</string>
+    <string name="settings_backup_pictures_label">Pictures on Wi-Fi only</string>
+    <string name="settings_backup_pictures_sub">%1$s in your account</string>
+    <string name="settings_backup_stuck">Not backed up since %1$s. Check your connection.</string>
+    <string name="settings_backup_sub">Tiers, items and notes</string>
+    <string name="settings_export">Export data</string>
+    <string name="settings_export_sub">Save a readable copy of every list</string>
+    <string name="settings_group_appearance">Appearance</string>
+    <string name="settings_group_data">Your data</string>
+    <string name="settings_hidden">Hidden</string>
+    <string name="settings_hidden_sub">Lists and people you stopped seeing</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_caption">Changes the app\'s own text. Names you typed stay as they are.</string>
+    <string name="settings_moderation">Reports</string>
+    <string name="settings_moderation_none">Nothing waiting</string>
+    <string name="settings_privacy">Privacy policy</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_sub">System uses your Android setting.</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_trash">Trash</string>
+    <string name="settings_trash_empty">Empty</string>
+    <string name="settings_version">Version %1$s</string>
+    <plurals name="snack_export_done">
+        <item quantity="one">Exported 1 list</item>
+        <item quantity="other">Exported %1$d lists</item>
+    </plurals>
+    <string name="snack_export_failed">Couldn\'t save the file</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_system">System</string>
+    <string name="tmdb_attribution" translatable="false">This product uses the TMDB API but is not endorsed or certified by TMDB.</string>
+    <plurals name="unranked_count">
+        <item quantity="one">%1$d unranked</item>
+        <item quantity="other">%1$d unranked</item>
+    </plurals>
+</resources>

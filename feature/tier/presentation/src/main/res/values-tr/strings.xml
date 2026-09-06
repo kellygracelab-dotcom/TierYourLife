@@ -177,30 +177,6 @@
     </plurals>
     <string name="manual_dialog_remove_photo">Fotoğrafı kaldır</string>
 
-    <string name="settings_title">Ayarlar</string>
-    <string name="settings_theme">Tema</string>
-    <string name="settings_theme_sub">\"Sistem\" Android ayarını kullanır.</string>
-    <string name="theme_light">Açık</string>
-    <string name="theme_dark">Koyu</string>
-    <string name="theme_system">Sistem</string>
-    <string name="settings_language">Dil</string>
-    <string name="settings_language_caption">Yalnızca uygulamanın kendi metnini değiştirir. Senin yazdığın adlar olduğu gibi kalır.</string>
-    <string name="language_default">Varsayılan</string>
-    <string name="language_name_uk">Ukraynaca</string>
-    <string name="language_name_ru">Rusça</string>
-    <string name="language_name_es">İspanyolca</string>
-    <string name="language_name_pt_br">Portekizce (Brezilya)</string>
-    <string name="language_name_de">Almanca</string>
-    <string name="language_name_fr">Fransızca</string>
-    <string name="language_name_pl">Lehçe</string>
-    <string name="language_name_tr">Türkçe</string>
-    <string name="language_name_ja">Japonca</string>
-    <string name="language_name_ar">Arapça · sağdan sola</string>
-    <string name="settings_trash">Çöp kutusu</string>
-    <string name="settings_trash_empty">Boş</string>
-    <string name="settings_export">Verileri dışa aktar</string>
-    <string name="settings_export_sub">Her listenin okunabilir bir kopyasını kaydet</string>
-    <string name="cd_settings_back">Geri git</string>
 
     <string name="trash_title">Çöp kutusu</string>
     <string name="trash_load_error">Çöp kutusu yüklenemedi.</string>
@@ -246,36 +222,10 @@
     <string name="cd_remove">%1$s öğesini kalıcı olarak kaldır</string>
     <string name="cd_trash_back">Geri git</string>
 
-    <string name="export_filename">TierYourLife %1$s.txt</string>
-    <string name="export_file_header">TierYourLife</string>
-    <string name="export_file_date">%1$s tarihinde dışa aktarıldı</string>
     <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <plurals name="unranked_count">
-        <item quantity="one">%1$d sıralanmadı</item>
-        <item quantity="other">%1$d sıralanmadı</item>
-    </plurals>
     <string name="export_list_counts">%1$s · %2$s</string>
-    <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_tier_plain">%1$s</string>
-    <string name="export_tier_empty">(boş)</string>
-    <string name="export_unranked_heading">Sıralanmadı</string>
-    <plurals name="snack_export_done">
-        <item quantity="one">1 liste dışa aktarıldı</item>
-        <item quantity="other">%1$d liste dışa aktarıldı</item>
-    </plurals>
-    <string name="action_share">Paylaş</string>
-    <string name="snack_export_failed">Dosya kaydedilemedi</string>
     <string name="action_try_again">Tekrar dene</string>
     <string name="snack_action_failed">Değişiklik kaydedilemedi</string>
-    <string name="settings_account">Hesap</string>
-    <string name="settings_group_appearance">Görünüm</string>
-    <string name="settings_group_data">Verilerin</string>
-    <string name="settings_account_offer_title">Haklarını koru</string>
-    <string name="settings_account_offer_body">Uygulama hesapsız da tam çalışır.</string>
-    <string name="settings_account_offer_action">Oturum aç</string>
-    <string name="settings_account_signed_in">Oturum açıldı</string>
-    <string name="settings_version">Sürüm %1$s</string>
-    <string name="settings_privacy">Gizlilik politikası</string>
     <string name="home_start_with">Şununla başla</string>
     <string name="home_start_hint">Panoyu hemen oluşturur. Adını değiştirmek için başlığa dokun.</string>
     <string name="home_new_list">Yeni liste</string>
@@ -338,30 +288,9 @@
     <string name="snack_published_list_still_public">Silinmedi, korundu: herkese açık kopyası kaldırılamadı. Çevrimiçi olduğunuzda yeniden deneyin.</string>
     <string name="list_settings_public_too_large">Bu liste yayımlanamayacak kadar büyük: en fazla 1000 kart ve 20 kademe.</string>
     <string name="list_settings_public_picture_refused">Fotoğraflarınızdan biri herkese açık akışta yer alamaz. Kaldırın ya da listeyi özel tutun.</string>
-    <string name="settings_hidden">Gizlenenler</string>
-    <string name="settings_hidden_sub">Artık görmediğiniz listeler ve kişiler</string>
     <string name="settings_hidden_none">Gizlenen bir şey yok</string>
-    <string name="hidden_title">Gizlenenler</string>
-    <string name="hidden_subtitle">Yalnızca sizde gizlendi.</string>
-    <string name="hidden_lists">LİSTELER</string>
-    <string name="hidden_people">KİŞİLER</string>
-    <string name="action_show_again">Yeniden göster</string>
-    <string name="hidden_empty_title">Her şey görünür durumda</string>
-    <string name="hidden_empty_body">Toplulukta gizlediğiniz listeler ve kişiler, fikrinizi değiştirirsiniz diye burada bekler.</string>
-    <string name="hidden_unnamed_list">Gizlediğiniz bir liste</string>
-    <string name="hidden_unnamed_person">Gizlediğiniz biri</string>
-    <string name="settings_moderation">Bildirimler</string>
-    <string name="settings_moderation_none">Bekleyen yok</string>
-    <plurals name="moderation_waiting">
-        <item quantity="one">%d bekliyor</item>
-        <item quantity="other">%d bekliyor</item>
-    </plurals>
     <string name="my_published_behind">Yayımlanan sürüm bu panonun gerisinde.</string>
     <string name="my_published_action_update">Güncelle</string>
-    <plurals name="settings_account_signed_in_credits">
-        <item quantity="one">Giriş yapıldı · %1$d kredi</item>
-        <item quantity="other">Giriş yapıldı · %1$d kredi</item>
-    </plurals>
     <plurals name="board_count">
         <item quantity="one">1 pano</item>
         <item quantity="other">%1$d pano</item>
@@ -375,16 +304,6 @@
     <string name="local_only_card_sign_in">Oturum aç</string>
     <string name="restoring_one_picture">Resim geri yükleniyor</string>
     <string name="restoring_pictures">Resimler geri yükleniyor · %1$d / %2$d</string>
-    <string name="settings_backup_label">Panolarımın yedeğini al</string>
-    <string name="settings_backup_sub">Seviyeler, kartlar ve notlar</string>
-    <string name="settings_backup_pictures_label">Resimler yalnızca Wi-Fi’da</string>
-    <string name="settings_backup_pictures_sub">Hesabında %1$s</string>
-    <string name="settings_backup_note">Fotoğraflarınız ve üretilen kartlar hesabınıza gider, orada yalnızca siz görürsünüz. Yayımlamak, listenin görsellerini herkesin gördüğü akışa kopyalar.</string>
-    <string name="settings_backup_stuck">%1$s tarihinden beri yedeklenmedi. Bağlantını kontrol et.</string>
-    <string name="settings_backup_off_title">Yedekleme durdurulsun mu?</string>
-    <string name="settings_backup_off_body">Panoların bu telefonda kalır. Hesabındaki kopya silinir ve yeni bir telefon boş başlar.</string>
-    <string name="settings_backup_off_confirm">Durdur ve sil</string>
-    <string name="settings_backup_off_cancel">İptal</string>
     <string name="conflict_title">“%1$s” iki telefonda değişti</string>
     <string name="conflict_body">İki sürüm de burada. Açıp istediğini tut, diğerini sil.</string>
     <string name="conflict_got_it">Anladım</string>

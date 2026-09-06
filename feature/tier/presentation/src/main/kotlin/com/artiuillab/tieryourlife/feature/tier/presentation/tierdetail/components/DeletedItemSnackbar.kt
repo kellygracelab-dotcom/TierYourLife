@@ -20,7 +20,7 @@ private val ActionLight = Color(0xFFBAC3FF)
 private val ActionDark = Color(0xFF4A5BAA)
 
 @Composable
-internal fun DeletedItemSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifier) {
+fun DeletedItemSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifier) {
     val isDark = TierYourLifeMedia.current.isDark
 
     SnackbarHost(hostState = hostState, modifier = modifier) { data ->

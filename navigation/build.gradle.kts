@@ -13,6 +13,7 @@ dependencies {
     implementation(projects.core.theme)
     implementation(projects.feature.tier.presentation)
     implementation(projects.feature.community.presentation)
+    implementation(projects.feature.settings.presentation)
     implementation(projects.feature.account.presentation)
     implementation(projects.feature.aistudio.presentation)
     // The tablet pictures in the README are drawn here, because the rail is

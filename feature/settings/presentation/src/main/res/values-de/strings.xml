@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_share">Teilen</string>
+    <string name="action_show_again">Wieder anzeigen</string>
+    <string name="cd_settings_back">Zurück</string>
+    <string name="export_file_date">Exportiert am %1$s</string>
+    <string name="export_file_header">TierYourLife</string>
+    <string name="export_filename">TierYourLife %1$s.txt</string>
+    <string name="export_tier_empty">(leer)</string>
+    <string name="export_tier_plain">%1$s</string>
+    <string name="export_tier_with_caption">%1$s — %2$s</string>
+    <string name="export_unranked_heading">Nicht eingestuft</string>
+    <string name="hidden_empty_body">Listen und Menschen, die du in der Community ausblendest, warten hier, falls du es dir anders überlegst.</string>
+    <string name="hidden_empty_title">Alles ist sichtbar</string>
+    <string name="hidden_lists">LISTEN</string>
+    <string name="hidden_people">MENSCHEN</string>
+    <string name="hidden_subtitle">Nur für dich ausgeblendet.</string>
+    <string name="hidden_title">Ausgeblendet</string>
+    <string name="hidden_unnamed_list">Eine Liste, die du ausgeblendet hast</string>
+    <string name="hidden_unnamed_person">Jemand, den du ausgeblendet hast</string>
+    <string name="language_default">Standard</string>
+    <string name="language_name_ar">Arabisch · von rechts nach links</string>
+    <string name="language_name_de">Deutsch</string>
+    <string name="language_name_es">Spanisch</string>
+    <string name="language_name_fr">Französisch</string>
+    <string name="language_name_ja">Japanisch</string>
+    <string name="language_name_pl">Polnisch</string>
+    <string name="language_name_pt_br">Portugiesisch (Brasilien)</string>
+    <string name="language_name_ru">Russisch</string>
+    <string name="language_name_tr">Türkisch</string>
+    <string name="language_name_uk">Ukrainisch</string>
+    <plurals name="moderation_waiting">
+        <item quantity="one">%d offen</item>
+        <item quantity="other">%d offen</item>
+    </plurals>
+    <string name="settings_account">Konto</string>
+    <string name="settings_account_offer_action">Anmelden</string>
+    <string name="settings_account_offer_body">Die App funktioniert auch ohne vollständig.</string>
+    <string name="settings_account_offer_title">Behalte dein Guthaben</string>
+    <string name="settings_account_signed_in">Angemeldet</string>
+    <plurals name="settings_account_signed_in_credits">
+        <item quantity="one">Angemeldet · %1$d Guthaben</item>
+        <item quantity="other">Angemeldet · %1$d Guthaben</item>
+    </plurals>
+    <string name="settings_backup_label">Meine Boards sichern</string>
+    <string name="settings_backup_note">Deine Fotos und erzeugten Karten liegen in deinem Konto, wo nur du sie siehst. Beim Veröffentlichen werden die Bilder in den Feed kopiert, wo alle sie sehen.</string>
+    <string name="settings_backup_off_body">Deine Boards bleiben auf diesem Telefon. Die Kopie in deinem Konto wird gelöscht, und ein neues Telefon fängt leer an.</string>
+    <string name="settings_backup_off_cancel">Abbrechen</string>
+    <string name="settings_backup_off_confirm">Beenden und löschen</string>
+    <string name="settings_backup_off_title">Sicherung beenden?</string>
+    <string name="settings_backup_pictures_label">Bilder nur über WLAN</string>
+    <string name="settings_backup_pictures_sub">%1$s in deinem Konto</string>
+    <string name="settings_backup_stuck">Seit %1$s nicht gesichert. Prüfe deine Verbindung.</string>
+    <string name="settings_backup_sub">Stufen, Karten und Beschriftungen</string>
+    <string name="settings_export">Daten exportieren</string>
+    <string name="settings_export_sub">Eine lesbare Kopie jeder Liste speichern</string>
+    <string name="settings_group_appearance">Darstellung</string>
+    <string name="settings_group_data">Deine Daten</string>
+    <string name="settings_hidden">Ausgeblendet</string>
+    <string name="settings_hidden_sub">Listen und Menschen, die du nicht mehr siehst</string>
+    <string name="settings_language">Sprache</string>
+    <string name="settings_language_caption">Ändert nur den Text der App. Von dir eingegebene Namen bleiben unverändert.</string>
+    <string name="settings_moderation">Meldungen</string>
+    <string name="settings_moderation_none">Nichts offen</string>
+    <string name="settings_privacy">Datenschutzerklärung</string>
+    <string name="settings_theme">Design</string>
+    <string name="settings_theme_sub">„System“ verwendet deine Android-Einstellung.</string>
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_trash">Papierkorb</string>
+    <string name="settings_trash_empty">Leer</string>
+    <string name="settings_version">Version %1$s</string>
+    <plurals name="snack_export_done">
+        <item quantity="one">1 Liste exportiert</item>
+        <item quantity="other">%1$d Listen exportiert</item>
+    </plurals>
+    <string name="snack_export_failed">Datei konnte nicht gespeichert werden</string>
+    <string name="theme_dark">Dunkel</string>
+    <string name="theme_light">Hell</string>
+    <string name="theme_system">System</string>
+    <plurals name="unranked_count">
+        <item quantity="one">%1$d nicht eingestuft</item>
+        <item quantity="other">%1$d nicht eingestuft</item>
+    </plurals>
+</resources>

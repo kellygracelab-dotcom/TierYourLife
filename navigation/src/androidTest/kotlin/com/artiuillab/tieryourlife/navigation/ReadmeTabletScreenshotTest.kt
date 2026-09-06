@@ -31,11 +31,11 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListS
 import com.artiuillab.tieryourlife.feature.community.presentation.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.CommunityFeedScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.CommunityFeedUiState
+import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
-import com.artiuillab.tieryourlife.feature.tier.presentation.settings.SettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailUiState
 import org.junit.Rule
@@ -121,7 +121,7 @@ class ReadmeTabletScreenshotTest {
     private fun railItemFor(screen: String): RailDestination? = when (screen) {
         "board" -> railDestinationFor("Route.TierDetail/{tierListId}", onCommunity = false)
         "community" -> railDestinationFor("Route.TierLists?community={community}", onCommunity = true)
-        else -> railDestinationFor("Route.Settings", onCommunity = false)
+        else -> railDestinationFor("SettingsRoute.Settings", onCommunity = false)
     }
 
     @Composable

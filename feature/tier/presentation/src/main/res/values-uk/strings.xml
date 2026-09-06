@@ -213,30 +213,6 @@
     </plurals>
     <string name="manual_dialog_remove_photo">Видалити фото</string>
 
-    <string name="settings_title">Налаштування</string>
-    <string name="settings_theme">Тема</string>
-    <string name="settings_theme_sub">«Системна» використовує налаштування Android.</string>
-    <string name="theme_light">Світла</string>
-    <string name="theme_dark">Темна</string>
-    <string name="theme_system">Системна</string>
-    <string name="settings_language">Мова</string>
-    <string name="settings_language_caption">Змінює лише текст додатка. Назви, які ви ввели самі, залишаються без змін.</string>
-    <string name="language_default">За замовчуванням</string>
-    <string name="language_name_uk">Українська</string>
-    <string name="language_name_ru">Російська</string>
-    <string name="language_name_es">Іспанська</string>
-    <string name="language_name_pt_br">Португальська (Бразилія)</string>
-    <string name="language_name_de">Німецька</string>
-    <string name="language_name_fr">Французька</string>
-    <string name="language_name_pl">Польська</string>
-    <string name="language_name_tr">Турецька</string>
-    <string name="language_name_ja">Японська</string>
-    <string name="language_name_ar">Арабська · справа наліво</string>
-    <string name="settings_trash">Кошик</string>
-    <string name="settings_trash_empty">Порожньо</string>
-    <string name="settings_export">Експорт даних</string>
-    <string name="settings_export_sub">Зберегти читабельну копію кожного списку</string>
-    <string name="cd_settings_back">Назад</string>
 
     <string name="trash_title">Кошик</string>
     <string name="trash_load_error">Не вдалося завантажити кошик.</string>
@@ -292,40 +268,10 @@
     <string name="cd_remove">Видалити %1$s назавжди</string>
     <string name="cd_trash_back">Назад</string>
 
-    <string name="export_filename">TierYourLife %1$s.txt</string>
-    <string name="export_file_header">TierYourLife</string>
-    <string name="export_file_date">Експортовано %1$s</string>
     <string name="export_file_totals">%1$s · %2$s · %3$s</string>
-    <plurals name="unranked_count">
-        <item quantity="one">%1$d без оцінки</item>
-        <item quantity="few">%1$d без оцінки</item>
-        <item quantity="many">%1$d без оцінки</item>
-        <item quantity="other">%1$d без оцінки</item>
-    </plurals>
     <string name="export_list_counts">%1$s · %2$s</string>
-    <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_tier_plain">%1$s</string>
-    <string name="export_tier_empty">(порожньо)</string>
-    <string name="export_unranked_heading">Без оцінки</string>
-    <plurals name="snack_export_done">
-        <item quantity="one">Експортовано %1$d список</item>
-        <item quantity="few">Експортовано %1$d списки</item>
-        <item quantity="many">Експортовано %1$d списків</item>
-        <item quantity="other">Експортовано %1$d списку</item>
-    </plurals>
-    <string name="action_share">Поділитися</string>
-    <string name="snack_export_failed">Не вдалося зберегти файл</string>
     <string name="action_try_again">Спробувати ще раз</string>
     <string name="snack_action_failed">Не вдалося зберегти зміну</string>
-    <string name="settings_account">Обліковий запис</string>
-    <string name="settings_group_appearance">Вигляд</string>
-    <string name="settings_group_data">Ваші дані</string>
-    <string name="settings_account_offer_title">Збережіть свої кредити</string>
-    <string name="settings_account_offer_body">Застосунок повністю працює й без нього.</string>
-    <string name="settings_account_offer_action">Увійти</string>
-    <string name="settings_account_signed_in">Вхід виконано</string>
-    <string name="settings_version">Версія %1$s</string>
-    <string name="settings_privacy">Політика конфіденційності</string>
     <string name="home_start_with">Почніть з</string>
     <string name="home_start_hint">Дошка створиться одразу. Торкніться назви, щоб перейменувати.</string>
     <string name="home_new_list">Новий список</string>
@@ -388,34 +334,9 @@
     <string name="snack_published_list_still_public">Список залишено, а не видалено: публічну копію не вдалося зняти. Спробуйте знову, коли буде мережа.</string>
     <string name="list_settings_public_too_large">Список завеликий для публікації: не більше 1000 карток і 20 тирів.</string>
     <string name="list_settings_public_picture_refused">Одне з ваших фото не може бути в загальній стрічці. Приберіть його або залиште список особистим.</string>
-    <string name="settings_hidden">Сховане</string>
-    <string name="settings_hidden_sub">Списки й люди, яких ви перестали бачити</string>
     <string name="settings_hidden_none">Нічого не сховано</string>
-    <string name="hidden_title">Сховане</string>
-    <string name="hidden_subtitle">Сховано лише у вас.</string>
-    <string name="hidden_lists">СПИСКИ</string>
-    <string name="hidden_people">ЛЮДИ</string>
-    <string name="action_show_again">Показати знову</string>
-    <string name="hidden_empty_title">Усе на видноті</string>
-    <string name="hidden_empty_body">Списки й люди, яких ви сховаєте у спільноті, чекатимуть тут — раптом передумаєте.</string>
-    <string name="hidden_unnamed_list">Список, який ви сховали</string>
-    <string name="hidden_unnamed_person">Хтось, кого ви сховали</string>
-    <string name="settings_moderation">Скарги</string>
-    <string name="settings_moderation_none">Нічого не чекає</string>
-    <plurals name="moderation_waiting">
-        <item quantity="one">%d скарга чекає</item>
-        <item quantity="few">%d скарги чекають</item>
-        <item quantity="many">%d скарг чекають</item>
-        <item quantity="other">%d скарги чекають</item>
-    </plurals>
     <string name="my_published_behind">Опублікована версія відстала від вашої дошки.</string>
     <string name="my_published_action_update">Оновити</string>
-    <plurals name="settings_account_signed_in_credits">
-        <item quantity="one">Вхід виконано · %1$d кредит</item>
-        <item quantity="few">Вхід виконано · %1$d кредити</item>
-        <item quantity="many">Вхід виконано · %1$d кредитів</item>
-        <item quantity="other">Вхід виконано · %1$d кредиту</item>
-    </plurals>
     <plurals name="board_count">
         <item quantity="one">%1$d дошка</item>
         <item quantity="few">%1$d дошки</item>
@@ -431,16 +352,6 @@
     <string name="local_only_card_sign_in">Увійти</string>
     <string name="restoring_one_picture">Відновлюємо картинку</string>
     <string name="restoring_pictures">Відновлюємо картинки · %1$d з %2$d</string>
-    <string name="settings_backup_label">Зберігати копію дошок</string>
-    <string name="settings_backup_sub">Тіри, картки та підписи</string>
-    <string name="settings_backup_pictures_label">Картинки лише через Wi-Fi</string>
-    <string name="settings_backup_pictures_sub">%1$s у вашому обліковому записі</string>
-    <string name="settings_backup_note">Ваші фото та згенеровані картки йдуть у ваш акаунт, де їх бачите лише ви. Публікація копіює картинки списку у стрічку, де їх бачать усі.</string>
-    <string name="settings_backup_stuck">Копії немає з %1$s. Перевірте з’єднання.</string>
-    <string name="settings_backup_off_title">Припинити зберігати копію?</string>
-    <string name="settings_backup_off_body">Дошки залишаться на цьому телефоні. Копію в обліковому записі буде видалено, і новий телефон почне з порожнього.</string>
-    <string name="settings_backup_off_confirm">Видалити копію</string>
-    <string name="settings_backup_off_cancel">Скасувати</string>
     <string name="conflict_title">«%1$s» редагували на двох телефонах</string>
     <string name="conflict_body">Обидві версії тут. Відкрийте, залиште потрібну, другу видаліть.</string>
     <string name="conflict_got_it">Зрозуміло</string>

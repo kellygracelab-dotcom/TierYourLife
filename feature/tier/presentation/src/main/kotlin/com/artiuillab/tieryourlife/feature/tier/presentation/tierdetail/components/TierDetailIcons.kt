@@ -58,7 +58,7 @@ fun CheckIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
 }
 
 @Composable
-internal fun DeleteOutlineIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+fun DeleteOutlineIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     val stroke = 1.6f * scale
     drawLine(color, Offset(4f * scale, 7f * scale), Offset(20f * scale, 7f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(9f * scale, 4f * scale), Offset(15f * scale, 4f * scale), stroke, StrokeCap.Round)

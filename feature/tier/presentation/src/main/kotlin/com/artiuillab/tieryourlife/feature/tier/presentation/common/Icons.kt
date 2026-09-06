@@ -86,7 +86,7 @@ internal fun DeleteSweepIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, 
 }
 
 @Composable
-internal fun FileDownloadIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+fun FileDownloadIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     val stroke = 1.6f * scale
     drawLine(color, Offset(12f * scale, 3f * scale), Offset(12f * scale, 14f * scale), stroke, StrokeCap.Round)
     drawLine(color, Offset(7.5f * scale, 9.5f * scale), Offset(12f * scale, 14f * scale), stroke, StrokeCap.Round)

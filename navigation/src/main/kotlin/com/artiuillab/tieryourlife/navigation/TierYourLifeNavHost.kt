@@ -31,14 +31,14 @@ import com.artiuillab.tieryourlife.feature.community.presentation.navigation.nav
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToCommunityList
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToModeration
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToMyPublished
+import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.hiddenScreen
+import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.navigateToHidden
+import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.navigateToSettings
+import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.settingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.ADDED_ITEMS_RESULT_KEY
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
-import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.hiddenScreen
-import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToHidden
-import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToSettings
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTierDetail
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTrash
-import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.settingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.trashScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreen
@@ -84,13 +84,14 @@ private fun railDestinationOf(entry: NavBackStackEntry?): RailDestination? {
     return railDestinationFor(route, onCommunity)
 }
 
-/** The rule on its own, so it can be unit-tested. Type-safe routes serialise to class name plus arguments, hence the match on the name. */
-internal fun railDestinationFor(route: String?, onCommunity: Boolean): RailDestination? = when {
-    route == null -> null
-    route.contains("TierLists") -> if (onCommunity) RailDestination.Community else RailDestination.Lists
-    route.contains("Settings") -> RailDestination.Settings
-    else -> null
-}
+/** The rule on its own, so it can be unit-tested. A type-safe route serialises to its class name plus arguments; only the last name counts, so a sibling route in the same file cannot light the wrong item. */
+internal fun railDestinationFor(route: String?, onCommunity: Boolean): RailDestination? =
+    when (route?.substringBefore('?')?.substringBefore('/')?.substringAfterLast('.')) {
+        null -> null
+        "TierLists" -> if (onCommunity) RailDestination.Community else RailDestination.Lists
+        "Settings" -> RailDestination.Settings
+        else -> null
+    }
 
 private fun NavHostController.goTo(destination: RailDestination) {
     when (destination) {
