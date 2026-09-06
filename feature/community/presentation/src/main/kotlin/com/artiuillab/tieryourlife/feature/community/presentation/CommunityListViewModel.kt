@@ -1,0 +1,209 @@
+package com.artiuillab.tieryourlife.feature.community.presentation
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
+import com.artiuillab.tieryourlife.core.theme.messages.guard
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
+import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
+import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.inject.Inject
+
+private const val POOL_TIER_ID = -1L
+
+@HiltViewModel
+class CommunityListViewModel @Inject constructor(
+    private val community: CommunityRepository,
+    private val tiers: TierRepository,
+    private val preferences: AppPreferences,
+    savedStateHandle: SavedStateHandle,
+) : ViewModel() {
+
+    private val publishedId = savedStateHandle.toRoute<CommunityRoute.CommunityList>().publishedId
+
+    private val _state = MutableStateFlow<CommunityListUiState>(CommunityListUiState.Loading)
+    val state: StateFlow<CommunityListUiState> = _state.asStateFlow()
+
+    private val messages = UserMessages()
+    val userMessages: Flow<UserMessage> = messages.flow
+
+    init {
+        load()
+    }
+
+    private fun loadFollowState(authorUid: String) {
+        if (authorUid.isEmpty()) return
+        viewModelScope.launch {
+            val state = community.followState(authorUid)
+                .onFailure { Timber.i(it, "Not showing whether this author is followed") }
+                .getOrNull() ?: return@launch
+            _state.update { current ->
+                if (current is CommunityListUiState.Success) current.copy(follow = state) else current
+            }
+        }
+    }
+
+    /** Shown before the server answers, put back if it refuses. */
+    fun toggleFollow() {
+        val current = _state.value as? CommunityListUiState.Success ?: return
+        val was = current.follow ?: return
+        val now = was.copy(
+            following = !was.following,
+            followers = (was.followers + if (was.following) -1 else 1).coerceAtLeast(0),
+        )
+        _state.update { (it as CommunityListUiState.Success).copy(follow = now) }
+
+        viewModelScope.launch {
+            val result = if (now.following) {
+                community.follow(current.authorUid)
+            } else {
+                community.unfollow(current.authorUid)
+            }
+            result.onFailure { error ->
+                Timber.w(error, "Following an author failed")
+                _state.update { state ->
+                    if (state is CommunityListUiState.Success) state.copy(follow = was) else state
+                }
+            }
+        }
+    }
+
+    fun load() {
+        viewModelScope.launch {
+            _state.value = CommunityListUiState.Loading
+            _state.value = community.open(publishedId).fold(
+                onSuccess = { published ->
+                    CommunityListUiState.Success(
+                        list = asTheAuthorLeftIt(published),
+                        mine = emptied(published),
+                        // What somebody came for: the list as its author ranked it.
+                        showing = if (published.arrangement.isEmpty()) Showing.Mine else Showing.Theirs,
+                        knowsTheirs = published.arrangement.isNotEmpty(),
+                        authorName = published.summary.authorName,
+                        authorUid = published.summary.authorUid,
+                        authorPhotoUrl = published.summary.authorPhotoUrl,
+                    )
+                },
+                onFailure = { CommunityListUiState.Error },
+            )
+            (_state.value as? CommunityListUiState.Success)?.let { loadFollowState(it.authorUid) }
+        }
+    }
+
+    /** Two boards kept side by side: your own work stays where you left it while you glance at the author's. */
+    fun show(which: Showing) {
+        _state.update { current ->
+            if (current !is CommunityListUiState.Success) current else current.copy(showing = which)
+        }
+    }
+
+    /** In memory only until a copy is asked for, so backing out costs nothing. */
+    fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
+        _state.update { current ->
+            if (current !is CommunityListUiState.Success) return@update current
+            // Their arrangement is theirs. A drag while it was on screen used
+            // to land in the author's board and snap back.
+            if (current.showing == Showing.Theirs) return@update current
+            current.copy(
+                mine = current.mine.withItemMoved(itemId, toTierId, toPosition),
+                arranged = true,
+            )
+        }
+    }
+
+    fun saveToMyLists(onSaved: (Long) -> Unit) {
+        val current = _state.value as? CommunityListUiState.Success ?: return
+        if (current.saving) return
+        _state.update { (it as CommunityListUiState.Success).copy(saving = true) }
+
+        viewModelScope.launch {
+            var newId: Long? = null
+            val saved = messages.guard("Saving a community list") {
+                // Whichever board is on screen: keeping the author's ranking
+                // is a reason to save, not a mistake to correct.
+                val keeping = current.shown
+                newId = tiers.createFromTemplate(
+                    title = keeping.title,
+                    authorName = current.authorName,
+                    tiers = keeping.tiers.filterNot { it.isPool },
+                    items = keeping.tiers.filter { it.isPool }.flatMap { it.items },
+                )
+            }
+            _state.update { (it as CommunityListUiState.Success).copy(saving = false) }
+            if (saved) {
+                // What the popular ordering counts. Its failure is not this
+                // person's problem: they have their copy either way.
+                community.noteTaken(publishedId)
+                    .onFailure { Timber.i(it, "Not counting this list as taken") }
+                newId?.let(onSaved)
+            }
+        }
+    }
+
+    fun hide() {
+        val current = _state.value as? CommunityListUiState.Success ?: return
+        preferences.hideList(publishedId, current.list.title)
+    }
+
+    fun hideAuthor(authorUid: String, name: String) {
+        preferences.hideAuthor(authorUid, name)
+    }
+
+    /** Off this reader's screen at once; whether it comes down for everyone is a person's decision. */
+    fun report(reason: ReportReason, note: String?) {
+        hide()
+        viewModelScope.launch {
+            community.report(publishedId, reason, note)
+                .onFailure { Timber.w(it, "Could not file the report") }
+        }
+    }
+
+    /** As the author left it. A card whose tier the snapshot does not know goes to the pool, beside the author's own unranked cards. */
+    private fun asTheAuthorLeftIt(published: PublishedList): TierList {
+        val where = published.arrangement
+        val ranked = published.tiers.mapIndexed { index, tier ->
+            tier.copy(items = published.items.filterIndexed { at, _ -> where.getOrNull(at) == index })
+        }
+        val unranked = published.items.filterIndexed { at, _ -> where.getOrNull(at) == null }
+        return TierList(
+            id = 0,
+            title = published.summary.title,
+            tiers = ranked + pool(unranked),
+            authorName = published.summary.authorName,
+        )
+    }
+
+    /** The same board with every card back in the pool, for ranking it yourself. */
+    private fun emptied(published: PublishedList) = TierList(
+        id = 0,
+        title = published.summary.title,
+        tiers = published.tiers.map { it.copy(items = emptyList()) } + pool(published.items),
+        authorName = published.summary.authorName,
+    )
+
+    private fun pool(items: List<com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem>) = Tier(
+        id = POOL_TIER_ID,
+        label = "Unranked",
+        colorLight = "#DAD7E0",
+        colorDark = "#46464F",
+        items = items,
+        isPool = true,
+    )
+}

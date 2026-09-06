@@ -15,12 +15,12 @@ theme. Two reasons it works that way:
 ## Redrawing them
 
 ```bash
-ANDROID_SERIAL=<phone> ./gradlew :feature:tier:presentation:connectedDebugAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.artiuillab.tieryourlife.feature.tier.presentation.common.ReadmeScreenshotTest
+ANDROID_SERIAL=<phone> ./gradlew :navigation:connectedDebugAndroidTest \
+  -Pandroid.testInstrumentationRunnerArguments.class=com.artiuillab.tieryourlife.navigation.ReadmeScreenshotTest
 ```
 
 The files land under
-`feature/tier/presentation/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected/<device>/readme/`.
+`navigation/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected/<device>/readme/`.
 
 Copy over **only the ones the README points at** — the test draws every screen in both themes and
 the README uses about half of them, and an unread PNG is weight in a repository that nobody ever
@@ -44,10 +44,11 @@ ANDROID_SERIAL=<tablet> ./gradlew :navigation:connectedDebugAndroidTest   -Pandr
 ```
 
 `ReadmeTabletScreenshotTest` draws the same composition `TierYourLifeNavHost` makes — the rail,
-then the screen beside it — with fixtures where the view models would be. The screens themselves
-belong to `feature:tier:presentation`, which cannot see the rail and should not: a screen does
-not know what the app puts beside it. For a while the tablet section showed that module's
-pictures stretched to tablet width, under a paragraph about a rail they did not contain.
+then the screen beside it — with fixtures where the view models would be. Both tests live in
+`navigation`, the one module that sees every feature's screens; a feature module cannot see the
+rail and should not, since a screen does not know what the app puts beside it. For a while the
+tablet section showed phone pictures stretched to tablet width, under a paragraph about a rail
+they did not contain.
 
 The files land under
 `navigation/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected/<device>/readme-tablet/`.

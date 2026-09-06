@@ -12,7 +12,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 
 @Composable
-internal fun OnResumeEffect(onResume: () -> Unit) {
+fun OnResumeEffect(onResume: () -> Unit) {
     val currentOnResume by rememberUpdatedState(onResume)
     val lifecycleOwner = LocalLifecycleOwner.current
 

@@ -1,0 +1,21 @@
+package com.artiuillab.tieryourlife.feature.community.domain.model
+
+/** Why a list could not be published, in terms a screen can explain. */
+enum class PublishError {
+    NotSignedIn,
+    NothingToPublish,
+    TooManyLists,
+    TooLarge,
+
+    /** One of the photographs on the board may not go into a public feed. */
+    PictureRefused,
+
+    Offline,
+
+    /** Play would not vouch for this installation. Retrying will not help. */
+    NotVerified,
+
+    Unknown,
+}
+
+class PublishRefused(val error: PublishError) : Exception(error.name)

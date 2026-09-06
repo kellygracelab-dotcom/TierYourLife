@@ -37,6 +37,7 @@ dependencies {
     implementation(projects.core.logging)
     implementation(projects.core.settings)
     implementation(projects.feature.tier.domain)
+    implementation(projects.feature.community.domain)
     implementation(projects.feature.account.domain)
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.firebase.bom))

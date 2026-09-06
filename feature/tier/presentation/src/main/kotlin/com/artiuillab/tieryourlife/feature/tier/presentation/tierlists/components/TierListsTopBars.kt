@@ -60,7 +60,7 @@ internal fun HomeHeader(totalListCount: Int, rankedCount: Int) {
 }
 
 @Composable
-internal fun HomeTopBar(
+fun HomeTopBar(
     onSearchClick: () -> Unit,
     onSettingsClick: (() -> Unit)?,
     asPictures: Boolean = false,
@@ -125,7 +125,7 @@ internal fun HomeTopBar(
 }
 
 @Composable
-internal fun SearchTopBar(query: String, onQueryChange: (String) -> Unit, onClose: () -> Unit) {
+fun SearchTopBar(query: String, onQueryChange: (String) -> Unit, onClose: () -> Unit) {
     val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     val closeDescription = stringResource(R.string.cd_close_search)
     val clearDescription = stringResource(R.string.cd_clear_query)

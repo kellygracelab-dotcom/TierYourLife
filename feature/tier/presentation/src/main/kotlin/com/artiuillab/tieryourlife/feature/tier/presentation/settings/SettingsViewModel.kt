@@ -11,9 +11,9 @@ import com.artiuillab.tieryourlife.core.theme.messages.logFailures
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
+import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.TierListsExportStrings
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.buildTierListsExport
-import com.artiuillab.tieryourlife.feature.tier.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupSettings
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardBackup

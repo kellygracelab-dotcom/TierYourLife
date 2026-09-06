@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
 internal object TierDetailTestTags {
+    const val MORE = "community_list_more"
     const val LOADING = "tier_detail_loading"
     const val HEADER_TITLE = "tier_detail_header_title"
     const val ADD_CHIP = "tier_detail_add_chip"

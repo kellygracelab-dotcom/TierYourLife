@@ -5,7 +5,6 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewTemplateTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
-import com.artiuillab.tieryourlife.feature.tier.data.sync.PublishFingerprint
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -16,6 +15,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.PublishFingerprint
 import javax.inject.Inject
 
 class RoomTierRepository internal constructor(
