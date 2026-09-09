@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "709407647012-kudtrgidingn8i701qh5kacumjpii872.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.artiuillab.tieryourlife",
+            "certificate_hash": "9b40b1a003aee0ce622df1b1862a8d169c13bc08"
+          }
+        },
+        {
           "client_id": "709407647012-p50cqfnrvf0djff7eo7k1gpmot0bho7t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
