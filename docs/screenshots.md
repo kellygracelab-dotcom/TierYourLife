@@ -77,3 +77,22 @@ edge rather than a picture of a sheet.
 `drag.gif`. It is a recording, and if it is ever re-taken, take it on a device signed into an
 account that is not a real person's. The AI-studio pictures used to be here too; they went when
 the README stopped showing a feature the first release switches off.
+
+## The store icon
+
+Google Play wants 512x512 and the largest icon in the app is 192x192, so it is
+drawn rather than exported:
+
+```bash
+ANDROID_SERIAL=<device> ./gradlew :app:connectedDebugAndroidTest   -Pandroid.testInstrumentationRunnerArguments.class=com.artiuillab.tieryourlife.StoreIconTest
+```
+
+The file lands under
+`app/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected/<device>/store/icon-512.png`
+and is uploaded to Play by hand -- it is not committed, because nothing in the
+repository reads it.
+
+`StoreIconTest` draws `R.mipmap.ic_launcher`, so the store icon and the launcher
+icon cannot disagree. Drawing an adaptive icon applies the device's mask, which
+is why the test draws it oversized and keeps the middle: what comes back from
+the whole 108dp canvas has the corners cut out, and Play rejects transparency.
