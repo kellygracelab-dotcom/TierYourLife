@@ -122,7 +122,7 @@ class AccountViewModelTest {
     }
 
     @Test
-    fun signIn_twice_doesNotOpenThePickerAgainWhileTheFirstIsRunning() = runBlocking {
+    fun signIn_twice_doesNotOpenThePickerAgainWhileTheFirstIsRunning() = runBlocking<Unit> {
         val credential = FakeGoogleCredential()
         val viewModel = viewModel(credential = credential)
 
