@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.community.data.repository
 
 import com.artiuillab.tieryourlife.feature.community.data.remote.api.CommunityApi
+import com.artiuillab.tieryourlife.feature.community.data.remote.banNotice
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModerationReportDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedItemDto
@@ -184,7 +185,7 @@ private inline fun <T> attempt(what: String, block: () -> T): Result<T> =
 private fun Throwable.asPublishError(): PublishError = when {
     isAppUnverified() -> PublishError.NotVerified
     this is HttpException -> when (code()) {
-        403 -> PublishError.NotSignedIn
+        403 -> banNotice()?.let { PublishError.Banned(it.untilMillis) } ?: PublishError.NotSignedIn
         409 -> PublishError.TooManyLists
         413 -> PublishError.TooLarge
         422 -> PublishError.PictureRefused

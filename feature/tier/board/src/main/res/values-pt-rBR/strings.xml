@@ -22,6 +22,8 @@
     <string name="list_settings_cover_none_set">Nenhuma</string>
     <string name="list_settings_cover_set">Escolhida</string>
     <string name="list_settings_public">Pública</string>
+    <string name="list_settings_public_banned_forever">Um moderador removeu uma das suas listas e você não pode mais publicar.</string>
+    <string name="list_settings_public_banned_until">Um moderador removeu uma das suas listas. Você poderá publicar de novo em %1$s.</string>
     <string name="list_settings_public_body">Qualquer pessoa pode abrir esta lista e organizá-la do seu jeito.</string>
     <string name="list_settings_public_failed">Não foi possível publicar esta lista. Tente de novo.</string>
     <string name="list_settings_public_images">Só viajam as imagens que já estão na web. Fotos e arte gerada ficam neste telefone.</string>

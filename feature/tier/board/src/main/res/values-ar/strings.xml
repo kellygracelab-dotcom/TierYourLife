@@ -22,6 +22,8 @@
     <string name="list_settings_cover_none_set">لا يوجد</string>
     <string name="list_settings_cover_set">مُختار</string>
     <string name="list_settings_public">عامة</string>
+    <string name="list_settings_public_banned_forever">أزال أحد المشرفين إحدى قوائمك، ولم يعد بإمكانك النشر.</string>
+    <string name="list_settings_public_banned_until">أزال أحد المشرفين إحدى قوائمك. يمكنك النشر مجددًا في %1$s.</string>
     <string name="list_settings_public_body">يمكن لأي شخص فتح هذه القائمة وترتيبها بطريقته.</string>
     <string name="list_settings_public_failed">تعذّر نشر هذه القائمة. أعد المحاولة.</string>
     <string name="list_settings_public_images">تنتقل فقط الصور الموجودة على الإنترنت. الصور الشخصية والمولّدة تبقى على هذا الهاتف.</string>

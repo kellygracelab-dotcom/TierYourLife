@@ -22,6 +22,8 @@
     <string name="list_settings_cover_none_set">Brak</string>
     <string name="list_settings_cover_set">Wybrana</string>
     <string name="list_settings_public">Publiczna</string>
+    <string name="list_settings_public_banned_forever">Moderator usunął jedną z twoich list i nie możesz już publikować.</string>
+    <string name="list_settings_public_banned_until">Moderator usunął jedną z twoich list. Ponownie możesz publikować od %1$s.</string>
     <string name="list_settings_public_body">Każdy może otworzyć tę listę i ułożyć ją po swojemu.</string>
     <string name="list_settings_public_failed">Nie udało się opublikować listy. Spróbuj ponownie.</string>
     <string name="list_settings_public_images">Podróżują tylko obrazy, które już są w sieci. Zdjęcia i generowana grafika zostają na tym telefonie.</string>
