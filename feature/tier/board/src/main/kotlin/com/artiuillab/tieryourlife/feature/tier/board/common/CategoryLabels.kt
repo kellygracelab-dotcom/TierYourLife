@@ -11,6 +11,7 @@ val ListCategory.labelRes: Int
         ListCategory.FilmTv -> R.string.category_film_tv
         ListCategory.Games -> R.string.category_games
         ListCategory.Music -> R.string.category_music
+        ListCategory.Books -> R.string.category_books
         ListCategory.Food -> R.string.category_food
         ListCategory.Sport -> R.string.category_sport
         ListCategory.People -> R.string.category_people
