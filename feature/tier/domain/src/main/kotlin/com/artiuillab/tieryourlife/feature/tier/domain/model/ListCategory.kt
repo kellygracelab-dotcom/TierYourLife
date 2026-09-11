@@ -1,7 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.model
 
 /**
- * Eight, fixed. Free text would splinter the community feed into synonyms
+ * Nine, fixed. Free text would splinter the community feed into synonyms
  * nobody can browse. [id] is what travels; the display name is a resource.
  */
 enum class ListCategory(val id: String) {
@@ -9,6 +9,7 @@ enum class ListCategory(val id: String) {
     FilmTv("film_tv"),
     Games("games"),
     Music("music"),
+    Books("books"),
     Food("food"),
     Sport("sport"),
     People("people"),

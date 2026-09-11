@@ -6,6 +6,7 @@
     <string name="category_food">Cuisine</string>
     <string name="category_games">Jeux</string>
     <string name="category_music">Musique</string>
+    <string name="category_books">Livres</string>
     <string name="category_other">Autre</string>
     <string name="category_people">Personnes</string>
     <string name="category_sport">Sport</string>
