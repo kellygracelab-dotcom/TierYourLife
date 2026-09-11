@@ -30,6 +30,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.MergeChoice
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -122,14 +123,18 @@ class AccountViewModelTest {
 
     @Test
     fun signIn_twice_doesNotOpenThePickerAgainWhileTheFirstIsRunning() = runBlocking {
-        val credential = FakeGoogleCredential(GoogleCredentialResult.Cancelled)
+        val credential = FakeGoogleCredential()
         val viewModel = viewModel(credential = credential)
 
         viewModel.signIn(context)
         viewModel.signIn(context)
-        viewModel.state.first { !it.signingIn }
+        // The request is launched onto the main thread; counting before that thread
+        // has caught up would find no request, or miss a second one.
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
         assertEquals(1, credential.requests)
+        credential.release(GoogleCredentialResult.Cancelled)
+        viewModel.state.first { !it.signingIn }
     }
 
     // Both halves of the switch, so one of them is running whichever way it
@@ -330,12 +335,21 @@ private class FakeAccountRepository(
     }
 }
 
-private class FakeGoogleCredential(private val result: GoogleCredentialResult) : GoogleCredential {
+private class FakeGoogleCredential(result: GoogleCredentialResult? = null) : GoogleCredential {
     var requests = 0
+    private val answer = CompletableDeferred<GoogleCredentialResult>()
+
+    init {
+        if (result != null) answer.complete(result)
+    }
+
+    fun release(result: GoogleCredentialResult) {
+        answer.complete(result)
+    }
 
     override suspend fun request(context: Context): GoogleCredentialResult {
         requests++
-        return result
+        return answer.await()
     }
 }
 
