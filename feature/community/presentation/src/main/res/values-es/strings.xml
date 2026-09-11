@@ -80,8 +80,10 @@
     <string name="moderation_take_down_body">La lista desaparece para siempre. Sus tableros siguen en su teléfono.</string>
     <string name="moderation_take_down_title">Retirarla</string>
     <string name="moderation_take_down_with">Retirar · %1$s</string>
+    <string name="moderation_taken_down">Retirada</string>
     <string name="moderation_title">Denuncias</string>
     <string name="moderation_unblur">Mostrar portadas</string>
+    <string name="moderation_undo">Deshacer</string>
     <string name="my_published_action_open">Abrir</string>
     <string name="my_published_empty_body">Las listas que hagas públicas aparecen aquí.</string>
     <string name="my_published_empty_title">Nada publicado</string>

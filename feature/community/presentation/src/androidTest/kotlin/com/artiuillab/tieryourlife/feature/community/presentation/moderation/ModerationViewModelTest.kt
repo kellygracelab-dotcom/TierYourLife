@@ -52,13 +52,44 @@ class ModerationViewModelTest {
         viewModel.state.first { it is ModerationUiState.Ready }
 
         viewModel.takeDown("a")
-        val left = viewModel.state.first {
-            (it as? ModerationUiState.Ready)?.reports?.size == 1
-        } as ModerationUiState.Ready
+        viewModel.confirmTakeDown()
+        val left = viewModel.state.first { it.isSettled() } as ModerationUiState.Ready
 
         assertEquals(listOf("b"), left.reports.map { it.listId })
         assertEquals(listOf("a"), repository.takenDown)
         assertTrue(repository.dismissed.isEmpty())
+    }
+
+    // The server deletes the list and its pictures for good, so the only undo
+    // there can be is not having sent it yet.
+    @Test
+    fun takingAListDown_sendsNothingWhileItCanStillBeUndone() = runBlocking {
+        val repository = FakeModerationRepository(twoAboutOneList() + about("b"))
+        val viewModel = ModerationViewModel(repository)
+        viewModel.state.first { it is ModerationUiState.Ready }
+
+        viewModel.takeDown("a", BanLength.Month)
+        val waiting = viewModel.state.value as ModerationUiState.Ready
+
+        assertEquals(listOf("b"), waiting.reports.map { it.listId })
+        assertEquals("a", waiting.pendingTakeDown?.report?.listId)
+        assertEquals(BanLength.Month, waiting.pendingTakeDown?.ban)
+        assertTrue(repository.takenDown.isEmpty())
+    }
+
+    @Test
+    fun undoingATakedown_putsTheRowBackWhereItWas() = runBlocking {
+        val repository = FakeModerationRepository(twoAboutOneList() + about("b"))
+        val viewModel = ModerationViewModel(repository)
+        viewModel.state.first { it is ModerationUiState.Ready }
+
+        viewModel.takeDown("a")
+        viewModel.undoTakeDown()
+        val back = viewModel.state.value as ModerationUiState.Ready
+
+        assertEquals(listOf("a", "b"), back.reports.map { it.listId })
+        assertEquals(null, back.pendingTakeDown)
+        assertTrue(repository.takenDown.isEmpty())
     }
 
     @Test
@@ -82,9 +113,8 @@ class ModerationViewModelTest {
         viewModel.state.first { it is ModerationUiState.Ready }
 
         viewModel.takeDown("a")
-        val still = viewModel.state.first {
-            (it as? ModerationUiState.Ready)?.settling == null
-        } as ModerationUiState.Ready
+        viewModel.confirmTakeDown()
+        val still = viewModel.state.first { it.isSettled() } as ModerationUiState.Ready
 
         assertEquals(listOf("a"), still.reports.map { it.listId })
         assertEquals(2, still.reports.single().reportCount)
@@ -162,3 +192,6 @@ private class FakeModerationRepository(
     override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> = Result.success(emptyList())
     override suspend fun noteTaken(publishedId: String): Result<Unit> = Result.success(Unit)
 }
+
+private fun ModerationUiState.isSettled(): Boolean =
+    this is ModerationUiState.Ready && settling == null && pendingTakeDown == null

@@ -76,8 +76,10 @@
     <string name="moderation_take_down_body">Liste tamamen gider. Kendi panoları telefonunda kalır.</string>
     <string name="moderation_take_down_title">Yayından kaldır</string>
     <string name="moderation_take_down_with">Kaldır · %1$s</string>
+    <string name="moderation_taken_down">Yayından kaldırıldı</string>
     <string name="moderation_title">Bildirimler</string>
     <string name="moderation_unblur">Kapakları göster</string>
+    <string name="moderation_undo">Geri al</string>
     <string name="my_published_action_open">Aç</string>
     <string name="my_published_empty_body">Herkese açık yaptığınız listeler burada görünür.</string>
     <string name="my_published_empty_title">Yayımlanan yok</string>

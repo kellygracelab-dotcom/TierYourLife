@@ -76,8 +76,10 @@
     <string name="moderation_take_down_body">The list goes for good. Their own boards stay on their phone.</string>
     <string name="moderation_take_down_title">Take it down</string>
     <string name="moderation_take_down_with">Take down · %1$s</string>
+    <string name="moderation_taken_down">Taken down</string>
     <string name="moderation_title">Reports</string>
     <string name="moderation_unblur">Show covers</string>
+    <string name="moderation_undo">Undo</string>
     <string name="my_published_action_open">Open</string>
     <string name="my_published_empty_body">Lists you make public show up here.</string>
     <string name="my_published_empty_title">Nothing published</string>

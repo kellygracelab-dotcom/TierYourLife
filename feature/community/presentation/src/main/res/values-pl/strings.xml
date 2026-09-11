@@ -84,8 +84,10 @@
     <string name="moderation_take_down_body">Lista zniknie na zawsze. Jego tablice na telefonie zostaną.</string>
     <string name="moderation_take_down_title">Usuń z publikacji</string>
     <string name="moderation_take_down_with">Usuń · %1$s</string>
+    <string name="moderation_taken_down">Usunięto z publikacji</string>
     <string name="moderation_title">Zgłoszenia</string>
     <string name="moderation_unblur">Pokaż okładki</string>
+    <string name="moderation_undo">Cofnij</string>
     <string name="my_published_action_open">Otwórz</string>
     <string name="my_published_empty_body">Listy, które upublicznisz, pojawią się tutaj.</string>
     <string name="my_published_empty_title">Nic nie opublikowano</string>
