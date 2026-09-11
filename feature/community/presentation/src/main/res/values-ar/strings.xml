@@ -92,8 +92,10 @@
     <string name="moderation_take_down_body">ستختفي القائمة نهائيًا. تبقى لوحاته على هاتفه.</string>
     <string name="moderation_take_down_title">إزالتها</string>
     <string name="moderation_take_down_with">إزالة · %1$s</string>
+    <string name="moderation_taken_down">أُزيلت</string>
     <string name="moderation_title">البلاغات</string>
     <string name="moderation_unblur">إظهار الأغلفة</string>
+    <string name="moderation_undo">تراجع</string>
     <string name="my_published_action_open">فتح</string>
     <string name="my_published_empty_body">تظهر هنا القوائم التي تجعلها عامة.</string>
     <string name="my_published_empty_title">لا شيء منشور</string>

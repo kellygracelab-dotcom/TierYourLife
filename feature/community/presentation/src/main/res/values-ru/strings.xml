@@ -84,8 +84,10 @@
     <string name="moderation_take_down_body">Список исчезнет насовсем. Его доски на телефоне останутся.</string>
     <string name="moderation_take_down_title">Снять с публикации</string>
     <string name="moderation_take_down_with">Снять · %1$s</string>
+    <string name="moderation_taken_down">Снято с публикации</string>
     <string name="moderation_title">Жалобы</string>
     <string name="moderation_unblur">Показать обложки</string>
+    <string name="moderation_undo">Отменить</string>
     <string name="my_published_action_open">Открыть</string>
     <string name="my_published_empty_body">Списки, которые ты сделаешь публичными, появятся здесь.</string>
     <string name="my_published_empty_title">Ничего не опубликовано</string>

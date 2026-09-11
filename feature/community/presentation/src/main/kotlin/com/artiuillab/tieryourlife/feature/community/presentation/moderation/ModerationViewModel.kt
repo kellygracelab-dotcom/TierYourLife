@@ -27,10 +27,18 @@ sealed interface ModerationUiState {
         val settling: String? = null,
         /** Which row the second pane is showing, on a window wide enough. */
         val looking: String? = null,
+        val pendingTakeDown: PendingTakeDown? = null,
     ) : ModerationUiState
 
     data object Failed : ModerationUiState
 }
+
+/** Out of the queue and not yet sent: the server deletes for good, so not sending is the only undo. */
+data class PendingTakeDown(
+    val report: ModerationReport,
+    val position: Int,
+    val ban: BanLength?,
+)
 
 @HiltViewModel
 class ModerationViewModel @Inject constructor(
@@ -97,17 +105,52 @@ class ModerationViewModel @Inject constructor(
         }
     }
 
-    /** One call: no moment in which the list is gone and nobody has answered for it. */
-    fun takeDown(listId: String, ban: BanLength? = null) = settle(listId) { community.takeDown(listId, ban) }
+    /** Takes the row out and sends nothing yet; the screen calls [confirmTakeDown] or [undoTakeDown] once the moment has passed. */
+    fun takeDown(listId: String, ban: BanLength? = null) {
+        val shown = readyToAct() ?: return
+        val position = shown.reports.indexOfFirst { it.listId == listId }
+        if (position < 0) return
+        _state.value = shown.copy(
+            reports = shown.reports.filterIndexed { index, _ -> index != position },
+            pendingTakeDown = PendingTakeDown(shown.reports[position], position, ban),
+        )
+    }
 
-    fun dismiss(listId: String) = settle(listId) { community.dismissReports(listId) }
+    fun undoTakeDown() {
+        val shown = _state.value as? ModerationUiState.Ready ?: return
+        val pending = shown.pendingTakeDown ?: return
+        _state.value = shown.copy(reports = shown.reports.putBack(pending), pendingTakeDown = null)
+    }
+
+    /** One call: no moment in which the list is gone and nobody has answered for it. */
+    fun confirmTakeDown() {
+        val shown = _state.value as? ModerationUiState.Ready ?: return
+        val pending = shown.pendingTakeDown ?: return
+        val listId = pending.report.listId
+        // Stays out of sight while it is sent; a failure puts it back where it was.
+        settle(
+            listId = listId,
+            shown = shown.copy(reports = shown.reports.putBack(pending), pendingTakeDown = null),
+            whileSettling = shown.copy(pendingTakeDown = null),
+        ) { community.takeDown(listId, pending.ban) }
+    }
+
+    fun dismiss(listId: String) {
+        val shown = readyToAct() ?: return
+        settle(listId, shown) { community.dismissReports(listId) }
+    }
+
+    private fun readyToAct(): ModerationUiState.Ready? =
+        (_state.value as? ModerationUiState.Ready)?.takeIf { it.settling == null && it.pendingTakeDown == null }
 
     /** Both endings close every complaint about the list. Failing leaves them all: a queue that quietly loses entries is worse than one that will not budge. */
-    private fun settle(listId: String, act: suspend () -> Result<Unit>) {
-        val shown = _state.value as? ModerationUiState.Ready ?: return
-        if (shown.settling != null) return
-
-        _state.value = shown.copy(settling = listId)
+    private fun settle(
+        listId: String,
+        shown: ModerationUiState.Ready,
+        whileSettling: ModerationUiState.Ready = shown,
+        act: suspend () -> Result<Unit>,
+    ) {
+        _state.value = whileSettling.copy(settling = listId)
         viewModelScope.launch {
             act().fold(
                 onSuccess = {
@@ -124,3 +167,6 @@ class ModerationViewModel @Inject constructor(
         }
     }
 }
+
+private fun List<ModerationReport>.putBack(pending: PendingTakeDown): List<ModerationReport> =
+    toMutableList().apply { add(pending.position.coerceAtMost(size), pending.report) }

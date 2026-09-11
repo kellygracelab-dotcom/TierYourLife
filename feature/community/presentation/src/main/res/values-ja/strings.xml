@@ -72,8 +72,10 @@
     <string name="moderation_take_down_body">リストは完全に消えます。本人の端末のボードは残ります。</string>
     <string name="moderation_take_down_title">公開を取り下げる</string>
     <string name="moderation_take_down_with">取り下げ · %1$s</string>
+    <string name="moderation_taken_down">公開を取り下げました</string>
     <string name="moderation_title">報告</string>
     <string name="moderation_unblur">表紙を表示</string>
+    <string name="moderation_undo">元に戻す</string>
     <string name="my_published_action_open">開く</string>
     <string name="my_published_empty_body">公開にしたリストがここに並びます。</string>
     <string name="my_published_empty_title">公開中のものはありません</string>

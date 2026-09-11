@@ -24,6 +24,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -80,6 +84,8 @@ fun ModerationScreen(
         looking = looking,
         onBack = onBack,
         onTakeDown = viewModel::takeDown,
+        onUndoTakeDown = viewModel::undoTakeDown,
+        onConfirmTakeDown = viewModel::confirmTakeDown,
         onDismiss = viewModel::dismiss,
         onRetry = viewModel::load,
         onOpenList = onOpenList,
@@ -93,6 +99,8 @@ fun ModerationScreenContent(
     onBack: () -> Unit,
     looking: CommunityListUiState = CommunityListUiState.Loading,
     onTakeDown: (String, BanLength?) -> Unit = { _, _ -> },
+    onUndoTakeDown: () -> Unit = {},
+    onConfirmTakeDown: () -> Unit = {},
     onDismiss: (String) -> Unit = {},
     onRetry: () -> Unit = {},
     onOpenList: (String) -> Unit = {},
@@ -102,44 +110,58 @@ fun ModerationScreenContent(
     var coversShown by rememberSaveable { mutableStateOf(true) }
     var takingDown by remember { mutableStateOf<ModerationReport?>(null) }
 
+    val snackbar = remember { SnackbarHostState() }
+    val pending = (state as? ModerationUiState.Ready)?.pendingTakeDown
+    val takenDownMessage = stringResource(R.string.moderation_taken_down)
+    val undoLabel = stringResource(R.string.moderation_undo)
+    // Nothing is sent until the snackbar goes. Leaving first sends nothing, and
+    // the report is still in the queue next time: the safe way to be wrong.
+    LaunchedEffect(pending) {
+        if (pending == null) return@LaunchedEffect
+        val result = snackbar.showSnackbar(takenDownMessage, actionLabel = undoLabel, duration = SnackbarDuration.Short)
+        if (result == SnackbarResult.ActionPerformed) onUndoTakeDown() else onConfirmTakeDown()
+    }
+
     // Beside the queue once there is room: a reported list is out of the
     // feed, so this is where it can be looked at.
     val besideIt = currentWindowShape.holdsTwoPanes
-    if (besideIt) {
-        Row(Modifier.fillMaxSize().testTag(ModerationTestTags.SCREEN)) {
-            Surface(
-                modifier = Modifier.width(QUEUE_WIDTH).fillMaxSize(),
-                color = MaterialTheme.colorScheme.surface,
-            ) {
-                Column {
-                    Queue(
-                        state, onBack, { takingDown = it }, onDismiss, onRetry, onLook, besideIt,
-                        coversShown, { coversShown = !coversShown },
-                    )
+    Box(Modifier.fillMaxSize()) {
+        if (besideIt) {
+            Row(Modifier.fillMaxSize().testTag(ModerationTestTags.SCREEN)) {
+                Surface(
+                    modifier = Modifier.width(QUEUE_WIDTH).fillMaxSize(),
+                    color = MaterialTheme.colorScheme.surface,
+                ) {
+                    Column {
+                        Queue(
+                            state, onBack, { takingDown = it }, onDismiss, onRetry, onLook, besideIt,
+                            coversShown, { coversShown = !coversShown },
+                        )
+                    }
                 }
+                CommunityListScreenContent(
+                    state = looking,
+                    onBack = {},
+                    onMoveItem = { _, _, _ -> },
+                    onSave = {},
+                    onRetry = {},
+                    modifier = Modifier.weight(1f),
+                )
             }
-            CommunityListScreenContent(
-                state = looking,
-                onBack = {},
-                onMoveItem = { _, _, _ -> },
-                onSave = {},
-                onRetry = {},
-                modifier = Modifier.weight(1f),
-            )
+        } else {
+        Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
+            CenteredContent(
+                max = ContentWidth.Reading,
+                modifier = Modifier.fillMaxSize().testTag(ModerationTestTags.SCREEN),
+            ) {
+                Queue(
+                    state, onBack, { takingDown = it }, onDismiss, onRetry, onOpenList, besideIt,
+                    coversShown, { coversShown = !coversShown },
+                )
+            }
         }
-        return
-    }
-
-    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-        CenteredContent(
-            max = ContentWidth.Reading,
-            modifier = Modifier.fillMaxSize().testTag(ModerationTestTags.SCREEN),
-        ) {
-            Queue(
-                state, onBack, { takingDown = it }, onDismiss, onRetry, onOpenList, besideIt,
-                coversShown, { coversShown = !coversShown },
-            )
         }
+        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
     }
 
     takingDown?.let { report ->
@@ -203,7 +225,7 @@ private fun ColumnScope.Queue(
                         items(state.reports, key = { it.listId }) { report ->
                             ReportCard(
                                 report = report,
-                                busy = state.settling != null,
+                                busy = state.settling != null || state.pendingTakeDown != null,
                                 chosen = besideIt && state.looking == report.listId,
                                 onOpen = { onChoose(report.listId) },
                                 coversShown = coversShown,

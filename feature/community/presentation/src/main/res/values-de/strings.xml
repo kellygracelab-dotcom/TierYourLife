@@ -76,8 +76,10 @@
     <string name="moderation_take_down_body">Die Liste ist endgültig weg. Die eigenen Boards bleiben auf dem Telefon.</string>
     <string name="moderation_take_down_title">Zurückziehen</string>
     <string name="moderation_take_down_with">Zurückziehen · %1$s</string>
+    <string name="moderation_taken_down">Zurückgezogen</string>
     <string name="moderation_title">Meldungen</string>
     <string name="moderation_unblur">Titelbilder zeigen</string>
+    <string name="moderation_undo">Rückgängig</string>
     <string name="my_published_action_open">Öffnen</string>
     <string name="my_published_empty_body">Listen, die du öffentlich machst, erscheinen hier.</string>
     <string name="my_published_empty_title">Nichts veröffentlicht</string>
