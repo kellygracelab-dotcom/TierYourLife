@@ -1,21 +1,27 @@
 package com.artiuillab.tieryourlife.feature.community.domain.model
 
 /** Why a list could not be published, in terms a screen can explain. */
-enum class PublishError {
-    NotSignedIn,
-    NothingToPublish,
-    TooManyLists,
-    TooLarge,
+sealed interface PublishError {
+    data object NotSignedIn : PublishError
+
+    data object NothingToPublish : PublishError
+
+    data object TooManyLists : PublishError
+
+    data object TooLarge : PublishError
 
     /** One of the photographs on the board may not go into a public feed. */
-    PictureRefused,
+    data object PictureRefused : PublishError
 
-    Offline,
+    /** A moderator took one of their lists down and kept them from publishing. Null for a ban with no end. */
+    data class Banned(val untilMillis: Long?) : PublishError
+
+    data object Offline : PublishError
 
     /** Play would not vouch for this installation. Retrying will not help. */
-    NotVerified,
+    data object NotVerified : PublishError
 
-    Unknown,
+    data object Unknown : PublishError
 }
 
-class PublishRefused(val error: PublishError) : Exception(error.name)
+class PublishRefused(val error: PublishError) : Exception(error.toString())

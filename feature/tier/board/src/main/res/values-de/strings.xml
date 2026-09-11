@@ -21,6 +21,8 @@
     <string name="list_settings_cover_none_set">Keins</string>
     <string name="list_settings_cover_set">Gewählt</string>
     <string name="list_settings_public">Öffentlich</string>
+    <string name="list_settings_public_banned_forever">Die Moderation hat eine deiner Listen entfernt, und du kannst nicht mehr veröffentlichen.</string>
+    <string name="list_settings_public_banned_until">Die Moderation hat eine deiner Listen entfernt. Du kannst ab dem %1$s wieder veröffentlichen.</string>
     <string name="list_settings_public_body">Alle können diese Liste öffnen und selbst einordnen.</string>
     <string name="list_settings_public_failed">Die Liste konnte nicht veröffentlicht werden. Versuche es erneut.</string>
     <string name="list_settings_public_images">Nur Bilder, die schon im Netz liegen, reisen mit. Fotos und generierte Kunst bleiben auf diesem Telefon.</string>

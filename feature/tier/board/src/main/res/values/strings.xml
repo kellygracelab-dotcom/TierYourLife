@@ -21,6 +21,8 @@
     <string name="list_settings_cover_none_set">None</string>
     <string name="list_settings_cover_set">Chosen</string>
     <string name="list_settings_public">Public</string>
+    <string name="list_settings_public_banned_forever">A moderator took down one of your lists, and you can no longer publish.</string>
+    <string name="list_settings_public_banned_until">A moderator took down one of your lists. You can publish again on %1$s.</string>
     <string name="list_settings_public_body">Anyone can open this list and rank it themselves.</string>
     <string name="list_settings_public_failed">Could not publish this list. Try again.</string>
     <string name="list_settings_public_images">Only pictures that already live on the web travel. Photos and generated art stay on this phone.</string>

@@ -21,6 +21,8 @@
     <string name="list_settings_cover_none_set">Немає</string>
     <string name="list_settings_cover_set">Вибрана</string>
     <string name="list_settings_public">Публічний</string>
+    <string name="list_settings_public_banned_forever">Модератор зняв один із ваших списків, і публікувати більше не можна.</string>
+    <string name="list_settings_public_banned_until">Модератор зняв один із ваших списків. Публікувати знову можна з %1$s.</string>
     <string name="list_settings_public_body">Будь-хто зможе відкрити цей список і розкласти його по-своєму.</string>
     <string name="list_settings_public_failed">Не вдалося опублікувати список. Спробуйте ще раз.</string>
     <string name="list_settings_public_images">Їдуть лише зображення, які вже лежать у мережі. Фото й згенероване залишаються на телефоні.</string>

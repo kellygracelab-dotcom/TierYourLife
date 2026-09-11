@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -68,6 +69,8 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.captionsEx
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import java.text.DateFormat
+import java.util.Date
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private val DisplayModeSelectedTintLight = Color(0xFFEDEBFA)
@@ -459,7 +462,7 @@ private fun PublishSection(
         if (error != null) {
             Spacer(Modifier.height(8.dp))
             Text(
-                text = stringResource(error.messageRes()),
+                text = error.message(),
                 modifier = Modifier.testTag(TierDetailTestTags.PUBLISH_ERROR),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
@@ -506,12 +509,27 @@ private fun PublishSection(
     }
 }
 
+@Composable
+private fun PublishError.message(): String = when (this) {
+    is PublishError.Banned -> {
+        val until = untilMillis
+        if (until == null) {
+            stringResource(R.string.list_settings_public_banned_forever)
+        } else {
+            val date = DateFormat.getDateInstance(DateFormat.LONG, LocalConfiguration.current.locales[0]).format(Date(until))
+            stringResource(R.string.list_settings_public_banned_until, date)
+        }
+    }
+    else -> stringResource(messageRes())
+}
+
 private fun PublishError.messageRes(): Int = when (this) {
     PublishError.NotSignedIn -> R.string.list_settings_public_needs_account
     PublishError.NothingToPublish -> R.string.list_settings_public_needs_items
     PublishError.TooManyLists -> R.string.list_settings_public_too_many
     PublishError.TooLarge -> R.string.list_settings_public_too_large
     PublishError.PictureRefused -> R.string.list_settings_public_picture_refused
+    is PublishError.Banned -> R.string.list_settings_public_banned_forever
     PublishError.Offline -> R.string.list_settings_public_offline
     PublishError.NotVerified -> R.string.list_settings_public_unverified
     PublishError.Unknown -> R.string.list_settings_public_failed

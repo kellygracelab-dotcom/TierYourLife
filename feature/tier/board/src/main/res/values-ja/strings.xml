@@ -21,6 +21,8 @@
     <string name="list_settings_cover_none_set">なし</string>
     <string name="list_settings_cover_set">選択済み</string>
     <string name="list_settings_public">公開</string>
+    <string name="list_settings_public_banned_forever">モデレーターがあなたのリストを1つ取り下げたため、今後は公開できません。</string>
+    <string name="list_settings_public_banned_until">モデレーターがあなたのリストを1つ取り下げました。%1$s から再び公開できます。</string>
     <string name="list_settings_public_body">誰でもこのリストを開いて、自分で並べられます。</string>
     <string name="list_settings_public_failed">このリストを公開できませんでした。もう一度お試しください。</string>
     <string name="list_settings_public_images">すでにウェブ上にある画像だけが一緒に届きます。写真と生成画像はこの端末に残ります。</string>

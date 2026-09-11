@@ -21,6 +21,8 @@
     <string name="list_settings_cover_none_set">Yok</string>
     <string name="list_settings_cover_set">Seçildi</string>
     <string name="list_settings_public">Herkese açık</string>
+    <string name="list_settings_public_banned_forever">Bir moderatör listelerinizden birini kaldırdı ve artık yayımlayamazsınız.</string>
+    <string name="list_settings_public_banned_until">Bir moderatör listelerinizden birini kaldırdı. %1$s tarihinden itibaren yeniden yayımlayabilirsiniz.</string>
     <string name="list_settings_public_body">Herkes bu listeyi açıp kendince sıralayabilir.</string>
     <string name="list_settings_public_failed">Bu liste yayımlanamadı. Yeniden deneyin.</string>
     <string name="list_settings_public_images">Yalnızca zaten internette olan görseller gider. Fotoğraflar ve üretilen görseller bu telefonda kalır.</string>
