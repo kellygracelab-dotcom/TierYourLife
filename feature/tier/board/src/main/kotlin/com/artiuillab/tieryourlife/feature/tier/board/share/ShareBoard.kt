@@ -24,7 +24,7 @@ private const val AUTHORITY_SUFFIX = ".share"
 /** The width posters are fetched at; a tile is 132px. */
 private const val PICTURE_WIDTH = 264
 
-/** Where the caption points. The store listing replaces this the day it exists. */
+/** Where the caption points. Not Play itself: until launch its page is "not found" to anyone who is not a tester, and this page links to it. */
 const val SHARE_LINK = "https://tieryourlife.web.app"
 
 /**
