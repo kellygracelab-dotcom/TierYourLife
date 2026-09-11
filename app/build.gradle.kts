@@ -7,6 +7,17 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
 }
 
+// Play refuses a version code it has already seen. The commit count keeps each
+// build from main above the last without anyone remembering to raise it.
+val commitCount = providers.exec {
+    commandLine("git", "rev-list", "--count", "HEAD")
+    isIgnoreExitValue = true
+}.standardOutput.asText.map { it.trim().toIntOrNull() ?: 1 }
+
+// The upload key lives outside the repository, and so do these four properties:
+// ~/.gradle/gradle.properties. Without them a release build is left unsigned.
+val uploadStoreFile = providers.gradleProperty("tieryourlife.upload.storeFile")
+
 android {
     namespace = "com.artiuillab.tieryourlife"
     compileSdk {
@@ -17,10 +28,21 @@ android {
         applicationId = "com.artiuillab.tieryourlife"
         minSdk = 24
         targetSdk = 37
-        versionCode = 1
+        versionCode = providers.gradleProperty("tieryourlife.versionCode").map(String::toInt).orElse(commitCount).get()
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        if (uploadStoreFile.isPresent) {
+            create("upload") {
+                storeFile = file(uploadStoreFile.get())
+                storePassword = providers.gradleProperty("tieryourlife.upload.storePassword").get()
+                keyAlias = providers.gradleProperty("tieryourlife.upload.keyAlias").get()
+                keyPassword = providers.gradleProperty("tieryourlife.upload.keyPassword").get()
+            }
+        }
     }
 
     buildTypes {
@@ -30,6 +52,7 @@ android {
             }
         }
         release {
+            signingConfig = signingConfigs.findByName("upload")
             isMinifyEnabled = true
             isShrinkResources = true
             optimization {
