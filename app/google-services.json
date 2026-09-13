@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "709407647012-cbeu9m9g7ssh0biuf0i6pt827um0oeq0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.artiuillab.tieryourlife",
+            "certificate_hash": "0ea5bca384a548163d61d1686000fa046742f0d6"
+          }
+        },
+        {
           "client_id": "709407647012-eqslia5k9lvjpom9e5jsl8hbc5k38gq0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
