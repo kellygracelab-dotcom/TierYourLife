@@ -72,6 +72,13 @@ android {
         compose = true
         buildConfig = true
     }
+    // Play would install only the phone's own languages, and the in-app
+    // language picker would then switch to strings that are not on the device.
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
 }
 
 dependencies {
