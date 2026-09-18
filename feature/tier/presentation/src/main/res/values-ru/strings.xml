@@ -33,6 +33,11 @@
     <string name="home_empty_body">Фильмы, игры, рестораны, альбомы — что угодно.</string>
     <string name="cd_new_list">Новый список</string>
     <string name="default_tier_list_title">Список без названия</string>
+    <string name="default_tier_caption_s">Лучшее</string>
+    <string name="default_tier_caption_a">Отлично</string>
+    <string name="default_tier_caption_b">Хорошо</string>
+    <string name="default_tier_caption_c">Нормально</string>
+    <string name="default_tier_caption_d">Худшее</string>
     <string name="tier_lists_load_error">Не удалось загрузить списки.</string>
 
 

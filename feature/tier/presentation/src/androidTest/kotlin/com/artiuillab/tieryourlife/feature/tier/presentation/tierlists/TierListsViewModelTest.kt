@@ -350,7 +350,7 @@ internal class FakeTierRepository(initial: List<TierList>) : TierRepository {
 
     override suspend fun getAllTierLists(): List<TierList> = lists.values.sortedBy { it.id }
 
-    override suspend fun createTierList(title: String): Long {
+    override suspend fun createTierList(title: String, captions: List<String>): Long {
         val id = nextId++
         lists[id] = TierList(id = id, title = title, tiers = emptyList())
         return id

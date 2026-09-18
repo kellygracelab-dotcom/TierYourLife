@@ -15,7 +15,8 @@ interface TierRepository {
 
     suspend fun getAllTierLists(): List<TierList>
 
-    suspend fun createTierList(title: String): Long
+    /** [captions] label the five default tiers, best first. */
+    suspend fun createTierList(title: String, captions: List<String>): Long
 
     /**
      * Builds a board from somebody else's published list, keeping the ranking

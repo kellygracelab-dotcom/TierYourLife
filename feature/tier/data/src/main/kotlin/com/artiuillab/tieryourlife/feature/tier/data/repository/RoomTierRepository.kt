@@ -35,8 +35,8 @@ class RoomTierRepository internal constructor(
         return dao.getAllTierListsWithTiers().map { it.toDomain() }
     }
 
-    override suspend fun createTierList(title: String): Long {
-        return dao.createTierListWithDefaultTier(title = title)
+    override suspend fun createTierList(title: String, captions: List<String>): Long {
+        return dao.createTierListWithDefaultTier(title = title, captions = captions)
     }
 
     override suspend fun createFromTemplate(

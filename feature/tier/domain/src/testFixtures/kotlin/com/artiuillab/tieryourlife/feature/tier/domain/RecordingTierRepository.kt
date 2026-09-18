@@ -54,7 +54,7 @@ class RecordingTierRepository(
     override suspend fun getAllTierLists(): List<TierList> = publishedIdOfFirstList
         ?.let { listOf(TierList(id = 7, title = "Local copy", tiers = emptyList(), publishedId = it)) }
         .orEmpty()
-    override suspend fun createTierList(title: String): Long = 0
+    override suspend fun createTierList(title: String, captions: List<String>): Long = 0
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) = Unit
     override suspend fun renameTierList(id: Long, title: String) = Unit
     override suspend fun addItemToPool(

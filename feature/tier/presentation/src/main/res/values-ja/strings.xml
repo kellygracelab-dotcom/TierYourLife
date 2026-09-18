@@ -24,6 +24,11 @@
     <string name="home_empty_body">映画、ゲーム、レストラン、アルバム、なんでも。</string>
     <string name="cd_new_list">新しいリスト</string>
     <string name="default_tier_list_title">無題のリスト</string>
+    <string name="default_tier_caption_s">最高</string>
+    <string name="default_tier_caption_a">とても良い</string>
+    <string name="default_tier_caption_b">良い</string>
+    <string name="default_tier_caption_c">まあまあ</string>
+    <string name="default_tier_caption_d">最低</string>
     <string name="tier_lists_load_error">リストを読み込めませんでした。</string>
 
 

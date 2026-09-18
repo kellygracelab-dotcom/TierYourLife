@@ -108,6 +108,15 @@ fun TierListsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val defaultListTitle = stringResource(R.string.default_tier_list_title)
+    // Any board can be about anything, so the captions a new one starts with
+    // say how good something is and nothing about what it is.
+    val defaultTierCaptions = listOf(
+        stringResource(R.string.default_tier_caption_s),
+        stringResource(R.string.default_tier_caption_a),
+        stringResource(R.string.default_tier_caption_b),
+        stringResource(R.string.default_tier_caption_c),
+        stringResource(R.string.default_tier_caption_d),
+    )
     val ownArrival = rememberArrival()
     val arrivedWith = arrival ?: ownArrival
     LaunchedEffect(arrivedWith) { arrivedWith?.let(viewModel::onArrival) }
@@ -117,7 +126,7 @@ fun TierListsScreen(
     LaunchedEffect(Unit) {
         if (makeBoard && !boardMade) {
             boardMade = true
-            viewModel.createTierList(defaultListTitle, onNewListCreated)
+            viewModel.createTierList(defaultListTitle, defaultTierCaptions, onNewListCreated)
         }
     }
 
@@ -136,8 +145,8 @@ fun TierListsScreen(
         onCloseSelection = viewModel::exitSelection,
         onDeleteLists = viewModel::deleteTierLists,
         onUndoDelete = viewModel::restoreTierLists,
-        onCreateList = { viewModel.createTierList(defaultListTitle, onNewListCreated) },
-        onCreateNamedList = { title -> viewModel.createTierList(title, onNewListCreated) },
+        onCreateList = { viewModel.createTierList(defaultListTitle, defaultTierCaptions, onNewListCreated) },
+        onCreateNamedList = { title -> viewModel.createTierList(title, defaultTierCaptions, onNewListCreated) },
         onToggleView = viewModel::toggleBoardsAsPictures,
         onSelectBoardSort = viewModel::selectBoardSort,
         onApplyBoardFilters = viewModel::applyBoardFilters,
