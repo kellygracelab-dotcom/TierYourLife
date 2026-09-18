@@ -286,10 +286,10 @@ class TierListsViewModel @Inject constructor(
         mutate("Restoring lists") { repository.restoreTierLists(ids) }
     }
 
-    fun createTierList(title: String, onCreated: (Long) -> Unit) {
+    fun createTierList(title: String, captions: List<String>, onCreated: (Long) -> Unit) {
         viewModelScope.launch {
             var createdId: Long? = null
-            messages.guard("Creating a list") { createdId = repository.createTierList(title) }
+            messages.guard("Creating a list") { createdId = repository.createTierList(title, captions) }
             loadTierListsInternal()
             createdId?.let(onCreated)
         }

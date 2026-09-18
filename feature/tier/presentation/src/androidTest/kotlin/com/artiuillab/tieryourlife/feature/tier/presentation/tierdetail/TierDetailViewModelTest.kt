@@ -464,7 +464,7 @@ private class FakeTierRepository(
     }
 
     override suspend fun getAllTierLists(): List<TierList> = unsupported()
-    override suspend fun createTierList(title: String): Long = unsupported()
+    override suspend fun createTierList(title: String, captions: List<String>): Long = unsupported()
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) = unsupported()
     override suspend fun renameTierList(id: Long, title: String) = unsupported()
     override suspend fun addItemsToPool(tierListId: Long, items: List<PoolItemDraft>) = unsupported()

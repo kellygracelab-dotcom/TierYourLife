@@ -143,29 +143,31 @@ interface TierDao {
     @Query("UPDATE tier_lists SET coverImageUrl = :coverImageUrl WHERE id = :id")
     suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?)
 
+    // The captions come from the caller: they are shown to the reader, so they
+    // belong to a screen's resources and follow the language it is drawn in.
     @Transaction
-    suspend fun createTierListWithDefaultTier(title: String): Long {
+    suspend fun createTierListWithDefaultTier(title: String, captions: List<String>): Long {
         val tierListId = insertTierList(TierListEntity(title = title))
 
         val defaultTiers = listOf(
             TierEntity(
-                tierListId = tierListId, position = 0, label = "S", caption = "Masterpiece",
+                tierListId = tierListId, position = 0, label = "S", caption = captions.getOrNull(0),
                 colorLight = DefaultTierColors.S_LIGHT, colorDark = DefaultTierColors.S_DARK,
             ),
             TierEntity(
-                tierListId = tierListId, position = 1, label = "A", caption = "Great",
+                tierListId = tierListId, position = 1, label = "A", caption = captions.getOrNull(1),
                 colorLight = DefaultTierColors.A_LIGHT, colorDark = DefaultTierColors.A_DARK,
             ),
             TierEntity(
-                tierListId = tierListId, position = 2, label = "B", caption = "Good",
+                tierListId = tierListId, position = 2, label = "B", caption = captions.getOrNull(2),
                 colorLight = DefaultTierColors.B_LIGHT, colorDark = DefaultTierColors.B_DARK,
             ),
             TierEntity(
-                tierListId = tierListId, position = 3, label = "C", caption = "Watchable",
+                tierListId = tierListId, position = 3, label = "C", caption = captions.getOrNull(3),
                 colorLight = DefaultTierColors.C_LIGHT, colorDark = DefaultTierColors.C_DARK,
             ),
             TierEntity(
-                tierListId = tierListId, position = 4, label = "D", caption = "No",
+                tierListId = tierListId, position = 4, label = "D", caption = captions.getOrNull(4),
                 colorLight = DefaultTierColors.D_LIGHT, colorDark = DefaultTierColors.D_DARK,
             ),
             TierEntity(

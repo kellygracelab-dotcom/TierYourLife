@@ -19,6 +19,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
+// What a screen hands the dao: one caption per ranked tier, best first.
+private val CAPTIONS = listOf("Best", "Great", "Good", "Okay", "Worst")
+
 @RunWith(AndroidJUnit4::class)
 class TierDaoTest {
 
@@ -158,7 +161,7 @@ class TierDaoTest {
 
     @Test
     fun create_tier_list_with_default_tier_inserts_list_and_six_tiers() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
 
         val savedList = dao.getTierListById(listId)
         val tiers = dao.getAllTiersByTierListId(listId)
@@ -171,7 +174,7 @@ class TierDaoTest {
 
     @Test
     fun create_tier_list_with_default_tier_orders_tiers_s_to_d_then_pool() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
 
         val tiers = dao.getAllTiersByTierListId(listId)
 
@@ -180,7 +183,7 @@ class TierDaoTest {
 
     @Test
     fun create_tier_list_with_default_tier_marks_exactly_one_pool_tier() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
 
         val tiers = dao.getAllTiersByTierListId(listId)
         val poolTiers = tiers.filter { it.isPool }
@@ -191,14 +194,11 @@ class TierDaoTest {
 
     @Test
     fun create_tier_list_with_default_tier_sets_the_five_ranked_captions() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
 
         val tiers = dao.getAllTiersByTierListId(listId)
 
-        assertEquals(
-            listOf("Masterpiece", "Great", "Good", "Watchable", "No"),
-            tiers.filterNot { it.isPool }.map { it.caption },
-        )
+        assertEquals(CAPTIONS, tiers.filterNot { it.isPool }.map { it.caption })
         assertEquals(null, tiers.single { it.isPool }.caption)
     }
 
@@ -242,7 +242,7 @@ class TierDaoTest {
 
     @Test
     fun add_tier_appends_after_existing_ranked_tiers_and_keeps_positions_contiguous() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
 
         val newTierId = dao.addTier(
             tierListId = listId,
@@ -263,7 +263,7 @@ class TierDaoTest {
 
     @Test
     fun add_tier_does_not_create_a_second_pool() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
 
         dao.addTier(tierListId = listId, label = "E", caption = null, colorLight = "#111111", colorDark = "#222222")
 
@@ -274,7 +274,7 @@ class TierDaoTest {
 
     @Test
     fun add_item_to_pool_puts_first_item_at_position_zero() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val poolTierId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
 
         dao.addItemToPool(
@@ -291,7 +291,7 @@ class TierDaoTest {
 
     @Test
     fun add_item_to_pool_appends_items_with_increasing_positions() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val poolTierId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
 
         dao.addItemToPool(tierListId = listId, title = "Interstellar", imageUrl = null)
@@ -304,7 +304,7 @@ class TierDaoTest {
 
     @Test
     fun add_item_to_pool_leaves_ranked_tiers_empty() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
 
         dao.addItemToPool(tierListId = listId, title = "Interstellar", imageUrl = null)
 
@@ -314,7 +314,7 @@ class TierDaoTest {
 
     @Test
     fun rename_tier_updates_label_and_caption_together() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTier = dao.getAllTiersByTierListId(listId).first()
 
         dao.renameTier(sTier.id, label = "S+", caption = "Beyond words")
@@ -329,7 +329,7 @@ class TierDaoTest {
 
     @Test
     fun rename_tier_with_empty_caption_persists_empty_string_not_null() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTier = dao.getAllTiersByTierListId(listId).first()
 
         dao.renameTier(sTier.id, label = "S+", caption = "")
@@ -339,7 +339,7 @@ class TierDaoTest {
 
     @Test
     fun rename_tier_with_null_caption_clears_a_previously_set_one() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTier = dao.getAllTiersByTierListId(listId).first()
 
         dao.renameTier(sTier.id, label = "S+", caption = null)
@@ -349,7 +349,7 @@ class TierDaoTest {
 
     @Test
     fun update_tier_colors_changes_both_theme_variants_without_touching_the_other_fields() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTier = dao.getAllTiersByTierListId(listId).first()
 
         dao.updateTierColors(sTier.id, colorLight = "#ABCDEF", colorDark = "#FEDCBA")
@@ -363,7 +363,7 @@ class TierDaoTest {
 
     @Test
     fun reorder_tiers_gives_contiguous_positions_and_leaves_the_pool_where_it_was() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val allTiers = dao.getAllTiersByTierListId(listId)
         val poolPosition = allTiers.single { it.isPool }.position
         val rankedIds = allTiers.filterNot { it.isPool }.map { it.id }
@@ -381,7 +381,7 @@ class TierDaoTest {
 
     @Test
     fun reorder_tiers_ignores_a_stale_id_for_an_already_deleted_tier() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val rankedTiers = dao.getAllTiersByTierListId(listId).filterNot { it.isPool }
         val doomed = rankedTiers.first()
         val survivorIds = rankedTiers.drop(1).map { it.id }
@@ -396,7 +396,7 @@ class TierDaoTest {
 
     @Test
     fun bulk_add_items_to_pool_appends_all_with_contiguous_positions_in_one_call() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val poolId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
         dao.insertTierItem(tierItem(tierId = poolId, title = "Existing", position = 0))
 
@@ -417,7 +417,7 @@ class TierDaoTest {
 
     @Test
     fun bulk_add_items_does_not_reuse_or_collide_with_a_trashed_items_old_position() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val poolId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
         dao.insertTierItem(tierItem(tierId = poolId, title = "Active", position = 0))
         val trashedId = dao.insertTierItem(tierItem(tierId = poolId, title = "Trashed", position = 1))
@@ -432,7 +432,7 @@ class TierDaoTest {
 
     @Test
     fun bulk_add_items_to_the_pool_of_a_trashed_list_is_a_no_op() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val poolId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
         dao.markTierListsDeleted(listOf(listId), deletedAt = 1_000L)
 
@@ -443,7 +443,7 @@ class TierDaoTest {
 
     @Test
     fun update_tier_item_image_persists_and_is_read_back() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val itemId = dao.insertTierItem(
             tierItem(tierId = sTierId, title = "Interstellar", position = 0).copy(imageUrl = null),
@@ -456,7 +456,7 @@ class TierDaoTest {
 
     @Test
     fun get_tier_item_image_by_id_finds_it_even_when_the_item_is_trashed() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val itemId = dao.insertTierItem(
             tierItem(tierId = sTierId, title = "Interstellar", position = 0).copy(imageUrl = "/path/1"),
@@ -468,7 +468,7 @@ class TierDaoTest {
 
     @Test
     fun get_all_image_refs_includes_trashed_items_and_excludes_items_without_an_image() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         dao.insertTierItem(tierItem(tierId = sTierId, title = "A", position = 0).copy(imageUrl = "/path/1"))
         dao.insertTierItem(tierItem(tierId = sTierId, title = "B", position = 1).copy(imageUrl = null))
@@ -511,7 +511,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_from_pool_to_ranked_tier_relocates_item() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val poolTierId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val itemId = dao.addItemToPool(tierListId = listId, title = "Interstellar", imageUrl = null)
@@ -526,7 +526,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_from_ranked_tier_to_pool_relocates_item() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val poolTierId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val itemId = dao.insertTierItem(tierItem(tierId = sTierId, title = "Interstellar", position = 0))
@@ -541,7 +541,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_between_two_ranked_tiers_relocates_item() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
         val itemId = dao.insertTierItem(tierItem(tierId = sTierId, title = "Interstellar", position = 0))
@@ -554,7 +554,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_into_tier_at_start_shifts_existing_items() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
         val first = dao.insertTierItem(tierItem(tierId = aTierId, title = "First", position = 0))
@@ -570,7 +570,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_into_tier_in_the_middle_shifts_later_items() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
         val first = dao.insertTierItem(tierItem(tierId = aTierId, title = "First", position = 0))
@@ -586,7 +586,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_into_tier_at_end_appends_after_existing_items() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
         val first = dao.insertTierItem(tierItem(tierId = aTierId, title = "First", position = 0))
@@ -602,7 +602,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_with_out_of_range_position_appends_to_end() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
         val first = dao.insertTierItem(tierItem(tierId = aTierId, title = "First", position = 0))
@@ -617,7 +617,7 @@ class TierDaoTest {
 
     @Test
     fun move_last_item_out_of_tier_leaves_source_tier_empty() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
         val moved = dao.insertTierItem(tierItem(tierId = sTierId, title = "Moved", position = 0))
@@ -632,7 +632,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_within_same_tier_reorders_without_losing_items() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val first = dao.insertTierItem(tierItem(tierId = sTierId, title = "First", position = 0))
         val second = dao.insertTierItem(tierItem(tierId = sTierId, title = "Second", position = 1))
@@ -647,7 +647,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_within_same_tier_to_start_reorders_and_stays_contiguous() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val first = dao.insertTierItem(tierItem(tierId = sTierId, title = "First", position = 0))
         val second = dao.insertTierItem(tierItem(tierId = sTierId, title = "Second", position = 1))
@@ -663,7 +663,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_within_same_tier_to_middle_reorders_and_stays_contiguous() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val first = dao.insertTierItem(tierItem(tierId = sTierId, title = "First", position = 0))
         val second = dao.insertTierItem(tierItem(tierId = sTierId, title = "Second", position = 1))
@@ -679,7 +679,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_within_same_tier_to_end_reorders_and_stays_contiguous() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val first = dao.insertTierItem(tierItem(tierId = sTierId, title = "First", position = 0))
         val second = dao.insertTierItem(tierItem(tierId = sTierId, title = "Second", position = 1))
@@ -695,7 +695,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_within_same_tier_forward_past_later_items_lands_on_requested_index() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val first = dao.insertTierItem(tierItem(tierId = sTierId, title = "First", position = 0))
         val second = dao.insertTierItem(tierItem(tierId = sTierId, title = "Second", position = 1))
@@ -711,7 +711,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_leaves_source_and_target_positions_contiguous_without_duplicates() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
         dao.insertTierItem(tierItem(tierId = sTierId, title = "S1", position = 0))
@@ -741,7 +741,7 @@ class TierDaoTest {
 
     @Test
     fun create_tier_list_with_default_tier_defaults_to_wrap_display_mode() = runBlocking {
-        val id = dao.createTierListWithDefaultTier(title = "Films")
+        val id = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
 
         val saved = requireNotNull(dao.getTierListById(id))
 
@@ -922,7 +922,7 @@ class TierDaoTest {
 
     @Test
     fun move_item_does_not_move_a_deleted_item() = runBlocking {
-        val listId = dao.createTierListWithDefaultTier(title = "Films")
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
         val itemId = dao.insertTierItem(tierItem(tierId = sTierId, title = "Interstellar", position = 0))
@@ -937,11 +937,11 @@ class TierDaoTest {
 
     @Test
     fun move_item_does_not_move_into_a_tier_whose_list_is_trashed() = runBlocking {
-        val sourceListId = dao.createTierListWithDefaultTier(title = "Films")
+        val sourceListId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sourceTierId = dao.getAllTiersByTierListId(sourceListId).single { it.label == "S" }.id
         val itemId = dao.insertTierItem(tierItem(tierId = sourceTierId, title = "Interstellar", position = 0))
 
-        val trashedListId = dao.createTierListWithDefaultTier(title = "Trashed")
+        val trashedListId = dao.createTierListWithDefaultTier(title = "Trashed", captions = CAPTIONS)
         val trashedTierId = dao.getAllTiersByTierListId(trashedListId).single { it.label == "A" }.id
         dao.markTierListsDeleted(listOf(trashedListId), deletedAt = 1_000L)
 

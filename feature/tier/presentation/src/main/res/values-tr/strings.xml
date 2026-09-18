@@ -27,6 +27,11 @@
     <string name="home_empty_body">Filmler, oyunlar, restoranlar, albümler — ne olursa.</string>
     <string name="cd_new_list">Yeni liste</string>
     <string name="default_tier_list_title">Başlıksız liste</string>
+    <string name="default_tier_caption_s">En iyi</string>
+    <string name="default_tier_caption_a">Harika</string>
+    <string name="default_tier_caption_b">İyi</string>
+    <string name="default_tier_caption_c">İdare eder</string>
+    <string name="default_tier_caption_d">En kötü</string>
     <string name="tier_lists_load_error">Listeler yüklenemedi.</string>
 
 

@@ -141,7 +141,7 @@ private class FailingTierRepository(
 
     override suspend fun getAllTierLists(): List<TierList> = fail()
 
-    override suspend fun createTierList(title: String): Long = fail()
+    override suspend fun createTierList(title: String, captions: List<String>): Long = fail()
 
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) = fail()
 

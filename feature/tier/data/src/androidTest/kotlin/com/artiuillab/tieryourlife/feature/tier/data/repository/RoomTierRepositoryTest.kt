@@ -24,6 +24,8 @@ import org.junit.runner.RunWith
 import java.io.ByteArrayInputStream
 import java.io.File
 
+private val CAPTIONS = listOf("Best", "Great", "Good", "Okay", "Worst")
+
 @RunWith(AndroidJUnit4::class)
 class RoomTierRepositoryTest {
 
@@ -88,7 +90,7 @@ class RoomTierRepositoryTest {
 
     @Test
     fun create_tier_list_defaults_to_wrap_display_mode() = runBlocking {
-        val id = repository.createTierList("Films")
+        val id = repository.createTierList("Films", CAPTIONS)
 
         val actual = requireNotNull(repository.getTierListById(id))
 
@@ -121,7 +123,7 @@ class RoomTierRepositoryTest {
 
     @Test
     fun get_all_tier_lists_returns_complete_tiers_and_items() = runBlocking {
-        val listId = repository.createTierList("Films")
+        val listId = repository.createTierList("Films", CAPTIONS)
         repository.addItemToPool(listId, "Interstellar", imageUrl = null)
 
         val list = repository.getAllTierLists().single { it.id == listId }
@@ -182,7 +184,7 @@ class RoomTierRepositoryTest {
 
     @Test
     fun delete_tier_removes_it_and_moves_its_items_to_the_pool() = runBlocking {
-        val listId = repository.createTierList("Films")
+        val listId = repository.createTierList("Films", CAPTIONS)
         val before = requireNotNull(repository.getTierListById(listId))
         val sTierId = before.tiers.single { it.label == "S" }.id
         val poolTierId = before.tiers.single { it.isPool }.id
@@ -197,7 +199,7 @@ class RoomTierRepositoryTest {
 
     @Test
     fun delete_tier_keeps_its_trashed_items_by_moving_them_to_the_pool() = runBlocking {
-        val listId = repository.createTierList("Films")
+        val listId = repository.createTierList("Films", CAPTIONS)
         val before = requireNotNull(repository.getTierListById(listId))
         val sTierId = before.tiers.single { it.label == "S" }.id
         val poolTierId = before.tiers.single { it.isPool }.id
@@ -222,7 +224,7 @@ class RoomTierRepositoryTest {
 
     @Test
     fun delete_tier_keeps_every_active_item_in_its_original_order() = runBlocking {
-        val listId = repository.createTierList("Films")
+        val listId = repository.createTierList("Films", CAPTIONS)
         val before = requireNotNull(repository.getTierListById(listId))
         val sTierId = before.tiers.single { it.label == "S" }.id
         val poolTierId = before.tiers.single { it.isPool }.id
@@ -237,7 +239,7 @@ class RoomTierRepositoryTest {
 
     @Test
     fun delete_tier_on_the_pool_is_a_no_op_and_exactly_one_pool_remains() = runBlocking {
-        val listId = repository.createTierList("Films")
+        val listId = repository.createTierList("Films", CAPTIONS)
         val poolTierId = requireNotNull(repository.getTierListById(listId)).tiers.single { it.isPool }.id
 
         repository.deleteTierToPool(poolTierId)
@@ -249,7 +251,7 @@ class RoomTierRepositoryTest {
 
     @Test
     fun restore_tier_recreates_its_position_and_returns_its_items_from_the_pool() = runBlocking {
-        val listId = repository.createTierList("Films")
+        val listId = repository.createTierList("Films", CAPTIONS)
         val before = requireNotNull(repository.getTierListById(listId))
         val tier = before.tiers.first { it.label == "A" }
         val itemId = dao.insertTierItem(
@@ -277,7 +279,7 @@ class RoomTierRepositoryTest {
 
     @Test
     fun rename_recolor_and_reorder_tiers_through_the_repository() = runBlocking {
-        val listId = repository.createTierList("Films")
+        val listId = repository.createTierList("Films", CAPTIONS)
         val ranked = requireNotNull(repository.getTierListById(listId)).tiers.filterNot { it.isPool }
         val sTierId = ranked.first { it.label == "S" }.id
 
@@ -296,7 +298,7 @@ class RoomTierRepositoryTest {
 
     @Test
     fun bulk_add_items_through_the_repository_appends_all_of_them_to_the_pool() = runBlocking {
-        val listId = repository.createTierList("Films")
+        val listId = repository.createTierList("Films", CAPTIONS)
 
         repository.addItemsToPool(
             listId,

@@ -30,6 +30,11 @@
     <string name="home_empty_body">Películas, juegos, restaurantes, álbumes: lo que sea.</string>
     <string name="cd_new_list">Nueva lista</string>
     <string name="default_tier_list_title">Lista sin título</string>
+    <string name="default_tier_caption_s">Lo mejor</string>
+    <string name="default_tier_caption_a">Genial</string>
+    <string name="default_tier_caption_b">Bueno</string>
+    <string name="default_tier_caption_c">Pasable</string>
+    <string name="default_tier_caption_d">Lo peor</string>
     <string name="tier_lists_load_error">No se pudieron cargar las listas.</string>
 
 

@@ -27,6 +27,11 @@
     <string name="home_empty_body">Films, games, restaurants, albums — anything at all.</string>
     <string name="cd_new_list">New list</string>
     <string name="default_tier_list_title">Untitled list</string>
+    <string name="default_tier_caption_s">Best</string>
+    <string name="default_tier_caption_a">Great</string>
+    <string name="default_tier_caption_b">Good</string>
+    <string name="default_tier_caption_c">Okay</string>
+    <string name="default_tier_caption_d">Worst</string>
     <string name="tier_lists_load_error">Couldn’t load your lists.</string>
 
 

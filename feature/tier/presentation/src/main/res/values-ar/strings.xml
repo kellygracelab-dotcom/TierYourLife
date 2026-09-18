@@ -39,6 +39,11 @@
     <string name="home_empty_body">أفلام، ألعاب، مطاعم، ألبومات — أي شيء.</string>
     <string name="cd_new_list">قائمة جديدة</string>
     <string name="default_tier_list_title">قائمة بلا عنوان</string>
+    <string name="default_tier_caption_s">الأفضل</string>
+    <string name="default_tier_caption_a">ممتاز</string>
+    <string name="default_tier_caption_b">جيد</string>
+    <string name="default_tier_caption_c">مقبول</string>
+    <string name="default_tier_caption_d">الأسوأ</string>
     <string name="tier_lists_load_error">تعذّر تحميل القوائم.</string>
 
 
