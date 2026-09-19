@@ -16,7 +16,7 @@
     <string name="list_settings_cover">Kapak</string>
     <string name="list_settings_cover_body">Bu listedeki kartlardan birini ya da galerinizden bir görseli seçin.</string>
     <string name="list_settings_cover_gallery">Galeriden seç</string>
-    <string name="list_settings_cover_gallery_note">Galeriden seçilen görsel bu telefonda kalır. Toplulukta liste bunun yerine kartlarını gösterir.</string>
+    <string name="list_settings_cover_gallery_note">Galeriden seçilen görsel, listeyi yayımladığında onunla birlikte gider.</string>
     <string name="list_settings_cover_no_cards">Bu listedeki kartların henüz görseli yok.</string>
     <string name="list_settings_cover_none">Kapağı kaldır</string>
     <string name="list_settings_cover_none_set">Yok</string>
@@ -26,7 +26,7 @@
     <string name="list_settings_public_banned_until">Bir moderatör listelerinizden birini kaldırdı. %1$s tarihinden itibaren yeniden yayımlayabilirsiniz.</string>
     <string name="list_settings_public_body">Herkes bu listeyi açıp kendince sıralayabilir.</string>
     <string name="list_settings_public_failed">Bu liste yayımlanamadı. Yeniden deneyin.</string>
-    <string name="list_settings_public_images">Yalnızca zaten internette olan görseller gider. Fotoğraflar ve üretilen görseller bu telefonda kalır.</string>
+    <string name="list_settings_public_images">Yayımlarken listenin görselleri de gider; kendi fotoğrafların ve üretilen görseller dahil. Her biri önce denetlenir.</string>
     <string name="list_settings_public_needs_account">Yayımlamak için Google ile oturum aç. Başkalarınınkini okumak ve kaydetmek hesap istemez.</string>
     <string name="list_settings_public_needs_items">Listeyi yayımlamadan önce en az bir kart ekleyin.</string>
     <string name="list_settings_public_offline">Bağlantı yok. Çevrimiçi olduğunuzda yeniden deneyin.</string>

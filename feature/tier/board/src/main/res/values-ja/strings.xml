@@ -16,7 +16,7 @@
     <string name="list_settings_cover">カバー</string>
     <string name="list_settings_cover_body">このリストのカード、またはギャラリーの画像から選べます。</string>
     <string name="list_settings_cover_gallery">ギャラリーから選ぶ</string>
-    <string name="list_settings_cover_gallery_note">ギャラリーの画像はこの端末に留まります。コミュニティではカードが表示されます。</string>
+    <string name="list_settings_cover_gallery_note">ギャラリーの画像は、リストを公開すると一緒に送られます。</string>
     <string name="list_settings_cover_no_cards">このリストのカードにはまだ画像がありません。</string>
     <string name="list_settings_cover_none">カバーを削除</string>
     <string name="list_settings_cover_none_set">なし</string>
@@ -26,7 +26,7 @@
     <string name="list_settings_public_banned_until">モデレーターがあなたのリストを1つ取り下げました。%1$s から再び公開できます。</string>
     <string name="list_settings_public_body">誰でもこのリストを開いて、自分で並べられます。</string>
     <string name="list_settings_public_failed">このリストを公開できませんでした。もう一度お試しください。</string>
-    <string name="list_settings_public_images">すでにウェブ上にある画像だけが一緒に届きます。写真と生成画像はこの端末に残ります。</string>
+    <string name="list_settings_public_images">公開すると、自分で撮った写真や生成した画像も含め、リストの画像も一緒に送られます。どれも先に確認されます。</string>
     <string name="list_settings_public_needs_account">公開するには Google でログインしてください。読むことと保存はアカウントなしでできます。</string>
     <string name="list_settings_public_needs_items">リストを公開する前に、カードを1枚以上追加してください。</string>
     <string name="list_settings_public_offline">接続がありません。オンラインに戻ってからもう一度お試しください。</string>

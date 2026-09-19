@@ -16,7 +16,7 @@
     <string name="list_settings_cover">الغلاف</string>
     <string name="list_settings_cover_body">اختر إحدى بطاقات هذه القائمة أو صورة من معرضك.</string>
     <string name="list_settings_cover_gallery">الاختيار من المعرض</string>
-    <string name="list_settings_cover_gallery_note">تبقى صورة المعرض على هذا الهاتف. في المجتمع تعرض القائمة بطاقاتها بدلًا منها.</string>
+    <string name="list_settings_cover_gallery_note">صورة من المعرض تذهب مع القائمة عند نشرها.</string>
     <string name="list_settings_cover_no_cards">لا تحتوي أي بطاقة في هذه القائمة على صورة بعد.</string>
     <string name="list_settings_cover_none">إزالة الغلاف</string>
     <string name="list_settings_cover_none_set">لا يوجد</string>
@@ -26,7 +26,7 @@
     <string name="list_settings_public_banned_until">أزال أحد المشرفين إحدى قوائمك. يمكنك النشر مجددًا في %1$s.</string>
     <string name="list_settings_public_body">يمكن لأي شخص فتح هذه القائمة وترتيبها بطريقته.</string>
     <string name="list_settings_public_failed">تعذّر نشر هذه القائمة. أعد المحاولة.</string>
-    <string name="list_settings_public_images">تنتقل فقط الصور الموجودة على الإنترنت. الصور الشخصية والمولّدة تبقى على هذا الهاتف.</string>
+    <string name="list_settings_public_images">عند النشر تذهب صور القائمة معها، بما في ذلك صورك والصور المولّدة. تُفحص كل صورة أولاً.</string>
     <string name="list_settings_public_needs_account">سجّل الدخول بحساب Google للنشر. القراءة والحفظ لا تحتاجان إلى حساب.</string>
     <string name="list_settings_public_needs_items">أضف بطاقة واحدة على الأقل قبل نشر القائمة.</string>
     <string name="list_settings_public_offline">لا يوجد اتصال. أعد المحاولة عند عودتك إلى الإنترنت.</string>

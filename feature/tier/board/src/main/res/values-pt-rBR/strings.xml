@@ -16,7 +16,7 @@
     <string name="list_settings_cover">Capa</string>
     <string name="list_settings_cover_body">Escolha um dos cards da lista ou uma imagem da sua galeria.</string>
     <string name="list_settings_cover_gallery">Escolher da galeria</string>
-    <string name="list_settings_cover_gallery_note">Uma imagem da galeria fica neste telefone. Na comunidade a lista mostra seus cards.</string>
+    <string name="list_settings_cover_gallery_note">Uma imagem da galeria vai junto com a lista quando você a publica.</string>
     <string name="list_settings_cover_no_cards">Nenhum card desta lista tem imagem ainda.</string>
     <string name="list_settings_cover_none">Remover capa</string>
     <string name="list_settings_cover_none_set">Nenhuma</string>
@@ -26,7 +26,7 @@
     <string name="list_settings_public_banned_until">Um moderador removeu uma das suas listas. Você poderá publicar de novo em %1$s.</string>
     <string name="list_settings_public_body">Qualquer pessoa pode abrir esta lista e organizá-la do seu jeito.</string>
     <string name="list_settings_public_failed">Não foi possível publicar esta lista. Tente de novo.</string>
-    <string name="list_settings_public_images">Só viajam as imagens que já estão na web. Fotos e arte gerada ficam neste telefone.</string>
+    <string name="list_settings_public_images">Ao publicar, as imagens da lista vão junto, incluindo suas fotos e as geradas. Cada uma é verificada antes.</string>
     <string name="list_settings_public_needs_account">Entre com o Google para publicar. Ler e salvar as dos outros não precisa de conta.</string>
     <string name="list_settings_public_needs_items">Adicione ao menos um card antes de publicar a lista.</string>
     <string name="list_settings_public_offline">Sem conexão. Tente de novo quando voltar a ficar online.</string>
