@@ -31,7 +31,7 @@
     <string name="list_settings_public_needs_items">Dodaj co najmniej jedną kartę, zanim opublikujesz listę.</string>
     <string name="list_settings_public_offline">Brak połączenia. Spróbuj ponownie, gdy wrócisz do sieci.</string>
     <string name="list_settings_public_picture_refused">Jedno z Twoich zdjęć nie może trafić do publicznego kanału. Usuń je albo zostaw listę prywatną.</string>
-    <string name="list_settings_public_too_large">Ta lista jest za duża, by ją opublikować: najwyżej 1000 kart i 20 poziomów.</string>
+    <string name="list_settings_public_too_large">Ta lista jest za duża, by ją opublikować: najwyżej 2000 kart i 20 poziomów.</string>
     <string name="list_settings_public_too_many">Masz już opublikowaną maksymalną liczbę list. Wycofaj jedną, aby zwolnić miejsce.</string>
     <string name="list_settings_public_unverified">Google Play nie potwierdził tej instalacji, więc nie można z niej nic opublikować.</string>
     <string name="list_settings_share">Udostępnij jako obraz</string>

@@ -31,7 +31,7 @@
     <string name="list_settings_public_needs_items">Добавьте хотя бы одну карточку, прежде чем публиковать список.</string>
     <string name="list_settings_public_offline">Нет соединения. Попробуйте снова, когда сеть вернётся.</string>
     <string name="list_settings_public_picture_refused">Одно из ваших фото нельзя показывать в общей ленте. Уберите его или оставьте список личным.</string>
-    <string name="list_settings_public_too_large">Список слишком большой для публикации: не больше 1000 карточек и 20 тиров.</string>
+    <string name="list_settings_public_too_large">Список слишком большой для публикации: не больше 2000 карточек и 20 тиров.</string>
     <string name="list_settings_public_too_many">Опубликовано максимальное число списков. Снимите один с публикации, чтобы освободить место.</string>
     <string name="list_settings_public_unverified">Google Play не подтвердил эту установку, поэтому публиковать с неё нельзя.</string>
     <string name="list_settings_share">Поделиться картинкой</string>

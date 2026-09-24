@@ -31,7 +31,7 @@
     <string name="list_settings_public_needs_items">Додайте хоча б одну картку, перш ніж публікувати список.</string>
     <string name="list_settings_public_offline">Немає зʼєднання. Спробуйте ще раз, коли мережа повернеться.</string>
     <string name="list_settings_public_picture_refused">Одне з ваших фото не може бути в загальній стрічці. Приберіть його або залиште список особистим.</string>
-    <string name="list_settings_public_too_large">Список завеликий для публікації: не більше 1000 карток і 20 тирів.</string>
+    <string name="list_settings_public_too_large">Список завеликий для публікації: не більше 2000 карток і 20 тирів.</string>
     <string name="list_settings_public_too_many">Опубліковано максимальну кількість списків. Зніміть один з публікації, щоб звільнити місце.</string>
     <string name="list_settings_public_unverified">Google Play не підтвердив це встановлення, тому публікувати з нього не можна.</string>
     <string name="list_settings_share">Поділитися картинкою</string>

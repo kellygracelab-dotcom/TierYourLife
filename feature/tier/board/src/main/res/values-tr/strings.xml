@@ -31,7 +31,7 @@
     <string name="list_settings_public_needs_items">Listeyi yayımlamadan önce en az bir kart ekleyin.</string>
     <string name="list_settings_public_offline">Bağlantı yok. Çevrimiçi olduğunuzda yeniden deneyin.</string>
     <string name="list_settings_public_picture_refused">Fotoğraflarınızdan biri herkese açık akışta yer alamaz. Kaldırın ya da listeyi özel tutun.</string>
-    <string name="list_settings_public_too_large">Bu liste yayımlanamayacak kadar büyük: en fazla 1000 kart ve 20 kademe.</string>
+    <string name="list_settings_public_too_large">Bu liste yayımlanamayacak kadar büyük: en fazla 2000 kart ve 20 kademe.</string>
     <string name="list_settings_public_too_many">İzin verilen en fazla sayıda listeyi yayımladınız. Yer açmak için birini yayından kaldırın.</string>
     <string name="list_settings_public_unverified">Google Play bu kurulumu doğrulayamadı, bu yüzden buradan hiçbir şey yayınlanamaz.</string>
     <string name="list_settings_share">Görsel olarak paylaş</string>

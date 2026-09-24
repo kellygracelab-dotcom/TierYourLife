@@ -31,7 +31,7 @@
     <string name="list_settings_public_needs_items">Ajoutez au moins une carte avant de publier la liste.</string>
     <string name="list_settings_public_offline">Pas de connexion. Réessayez une fois de retour en ligne.</string>
     <string name="list_settings_public_picture_refused">Une de vos photos ne peut pas figurer dans le fil public. Retirez-la ou gardez la liste privée.</string>
-    <string name="list_settings_public_too_large">Cette liste est trop grande pour être publiée : 1000 cartes et 20 rangs au maximum.</string>
+    <string name="list_settings_public_too_large">Cette liste est trop grande pour être publiée : 2000 cartes et 20 rangs au maximum.</string>
     <string name="list_settings_public_too_many">Vous avez publié le maximum de listes autorisé. Retirez-en une pour faire de la place.</string>
     <string name="list_settings_public_unverified">Google Play n\'a pas pu confirmer cette installation, donc rien ne peut être publié depuis celle-ci.</string>
     <string name="list_settings_share">Partager en image</string>
