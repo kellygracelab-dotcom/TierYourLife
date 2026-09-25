@@ -31,7 +31,7 @@
     <string name="list_settings_public_needs_items">Añade al menos una tarjeta antes de publicar la lista.</string>
     <string name="list_settings_public_offline">Sin conexión. Inténtalo de nuevo cuando vuelvas a estar en línea.</string>
     <string name="list_settings_public_picture_refused">Una de tus fotos no puede aparecer en el feed público. Quítala o mantén la lista privada.</string>
-    <string name="list_settings_public_too_large">Esta lista es demasiado grande para publicarse: como máximo 1000 tarjetas y 20 niveles.</string>
+    <string name="list_settings_public_too_large">Esta lista es demasiado grande para publicarse: como máximo 2000 tarjetas y 20 niveles.</string>
     <string name="list_settings_public_too_many">Has publicado el máximo de listas permitido. Retira una para hacer sitio.</string>
     <string name="list_settings_public_unverified">Google Play no pudo confirmar esta instalación, así que no se puede publicar nada desde ella.</string>
     <string name="list_settings_share">Compartir como imagen</string>
