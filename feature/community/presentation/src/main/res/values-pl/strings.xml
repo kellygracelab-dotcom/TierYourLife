@@ -18,6 +18,8 @@
         <item quantity="many">%1$d list publicznych</item>
         <item quantity="other">%1$d listy publicznej</item>
     </plurals>
+    <string name="author_unavailable">Ten profil jest niedostępny</string>
+    <string name="author_unavailable_body">Jego listy są w kanale i możesz je stamtąd otworzyć.</string>
     <string name="ban_forever">Na zawsze</string>
     <string name="ban_forever_confirm_action">Zbanuj na zawsze</string>
     <string name="ban_forever_confirm_body">Nigdy więcej nie opublikuje. Własne tablice na telefonie zostaną, cudze listy nadal może układać.</string>

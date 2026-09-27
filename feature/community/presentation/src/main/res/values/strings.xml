@@ -14,6 +14,8 @@
         <item quantity="one">%1$d public list</item>
         <item quantity="other">%1$d public lists</item>
     </plurals>
+    <string name="author_unavailable">This profile isn’t available</string>
+    <string name="author_unavailable_body">Its lists are in the feed, and you can open any of them there.</string>
     <string name="ban_forever">Forever</string>
     <string name="ban_forever_confirm_action">Ban forever</string>
     <string name="ban_forever_confirm_body">They will never publish again. Their own boards stay on their phone, and they can still rank other people\'s lists.</string>

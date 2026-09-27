@@ -194,8 +194,8 @@ internal fun CommunityFeedList(
                             summary = summary,
                             onClick = { onOpen(summary.id) },
                             onLongClick = onLongPress?.let { press -> { press(summary) } },
-                            showAuthor = showAuthor,
-                            onAuthorClick = onOpenAuthor?.let { open ->
+                            showAuthor = showAuthor && !summary.editorial,
+                            onAuthorClick = onOpenAuthor?.takeUnless { summary.editorial }?.let { open ->
                                 { open(summary.authorUid) }
                             },
                         )

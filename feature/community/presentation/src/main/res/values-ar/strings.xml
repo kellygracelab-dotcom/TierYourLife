@@ -22,6 +22,8 @@
         <item quantity="many">%1$d قائمة عامة</item>
         <item quantity="other">%1$d قائمة عامة</item>
     </plurals>
+    <string name="author_unavailable">هذا الملف الشخصي غير متاح</string>
+    <string name="author_unavailable_body">قوائمه موجودة في الخلاصة ويمكنك فتح أيٍّ منها من هناك.</string>
     <string name="ban_forever">إلى الأبد</string>
     <string name="ban_forever_confirm_action">حظر إلى الأبد</string>
     <string name="ban_forever_confirm_body">لن ينشر مرة أخرى أبدًا. تبقى لوحاته على هاتفه، ويمكنه ترتيب قوائم الآخرين.</string>

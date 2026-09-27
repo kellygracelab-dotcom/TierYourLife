@@ -12,6 +12,8 @@
     <plurals name="author_public_lists">
         <item quantity="other">公開リスト %1$d 件</item>
     </plurals>
+    <string name="author_unavailable">このプロフィールは利用できません</string>
+    <string name="author_unavailable_body">リストはフィードにあり、そこから開けます。</string>
     <string name="ban_forever">永久</string>
     <string name="ban_forever_confirm_action">永久に禁止</string>
     <string name="ban_forever_confirm_body">二度と公開できなくなります。本人の端末のボードは残り、他人のリストの並べ替えは引き続きできます。</string>

@@ -157,12 +157,16 @@ fun CommunityFeedScreenContent(
             actionsFor?.let { summary ->
                 ListActionsSheet(
                     title = summary.title,
-                    authorName = summary.authorName,
+                    authorName = summary.authorName.takeUnless { summary.editorial },
                     authorPhotoUrl = summary.authorPhotoUrl,
                     onDismiss = { actionsFor = null },
-                    onOpenAuthor = {
-                        actionsFor = null
-                        onAuthorClick(summary.authorUid, summary.authorName, summary.authorPhotoUrl)
+                    onOpenAuthor = if (summary.editorial) {
+                        null
+                    } else {
+                        {
+                            actionsFor = null
+                            onAuthorClick(summary.authorUid, summary.authorName, summary.authorPhotoUrl)
+                        }
                     },
                     onHide = {
                         actionsFor = null
@@ -188,7 +192,7 @@ fun CommunityFeedScreenContent(
 
             reportedFrom?.let { summary ->
                 ReportSentDialog(
-                    authorName = summary.authorName,
+                    authorName = summary.authorName.takeUnless { summary.editorial },
                     onDismiss = { reportedFrom = null },
                     onHideAuthor = {
                         reportedFrom = null

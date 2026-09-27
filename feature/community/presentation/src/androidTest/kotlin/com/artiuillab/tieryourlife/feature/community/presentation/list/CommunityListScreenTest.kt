@@ -78,6 +78,34 @@ class CommunityListScreenTest {
     }
 
     @Test
+    fun editorialList_showsNoAuthorLine_andItsOverflowLeadsToNoProfile() {
+        setScreen(state = successState().copy(editorial = true))
+
+        composeRule.onNodeWithText(string(R.string.community_by_author, "Olena M.")).assertDoesNotExist()
+        composeRule.onNodeWithTag(CommunityListTestTags.FOLLOW).assertDoesNotExist()
+
+        openOverflow()
+        composeRule.onNodeWithTag(CommunityTestTags.LIST_ACTIONS_SHEET).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_VIEW_AUTHOR).assertDoesNotExist()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_HIDE).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_REPORT).assertIsDisplayed()
+    }
+
+    @Test
+    fun reportingAnEditorialList_offersNoWayToHideItsAuthor() {
+        setScreen(state = successState().copy(editorial = true))
+
+        openOverflow()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_REPORT).performClick()
+        composeRule.onNodeWithTag(CommunityTestTags.reportReason(ReportReason.Spam)).performClick()
+        composeRule.onNodeWithTag(CommunityTestTags.REPORT_SEND).performClick()
+
+        composeRule.onNodeWithText(string(R.string.report_sent_title)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.report_hide_author, "Olena M.")).assertDoesNotExist()
+        composeRule.onNodeWithText(string(R.string.action_done)).assertIsDisplayed()
+    }
+
+    @Test
     fun loadingState_keepsTheOverflowAwayUntilThereIsSomethingToActOn() {
         composeRule.setContent {
             TierYourLifeTheme {
@@ -100,13 +128,14 @@ class CommunityListScreenTest {
     }
 
     private fun setScreen(
+        state: CommunityListUiState = successState(),
         onHide: () -> Unit = {},
         onReport: (ReportReason, String?) -> Unit = { _, _ -> },
     ) {
         composeRule.setContent {
             TierYourLifeTheme {
                 CommunityListScreenContent(
-                    state = successState(),
+                    state = state,
                     onBack = {},
                     onMoveItem = { _, _, _ -> },
                     onSave = {},
@@ -139,6 +168,6 @@ class CommunityListScreenTest {
         authorUid = "author-1",
     )
 
-    private fun string(id: Int): String =
-        InstrumentationRegistry.getInstrumentation().targetContext.getString(id)
+    private fun string(id: Int, vararg args: Any): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(id, *args)
 }

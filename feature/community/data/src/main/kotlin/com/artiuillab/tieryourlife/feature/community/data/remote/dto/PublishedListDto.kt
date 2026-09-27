@@ -16,6 +16,7 @@ data class PublishedListSummaryDto(
     val tierColors: List<String> = emptyList(),
     val updatedAt: Long = 0,
     val takeCount: Int = 0,
+    val anonymous: Boolean = false,
 )
 
 @Serializable
@@ -85,6 +86,7 @@ data class PublishedListDto(
     val updatedAt: Long = 0,
     val tiers: List<PublishedTierDto> = emptyList(),
     val items: List<PublishedItemDto> = emptyList(),
+    val anonymous: Boolean = false,
 )
 
 @Serializable

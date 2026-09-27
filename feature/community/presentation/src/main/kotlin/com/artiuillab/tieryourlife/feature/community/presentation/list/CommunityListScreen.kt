@@ -152,15 +152,18 @@ fun CommunityListScreenContent(
                         readOnly = state.showing == Showing.Theirs,
                         onReaderMoreClick = { actionsVisible = true },
                         belowTopBar = {
-                            AuthorLine(
-                                name = state.authorName,
-                                photoUrl = state.authorPhotoUrl,
-                                follow = state.follow,
-                                onOpenAuthor = {
-                                    onAuthorClick(state.authorUid, state.authorName, state.authorPhotoUrl)
-                                },
-                                onToggleFollow = onToggleFollow,
-                            )
+                            // A list that stands without an author has no line to pin here.
+                            if (!state.editorial) {
+                                AuthorLine(
+                                    name = state.authorName,
+                                    photoUrl = state.authorPhotoUrl,
+                                    follow = state.follow,
+                                    onOpenAuthor = {
+                                        onAuthorClick(state.authorUid, state.authorName, state.authorPhotoUrl)
+                                    },
+                                    onToggleFollow = onToggleFollow,
+                                )
+                            }
                         },
                     )
                 }
@@ -178,12 +181,16 @@ fun CommunityListScreenContent(
             if (actionsVisible) {
                 ListActionsSheet(
                     title = loaded.list.title,
-                    authorName = loaded.authorName,
+                    authorName = loaded.authorName.takeUnless { loaded.editorial },
                     authorPhotoUrl = loaded.authorPhotoUrl,
                     onDismiss = { actionsVisible = false },
-                    onOpenAuthor = {
-                        actionsVisible = false
-                        onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl)
+                    onOpenAuthor = if (loaded.editorial) {
+                        null
+                    } else {
+                        {
+                            actionsVisible = false
+                            onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl)
+                        }
                     },
                     onHide = {
                         actionsVisible = false
@@ -210,7 +217,7 @@ fun CommunityListScreenContent(
             // Backing out only once the reader has read it: the list is already gone from their feed.
             if (reportedFrom) {
                 ReportSentDialog(
-                    authorName = loaded.authorName,
+                    authorName = loaded.authorName.takeUnless { loaded.editorial },
                     onDismiss = {
                         reportedFrom = false
                         onBack()

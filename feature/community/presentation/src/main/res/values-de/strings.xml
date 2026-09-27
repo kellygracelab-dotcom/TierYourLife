@@ -14,6 +14,8 @@
         <item quantity="one">%1$d öffentliche Liste</item>
         <item quantity="other">%1$d öffentliche Listen</item>
     </plurals>
+    <string name="author_unavailable">Dieses Profil ist nicht verfügbar</string>
+    <string name="author_unavailable_body">Seine Listen stehen im Feed, dort kannst du jede davon öffnen.</string>
     <string name="ban_forever">Für immer</string>
     <string name="ban_forever_confirm_action">Für immer sperren</string>
     <string name="ban_forever_confirm_body">Diese Person wird nie wieder veröffentlichen. Die eigenen Boards bleiben, fremde Listen kann sie weiterhin einordnen.</string>

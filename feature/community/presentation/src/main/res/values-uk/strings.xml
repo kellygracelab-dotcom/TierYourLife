@@ -18,6 +18,8 @@
         <item quantity="many">%1$d публічних списків</item>
         <item quantity="other">%1$d публічного списку</item>
     </plurals>
+    <string name="author_unavailable">Цей профіль недоступний</string>
+    <string name="author_unavailable_body">Його списки є у стрічці — відкривайте їх звідти.</string>
     <string name="ban_forever">Назавжди</string>
     <string name="ban_forever_confirm_action">Забанити назавжди</string>
     <string name="ban_forever_confirm_body">Він більше ніколи не зможе публікувати. Свої дошки на телефоні залишаться, чужі списки розкладати зможе.</string>

@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.isAppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
+import com.artiuillab.tieryourlife.feature.community.domain.model.EditorialAuthors
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
@@ -84,9 +85,12 @@ class RetrofitCommunityRepository @Inject constructor(
 
     override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> =
         attempt("Reading who to follow") {
-            api.suggestedAuthors().authors.map {
-                SuggestedAuthor(uid = it.uid, name = it.name, photoUrl = it.photoUrl, takeCount = it.takeCount)
-            }
+            api.suggestedAuthors().authors
+                // Nobody to follow behind a list that stands without an author.
+                .filterNot { EditorialAuthors.isEditorial(it.uid) }
+                .map {
+                    SuggestedAuthor(uid = it.uid, name = it.name, photoUrl = it.photoUrl, takeCount = it.takeCount)
+                }
         }
 
     override suspend fun noteTaken(publishedId: String): Result<Unit> = attempt("Counting a list as taken") {
@@ -209,6 +213,7 @@ private fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     tierColors = tierColors,
     updatedAtMillis = updatedAt,
     takeCount = takeCount,
+    anonymous = anonymous,
 )
 
 private fun PublishedListDto.toDomain() = PublishedList(
@@ -224,6 +229,7 @@ private fun PublishedListDto.toDomain() = PublishedList(
         previewImages = previewImages,
         tierColors = tierColors,
         updatedAtMillis = updatedAt,
+        anonymous = anonymous,
     ),
     tiers = tiers.mapIndexed { index, tier ->
         Tier(

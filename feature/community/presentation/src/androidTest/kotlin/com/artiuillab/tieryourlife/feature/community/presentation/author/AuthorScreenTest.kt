@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -12,6 +13,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import org.junit.Assert.assertEquals
@@ -53,6 +55,23 @@ class AuthorScreenTest {
             }
         }
 
+        composeRule.onNodeWithTag(AuthorTestTags.MORE).assertDoesNotExist()
+    }
+
+    @Test
+    fun unavailableProfile_saysSo_andOffersNothingToActOn() {
+        composeRule.setContent {
+            TierYourLifeTheme {
+                AuthorScreenContent(
+                    state = AuthorUiState.Unavailable,
+                    onBack = {},
+                    onOpenList = {},
+                    onRetry = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithText(string(R.string.author_unavailable)).assertIsDisplayed()
         composeRule.onNodeWithTag(AuthorTestTags.MORE).assertDoesNotExist()
     }
 

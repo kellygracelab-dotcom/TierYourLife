@@ -16,6 +16,8 @@
         <item quantity="other">%1$d listas públicas</item>
         <item quantity="many">%1$d listas públicas</item>
     </plurals>
+    <string name="author_unavailable">Este perfil não está disponível</string>
+    <string name="author_unavailable_body">As listas dele estão no feed, e você pode abrir qualquer uma por lá.</string>
     <string name="ban_forever">Para sempre</string>
     <string name="ban_forever_confirm_action">Banir para sempre</string>
     <string name="ban_forever_confirm_body">Nunca mais vai publicar. Os quadros dele continuam no telefone e ele ainda pode ordenar listas de outros.</string>
