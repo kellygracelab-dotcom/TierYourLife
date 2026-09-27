@@ -46,11 +46,16 @@ class EditorialCardTest {
         listOf("people", "editorial", "flagged", "blank").forEach { id ->
             composeRule.onNodeWithTag(CommunityTestTags.communityCard(id)).assertExists()
         }
-        composeRule.onNodeWithTag(CommunityTestTags.communityCardAuthor("people")).assertExists()
-        composeRule.onNodeWithTag(CommunityTestTags.communityCardAuthor("editorial")).assertDoesNotExist()
-        composeRule.onNodeWithTag(CommunityTestTags.communityCardAuthor("flagged")).assertDoesNotExist()
-        composeRule.onNodeWithTag(CommunityTestTags.communityCardAuthor("blank")).assertDoesNotExist()
+        // The card is one tap target and merges what is inside it, the pill's
+        // tag included: only the unmerged tree still has it.
+        author("people").assertExists()
+        author("editorial").assertDoesNotExist()
+        author("flagged").assertDoesNotExist()
+        author("blank").assertDoesNotExist()
     }
+
+    private fun author(id: String) =
+        composeRule.onNodeWithTag(CommunityTestTags.communityCardAuthor(id), useUnmergedTree = true)
 
     private fun summary(id: String, authorUid: String, anonymous: Boolean = false) = PublishedListSummary(
         id = id,
