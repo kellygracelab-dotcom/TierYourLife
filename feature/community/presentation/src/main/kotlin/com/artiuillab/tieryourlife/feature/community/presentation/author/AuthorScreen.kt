@@ -120,6 +120,13 @@ fun AuthorScreenContent(
                     onAction = onRetry,
                 )
 
+                AuthorUiState.Unavailable -> Message(
+                    title = stringResource(R.string.author_unavailable),
+                    body = stringResource(R.string.author_unavailable_body),
+                    action = null,
+                    onAction = {},
+                )
+
                 is AuthorUiState.Ready -> CenteredContent(ContentWidth.Board) {
                     Header(state, onToggleFollow = onToggleFollow)
                     if (state.lists.isEmpty()) {

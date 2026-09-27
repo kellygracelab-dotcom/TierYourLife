@@ -152,15 +152,18 @@ fun CommunityListScreenContent(
                         readOnly = state.showing == Showing.Theirs,
                         onReaderMoreClick = { actionsVisible = true },
                         belowTopBar = {
-                            AuthorLine(
-                                name = state.authorName,
-                                photoUrl = state.authorPhotoUrl,
-                                follow = state.follow,
-                                onOpenAuthor = {
-                                    onAuthorClick(state.authorUid, state.authorName, state.authorPhotoUrl)
-                                },
-                                onToggleFollow = onToggleFollow,
-                            )
+                            // A list that stands without an author has no line to pin here.
+                            if (!state.editorial) {
+                                AuthorLine(
+                                    name = state.authorName,
+                                    photoUrl = state.authorPhotoUrl,
+                                    follow = state.follow,
+                                    onOpenAuthor = {
+                                        onAuthorClick(state.authorUid, state.authorName, state.authorPhotoUrl)
+                                    },
+                                    onToggleFollow = onToggleFollow,
+                                )
+                            }
                         },
                     )
                 }
@@ -169,7 +172,7 @@ fun CommunityListScreenContent(
                 if (state.knowsTheirs) {
                     WhoseArrangement(showing = state.showing, onShow = onShow)
                 }
-                SaveBar(arranged = state.arranged, saving = state.saving, onSave = onSave)
+                SaveBar(arranged = state.arranged, editorial = state.editorial, saving = state.saving, onSave = onSave)
             }
         }
 
@@ -178,12 +181,16 @@ fun CommunityListScreenContent(
             if (actionsVisible) {
                 ListActionsSheet(
                     title = loaded.list.title,
-                    authorName = loaded.authorName,
+                    authorName = loaded.authorName.takeUnless { loaded.editorial },
                     authorPhotoUrl = loaded.authorPhotoUrl,
                     onDismiss = { actionsVisible = false },
-                    onOpenAuthor = {
-                        actionsVisible = false
-                        onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl)
+                    onOpenAuthor = if (loaded.editorial) {
+                        null
+                    } else {
+                        {
+                            actionsVisible = false
+                            onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl)
+                        }
                     },
                     onHide = {
                         actionsVisible = false
@@ -210,7 +217,7 @@ fun CommunityListScreenContent(
             // Backing out only once the reader has read it: the list is already gone from their feed.
             if (reportedFrom) {
                 ReportSentDialog(
-                    authorName = loaded.authorName,
+                    authorName = loaded.authorName.takeUnless { loaded.editorial },
                     onDismiss = {
                         reportedFrom = false
                         onBack()
@@ -256,7 +263,7 @@ private fun WhoseArrangement(showing: Showing, onShow: (Showing) -> Unit) {
 }
 
 @Composable
-private fun SaveBar(arranged: Boolean, saving: Boolean, onSave: () -> Unit) {
+private fun SaveBar(arranged: Boolean, editorial: Boolean, saving: Boolean, onSave: () -> Unit) {
     // Two lines each and the bar grows: "Save to my lists" is half again as long in German.
     Row(
         modifier = Modifier
@@ -276,7 +283,12 @@ private fun SaveBar(arranged: Boolean, saving: Boolean, onSave: () -> Unit) {
         ) {
             Text(
                 text = stringResource(
-                    if (arranged) R.string.community_not_saved_yet else R.string.community_someone_elses,
+                    when {
+                        arranged -> R.string.community_not_saved_yet
+                        // "Someone else's" would name an owner a list without an author does not have.
+                        editorial -> R.string.community_rank_it_your_way
+                        else -> R.string.community_someone_elses
+                    },
                 ),
                 modifier = Modifier
                     .weight(1f)

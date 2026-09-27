@@ -99,11 +99,14 @@ class CommunityListViewModel @Inject constructor(
                         authorName = published.summary.authorName,
                         authorUid = published.summary.authorUid,
                         authorPhotoUrl = published.summary.authorPhotoUrl,
+                        editorial = published.summary.editorial,
                     )
                 },
                 onFailure = { CommunityListUiState.Error },
             )
-            (_state.value as? CommunityListUiState.Success)?.let { loadFollowState(it.authorUid) }
+            (_state.value as? CommunityListUiState.Success)
+                ?.takeUnless { it.editorial }
+                ?.let { loadFollowState(it.authorUid) }
         }
     }
 

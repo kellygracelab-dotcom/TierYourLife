@@ -16,6 +16,8 @@
         <item quantity="other">%1$d listes publiques</item>
         <item quantity="many">%1$d listes publiques</item>
     </plurals>
+    <string name="author_unavailable">Ce profil n’est pas disponible</string>
+    <string name="author_unavailable_body">Ses listes sont dans le fil, vous pouvez les ouvrir depuis là.</string>
     <string name="ban_forever">Pour toujours</string>
     <string name="ban_forever_confirm_action">Bloquer pour toujours</string>
     <string name="ban_forever_confirm_body">Cette personne ne publiera plus jamais. Ses tableaux restent sur son téléphone et elle peut toujours classer les listes des autres.</string>
@@ -40,6 +42,7 @@
     </plurals>
     <string name="community_not_saved_yet">Votre classement n\'est pas encore enregistré.</string>
     <string name="community_open_failed">Impossible d\'ouvrir cette liste</string>
+    <string name="community_rank_it_your_way">Classez-la librement.</string>
     <string name="community_save_to_my_lists">Enregistrer dans mes listes</string>
     <string name="community_showing_mine">Le mien</string>
     <string name="community_showing_theirs">Son classement</string>

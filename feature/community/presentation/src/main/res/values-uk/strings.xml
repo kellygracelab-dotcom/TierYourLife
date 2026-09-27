@@ -18,6 +18,8 @@
         <item quantity="many">%1$d публічних списків</item>
         <item quantity="other">%1$d публічного списку</item>
     </plurals>
+    <string name="author_unavailable">Цей профіль недоступний</string>
+    <string name="author_unavailable_body">Його списки є у стрічці — відкривайте їх звідти.</string>
     <string name="ban_forever">Назавжди</string>
     <string name="ban_forever_confirm_action">Забанити назавжди</string>
     <string name="ban_forever_confirm_body">Він більше ніколи не зможе публікувати. Свої дошки на телефоні залишаться, чужі списки розкладати зможе.</string>
@@ -43,6 +45,7 @@
     </plurals>
     <string name="community_not_saved_yet">Ваша розкладка ще не збережена.</string>
     <string name="community_open_failed">Не вдалося відкрити цей список</string>
+    <string name="community_rank_it_your_way">Розкладіть його як забажаєте.</string>
     <string name="community_save_to_my_lists">Зберегти собі</string>
     <string name="community_showing_mine">Моє</string>
     <string name="community_showing_theirs">Його розташування</string>

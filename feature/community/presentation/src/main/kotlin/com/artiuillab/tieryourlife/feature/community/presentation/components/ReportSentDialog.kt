@@ -14,7 +14,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.R
  */
 @Composable
 fun ReportSentDialog(
-    authorName: String,
+    /** Null for a list that stands without an author: there is nobody to hide wholesale. */
+    authorName: String?,
     onDismiss: () -> Unit,
     onHideAuthor: () -> Unit,
 ) {
@@ -23,12 +24,18 @@ fun ReportSentDialog(
         title = { Text(stringResource(R.string.report_sent_title)) },
         text = { Text(stringResource(R.string.report_sent_body)) },
         confirmButton = {
-            TextButton(onClick = onHideAuthor) {
-                Text(stringResource(R.string.report_hide_author, authorName))
+            if (authorName != null) {
+                TextButton(onClick = onHideAuthor) {
+                    Text(stringResource(R.string.report_hide_author, authorName))
+                }
+            } else {
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done)) }
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done)) }
+            if (authorName != null) {
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done)) }
+            }
         },
     )
 }

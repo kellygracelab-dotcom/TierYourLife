@@ -20,7 +20,12 @@ data class PublishedListSummary(
     val updatedAtMillis: Long,
     /** How many people have taken this list: the number the popular ordering sorts by, so what a reader sees and what put it there agree. */
     val takeCount: Int = 0,
-)
+    /** Set by the server once it marks lists that stand without an author; absent before. */
+    val anonymous: Boolean = false,
+) {
+    /** Shown without its author, and leading to no profile. */
+    val editorial: Boolean get() = EditorialAuthors.isEditorial(authorUid, anonymous)
+}
 
 /** Their cards and tier definitions, with no ranking; where it goes is the reader's business. */
 data class PublishedList(

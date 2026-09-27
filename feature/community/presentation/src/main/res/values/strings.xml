@@ -14,6 +14,8 @@
         <item quantity="one">%1$d public list</item>
         <item quantity="other">%1$d public lists</item>
     </plurals>
+    <string name="author_unavailable">This profile isn’t available</string>
+    <string name="author_unavailable_body">Its lists are in the feed, and you can open any of them there.</string>
     <string name="ban_forever">Forever</string>
     <string name="ban_forever_confirm_action">Ban forever</string>
     <string name="ban_forever_confirm_body">They will never publish again. Their own boards stay on their phone, and they can still rank other people\'s lists.</string>
@@ -37,6 +39,7 @@
     </plurals>
     <string name="community_not_saved_yet">Your arrangement isn\'t saved yet.</string>
     <string name="community_open_failed">Could not open this list</string>
+    <string name="community_rank_it_your_way">Rank it however you like.</string>
     <string name="community_save_to_my_lists">Save to my lists</string>
     <string name="community_showing_mine">Mine</string>
     <string name="community_showing_theirs">Their ranking</string>

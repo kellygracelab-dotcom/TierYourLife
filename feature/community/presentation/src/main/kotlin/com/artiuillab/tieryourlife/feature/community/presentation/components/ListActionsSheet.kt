@@ -39,7 +39,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.R
 @Composable
 fun ListActionsSheet(
     title: String,
-    authorName: String,
+    /** Null for a list that stands without an author: no face, no byline. */
+    authorName: String?,
     authorPhotoUrl: String?,
     onDismiss: () -> Unit,
     onOpenAuthor: (() -> Unit)?,
@@ -63,8 +64,10 @@ fun ListActionsSheet(
                     .padding(bottom = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                AuthorFace(photoUrl = authorPhotoUrl, name = authorName, size = 32.dp)
-                Spacer(Modifier.width(12.dp))
+                if (authorName != null) {
+                    AuthorFace(photoUrl = authorPhotoUrl, name = authorName, size = 32.dp)
+                    Spacer(Modifier.width(12.dp))
+                }
                 Column(Modifier.fillMaxWidth()) {
                     Text(
                         text = title,
@@ -73,13 +76,15 @@ fun ListActionsSheet(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Text(
-                        text = stringResource(R.string.community_by_author, authorName),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                    if (authorName != null) {
+                        Text(
+                            text = stringResource(R.string.community_by_author, authorName),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 }
             }
 
@@ -88,7 +93,7 @@ fun ListActionsSheet(
                 color = MaterialTheme.colorScheme.outlineVariant,
             )
 
-            if (onOpenAuthor != null) {
+            if (onOpenAuthor != null && authorName != null) {
                 ActionRow(
                     text = stringResource(R.string.community_action_view_author, authorName),
                     testTag = CommunityTestTags.ACTION_VIEW_AUTHOR,

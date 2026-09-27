@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.feature.community.domain.model.EditorialAuthors
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
@@ -36,6 +37,13 @@ sealed interface AuthorUiState {
     ) : AuthorUiState
 
     data object Failed : AuthorUiState
+
+    /**
+     * A profile behind lists that stand without an author, or no uid at all.
+     * Reached only by an old route; asking the server would get the whole
+     * feed back as if it were one person's.
+     */
+    data object Unavailable : AuthorUiState
 }
 
 @HiltViewModel
@@ -50,9 +58,15 @@ class AuthorViewModel @Inject constructor(
     private val _state = MutableStateFlow<AuthorUiState>(AuthorUiState.Loading)
     val state: StateFlow<AuthorUiState> = _state.asStateFlow()
 
+    private val unavailable = EditorialAuthors.isEditorial(route.authorUid)
+
     init {
-        load()
-        loadFollowState()
+        if (unavailable) {
+            _state.value = AuthorUiState.Unavailable
+        } else {
+            load()
+            loadFollowState()
+        }
     }
 
     private fun loadFollowState() {
@@ -92,6 +106,7 @@ class AuthorViewModel @Inject constructor(
     }
 
     fun load() {
+        if (unavailable) return
         viewModelScope.launch {
             _state.value = AuthorUiState.Loading
             _state.value = community.feed(author = route.authorUid).fold(
