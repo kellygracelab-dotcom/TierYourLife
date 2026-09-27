@@ -42,6 +42,7 @@
     </plurals>
     <string name="community_not_saved_yet">Tu orden todavía no está guardado.</string>
     <string name="community_open_failed">No se pudo abrir esta lista</string>
+    <string name="community_rank_it_your_way">Ordénala como quieras.</string>
     <string name="community_save_to_my_lists">Guardar en mis listas</string>
     <string name="community_showing_mine">El mío</string>
     <string name="community_showing_theirs">Su orden</string>

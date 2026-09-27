@@ -51,6 +51,7 @@
     </plurals>
     <string name="community_not_saved_yet">ترتيبك لم يُحفظ بعد.</string>
     <string name="community_open_failed">تعذّر فتح هذه القائمة</string>
+    <string name="community_rank_it_your_way">رتّبها كما يحلو لك.</string>
     <string name="community_save_to_my_lists">احفظ في قوائمي</string>
     <string name="community_showing_mine">ترتيبي</string>
     <string name="community_showing_theirs">ترتيبه</string>

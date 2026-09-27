@@ -39,6 +39,7 @@
     </plurals>
     <string name="community_not_saved_yet">Sıralaman henüz kaydedilmedi.</string>
     <string name="community_open_failed">Bu liste açılamadı</string>
+    <string name="community_rank_it_your_way">Nasıl istersen sırala.</string>
     <string name="community_save_to_my_lists">Listelerime kaydet</string>
     <string name="community_showing_mine">Benimki</string>
     <string name="community_showing_theirs">Onun sıralaması</string>

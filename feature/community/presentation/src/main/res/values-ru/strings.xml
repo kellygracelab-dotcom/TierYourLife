@@ -45,6 +45,7 @@
     </plurals>
     <string name="community_not_saved_yet">Ваша раскладка ещё не сохранена.</string>
     <string name="community_open_failed">Не удалось открыть этот список</string>
+    <string name="community_rank_it_your_way">Разложите его как захотите.</string>
     <string name="community_save_to_my_lists">Сохранить себе</string>
     <string name="community_showing_mine">Моя</string>
     <string name="community_showing_theirs">Его расстановка</string>

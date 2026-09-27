@@ -39,6 +39,7 @@
     </plurals>
     <string name="community_not_saved_yet">Deine Anordnung ist noch nicht gespeichert.</string>
     <string name="community_open_failed">Diese Liste ließ sich nicht öffnen</string>
+    <string name="community_rank_it_your_way">Ordne sie frei.</string>
     <string name="community_save_to_my_lists">In meine Listen speichern</string>
     <string name="community_showing_mine">Meine</string>
     <string name="community_showing_theirs">Ihre Reihung</string>

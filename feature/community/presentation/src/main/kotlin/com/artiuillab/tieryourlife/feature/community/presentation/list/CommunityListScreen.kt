@@ -172,7 +172,7 @@ fun CommunityListScreenContent(
                 if (state.knowsTheirs) {
                     WhoseArrangement(showing = state.showing, onShow = onShow)
                 }
-                SaveBar(arranged = state.arranged, saving = state.saving, onSave = onSave)
+                SaveBar(arranged = state.arranged, editorial = state.editorial, saving = state.saving, onSave = onSave)
             }
         }
 
@@ -263,7 +263,7 @@ private fun WhoseArrangement(showing: Showing, onShow: (Showing) -> Unit) {
 }
 
 @Composable
-private fun SaveBar(arranged: Boolean, saving: Boolean, onSave: () -> Unit) {
+private fun SaveBar(arranged: Boolean, editorial: Boolean, saving: Boolean, onSave: () -> Unit) {
     // Two lines each and the bar grows: "Save to my lists" is half again as long in German.
     Row(
         modifier = Modifier
@@ -283,7 +283,12 @@ private fun SaveBar(arranged: Boolean, saving: Boolean, onSave: () -> Unit) {
         ) {
             Text(
                 text = stringResource(
-                    if (arranged) R.string.community_not_saved_yet else R.string.community_someone_elses,
+                    when {
+                        arranged -> R.string.community_not_saved_yet
+                        // "Someone else's" would name an owner a list without an author does not have.
+                        editorial -> R.string.community_rank_it_your_way
+                        else -> R.string.community_someone_elses
+                    },
                 ),
                 modifier = Modifier
                     .weight(1f)

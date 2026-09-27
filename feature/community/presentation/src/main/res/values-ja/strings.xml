@@ -36,6 +36,7 @@
     </plurals>
     <string name="community_not_saved_yet">並べ方はまだ保存されていません。</string>
     <string name="community_open_failed">このリストを開けませんでした</string>
+    <string name="community_rank_it_your_way">好きなように並べてください。</string>
     <string name="community_save_to_my_lists">自分のリストに保存</string>
     <string name="community_showing_mine">自分の並べ方</string>
     <string name="community_showing_theirs">作者の並べ方</string>

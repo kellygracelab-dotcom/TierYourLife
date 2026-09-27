@@ -83,6 +83,8 @@ class CommunityListScreenTest {
 
         composeRule.onNodeWithText(string(R.string.community_by_author, "Olena M.")).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.FOLLOW).assertDoesNotExist()
+        composeRule.onNodeWithText(string(R.string.community_rank_it_your_way)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.community_someone_elses)).assertDoesNotExist()
 
         openOverflow()
         composeRule.onNodeWithTag(CommunityTestTags.LIST_ACTIONS_SHEET).assertIsDisplayed()
