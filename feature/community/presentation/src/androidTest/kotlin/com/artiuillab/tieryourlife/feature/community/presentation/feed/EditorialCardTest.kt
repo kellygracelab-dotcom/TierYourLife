@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.feed
 
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -37,11 +36,17 @@ class EditorialCardTest {
                     onOpen = {},
                     onRetry = {},
                     onOpenAuthor = {},
+                    // The category tiles would push the cards below a small emulator's fold.
+                    showCategories = false,
                 )
             }
         }
 
-        composeRule.onNodeWithTag(CommunityTestTags.communityCardAuthor("people")).assertIsDisplayed()
+        // Every card was composed, so a missing author below is missing, not off the grid.
+        listOf("people", "editorial", "flagged", "blank").forEach { id ->
+            composeRule.onNodeWithTag(CommunityTestTags.communityCard(id)).assertExists()
+        }
+        composeRule.onNodeWithTag(CommunityTestTags.communityCardAuthor("people")).assertExists()
         composeRule.onNodeWithTag(CommunityTestTags.communityCardAuthor("editorial")).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityTestTags.communityCardAuthor("flagged")).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityTestTags.communityCardAuthor("blank")).assertDoesNotExist()
