@@ -25,11 +25,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -42,44 +41,46 @@ class TierDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    val signedIn: StateFlow<Boolean> = accountRepository.account
-        .map { it is Account.SignedIn }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), false)
-
-    /** For the column beside this board on a wide window. Read here: the list screen is not on the stack when this one is. */
-    private val _allLists = MutableStateFlow<List<TierList>>(emptyList())
-    val allLists: StateFlow<List<TierList>> = _allLists.asStateFlow()
-
-    private val _publishing = MutableStateFlow(false)
-    val publishing: StateFlow<Boolean> = _publishing.asStateFlow()
-
-    private val _publishError = MutableStateFlow<PublishError?>(null)
-    val publishError: StateFlow<PublishError?> = _publishError.asStateFlow()
-
-    /**
-     * Only ever said with proof: a board published before what was sent was
-     * recorded reads as false, and the row offers to send it again anyway.
-     */
-    private val _publishedIsBehind = MutableStateFlow(false)
-    val publishedIsBehind: StateFlow<Boolean> = _publishedIsBehind.asStateFlow()
-
-    /** What the switch reads while the request is in flight; waiting for the server read as a tap that missed. */
-    private val _publicPending = MutableStateFlow<Boolean?>(null)
-    val publicPending: StateFlow<Boolean?> = _publicPending.asStateFlow()
-
-    /** Set when the switch was turned on and the list has no category yet. */
-    private val _categoryWanted = MutableStateFlow(false)
-    val categoryWanted: StateFlow<Boolean> = _categoryWanted.asStateFlow()
-
     private val tierListId = savedStateHandle.toRoute<Route.TierDetail>().tierListId
 
-    private val _state = MutableStateFlow<TierDetailUiState>(TierDetailUiState.Loading)
-    val state: StateFlow<TierDetailUiState> = _state.asStateFlow()
+    private val _screen = MutableStateFlow(TierDetailScreenState())
+    val screen: StateFlow<TierDetailScreenState> = _screen.asStateFlow()
+
+    // Views onto one value, so a write is seen at once and the screen gets one frame per change.
+    private var board: TierDetailUiState
+        get() = _screen.value.board
+        set(value) = _screen.update { it.copy(board = value) }
+    private var allLists: List<TierList>
+        get() = _screen.value.allLists
+        set(value) = _screen.update { it.copy(allLists = value) }
+    private var publishing: Boolean
+        get() = _screen.value.publish.publishing
+        set(value) = updatePublish { it.copy(publishing = value) }
+    private var publishError: PublishError?
+        get() = _screen.value.publish.error
+        set(value) = updatePublish { it.copy(error = value) }
+    private var publishedIsBehind: Boolean
+        get() = _screen.value.publish.publishedIsBehind
+        set(value) = updatePublish { it.copy(publishedIsBehind = value) }
+    private var publicPending: Boolean?
+        get() = _screen.value.publish.publicPending
+        set(value) = updatePublish { it.copy(publicPending = value) }
+    private var categoryWanted: Boolean
+        get() = _screen.value.publish.categoryWanted
+        set(value) = updatePublish { it.copy(categoryWanted = value) }
+
+    private fun updatePublish(change: (PublishState) -> PublishState) =
+        _screen.update { it.copy(publish = change(it.publish)) }
 
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
 
     init {
+        viewModelScope.launch {
+            accountRepository.account.collect { account ->
+                _screen.update { it.copy(signedIn = account is Account.SignedIn) }
+            }
+        }
         loadTierList()
     }
 
@@ -89,27 +90,27 @@ class TierDetailViewModel @Inject constructor(
     private fun refreshPublishedStanding() {
         viewModelScope.launch {
             val standing = runCatching { repository.publishedStanding() }.getOrNull() ?: return@launch
-            val id = (_state.value as? TierDetailUiState.Success)?.list?.publishedId
-            _publishedIsBehind.value = id != null && id in standing.knownBehind
+            val id = (board as? TierDetailUiState.Success)?.list?.publishedId
+            publishedIsBehind = id != null && id in standing.knownBehind
         }
     }
 
     fun setPublic(public: Boolean) {
-        val list = (_state.value as? TierDetailUiState.Success)?.list ?: return
-        if (_publishing.value) return
-        _publishError.value = null
+        val list = (board as? TierDetailUiState.Success)?.list ?: return
+        if (publishing) return
+        publishError = null
 
         if (public && list.tiers.none { it.items.isNotEmpty() }) {
-            _publishError.value = PublishError.NothingToPublish
+            publishError = PublishError.NothingToPublish
             return
         }
         if (public && list.category == null) {
-            _categoryWanted.value = true
+            categoryWanted = true
             return
         }
 
-        _publishing.value = true
-        _publicPending.value = public
+        publishing = true
+        publicPending = public
         viewModelScope.launch {
             val result: Result<Published?> = if (public) {
                 community.publish(list)
@@ -125,21 +126,21 @@ class TierDetailViewModel @Inject constructor(
                     // and spring the switch back for a frame. The id is all that changed.
                     if (recorded) showPublishedId(published?.id)
                     // Just sent, so nothing is behind any more.
-                    _publishedIsBehind.value = false
+                    publishedIsBehind = false
                 },
                 onFailure = { failure ->
-                    _publishError.value = (failure as? PublishRefused)?.error ?: PublishError.Unknown
+                    publishError = (failure as? PublishRefused)?.error ?: PublishError.Unknown
                 },
             )
-            _publishing.value = false
-            _publicPending.value = null
+            publishing = false
+            publicPending = null
         }
     }
 
     /** Finishes the publish that asked for it: a tap becoming two is smaller than a tap that only refuses. */
     fun setCategory(category: ListCategory) {
-        val publishNext = _categoryWanted.value
-        _categoryWanted.value = false
+        val publishNext = categoryWanted
+        categoryWanted = false
         viewModelScope.launch {
             messages.guard("Setting the category") { repository.setCategory(tierListId, category) }
             reloadTierList()
@@ -148,7 +149,7 @@ class TierDetailViewModel @Inject constructor(
     }
 
     fun categoryNotChosen() {
-        _categoryWanted.value = false
+        categoryWanted = false
     }
 
     fun setCoverImageUrl(coverImageUrl: String?) {
@@ -159,7 +160,7 @@ class TierDetailViewModel @Inject constructor(
         viewModelScope.launch { reloadTierList() }
         viewModelScope.launch {
             runCatching { repository.getAllTierLists() }
-                .onSuccess { lists -> _allLists.value = lists }
+                .onSuccess { lists -> allLists = lists }
         }
     }
 
@@ -190,9 +191,9 @@ class TierDetailViewModel @Inject constructor(
     }
 
     fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
-        val current = _state.value
+        val current = board
         if (current is TierDetailUiState.Success) {
-            _state.value = TierDetailUiState.Success(current.list.withItemMoved(itemId, toTierId, toPosition))
+            board = TierDetailUiState.Success(current.list.withItemMoved(itemId, toTierId, toPosition))
         }
         mutate("Moving an item") {
             repository.moveItem(itemId, toTierId, toPosition)
@@ -200,7 +201,7 @@ class TierDetailViewModel @Inject constructor(
     }
 
     fun reorderTiers(orderedTierIds: List<Long>) {
-        val current = _state.value
+        val current = board
         if (current is TierDetailUiState.Success) {
             val orderedSet = orderedTierIds.toSet()
             val byId = current.list.tiers.associateBy { it.id }
@@ -208,7 +209,7 @@ class TierDetailViewModel @Inject constructor(
             val reorderedTiers = current.list.tiers.map { tier ->
                 if (tier.id in orderedSet) queue.removeFirst() else tier
             }
-            _state.value = TierDetailUiState.Success(current.list.copy(tiers = reorderedTiers))
+            board = TierDetailUiState.Success(current.list.copy(tiers = reorderedTiers))
         }
         mutate("Reordering tiers") {
             repository.reorderTiers(orderedTierIds)
@@ -278,17 +279,17 @@ class TierDetailViewModel @Inject constructor(
     }
 
     private fun showPublishedId(publishedId: String?) {
-        val current = _state.value
+        val current = board
         if (current is TierDetailUiState.Success) {
-            _state.value = TierDetailUiState.Success(current.list.copy(publishedId = publishedId))
+            board = TierDetailUiState.Success(current.list.copy(publishedId = publishedId))
         }
     }
 
     /** Only the message the list itself can answer is dropped; a server refusal stands until the next attempt. */
     private fun dropSettledPublishError(list: TierList) {
-        val settled = _publishError.value == PublishError.NothingToPublish &&
+        val settled = publishError == PublishError.NothingToPublish &&
             list.tiers.any { it.items.isNotEmpty() }
-        if (settled) _publishError.value = null
+        if (settled) publishError = null
     }
 
     private fun mutate(operation: String, block: suspend () -> Unit) {
@@ -299,10 +300,10 @@ class TierDetailViewModel @Inject constructor(
     }
 
     private suspend fun reloadTierList() {
-        val hasVisibleList = _state.value is TierDetailUiState.Success
+        val hasVisibleList = board is TierDetailUiState.Success
         try {
             val list = repository.getTierListById(tierListId)
-            _state.value = if (list != null) {
+            board = if (list != null) {
                 dropSettledPublishError(list)
                 if (list.publishedId != null) refreshPublishedStanding()
                 TierDetailUiState.Success(list)
@@ -316,10 +317,8 @@ class TierDetailViewModel @Inject constructor(
             if (hasVisibleList) {
                 messages.send(UserMessage.ActionFailed)
             } else {
-                _state.value = TierDetailUiState.Error
+                board = TierDetailUiState.Error
             }
         }
     }
 }
-
-private const val STOP_TIMEOUT_MILLIS = 5_000L

@@ -41,7 +41,7 @@ class TierDetailViewModelErrorsTest {
         assertEquals(UserMessage.ActionFailed, message)
 
         val state = withTimeout(AWAIT_TIMEOUT_MILLIS) {
-            viewModel.state.firstWithin { it is TierDetailUiState.Success && it.list == repository.stored }
+            viewModel.board.firstWithin { it is TierDetailUiState.Success && it.list == repository.stored }
         } as TierDetailUiState.Success
         assertEquals(listOf(1L), state.list.tiers.first { it.id == 10L }.items.map { it.id })
         assertTrue(state.list.tiers.first { it.id == 20L }.items.isEmpty())
@@ -56,7 +56,7 @@ class TierDetailViewModelErrorsTest {
         viewModel.renameTierList("New title")
         withTimeout(AWAIT_TIMEOUT_MILLIS) { viewModel.userMessages.first() }
 
-        val state = withTimeout(AWAIT_TIMEOUT_MILLIS) { viewModel.state.firstWithin { it is TierDetailUiState.Success } }
+        val state = withTimeout(AWAIT_TIMEOUT_MILLIS) { viewModel.board.firstWithin { it is TierDetailUiState.Success } }
         assertTrue(state is TierDetailUiState.Success)
     }
 
@@ -66,13 +66,13 @@ class TierDetailViewModelErrorsTest {
         val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
 
         val state = withTimeout(AWAIT_TIMEOUT_MILLIS) {
-            viewModel.state.firstWithin { it is TierDetailUiState.Error }
+            viewModel.board.firstWithin { it is TierDetailUiState.Error }
         }
         assertTrue(state is TierDetailUiState.Error)
     }
 
     private suspend fun awaitSuccess(viewModel: TierDetailViewModel) {
-        withTimeout(AWAIT_TIMEOUT_MILLIS) { viewModel.state.firstWithin { it is TierDetailUiState.Success } }
+        withTimeout(AWAIT_TIMEOUT_MILLIS) { viewModel.board.firstWithin { it is TierDetailUiState.Success } }
     }
 
     private fun savedStateHandle(startInTitleEdit: Boolean = false) = SavedStateHandle(

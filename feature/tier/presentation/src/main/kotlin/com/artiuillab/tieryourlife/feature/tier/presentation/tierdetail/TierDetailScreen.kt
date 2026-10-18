@@ -23,32 +23,27 @@ fun TierDetailScreen(
     onAddedItemConsumed: () -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val allLists by viewModel.allLists.collectAsStateWithLifecycle()
-    val signedIn by viewModel.signedIn.collectAsStateWithLifecycle()
-    val publishing by viewModel.publishing.collectAsStateWithLifecycle()
-    val publishError by viewModel.publishError.collectAsStateWithLifecycle()
-    val publishedIsBehind by viewModel.publishedIsBehind.collectAsStateWithLifecycle()
-    val publicPending by viewModel.publicPending.collectAsStateWithLifecycle()
-    val categoryWanted by viewModel.categoryWanted.collectAsStateWithLifecycle()
+    val screen by viewModel.screen.collectAsStateWithLifecycle()
+    val state = screen.board
+    val publish = screen.publish
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
     var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
 
     TierDetailScreenContent(
         state = state,
-        allLists = allLists,
+        allLists = screen.allLists,
         onOpenList = onOpenList,
         addedItemIds = addedItemIds,
         userMessages = viewModel.userMessages,
         actions = TierDetailActions(
             onBack = onBack,
-            signedIn = signedIn,
-            publishing = publishing,
-            publishError = publishError,
-            publicPending = publicPending,
-            categoryWanted = categoryWanted,
+            signedIn = screen.signedIn,
+            publishing = publish.publishing,
+            publishError = publish.error,
+            publicPending = publish.publicPending,
+            categoryWanted = publish.categoryWanted,
             onSetPublic = viewModel::setPublic,
-            publishedIsBehind = publishedIsBehind,
+            publishedIsBehind = publish.publishedIsBehind,
             onUpdatePublished = viewModel::updatePublished,
             onSetCategory = viewModel::setCategory,
             onCategoryNotChosen = viewModel::categoryNotChosen,
