@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.sync
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,12 +28,17 @@ class PictureVault @Inject constructor(
 
     override suspend fun put(pictureId: String, bytes: ByteArray): Boolean {
         val reference = referenceTo(pictureId) ?: return false
-        return runCatching { reference.putBytes(bytes).await() }.isSuccess
+        return runCatching { reference.putBytes(bytes).await() }
+            .onFailure { Timber.w(it, "Uploading picture $pictureId failed") }
+            .isSuccess
     }
 
     override suspend fun get(pictureId: String): ByteArray? {
         val reference = referenceTo(pictureId) ?: return null
-        return runCatching { reference.getBytes(MAX_PICTURE_BYTES).await() }.getOrNull()
+        // Info, not a warning: a picture not uploaded yet is an ordinary miss.
+        return runCatching { reference.getBytes(MAX_PICTURE_BYTES).await() }
+            .onFailure { Timber.i(it, "Downloading picture $pictureId failed") }
+            .getOrNull()
     }
 
     /** Null for a guest: boards are only kept for somebody signed in, and asking is not an error. */

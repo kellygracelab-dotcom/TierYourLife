@@ -16,6 +16,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withTimeoutOrNull
 import retrofit2.HttpException
+import timber.log.Timber
 import java.io.IOException
 import java.util.Locale
 import java.util.concurrent.TimeoutException
@@ -87,12 +88,15 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
                     ),
                 )
             } catch (exception: IOException) {
+                Timber.i(exception, "TMDB search failed on the network")
                 Result.failure(exception)
             } catch (exception: HttpException) {
+                Timber.w(exception, "TMDB search refused: HTTP ${exception.code()}")
                 Result.failure(exception)
             }
         }
-        return timedOut ?: Result.failure(TimeoutException("TMDB search timed out"))
+        return timedOut ?: Result.failure<TmdbPage>(TimeoutException("TMDB search timed out"))
+            .also { Timber.i("TMDB search timed out") }
     }
 
     private suspend fun fetchWikidata(query: String, language: String): Result<List<WikidataCandidate>> {
@@ -100,12 +104,15 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
             try {
                 Result.success(fetchWikidataCandidates(query, language))
             } catch (exception: IOException) {
+                Timber.i(exception, "Wikidata search failed on the network")
                 Result.failure(exception)
             } catch (exception: HttpException) {
+                Timber.w(exception, "Wikidata search refused: HTTP ${exception.code()}")
                 Result.failure(exception)
             }
         }
-        return timedOut ?: Result.failure(TimeoutException("Wikidata search timed out"))
+        return timedOut ?: Result.failure<List<WikidataCandidate>>(TimeoutException("Wikidata search timed out"))
+            .also { Timber.i("Wikidata search timed out") }
     }
 
     private suspend fun fetchWikidataCandidates(query: String, language: String): List<WikidataCandidate> {
