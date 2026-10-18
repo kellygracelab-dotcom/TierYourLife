@@ -1,7 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.catalogue
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
+import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueSearchPage
@@ -10,13 +10,14 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.io.IOException
 
-// Instrumented because viewModelScope needs Android's main dispatcher.
-@RunWith(AndroidJUnit4::class)
 class CatalogueSearchViewModelTest {
+
+    @get:Rule
+    val main = MainDispatcherRule()
 
     @Test
     fun loadingMore_putsTheNextPageUnderWhatIsAlreadyThere() = runBlocking {
