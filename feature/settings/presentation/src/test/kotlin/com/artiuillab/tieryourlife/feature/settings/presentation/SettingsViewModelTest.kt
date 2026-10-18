@@ -1,7 +1,7 @@
 package com.artiuillab.tieryourlife.feature.settings.presentation
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
+import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
@@ -18,16 +18,18 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 /**
  * The settings screen is read the moment it opens, so what it can only learn
  * later must not be allowed to rearrange it under the reader. These pin the
  * two answers that decide whether a row exists at all.
  */
-@RunWith(AndroidJUnit4::class)
 class SettingsViewModelTest {
+
+    @get:Rule
+    val main = MainDispatcherRule()
 
     @Test
     fun theReportQueue_opensWithWhatItSaidLastTime() = runBlocking {
