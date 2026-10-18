@@ -1,8 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.di
 
-import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
 import com.artiuillab.tieryourlife.feature.tier.data.repository.CatalogueSearchRepositoryImpl
-import com.artiuillab.tieryourlife.feature.tier.data.repository.RetrofitAccountErasure
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomOwnLists
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
 import com.artiuillab.tieryourlife.feature.tier.data.sync.BoardSyncEngine
@@ -37,12 +35,6 @@ abstract class RepositoryModule {
     abstract fun bindTierRepository(
         implementation: RoomTierRepository,
     ): TierRepository
-
-    @Binds
-    @Singleton
-    abstract fun bindAccountErasure(
-        implementation: RetrofitAccountErasure,
-    ): AccountErasure
 
     @Binds
     @Singleton
