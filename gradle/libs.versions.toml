@@ -19,6 +19,7 @@ navigationCompose = "2.9.0"
 hiltNavigationCompose = "1.2.0"
 appcompat = "1.7.0"
 ktlintGradle = "14.2.0"
+kover = "0.9.11"
 firebaseBom = "34.1.0"
 credentials = "1.6.0"
 googleid = "1.2.0"
@@ -98,6 +99,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ktlint-gradle = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintGradle" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsGradle" }
 

@@ -32,7 +32,11 @@ jobs:
       # assembleDebug is here on purpose: the app module has no unit tests, so
       # `test` alone never compiles it and a broken app module would go unnoticed.
       - name: Assemble, unit tests, static analysis, lint
-        run: ./gradlew assembleDebug test ktlintCheck lint
+        run: ./gradlew assembleDebug test ktlintCheck lint koverXmlReport koverHtmlReport koverVerify
+
+      - name: Coverage summary
+        if: always()
+        run: python3 .github/scripts/coverage-summary.py build/reports/kover/report.xml >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload reports
         if: always()
@@ -42,6 +46,7 @@ jobs:
           path: |
             **/build/reports/tests/**
             **/build/reports/lint-results-*.html
+            build/reports/kover/**
           retention-days: 7
 
   instrumentation:
