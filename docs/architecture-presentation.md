@@ -13,6 +13,12 @@ and on `core:theme`, which holds the icons, bars and generic strings every scree
 Features never depend on each other's presentation; the `:navigation` module composes them
 into a graph, and `app` is bootstrap — Application, Activity, DI wiring.
 
+`./gradlew checkModuleBoundaries` (run in CI) enforces this from the build files: `app`
+reaches screens only through `navigation`; a domain depends only on domains; `core` sees no
+feature; data sees neither screens nor another feature's data; screens never see data,
+`navigation`, or another feature's screens (the shared `board` excepted). A new rule goes
+there, not into a reviewer's memory.
+
 ## The screen package law
 
 One screen surface = one package (`tierdetail`, `tierlists`, `trash`, `settings`,
