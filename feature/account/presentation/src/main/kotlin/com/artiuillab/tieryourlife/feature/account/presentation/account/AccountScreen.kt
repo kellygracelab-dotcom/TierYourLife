@@ -48,8 +48,8 @@ import com.artiuillab.tieryourlife.feature.account.presentation.account.componen
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.SignedInPanel
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.previewAccountGuestState
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.previewAccountSignedInState
-import com.artiuillab.tieryourlife.feature.account.presentation.signin.rememberGoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.previewAccountSigningInState
+import com.artiuillab.tieryourlife.feature.account.presentation.signin.rememberGoogleCredential
 
 @Composable
 fun AccountScreen(
