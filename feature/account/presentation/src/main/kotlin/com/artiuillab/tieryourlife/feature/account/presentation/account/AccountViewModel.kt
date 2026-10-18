@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
@@ -9,7 +8,6 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
-import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
@@ -29,7 +27,6 @@ private const val FACE_CHOICE_LIMIT = 24
 @HiltViewModel
 class AccountViewModel @Inject constructor(
     private val repository: AccountRepository,
-    private val googleCredential: GoogleCredential,
     private val credits: GenerationCredits,
     private val ownLists: OwnLists,
     private val community: CommunityRepository,
@@ -60,11 +57,12 @@ class AccountViewModel @Inject constructor(
         _state.update { it.copy(backUpBoards = backUp) }
     }
 
-    fun signIn(context: Context) {
+    /** [pickAccount] opens Google's sheet; the screen owns it because the sheet needs the activity. */
+    fun signIn(pickAccount: suspend () -> GoogleCredentialResult) {
         if (_state.value.signingIn) return
         _state.update { it.copy(signingIn = true, notice = null) }
         viewModelScope.launch {
-            when (val result = googleCredential.request(context)) {
+            when (val result = pickAccount()) {
                 is GoogleCredentialResult.Token -> completeSignIn(result.idToken)
                 GoogleCredentialResult.Cancelled -> _state.update { it.copy(signingIn = false) }
                 GoogleCredentialResult.NoGoogleAccount -> finish(AccountNotice.NoGoogleAccount)
