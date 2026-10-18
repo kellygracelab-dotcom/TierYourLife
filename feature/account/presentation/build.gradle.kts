@@ -35,4 +35,6 @@ dependencies {
     implementation(libs.coil.compose)
     androidTestImplementation(testFixtures(projects.feature.community.domain))
     androidTestImplementation(testFixtures(projects.feature.account.domain))
+    testImplementation(testFixtures(projects.feature.community.domain))
+    testImplementation(testFixtures(projects.feature.account.domain))
 }

@@ -27,4 +27,7 @@ dependencies {
     androidTestImplementation(testFixtures(projects.core.settings))
     androidTestImplementation(testFixtures(projects.feature.tier.domain))
     androidTestImplementation(testFixtures(projects.feature.community.domain))
+    testImplementation(testFixtures(projects.core.settings))
+    testImplementation(testFixtures(projects.feature.tier.domain))
+    testImplementation(testFixtures(projects.feature.community.domain))
 }
