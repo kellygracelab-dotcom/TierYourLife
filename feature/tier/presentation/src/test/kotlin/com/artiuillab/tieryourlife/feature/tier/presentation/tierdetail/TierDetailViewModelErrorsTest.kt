@@ -1,7 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
@@ -21,13 +21,15 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 private const val AWAIT_TIMEOUT_MILLIS = 5_000L
 
-@RunWith(AndroidJUnit4::class)
 class TierDetailViewModelErrorsTest {
+
+    @get:Rule
+    val main = MainDispatcherRule()
 
     @Test
     fun aFailingMoveRollsTheOptimisticChangeBackAndReportsIt() = runBlocking {

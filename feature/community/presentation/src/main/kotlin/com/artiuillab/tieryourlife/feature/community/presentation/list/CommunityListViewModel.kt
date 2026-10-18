@@ -3,7 +3,6 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
@@ -11,7 +10,7 @@ import com.artiuillab.tieryourlife.core.theme.messages.guard
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -36,7 +35,7 @@ class CommunityListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val publishedId = savedStateHandle.toRoute<CommunityRoute.CommunityList>().publishedId
+    private val publishedId = savedStateHandle.communityListRoute().publishedId
 
     private val _state = MutableStateFlow<CommunityListUiState>(CommunityListUiState.Loading)
     val state: StateFlow<CommunityListUiState> = _state.asStateFlow()

@@ -3,7 +3,6 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
@@ -20,7 +19,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
-import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
@@ -41,7 +40,7 @@ class TierDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val tierListId = savedStateHandle.toRoute<Route.TierDetail>().tierListId
+    private val tierListId = savedStateHandle.tierDetailRoute().tierListId
 
     private val _screen = MutableStateFlow(TierDetailScreenState())
     val screen: StateFlow<TierDetailScreenState> = _screen.asStateFlow()

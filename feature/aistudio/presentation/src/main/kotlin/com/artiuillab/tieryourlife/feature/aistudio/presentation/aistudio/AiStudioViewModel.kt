@@ -3,7 +3,6 @@ package com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
@@ -12,7 +11,7 @@ import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCre
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.GenerationOutcome
 import com.artiuillab.tieryourlife.feature.aistudio.domain.library.GeneratedCardSaver
-import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.AiStudioRoute
+import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.aiStudioRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +30,7 @@ class AiStudioViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val route = savedStateHandle.toRoute<AiStudioRoute>()
+    private val route = savedStateHandle.aiStudioRoute()
     val tierListId = route.tierListId
     val listTitle = route.listTitle
 
