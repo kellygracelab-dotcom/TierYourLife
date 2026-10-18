@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account
 
-import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
@@ -11,7 +10,6 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
-import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredential
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
@@ -45,15 +43,14 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class AccountViewModelTest {
 
-    private val context: Context
-        get() = InstrumentationRegistry.getInstrumentation().targetContext
+    private var picker = FakeGoogleCredential(GoogleCredentialResult.Cancelled)
 
     @Test
     fun signIn_whenGoogleReturnsAToken_handsItToTheRepository() = runBlocking {
         val repository = FakeAccountRepository()
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("token-1")))
 
-        viewModel.signIn(context)
+        viewModel.signIn(picker::request)
         viewModel.state.first { !it.signingIn }
 
         assertEquals(listOf("token-1"), repository.tokens)
@@ -66,7 +63,7 @@ class AccountViewModelTest {
         val repository = FakeAccountRepository()
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Cancelled))
 
-        viewModel.signIn(context)
+        viewModel.signIn(picker::request)
         val state = viewModel.state.first { !it.signingIn }
 
         assertNull(state.notice)
@@ -77,7 +74,7 @@ class AccountViewModelTest {
     fun signIn_withoutAGoogleAccountOnThePhone_saysSo() = runBlocking {
         val viewModel = viewModel(credential = FakeGoogleCredential(GoogleCredentialResult.NoGoogleAccount))
 
-        viewModel.signIn(context)
+        viewModel.signIn(picker::request)
         val state = viewModel.state.first { it.notice != null }
 
         assertEquals(AccountNotice.NoGoogleAccount, state.notice)
@@ -89,7 +86,7 @@ class AccountViewModelTest {
     fun signIn_whenSigningInIsNotConfigured_reportsItSeparately() = runBlocking {
         val viewModel = viewModel(credential = FakeGoogleCredential(GoogleCredentialResult.Unavailable))
 
-        viewModel.signIn(context)
+        viewModel.signIn(picker::request)
         val state = viewModel.state.first { it.notice != null }
 
         assertEquals(AccountNotice.SignInUnavailable, state.notice)
@@ -100,7 +97,7 @@ class AccountViewModelTest {
         val repository = FakeAccountRepository(outcome = SignInOutcome.Failed)
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("token-1")))
 
-        viewModel.signIn(context)
+        viewModel.signIn(picker::request)
         val state = viewModel.state.first { it.notice != null }
 
         assertEquals(AccountNotice.SignInFailed, state.notice)
@@ -115,7 +112,7 @@ class AccountViewModelTest {
         )
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")))
 
-        viewModel.signIn(context)
+        viewModel.signIn(picker::request)
         val state = viewModel.state.first { it.notice != null }
 
         assertEquals(AccountNotice.SignedInToExistingAccount, state.notice)
@@ -126,8 +123,8 @@ class AccountViewModelTest {
         val credential = FakeGoogleCredential()
         val viewModel = viewModel(credential = credential)
 
-        viewModel.signIn(context)
-        viewModel.signIn(context)
+        viewModel.signIn(picker::request)
+        viewModel.signIn(picker::request)
         // The request is launched onto the main thread; counting before that thread
         // has caught up would find no request, or miss a second one.
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
@@ -233,11 +230,14 @@ class AccountViewModelTest {
 
     private fun viewModel(
         repository: AccountRepository = FakeAccountRepository(),
-        credential: GoogleCredential = FakeGoogleCredential(GoogleCredentialResult.Cancelled),
+        credential: FakeGoogleCredential = FakeGoogleCredential(GoogleCredentialResult.Cancelled),
         credits: GenerationCredits = FakeGenerationCredits(),
         publishedLists: OwnLists = FakeOwnLists(),
         erasure: AccountErasure = NoErasure,
-    ) = AccountViewModel(repository, credential, credits, publishedLists, FakeCommunityForAccount(), FakeAppPreferences(), NoMerge, erasure)
+    ): AccountViewModel {
+        picker = credential
+        return AccountViewModel(repository, credits, publishedLists, FakeCommunityForAccount(), FakeAppPreferences(), NoMerge, erasure)
+    }
 }
 
 private class RecordingErasure(private val onErase: () -> Unit) : AccountErasure {
@@ -335,7 +335,7 @@ private class FakeAccountRepository(
     }
 }
 
-private class FakeGoogleCredential(result: GoogleCredentialResult? = null) : GoogleCredential {
+private class FakeGoogleCredential(result: GoogleCredentialResult? = null) {
     var requests = 0
     private val answer = CompletableDeferred<GoogleCredentialResult>()
 
@@ -347,7 +347,7 @@ private class FakeGoogleCredential(result: GoogleCredentialResult? = null) : Goo
         answer.complete(result)
     }
 
-    override suspend fun request(context: Context): GoogleCredentialResult {
+    suspend fun request(): GoogleCredentialResult {
         requests++
         return answer.await()
     }

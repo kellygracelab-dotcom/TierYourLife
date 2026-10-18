@@ -49,6 +49,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.account.componen
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.previewAccountGuestState
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.previewAccountSignedInState
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.previewAccountSigningInState
+import com.artiuillab.tieryourlife.feature.account.presentation.signin.rememberGoogleCredential
 
 @Composable
 fun AccountScreen(
@@ -58,13 +59,14 @@ fun AccountScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val googleCredential = rememberGoogleCredential()
     val fromThisPhone = stringResource(R.string.merge_name_suffix)
 
     AccountScreenContent(
         state = state,
         onOpenPublished = onOpenPublished,
         onClose = onClose,
-        onSignIn = { viewModel.signIn(context) },
+        onSignIn = { viewModel.signIn { googleCredential.request(context) } },
         onSignOut = viewModel::signOut,
         onDeleteAccount = viewModel::deleteAccount,
         onSetName = viewModel::setDisplayName,
