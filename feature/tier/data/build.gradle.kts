@@ -31,4 +31,7 @@ dependencies {
     // Coil shares this module's Wikimedia-aware OkHttpClient.
     implementation(libs.coil.core)
     implementation(libs.coil.network.okhttp)
+    androidTestImplementation(testFixtures(projects.core.settings))
+    androidTestImplementation(testFixtures(projects.feature.account.domain))
+    androidTestImplementation(testFixtures(projects.feature.community.domain))
 }
