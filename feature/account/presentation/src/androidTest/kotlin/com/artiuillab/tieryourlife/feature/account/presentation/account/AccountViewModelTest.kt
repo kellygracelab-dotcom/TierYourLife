@@ -7,31 +7,18 @@ import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
-import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
-import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
-import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
-import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
-import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
-import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
-import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
-import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
-import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
-import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.MergeChoice
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -252,52 +239,7 @@ private object RefusingErasure : AccountErasure {
     override suspend fun erase(): Result<Unit> = Result.failure(IllegalStateException("offline"))
 }
 
-private class FakeCommunityForAccount : CommunityRepository {
-    override suspend fun feed(
-        category: ListCategory?,
-        query: String?,
-        author: String?,
-        after: String?,
-        sort: FeedSort,
-        following: Boolean,
-    ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
-
-    override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
-
-    override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> = Result.success(Unit)
-
-    override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
-
-    override suspend fun follow(authorUid: String): Result<Unit> = Result.success(Unit)
-
-    override suspend fun unfollow(authorUid: String): Result<Unit> = Result.success(Unit)
-
-    override suspend fun followState(authorUid: String): Result<FollowState> =
-        Result.success(FollowState(following = false, followers = 0))
-
-    override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> = Result.success(emptyList())
-
-    override suspend fun noteTaken(publishedId: String): Result<Unit> = Result.success(Unit)
-
-    override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(emptyList())
-
-    override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
-
-    override suspend fun publish(list: TierList): Result<Published> = Result.failure(IllegalStateException())
-
-    override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
-
-    override suspend fun makeFace(pictureId: String): Result<String> =
-        Result.success("https://example.test/face.jpg")
-
-    override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
-
-    override suspend fun report(
-        publishedId: String,
-        reason: ReportReason,
-        note: String?,
-    ): Result<Unit> = Result.success(Unit)
-}
+private class FakeCommunityForAccount : FakeCommunityRepository()
 
 private class FakeOwnLists(private val published: Int = 0, private val boards: Int = 0) : OwnLists {
     override suspend fun publishedCount(): Int = published
@@ -305,35 +247,6 @@ private class FakeOwnLists(private val published: Int = 0, private val boards: I
     override suspend fun boardCount(): Int = boards
 
     override suspend fun cardImages(limit: Int): List<String> = emptyList()
-}
-
-private class FakeAccountRepository(
-    initial: Account = Account.Guest,
-    private val outcome: SignInOutcome = SignInOutcome.Success,
-    private val onSignOut: () -> Unit = {},
-) : AccountRepository {
-
-    val tokens = mutableListOf<String>()
-    private val state = MutableStateFlow(initial)
-
-    override val account: Flow<Account> = state
-
-    override suspend fun signInWithGoogle(idToken: String): SignInOutcome {
-        tokens += idToken
-        if (outcome is SignInOutcome.Success) {
-            state.value = Account.SignedIn(email = "someone@example.com", photoUrl = null)
-        }
-        return outcome
-    }
-
-    override suspend fun setDisplayName(name: String): Boolean = true
-
-    override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
-
-    override suspend fun signOut() {
-        onSignOut()
-        state.value = Account.Guest
-    }
 }
 
 private class FakeGoogleCredential(result: GoogleCredentialResult? = null) {

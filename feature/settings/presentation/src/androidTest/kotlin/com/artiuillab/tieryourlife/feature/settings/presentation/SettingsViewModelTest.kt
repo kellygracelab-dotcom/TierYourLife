@@ -3,28 +3,17 @@ package com.artiuillab.tieryourlife.feature.settings.presentation
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
-import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
-import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
-import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
-import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
-import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
+import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
-import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
-import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
-import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupSettings
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardBackup
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -96,18 +85,18 @@ class SettingsViewModelTest {
      */
     @Test
     fun theBackupSection_waitsForTheAccountRatherThanAskingWhileItIsUnknown() = runBlocking {
-        val account = MutableStateFlow<Account>(Account.Unknown)
-        val viewModel = viewModel(account = FakeAccountRepository(account))
+        val account = FakeAccountRepository(initial = Account.Unknown)
+        val viewModel = viewModel(account = account)
 
         viewModel.loadBackupSettings()
-        account.value = Account.SignedIn(email = "someone@example.test", photoUrl = null)
+        account.accounts.value = FakeAccountRepository.signedIn
 
         assertNotNull(viewModel.backupSettings.firstWithin { it != null })
     }
 
     @Test
     fun aGuest_hasNoBackupSectionAtAll() = runBlocking {
-        val viewModel = viewModel(account = FakeAccountRepository(MutableStateFlow(Account.Guest)))
+        val viewModel = viewModel(account = FakeAccountRepository())
 
         viewModel.loadBackupSettings()
 
@@ -117,7 +106,7 @@ class SettingsViewModelTest {
     private fun viewModel(
         preferences: FakeAppPreferences = FakeAppPreferences(),
         community: CommunityRepository = FakeCommunity(),
-        account: AccountRepository = FakeAccountRepository(MutableStateFlow(Account.Guest)),
+        account: AccountRepository = FakeAccountRepository(),
     ) = SettingsViewModel(
         repository = RecordingTierRepository(),
         accountRepository = account,
@@ -146,18 +135,10 @@ private object FakeBackup : BoardBackup {
     override suspend fun stopAndDelete(): Boolean = true
 }
 
-private class FakeAccountRepository(private val accounts: MutableStateFlow<Account>) : AccountRepository {
-    override val account: Flow<Account> = accounts
-    override suspend fun signInWithGoogle(idToken: String): SignInOutcome = SignInOutcome.Success
-    override suspend fun setDisplayName(name: String): Boolean = true
-    override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
-    override suspend fun signOut() = Unit
-}
-
 private class FakeCommunity(
     private val waiting: Int = 0,
     private val readable: Boolean = true,
-) : CommunityRepository {
+) : FakeCommunityRepository() {
 
     override suspend fun reports(): Result<List<ModerationReport>> = if (readable) {
         Result.success(List(waiting) { report(it.toString()) })
@@ -176,37 +157,4 @@ private class FakeCommunity(
         hidden = false,
         reviewed = false,
     )
-
-    override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> = Result.success(Unit)
-    override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
-    override suspend fun feed(
-        category: ListCategory?,
-        query: String?,
-        author: String?,
-        after: String?,
-        sort: FeedSort,
-        following: Boolean,
-    ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
-
-    override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(emptyList())
-    override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
-    override suspend fun publish(list: TierList): Result<Published> = Result.failure(IllegalStateException())
-    override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
-    override suspend fun makeFace(pictureId: String): Result<String> =
-        Result.success("https://example.test/face.jpg")
-
-    override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
-    override suspend fun report(
-        publishedId: String,
-        reason: ReportReason,
-        note: String?,
-    ): Result<Unit> = Result.success(Unit)
-
-    override suspend fun follow(authorUid: String): Result<Unit> = Result.success(Unit)
-    override suspend fun unfollow(authorUid: String): Result<Unit> = Result.success(Unit)
-    override suspend fun followState(authorUid: String): Result<FollowState> =
-        Result.success(FollowState(following = false, followers = 0))
-
-    override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> = Result.success(emptyList())
-    override suspend fun noteTaken(publishedId: String): Result<Unit> = Result.success(Unit)
 }

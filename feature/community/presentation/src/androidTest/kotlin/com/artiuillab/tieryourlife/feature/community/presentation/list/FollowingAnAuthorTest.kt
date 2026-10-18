@@ -3,22 +3,15 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
-import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
-import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
-import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
+import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
-import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
-import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
-import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -172,7 +165,7 @@ private class FollowRecorder(
     private val answers: Boolean = true,
     private val followFails: Boolean = false,
     private val takeFails: Boolean = false,
-) : CommunityRepository {
+) : FakeCommunityRepository() {
     val followed = mutableListOf<String>()
     val unfollowed = mutableListOf<String>()
     val taken = mutableListOf<String>()
@@ -205,25 +198,4 @@ private class FollowRecorder(
     }
 
     override suspend fun open(id: String): Result<PublishedList> = Result.success(theList)
-    override suspend fun feed(
-        category: ListCategory?,
-        query: String?,
-        author: String?,
-        after: String?,
-        sort: FeedSort,
-        following: Boolean,
-    ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
-
-    override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> = Result.success(emptyList())
-    override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(emptyList())
-    override suspend fun publish(list: TierList): Result<Published> = Result.failure(IllegalStateException())
-    override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
-    override suspend fun makeFace(pictureId: String): Result<String> = Result.success("https://example.test/f.jpg")
-    override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
-    override suspend fun report(publishedId: String, reason: ReportReason, note: String?): Result<Unit> =
-        Result.success(Unit)
-
-    override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
-    override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> = Result.success(Unit)
-    override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
 }
