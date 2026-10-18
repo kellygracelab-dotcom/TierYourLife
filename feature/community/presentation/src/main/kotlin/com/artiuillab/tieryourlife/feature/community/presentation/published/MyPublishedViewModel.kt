@@ -91,7 +91,9 @@ class MyPublishedViewModel @Inject constructor(
 
         _state.value = shown.copy(updating = publishedId)
         viewModelScope.launch {
-            val board = runCatching { tiers.boardPublishedAs(publishedId) }.getOrNull()
+            val board = runCatching { tiers.boardPublishedAs(publishedId) }
+                .onFailure { Timber.w(it, "Finding the board behind $publishedId failed") }
+                .getOrNull()
             if (board == null) {
                 // Published from a phone this one no longer is: nothing here to send.
                 _state.value = shown.copy(updating = null)
@@ -100,6 +102,7 @@ class MyPublishedViewModel @Inject constructor(
             community.publish(board).fold(
                 onSuccess = { published ->
                     runCatching { tiers.setPublished(board.id, published.id, published.fingerprint) }
+                        .onFailure { Timber.w(it, "Recording the update of $publishedId failed") }
                     // Sent, so it is neither behind nor unknown any more.
                     _state.value = shown.copy(updating = null, behind = shown.behind - publishedId)
                 },
@@ -112,8 +115,13 @@ class MyPublishedViewModel @Inject constructor(
     }
 
     private suspend fun forgetLocally(publishedId: String) {
-        val mine = runCatching { tiers.getAllTierLists() }.getOrNull().orEmpty()
+        val mine = runCatching { tiers.getAllTierLists() }
+            .onFailure { Timber.w(it, "Reading boards to forget $publishedId failed") }
+            .getOrNull().orEmpty()
         mine.firstOrNull { it.publishedId == publishedId }
-            ?.let { runCatching { tiers.setPublished(it.id, null, null) } }
+            ?.let { board ->
+                runCatching { tiers.setPublished(board.id, null, null) }
+                    .onFailure { Timber.w(it, "Forgetting $publishedId on this phone failed") }
+            }
     }
 }
