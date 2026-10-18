@@ -25,4 +25,6 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     androidTestImplementation(testFixtures(projects.core.settings))
+    androidTestImplementation(testFixtures(projects.feature.community.domain))
+    androidTestImplementation(testFixtures(projects.feature.account.domain))
 }

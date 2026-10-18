@@ -3,20 +3,13 @@ package com.artiuillab.tieryourlife.feature.community.presentation.feed
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
-import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
-import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
-import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
-import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
-import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
-import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -252,7 +245,7 @@ private class FakeFeedRepository(
     private val laterPagesFail: Boolean = false,
     /** What the first page comes back as, when it does not come back. */
     private val firstPageFails: Throwable? = null,
-) : CommunityRepository {
+) : FakeCommunityRepository() {
     val cursorsAsked = mutableListOf<String?>()
     val queriesAsked = mutableListOf<String?>()
 
@@ -273,24 +266,4 @@ private class FakeFeedRepository(
         val more = index < nextPages.size
         return Result.success(CommunityPage(lists, nextCursor = if (more) index.toString() else null))
     }
-
-    override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(emptyList())
-    override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
-    override suspend fun publish(list: TierList): Result<Published> = Result.failure(IllegalStateException())
-    override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
-    override suspend fun makeFace(pictureId: String): Result<String> = Result.success("https://example.test/face.jpg")
-    override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
-    override suspend fun report(publishedId: String, reason: ReportReason, note: String?): Result<Unit> =
-        Result.success(Unit)
-
-    override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
-    override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> = Result.success(Unit)
-    override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
-    override suspend fun follow(authorUid: String): Result<Unit> = Result.success(Unit)
-    override suspend fun unfollow(authorUid: String): Result<Unit> = Result.success(Unit)
-    override suspend fun followState(authorUid: String): Result<FollowState> =
-        Result.success(FollowState(following = false, followers = 0))
-
-    override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> = Result.success(emptyList())
-    override suspend fun noteTaken(publishedId: String): Result<Unit> = Result.success(Unit)
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
@@ -31,7 +32,7 @@ class TierDetailViewModelErrorsTest {
     @Test
     fun aFailingMoveRollsTheOptimisticChangeBackAndReportsIt() = runBlocking {
         val repository = FailingTierRepository(twoTiers())
-        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
         awaitSuccess(viewModel)
 
         viewModel.moveItem(itemId = 1L, toTierId = 20L, toPosition = 0)
@@ -49,7 +50,7 @@ class TierDetailViewModelErrorsTest {
     @Test
     fun aFailingMutationDoesNotTakeTheScreenDown() = runBlocking {
         val repository = FailingTierRepository(twoTiers())
-        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
         awaitSuccess(viewModel)
 
         viewModel.renameTierList("New title")
@@ -62,7 +63,7 @@ class TierDetailViewModelErrorsTest {
     @Test
     fun aFailingFirstLoadShowsTheErrorState() = runBlocking {
         val repository = FailingTierRepository(twoTiers(), failReads = true)
-        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
 
         val state = withTimeout(AWAIT_TIMEOUT_MILLIS) {
             viewModel.state.firstWithin { it is TierDetailUiState.Error }

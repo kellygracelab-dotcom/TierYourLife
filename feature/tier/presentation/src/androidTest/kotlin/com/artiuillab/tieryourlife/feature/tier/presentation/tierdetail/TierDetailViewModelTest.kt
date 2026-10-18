@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
@@ -34,7 +35,7 @@ class TierDetailViewModelTest {
     @Test
     fun addManualItem_withTitleOnly_addsToThePoolWithNoImage() = runBlocking {
         val repository = FakeTierRepository(pool())
-        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
 
         viewModel.addManualItem("Dune", photoUris = emptyList())
         val state = viewModel.state.firstWithin {
@@ -50,7 +51,7 @@ class TierDetailViewModelTest {
     @Test
     fun addManualItem_withAPhoto_sendsTheGalleryUriOnlyToAttachImageToItem() = runBlocking {
         val repository = FakeTierRepository(pool())
-        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
 
         viewModel.addManualItem("Dune", photoUris = listOf("content://gallery/42"))
         viewModel.state.firstWithin {
@@ -64,7 +65,7 @@ class TierDetailViewModelTest {
     @Test
     fun addManualItem_withSeveralPhotos_addsOneItemPerPhoto() = runBlocking {
         val repository = FakeTierRepository(pool())
-        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
         val picked = listOf("content://gallery/1", "content://gallery/2", "content://gallery/3")
 
         viewModel.addManualItem("", photoUris = picked)
@@ -80,7 +81,7 @@ class TierDetailViewModelTest {
     @Test
     fun reorderTiers_emitsTheNewOrderSynchronously_beforeTheRepositoryResponds() = runBlocking {
         val repository = FakeTierRepository(rankedList())
-        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
         viewModel.state.firstWithin { it is TierDetailUiState.Success }
 
         viewModel.reorderTiers(listOf(20L, 10L))
@@ -103,7 +104,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(
             repository,
             community,
-            FakeAccountRepositoryForDetail(signedIn = true),
+            FakeAccountRepository(FakeAccountRepository.signedIn),
             savedStateHandle(),
         )
         viewModel.state.firstWithin { it is TierDetailUiState.Success }
@@ -126,7 +127,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(
             repository,
             FakeCommunityRepositoryForDetail(),
-            FakeAccountRepositoryForDetail(signedIn = true),
+            FakeAccountRepository(FakeAccountRepository.signedIn),
             savedStateHandle(),
         )
         viewModel.state.firstWithin { it is TierDetailUiState.Success }
@@ -148,7 +149,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(
             FakeTierRepository(listWithOneCard()),
             FakeCommunityRepositoryForDetail(),
-            FakeAccountRepositoryForDetail(signedIn = true),
+            FakeAccountRepository(FakeAccountRepository.signedIn),
             savedStateHandle(),
         )
         viewModel.state.firstWithin { it is TierDetailUiState.Success }
@@ -173,7 +174,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(
             FakeTierRepository(listWithOneCard().copy(category = null)),
             community,
-            FakeAccountRepositoryForDetail(signedIn = true),
+            FakeAccountRepository(FakeAccountRepository.signedIn),
             savedStateHandle(),
         )
         viewModel.state.firstWithin { it is TierDetailUiState.Success }
@@ -191,7 +192,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(
             FakeTierRepository(listWithOneCard().copy(category = null)),
             community,
-            FakeAccountRepositoryForDetail(signedIn = true),
+            FakeAccountRepository(FakeAccountRepository.signedIn),
             savedStateHandle(),
         )
         viewModel.state.firstWithin { it is TierDetailUiState.Success }
@@ -210,7 +211,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(
             repository,
             community,
-            FakeAccountRepositoryForDetail(signedIn = true),
+            FakeAccountRepository(FakeAccountRepository.signedIn),
             savedStateHandle(),
         )
         viewModel.state.firstWithin { it is TierDetailUiState.Success }
@@ -233,7 +234,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(
             FakeTierRepository(listWithOneCard().copy(category = null)),
             community,
-            FakeAccountRepositoryForDetail(signedIn = true),
+            FakeAccountRepository(FakeAccountRepository.signedIn),
             savedStateHandle(),
         )
         viewModel.state.firstWithin { it is TierDetailUiState.Success }
@@ -256,7 +257,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(
             FakeTierRepository(listWithOneCard().copy(category = null)),
             community,
-            FakeAccountRepositoryForDetail(signedIn = true),
+            FakeAccountRepository(FakeAccountRepository.signedIn),
             savedStateHandle(),
         )
         viewModel.state.firstWithin { it is TierDetailUiState.Success }
@@ -276,7 +277,7 @@ class TierDetailViewModelTest {
             FakeCommunityRepositoryForDetail(
                 publishResult = Result.failure(PublishRefused(PublishError.TooManyLists)),
             ),
-            FakeAccountRepositoryForDetail(signedIn = true),
+            FakeAccountRepository(FakeAccountRepository.signedIn),
             savedStateHandle(),
         )
         viewModel.state.firstWithin { it is TierDetailUiState.Success }
@@ -298,7 +299,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(
             FakeTierRepository(pool()),
             community,
-            FakeAccountRepositoryForDetail(signedIn = true),
+            FakeAccountRepository(FakeAccountRepository.signedIn),
             savedStateHandle(),
         )
         viewModel.state.firstWithin { it is TierDetailUiState.Success }
@@ -317,7 +318,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(
             FakeTierRepository(listWithOneCard()),
             community,
-            FakeAccountRepositoryForDetail(signedIn = true),
+            FakeAccountRepository(FakeAccountRepository.signedIn),
             savedStateHandle(),
         )
         viewModel.state.firstWithin { it is TierDetailUiState.Success }
@@ -337,7 +338,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(
             repository,
             community,
-            FakeAccountRepositoryForDetail(signedIn = true),
+            FakeAccountRepository(FakeAccountRepository.signedIn),
             savedStateHandle(),
         )
         viewModel.state.firstWithin { it is TierDetailUiState.Success }

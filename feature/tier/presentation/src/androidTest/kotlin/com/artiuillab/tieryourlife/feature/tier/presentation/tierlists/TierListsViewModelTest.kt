@@ -4,20 +4,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
-import com.artiuillab.tieryourlife.feature.account.domain.model.Account
-import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
-import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
-import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
-import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
-import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
-import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
-import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
-import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
-import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
-import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
-import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
-import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
+import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
+import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -35,10 +23,8 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -62,7 +48,7 @@ class TierListsViewModelTest {
                 fakeList(id = 2, title = "Another list", editedAt = 1),
             ),
         )
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
         val state = viewModel.state.firstWithin { it is TierListsUiState.Success } as TierListsUiState.Success
@@ -75,7 +61,7 @@ class TierListsViewModelTest {
     @Test
     fun loadTierLists_onAnEmptyRepository_staysEmpty_andCreatesNothing() = runBlocking {
         val repository = FakeTierRepository(initial = emptyList())
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
         val state = viewModel.state.firstWithin { it is TierListsUiState.Success } as TierListsUiState.Success
@@ -87,7 +73,7 @@ class TierListsViewModelTest {
     @Test
     fun secondLoad_afterARenameOnTheRepository_showsTheNewTitle() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -110,7 +96,7 @@ class TierListsViewModelTest {
                 fakeList(id = 2, title = "Gets deleted"),
             ),
         )
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -128,7 +114,7 @@ class TierListsViewModelTest {
     @Test
     fun firstLoad_passesThroughLoadingState() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Existing")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
 
         val collected = recordStates(viewModel)
 
@@ -143,7 +129,7 @@ class TierListsViewModelTest {
     @Test
     fun secondLoad_neverShowsLoading_andReplacesTheListInOneStep() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -170,7 +156,7 @@ class TierListsViewModelTest {
         val repository = FakeTierRepository(
             initial = listOf(fakeList(id = 1, title = "Pizza in Lisbon"), fakeList(id = 2, title = "Sushi tour")),
         )
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -189,7 +175,7 @@ class TierListsViewModelTest {
     @Test
     fun exitSearch_returnsToBrowsingWithEveryListVisibleAgain() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Pizza in Lisbon")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -208,7 +194,7 @@ class TierListsViewModelTest {
     @Test
     fun toggleSelection_deselectingTheLastId_returnsToBrowsingMode() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Only list")))
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -231,7 +217,7 @@ class TierListsViewModelTest {
         val repository = FakeTierRepository(
             initial = listOf(fakeList(id = 1, title = "Keeps existing"), fakeList(id = 2, title = "Gets deleted")),
         )
-        val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -259,8 +245,8 @@ class TierListsViewModelTest {
         val repository = FakeTierRepository(
             initial = listOf(fakeList(id = 1, title = "Films", publishedId = "published-1")),
         )
-        val community = FakeCommunityRepository()
-        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        val community = TestCommunity()
+        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
 
@@ -277,8 +263,8 @@ class TierListsViewModelTest {
         val repository = FakeTierRepository(
             initial = listOf(fakeList(id = 1, title = "Films", publishedId = "published-1")),
         )
-        val community = FakeCommunityRepository(unpublishResult = Result.failure(IllegalStateException()))
-        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
+        val community = TestCommunity(unpublishResult = Result.failure(IllegalStateException()))
+        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
 
@@ -411,59 +397,14 @@ internal class FakeTierRepository(initial: List<TierList>) : TierRepository {
         throw UnsupportedOperationException("Not used by TierListsViewModel")
 }
 
-private class FakeCommunityRepository(
+private class TestCommunity(
     private val unpublishResult: Result<Unit> = Result.success(Unit),
-) : CommunityRepository {
+) : FakeCommunityRepository() {
     val takenDown = mutableListOf<String>()
-    override suspend fun feed(
-        category: ListCategory?,
-        query: String?,
-        author: String?,
-        after: String?,
-        sort: FeedSort,
-        following: Boolean,
-    ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
-    override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(emptyList())
-
-    override suspend fun open(id: String): Result<PublishedList> = Result.failure(IllegalStateException())
-    override suspend fun publish(list: TierList): Result<Published> = Result.failure(IllegalStateException())
     override suspend fun unpublish(publishedId: String): Result<Unit> {
         takenDown += publishedId
         return unpublishResult
     }
-
-    override suspend fun makeFace(pictureId: String): Result<String> =
-        Result.success("https://example.test/face.jpg")
-
-    override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
-
-    override suspend fun report(
-        publishedId: String,
-        reason: ReportReason,
-        note: String?,
-    ): Result<Unit> = Result.success(Unit)
-    override suspend fun reports(): Result<List<ModerationReport>> = Result.failure(IllegalStateException())
-    override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> = Result.success(Unit)
-    override suspend fun dismissReports(publishedId: String): Result<Unit> = Result.success(Unit)
-
-    override suspend fun follow(authorUid: String): Result<Unit> = Result.success(Unit)
-
-    override suspend fun unfollow(authorUid: String): Result<Unit> = Result.success(Unit)
-
-    override suspend fun followState(authorUid: String): Result<FollowState> =
-        Result.success(FollowState(following = false, followers = 0))
-
-    override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> = Result.success(emptyList())
-
-    override suspend fun noteTaken(publishedId: String): Result<Unit> = Result.success(Unit)
-}
-
-private fun guestAccount(): AccountRepository = object : AccountRepository {
-    override val account: Flow<Account> = flowOf(Account.Guest)
-    override suspend fun signInWithGoogle(idToken: String): SignInOutcome = SignInOutcome.Success
-    override suspend fun setDisplayName(name: String): Boolean = true
-    override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
-    override suspend fun signOut() = Unit
 }
 
 /** A guest has nowhere to sync to, so every case here would report the same thing. */
