@@ -1,7 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
+import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
@@ -31,11 +31,13 @@ import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.yield
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class TierListsViewModelTest {
+
+    @get:Rule
+    val main = MainDispatcherRule()
 
     // Edited-at is spelled out because the screen opens on Newest, and two
     // boards without one are ordered by the tie-break rather than by anything

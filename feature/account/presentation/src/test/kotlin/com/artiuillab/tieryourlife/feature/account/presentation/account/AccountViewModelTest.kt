@@ -1,11 +1,10 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
+import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
@@ -19,17 +18,21 @@ import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.MergeChoice
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assume.assumeFalse
 import org.junit.Assume.assumeTrue
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class AccountViewModelTest {
+
+    @get:Rule
+    val main = MainDispatcherRule()
 
     private var picker = FakeGoogleCredential(GoogleCredentialResult.Cancelled)
 
@@ -115,7 +118,7 @@ class AccountViewModelTest {
         viewModel.signIn(picker::request)
         // The request is launched onto the main thread; counting before that thread
         // has caught up would find no request, or miss a second one.
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        withContext(Dispatchers.Main) {}
 
         assertEquals(1, credential.requests)
         credential.release(GoogleCredentialResult.Cancelled)
