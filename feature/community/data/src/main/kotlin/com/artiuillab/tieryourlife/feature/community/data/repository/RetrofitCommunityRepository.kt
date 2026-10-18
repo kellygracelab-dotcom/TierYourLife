@@ -216,7 +216,7 @@ private fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     anonymous = anonymous,
 )
 
-private fun PublishedListDto.toDomain() = PublishedList(
+internal fun PublishedListDto.toDomain() = PublishedList(
     summary = PublishedListSummary(
         id = id,
         title = title,
@@ -258,7 +258,7 @@ private fun TierList.ownPictureIds(images: OwnPictures): List<String> =
         .mapNotNull(images::pictureIdOf)
         .distinct()
 
-private fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = PublishListRequestDto(
+internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = PublishListRequestDto(
     title = title,
     category = (category ?: ListCategory.Other).id,
     coverImageUrl = coverImageUrl?.takeIf { it.startsWith("https://") },
