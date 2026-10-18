@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.moderation
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
@@ -28,7 +29,7 @@ class ModerationViewModelTest {
     fun theQueue_isWhatTheServerHandedBack() = runBlocking {
         val viewModel = ModerationViewModel(FakeModerationRepository(twoAboutOneList() + about("b")))
 
-        val ready = viewModel.state.first { it is ModerationUiState.Ready } as ModerationUiState.Ready
+        val ready = viewModel.state.firstWithin { it is ModerationUiState.Ready } as ModerationUiState.Ready
 
         assertEquals(listOf("a", "b"), ready.reports.map { it.listId })
         assertEquals(2, ready.reports.first().reportCount)
@@ -40,7 +41,7 @@ class ModerationViewModelTest {
     fun beingTurnedAway_readsAsAFailure() = runBlocking {
         val viewModel = ModerationViewModel(FakeModerationRepository(emptyList(), readable = false))
 
-        val reached = viewModel.state.first { it is ModerationUiState.Failed }
+        val reached = viewModel.state.firstWithin { it is ModerationUiState.Failed }
 
         assertEquals(ModerationUiState.Failed, reached)
     }
@@ -49,11 +50,11 @@ class ModerationViewModelTest {
     fun takingAListDown_clearsEveryComplaintAboutIt() = runBlocking {
         val repository = FakeModerationRepository(twoAboutOneList() + about("b"))
         val viewModel = ModerationViewModel(repository)
-        viewModel.state.first { it is ModerationUiState.Ready }
+        viewModel.state.firstWithin { it is ModerationUiState.Ready }
 
         viewModel.takeDown("a")
         viewModel.confirmTakeDown()
-        val left = viewModel.state.first { it.isSettled() } as ModerationUiState.Ready
+        val left = viewModel.state.firstWithin { it.isSettled() } as ModerationUiState.Ready
 
         assertEquals(listOf("b"), left.reports.map { it.listId })
         assertEquals(listOf("a"), repository.takenDown)
@@ -66,7 +67,7 @@ class ModerationViewModelTest {
     fun takingAListDown_sendsNothingWhileItCanStillBeUndone() = runBlocking {
         val repository = FakeModerationRepository(twoAboutOneList() + about("b"))
         val viewModel = ModerationViewModel(repository)
-        viewModel.state.first { it is ModerationUiState.Ready }
+        viewModel.state.firstWithin { it is ModerationUiState.Ready }
 
         viewModel.takeDown("a", BanLength.Month)
         val waiting = viewModel.state.value as ModerationUiState.Ready
@@ -81,7 +82,7 @@ class ModerationViewModelTest {
     fun undoingATakedown_putsTheRowBackWhereItWas() = runBlocking {
         val repository = FakeModerationRepository(twoAboutOneList() + about("b"))
         val viewModel = ModerationViewModel(repository)
-        viewModel.state.first { it is ModerationUiState.Ready }
+        viewModel.state.firstWithin { it is ModerationUiState.Ready }
 
         viewModel.takeDown("a")
         viewModel.undoTakeDown()
@@ -96,10 +97,10 @@ class ModerationViewModelTest {
     fun leavingAListUp_clearsTheComplaintsWithoutRemovingIt() = runBlocking {
         val repository = FakeModerationRepository(twoAboutOneList())
         val viewModel = ModerationViewModel(repository)
-        viewModel.state.first { it is ModerationUiState.Ready }
+        viewModel.state.firstWithin { it is ModerationUiState.Ready }
 
         viewModel.dismiss("a")
-        viewModel.state.first { (it as? ModerationUiState.Ready)?.reports?.isEmpty() == true }
+        viewModel.state.firstWithin { (it as? ModerationUiState.Ready)?.reports?.isEmpty() == true }
 
         assertEquals(listOf("a"), repository.dismissed)
         assertTrue(repository.takenDown.isEmpty())
@@ -110,11 +111,11 @@ class ModerationViewModelTest {
     fun anActionThatFails_leavesTheQueueWhereItWas() = runBlocking {
         val repository = FakeModerationRepository(twoAboutOneList(), actionsFail = true)
         val viewModel = ModerationViewModel(repository)
-        viewModel.state.first { it is ModerationUiState.Ready }
+        viewModel.state.firstWithin { it is ModerationUiState.Ready }
 
         viewModel.takeDown("a")
         viewModel.confirmTakeDown()
-        val still = viewModel.state.first { it.isSettled() } as ModerationUiState.Ready
+        val still = viewModel.state.firstWithin { it.isSettled() } as ModerationUiState.Ready
 
         assertEquals(listOf("a"), still.reports.map { it.listId })
         assertEquals(2, still.reports.single().reportCount)

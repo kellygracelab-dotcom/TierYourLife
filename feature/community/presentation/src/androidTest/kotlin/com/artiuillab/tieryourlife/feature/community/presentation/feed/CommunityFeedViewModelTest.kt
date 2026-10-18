@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.feed
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
+import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
@@ -16,7 +17,6 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Community
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -34,7 +34,7 @@ class CommunityFeedViewModelTest {
         )
         val viewModel = CommunityFeedViewModel(community, preferences)
         viewModel.load()
-        viewModel.state.first { it.feed is CommunityFeed.Ready }
+        viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }
 
         // What opening the list and hiding it from in there leaves behind.
         preferences.hideList("a", "Sci-fi films")
@@ -51,7 +51,7 @@ class CommunityFeedViewModelTest {
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
 
-        val state = viewModel.state.first { it.feed is CommunityFeed.Unverified }
+        val state = viewModel.state.firstWithin { it.feed is CommunityFeed.Unverified }
         assertEquals(CommunityFeed.Unverified, state.feed)
     }
 
@@ -61,7 +61,7 @@ class CommunityFeedViewModelTest {
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
 
-        val state = viewModel.state.first { it.feed is CommunityFeed.Failed }
+        val state = viewModel.state.firstWithin { it.feed is CommunityFeed.Failed }
         assertEquals(CommunityFeed.Failed, state.feed)
     }
 
@@ -70,7 +70,7 @@ class CommunityFeedViewModelTest {
         val community = FakeFeedRepository(feed = listOf(published("a", "Sci-fi films")))
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
-        viewModel.state.first { it.feed is CommunityFeed.Ready }
+        viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }
 
         viewModel.refreshHidden()
 
@@ -87,7 +87,7 @@ class CommunityFeedViewModelTest {
         )
         val viewModel = CommunityFeedViewModel(community, preferences)
         viewModel.load()
-        viewModel.state.first { it.feed is CommunityFeed.Ready }
+        viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }
 
         preferences.hideList("a", "Sci-fi films")
         viewModel.refreshHidden()
@@ -95,7 +95,7 @@ class CommunityFeedViewModelTest {
 
         preferences.unhideList("a")
         viewModel.refreshHidden()
-        val back = viewModel.state.first { readyFeed(it)?.lists?.size == 2 }
+        val back = viewModel.state.firstWithin { readyFeed(it)?.lists?.size == 2 }
         assertEquals(listOf("a", "b"), readyFeed(back)!!.lists.map { it.id })
     }
 
@@ -107,10 +107,10 @@ class CommunityFeedViewModelTest {
         )
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
-        viewModel.state.first { it.feed is CommunityFeed.Ready }
+        viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }
 
         viewModel.loadMore()
-        viewModel.state.first { readyFeed(it)?.loadingMore == false && readyFeed(it)?.lists?.size == 2 }
+        viewModel.state.firstWithin { readyFeed(it)?.loadingMore == false && readyFeed(it)?.lists?.size == 2 }
 
         assertEquals(listOf("a", "b"), shownIds(viewModel))
         assertEquals(listOf(null, "0"), community.cursorsAsked)
@@ -121,7 +121,7 @@ class CommunityFeedViewModelTest {
         val community = FakeFeedRepository(feed = listOf(published("a", "One")))
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
-        viewModel.state.first { it.feed is CommunityFeed.Ready }
+        viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }
 
         viewModel.loadMore()
 
@@ -140,10 +140,10 @@ class CommunityFeedViewModelTest {
         )
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
-        viewModel.state.first { it.feed is CommunityFeed.Ready }
+        viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }
 
         viewModel.loadMore()
-        viewModel.state.first { readyFeed(it)?.loadingMore == false }
+        viewModel.state.firstWithin { readyFeed(it)?.loadingMore == false }
 
         assertEquals(listOf("a"), shownIds(viewModel))
     }
@@ -158,10 +158,10 @@ class CommunityFeedViewModelTest {
         )
         val viewModel = CommunityFeedViewModel(community, preferences)
         viewModel.load()
-        viewModel.state.first { it.feed is CommunityFeed.Ready }
+        viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }
 
         viewModel.loadMore()
-        viewModel.state.first { readyFeed(it)?.loadingMore == false && readyFeed(it)?.lists?.size == 2 }
+        viewModel.state.firstWithin { readyFeed(it)?.loadingMore == false && readyFeed(it)?.lists?.size == 2 }
 
         assertEquals(listOf("a", "c"), shownIds(viewModel))
     }
@@ -173,7 +173,7 @@ class CommunityFeedViewModelTest {
         val community = FakeFeedRepository(feed = listOf(published("a", "One"), published("b", "Two")))
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
-        viewModel.state.first { it.feed is CommunityFeed.Ready }
+        viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }
 
         viewModel.hideList(published("a", "One"))
 
@@ -187,7 +187,7 @@ class CommunityFeedViewModelTest {
         val community = FakeFeedRepository(feed = listOf(published("a", "One")))
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
-        viewModel.state.first { it.feed is CommunityFeed.Ready }
+        viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }
 
         viewModel.report(published("a", "One"), ReportReason.Spam, null)
 
@@ -199,11 +199,11 @@ class CommunityFeedViewModelTest {
         val community = FakeFeedRepository(feed = listOf(published("a", "One"), published("b", "Two")))
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
-        viewModel.state.first { it.feed is CommunityFeed.Ready }
+        viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }
         viewModel.hideList(published("a", "One"))
 
         viewModel.load()
-        val reloaded = viewModel.state.first {
+        val reloaded = viewModel.state.firstWithin {
             readyFeed(it)?.justHidden?.isEmpty() == true && readyFeed(it)?.lists?.size == 1
         }
 
@@ -217,15 +217,15 @@ class CommunityFeedViewModelTest {
         val community = FakeFeedRepository(feed = listOf(published("a", "One")))
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.load()
-        viewModel.state.first { it.feed is CommunityFeed.Ready }
+        viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }
 
         viewModel.enterSearch()
         viewModel.updateQuery("ghibli")
-        viewModel.state.first { it.query == "ghibli" && it.feed is CommunityFeed.Ready }
+        viewModel.state.firstWithin { it.query == "ghibli" && it.feed is CommunityFeed.Ready }
         assertEquals(listOf(null, "ghibli"), community.queriesAsked)
 
         viewModel.exitSearch()
-        viewModel.state.first { it.query == null && it.feed is CommunityFeed.Ready }
+        viewModel.state.firstWithin { it.query == null && it.feed is CommunityFeed.Ready }
         assertEquals(listOf(null, "ghibli", null), community.queriesAsked)
     }
 
