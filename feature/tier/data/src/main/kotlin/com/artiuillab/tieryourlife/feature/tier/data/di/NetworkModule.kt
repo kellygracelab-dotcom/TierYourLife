@@ -1,9 +1,9 @@
 package com.artiuillab.tieryourlife.feature.tier.data.di
 
 import com.artiuillab.tieryourlife.core.network.AppCheckInterceptor
+import com.artiuillab.tieryourlife.core.network.ProxyAddress
 import com.artiuillab.tieryourlife.core.network.ProxyRetrofit
 import com.artiuillab.tieryourlife.core.network.networkJson
-import com.artiuillab.tieryourlife.feature.tier.data.BuildConfig
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataApi
@@ -82,7 +82,7 @@ object NetworkModule {
         json: Json,
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.PROXY_BASE_URL.ifBlank { PLACEHOLDER_BASE_URL } + TMDB_PATH_PREFIX)
+            .baseUrl(ProxyAddress.resolve(TMDB_PATH_PREFIX))
             .client(okHttpClient)
             .addConverterFactory(
                 json.asConverterFactory(
@@ -152,7 +152,6 @@ object NetworkModule {
         return retrofit.create(WikidataSparqlApi::class.java)
     }
 
-    private const val PLACEHOLDER_BASE_URL = "https://example.invalid/"
     private const val TMDB_PATH_PREFIX = "tmdb/"
     private const val WIKIDATA_BASE_URL = "https://www.wikidata.org/w/"
     private const val WIKIDATA_SPARQL_BASE_URL = "https://query.wikidata.org/"

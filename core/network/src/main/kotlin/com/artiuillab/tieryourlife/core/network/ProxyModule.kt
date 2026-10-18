@@ -16,29 +16,35 @@ import javax.inject.Singleton
 @Retention(AnnotationRetention.BINARY)
 annotation class ProxyRetrofit
 
-/** Keeps Retrofit's builder happy in a checkout with no proxy configured; every call then fails as unreachable. */
-private const val PLACEHOLDER_BASE_URL = "https://localhost/"
+/** The client behind [ProxyRetrofit], for a feature that needs the same identity with other timeouts. */
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class ProxyOkHttp
+
 private const val JSON_MEDIA_TYPE = "application/json"
 
 @Module
 @InstallIn(SingletonComponent::class)
 object ProxyModule {
 
+    @ProxyOkHttp
+    @Provides
+    @Singleton
+    fun provideProxyOkHttpClient(
+        appCheckInterceptor: AppCheckInterceptor,
+        idTokenInterceptor: IdTokenInterceptor,
+    ): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(appCheckInterceptor)
+        .addInterceptor(idTokenInterceptor)
+        .build()
+
     @ProxyRetrofit
     @Provides
     @Singleton
-    fun provideProxyRetrofit(
-        appCheckInterceptor: AppCheckInterceptor,
-        idTokenInterceptor: IdTokenInterceptor,
-    ): Retrofit {
-        val client = OkHttpClient.Builder()
-            .addInterceptor(appCheckInterceptor)
-            .addInterceptor(idTokenInterceptor)
-            .build()
-        return Retrofit.Builder()
-            .baseUrl(BuildConfig.PROXY_BASE_URL.ifBlank { PLACEHOLDER_BASE_URL })
+    fun provideProxyRetrofit(@ProxyOkHttp client: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(ProxyAddress.resolve())
             .client(client)
             .addConverterFactory(networkJson.asConverterFactory(JSON_MEDIA_TYPE.toMediaType()))
             .build()
-    }
 }
