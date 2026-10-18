@@ -34,6 +34,13 @@ jobs:
       - name: Assemble, unit tests, static analysis, lint
         run: ./gradlew assembleDebug test ktlintCheck lint
 
+      # The build that reaches people is shrunk by R8, which the debug build
+      # never is: a class R8 strips or a rule it rejects would otherwise first
+      # show up as a crash on a tester's phone. Unsigned, and the mapping file
+      # stays here: uploading it is the release's job, not every PR's.
+      - name: Release bundle
+        run: ./gradlew :app:bundleRelease -x :app:uploadCrashlyticsMappingFileRelease
+
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -44,8 +51,31 @@ jobs:
             **/build/reports/lint-results-*.html
           retention-days: 7
 
+  # Twenty emulator minutes for a change to a README read nothing new.
+  changes:
+    name: What changed
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Filter
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - '**'
+              - '!docs/**'
+              - '!**/*.md'
+          predicate-quantifier: 'every'
+
   instrumentation:
     name: Instrumentation tests
+    needs: changes
+    # A skipped job counts as passed, so a docs-only PR is not left waiting.
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
