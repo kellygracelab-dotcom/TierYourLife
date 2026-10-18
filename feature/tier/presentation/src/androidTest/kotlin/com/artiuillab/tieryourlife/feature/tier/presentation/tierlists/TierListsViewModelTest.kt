@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
+import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
@@ -64,7 +65,7 @@ class TierListsViewModelTest {
         val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
-        val state = viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success
+        val state = viewModel.state.firstWithin { it is TierListsUiState.Success } as TierListsUiState.Success
 
         assertEquals(listOf(1L, 2L), state.lists.map { it.id })
         assertEquals(listOf("Existing list", "Another list"), state.lists.map { it.title })
@@ -77,7 +78,7 @@ class TierListsViewModelTest {
         val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
-        val state = viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success
+        val state = viewModel.state.firstWithin { it is TierListsUiState.Success } as TierListsUiState.Success
 
         assertEquals(emptyList<Long>(), state.lists.map { it.id })
         assertEquals(0, state.totalListCount)
@@ -89,12 +90,12 @@ class TierListsViewModelTest {
         val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
-        viewModel.state.first { it is TierListsUiState.Success }
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
 
         repository.renameTierList(1, "New title")
 
         viewModel.loadTierLists()
-        val state = viewModel.state.first {
+        val state = viewModel.state.firstWithin {
             it is TierListsUiState.Success && it.lists.singleOrNull()?.title == "New title"
         } as TierListsUiState.Success
 
@@ -112,12 +113,12 @@ class TierListsViewModelTest {
         val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
-        viewModel.state.first { it is TierListsUiState.Success }
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
 
         repository.deleteTierLists(listOf(2L))
 
         viewModel.loadTierLists()
-        val state = viewModel.state.first {
+        val state = viewModel.state.firstWithin {
             it is TierListsUiState.Success && it.lists.size == 1
         } as TierListsUiState.Success
 
@@ -145,7 +146,7 @@ class TierListsViewModelTest {
         val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
-        viewModel.state.first { it is TierListsUiState.Success }
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
 
         repository.renameTierList(1, "New title")
 
@@ -172,12 +173,12 @@ class TierListsViewModelTest {
         val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
-        viewModel.state.first { it is TierListsUiState.Success }
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
 
         viewModel.enterSearch()
         viewModel.updateSearchQuery("piz")
 
-        val state = viewModel.state.first {
+        val state = viewModel.state.firstWithin {
             it is TierListsUiState.Success && (it.mode as? HomeMode.Searching)?.query == "piz"
         } as TierListsUiState.Success
 
@@ -191,13 +192,13 @@ class TierListsViewModelTest {
         val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
-        viewModel.state.first { it is TierListsUiState.Success }
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
 
         viewModel.enterSearch()
         viewModel.updateSearchQuery("nothing matches this")
         viewModel.exitSearch()
 
-        val state = viewModel.state.first {
+        val state = viewModel.state.firstWithin {
             it is TierListsUiState.Success && it.mode == HomeMode.Browsing
         } as TierListsUiState.Success
 
@@ -210,16 +211,16 @@ class TierListsViewModelTest {
         val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
-        viewModel.state.first { it is TierListsUiState.Success }
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
 
         viewModel.enterSelection(1L)
-        val selecting = viewModel.state.first {
+        val selecting = viewModel.state.firstWithin {
             it is TierListsUiState.Success && it.mode is HomeMode.Selecting
         } as TierListsUiState.Success
         assertEquals(HomeMode.Selecting(setOf(1L)), selecting.mode)
 
         viewModel.toggleSelection(1L)
-        val afterDeselect = viewModel.state.first {
+        val afterDeselect = viewModel.state.firstWithin {
             it is TierListsUiState.Success
         } as TierListsUiState.Success
         assertEquals(HomeMode.Browsing, afterDeselect.mode)
@@ -233,19 +234,19 @@ class TierListsViewModelTest {
         val viewModel = TierListsViewModel(repository, FakeCommunityRepository(), FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
 
         viewModel.loadTierLists()
-        viewModel.state.first { it is TierListsUiState.Success }
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
 
         viewModel.enterSelection(2L)
         viewModel.deleteTierLists(listOf(2L))
 
-        val afterDelete = viewModel.state.first {
+        val afterDelete = viewModel.state.firstWithin {
             it is TierListsUiState.Success && it.lists.size == 1
         } as TierListsUiState.Success
         assertEquals(listOf(1L), afterDelete.lists.map { it.id })
         assertEquals(HomeMode.Browsing, afterDelete.mode)
 
         viewModel.restoreTierLists(listOf(2L))
-        val afterRestore = viewModel.state.first {
+        val afterRestore = viewModel.state.firstWithin {
             it is TierListsUiState.Success && it.lists.size == 2
         } as TierListsUiState.Success
         assertEquals(listOf(1L, 2L), afterRestore.lists.map { it.id }.sorted())
@@ -261,10 +262,10 @@ class TierListsViewModelTest {
         val community = FakeCommunityRepository()
         val viewModel = TierListsViewModel(repository, community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
         viewModel.loadTierLists()
-        viewModel.state.first { it is TierListsUiState.Success }
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
 
         viewModel.deleteTierLists(listOf(1L))
-        viewModel.state.first { it is TierListsUiState.Success && it.lists.isEmpty() }
+        viewModel.state.firstWithin { it is TierListsUiState.Success && it.lists.isEmpty() }
 
         assertEquals(listOf("published-1"), community.takenDown)
     }
@@ -279,13 +280,13 @@ class TierListsViewModelTest {
         val community = FakeCommunityRepository(unpublishResult = Result.failure(IllegalStateException()))
         val viewModel = TierListsViewModel(repository, community, FakeAppPreferences(), guestAccount(), NoBoardSync, NoPictureRestore)
         viewModel.loadTierLists()
-        viewModel.state.first { it is TierListsUiState.Success }
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
 
         val message = async { viewModel.userMessages.first() }
         viewModel.deleteTierLists(listOf(1L))
 
         assertEquals(UserMessage.PublishedListStillPublic, message.await())
-        val state = viewModel.state.first { it is TierListsUiState.Success } as TierListsUiState.Success
+        val state = viewModel.state.firstWithin { it is TierListsUiState.Success } as TierListsUiState.Success
         assertEquals(listOf(1L), state.lists.map { it.id })
     }
 

@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -39,7 +40,7 @@ class TierDetailViewModelErrorsTest {
         assertEquals(UserMessage.ActionFailed, message)
 
         val state = withTimeout(AWAIT_TIMEOUT_MILLIS) {
-            viewModel.state.first { it is TierDetailUiState.Success && it.list == repository.stored }
+            viewModel.state.firstWithin { it is TierDetailUiState.Success && it.list == repository.stored }
         } as TierDetailUiState.Success
         assertEquals(listOf(1L), state.list.tiers.first { it.id == 10L }.items.map { it.id })
         assertTrue(state.list.tiers.first { it.id == 20L }.items.isEmpty())
@@ -54,7 +55,7 @@ class TierDetailViewModelErrorsTest {
         viewModel.renameTierList("New title")
         withTimeout(AWAIT_TIMEOUT_MILLIS) { viewModel.userMessages.first() }
 
-        val state = withTimeout(AWAIT_TIMEOUT_MILLIS) { viewModel.state.first { it is TierDetailUiState.Success } }
+        val state = withTimeout(AWAIT_TIMEOUT_MILLIS) { viewModel.state.firstWithin { it is TierDetailUiState.Success } }
         assertTrue(state is TierDetailUiState.Success)
     }
 
@@ -64,13 +65,13 @@ class TierDetailViewModelErrorsTest {
         val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
 
         val state = withTimeout(AWAIT_TIMEOUT_MILLIS) {
-            viewModel.state.first { it is TierDetailUiState.Error }
+            viewModel.state.firstWithin { it is TierDetailUiState.Error }
         }
         assertTrue(state is TierDetailUiState.Error)
     }
 
     private suspend fun awaitSuccess(viewModel: TierDetailViewModel) {
-        withTimeout(AWAIT_TIMEOUT_MILLIS) { viewModel.state.first { it is TierDetailUiState.Success } }
+        withTimeout(AWAIT_TIMEOUT_MILLIS) { viewModel.state.firstWithin { it is TierDetailUiState.Success } }
     }
 
     private fun savedStateHandle(startInTitleEdit: Boolean = false) = SavedStateHandle(

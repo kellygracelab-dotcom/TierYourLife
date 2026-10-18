@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.settings.presentation
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
+import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
@@ -24,7 +25,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupSettings
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardBackup
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -67,7 +67,7 @@ class SettingsViewModelTest {
         val viewModel = viewModel(preferences = preferences, community = FakeCommunity(waiting = 2))
 
         viewModel.loadPendingReports()
-        viewModel.pendingReports.first { it == 2 }
+        viewModel.pendingReports.firstWithin { it == 2 }
 
         assertEquals(2, preferences.lastKnownPendingReports())
     }
@@ -102,7 +102,7 @@ class SettingsViewModelTest {
         viewModel.loadBackupSettings()
         account.value = Account.SignedIn(email = "someone@example.test", photoUrl = null)
 
-        assertNotNull(viewModel.backupSettings.first { it != null })
+        assertNotNull(viewModel.backupSettings.firstWithin { it != null })
     }
 
     @Test

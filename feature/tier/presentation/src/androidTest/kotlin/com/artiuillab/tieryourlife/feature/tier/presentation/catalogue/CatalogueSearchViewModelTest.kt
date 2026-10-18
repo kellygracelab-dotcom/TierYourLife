@@ -2,10 +2,10 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.catalogue
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
+import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueSearchPage
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -26,10 +26,10 @@ class CatalogueSearchViewModelTest {
         )
         val viewModel = viewModelWith(repository)
         viewModel.search("marvel")
-        viewModel.state.first { it is CatalogueSearchUiState.Success }
+        viewModel.state.firstWithin { it is CatalogueSearchUiState.Success }
 
         viewModel.loadMore()
-        val shown = viewModel.state.first {
+        val shown = viewModel.state.firstWithin {
             it is CatalogueSearchUiState.Success && !it.loadingMore
         } as CatalogueSearchUiState.Success
 
@@ -45,7 +45,7 @@ class CatalogueSearchViewModelTest {
         )
         val viewModel = viewModelWith(repository)
         viewModel.search("marvel")
-        viewModel.state.first { it is CatalogueSearchUiState.Success }
+        viewModel.state.firstWithin { it is CatalogueSearchUiState.Success }
 
         viewModel.loadMore()
 
@@ -62,10 +62,10 @@ class CatalogueSearchViewModelTest {
         )
         val viewModel = viewModelWith(repository)
         viewModel.search("marvel")
-        viewModel.state.first { it is CatalogueSearchUiState.Success }
+        viewModel.state.firstWithin { it is CatalogueSearchUiState.Success }
 
         viewModel.loadMore()
-        val shown = viewModel.state.first {
+        val shown = viewModel.state.firstWithin {
             it is CatalogueSearchUiState.Success && !it.loadingMore
         } as CatalogueSearchUiState.Success
 
@@ -81,10 +81,10 @@ class CatalogueSearchViewModelTest {
         )
         val viewModel = viewModelWith(repository)
         viewModel.search("marvel")
-        viewModel.state.first { it is CatalogueSearchUiState.Success }
+        viewModel.state.firstWithin { it is CatalogueSearchUiState.Success }
 
         viewModel.loadMore()
-        val shown = viewModel.state.first {
+        val shown = viewModel.state.firstWithin {
             it is CatalogueSearchUiState.Success && !it.loadingMore
         } as CatalogueSearchUiState.Success
 
@@ -99,12 +99,12 @@ class CatalogueSearchViewModelTest {
         )
         val viewModel = viewModelWith(repository)
         viewModel.search("marvel")
-        viewModel.state.first { it is CatalogueSearchUiState.Success }
+        viewModel.state.firstWithin { it is CatalogueSearchUiState.Success }
         viewModel.loadMore()
-        viewModel.state.first { it is CatalogueSearchUiState.Success && !it.loadingMore }
+        viewModel.state.firstWithin { it is CatalogueSearchUiState.Success && !it.loadingMore }
 
         viewModel.search("dune")
-        val shown = viewModel.state.first {
+        val shown = viewModel.state.firstWithin {
             it is CatalogueSearchUiState.Success && it.items.size == 2
         } as CatalogueSearchUiState.Success
 

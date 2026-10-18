@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
+import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
@@ -51,7 +52,7 @@ class AccountViewModelTest {
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("token-1")))
 
         viewModel.signIn(picker::request)
-        viewModel.state.first { !it.signingIn }
+        viewModel.state.firstWithin { !it.signingIn }
 
         assertEquals(listOf("token-1"), repository.tokens)
     }
@@ -64,7 +65,7 @@ class AccountViewModelTest {
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Cancelled))
 
         viewModel.signIn(picker::request)
-        val state = viewModel.state.first { !it.signingIn }
+        val state = viewModel.state.firstWithin { !it.signingIn }
 
         assertNull(state.notice)
         assertEquals(emptyList<String>(), repository.tokens)
@@ -75,7 +76,7 @@ class AccountViewModelTest {
         val viewModel = viewModel(credential = FakeGoogleCredential(GoogleCredentialResult.NoGoogleAccount))
 
         viewModel.signIn(picker::request)
-        val state = viewModel.state.first { it.notice != null }
+        val state = viewModel.state.firstWithin { it.notice != null }
 
         assertEquals(AccountNotice.NoGoogleAccount, state.notice)
     }
@@ -87,7 +88,7 @@ class AccountViewModelTest {
         val viewModel = viewModel(credential = FakeGoogleCredential(GoogleCredentialResult.Unavailable))
 
         viewModel.signIn(picker::request)
-        val state = viewModel.state.first { it.notice != null }
+        val state = viewModel.state.firstWithin { it.notice != null }
 
         assertEquals(AccountNotice.SignInUnavailable, state.notice)
     }
@@ -98,7 +99,7 @@ class AccountViewModelTest {
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("token-1")))
 
         viewModel.signIn(picker::request)
-        val state = viewModel.state.first { it.notice != null }
+        val state = viewModel.state.firstWithin { it.notice != null }
 
         assertEquals(AccountNotice.SignInFailed, state.notice)
     }
@@ -113,7 +114,7 @@ class AccountViewModelTest {
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")))
 
         viewModel.signIn(picker::request)
-        val state = viewModel.state.first { it.notice != null }
+        val state = viewModel.state.firstWithin { it.notice != null }
 
         assertEquals(AccountNotice.SignedInToExistingAccount, state.notice)
     }
@@ -131,7 +132,7 @@ class AccountViewModelTest {
 
         assertEquals(1, credential.requests)
         credential.release(GoogleCredentialResult.Cancelled)
-        viewModel.state.first { !it.signingIn }
+        viewModel.state.firstWithin { !it.signingIn }
     }
 
     // Both halves of the switch, so one of them is running whichever way it
@@ -144,7 +145,7 @@ class AccountViewModelTest {
         )
         val viewModel = viewModel(repository, credits = FakeGenerationCredits(balance = 12))
 
-        val state = viewModel.state.first { it.credits != null }
+        val state = viewModel.state.firstWithin { it.credits != null }
 
         assertEquals(12, state.credits)
     }
@@ -158,7 +159,7 @@ class AccountViewModelTest {
         val credits = FakeGenerationCredits(balance = 12)
         val viewModel = viewModel(repository, credits = credits)
 
-        val state = viewModel.state.first { it.account is Account.SignedIn }
+        val state = viewModel.state.firstWithin { it.account is Account.SignedIn }
 
         assertEquals(0, credits.reads)
         assertEquals(null, state.credits)
@@ -182,10 +183,10 @@ class AccountViewModelTest {
             initial = Account.SignedIn(email = "someone@example.com", photoUrl = null),
         )
         val viewModel = viewModel(repository)
-        viewModel.state.first { it.account is Account.SignedIn }
+        viewModel.state.firstWithin { it.account is Account.SignedIn }
 
         viewModel.signOut()
-        val state = viewModel.state.first { it.account == Account.Guest }
+        val state = viewModel.state.firstWithin { it.account == Account.Guest }
 
         assertEquals(Account.Guest, state.account)
     }
@@ -205,7 +206,7 @@ class AccountViewModelTest {
         )
 
         viewModel.deleteAccount()
-        viewModel.state.first { !it.deleting && it.notice == null && order.size == 2 }
+        viewModel.state.firstWithin { !it.deleting && it.notice == null && order.size == 2 }
 
         assertEquals(listOf("erased", "signed out"), order)
     }
@@ -222,7 +223,7 @@ class AccountViewModelTest {
         val viewModel = viewModel(repository = repository, erasure = RefusingErasure)
 
         viewModel.deleteAccount()
-        val state = viewModel.state.first { it.notice == AccountNotice.NotDeleted }
+        val state = viewModel.state.firstWithin { it.notice == AccountNotice.NotDeleted }
 
         assertEquals(false, signedOut)
         assertEquals(false, state.deleting)

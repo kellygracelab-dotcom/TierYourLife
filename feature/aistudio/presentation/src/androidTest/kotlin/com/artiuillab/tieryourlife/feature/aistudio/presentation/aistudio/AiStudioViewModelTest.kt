@@ -2,13 +2,13 @@ package com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.GenerationOutcome
 import com.artiuillab.tieryourlife.feature.aistudio.domain.library.GeneratedCardSaver
 import com.artiuillab.tieryourlife.feature.aistudio.domain.model.GeneratedCardImage
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -25,12 +25,12 @@ class AiStudioViewModelTest {
 
         viewModel.send("A neon street")
         generator.generateStarted.await()
-        val generatingState = viewModel.state.first { it.exchanges.isNotEmpty() }
+        val generatingState = viewModel.state.firstWithin { it.exchanges.isNotEmpty() }
         assertEquals(AiExchangePhase.Generating, generatingState.exchanges.single().phase)
         assertEquals(true, generatingState.generating)
 
         generator.releaseGenerate()
-        val resultState = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
+        val resultState = viewModel.state.firstWithin { it.exchanges.single().phase is AiExchangePhase.Result }
         assertEquals(false, resultState.generating)
         val image = (resultState.exchanges.single().phase as AiExchangePhase.Result).image
         assertEquals("A neon street", image.prompt)
@@ -52,7 +52,7 @@ class AiStudioViewModelTest {
         val viewModel = viewModel(generator)
 
         viewModel.send("A neon street")
-        val state = viewModel.state.first { it.exchanges.singleOrNull()?.phase == AiExchangePhase.Failed }
+        val state = viewModel.state.firstWithin { it.exchanges.singleOrNull()?.phase == AiExchangePhase.Failed }
 
         assertEquals(false, state.generating)
     }
@@ -62,12 +62,12 @@ class AiStudioViewModelTest {
         val generator = FakeCardImageGenerator().apply { shouldFail = true }
         val viewModel = viewModel(generator)
         viewModel.send("A neon street")
-        val failedState = viewModel.state.first { it.exchanges.singleOrNull()?.phase == AiExchangePhase.Failed }
+        val failedState = viewModel.state.firstWithin { it.exchanges.singleOrNull()?.phase == AiExchangePhase.Failed }
         val exchangeId = failedState.exchanges.single().id
 
         generator.shouldFail = false
         viewModel.retry(exchangeId)
-        val resultState = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
+        val resultState = viewModel.state.firstWithin { it.exchanges.single().phase is AiExchangePhase.Result }
 
         assertEquals(exchangeId, resultState.exchanges.single().id)
         assertEquals(
@@ -81,12 +81,12 @@ class AiStudioViewModelTest {
         val generator = FakeCardImageGenerator()
         val viewModel = viewModel(generator)
         viewModel.send("A neon street")
-        val firstResult = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
+        val firstResult = viewModel.state.firstWithin { it.exchanges.single().phase is AiExchangePhase.Result }
         val exchangeId = firstResult.exchanges.single().id
         val firstImage = (firstResult.exchanges.single().phase as AiExchangePhase.Result).image
 
         viewModel.regenerate(exchangeId)
-        val secondResult = viewModel.state.first {
+        val secondResult = viewModel.state.firstWithin {
             val phase = it.exchanges.single().phase
             phase is AiExchangePhase.Result && phase.image != firstImage
         }
@@ -102,12 +102,12 @@ class AiStudioViewModelTest {
         val saver = FakeGeneratedCardSaver()
         val viewModel = viewModel(generator, saver)
         viewModel.send("A neon street")
-        val resultState = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
+        val resultState = viewModel.state.firstWithin { it.exchanges.single().phase is AiExchangePhase.Result }
         val exchangeId = resultState.exchanges.single().id
         val image = (resultState.exchanges.single().phase as AiExchangePhase.Result).image
 
         viewModel.addToList(exchangeId, "My card")
-        val addedState = viewModel.state.first { it.exchanges.single().addedItemId != null }
+        val addedState = viewModel.state.firstWithin { it.exchanges.single().addedItemId != null }
 
         assertEquals(1L, addedState.exchanges.single().addedItemId)
         assertEquals(listOf(Triple(1L, "My card", image.imageUri)), saver.calls)
@@ -123,18 +123,18 @@ class AiStudioViewModelTest {
         val viewModel = viewModel(generator, saver)
 
         viewModel.send("First")
-        val firstResult = viewModel.state.first { it.exchanges.singleOrNull()?.phase is AiExchangePhase.Result }
+        val firstResult = viewModel.state.firstWithin { it.exchanges.singleOrNull()?.phase is AiExchangePhase.Result }
         val firstId = firstResult.exchanges.single().id
         viewModel.addToList(firstId, "First card")
-        viewModel.state.first { it.exchanges.single().addedItemId != null }
+        viewModel.state.firstWithin { it.exchanges.single().addedItemId != null }
 
         viewModel.send("Second")
-        val secondResult = viewModel.state.first {
+        val secondResult = viewModel.state.firstWithin {
             it.exchanges.size == 2 && it.exchanges.last().phase is AiExchangePhase.Result
         }
         val secondId = secondResult.exchanges.last().id
         viewModel.addToList(secondId, "Second card")
-        viewModel.state.first { it.exchanges.last().addedItemId != null }
+        viewModel.state.firstWithin { it.exchanges.last().addedItemId != null }
 
         assertEquals(listOf(1L, 2L), viewModel.addedItemIds)
     }
@@ -145,10 +145,10 @@ class AiStudioViewModelTest {
         val saver = FakeGeneratedCardSaver()
         val viewModel = viewModel(generator, saver)
         viewModel.send("A neon street")
-        val resultState = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
+        val resultState = viewModel.state.firstWithin { it.exchanges.single().phase is AiExchangePhase.Result }
         val exchangeId = resultState.exchanges.single().id
         viewModel.addToList(exchangeId, "My card")
-        viewModel.state.first { it.exchanges.single().addedItemId != null }
+        viewModel.state.firstWithin { it.exchanges.single().addedItemId != null }
         val callCountBefore = generator.callCount
 
         viewModel.regenerate(exchangeId)
@@ -161,7 +161,7 @@ class AiStudioViewModelTest {
     fun openingTheStudio_showsTheBalanceItReads() = runBlocking {
         val viewModel = viewModel(credits = FakeGenerationCredits(balance = 7))
 
-        val state = viewModel.state.first { it.credits != null }
+        val state = viewModel.state.firstWithin { it.credits != null }
 
         assertEquals(7, state.credits)
     }
@@ -174,7 +174,7 @@ class AiStudioViewModelTest {
         val viewModel = viewModel(generator, credits = FakeGenerationCredits(balance = null))
 
         viewModel.send("A neon street")
-        val state = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
+        val state = viewModel.state.firstWithin { it.exchanges.single().phase is AiExchangePhase.Result }
 
         assertNull(state.credits)
     }
@@ -183,10 +183,10 @@ class AiStudioViewModelTest {
     fun send_takesTheNewBalanceFromTheGenerationItself() = runBlocking {
         val generator = FakeCardImageGenerator().apply { creditsRemaining = 4 }
         val viewModel = viewModel(generator, credits = FakeGenerationCredits(balance = 5))
-        viewModel.state.first { it.credits == 5 }
+        viewModel.state.firstWithin { it.credits == 5 }
 
         viewModel.send("A neon street")
-        val state = viewModel.state.first { it.exchanges.single().phase is AiExchangePhase.Result }
+        val state = viewModel.state.firstWithin { it.exchanges.single().phase is AiExchangePhase.Result }
 
         assertEquals(4, state.credits)
     }
@@ -197,7 +197,7 @@ class AiStudioViewModelTest {
         val viewModel = viewModel(generator, credits = FakeGenerationCredits(balance = 1))
 
         viewModel.send("A neon street")
-        val state = viewModel.state.first {
+        val state = viewModel.state.firstWithin {
             it.exchanges.singleOrNull()?.phase == AiExchangePhase.OutOfCredits
         }
 
@@ -213,7 +213,7 @@ class AiStudioViewModelTest {
         val viewModel = viewModel(generator)
 
         viewModel.send("A neon street")
-        val state = viewModel.state.first { it.exchanges.singleOrNull()?.phase != AiExchangePhase.Generating }
+        val state = viewModel.state.firstWithin { it.exchanges.singleOrNull()?.phase != AiExchangePhase.Generating }
 
         assertEquals(AiExchangePhase.OutOfCredits, state.exchanges.single().phase)
     }
@@ -224,10 +224,10 @@ class AiStudioViewModelTest {
     fun aFailedGeneration_leavesTheBalanceAlone() = runBlocking {
         val generator = FakeCardImageGenerator().apply { shouldFail = true }
         val viewModel = viewModel(generator, credits = FakeGenerationCredits(balance = 3))
-        viewModel.state.first { it.credits == 3 }
+        viewModel.state.firstWithin { it.credits == 3 }
 
         viewModel.send("A neon street")
-        val state = viewModel.state.first { it.exchanges.singleOrNull()?.phase == AiExchangePhase.Failed }
+        val state = viewModel.state.firstWithin { it.exchanges.singleOrNull()?.phase == AiExchangePhase.Failed }
 
         assertEquals(3, state.credits)
     }

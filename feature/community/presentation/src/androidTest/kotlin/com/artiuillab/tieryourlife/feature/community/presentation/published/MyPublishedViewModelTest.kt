@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.published
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
@@ -15,7 +16,6 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -29,7 +29,7 @@ class MyPublishedViewModelTest {
         val tiers = RecordingTierRepository()
         val viewModel = MyPublishedViewModel(FakePublishedRepository(listOf(mine("a"), mine("b"))), tiers)
 
-        val ready = viewModel.state.first { it is MyPublishedUiState.Ready } as MyPublishedUiState.Ready
+        val ready = viewModel.state.firstWithin { it is MyPublishedUiState.Ready } as MyPublishedUiState.Ready
 
         assertEquals(listOf("a", "b"), ready.lists.map { it.id })
     }
@@ -39,10 +39,10 @@ class MyPublishedViewModelTest {
         val community = FakePublishedRepository(listOf(mine("a"), mine("b")))
         val tiers = RecordingTierRepository(publishedIdOfFirstList = "a")
         val viewModel = MyPublishedViewModel(community, tiers)
-        viewModel.state.first { it is MyPublishedUiState.Ready }
+        viewModel.state.firstWithin { it is MyPublishedUiState.Ready }
 
         viewModel.takeDown("a")
-        val left = viewModel.state.first {
+        val left = viewModel.state.firstWithin {
             (it as? MyPublishedUiState.Ready)?.lists?.size == 1
         } as MyPublishedUiState.Ready
 
@@ -56,10 +56,10 @@ class MyPublishedViewModelTest {
     fun takingDownSomethingThisPhoneNeverHad_stillWorks() = runBlocking {
         val community = FakePublishedRepository(listOf(mine("orphan")))
         val viewModel = MyPublishedViewModel(community, RecordingTierRepository())
-        viewModel.state.first { it is MyPublishedUiState.Ready }
+        viewModel.state.firstWithin { it is MyPublishedUiState.Ready }
 
         viewModel.takeDown("orphan")
-        val left = viewModel.state.first {
+        val left = viewModel.state.firstWithin {
             (it as? MyPublishedUiState.Ready)?.lists?.isEmpty() == true
         } as MyPublishedUiState.Ready
 
@@ -71,10 +71,10 @@ class MyPublishedViewModelTest {
     fun aTakeDownThatFails_leavesTheListWhereItWas() = runBlocking {
         val community = FakePublishedRepository(listOf(mine("a")), takeDownFails = true)
         val viewModel = MyPublishedViewModel(community, RecordingTierRepository())
-        viewModel.state.first { it is MyPublishedUiState.Ready }
+        viewModel.state.firstWithin { it is MyPublishedUiState.Ready }
 
         viewModel.takeDown("a")
-        val still = viewModel.state.first {
+        val still = viewModel.state.firstWithin {
             (it as? MyPublishedUiState.Ready)?.removing == null
         } as MyPublishedUiState.Ready
 

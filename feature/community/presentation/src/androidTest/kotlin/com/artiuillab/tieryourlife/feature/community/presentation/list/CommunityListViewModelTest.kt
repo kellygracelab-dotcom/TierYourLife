@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
+import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
@@ -51,7 +52,7 @@ class CommunityListViewModelTest {
     fun opening_putsTheAuthorsCardsInThePool_andLeavesEveryTierEmpty() = runBlocking {
         val viewModel = viewModel()
 
-        val state = viewModel.state.first { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        val state = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
 
         assertEquals("Olena M.", state.authorName)
         assertEquals(2, state.list.tiers.first { it.isPool }.items.size)
@@ -64,13 +65,13 @@ class CommunityListViewModelTest {
     fun ranking_changesNothingInTheDatabase() = runBlocking {
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
-        val loaded = viewModel.state.first { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
         viewModel.show(Showing.Mine)
         val poolItem = loaded.mine.tiers.first { it.isPool }.items.first()
         val target = loaded.mine.tiers.first { !it.isPool }
 
         viewModel.moveItem(poolItem.id, target.id, 0)
-        val ranked = viewModel.state.first {
+        val ranked = viewModel.state.firstWithin {
             (it as? CommunityListUiState.Success)?.arranged == true
         } as CommunityListUiState.Success
 
@@ -84,14 +85,14 @@ class CommunityListViewModelTest {
     @Test
     fun draggingWhileTheirArrangementIsShown_movesNothing() = runBlocking {
         val viewModel = viewModel()
-        val loaded = viewModel.state.first { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
         viewModel.show(Showing.Theirs)
         val poolItem = loaded.mine.tiers.first { it.isPool }.items.first()
         val target = loaded.mine.tiers.first { !it.isPool }
 
         viewModel.moveItem(poolItem.id, target.id, 0)
 
-        val after = viewModel.state.first { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        val after = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
         assertEquals(false, after.arranged)
         assertEquals(loaded.list.tiers.map { tier -> tier.items.size }, after.list.tiers.map { it.items.size })
     }
@@ -99,14 +100,14 @@ class CommunityListViewModelTest {
     @Test
     fun draggingWhileYourOwnIsShown_movesTheCardAndLeavesTheirsAlone() = runBlocking {
         val viewModel = viewModel()
-        val loaded = viewModel.state.first { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
         viewModel.show(Showing.Mine)
         val poolItem = loaded.mine.tiers.first { it.isPool }.items.first()
         val target = loaded.mine.tiers.first { !it.isPool }
 
         viewModel.moveItem(poolItem.id, target.id, 0)
 
-        val after = viewModel.state.first {
+        val after = viewModel.state.firstWithin {
             (it as? CommunityListUiState.Success)?.arranged == true
         } as CommunityListUiState.Success
         assertEquals(1, after.mine.tiers.first { it.id == target.id }.items.size)
@@ -119,14 +120,14 @@ class CommunityListViewModelTest {
     fun saving_keepsWhicheverArrangementIsOnScreen() = runBlocking {
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
-        viewModel.state.first { it is CommunityListUiState.Success }
+        viewModel.state.firstWithin { it is CommunityListUiState.Success }
         viewModel.show(Showing.Theirs)
 
         val savedId = CompletableDeferred<Long>()
         viewModel.saveToMyLists { savedId.complete(it) }
         savedId.await()
 
-        val theirs = viewModel.state.first { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        val theirs = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
         val template = tiers.templates.single()
         assertEquals(
             theirs.list.tiers.filterNot { it.isPool }.map { it.items.size },
@@ -141,7 +142,7 @@ class CommunityListViewModelTest {
     fun saving_copiesTheListUnderTheReadersOwnRoof_withTheAuthorAttached() = runBlocking {
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
-        viewModel.state.first { it is CommunityListUiState.Success }
+        viewModel.state.firstWithin { it is CommunityListUiState.Success }
 
         // The view model clears `saving` before it calls back, so waiting on the
         // flag can win the race against the id it is waiting for.
@@ -160,7 +161,7 @@ class CommunityListViewModelTest {
     fun aListThatCannotBeOpened_saysSoRatherThanShowingAnEmptyBoard() = runBlocking {
         val viewModel = viewModel(community = FailingCommunityRepository())
 
-        val state = viewModel.state.first { it is CommunityListUiState.Error }
+        val state = viewModel.state.firstWithin { it is CommunityListUiState.Error }
 
         assertEquals(CommunityListUiState.Error, state)
     }

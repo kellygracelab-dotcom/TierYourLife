@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
@@ -17,7 +18,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStand
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -37,7 +37,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
 
         viewModel.addManualItem("Dune", photoUris = emptyList())
-        val state = viewModel.state.first {
+        val state = viewModel.state.firstWithin {
             it is TierDetailUiState.Success && it.list.tiers.single().items.isNotEmpty()
         } as TierDetailUiState.Success
 
@@ -53,7 +53,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
 
         viewModel.addManualItem("Dune", photoUris = listOf("content://gallery/42"))
-        viewModel.state.first {
+        viewModel.state.firstWithin {
             it is TierDetailUiState.Success && it.list.tiers.single().items.isNotEmpty()
         }
 
@@ -68,7 +68,7 @@ class TierDetailViewModelTest {
         val picked = listOf("content://gallery/1", "content://gallery/2", "content://gallery/3")
 
         viewModel.addManualItem("", photoUris = picked)
-        val state = viewModel.state.first {
+        val state = viewModel.state.firstWithin {
             it is TierDetailUiState.Success && it.list.tiers.single().items.size == picked.size
         } as TierDetailUiState.Success
 
@@ -81,7 +81,7 @@ class TierDetailViewModelTest {
     fun reorderTiers_emitsTheNewOrderSynchronously_beforeTheRepositoryResponds() = runBlocking {
         val repository = FakeTierRepository(rankedList())
         val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepositoryForDetail(), savedStateHandle())
-        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.state.firstWithin { it is TierDetailUiState.Success }
 
         viewModel.reorderTiers(listOf(20L, 10L))
 
@@ -106,10 +106,10 @@ class TierDetailViewModelTest {
             FakeAccountRepositoryForDetail(signedIn = true),
             savedStateHandle(),
         )
-        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.state.firstWithin { it is TierDetailUiState.Success }
 
         viewModel.setPublic(true)
-        viewModel.publishing.first { !it }
+        viewModel.publishing.firstWithin { !it }
 
         assertEquals(1, community.published.size)
         assertEquals("published-1", repository.publishedIds.single().second)
@@ -129,7 +129,7 @@ class TierDetailViewModelTest {
             FakeAccountRepositoryForDetail(signedIn = true),
             savedStateHandle(),
         )
-        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.state.firstWithin { it is TierDetailUiState.Success }
         repository.readsAreHeld = true
 
         viewModel.setPublic(true)
@@ -137,7 +137,7 @@ class TierDetailViewModelTest {
         // are two writes one after the other, and waking between them made this
         // fail on a slow emulator for a reason that had nothing to do with the
         // thing being tested.
-        viewModel.publicPending.first { it == null }
+        viewModel.publicPending.firstWithin { it == null }
 
         val shown = (viewModel.state.value as TierDetailUiState.Success).list
         assertEquals("published-1", shown.publishedId)
@@ -151,14 +151,14 @@ class TierDetailViewModelTest {
             FakeAccountRepositoryForDetail(signedIn = true),
             savedStateHandle(),
         )
-        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.state.firstWithin { it is TierDetailUiState.Success }
         val seen = mutableListOf<TierDetailUiState>()
         val watcher = launch(Dispatchers.Unconfined) { viewModel.state.collect { seen += it } }
 
         viewModel.setPublic(true)
-        viewModel.publishing.first { !it }
+        viewModel.publishing.firstWithin { !it }
         viewModel.setPublic(false)
-        viewModel.publishing.first { !it }
+        viewModel.publishing.firstWithin { !it }
         watcher.cancel()
 
         assertTrue(seen.none { it is TierDetailUiState.Loading })
@@ -176,7 +176,7 @@ class TierDetailViewModelTest {
             FakeAccountRepositoryForDetail(signedIn = true),
             savedStateHandle(),
         )
-        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.state.firstWithin { it is TierDetailUiState.Success }
 
         viewModel.setPublic(true)
 
@@ -194,7 +194,7 @@ class TierDetailViewModelTest {
             FakeAccountRepositoryForDetail(signedIn = true),
             savedStateHandle(),
         )
-        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.state.firstWithin { it is TierDetailUiState.Success }
         viewModel.setPublic(true)
 
         viewModel.categoryNotChosen()
@@ -213,14 +213,14 @@ class TierDetailViewModelTest {
             FakeAccountRepositoryForDetail(signedIn = true),
             savedStateHandle(),
         )
-        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.state.firstWithin { it is TierDetailUiState.Success }
 
         viewModel.setCategory(ListCategory.Food)
-        viewModel.state.first {
+        viewModel.state.firstWithin {
             (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food
         }
         viewModel.setPublic(true)
-        viewModel.publishing.first { !it }
+        viewModel.publishing.firstWithin { !it }
 
         assertEquals(ListCategory.Food, community.published.single().category)
     }
@@ -236,13 +236,13 @@ class TierDetailViewModelTest {
             FakeAccountRepositoryForDetail(signedIn = true),
             savedStateHandle(),
         )
-        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.state.firstWithin { it is TierDetailUiState.Success }
         viewModel.setPublic(true)
 
         viewModel.setCategory(ListCategory.Food)
         // Waiting for the published id rather than for the pending flag to
         // clear: the flag has not been raised yet when setCategory returns.
-        viewModel.state.first { (it as? TierDetailUiState.Success)?.list?.publishedId != null }
+        viewModel.state.firstWithin { (it as? TierDetailUiState.Success)?.list?.publishedId != null }
 
         assertEquals(ListCategory.Food, community.published.single().category)
         assertFalse(viewModel.categoryWanted.value)
@@ -259,10 +259,10 @@ class TierDetailViewModelTest {
             FakeAccountRepositoryForDetail(signedIn = true),
             savedStateHandle(),
         )
-        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.state.firstWithin { it is TierDetailUiState.Success }
 
         viewModel.setCategory(ListCategory.Food)
-        viewModel.state.first { (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food }
+        viewModel.state.firstWithin { (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food }
 
         assertEquals(0, community.published.size)
     }
@@ -279,12 +279,12 @@ class TierDetailViewModelTest {
             FakeAccountRepositoryForDetail(signedIn = true),
             savedStateHandle(),
         )
-        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.state.firstWithin { it is TierDetailUiState.Success }
         viewModel.setPublic(true)
-        viewModel.publishing.first { !it }
+        viewModel.publishing.firstWithin { !it }
 
         viewModel.setCoverImageUrl("https://example.test/cover.jpg")
-        viewModel.state.first { (it as? TierDetailUiState.Success)?.list?.coverImageUrl != null }
+        viewModel.state.firstWithin { (it as? TierDetailUiState.Success)?.list?.coverImageUrl != null }
 
         assertEquals(PublishError.TooManyLists, viewModel.publishError.value)
     }
@@ -301,7 +301,7 @@ class TierDetailViewModelTest {
             FakeAccountRepositoryForDetail(signedIn = true),
             savedStateHandle(),
         )
-        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.state.firstWithin { it is TierDetailUiState.Success }
 
         viewModel.setPublic(true)
 
@@ -320,10 +320,10 @@ class TierDetailViewModelTest {
             FakeAccountRepositoryForDetail(signedIn = true),
             savedStateHandle(),
         )
-        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.state.firstWithin { it is TierDetailUiState.Success }
 
         viewModel.setPublic(true)
-        viewModel.publishing.first { !it }
+        viewModel.publishing.firstWithin { !it }
 
         assertEquals(PublishError.TooManyLists, viewModel.publishError.value)
     }
@@ -340,10 +340,10 @@ class TierDetailViewModelTest {
             FakeAccountRepositoryForDetail(signedIn = true),
             savedStateHandle(),
         )
-        viewModel.state.first { it is TierDetailUiState.Success }
+        viewModel.state.firstWithin { it is TierDetailUiState.Success }
 
         viewModel.setPublic(false)
-        viewModel.publishing.first { !it }
+        viewModel.publishing.firstWithin { !it }
 
         assertEquals(listOf("published-1"), community.unpublished)
         assertEquals(null, repository.publishedIds.single().second)
