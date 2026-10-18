@@ -10,6 +10,8 @@ import android.text.TextPaint
 import android.text.TextUtils
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.withClip
 import com.artiuillab.tieryourlife.feature.tier.board.common.parseTierColor
 import com.artiuillab.tieryourlife.feature.tier.board.common.rowTintFor
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.BAND_CAPTION_PADDING
@@ -75,7 +77,7 @@ object BoardPicture {
         val boardHeight = rows.sumOf { it.height.toDouble() }.toFloat() + ROW_GAP * max(0, rows.size - 1)
         val height = (headerHeight + boardHeight + PADDING + FOOTER_HEIGHT).toInt()
 
-        val bitmap = Bitmap.createBitmap(WIDTH, height, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(WIDTH, height)
         val canvas = Canvas(bitmap)
         canvas.drawColor(palette.surface.toArgb())
 
@@ -162,10 +164,9 @@ object BoardPicture {
 
         // The band, squared off where it meets the row.
         val bandPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = band.toArgb() }
-        canvas.save()
-        canvas.clipRect(left, top, left + bandWidth, bottom)
-        canvas.drawRoundRect(RectF(left, top, left + bandWidth + ROW_RADIUS, bottom), ROW_RADIUS, ROW_RADIUS, bandPaint)
-        canvas.restore()
+        canvas.withClip(left, top, left + bandWidth, bottom) {
+            drawRoundRect(RectF(left, top, left + bandWidth + ROW_RADIUS, bottom), ROW_RADIUS, ROW_RADIUS, bandPaint)
+        }
 
         val onBand = if (tier.isPool) palette.onSurfaceVariant else palette.onBand
         val labelSize = labelSizeFor(tier.label, bandWidth)
@@ -207,10 +208,8 @@ object BoardPicture {
             val frame = RectF(x, y, x + TILE_WIDTH, y + TILE_HEIGHT)
             val picture = pictures[item.id]
             if (picture != null) {
-                canvas.save()
-                canvas.clipPath(android.graphics.Path().apply { addRoundRect(frame, TILE_RADIUS, TILE_RADIUS, android.graphics.Path.Direction.CW) })
-                canvas.drawBitmap(picture, cover(picture, frame), frame, null)
-                canvas.restore()
+                val rounded = android.graphics.Path().apply { addRoundRect(frame, TILE_RADIUS, TILE_RADIUS, android.graphics.Path.Direction.CW) }
+                canvas.withClip(rounded) { drawBitmap(picture, cover(picture, frame), frame, null) }
             } else {
                 canvas.drawRoundRect(frame, TILE_RADIUS, TILE_RADIUS, placeholder)
                 drawTitle(canvas, item.title, frame, tileText)
