@@ -15,8 +15,7 @@ import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
-import com.artiuillab.tieryourlife.feature.tier.presentation.cover.CoverScreen
-import com.artiuillab.tieryourlife.navigation.TierYourLifeNavHost
+import com.artiuillab.tieryourlife.navigation.TierYourLifeContent
 
 @Composable
 fun AppRoot(
@@ -48,18 +47,12 @@ fun AppRoot(
                 shareable = activity?.isInMultiWindowMode == true,
             )
             CompositionLocalProvider(LocalWindowShape provides shape) {
-                // A cover screen gets its own screen rather than the app with
-                // most of its controls refusing.
-                if (shape.isGlanceable) {
-                    CoverScreen()
-                } else {
-                    TierYourLifeNavHost(
-                        themeChoice = state.themeChoice,
-                        onThemeChoiceChange = onThemeChoiceChange,
-                        languageTag = state.languageTag,
-                        onLanguageTagChange = onLanguageTagChange,
-                    )
-                }
+                TierYourLifeContent(
+                    themeChoice = state.themeChoice,
+                    onThemeChoiceChange = onThemeChoiceChange,
+                    languageTag = state.languageTag,
+                    onLanguageTagChange = onLanguageTagChange,
+                )
             }
         }
     }
