@@ -71,7 +71,7 @@ Place code where its audience is:
 | Code↔test contract (test tags) | `XTestTags.kt` in the screen package |
 | Helper consumed across screen packages | the module's `common/` |
 | Preview fixtures | one `XPreviewData.kt` per surface, in `components/` |
-| Fake of a port that tests in 2+ modules need | `testFixtures` of the module that owns the port (`FakeAppPreferences` in `core:settings`, `RecordingTierRepository` in `feature:tier:domain`) |
+| Fake of a port that tests in 2+ modules need | `testFixtures` of the module that owns the port (`FakeAppPreferences` in `core:settings`, `RecordingTierRepository` in `feature:tier:domain`, `FakeCommunityRepository` in `feature:community:domain`, `FakeAccountRepository` in `feature:account:domain`) |
 
 A screen file may keep: the entry, Content, `private` pieces used once, and previews.
 
@@ -83,6 +83,22 @@ nodes — a tag consumed by `catalogue` does not live in `tierdetail`'s object. 
 values are a contract with the instrumented tests: renaming a constant is free, changing
 a value means updating the tests in the same commit. Tags are the test channel;
 `contentDescription` is the accessibility channel — never conflate them.
+
+## Tests
+
+- **ViewModels run on the JVM**, in `src/test`, with `MainDispatcherRule` from
+  `core:testing` standing one thread in for the main thread. Real time, no virtual
+  clock: the same `runBlocking` test reads as it would on a phone.
+- **Exception:** a ViewModel that reads its route with `SavedStateHandle.toRoute()`
+  needs Android's `Bundle`, so its test stays in `androidTest` (AI Studio, TierDetail,
+  CommunityList, Author).
+- **Waiting for state** uses `firstWithin { }` from `core:testing`, never a bare
+  `first { }`: a state that never comes fails that one test with the last value seen,
+  instead of hanging the instrumentation job for an hour.
+- **Fakes** of shared ports are open classes with quiet defaults; a test overrides only
+  the calls it is about (`object : FakeCommunityRepository() { ... }`).
+- `androidTest` is for what needs a device: Compose UI, Room, the file system,
+  pictures.
 
 ## Previews
 
