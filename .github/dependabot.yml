@@ -1,0 +1,32 @@
+# Weekly and grouped: one PR per ecosystem a week reads; one per library is
+# noise that gets ignored. Each still has to pass CI before anyone merges it.
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      androidx:
+        patterns: ["androidx.*"]
+      kotlin:
+        patterns: ["org.jetbrains.kotlin*", "org.jetbrains.kotlinx*", "com.google.devtools.ksp*"]
+      firebase:
+        patterns: ["com.google.firebase*"]
+      everything-else:
+        patterns: ["*"]
+    commit-message:
+      prefix: "Dependencies:"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "CI actions:"
