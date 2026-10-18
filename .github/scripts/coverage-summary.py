@@ -16,4 +16,4 @@ for kind, missed, covered in re.findall(r'<counter type="(\w+)" missed="(\d+)" c
     if kind in ("LINE", "BRANCH", "METHOD"):
         missed, covered = int(missed), int(covered)
         print(f"| {kind.lower()} | {100 * covered / (missed + covered):.1f}% ({covered}/{missed + covered}) |")
-print("\nScreens, generated code and DAOs are measured by the emulator tests, not here.")
+print("\nEmulator tests (screens, Room, gestures) are not counted here; screens and generated code are left out.")
