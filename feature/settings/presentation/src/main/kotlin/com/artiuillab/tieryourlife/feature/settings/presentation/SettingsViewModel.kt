@@ -20,11 +20,11 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardBackup
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -41,30 +41,34 @@ class SettingsViewModel @Inject constructor(
     private val preferences: AppPreferences,
 ) : ViewModel() {
 
-    val account: StateFlow<Account> = accountRepository.account
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), Account.Unknown)
-
-    // Null while generation is not offered: a balance nobody can spend is a puzzle.
-    private val _credits = MutableStateFlow(
-        generationCredits.lastKnown().takeIf { Features.GENERATION_OFFERED },
+    private val _state = MutableStateFlow(
+        SettingsUiState(
+            // Null while generation is not offered: a balance nobody can spend is a puzzle.
+            credits = generationCredits.lastKnown().takeIf { Features.GENERATION_OFFERED },
+            trashCount = preferences.lastKnownTrashCount(),
+            pendingReports = preferences.lastKnownPendingReports(),
+        ),
     )
-    val credits: StateFlow<Int?> = _credits.asStateFlow()
+    val state: StateFlow<SettingsUiState> = _state.asStateFlow()
 
-    private val _trashCount = MutableStateFlow(preferences.lastKnownTrashCount())
-    val trashCount: StateFlow<Int> = _trashCount.asStateFlow()
+    private var credits: Int?
+        get() = _state.value.credits
+        set(value) = _state.update { it.copy(credits = value) }
+    private var trashCount: Int
+        get() = _state.value.trashCount
+        set(value) = _state.update { it.copy(trashCount = value) }
+    private var pendingReports: Int?
+        get() = _state.value.pendingReports
+        set(value) = _state.update { it.copy(pendingReports = value) }
+    private var backupSettings: BackupSettings?
+        get() = _state.value.backupSettings
+        set(value) = _state.update { it.copy(backupSettings = value) }
 
-    /**
-     * Null for everyone who is not the reader; being turned away is how the
-     * app finds out. Opens with the last answer, because it decides whether
-     * a row exists.
-     */
-    private val _pendingReports = MutableStateFlow(preferences.lastKnownPendingReports())
-    val pendingReports: StateFlow<Int?> = _pendingReports.asStateFlow()
-
-    private val _backupSettings = MutableStateFlow<BackupSettings?>(null)
-
-    /** Null until it has been read, and always null for a guest: there is nothing to say. */
-    val backupSettings: StateFlow<BackupSettings?> = _backupSettings.asStateFlow()
+    init {
+        viewModelScope.launch {
+            accountRepository.account.collect { account -> _state.update { it.copy(account = account) } }
+        }
+    }
 
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
@@ -76,8 +80,8 @@ class SettingsViewModel @Inject constructor(
      */
     fun loadBackupSettings() {
         viewModelScope.launch {
-            val settled = account.first { it !is Account.Unknown }
-            _backupSettings.value = if (settled is Account.SignedIn) backup.settings() else null
+            val settled = _state.map { it.account }.first { it !is Account.Unknown }
+            backupSettings = if (settled is Account.SignedIn) backup.settings() else null
         }
     }
 
@@ -103,7 +107,7 @@ class SettingsViewModel @Inject constructor(
         if (!Features.GENERATION_OFFERED) return
         viewModelScope.launch {
             logFailures("Reading generation credits") {
-                _credits.value = generationCredits.remaining()
+                credits = generationCredits.remaining()
             }
         }
     }
@@ -118,7 +122,7 @@ class SettingsViewModel @Inject constructor(
                 // Remembered before it is shown: the screen opens from what was remembered.
                 .onSuccess { reports ->
                     preferences.setLastKnownPendingReports(reports.size)
-                    _pendingReports.value = reports.size
+                    pendingReports = reports.size
                 }
         }
     }
@@ -128,7 +132,7 @@ class SettingsViewModel @Inject constructor(
             logFailures("Counting trashed entries") {
                 val count = repository.getTrashEntries().size
                 preferences.setLastKnownTrashCount(count)
-                _trashCount.value = count
+                trashCount = count
             }
         }
     }
@@ -147,5 +151,3 @@ class SettingsViewModel @Inject constructor(
         }
     }
 }
-
-private const val STOP_TIMEOUT_MILLIS = 5_000L

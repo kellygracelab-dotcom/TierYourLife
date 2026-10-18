@@ -35,7 +35,7 @@ class SettingsViewModelTest {
     fun theReportQueue_opensWithWhatItSaidLastTime() = runBlocking {
         val viewModel = viewModel(preferences = FakeAppPreferences(pendingReports = 4))
 
-        assertEquals(4, viewModel.pendingReports.value)
+        assertEquals(4, viewModel.state.value.pendingReports)
     }
 
     // The row is the moderator's way in. Losing it because the phone was on a
@@ -49,7 +49,7 @@ class SettingsViewModelTest {
 
         viewModel.loadPendingReports()
 
-        assertEquals(4, viewModel.pendingReports.value)
+        assertEquals(4, viewModel.state.value.pendingReports)
     }
 
     @Test
@@ -58,7 +58,7 @@ class SettingsViewModelTest {
         val viewModel = viewModel(preferences = preferences, community = FakeCommunity(waiting = 2))
 
         viewModel.loadPendingReports()
-        viewModel.pendingReports.firstWithin { it == 2 }
+        viewModel.state.firstWithin { it.pendingReports == 2 }
 
         assertEquals(2, preferences.lastKnownPendingReports())
     }
@@ -71,14 +71,14 @@ class SettingsViewModelTest {
 
         viewModel.loadPendingReports()
 
-        assertNull(viewModel.pendingReports.value)
+        assertNull(viewModel.state.value.pendingReports)
     }
 
     @Test
     fun theTrashCount_opensWithWhatItHeldLastTime() = runBlocking {
         val viewModel = viewModel(preferences = FakeAppPreferences(trashCount = 7))
 
-        assertEquals(7, viewModel.trashCount.value)
+        assertEquals(7, viewModel.state.value.trashCount)
     }
 
     /**
@@ -93,7 +93,7 @@ class SettingsViewModelTest {
         viewModel.loadBackupSettings()
         account.accounts.value = FakeAccountRepository.signedIn
 
-        assertNotNull(viewModel.backupSettings.firstWithin { it != null })
+        assertNotNull(viewModel.state.firstWithin { it.backupSettings != null }.backupSettings)
     }
 
     @Test
@@ -102,7 +102,7 @@ class SettingsViewModelTest {
 
         viewModel.loadBackupSettings()
 
-        assertNull(viewModel.backupSettings.value)
+        assertNull(viewModel.state.value.backupSettings)
     }
 
     private fun viewModel(

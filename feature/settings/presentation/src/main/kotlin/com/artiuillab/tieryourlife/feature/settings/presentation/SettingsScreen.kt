@@ -97,15 +97,16 @@ fun SettingsScreen(
     onLanguageTagChange: (String?) -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
-    val trashCount by viewModel.trashCount.collectAsStateWithLifecycle()
-    val pendingReports by viewModel.pendingReports.collectAsStateWithLifecycle()
-    val account by viewModel.account.collectAsStateWithLifecycle()
-    val credits by viewModel.credits.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val trashCount = state.trashCount
+    val pendingReports = state.pendingReports
+    val account = state.account
+    val credits = state.credits
     OnResumeEffect(onResume = viewModel::loadCredits)
     OnResumeEffect(onResume = viewModel::loadTrashCount)
     OnResumeEffect(onResume = viewModel::loadPendingReports)
     OnResumeEffect(onResume = viewModel::loadBackupSettings)
-    val backupSettings by viewModel.backupSettings.collectAsStateWithLifecycle()
+    val backupSettings = state.backupSettings
     var stoppingBackup by rememberSaveable { mutableStateOf(false) }
 
     val context = LocalContext.current
