@@ -105,6 +105,10 @@ a value means updating the tests in the same commit. Tags are the test channel;
   instead of hanging the instrumentation job for an hour.
 - **Fakes** of shared ports are open classes with quiet defaults; a test overrides only
   the calls it is about (`object : FakeCommunityRepository() { ... }`).
+- **Screenshots on the JVM:** `TierDetailScreenshotTest` draws the board with Robolectric
+  and Roborazzi and compares it with `feature/tier/board/src/test/screenshots/`. CI runs
+  `verifyRoborazziDebug`; a deliberate visual change re-records with
+  `./gradlew recordRoborazziDebug` and commits the new pictures with it.
 - `androidTest` is for what needs a device: Compose UI, Room, the file system,
   pictures.
 
