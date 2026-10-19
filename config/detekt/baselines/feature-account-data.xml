@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ReturnCount:FirebaseAccountRepository.kt:FirebaseAccountRepository$override suspend fun signInWithGoogle: SignInOutcome</ID>
+    <ID>TooGenericExceptionCaught:FirebaseAccountRepository.kt:FirebaseAccountRepository$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

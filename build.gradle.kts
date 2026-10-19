@@ -10,11 +10,19 @@ plugins {
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
     alias(libs.plugins.kover)
+    alias(libs.plugins.detekt) apply false
 }
 
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     apply(plugin = "org.jetbrains.kotlinx.kover")
+    apply(plugin = "dev.detekt")
+    extensions.configure<dev.detekt.gradle.extensions.DetektExtension> {
+        buildUponDefaultConfig.set(true)
+        config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+        // What was already here when detekt arrived, kept as listed debt; anything new fails.
+        baseline.set(rootProject.file("config/detekt/baselines/${path.removePrefix(":").replace(':', '-')}.xml"))
+    }
 }
 
 dependencies {

@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:CommunityFeedList.kt:@Composable internal fun CommunityFeedList</ID>
+    <ID>ReturnCount:CommunityFeedViewModelTest.kt:FakeFeedRepository$override suspend fun feed: Result&lt;CommunityPage&gt;</ID>
+    <ID>TooManyFunctions:CommunityFeedViewModel.kt:CommunityFeedViewModel : ViewModel</ID>
+  </CurrentIssues>
+</SmellBaseline>

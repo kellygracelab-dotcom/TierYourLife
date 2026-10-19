@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:TierListsScreen.kt:@Composable fun TierListsScreenContent</ID>
+    <ID>MagicNumber:CoverBoard.kt:0.114f</ID>
+    <ID>MagicNumber:CoverBoard.kt:0.299f</ID>
+    <ID>MagicNumber:CoverBoard.kt:0.587f</ID>
+    <ID>MagicNumber:HomeEmptyState.kt:0.114f</ID>
+    <ID>MagicNumber:HomeEmptyState.kt:0.299f</ID>
+    <ID>MagicNumber:HomeEmptyState.kt:0.587f</ID>
+    <ID>MagicNumber:HomeEmptyState.kt:0.5f</ID>
+    <ID>TooGenericExceptionCaught:TierDetailViewModel.kt:TierDetailViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:TierListsViewModel.kt:TierListsViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:TrashViewModel.kt:TrashViewModel$e: Exception</ID>
+    <ID>TooManyFunctions:TierDetailViewModel.kt:TierDetailViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:TierListsViewModel.kt:TierListsViewModel : ViewModel</ID>
+  </CurrentIssues>
+</SmellBaseline>

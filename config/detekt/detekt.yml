@@ -1,0 +1,39 @@
+# Built on detekt's defaults. What is changed here is noise for this codebase,
+# not a lowered bar: Compose and tests read differently from logic.
+
+style:
+  MagicNumber:
+    # Layout is numbers (dp, alpha, weights); tests are examples. Both are
+    # read where they stand, and naming every one would hide the picture.
+    excludes: ['**/test/**', '**/androidTest/**', '**/testFixtures/**']
+    ignoreAnnotated: ['Composable', 'Preview']
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+  MaxLineLength:
+    # ktlint owns formatting; two tools disagreeing about a line is no rule.
+    active: false
+  ReturnCount:
+    excludeGuardClauses: true
+    excludeReturnFromLambda: true
+
+naming:
+  FunctionNaming:
+    # Composables are nouns in PascalCase; tests are sentences.
+    ignoreAnnotated: ['Composable']
+    excludes: ['**/test/**', '**/androidTest/**', '**/testFixtures/**']
+  MatchingDeclarationName:
+    # ktlint's filename rule already says this, more precisely.
+    active: false
+
+complexity:
+  LongMethod:
+    # A screen's body is one long expression of layout, not a method doing
+    # many things; the logic around it is held to the bar.
+    ignoreAnnotated: ['Composable']
+    excludes: ['**/test/**', '**/androidTest/**']
+  TooManyFunctions:
+    excludes: ['**/test/**', '**/androidTest/**', '**/testFixtures/**']
+    ignorePrivate: true
+    ignoreOverridden: true
+  CyclomaticComplexMethod:
+    ignoreSimpleWhenEntries: true

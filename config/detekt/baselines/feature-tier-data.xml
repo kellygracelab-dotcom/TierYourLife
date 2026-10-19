@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>MagicNumber:MovieDtoMapper.kt:4</ID>
+    <ID>TooManyFunctions:BoardSyncDao.kt:BoardSyncDao</ID>
+    <ID>TooManyFunctions:TierDao.kt:TierDao</ID>
+  </CurrentIssues>
+</SmellBaseline>

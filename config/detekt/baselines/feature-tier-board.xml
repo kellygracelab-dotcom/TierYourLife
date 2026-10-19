@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:BoardPicture.kt:BoardPicture$private fun drawRow</ID>
+    <ID>CyclomaticComplexMethod:TierDetailScreenContent.kt:@Composable private fun TierScreenBody</ID>
+    <ID>CyclomaticComplexMethod:TierRow.kt:@Composable fun TierRow</ID>
+    <ID>CyclomaticComplexMethod:TrashTarget.kt:@Composable fun TrashTarget</ID>
+    <ID>LongMethod:BoardPicture.kt:BoardPicture$private fun drawRow</ID>
+    <ID>MagicNumber:BoardPicture.kt:BoardPicture$10f</ID>
+    <ID>MagicNumber:BoardPicture.kt:BoardPicture$12f</ID>
+    <ID>MagicNumber:BoardPicture.kt:BoardPicture$3</ID>
+    <ID>MagicNumber:BoardPicture.kt:BoardPicture$6f</ID>
+    <ID>MagicNumber:ColorMath.kt:0.03928</ID>
+    <ID>MagicNumber:ColorMath.kt:0.05</ID>
+    <ID>MagicNumber:ColorMath.kt:0.055</ID>
+    <ID>MagicNumber:ColorMath.kt:0.0722</ID>
+    <ID>MagicNumber:ColorMath.kt:0.2126</ID>
+    <ID>MagicNumber:ColorMath.kt:0.7152</ID>
+    <ID>MagicNumber:ColorMath.kt:1.055</ID>
+    <ID>MagicNumber:ColorMath.kt:12.92</ID>
+    <ID>MagicNumber:ColorMath.kt:2.4</ID>
+    <ID>MagicNumber:ColorMath.kt:Hsl$3f</ID>
+    <ID>MagicNumber:ColorMath.kt:Hsl$6f</ID>
+    <ID>MagicNumber:TierRowColors.kt:0xFF000000L</ID>
+    <ID>MagicNumber:TierRowColors.kt:16</ID>
+    <ID>MagicNumber:TierRowColors.kt:6</ID>
+    <ID>MagicNumber:TierRowColors.kt:8</ID>
+    <ID>TooManyFunctions:TierDetailTestTags.kt:TierDetailTestTags</ID>
+    <ID>TooManyFunctions:TierDragController.kt:TierDragController</ID>
+  </CurrentIssues>
+</SmellBaseline>
