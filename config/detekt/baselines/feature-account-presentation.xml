@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>TooGenericExceptionCaught:GoogleCredential.kt:CredentialManagerGoogleCredential$e: Exception</ID>
+    <ID>UnusedParameter:FaceSheet.kt:name: String?</ID>
+  </CurrentIssues>
+</SmellBaseline>

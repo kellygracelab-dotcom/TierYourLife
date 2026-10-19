@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>MagicNumber:EditingIcons.kt:1.6f</ID>
+    <ID>MagicNumber:EditingIcons.kt:12f</ID>
+    <ID>MagicNumber:EditingIcons.kt:16f</ID>
+    <ID>MagicNumber:EditingIcons.kt:4f</ID>
+    <ID>MagicNumber:EditingIcons.kt:8</ID>
+    <ID>MagicNumber:EditingIcons.kt:8f</ID>
+    <ID>TooGenericExceptionCaught:UserMessages.kt:e: Exception</ID>
+    <ID>TooManyFunctions:EditingIcons.kt:com.artiuillab.tieryourlife.core.theme.ui.EditingIcons.kt</ID>
+  </CurrentIssues>
+</SmellBaseline>

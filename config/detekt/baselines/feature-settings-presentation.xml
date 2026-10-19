@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>MagicNumber:BackupSection.kt:1023</ID>
+    <ID>MagicNumber:BackupSection.kt:1024</ID>
+    <ID>MagicNumber:BackupSection.kt:1024L</ID>
+  </CurrentIssues>
+</SmellBaseline>

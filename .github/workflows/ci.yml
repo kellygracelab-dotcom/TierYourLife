@@ -32,7 +32,7 @@ jobs:
       # assembleDebug is here on purpose: the app module has no unit tests, so
       # `test` alone never compiles it and a broken app module would go unnoticed.
       - name: Assemble, unit tests, static analysis, lint
-        run: ./gradlew assembleDebug test ktlintCheck lint checkModuleBoundaries koverXmlReport koverHtmlReport koverVerify
+        run: ./gradlew assembleDebug test ktlintCheck lint detekt checkModuleBoundaries koverXmlReport koverHtmlReport koverVerify
 
       - name: Coverage summary
         if: always()

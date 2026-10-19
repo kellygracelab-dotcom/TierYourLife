@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>MagicNumber:RetrofitCommunityRepository.kt:403</ID>
+    <ID>MagicNumber:RetrofitCommunityRepository.kt:409</ID>
+    <ID>MagicNumber:RetrofitCommunityRepository.kt:413</ID>
+    <ID>MagicNumber:RetrofitCommunityRepository.kt:422</ID>
+    <ID>TooGenericExceptionCaught:RetrofitCommunityRepository.kt:RetrofitCommunityRepository$e: Exception</ID>
+    <ID>TooManyFunctions:CommunityApi.kt:CommunityApi</ID>
+  </CurrentIssues>
+</SmellBaseline>
