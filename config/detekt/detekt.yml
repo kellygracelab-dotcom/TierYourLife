@@ -13,6 +13,7 @@ style:
     # ktlint owns formatting; two tools disagreeing about a line is no rule.
     active: false
   ReturnCount:
+    excludes: ['**/test/**', '**/androidTest/**', '**/testFixtures/**']
     excludeGuardClauses: true
     excludeReturnFromLambda: true
 
