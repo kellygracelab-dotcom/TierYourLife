@@ -68,6 +68,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    // A warning that only warns is read once; every one fails the build.
+    lint {
+        warningsAsErrors = true
+        abortOnError = true
+        // "A newer version exists" turns red on the day a library ships, with
+        // nothing in the code changed. Dependabot brings the updates instead.
+        disable += setOf("GradleDependency", "NewerVersionAvailable", "AndroidGradlePluginVersion")
+    }
     buildFeatures {
         compose = true
         buildConfig = true
