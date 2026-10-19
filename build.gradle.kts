@@ -60,3 +60,40 @@ kover {
         }
     }
 }
+
+// The module graph is the architecture, so it is checked like code. Read from
+// the build files' production dependencies; tests may reach wherever they need.
+val checkModuleBoundaries by tasks.registering {
+    group = "verification"
+    description = "Fails when a module depends on one its layer must not see."
+    val buildFiles = subprojects.filter { it.buildFile.exists() }.associate { it.path to it.buildFile }
+    inputs.files(buildFiles.values)
+    doLast {
+        val dependency = Regex("""^\s*(?:implementation|api|compileOnly)\(projects\.([A-Za-z.]+)\)""", RegexOption.MULTILINE)
+        fun isPresentation(path: String) = path.endsWith(":presentation") || path == ":feature:tier:board"
+        fun isData(path: String) = path.endsWith(":data")
+        fun isDomain(path: String) = path.endsWith(":domain")
+        fun featureOf(path: String) = path.split(":").getOrNull(2)
+
+        val problems = buildFiles.flatMap { (from, file) ->
+            dependency.findAll(file.readText()).map { ":" + it.groupValues[1].replace('.', ':') }.mapNotNull { to ->
+                when {
+                    to == ":app" -> "nothing depends on the app"
+                    to == ":navigation" && from != ":app" -> "only the app wires navigation"
+                    from == ":app" && isPresentation(to) -> "the app reaches screens through navigation only"
+                    from.startsWith(":core:") && !to.startsWith(":core:") -> "core sees no feature"
+                    isDomain(from) && !isDomain(to) -> "a domain depends on other domains only"
+                    isData(from) && (isPresentation(to) || isData(to)) -> "data sees neither screens nor another feature's data"
+                    isPresentation(from) && isData(to) -> "screens reach data through domain ports"
+                    isPresentation(from) && isPresentation(to) && featureOf(from) != featureOf(to) && to != ":feature:tier:board" ->
+                        "screens of one feature do not open another's; navigation wires them"
+                    else -> null
+                }?.let { rule -> "$from -> $to: $rule" }
+            }.toList()
+        }
+        if (problems.isNotEmpty()) {
+            throw GradleException("Module boundaries broken:\n" + problems.joinToString("\n") { "  $it" })
+        }
+        logger.lifecycle("Module boundaries hold across ${buildFiles.size} modules.")
+    }
+}
