@@ -37,7 +37,7 @@ kover {
         // The floor rises with the tests: raise it when they do, never lower it to pass.
         verify {
             rule {
-                minBound(27)
+                minBound(33)
             }
         }
         filters {
