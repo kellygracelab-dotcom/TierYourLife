@@ -32,7 +32,7 @@ jobs:
       # assembleDebug is here on purpose: the app module has no unit tests, so
       # `test` alone never compiles it and a broken app module would go unnoticed.
       - name: Assemble, unit tests, static analysis, lint
-        run: ./gradlew assembleDebug test ktlintCheck lint detekt checkModuleBoundaries koverXmlReport koverHtmlReport koverVerify
+        run: ./gradlew assembleDebug test ktlintCheck lint detekt checkModuleBoundaries verifyRoborazziDebug koverXmlReport koverHtmlReport koverVerify
 
       - name: Coverage summary
         if: always()
@@ -54,6 +54,7 @@ jobs:
             **/build/reports/tests/**
             **/build/reports/lint-results-*.html
             build/reports/kover/**
+            **/build/outputs/roborazzi/**
           retention-days: 7
 
   # Twenty emulator minutes for a change to a README read nothing new.
