@@ -1,7 +1,7 @@
 package com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.CardImageGenerator
@@ -12,11 +12,13 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class AiStudioViewModelTest {
+
+    @get:Rule
+    val main = MainDispatcherRule()
 
     @Test
     fun send_showsGeneratingThenResult() = runBlocking {

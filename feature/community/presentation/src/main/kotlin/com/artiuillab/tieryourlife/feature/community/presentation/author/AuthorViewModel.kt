@@ -3,14 +3,13 @@ package com.artiuillab.tieryourlife.feature.community.presentation.author
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.community.domain.model.EditorialAuthors
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.authorRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -53,7 +52,7 @@ class AuthorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val route = savedStateHandle.toRoute<CommunityRoute.Author>()
+    private val route = savedStateHandle.authorRoute()
 
     private val _state = MutableStateFlow<AuthorUiState>(AuthorUiState.Loading)
     val state: StateFlow<AuthorUiState> = _state.asStateFlow()

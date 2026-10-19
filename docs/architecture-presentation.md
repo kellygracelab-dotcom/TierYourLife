@@ -89,9 +89,11 @@ a value means updating the tests in the same commit. Tags are the test channel;
 - **ViewModels run on the JVM**, in `src/test`, with `MainDispatcherRule` from
   `core:testing` standing one thread in for the main thread. Real time, no virtual
   clock: the same `runBlocking` test reads as it would on a phone.
-- **Exception:** a ViewModel that reads its route with `SavedStateHandle.toRoute()`
-  needs Android's `Bundle`, so its test stays in `androidTest` (AI Studio, TierDetail,
-  CommunityList, Author).
+- **Routes without `Bundle`:** a ViewModel reads its route with the reader next to the
+  route type (`savedStateHandle.tierDetailRoute()`), not `toRoute()`, which goes through
+  Android's `Bundle` and would keep the test on an emulator. Each feature's
+  `RouteFromHandleTest` (instrumented, real `NavHost`) holds the reader equal to
+  `toRoute()`; add a case there when a route gains an argument.
 - **Waiting for state** uses `firstWithin { }` from `core:testing`, never a bare
   `first { }`: a state that never comes fails that one test with the last value seen,
   instead of hanging the instrumentation job for an hour.

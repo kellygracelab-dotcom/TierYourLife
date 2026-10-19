@@ -1,7 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
@@ -25,12 +25,14 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 // Instrumented because viewModelScope needs Android's main dispatcher.
-@RunWith(AndroidJUnit4::class)
 class TierDetailViewModelTest {
+
+    @get:Rule
+    val main = MainDispatcherRule()
 
     @Test
     fun addManualItem_withTitleOnly_addsToThePoolWithNoImage() = runBlocking {

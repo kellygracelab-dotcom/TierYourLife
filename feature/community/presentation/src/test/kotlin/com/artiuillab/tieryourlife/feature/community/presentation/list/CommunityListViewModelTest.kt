@@ -1,8 +1,8 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
+import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
@@ -19,8 +19,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 private val published = PublishedList(
     summary = PublishedListSummary(
@@ -39,8 +39,10 @@ private val published = PublishedList(
     items = listOf(TierItem(0, "Hereditary", null), TierItem(1, "Moonlight", "https://i/2.jpg")),
 )
 
-@RunWith(AndroidJUnit4::class)
 class CommunityListViewModelTest {
+
+    @get:Rule
+    val main = MainDispatcherRule()
 
     @Test
     fun opening_putsTheAuthorsCardsInThePool_andLeavesEveryTierEmpty() = runBlocking {
