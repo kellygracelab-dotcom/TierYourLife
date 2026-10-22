@@ -40,8 +40,9 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             add("testImplementation", libs.findLibrary("junit").get())
             add("testImplementation", project(":core:testing"))
             add("androidTestImplementation", project(":core:testing"))
-            add("androidTestImplementation", libs.findLibrary("androidx-espresso-core").get())
             add("androidTestImplementation", libs.findLibrary("androidx-junit").get())
+            // AndroidJUnitRunner itself, named above as the instrumentation runner.
+            add("androidTestImplementation", libs.findLibrary("androidx-test-runner").get())
         }
     }
 }
