@@ -9,7 +9,7 @@ android {
     namespace = "com.artiuillab.tieryourlife.feature.tier.data"
 
     sourceSets {
-        getByName("androidTest").assets.srcDirs("$projectDir/schemas")
+        getByName("androidTest").assets.directories.add("$projectDir/schemas")
     }
 }
 
