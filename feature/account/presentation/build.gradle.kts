@@ -22,9 +22,7 @@ dependencies {
     // tier side owns — the same domain-layer read across features.
     implementation(projects.feature.tier.domain)
     implementation(projects.feature.community.domain)
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.credentials)
@@ -33,8 +31,6 @@ dependencies {
     implementation(libs.play.services.base)
     implementation(libs.googleid)
     implementation(libs.coil.compose)
-    androidTestImplementation(testFixtures(projects.feature.community.domain))
-    androidTestImplementation(testFixtures(projects.feature.account.domain))
     testImplementation(testFixtures(projects.feature.community.domain))
     testImplementation(testFixtures(projects.feature.account.domain))
 }

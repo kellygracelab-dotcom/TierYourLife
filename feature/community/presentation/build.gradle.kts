@@ -17,17 +17,13 @@ dependencies {
     implementation(projects.feature.tier.domain)
     // A stranger's list is drawn by the board renderer.
     implementation(projects.feature.tier.board)
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
-    androidTestImplementation(testFixtures(projects.core.settings))
-    androidTestImplementation(testFixtures(projects.feature.tier.domain))
-    androidTestImplementation(testFixtures(projects.feature.community.domain))
-    testImplementation(testFixtures(projects.core.settings))
-    testImplementation(testFixtures(projects.feature.tier.domain))
-    testImplementation(testFixtures(projects.feature.community.domain))
+    // The same fakes serve the JVM tests and the emulator ones.
+    listOf(projects.core.settings, projects.feature.tier.domain, projects.feature.community.domain).forEach { owner ->
+        testImplementation(testFixtures(owner))
+        androidTestImplementation(testFixtures(owner))
+    }
 }

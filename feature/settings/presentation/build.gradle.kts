@@ -21,16 +21,14 @@ dependencies {
     implementation(projects.feature.community.domain)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
-    androidTestImplementation(testFixtures(projects.core.settings))
-    androidTestImplementation(testFixtures(projects.feature.tier.domain))
-    androidTestImplementation(testFixtures(projects.feature.community.domain))
-    androidTestImplementation(testFixtures(projects.feature.account.domain))
-    testImplementation(testFixtures(projects.core.settings))
+    // Preferences are faked on both sides; the rest only in the JVM tests.
+    testFixtures(projects.core.settings).let { preferences ->
+        testImplementation(preferences)
+        androidTestImplementation(preferences)
+    }
     testImplementation(testFixtures(projects.feature.tier.domain))
     testImplementation(testFixtures(projects.feature.community.domain))
     testImplementation(testFixtures(projects.feature.account.domain))
