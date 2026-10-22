@@ -27,7 +27,7 @@ subprojects {
 }
 
 dependencies {
-    subprojects.forEach { kover(it) }
+    subprojects.forEach { kover(dependencies.project(mapOf("path" to it.path))) }
 }
 
 // What the JVM tests cover of the logic. Screens are left out on purpose: the
@@ -72,7 +72,7 @@ kover {
 
 // The module graph is the architecture, so it is checked like code. Read from
 // the build files' production dependencies; tests may reach wherever they need.
-val checkModuleBoundaries by tasks.registering {
+tasks.register("checkModuleBoundaries") {
     group = "verification"
     description = "Fails when a module depends on one its layer must not see."
     val buildFiles = subprojects.filter { it.buildFile.exists() }.associate { it.path to it.buildFile }
