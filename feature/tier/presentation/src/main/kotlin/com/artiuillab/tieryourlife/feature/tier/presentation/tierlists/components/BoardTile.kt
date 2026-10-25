@@ -73,10 +73,12 @@ internal fun BoardTile(
                 coverImageUrl = list.coverImageUrl,
                 // A local photograph is drawn as it is on the board; only
                 // publishing needs a picture to have travelled.
-                previewImages = list.tiers
-                    .flatMap { tier -> tier.items }
-                    .mapNotNull { item -> item.imageUrl }
-                    .take(PREVIEW_IMAGES),
+                previewImages = list.coverImageUrls.ifEmpty {
+                    list.tiers
+                        .flatMap { tier -> tier.items }
+                        .mapNotNull { item -> item.imageUrl }
+                        .take(PREVIEW_IMAGES)
+                },
                 tierColors = list.tiers.filterNot { it.isPool }.map { it.colorLight }.take(TIER_COLOURS),
                 modifier = Modifier.fillMaxWidth().aspectRatio(ART_RATIO),
             )

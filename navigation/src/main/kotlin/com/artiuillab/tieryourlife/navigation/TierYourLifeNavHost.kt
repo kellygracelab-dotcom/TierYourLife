@@ -43,7 +43,10 @@ import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.navi
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.navigateToSettings
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.settingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.ADDED_ITEMS_RESULT_KEY
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.COVER_CHANGED_RESULT_KEY
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.coverPickerScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToCoverPicker
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTierDetail
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTrash
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailScreen
@@ -197,6 +200,15 @@ private fun NavContent(
                 }
             },
             onOpenAiStudio = { tierListId, listTitle -> navController.navigateToAiStudio(tierListId, listTitle) },
+            onChooseCover = { id -> navController.navigateToCoverPicker(id) },
+        )
+        coverPickerScreen(
+            onBack = { navController.popBackStack() },
+            // The board behind it reads its own row again rather than being told what changed.
+            onSaved = {
+                navController.previousBackStackEntry?.savedStateHandle?.set(COVER_CHANGED_RESULT_KEY, true)
+                navController.popBackStack()
+            },
         )
         settingsScreen(
             onBack = { navController.popBackStack() },

@@ -21,6 +21,7 @@ internal fun TierListEntity.toDomain(): TierList = TierList(
     authorName = authorName,
     category = ListCategory.fromId(category),
     coverImageUrl = coverImageUrl,
+    coverImageUrls = coverImageUrls.toCoverImageUrls(),
     arrivedFrom = arrivedFrom,
     editedAt = editedAt,
     favouritedAt = favouritedAt,
@@ -38,6 +39,7 @@ internal fun TierListWithTiers.toDomain(): TierList = TierList(
     authorName = tierList.authorName,
     category = ListCategory.fromId(tierList.category),
     coverImageUrl = tierList.coverImageUrl,
+    coverImageUrls = tierList.coverImageUrls.toCoverImageUrls(),
     arrivedFrom = tierList.arrivedFrom,
     editedAt = tierList.editedAt,
     favouritedAt = tierList.favouritedAt,
@@ -67,3 +69,11 @@ private fun TierItemEntity.toDomain(): TierItem = TierItem(
 
 private fun String.toTierItemSource(): TierItemSource =
     TierItemSource.entries.firstOrNull { it.name == this } ?: TierItemSource.MANUAL
+
+private const val SMALLEST_COLLAGE = 2
+
+/** One address per line: no URL has a line break in it, and a line needs no parser. */
+internal fun List<String>.toStoredCoverImageUrls(): String? =
+    takeIf { it.size >= SMALLEST_COLLAGE }?.joinToString("\n")
+
+internal fun String?.toCoverImageUrls(): List<String> = this?.lines()?.filter { it.isNotBlank() }.orEmpty()

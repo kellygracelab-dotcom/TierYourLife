@@ -14,11 +14,6 @@
     <string name="list_settings_category">الفئة</string>
     <string name="list_settings_category_none">لم تُختر بعد</string>
     <string name="list_settings_cover">الغلاف</string>
-    <string name="list_settings_cover_body">اختر إحدى بطاقات هذه القائمة أو صورة من معرضك.</string>
-    <string name="list_settings_cover_gallery">الاختيار من المعرض</string>
-    <string name="list_settings_cover_gallery_note">صورة من المعرض تذهب مع القائمة عند نشرها.</string>
-    <string name="list_settings_cover_no_cards">لا تحتوي أي بطاقة في هذه القائمة على صورة بعد.</string>
-    <string name="list_settings_cover_none">إزالة الغلاف</string>
     <string name="list_settings_cover_none_set">لا يوجد</string>
     <string name="list_settings_cover_set">مُختار</string>
     <string name="list_settings_public">عامة</string>

@@ -286,8 +286,8 @@ class TierDetailViewModelTest {
         viewModel.setPublic(true)
         viewModel.screen.firstWithin { !it.publish.publishing }
 
-        viewModel.setCoverImageUrl("https://example.test/cover.jpg")
-        viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.coverImageUrl != null }
+        viewModel.setCategory(ListCategory.Food)
+        viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food }
 
         assertEquals(PublishError.TooManyLists, viewModel.screen.value.publish.error)
     }
@@ -414,8 +414,8 @@ private class FakeTierRepository(
         list = list.copy(category = category)
     }
 
-    override suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?) {
-        list = list.copy(coverImageUrl = coverImageUrl)
+    override suspend fun setCover(id: Long, pictures: List<String>) {
+        list = list.copy(coverImageUrl = pictures.singleOrNull(), coverImageUrls = pictures.takeIf { it.size > 1 }.orEmpty())
     }
 
     override suspend fun createFromTemplate(

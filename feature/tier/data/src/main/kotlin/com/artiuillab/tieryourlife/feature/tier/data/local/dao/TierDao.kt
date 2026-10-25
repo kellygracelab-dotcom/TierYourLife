@@ -140,8 +140,10 @@ interface TierDao {
     @Query("UPDATE tier_lists SET favouritedAt = :at WHERE id = :id")
     suspend fun setFavouritedAt(id: Long, at: Long?)
 
-    @Query("UPDATE tier_lists SET coverImageUrl = :coverImageUrl WHERE id = :id")
-    suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?)
+    // Both columns in one statement: the edited-at trigger watches coverImageUrl,
+    // so a new collage stamps the board even while the single cover stays null.
+    @Query("UPDATE tier_lists SET coverImageUrl = :coverImageUrl, coverImageUrls = :coverImageUrls WHERE id = :id")
+    suspend fun setCover(id: Long, coverImageUrl: String?, coverImageUrls: String?)
 
     // The captions come from the caller: they are shown to the reader, so they
     // belong to a screen's resources and follow the language it is drawn in.

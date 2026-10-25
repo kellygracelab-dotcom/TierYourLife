@@ -306,6 +306,28 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    // A cover chosen before there were collages is the same cover afterwards, with no collage beside it.
+    @Test
+    fun migration10To11_leavesEveryExistingCoverAsItWas() {
+        helper.createDatabase(TEST_DB, 10).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, publishedFingerprint, " +
+                    "authorName, category, coverImageUrl, uid, arrivedFrom, editedAt, favouritedAt) " +
+                    "VALUES (1, 'Films', NULL, 'WRAP', NULL, NULL, NULL, NULL, 'https://example.test/cover.jpg', " +
+                    "'board-1', NULL, 1, NULL)",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 11, true, MIGRATION_10_11)
+
+        migratedDb.query("SELECT coverImageUrl, coverImageUrls FROM tier_lists WHERE id = 1").use {
+            check(it.moveToFirst())
+            assertEquals("https://example.test/cover.jpg", it.getString(0))
+            assertTrue("no collage was ever chosen", it.isNull(1))
+        }
+    }
+
     private fun editedAt(db: androidx.sqlite.db.SupportSQLiteDatabase): Long =
         db.query("SELECT editedAt FROM tier_lists WHERE id = 1").use {
             check(it.moveToFirst())

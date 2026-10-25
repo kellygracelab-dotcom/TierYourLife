@@ -29,6 +29,8 @@ data class TierListEntity(
     val authorName: String? = null,
     val category: String? = null,
     val coverImageUrl: String? = null,
+    /** The chosen collage, one web address per line; null while the cover is one picture or left to the cards. */
+    val coverImageUrls: String? = null,
     /** Stable across devices, unlike [id], this database's own counter. */
     @ColumnInfo(defaultValue = "''")
     val uid: String = UUID.randomUUID().toString(),

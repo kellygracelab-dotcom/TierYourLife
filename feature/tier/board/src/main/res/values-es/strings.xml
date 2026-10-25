@@ -14,11 +14,6 @@
     <string name="list_settings_category">Categoría</string>
     <string name="list_settings_category_none">Aún sin elegir</string>
     <string name="list_settings_cover">Portada</string>
-    <string name="list_settings_cover_body">Elige una de las tarjetas de la lista o una imagen de tu galería.</string>
-    <string name="list_settings_cover_gallery">Elegir de la galería</string>
-    <string name="list_settings_cover_gallery_note">Una imagen de la galería viaja con la lista cuando la publicas.</string>
-    <string name="list_settings_cover_no_cards">Ninguna tarjeta de la lista tiene imagen todavía.</string>
-    <string name="list_settings_cover_none">Quitar portada</string>
     <string name="list_settings_cover_none_set">Ninguna</string>
     <string name="list_settings_cover_set">Elegida</string>
     <string name="list_settings_public">Pública</string>
