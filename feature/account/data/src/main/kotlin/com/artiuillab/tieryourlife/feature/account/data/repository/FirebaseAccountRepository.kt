@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.account.data.repository
 
 import androidx.core.net.toUri
+import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
@@ -11,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -50,7 +52,7 @@ class FirebaseAccountRepository @Inject constructor(
         if (guest != null) {
             // Taken before anything is attempted: if the sign-in becomes a switch
             // of identity, this is the only proof left that the guest was this person.
-            val guestToken = runCatching { guest.getIdToken(false).await().token }.getOrNull()
+            val guestToken = runSuspendCatching { guest.getIdToken(false).await().token }.getOrNull()
             try {
                 guest.linkWithCredential(credential).await()
                 adoptGoogleProfile()
@@ -58,6 +60,8 @@ class FirebaseAccountRepository @Inject constructor(
             } catch (e: FirebaseAuthUserCollisionException) {
                 Timber.i(e, "Google account already in use; signing into it instead")
                 return signInToExisting(credential, guestToken)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Timber.w(e, "Could not link the Google account")
                 return SignInOutcome.Failed
@@ -68,6 +72,8 @@ class FirebaseAccountRepository @Inject constructor(
             auth.signInWithCredential(credential).await()
             adoptGoogleProfile()
             SignInOutcome.Success
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Timber.w(e, "Could not sign in with Google")
             SignInOutcome.Failed
@@ -84,6 +90,8 @@ class FirebaseAccountRepository @Inject constructor(
         // moment anybody can say whose balance it was.
         val carried = guestToken != null && guestCredits.carryOver(guestToken)
         SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = carried)
+    } catch (e: CancellationException) {
+        throw e
     } catch (e: Exception) {
         Timber.w(e, "Could not sign into the existing Google account")
         SignInOutcome.Failed
@@ -101,6 +109,8 @@ class FirebaseAccountRepository @Inject constructor(
             user.getIdToken(true).await()
             profileEdits.tryEmit(Unit)
             true
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Timber.w(e, "Could not save the display name")
             false
@@ -117,6 +127,8 @@ class FirebaseAccountRepository @Inject constructor(
             user.getIdToken(true).await()
             profileEdits.tryEmit(Unit)
             true
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Timber.w(e, "Could not save the profile photo")
             false
@@ -125,7 +137,7 @@ class FirebaseAccountRepository @Inject constructor(
 
     override suspend fun signOut() {
         auth.signOut()
-        runCatching { auth.signInAnonymously().await() }
+        runSuspendCatching { auth.signInAnonymously().await() }
             .onFailure { Timber.w(it, "Could not return to a guest identity") }
     }
 
@@ -146,6 +158,8 @@ class FirebaseAccountRepository @Inject constructor(
             ).await()
             user.getIdToken(true).await()
             profileEdits.tryEmit(Unit)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Timber.w(e, "Could not copy the Google profile across")
         }

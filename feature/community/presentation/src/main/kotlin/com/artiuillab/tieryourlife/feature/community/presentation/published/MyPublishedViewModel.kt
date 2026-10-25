@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.published
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -51,7 +52,7 @@ class MyPublishedViewModel @Inject constructor(
 
     fun load() {
         viewModelScope.launch {
-            val standing = runCatching { tiers.publishedStanding() }
+            val standing = runSuspendCatching { tiers.publishedStanding() }
                 .onFailure { Timber.w(it, "Comparing published copies failed") }
                 .getOrDefault(PublishedStanding())
             _state.value = community.myPublished().fold(
@@ -104,7 +105,7 @@ class MyPublishedViewModel @Inject constructor(
 
         _state.value = shown.copy(updating = publishedId)
         viewModelScope.launch {
-            val board = runCatching { tiers.boardPublishedAs(publishedId) }
+            val board = runSuspendCatching { tiers.boardPublishedAs(publishedId) }
                 .onFailure { Timber.w(it, "Finding the board behind $publishedId failed") }
                 .getOrNull()
             if (board == null) {
@@ -114,7 +115,7 @@ class MyPublishedViewModel @Inject constructor(
             }
             community.publish(board).fold(
                 onSuccess = { published ->
-                    runCatching { tiers.setPublished(board.id, published.id, published.fingerprint) }
+                    runSuspendCatching { tiers.setPublished(board.id, published.id, published.fingerprint) }
                         .onFailure { Timber.w(it, "Recording the update of $publishedId failed") }
                     // Sent, so it is neither behind nor unknown any more.
                     _state.value = shown.copy(updating = null, behind = shown.behind - publishedId)
@@ -129,12 +130,12 @@ class MyPublishedViewModel @Inject constructor(
     }
 
     private suspend fun forgetLocally(publishedId: String) {
-        val mine = runCatching { tiers.getAllTierLists() }
+        val mine = runSuspendCatching { tiers.getAllTierLists() }
             .onFailure { Timber.w(it, "Reading boards to forget $publishedId failed") }
             .getOrNull().orEmpty()
         mine.firstOrNull { it.publishedId == publishedId }
             ?.let { board ->
-                runCatching { tiers.setPublished(board.id, null, null) }
+                runSuspendCatching { tiers.setPublished(board.id, null, null) }
                     .onFailure { Timber.w(it, "Forgetting $publishedId on this phone failed") }
             }
     }

@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
@@ -112,7 +113,7 @@ class AiStudioViewModel @Inject constructor(
     }
 
     private suspend fun completeGeneration(exchangeId: Long, prompt: String) {
-        val outcome = runCatching { generator.generate(prompt) }
+        val outcome = runSuspendCatching { generator.generate(prompt) }
             .onFailure { error -> Timber.w(error, "Image generation failed") }
             .getOrDefault(GenerationOutcome.Failed)
 
@@ -142,7 +143,7 @@ class AiStudioViewModel @Inject constructor(
 
     private fun refreshCredits() {
         viewModelScope.launch {
-            val remaining = runCatching { credits.remaining() }.getOrNull()
+            val remaining = runSuspendCatching { credits.remaining() }.getOrNull()
             if (remaining != null) {
                 _state.update { it.copy(credits = remaining) }
             }

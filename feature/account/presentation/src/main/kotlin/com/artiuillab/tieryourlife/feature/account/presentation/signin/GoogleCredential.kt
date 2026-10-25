@@ -8,6 +8,7 @@ import androidx.credentials.exceptions.NoCredentialException
 import com.artiuillab.tieryourlife.feature.account.domain.signin.GoogleWebClientId
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import kotlinx.coroutines.CancellationException
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -50,6 +51,8 @@ class CredentialManagerGoogleCredential @Inject constructor(
             GoogleCredentialResult.Cancelled
         } catch (_: NoCredentialException) {
             GoogleCredentialResult.NoGoogleAccount
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Timber.w(e, "The account picker failed")
             GoogleCredentialResult.Unavailable

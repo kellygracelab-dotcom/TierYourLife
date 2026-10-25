@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
+import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
@@ -67,23 +68,23 @@ class BoardSyncEngine @Inject constructor(
 
         // Pictures before boards, so no board ever names a picture the other
         // phone cannot fetch yet.
-        runCatching { pictures.push() }
+        runSuspendCatching { pictures.push() }
             .onFailure { failure -> Timber.w(failure, "Pictures did not go up") }
 
         var carried = 0
         var refused = 0
         steps.forEach { step ->
-            runCatching { carry(step, fingerprints) }
+            runSuspendCatching { carry(step, fingerprints) }
                 .onSuccess { carried++ }
                 .onFailure { failure ->
                     refused++
                     Timber.w(failure, "Board sync: %s did not go through", step.uid)
                 }
         }
-        runCatching { pictures.pull(wantedPictures()) }
+        runSuspendCatching { pictures.pull(wantedPictures()) }
             .onFailure { failure -> Timber.w(failure, "Pictures did not come down") }
 
-        runCatching { forgetWhatIsNoLongerPublished() }
+        runSuspendCatching { forgetWhatIsNoLongerPublished() }
             .onFailure { failure -> Timber.w(failure, "Could not reconcile what is published") }
 
         // Only after a complete run: a partial one leaves the account behind,
@@ -195,7 +196,7 @@ class BoardSyncEngine @Inject constructor(
     private fun conflictBoard(answer: Response<*>): KeptBoardDto? {
         if (answer.code() != HTTP_CONFLICT) return null
         val body = answer.errorBody()?.string() ?: return null
-        return runCatching { json.decodeFromString<BoardConflictDto>(body).board }.getOrNull()
+        return runSuspendCatching { json.decodeFromString<BoardConflictDto>(body).board }.getOrNull()
     }
 
     /** The account's copy replaces what is here, uid and all. */
