@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.sync
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
@@ -29,7 +30,7 @@ class PictureVault @Inject constructor(
 
     override suspend fun put(pictureId: String, bytes: ByteArray): Boolean {
         val reference = referenceTo(pictureId) ?: return false
-        return runSuspendCatching { reference.putBytes(bytes).await() }
+        return runSuspendCatching { reference.putBytes(bytes, pictureMetadata()).await() }
             .onFailure { Timber.w(it, "Uploading picture $pictureId failed") }
             .isSuccess
     }
@@ -52,3 +53,8 @@ class PictureVault @Inject constructor(
         const val MAX_PICTURE_BYTES = 4L * 1024 * 1024
     }
 }
+
+/** What the store writes. The rules admit images only, and bytes sent without a type arrive as an octet stream and are turned away. */
+internal const val PICTURE_CONTENT_TYPE = "image/jpeg"
+
+internal fun pictureMetadata(): StorageMetadata = StorageMetadata.Builder().setContentType(PICTURE_CONTENT_TYPE).build()
