@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,8 +26,14 @@ class SyncOnReconnect @Inject constructor(
     fun start() {
         scope.launch {
             connection.available.collect {
-                runCatching { boardSync.sync() }
-                    .onFailure { failure -> Timber.d(failure, "Sync on reconnect did not finish") }
+                runCatching { boardSync.sync() }.onFailure { failure ->
+                    // A dropped connection is ordinary here; anything else is a bug nobody would see.
+                    if (failure is IOException) {
+                        Timber.i(failure, "Sync on reconnect lost the connection")
+                    } else {
+                        Timber.w(failure, "Sync on reconnect failed")
+                    }
+                }
             }
         }
     }

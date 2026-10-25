@@ -7,6 +7,7 @@ import com.artiuillab.tieryourlife.feature.aistudio.domain.generation.Generation
 import com.artiuillab.tieryourlife.feature.aistudio.domain.model.GeneratedCardImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
@@ -34,7 +35,7 @@ class ProxyCardImageGenerator @Inject constructor(
             return if (response.code() == HTTP_PAYMENT_REQUIRED) {
                 GenerationOutcome.OutOfCredits
             } else {
-                Timber.w("Generating a card was refused with %d", response.code())
+                Timber.w(HttpException(response), "Generating a card was refused")
                 GenerationOutcome.Failed
             }
         }
@@ -43,7 +44,7 @@ class ProxyCardImageGenerator @Inject constructor(
         // empty is worth naming rather than folding into the same Failed.
         val bytes = response.body()?.use { it.bytes() }
         if (bytes == null || bytes.isEmpty()) {
-            Timber.w("The server accepted the generation and sent back no image")
+            Timber.w(IllegalStateException("Empty image body"), "The server accepted the generation and sent back no image")
             return GenerationOutcome.Failed
         }
 

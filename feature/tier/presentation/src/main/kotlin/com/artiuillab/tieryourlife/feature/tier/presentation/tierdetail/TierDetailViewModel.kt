@@ -88,7 +88,9 @@ class TierDetailViewModel @Inject constructor(
 
     private fun refreshPublishedStanding() {
         viewModelScope.launch {
-            val standing = runCatching { repository.publishedStanding() }.getOrNull() ?: return@launch
+            val standing = runCatching { repository.publishedStanding() }
+                .onFailure { Timber.w(it, "Comparing the published copy failed") }
+                .getOrNull() ?: return@launch
             val id = (board as? TierDetailUiState.Success)?.list?.publishedId
             publishedIsBehind = id != null && id in standing.knownBehind
         }
@@ -160,6 +162,7 @@ class TierDetailViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching { repository.getAllTierLists() }
                 .onSuccess { lists -> allLists = lists }
+                .onFailure { Timber.w(it, "Reading the lists beside this board failed") }
         }
     }
 
