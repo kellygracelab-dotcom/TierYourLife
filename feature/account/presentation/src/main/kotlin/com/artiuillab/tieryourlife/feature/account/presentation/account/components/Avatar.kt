@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -63,7 +64,8 @@ private val EDIT_BADGE = 32.dp
 
 /**
  * The badge is honest now: the picture is one the reader chose here, not one
- * Google owns and we could only display.
+ * Google owns and we could only display. While a photo is on its way the badge
+ * shows that instead of a pencil, and a second tap does nothing.
  */
 @Composable
 internal fun ProfileAvatar(
@@ -71,6 +73,7 @@ internal fun ProfileAvatar(
     name: String?,
     onEdit: () -> Unit,
     modifier: Modifier = Modifier,
+    busy: Boolean = false,
 ) {
     val description = stringResource(R.string.account_cd_change_face)
     Box(modifier.size(AVATAR_LARGE)) {
@@ -81,12 +84,20 @@ internal fun ProfileAvatar(
                 .size(EDIT_BADGE)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.secondaryContainer)
-                .clickable(onClick = onEdit)
+                .clickable(enabled = !busy, onClick = onEdit)
                 .semantics { contentDescription = description }
                 .testTag(AccountTestTags.EDIT_FACE),
             contentAlignment = Alignment.Center,
         ) {
-            PencilIcon(16.dp, MaterialTheme.colorScheme.onSecondaryContainer)
+            if (busy) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(16.dp),
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    strokeWidth = 2.dp,
+                )
+            } else {
+                PencilIcon(16.dp, MaterialTheme.colorScheme.onSecondaryContainer)
+            }
         }
     }
 }

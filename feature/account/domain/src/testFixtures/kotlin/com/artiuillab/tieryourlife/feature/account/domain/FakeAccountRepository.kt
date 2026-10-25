@@ -14,6 +14,7 @@ open class FakeAccountRepository(
 ) : AccountRepository {
 
     val tokens = mutableListOf<String>()
+    val photoUrls = mutableListOf<String?>()
     val accounts = MutableStateFlow(initial)
 
     override val account: Flow<Account> = accounts
@@ -28,7 +29,10 @@ open class FakeAccountRepository(
 
     override suspend fun setDisplayName(name: String): Boolean = true
 
-    override suspend fun setPhotoUrl(photoUrl: String?): Boolean = true
+    override suspend fun setPhotoUrl(photoUrl: String?): Boolean {
+        photoUrls += photoUrl
+        return true
+    }
 
     override suspend fun signOut() {
         onSignOut()
