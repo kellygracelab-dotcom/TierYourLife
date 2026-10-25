@@ -26,6 +26,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncedBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.planSync
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
+import retrofit2.HttpException
 import retrofit2.Response
 import timber.log.Timber
 import java.util.UUID
@@ -171,13 +172,12 @@ class BoardSyncEngine @Inject constructor(
         val answer = api.keep(uid, request(board, fingerprint, basedOn))
 
         if (answer.isSuccessful) {
-            val revision = answer.body()?.revision ?: return
+            val revision = answer.body()?.revision ?: error("The account kept $uid but named no revision")
             return remember(uid, revision, fingerprint)
         }
-        val theirs = conflictBoard(answer) ?: run {
-            Timber.w("Board sync: the account would not take %s (%d)", uid, answer.code())
-            return
-        }
+        // Thrown rather than logged and returned: the run counts it as refused,
+        // so the last-synced time stays put and the stuck banner can show.
+        val theirs = conflictBoard(answer) ?: throw HttpException(answer)
 
         // Our own board coming back: the last write's answer never arrived.
         // Same content, so take the missed number and stop -- otherwise a
@@ -188,9 +188,8 @@ class BoardSyncEngine @Inject constructor(
 
         adopt(theirs, asCopy = true)
         val second = api.keep(uid, request(board, fingerprint, basedOn = theirs.revision))
-        if (second.isSuccessful) {
-            second.body()?.let { remember(uid, it.revision, fingerprint) }
-        }
+        if (!second.isSuccessful) throw HttpException(second)
+        second.body()?.let { remember(uid, it.revision, fingerprint) }
     }
 
     private fun conflictBoard(answer: Response<*>): KeptBoardDto? {

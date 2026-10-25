@@ -130,10 +130,19 @@ class AccountViewModel @Inject constructor(
         askAboutMergeIfNeeded()
     }
 
-    /** Asked only when both sides hold something; an empty account takes this phone's boards silently. */
+    /**
+     * Asked only when both sides hold something; an empty account takes this
+     * phone's boards silently. An account that cannot be read is not taken for
+     * an empty one: signing in is undone and can be tried again, rather than
+     * merging two libraries nobody was asked about.
+     */
     private suspend fun askAboutMergeIfNeeded() {
         if (!preferences.backUpBoards()) return
-        val choice = merge.choice()
+        val choice = merge.choice() ?: run {
+            repository.signOut()
+            finish(AccountNotice.SignInFailed)
+            return
+        }
         if (choice.needed) {
             _state.update { it.copy(merge = choice, mergeKeep = MergeKeep.Everything) }
         }
