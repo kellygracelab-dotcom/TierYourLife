@@ -41,6 +41,8 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.MoreIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -54,6 +56,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Rep
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private val PORTRAIT_SIZE = 80.dp
@@ -77,6 +81,7 @@ fun AuthorScreen(
         },
         onReport = viewModel::report,
         onToggleFollow = viewModel::toggleFollow,
+        userMessages = viewModel.userMessages,
     )
 }
 
@@ -91,6 +96,7 @@ fun AuthorScreenContent(
     onHideAuthor: () -> Unit = {},
     onReport: (id: String, title: String, ReportReason, String?) -> Unit = { _, _, _, _ -> },
     onToggleFollow: () -> Unit = {},
+    userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     var authorActionsVisible by remember { mutableStateOf(false) }
     var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
@@ -98,6 +104,7 @@ fun AuthorScreenContent(
     var reportedFrom by remember { mutableStateOf<PublishedListSummary?>(null) }
 
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
+        ActionFailedSnackbar(userMessages)
         Column(Modifier.fillMaxSize().testTag(AuthorTestTags.SCREEN)) {
             AuthorTopBar(
                 onBack = onBack,

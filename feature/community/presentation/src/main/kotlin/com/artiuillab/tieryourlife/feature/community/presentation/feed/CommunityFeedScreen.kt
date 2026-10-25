@@ -17,7 +17,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
+import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.HomeTopBar
 import com.artiuillab.tieryourlife.core.theme.ui.OnResumeEffect
 import com.artiuillab.tieryourlife.core.theme.ui.SearchTopBar
@@ -31,6 +33,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Lis
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 /**
  * The community half of the home screen: everybody's published lists, or the
@@ -69,6 +73,7 @@ fun CommunityFeedScreen(
         onHideAuthor = viewModel::hideAuthor,
         onReportList = viewModel::report,
         tabs = tabs,
+        userMessages = viewModel.userMessages,
     )
 }
 
@@ -92,6 +97,7 @@ fun CommunityFeedScreenContent(
     onHideAuthor: (uid: String, name: String) -> Unit = { _, _ -> },
     onReportList: (PublishedListSummary, ReportReason, String?) -> Unit = { _, _, _ -> },
     tabs: @Composable () -> Unit = {},
+    userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val hasRail = currentWindowShape.hasRail
     val searching = state.query != null
@@ -102,6 +108,7 @@ fun CommunityFeedScreenContent(
     BackHandler(enabled = searching, onBack = onCloseSearch)
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
+        ActionFailedSnackbar(userMessages)
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize()) {
                 if (searching) {

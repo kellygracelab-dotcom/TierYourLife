@@ -3,6 +3,8 @@ package com.artiuillab.tieryourlife.feature.community.presentation.feed
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
@@ -15,6 +17,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,6 +32,9 @@ class CommunityFeedViewModel @Inject constructor(
     private val community: CommunityRepository,
     private val preferences: AppPreferences,
 ) : ViewModel() {
+
+    private val messages = UserMessages()
+    val userMessages: Flow<UserMessage> = messages.flow
 
     private val _state = MutableStateFlow(CommunityFeedUiState())
     val state: StateFlow<CommunityFeedUiState> = _state.asStateFlow()
@@ -251,8 +257,17 @@ class CommunityFeedViewModel @Inject constructor(
         preferences.hideList(summary.id, summary.title)
         noteHidden(summary.id, reported = true)
         viewModelScope.launch {
-            community.report(summary.id, reason, note)
-                .onFailure { Timber.w(it, "Could not file the report") }
+            community.report(summary.id, reason, note).onFailure {
+                Timber.w(it, "Could not file the report")
+                // Back on screen, so it can be reported again; hidden, it never could.
+                preferences.unhideList(summary.id)
+                val current = feed as? CommunityFeed.Ready
+                if (current != null) {
+                    feed = current.copy(justHidden = current.justHidden - summary.id)
+                    emit()
+                }
+                messages.send(UserMessage.ActionFailed)
+            }
         }
     }
 

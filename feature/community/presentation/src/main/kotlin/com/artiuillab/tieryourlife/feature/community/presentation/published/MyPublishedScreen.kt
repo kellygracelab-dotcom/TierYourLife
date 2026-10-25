@@ -42,12 +42,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
+import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CoverIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 
@@ -65,6 +69,7 @@ fun MyPublishedScreen(
         onTakeDown = viewModel::takeDown,
         onUpdate = viewModel::update,
         onRetry = viewModel::load,
+        userMessages = viewModel.userMessages,
     )
 }
 
@@ -76,8 +81,10 @@ fun MyPublishedScreenContent(
     onTakeDown: (String) -> Unit = {},
     onUpdate: (String) -> Unit = {},
     onRetry: () -> Unit = {},
+    userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
+        ActionFailedSnackbar(userMessages)
         Column(Modifier.fillMaxSize().testTag(MyPublishedTestTags.SCREEN)) {
             TopBar(onBack)
 

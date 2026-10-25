@@ -172,8 +172,12 @@ class CommunityListViewModel @Inject constructor(
     fun report(reason: ReportReason, note: String?) {
         hide()
         viewModelScope.launch {
-            community.report(publishedId, reason, note)
-                .onFailure { Timber.w(it, "Could not file the report") }
+            community.report(publishedId, reason, note).onFailure {
+                Timber.w(it, "Could not file the report")
+                // Shown again in the feed, so it can be reported again; hidden, it never could.
+                preferences.unhideList(publishedId)
+                messages.send(UserMessage.ActionFailed)
+            }
         }
     }
 
