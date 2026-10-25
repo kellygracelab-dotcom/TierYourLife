@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
+import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +27,7 @@ class SyncOnReconnect @Inject constructor(
     fun start() {
         scope.launch {
             connection.available.collect {
-                runCatching { boardSync.sync() }.onFailure { failure ->
+                runSuspendCatching { boardSync.sync() }.onFailure { failure ->
                     // A dropped connection is ordinary here; anything else is a bug nobody would see.
                     if (failure is IOException) {
                         Timber.i(failure, "Sync on reconnect lost the connection")

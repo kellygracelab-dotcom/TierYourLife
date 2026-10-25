@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
+import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
@@ -28,7 +29,7 @@ class PictureVault @Inject constructor(
 
     override suspend fun put(pictureId: String, bytes: ByteArray): Boolean {
         val reference = referenceTo(pictureId) ?: return false
-        return runCatching { reference.putBytes(bytes).await() }
+        return runSuspendCatching { reference.putBytes(bytes).await() }
             .onFailure { Timber.w(it, "Uploading picture $pictureId failed") }
             .isSuccess
     }
@@ -36,7 +37,7 @@ class PictureVault @Inject constructor(
     override suspend fun get(pictureId: String): ByteArray? {
         val reference = referenceTo(pictureId) ?: return null
         // Info, not a warning: a picture not uploaded yet is an ordinary miss.
-        return runCatching { reference.getBytes(MAX_PICTURE_BYTES).await() }
+        return runSuspendCatching { reference.getBytes(MAX_PICTURE_BYTES).await() }
             .onFailure { Timber.i(it, "Downloading picture $pictureId failed") }
             .getOrNull()
     }

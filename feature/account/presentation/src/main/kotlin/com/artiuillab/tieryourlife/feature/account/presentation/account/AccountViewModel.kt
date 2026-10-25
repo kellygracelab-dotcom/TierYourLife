@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.account.presentation.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
@@ -189,7 +190,7 @@ class AccountViewModel @Inject constructor(
             ?.size
             // Unknown is not zero: the last count stands rather than "0 public lists".
             ?: _state.value.publicListCount
-        val faces = runCatching { ownLists.cardImages(FACE_CHOICE_LIMIT) }
+        val faces = runSuspendCatching { ownLists.cardImages(FACE_CHOICE_LIMIT) }
             .onFailure { Timber.w(it, "Reading card pictures failed") }
             .getOrDefault(emptyList())
         _state.update {
@@ -225,7 +226,7 @@ class AccountViewModel @Inject constructor(
     private suspend fun refreshCredits() {
         if (!Features.GENERATION_OFFERED) return
         if (_state.value.account !is Account.SignedIn) return
-        val remaining = runCatching { credits.remaining() }.getOrNull()
+        val remaining = runSuspendCatching { credits.remaining() }.getOrNull()
         _state.update { it.copy(credits = remaining) }
     }
 }

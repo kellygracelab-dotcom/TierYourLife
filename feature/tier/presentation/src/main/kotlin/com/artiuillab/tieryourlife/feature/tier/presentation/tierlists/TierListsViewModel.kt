@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
@@ -87,7 +88,7 @@ class TierListsViewModel @Inject constructor(
         if (account !is Account.SignedIn || !preferences.backUpBoards()) return
         if (syncJob?.isActive == true) return
         syncJob = viewModelScope.launch {
-            runCatching { boardSync.sync() }
+            runSuspendCatching { boardSync.sync() }
                 .onFailure { failure -> Timber.w(failure, "Keeping boards did not finish") }
         }
     }
