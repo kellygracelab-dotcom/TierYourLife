@@ -37,8 +37,9 @@ import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountT
 private val CHOICE_SIZE = 64.dp
 
 /**
- * A face without a file: every choice is an address someone else already hosts,
- * so nothing of anyone's is stored here and the community can show it.
+ * A card's picture is an address someone else already hosts. A photo from the
+ * phone is the one thing stored here: looked at first, then kept beside the
+ * account so the community can show it.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,6 +49,7 @@ internal fun FaceSheet(
     name: String?,
     onDismiss: () -> Unit,
     onChoose: (String?) -> Unit,
+    onPickPhoto: () -> Unit,
 ) {
     AdaptiveSheet(
         onDismiss = onDismiss,
@@ -97,6 +99,14 @@ internal fun FaceSheet(
                 Spacer(Modifier.height(20.dp))
             }
 
+            TextButton(
+                onClick = onPickPhoto,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(AccountTestTags.FACE_GALLERY),
+            ) {
+                Text(stringResource(R.string.account_face_gallery))
+            }
             TextButton(
                 onClick = { onChoose(null) },
                 modifier = Modifier
