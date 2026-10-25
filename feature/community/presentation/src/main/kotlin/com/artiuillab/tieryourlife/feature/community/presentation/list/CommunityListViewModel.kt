@@ -35,7 +35,11 @@ class CommunityListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val publishedId = savedStateHandle.communityListRoute().publishedId
+    private val route = savedStateHandle.communityListRoute()
+    private val publishedId = route.publishedId
+
+    /** What the card showed, for the screen to draw while the list is on its way. */
+    val preview: ListPreview? = route.preview()
 
     private val _state = MutableStateFlow<CommunityListUiState>(CommunityListUiState.Loading)
     val state: StateFlow<CommunityListUiState> = _state.asStateFlow()
@@ -130,9 +134,10 @@ class CommunityListViewModel @Inject constructor(
         }
     }
 
-    fun saveToMyLists(onSaved: (Long) -> Unit) {
+    /** The copy's id lands in the state; the screen then offers to open it rather than leaving on its own. */
+    fun saveToMyLists() {
         val current = _state.value as? CommunityListUiState.Success ?: return
-        if (current.saving) return
+        if (current.saving || current.savedId != null) return
         _state.update { (it as CommunityListUiState.Success).copy(saving = true) }
 
         viewModelScope.launch {
@@ -148,13 +153,12 @@ class CommunityListViewModel @Inject constructor(
                     items = keeping.tiers.filter { it.isPool }.flatMap { it.items },
                 )
             }
-            _state.update { (it as CommunityListUiState.Success).copy(saving = false) }
+            _state.update { (it as CommunityListUiState.Success).copy(saving = false, savedId = newId.takeIf { saved }) }
             if (saved) {
                 // What the popular ordering counts. Its failure is not this
                 // person's problem: they have their copy either way.
                 community.noteTaken(publishedId)
                     .onFailure { Timber.i(it, "Not counting this list as taken") }
-                newId?.let(onSaved)
             }
         }
     }

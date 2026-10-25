@@ -11,21 +11,27 @@ import com.artiuillab.tieryourlife.feature.community.presentation.published.MyPu
 
 fun NavGraphBuilder.communityListScreen(
     onBack: () -> Unit,
-    onSaved: (Long) -> Unit,
+    onOpenSaved: (Long) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
 ) {
     composable<CommunityRoute.CommunityList> {
-        CommunityListScreen(onBack = onBack, onSaved = onSaved, onAuthorClick = onAuthorClick)
+        CommunityListScreen(onBack = onBack, onOpenSaved = onOpenSaved, onAuthorClick = onAuthorClick)
     }
 }
 
+/** With what the card showed, so the screen has something to draw before the answer. */
+fun NavController.navigateToCommunityList(route: CommunityRoute.CommunityList) {
+    navigate(route)
+}
+
+/** By id alone, from a place that holds no card: the screen waits with a spinner. */
 fun NavController.navigateToCommunityList(publishedId: String) {
     navigate(CommunityRoute.CommunityList(publishedId))
 }
 
 fun NavGraphBuilder.authorScreen(
     onBack: () -> Unit,
-    onOpenList: (String) -> Unit,
+    onOpenList: (CommunityRoute.CommunityList) -> Unit,
 ) {
     composable<CommunityRoute.Author> {
         AuthorScreen(onBack = onBack, onOpenList = onOpenList)
@@ -36,7 +42,7 @@ fun NavController.navigateToAuthor(uid: String, name: String, photoUrl: String?)
     navigate(CommunityRoute.Author(uid, name, photoUrl))
 }
 
-fun NavGraphBuilder.myPublishedScreen(onBack: () -> Unit, onOpen: (String) -> Unit) {
+fun NavGraphBuilder.myPublishedScreen(onBack: () -> Unit, onOpen: (CommunityRoute.CommunityList) -> Unit) {
     composable<CommunityRoute.MyPublished> {
         MyPublishedScreen(onBack = onBack, onOpen = onOpen)
     }
