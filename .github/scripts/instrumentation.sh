@@ -16,7 +16,19 @@ adb shell settings put global verifier_verify_adb_installs 0
 adb logcat -c
 adb logcat -s TestRunner:I &
 logcat_pid=$!
-trap 'kill "$logcat_pid" 2>/dev/null' EXIT
+
+# The runner kills the emulator after this script and waits for it to go;
+# on API 26 it printed "removeAll" and never went, twenty-two silent minutes
+# after a green run until the job's timeout. So it is put down here, hard,
+# and the runner's own kill finds nothing left to wait for.
+stop_everything() {
+  kill "$logcat_pid" 2>/dev/null
+  adb emu kill >/dev/null 2>&1
+  sleep 5
+  pkill -9 -f "avd test" >/dev/null 2>&1
+  return 0
+}
+trap stop_everything EXIT
 
 # Read straight off the pipeline, not after an `if`: a failed `if` with no `else`
 # is a success, and `status=$?` there reported every red run green.
