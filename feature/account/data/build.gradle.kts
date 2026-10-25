@@ -16,4 +16,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    // A face from the phone goes straight to Storage, as card pictures do; FirebaseStorage itself is provided beside them.
+    implementation(libs.firebase.storage)
+    // The platform's own ExifInterface is what lint warns against; this one reads a photo's orientation safely.
+    implementation(libs.androidx.exifinterface)
+    implementation(libs.androidx.core.ktx)
 }
