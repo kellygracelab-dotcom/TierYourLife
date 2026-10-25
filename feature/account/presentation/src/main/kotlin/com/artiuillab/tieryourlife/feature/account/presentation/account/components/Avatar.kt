@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -37,9 +38,12 @@ internal fun Avatar(photoUrl: String?, name: String?, size: Dp, modifier: Modifi
     ) {
         val initial = name?.firstOrNull { it.isLetter() }?.uppercaseChar()
         when {
+            // Cropped: a poster chosen as a face is taller than it is wide, and
+            // fitted it left the circle empty at the sides.
             !photoUrl.isNullOrBlank() -> AsyncImage(
                 model = photoUrl,
                 contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier.size(size).clip(CircleShape),
             )
 

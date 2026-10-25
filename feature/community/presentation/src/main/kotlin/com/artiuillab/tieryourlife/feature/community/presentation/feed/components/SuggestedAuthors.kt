@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -163,6 +164,7 @@ private fun Face(author: SuggestedAuthor) {
     AsyncImage(
         model = author.photoUrl,
         contentDescription = null,
+        contentScale = ContentScale.Crop,
         modifier = Modifier.size(40.dp).clip(shape),
     )
 }
