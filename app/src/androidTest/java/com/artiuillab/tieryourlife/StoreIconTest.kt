@@ -2,10 +2,8 @@ package com.artiuillab.tieryourlife
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.os.Build
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
@@ -24,8 +22,6 @@ class StoreIconTest {
 
     @Test
     fun theIconGooglePlayAsksFor() {
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val icon = context.getDrawable(R.mipmap.ic_launcher)!!
 
