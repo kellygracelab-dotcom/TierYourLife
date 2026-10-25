@@ -69,8 +69,10 @@ Built in #161.
 The panel under the rows folds to a strip (handle, count, a glimpse of three
 pictures, the Add chip) and opens to the row of cards. It opens on its own
 only for someone's own board with cards left to rank; a reader's pool and an
-empty one start folded. A tap or a pull switches. Built in #164. The community
-screen's Theirs / Mine switch and the Save bar move into the strip next.
+empty one start folded. A tap or a pull switches. Built in #164. On a community list the strip
+also holds the reader's Theirs / Mine switch and the Save button, with the
+sentence that explains it, so both are in reach whether the pool is folded or
+open.
 
 ## 5. The cover
 
