@@ -141,7 +141,7 @@ class CommunityListScreenTest {
 
         composeRule.onNodeWithTag(CommunityListTestTags.SKELETON).assertIsDisplayed()
         composeRule.onNodeWithText("Sci-fi films").assertIsDisplayed()
-        composeRule.onNodeWithText("Olena M.").assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.community_by_author, "Olena M.")).assertIsDisplayed()
     }
 
     @Test
