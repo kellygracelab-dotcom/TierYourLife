@@ -16,6 +16,54 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class TierDetailTileDragTest : TierDetailScreenTestBase() {
 
+    // The finger does not have to wait: moving sideways lifts the card at once.
+    @Test
+    fun aSidewaysMove_liftsTheCardWithoutWaiting() {
+        var moved: Triple<Long, Long, Int>? = null
+        setScreen(TierDetailUiState.Success(defaultList()), onMoveItem = { id, tier, pos -> moved = Triple(id, tier, pos) })
+        val sourceTag = TierDetailTestTags.tile(1)
+        val target = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(2)).fetchSemanticsNode().boundsInRoot
+        val sourceBounds = composeRule.onNodeWithTag(sourceTag).fetchSemanticsNode().boundsInRoot
+        val start = Offset(sourceBounds.width / 2f, sourceBounds.height / 2f)
+
+        composeRule.onNodeWithTag(sourceTag).performTouchInput {
+            down(start)
+            advanceEventTime(16)
+            moveBy(Offset(60f, 0f))
+            advanceEventTime(16)
+            moveTo(Offset(target.center.x, target.top + target.height * 0.3f) - sourceBounds.topLeft)
+            advanceEventTime(16)
+            up()
+        }
+        composeRule.waitForIdle()
+
+        assertEquals(2L, moved?.second)
+    }
+
+    // Up or down is the board scrolling; the card stays where it is.
+    @Test
+    fun aVerticalMove_doesNotLiftTheCard() {
+        var moves = 0
+        setScreen(TierDetailUiState.Success(defaultList()), onMoveItem = { _, _, _ -> moves++ })
+        val sourceTag = TierDetailTestTags.tile(1)
+        val sourceBounds = composeRule.onNodeWithTag(sourceTag).fetchSemanticsNode().boundsInRoot
+        val start = Offset(sourceBounds.width / 2f, sourceBounds.height / 2f)
+
+        composeRule.onNodeWithTag(sourceTag).performTouchInput {
+            down(start)
+            advanceEventTime(16)
+            moveBy(Offset(0f, 80f))
+            advanceEventTime(16)
+            moveBy(Offset(0f, 200f))
+            advanceEventTime(16)
+            up()
+        }
+        composeRule.waitForIdle()
+
+        assertEquals(0, moves)
+        composeRule.onNodeWithTag(TierDetailTestTags.FLOATING_DRAG_TILE).assertDoesNotExist()
+    }
+
     @Test
     fun dragPoolItem_intoRankedTier_movesToRequestedTierAndIndex() {
         val list = listOf(

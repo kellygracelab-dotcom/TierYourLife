@@ -18,8 +18,18 @@ import androidx.core.graphics.toColorInt
 import coil3.compose.AsyncImage
 
 private const val MOSAIC_COLUMNS = 3
-private const val MOSAIC_ROWS = 2
-private const val MOSAIC_CELLS = MOSAIC_COLUMNS * MOSAIC_ROWS
+
+/** The most card pictures a mosaic shows: two rows of columns. */
+const val MOSAIC_CELLS = MOSAIC_COLUMNS * 2
+
+/**
+ * How many pictures go in each row of a mosaic of [count] distinct pictures:
+ * one row while they fit in it, two rows after, the fuller row on top.
+ */
+fun mosaicRows(count: Int): List<Int> {
+    val shown = count.coerceIn(1, MOSAIC_CELLS)
+    return if (shown <= MOSAIC_COLUMNS) listOf(shown) else listOf((shown + 1) / 2, shown / 2)
+}
 
 /**
  * A published list is shown by whichever of three things it actually has. The
@@ -44,22 +54,22 @@ fun ListArt(
                 modifier = Modifier.fillMaxSize(),
             )
 
-            previewImages.isNotEmpty() -> Mosaic(previewImages)
+            previewImages.isNotEmpty() -> Mosaic(previewImages.distinct().take(MOSAIC_CELLS))
             else -> TierBands(tierColors)
         }
     }
 }
 
+/** Each picture once: a grid padded out with repeats read as a list of six copies of one film. */
 @Composable
 private fun Mosaic(images: List<String>) {
-    // Repeat rather than leave holes: a half-filled grid reads as a failed load.
-    val cells = List(MOSAIC_CELLS) { images[it % images.size] }
+    var next = 0
     Column(Modifier.fillMaxSize()) {
-        repeat(MOSAIC_ROWS) { row ->
+        mosaicRows(images.size).forEach { perRow ->
             Row(Modifier.fillMaxWidth().weight(1f)) {
-                repeat(MOSAIC_COLUMNS) { column ->
+                repeat(perRow) {
                     AsyncImage(
-                        model = cells[row * MOSAIC_COLUMNS + column],
+                        model = images[next++],
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize().weight(1f),

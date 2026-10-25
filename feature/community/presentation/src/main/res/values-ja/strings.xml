@@ -3,6 +3,7 @@
     <string name="action_done">完了</string>
     <string name="action_follow">フォロー</string>
     <string name="action_following">フォロー中</string>
+    <string name="action_unfollow">フォロー解除</string>
     <string name="author_failed">このプロフィールを開けませんでした。</string>
     <plurals name="author_followers_count">
         <item quantity="other">フォロワー %d 人</item>

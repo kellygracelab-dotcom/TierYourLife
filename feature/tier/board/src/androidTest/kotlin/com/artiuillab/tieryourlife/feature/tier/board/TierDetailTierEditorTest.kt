@@ -16,7 +16,6 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDragController
@@ -243,7 +242,6 @@ class TierDetailTierEditorTest : TierDetailScreenTestBase() {
                 val dragController = remember { TierDragController() }
                 TierRow(
                     tier = pool,
-                    bandContentWidth = 64.dp,
                     displayMode = TierListDisplayMode.WRAP,
                     dragController = dragController,
                     rankedTierIds = emptyList(),
