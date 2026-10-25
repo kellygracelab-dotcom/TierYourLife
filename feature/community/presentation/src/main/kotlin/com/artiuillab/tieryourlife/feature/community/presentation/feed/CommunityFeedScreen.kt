@@ -49,6 +49,7 @@ fun CommunityFeedScreen(
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onSettingsClick: () -> Unit,
     onManageFollowing: () -> Unit = {},
+    onOpenTopic: (CommunityRoute.Topic) -> Unit = {},
     tabs: @Composable () -> Unit = {},
     viewModel: CommunityFeedViewModel = hiltViewModel(),
 ) {
@@ -63,6 +64,8 @@ fun CommunityFeedScreen(
         onAuthorClick = onAuthorClick,
         onSettingsClick = onSettingsClick,
         onManageFollowing = onManageFollowing,
+        onOpenTopic = onOpenTopic,
+        onSelectFollowingFilter = viewModel::selectFollowingFilter,
         onSearchClick = viewModel::enterSearch,
         onQueryChange = viewModel::updateQuery,
         onCloseSearch = viewModel::exitSearch,
@@ -88,6 +91,8 @@ fun CommunityFeedScreenContent(
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit = { _, _, _ -> },
     onSettingsClick: () -> Unit = {},
     onManageFollowing: () -> Unit = {},
+    onOpenTopic: (CommunityRoute.Topic) -> Unit = {},
+    onSelectFollowingFilter: (FollowingFilter) -> Unit = {},
     onSearchClick: () -> Unit = {},
     onQueryChange: (String) -> Unit = {},
     onCloseSearch: () -> Unit = {},
@@ -136,6 +141,9 @@ fun CommunityFeedScreenContent(
                     onSelectCategory = onSelectCategory,
                     onOpen = { onOpenList(CommunityRoute.CommunityList.of(it)) },
                     onManageFollowing = onManageFollowing,
+                    // Above everybody's feed only: a following feed carries them in its strip, a search has no room.
+                    yourTopics = if (state.source == FeedSource.Everyone && !searching) state.yourTopics else emptyList(),
+                    onOpenTopic = { onOpenTopic(CommunityRoute.Topic.of(it)) },
                     onRetry = onRetry,
                     onNearEnd = onLoadMore,
                     onLongPress = { actionsFor = it },
@@ -162,6 +170,8 @@ fun CommunityFeedScreenContent(
                         onSelectSource = onSelectSource,
                         onSelectSort = onSelectSort,
                         onFollow = onFollowAuthor,
+                        followingFilter = state.followingFilter,
+                        onSelectFollowingFilter = onSelectFollowingFilter,
                     ),
                 )
             }

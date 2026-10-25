@@ -12,6 +12,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
+import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.model.opensOn
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -51,6 +53,9 @@ class CommunityFeedViewModel @Inject constructor(
     )
     private var query: String? = null
     private var searchJob: Job? = null
+    private var yourTopics: List<Topic> = emptyList()
+    private var topicsJob: Job? = null
+    private var followingFilter: FollowingFilter = FollowingFilter.All
 
     /** What the feed on screen was already filtered against. */
     private var appliedHidden: Set<String> = emptySet()
@@ -61,11 +66,25 @@ class CommunityFeedViewModel @Inject constructor(
 
     private fun emit() {
         _state.value = CommunityFeedUiState(
-            feed = feed,
+            feed = feed.narrowedTo(followingFilter),
             category = category,
             source = source,
             sort = sortNow(),
             query = query,
+            yourTopics = yourTopics,
+            followingFilter = followingFilter,
+        )
+    }
+
+    /** A following feed arrives as one page of people and topics together; the filter narrows what is shown without asking again. */
+    private fun CommunityFeed.narrowedTo(filter: FollowingFilter): CommunityFeed {
+        if (this !is CommunityFeed.Ready || source != FeedSource.Following || filter == FollowingFilter.All) return this
+        val people = followed.mapTo(mutableSetOf()) { it.uid }
+        val topics = followedTopics.mapTo(mutableSetOf()) { it.id }
+        return copy(
+            lists = lists.filter {
+                if (filter == FollowingFilter.People) it.authorUid in people else it.topicId in topics
+            },
         )
     }
 
@@ -73,7 +92,24 @@ class CommunityFeedViewModel @Inject constructor(
 
     fun load() {
         searchJob?.cancel()
+        refreshYourTopics()
         viewModelScope.launch { loadNow() }
+    }
+
+    /** The chips above the sections. Quiet: the feed stands without them, and a guest has none. */
+    private fun refreshYourTopics() {
+        topicsJob?.cancel()
+        topicsJob = viewModelScope.launch {
+            val mine = community.myTopics()
+                .onFailure { Timber.i(it, "Reading this person's topics failed") }
+                .getOrDefault(emptyList())
+            val followed = community.followedTopics()
+                .onFailure { Timber.i(it, "Reading the followed topics failed") }
+                .getOrDefault(emptyList())
+            // A turned-down proposal has nothing to open; a waiting one still has its label.
+            yourTopics = (mine + followed).distinctBy { it.id }.filterNot { it.status == TopicStatus.Rejected }
+            emit()
+        }
     }
 
     private suspend fun loadNow() {
@@ -97,10 +133,12 @@ class CommunityFeedViewModel @Inject constructor(
                         .getOrElse { shown?.authors.orEmpty() }
                     CommunityFeed.FollowingNobody(authors = authors, loading = false, followed = shown?.followed.orEmpty())
                 } else {
+                    val following = source == FeedSource.Following
                     CommunityFeed.Ready(
                         lists = page.lists.filterNot(::isHidden),
                         canLoadMore = page.nextCursor != null,
-                        followed = if (source == FeedSource.Following) whoIsFollowed() else emptyList(),
+                        followed = if (following) whoIsFollowed() else emptyList(),
+                        followedTopics = if (following) whichTopicsAreFollowed() else emptyList(),
                     )
                 }
             },
@@ -118,10 +156,16 @@ class CommunityFeedViewModel @Inject constructor(
         .onFailure { Timber.w(it, "Reading who is followed failed") }
         .getOrDefault(emptyList())
 
+    private suspend fun whichTopicsAreFollowed(): List<Topic> = community.followedTopics()
+        .onFailure { Timber.w(it, "Reading which topics are followed failed") }
+        .getOrDefault(emptyList())
+
+    /** The feed again under new terms; the chips above it are not in question. */
     private fun reload() {
         feed = CommunityFeed.Loading
         emit()
-        load()
+        searchJob?.cancel()
+        viewModelScope.launch { loadNow() }
     }
 
     fun selectCategory(selected: ListCategory?) {
@@ -134,6 +178,13 @@ class CommunityFeedViewModel @Inject constructor(
         if (source == selected) return
         source = selected
         reload()
+    }
+
+    /** Narrows what is already on screen: no request, nothing to wait for. */
+    fun selectFollowingFilter(selected: FollowingFilter) {
+        if (followingFilter == selected) return
+        followingFilter = selected
+        emit()
     }
 
     fun selectSort(selected: FeedSort) {

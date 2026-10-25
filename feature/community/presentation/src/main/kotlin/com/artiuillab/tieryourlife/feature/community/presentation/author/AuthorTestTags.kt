@@ -7,5 +7,6 @@ internal object AuthorTestTags {
     const val MORE = "author_more"
     const val ACTIONS_SHEET = "author_actions"
     const val ACTION_HIDE_AUTHOR = "author_action_hide_author"
+    const val ACTION_MODERATOR = "author_action_moderator"
     const val FOLLOW = "author_follow"
 }

@@ -14,6 +14,8 @@ internal object ModerationTestTags {
     const val BAN_FOREVER_DIALOG = "moderation_ban_forever_dialog"
     const val BAN_FOREVER_CONFIRM = "moderation_ban_forever_confirm"
 
+    fun tab(tab: ModerationTab): String = "moderation_tab_${tab.name.lowercase()}"
+
     fun cover(listId: String): String = "moderation_cover_$listId"
 
     fun banChoice(length: BanLength): String = "moderation_ban_${length.id}"

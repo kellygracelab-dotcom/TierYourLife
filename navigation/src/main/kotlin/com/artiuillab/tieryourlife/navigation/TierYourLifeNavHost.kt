@@ -40,6 +40,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.navigation.nav
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToFollowing
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToModeration
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToMyPublished
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToTopic
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.topicScreen
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.hiddenScreen
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.navigateToHidden
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.navigateToSettings
@@ -139,6 +141,7 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
                     onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
                     onSettingsClick = { navController.navigateToSettings() },
                     onManageFollowing = { navController.navigateToFollowing() },
+                    onOpenTopic = { route -> navController.navigateToTopic(route) },
                     tabs = tabs,
                 )
             },
@@ -257,6 +260,12 @@ private fun NavContent(
         followingScreen(
             onBack = { navController.popBackStack() },
             onOpenAuthor = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
+            onOpenTopic = { route -> navController.navigateToTopic(route) },
+        )
+        topicScreen(
+            onBack = { navController.popBackStack() },
+            onOpenList = { route -> navController.navigateToCommunityList(route) },
+            onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
         )
         communityListScreen(
             onBack = { navController.popBackStack() },

@@ -55,9 +55,14 @@ fun NavController.navigateToMyPublished() {
 fun NavGraphBuilder.followingScreen(
     onBack: () -> Unit,
     onOpenAuthor: (uid: String, name: String, photoUrl: String?) -> Unit,
+    onOpenTopic: (CommunityRoute.Topic) -> Unit,
 ) {
     composable<CommunityRoute.Following> {
-        FollowingScreen(onBack = onBack, onOpenAuthor = onOpenAuthor)
+        FollowingScreen(
+            onBack = onBack,
+            onOpenAuthor = onOpenAuthor,
+            onOpenTopic = { onOpenTopic(CommunityRoute.Topic.of(it)) },
+        )
     }
 }
 
