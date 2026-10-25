@@ -32,7 +32,8 @@
     <string name="account_face_body">Kendi listelerinizden bir kart seçin.</string>
     <string name="account_face_no_cards">Kartlarınızın hiçbirinde henüz katalog görseli yok.</string>
     <string name="account_face_letter">Sadece harf</string>
-    <string name="account_face_note">Hiçbir şey yüklenmez. Görsel internette zaten bulunduğu yerde kalır.</string>
+    <string name="account_face_gallery">Galeriden bir fotoğraf</string>
+    <string name="account_face_note">Kart görseli internette bulunduğu yerde kalır. Galeriden seçilen fotoğraf denetlenir ve hesabınızla birlikte saklanır.</string>
     <string name="account_cd_change_face">Resmi değiştir</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d üretim</item>

@@ -33,7 +33,8 @@
     <string name="account_face_body">Escolha um card das suas listas.</string>
     <string name="account_face_no_cards">Nenhum dos seus cards tem imagem de catálogo ainda.</string>
     <string name="account_face_letter">Apenas a letra</string>
-    <string name="account_face_note">Nada é enviado. A imagem fica onde já está na web.</string>
+    <string name="account_face_gallery">Uma foto da galeria</string>
+    <string name="account_face_note">A imagem de um card fica onde já está na web. Uma foto da galeria é verificada e guardada com a sua conta.</string>
     <string name="account_cd_change_face">Alterar a imagem</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d geração</item>

@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.play.services.base)
     implementation(libs.googleid)
     implementation(libs.coil.compose)
+    implementation(libs.androidx.activity.compose)
     testImplementation(testFixtures(projects.feature.community.domain))
     testImplementation(testFixtures(projects.feature.account.domain))
 }
