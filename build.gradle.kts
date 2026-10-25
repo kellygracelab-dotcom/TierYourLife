@@ -1,3 +1,6 @@
+import org.gradle.api.services.BuildService
+import org.gradle.api.services.BuildServiceParameters
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.compose) apply false
@@ -28,6 +31,23 @@ subprojects {
 
 dependencies {
     subprojects.forEach { kover(dependencies.project(mapOf("path" to it.path))) }
+}
+
+// One device, one test run at a time. With parallel builds on, Gradle starts
+// the connected tests of several modules together, and two instrumentations on
+// the same emulator push each other's activity off the screen: a test then
+// finds no Compose hierarchy, or waits for a frame that never comes until the
+// job is cut off. A build service with a single slot is Gradle's lock for that.
+abstract class ConnectedDevice : BuildService<BuildServiceParameters.None>
+
+val connectedDevice = gradle.sharedServices.registerIfAbsent("connectedDevice", ConnectedDevice::class) {
+    maxParallelUsages.set(1)
+}
+
+subprojects {
+    tasks.named { it.startsWith("connected") && it.endsWith("AndroidTest") && it != "connectedAndroidTest" }.configureEach {
+        usesService(connectedDevice)
+    }
 }
 
 // What the JVM tests cover of the logic. Screens are left out on purpose: the
