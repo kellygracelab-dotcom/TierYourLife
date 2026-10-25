@@ -107,6 +107,8 @@ data class PublishListRequestDto(
     val category: String,
     val coverImageUrl: String? = null,
     val coverPictureId: String? = null,
+    /** The author's collage, web addresses only; a single cover above it wins when set. */
+    val coverImageUrls: List<String> = emptyList(),
     val tiers: List<PublishedTierDto>,
     val items: List<PublishedItemDto>,
 )

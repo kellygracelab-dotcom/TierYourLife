@@ -102,4 +102,18 @@ class TierListMapperTest {
 
         assertEquals(TierListDisplayMode.FLAT_RANKED, actual.displayMode)
     }
+
+    @Test
+    fun a_collage_comes_back_as_the_same_pictures_in_the_same_order() {
+        val pictures = listOf("https://example.com/a.jpg", "https://example.com/b.jpg", "https://example.com/c.jpg")
+        val entity = TierListEntity(id = 1, title = "Films", coverImageUrls = pictures.toStoredCoverImageUrls())
+
+        assertEquals(pictures, entity.toDomain().coverImageUrls)
+    }
+
+    @Test
+    fun one_picture_is_a_cover_and_not_a_collage() {
+        assertEquals(null, listOf("https://example.com/a.jpg").toStoredCoverImageUrls())
+        assertEquals(emptyList<String>(), TierListEntity(id = 1, title = "Films").toDomain().coverImageUrls)
+    }
 }

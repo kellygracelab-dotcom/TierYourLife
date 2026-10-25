@@ -66,7 +66,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TIER_LIST_
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TrashTarget
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
-import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolPanel
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedPoolSection
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRow
@@ -259,7 +259,7 @@ private fun TierScreenBody(
             onUpdatePublished = actions.onUpdatePublished,
             onSetCategory = actions.onSetCategory,
             onCategoryNotChosen = actions.onCategoryNotChosen,
-            onSetCover = actions.onSetCover,
+            onChooseCover = actions.onChooseCover,
             onAddCards = {
                 listSettingsVisible = false
                 actions.onAddClick()
@@ -500,7 +500,7 @@ private fun TierScreenBody(
                     }
 
                     if (pool != null) {
-                        PoolPanel(
+                        PoolSheet(
                             pool = pool,
                             onAddClick = onAddClick,
                             onGenerateClick = onGenerateClick,

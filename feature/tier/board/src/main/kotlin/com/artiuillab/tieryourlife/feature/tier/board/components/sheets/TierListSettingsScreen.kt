@@ -91,13 +91,12 @@ fun TierListSettingsScreenContent(
     onUpdatePublished: () -> Unit = {},
     onSetCategory: (ListCategory) -> Unit = {},
     onCategoryNotChosen: () -> Unit = {},
-    onSetCover: (String?) -> Unit = {},
+    onChooseCover: () -> Unit = {},
     onAddCards: () -> Unit = {},
     onShare: () -> Unit = {},
 ) {
     var tierEditorVisible by remember { mutableStateOf(false) }
     var categorySheetVisible by remember { mutableStateOf(false) }
-    var coverSheetVisible by remember { mutableStateOf(false) }
     val rankedTierCount = list.tiers.count { !it.isPool }
 
     Column(Modifier.fillMaxSize().testTag(TierDetailTestTags.LIST_SETTINGS_SCREEN)) {
@@ -121,7 +120,7 @@ fun TierListSettingsScreenContent(
             // A category exists only for the feed; a cover is also the card's
             // own art, so it stays available to a guest.
             CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
-            CoverRow(coverImageUrl = list.coverImageUrl, onClick = { coverSheetVisible = true })
+            CoverRow(chosen = list.coverImageUrl != null || list.coverImageUrls.isNotEmpty(), onClick = onChooseCover)
             // Beside the cover: sharing is not publishing and needs no account.
             ShareRow(onClick = onShare)
 
@@ -149,17 +148,6 @@ fun TierListSettingsScreenContent(
             onSelect = {
                 onSetCategory(it)
                 categorySheetVisible = false
-            },
-        )
-    }
-
-    if (coverSheetVisible) {
-        CoverSheet(
-            list = list,
-            onDismiss = { coverSheetVisible = false },
-            onSelect = {
-                onSetCover(it)
-                coverSheetVisible = false
             },
         )
     }
@@ -354,12 +342,12 @@ private fun CategoryRow(category: ListCategory?, onClick: () -> Unit) {
 }
 
 @Composable
-private fun CoverRow(coverImageUrl: String?, onClick: () -> Unit) {
+private fun CoverRow(chosen: Boolean, onClick: () -> Unit) {
     SettingsActionRow(
         icon = { CoverIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
         title = stringResource(R.string.list_settings_cover),
         subtitle = stringResource(
-            if (coverImageUrl == null) R.string.list_settings_cover_none_set else R.string.list_settings_cover_set,
+            if (chosen) R.string.list_settings_cover_set else R.string.list_settings_cover_none_set,
         ),
         onClick = onClick,
         testTag = TierDetailTestTags.COVER_ROW,

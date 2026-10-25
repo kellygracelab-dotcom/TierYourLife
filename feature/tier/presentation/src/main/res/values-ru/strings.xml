@@ -165,4 +165,21 @@
     <string name="conflict_edited_here">Правлена здесь %1$s</string>
     <string name="cover_unfold_title">Разложите, чтобы расставить</string>
     <string name="cover_unfold_body">Перетаскивать карточки можно только на внутреннем экране.</string>
+
+    <string name="cover_picker_title">Обложка</string>
+    <string name="cover_picker_done">Готово</string>
+    <string name="cover_picker_reset">Сбросить</string>
+    <string name="cover_picker_tab_cards">Ваши карточки · %1$d</string>
+    <string name="cover_picker_tab_search">Поиск картинок</string>
+    <string name="cover_picker_status_automatic">Ничего не выбрано: до шести картинок самого списка</string>
+    <string name="cover_picker_status_one">Одна картинка, вся обложка</string>
+    <plurals name="cover_picker_status_collage">
+        <item quantity="one">Выбрана %1$d из %2$d, коллаж</item>
+        <item quantity="few">Выбраны %1$d из %2$d, коллаж</item>
+        <item quantity="many">Выбрано %1$d из %2$d, коллаж</item>
+        <item quantity="other">Выбрано %1$d из %2$d, коллаж</item>
+    </plurals>
+    <string name="cover_picker_no_cards">Ни у одной карточки списка пока нет картинки.</string>
+    <string name="cover_picker_gallery">Выбрать из галереи</string>
+    <string name="cover_picker_gallery_note">Картинка из галереи становится всей обложкой и едет вместе со списком, когда вы его публикуете.</string>
 </resources>

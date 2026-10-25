@@ -14,11 +14,6 @@
     <string name="list_settings_category">カテゴリ</string>
     <string name="list_settings_category_none">未選択</string>
     <string name="list_settings_cover">カバー</string>
-    <string name="list_settings_cover_body">このリストのカード、またはギャラリーの画像から選べます。</string>
-    <string name="list_settings_cover_gallery">ギャラリーから選ぶ</string>
-    <string name="list_settings_cover_gallery_note">ギャラリーの画像は、リストを公開すると一緒に送られます。</string>
-    <string name="list_settings_cover_no_cards">このリストのカードにはまだ画像がありません。</string>
-    <string name="list_settings_cover_none">カバーを削除</string>
     <string name="list_settings_cover_none_set">なし</string>
     <string name="list_settings_cover_set">選択済み</string>
     <string name="list_settings_public">公開</string>

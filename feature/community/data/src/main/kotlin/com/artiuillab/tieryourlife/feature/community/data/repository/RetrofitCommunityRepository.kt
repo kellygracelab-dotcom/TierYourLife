@@ -273,6 +273,7 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
     category = (category ?: ListCategory.Other).id,
     coverImageUrl = coverImageUrl?.takeIf { it.startsWith("https://") },
     coverPictureId = images.pictureIdOf(coverImageUrl)?.takeIf { it in uploaded },
+    coverImageUrls = coverImageUrls.filter { it.startsWith("https://") },
     tiers = tiers.filterNot { it.isPool }.map {
         PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark)
     },

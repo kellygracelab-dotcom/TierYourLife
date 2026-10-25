@@ -154,10 +154,6 @@ class TierDetailViewModel @Inject constructor(
         categoryWanted = false
     }
 
-    fun setCoverImageUrl(coverImageUrl: String?) {
-        mutate("Setting the cover") { repository.setCoverImageUrl(tierListId, coverImageUrl) }
-    }
-
     fun loadTierList() {
         viewModelScope.launch { reloadTierList() }
         viewModelScope.launch {

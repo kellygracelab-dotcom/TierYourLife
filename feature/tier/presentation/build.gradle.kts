@@ -18,6 +18,7 @@ dependencies {
     implementation(projects.feature.community.domain)
     implementation(projects.feature.account.domain)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.kotlinx.coroutines.core)

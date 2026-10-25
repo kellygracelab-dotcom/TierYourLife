@@ -23,6 +23,7 @@ object PublishFingerprint {
         eat(list.title)
         eat(list.category?.id)
         eat(picture(list.coverImageUrl, pictureIdOf))
+        list.coverImageUrls.forEach { eat(picture(it, pictureIdOf)) }
 
         list.tiers.filterNot { it.isPool }.forEach { tier ->
             eat(tier.label)

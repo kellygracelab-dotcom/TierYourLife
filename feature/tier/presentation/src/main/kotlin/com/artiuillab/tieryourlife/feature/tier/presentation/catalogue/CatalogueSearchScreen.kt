@@ -26,10 +26,10 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SearchField
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SelectionBar
 
-private val FieldFillLight = Color(0xFFEFEDF4)
-private val FieldFillDark = Color(0xFF2A2A31)
-private val SelectedRowTintLight = Color(0xFFEDEBFA)
-private val SelectedRowTintDark = Color(0xFF2E2F45)
+internal val FieldFillLight = Color(0xFFEFEDF4)
+internal val FieldFillDark = Color(0xFF2A2A31)
+internal val SelectedRowTintLight = Color(0xFFEDEBFA)
+internal val SelectedRowTintDark = Color(0xFF2E2F45)
 
 @Composable
 fun CatalogueSearchScreenContent(

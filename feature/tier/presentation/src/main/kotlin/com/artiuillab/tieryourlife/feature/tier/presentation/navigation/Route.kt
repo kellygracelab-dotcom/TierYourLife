@@ -13,6 +13,9 @@ sealed interface Route {
     data class TierDetail(val tierListId: Long) : Route
 
     @Serializable
+    data class CoverPicker(val tierListId: Long) : Route
+
+    @Serializable
     data object Trash : Route
 }
 
@@ -22,6 +25,8 @@ sealed interface Route {
  * keeps a view model off the JVM. RouteFromHandleTest holds the two equal.
  */
 internal fun SavedStateHandle.tierDetailRoute() = Route.TierDetail(tierListId = required(Route.TierDetail::tierListId.name))
+
+internal fun SavedStateHandle.coverPickerRoute() = Route.CoverPicker(tierListId = required(Route.CoverPicker::tierListId.name))
 
 private fun <T : Any> SavedStateHandle.required(key: String): T =
     checkNotNull(get<T>(key)) { "Route argument $key is missing" }
