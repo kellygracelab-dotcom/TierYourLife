@@ -4,22 +4,26 @@ Danylo went through build 355 on his Flip6 and wrote down what to change. One
 row per remark, in his order. "Kind" says who decides the shape: a fix is a
 code change with an obvious answer; design means Claude Design is asked first.
 
+The designs for 4, 5, 6, 9, 10, 11 and 12 are on the Claude Design canvas
+"TierYourLife: прогон 25.10" (nine boards, private). Nothing from them is built
+before Danylo's go.
+
 | # | Remark | Kind | Status |
 |---|---|---|---|
-| 1 | A card should answer the finger at once when dragging; there is no single-tap action, so the long-press delay only costs. Double tap should feel quicker too. | fix (keep a short delay: a vertical scroll and a drag both start with a finger on a card) | open |
-| 2 | Default tier captions (Best, Great, …) go away: a new board shows the letter alone. When a row wraps to two or more lines, the letter sits centred in the band, not top-left. | fix (reverses the default-caption part of #105; captions stay editable) | open |
-| 3 | The system back gesture first shrinks the screen, then leaves; the in-app back button leaves at once. The shrink is the system's predictive-back animation. | fix: opt out of predictive back, or make the pop immediate | open |
-| 4 | Opening a community list shows black for about half a second; "Save to my list" flashes too. Transitions across the whole app should be smooth and not catch the eye. | design: a transition language for the app; fix for the black frame (window background, screen root surface, NavHost transitions) | open |
-| 5 | The bottom panel on a list (pool; Their ranking / Mine; Save to my list) should collapse like a sheet and expand on demand, on own boards and community lists alike. | design + fix | open |
-| 6 | Cover art: if the person picked 1 picture, show it alone; 2 to 6, a collage of exactly those; 6 is the maximum. With no choice, a collage of up to 6 *distinct* card pictures, fewer when fewer exist, never repeats; 1 picture shows alone; 0 shows the tier-colour stripes. | design (layouts for 2–5; the picker) + fix (no repeats) | open |
-| 7 | Catalogue search returns many results without a poster; anything without a picture is dropped from the results. | fix | open |
-| 8 | Where the cover is chosen, add a picture search (the same catalogue search), not only the board's own cards. | feature | open |
-| 9 | The Following tab should present either the new rankings of people you follow, or the people themselves, in a way worth looking at. | design | open |
-| 10 | Categories as on TierMaker: people create their own; a new one starts under Other and is lifted into the shared set when an admin approves it; Community opens with the categories a person already taps, then the lists in that category; the category is asked at creation and required when a board goes public (with wording in every language). TierMaker guards category misuse by keyword checks at publish time, user reports, and moderators moving or removing lists. | design (Community, creation, picking) + proxy + web parity | open |
-| 11 | Follow a category, not only a person (design). Bugs: the Following tab flashes before the people appear; coming back from an author's page with the system back, the author blinks out and in. | design + fix (the flashes: the feed reloads on every arrival) | open |
-| 12 | There is no Unfollow. And no choice of what the Following feed shows: followed people, followed categories, or both. | fix (Unfollow) + design (the switch, with #10 and #11) | open |
-| 13 | A poster chosen as the avatar is not scaled to fill the circle, so the circle has empty sides. Add choosing an avatar from the gallery. | fix (crop to fill) + feature (gallery) | open |
-| 14 | The coloured band of a tier must not grow with its letter or caption: one fixed width, text wraps or is cut inside it. Reverses the August rule "one band width per board, from the longest caption". Goes with #2. | fix | open |
+| 1 | A card should answer the finger at once when dragging; there is no single-tap action, so the long-press delay only costs. Double tap should feel quicker too. | fix (keep a short delay: a vertical scroll and a drag both start with a finger on a card) | done, #154 |
+| 2 | Default tier captions (Best, Great, …) go away: a new board shows the letter alone. When a row wraps to two or more lines, the letter sits centred in the band, not top-left. | fix (reverses the default-caption part of #105; captions stay editable) | done, #151 |
+| 3 | The system back gesture first shrinks the screen, then leaves; the in-app back button leaves at once. The shrink is the system's predictive-back animation. | fix: opt out of predictive back, or make the pop immediate | done, #149 |
+| 4 | Opening a community list shows black for about half a second; "Save to my list" flashes too. Transitions across the whole app should be smooth and not catch the eye. | design: a transition language for the app; fix for the black frame (window background, screen root surface, NavHost transitions) | designed (Transitions board); the code is open |
+| 5 | The bottom panel on a list (pool; Their ranking / Mine; Save to my list) should collapse like a sheet and expand on demand, on own boards and community lists alike. | design + fix | designed (the two sheet boards); the code is open |
+| 6 | Cover art: if the person picked 1 picture, show it alone; 2 to 6, a collage of exactly those; 6 is the maximum. With no choice, a collage of up to 6 *distinct* card pictures, fewer when fewer exist, never repeats; 1 picture shows alone; 0 shows the tier-colour stripes. | design (layouts for 2–5; the picker) + fix (no repeats) | no repeats done, #156; layouts and picker designed; the picker is open |
+| 7 | Catalogue search returns many results without a poster; anything without a picture is dropped from the results. | fix | done, #150 |
+| 8 | Where the cover is chosen, add a picture search (the same catalogue search), not only the board's own cards. | feature | designed as a tab of the cover picker; open |
+| 9 | The Following tab should present either the new rankings of people you follow, or the people themselves, in a way worth looking at. | design | designed (Following board); the code is open |
+| 10 | Categories as on TierMaker: people create their own; a new one starts under Other and is lifted into the shared set when an admin approves it; Community opens with the categories a person already taps, then the lists in that category; the category is asked at creation and required when a board goes public (with wording in every language). TierMaker guards category misuse by keyword checks at publish time, user reports, and moderators moving or removing lists. | design (Community, creation, picking) + proxy + web parity | designed (Main, Topic, Publish, Moderation boards); proxy and code open |
+| 11 | Follow a category, not only a person (design). Bugs: the Following tab flashes before the people appear; coming back from an author's page with the system back, the author blinks out and in. | design + fix (the flashes: the feed reloads on every arrival) | designed; the Following flash fixed, #152; the author blink is open |
+| 12 | There is no Unfollow. And no choice of what the Following feed shows: followed people, followed categories, or both. | fix (Unfollow) + design (the switch, with #10 and #11) | Unfollow done, #153; the switch designed; the code is open |
+| 13 | A poster chosen as the avatar is not scaled to fill the circle, so the circle has empty sides. Add choosing an avatar from the gallery. | fix (crop to fill) + feature (gallery) | crop done, #155; the gallery is open |
+| 14 | The coloured band of a tier must not grow with its letter or caption: one fixed width, text wraps or is cut inside it. Reverses the August rule "one band width per board, from the longest caption". Goes with #2. | fix | done, #151 |
 
 ## Order proposed
 
