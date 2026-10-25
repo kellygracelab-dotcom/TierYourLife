@@ -87,7 +87,14 @@ class CommunityFeedViewModel @Inject constructor(
             onSuccess = { page ->
                 cursor = page.nextCursor
                 if (page.followingNobody) {
-                    CommunityFeed.FollowingNobody()
+                    // The people to follow come with the answer, not a moment
+                    // after it: shown in two steps, the screen blinked on every
+                    // arrival, and coming back from a profile blinked it again.
+                    val shown = feed as? CommunityFeed.FollowingNobody
+                    val authors = community.suggestedAuthors()
+                        .onFailure { Timber.w(it, "Reading who to follow failed") }
+                        .getOrElse { shown?.authors.orEmpty() }
+                    CommunityFeed.FollowingNobody(authors = authors, loading = false, followed = shown?.followed.orEmpty())
                 } else {
                     CommunityFeed.Ready(
                         lists = page.lists.filterNot(::isHidden),
@@ -102,24 +109,6 @@ class CommunityFeedViewModel @Inject constructor(
             },
         )
         emit()
-        // Only once the state above is set: an early answer arrives while
-        // still Loading and leaves the spinner up for good.
-        if (feed is CommunityFeed.FollowingNobody) {
-            loadSuggestedAuthors()
-        }
-    }
-
-    private fun loadSuggestedAuthors() {
-        viewModelScope.launch {
-            val authors = community.suggestedAuthors()
-                .onFailure { Timber.w(it, "Reading who to follow failed") }
-                .getOrDefault(emptyList())
-            // Only if the screen is still the one that asked. Switching back to
-            // everybody while this was in flight must not put it back.
-            val shown = feed as? CommunityFeed.FollowingNobody ?: return@launch
-            feed = shown.copy(authors = authors, loading = false)
-            emit()
-        }
     }
 
     private fun reload() {
