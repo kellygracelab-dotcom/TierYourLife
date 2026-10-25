@@ -2,11 +2,14 @@ package com.artiuillab.tieryourlife.feature.community.presentation.published
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,6 +41,9 @@ class MyPublishedViewModel @Inject constructor(
 
     private val _state = MutableStateFlow<MyPublishedUiState>(MyPublishedUiState.Loading)
     val state: StateFlow<MyPublishedUiState> = _state.asStateFlow()
+
+    private val messages = UserMessages()
+    val userMessages: Flow<UserMessage> = messages.flow
 
     init {
         load()
@@ -74,11 +80,18 @@ class MyPublishedViewModel @Inject constructor(
             community.unpublish(publishedId).fold(
                 onSuccess = {
                     forgetLocally(publishedId)
-                    _state.value = MyPublishedUiState.Ready(shown.lists.filterNot { it.id == publishedId })
+                    // A copy, not a fresh Ready: the other rows keep their Update buttons.
+                    _state.value = shown.copy(
+                        lists = shown.lists.filterNot { it.id == publishedId },
+                        removing = null,
+                        canUpdate = shown.canUpdate - publishedId,
+                        behind = shown.behind - publishedId,
+                    )
                 },
                 onFailure = { error ->
                     Timber.w(error, "Taking down $publishedId failed")
                     _state.value = shown.copy(removing = null)
+                    messages.send(UserMessage.ActionFailed)
                 },
             )
         }
@@ -109,6 +122,7 @@ class MyPublishedViewModel @Inject constructor(
                 onFailure = { error ->
                     Timber.w(error, "Updating $publishedId failed")
                     _state.value = shown.copy(updating = null)
+                    messages.send(UserMessage.ActionFailed)
                 },
             )
         }

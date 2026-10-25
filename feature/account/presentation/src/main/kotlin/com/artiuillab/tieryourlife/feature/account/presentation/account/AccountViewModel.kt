@@ -178,7 +178,8 @@ class AccountViewModel @Inject constructor(
             .onFailure { Timber.w(it, "Counting published lists failed") }
             .getOrNull()
             ?.size
-            ?: 0
+            // Unknown is not zero: the last count stands rather than "0 public lists".
+            ?: _state.value.publicListCount
         val faces = runCatching { ownLists.cardImages(FACE_CHOICE_LIMIT) }
             .onFailure { Timber.w(it, "Reading card pictures failed") }
             .getOrDefault(emptyList())
