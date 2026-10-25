@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.navigation
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -143,27 +144,23 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
     }
 }
 
-private const val PUSH_MILLIS = 220
-private const val POP_MILLIS = 180
-
-/** How far the next screen starts to the side, as a share of the width: a nudge, not a slide. */
-private const val PUSH_OFFSET_SHARE = 10
-
-/** How much of the screen beneath is left showing while the next one settles over it. */
-private const val BENEATH_ALPHA = 0.8f
+private const val PUSH_MILLIS = 260
+private const val POP_MILLIS = 220
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.betweenTopLevels(): Boolean =
     isTopLevel(initialState) && isTopLevel(targetState)
 
 private fun isTopLevel(entry: NavBackStackEntry): Boolean = railDestinationFor(entry.destination.route, false) != null
 
+/** The next screen slides in whole over the one that stays put. Nothing fades: two translucent screens over a dark window made a frame darker than either, which read as a flash. */
 private fun pushIn(): EnterTransition =
-    fadeIn(tween(PUSH_MILLIS)) + slideInHorizontally(tween(PUSH_MILLIS)) { width -> width / PUSH_OFFSET_SHARE }
+    slideInHorizontally(tween(PUSH_MILLIS, easing = FastOutSlowInEasing)) { width -> width }
 
-private fun stayBeneath(millis: Int): ExitTransition = fadeOut(tween(millis), targetAlpha = BENEATH_ALPHA)
+/** Kept exactly as it is for the whole push, and only then let go. */
+private fun holdBeneath(millis: Int): ExitTransition = fadeOut(tween(millis), targetAlpha = 1f)
 
 private fun popOut(): ExitTransition =
-    fadeOut(tween(POP_MILLIS)) + slideOutHorizontally(tween(POP_MILLIS)) { width -> width / PUSH_OFFSET_SHARE }
+    slideOutHorizontally(tween(POP_MILLIS, easing = FastOutSlowInEasing)) { width -> width }
 
 /** Top-level destinations replace each other rather than piling up. */
 private fun NavHostController.navigateToHome(community: Boolean, makeBoard: Boolean = false) {
@@ -188,8 +185,9 @@ private fun NavContent(
         navController = navController,
         startDestination = Route.TierLists(),
         enterTransition = { if (betweenTopLevels()) fadeIn(tween(PUSH_MILLIS)) else pushIn() },
-        exitTransition = { if (betweenTopLevels()) fadeOut(tween(PUSH_MILLIS)) else stayBeneath(PUSH_MILLIS) },
-        popEnterTransition = { if (betweenTopLevels()) fadeIn(tween(POP_MILLIS)) else fadeIn(tween(POP_MILLIS), initialAlpha = BENEATH_ALPHA) },
+        exitTransition = { if (betweenTopLevels()) fadeOut(tween(PUSH_MILLIS)) else holdBeneath(PUSH_MILLIS) },
+        // The screen underneath is already whole; it has nothing to animate.
+        popEnterTransition = { if (betweenTopLevels()) fadeIn(tween(POP_MILLIS)) else EnterTransition.None },
         popExitTransition = { if (betweenTopLevels()) fadeOut(tween(POP_MILLIS)) else popOut() },
     ) {
         homeScreen(navController)

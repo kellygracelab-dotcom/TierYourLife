@@ -10,7 +10,7 @@ data class ListPreview(
 )
 
 /** More than this and a row wraps, which the placeholder never does; the real board may. */
-internal const val SKELETON_TILES_PER_ROW = 4
+internal const val SKELETON_TILES_PER_ROW = 5
 
 /**
  * How many grey cards each row gets while the real ones load: the count spread

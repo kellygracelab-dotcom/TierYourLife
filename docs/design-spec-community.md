@@ -56,9 +56,12 @@ skeleton from them at once: the real top bar, the author line, one row per
 tier colour with grey cards spread by the count. The board replaces it with a
 150 ms fade. Moderation, which opens by id alone, keeps the spinner.
 
-Transitions are one set of rules in the host: the next screen slides in a
-tenth of the width and fades up over the one beneath (220 ms); back runs the
-same way out (180 ms); top-level siblings only fade. "Save to my lists" stays
+Transitions are one set of rules in the host: the next screen slides in
+whole over the one beneath, which stays as it is (260 ms); back slides it out
+the same way (220 ms); top-level siblings only fade. Nothing else fades, since
+two translucent screens over a dark window read as a flash. The skeleton's
+rows use the board's own tile size and leave room for the folded pool strip,
+so nothing moves when the board lands. "Save to my lists" stays
 on the screen: the bar says the copy exists and offers to open it, and
 opening takes the published list's place on the back stack.
 

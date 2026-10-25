@@ -135,7 +135,7 @@ class CommunityListViewModel @Inject constructor(
     }
 
     /** The copy's id lands in the state; the screen then offers to open it rather than leaving on its own. */
-    fun saveToMyLists() {
+    fun saveToMyLists(which: Showing) {
         val current = _state.value as? CommunityListUiState.Success ?: return
         if (current.saving || current.savedId != null) return
         _state.update { (it as CommunityListUiState.Success).copy(saving = true) }
@@ -143,9 +143,9 @@ class CommunityListViewModel @Inject constructor(
         viewModelScope.launch {
             var newId: Long? = null
             val saved = messages.guard("Saving a community list") {
-                // Whichever board is on screen: keeping the author's ranking
-                // is a reason to save, not a mistake to correct.
-                val keeping = current.shown
+                // The reader's choice, asked for at the moment of saving: keeping
+                // the author's ranking is a reason to save, not a mistake to correct.
+                val keeping = if (which == Showing.Theirs) current.list else current.mine
                 newId = tiers.createFromTemplate(
                     title = keeping.title,
                     authorName = current.authorName,

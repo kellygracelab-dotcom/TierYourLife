@@ -12,7 +12,7 @@ class SkeletonTilesTest {
 
     @Test
     fun aRowNeverShowsMoreThanOneLine() {
-        assertEquals(listOf(4, 4), skeletonTiles(itemCount = 60, rows = 2))
+        assertEquals(listOf(SKELETON_TILES_PER_ROW, SKELETON_TILES_PER_ROW), skeletonTiles(itemCount = 60, rows = 2))
     }
 
     @Test

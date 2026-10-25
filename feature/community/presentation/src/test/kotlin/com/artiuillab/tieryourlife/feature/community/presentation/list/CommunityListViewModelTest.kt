@@ -112,13 +112,14 @@ class CommunityListViewModelTest {
     // Keeping a list the way its author ranked it is a reason to save it, not
     // a mistake to correct.
     @Test
-    fun saving_keepsWhicheverArrangementIsOnScreen() = runBlocking {
+    fun savingTheirs_keepsTheAuthorsArrangement() = runBlocking {
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
         viewModel.state.firstWithin { it is CommunityListUiState.Success }
-        viewModel.show(Showing.Theirs)
+        // The switch shows the reader's own half; the choice at saving is what counts.
+        viewModel.show(Showing.Mine)
 
-        viewModel.saveToMyLists()
+        viewModel.saveToMyLists(Showing.Theirs)
 
         val theirs = viewModel.state.firstWithin { it.saved() } as CommunityListUiState.Success
         val template = tiers.templates.single()
@@ -137,7 +138,7 @@ class CommunityListViewModelTest {
         val viewModel = viewModel(tiers = tiers)
         viewModel.state.firstWithin { it is CommunityListUiState.Success }
 
-        viewModel.saveToMyLists()
+        viewModel.saveToMyLists(Showing.Mine)
         val saved = viewModel.state.firstWithin { it.saved() } as CommunityListUiState.Success
 
         assertEquals(7L, saved.savedId)
