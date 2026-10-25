@@ -113,6 +113,7 @@ fun TierDetailScreenContent(
     subtitle: String? = null,
     onReaderMoreClick: (() -> Unit)? = null,
     belowTopBar: (@Composable () -> Unit)? = null,
+    poolAccessories: (@Composable (folded: Boolean) -> Unit)? = null,
 ) {
     // Beside the board once there is room. Held back on a short window too: a
     // phone in landscape is wide enough for the column and too short for the board.
@@ -130,7 +131,7 @@ fun TierDetailScreenContent(
                     onSelect = onOpenList,
                 )
             }
-            TierDetailPane(state, actions, addedItemIds, userMessages, readOnly, subtitle, onReaderMoreClick, belowTopBar)
+            TierDetailPane(state, actions, addedItemIds, userMessages, readOnly, subtitle, onReaderMoreClick, belowTopBar, poolAccessories)
         }
     }
 }
@@ -148,6 +149,7 @@ private fun TierDetailPane(
     subtitle: String?,
     onReaderMoreClick: (() -> Unit)?,
     belowTopBar: (@Composable () -> Unit)?,
+    poolAccessories: (@Composable (folded: Boolean) -> Unit)?,
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -182,6 +184,7 @@ private fun TierDetailPane(
                     subtitle = subtitle,
                     onReaderMoreClick = onReaderMoreClick,
                     belowTopBar = belowTopBar,
+                    poolAccessories = poolAccessories,
                 )
             }
 
@@ -209,6 +212,7 @@ private fun TierScreenBody(
     subtitle: String? = null,
     onReaderMoreClick: (() -> Unit)? = null,
     belowTopBar: (@Composable () -> Unit)? = null,
+    poolAccessories: (@Composable (folded: Boolean) -> Unit)? = null,
 ) {
     val onBack = actions.onBack
     val onAddClick = actions.onAddClick
@@ -509,6 +513,7 @@ private fun TierScreenBody(
                             onDeleteItem = deleteAndAnnounce,
                             onDoubleTap = { itemId -> chooserItemId = itemId },
                             readOnly = readOnly,
+                            accessories = poolAccessories,
                         )
                     }
                 }

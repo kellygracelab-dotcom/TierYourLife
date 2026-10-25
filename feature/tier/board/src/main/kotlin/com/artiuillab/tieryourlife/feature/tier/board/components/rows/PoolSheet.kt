@@ -87,6 +87,8 @@ fun PoolSheet(
     onDeleteItem: (itemId: Long) -> Unit,
     onDoubleTap: (itemId: Long) -> Unit = {},
     readOnly: Boolean = false,
+    /** What the screen around the board puts in the strip, folded or open: a reader's switch and save. */
+    accessories: (@Composable (folded: Boolean) -> Unit)? = null,
 ) {
     var expanded by rememberSaveable(pool.id) { mutableStateOf(!readOnly && pool.items.isNotEmpty()) }
     val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
@@ -160,6 +162,7 @@ fun PoolSheet(
                     .clip(RoundedCornerShape(2.dp))
                     .background(MaterialTheme.colorScheme.outline),
             )
+            accessories?.invoke(!expanded)
             // The count and the two chips sit on one line while they fit and take
             // two when they do not. Given weight instead, the count was squeezed
             // into whatever the chips left over -- about a hundred dp on a folding

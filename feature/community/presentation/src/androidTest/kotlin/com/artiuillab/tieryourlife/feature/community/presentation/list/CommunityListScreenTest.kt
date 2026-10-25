@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.CommunityTestTags
+import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -163,6 +164,17 @@ class CommunityListScreenTest {
         composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.OPEN_SAVED).performClick()
         assertEquals(7L, opened)
+    }
+
+    // The pool starts folded on someone else's arrangement; what the reader does
+    // with the board must not fold away with it.
+    @Test
+    fun theSwitchAndTheSave_sitInTheFoldedStrip() {
+        setScreen()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertDoesNotExist()
+        composeRule.onNodeWithTag(CommunityListTestTags.showing(Showing.Theirs)).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertIsDisplayed()
     }
 
     private fun openOverflow() {
