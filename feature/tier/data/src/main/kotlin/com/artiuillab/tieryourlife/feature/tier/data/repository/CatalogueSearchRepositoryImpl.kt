@@ -56,7 +56,7 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
         if (page > FIRST_PAGE) {
             return fetchTmdb(normalizedQuery, resolvedLanguage, page).map { tmdb ->
                 CatalogueSearchPage(
-                    items = CatalogueSearchMerger.rank(normalizedQuery, tmdb.items),
+                    items = CatalogueSearchMerger.rank(normalizedQuery, tmdb.items).withPictures(),
                     hasMore = tmdb.hasMore,
                 )
             }
@@ -73,10 +73,13 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
                 tmdbResult = tmdb.map { it.items },
                 wikidataResult = wikidataDeferred.await(),
             ).map { items ->
-                CatalogueSearchPage(items = items, hasMore = tmdb.getOrNull()?.hasMore == true)
+                CatalogueSearchPage(items = items.withPictures(), hasMore = tmdb.getOrNull()?.hasMore == true)
             }
         }
     }
+
+    /** A card is its picture; a row of titles with empty frames reads as a broken search. */
+    private fun List<CatalogueItem>.withPictures(): List<CatalogueItem> = filter { it.imageUrl != null }
 
     private suspend fun fetchTmdb(query: String, language: String, page: Int): Result<TmdbPage> {
         val timedOut = withTimeoutOrNull(SEARCH_TIMEOUT_MILLIS) {
