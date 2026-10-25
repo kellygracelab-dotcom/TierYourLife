@@ -19,6 +19,8 @@ data class KeptBoardDto(
     val displayMode: String = "WRAP",
     val category: String? = null,
     val coverImageUrl: String? = null,
+    /** The collage chosen for the cover, in its order; empty when the cards decide. */
+    val coverImageUrls: List<String> = emptyList(),
     val authorName: String? = null,
     val publishedId: String? = null,
     val deletedAt: Long? = null,
@@ -96,6 +98,7 @@ data class KeepBoardRequestDto(
     val displayMode: String,
     val category: String? = null,
     val coverImageUrl: String? = null,
+    val coverImageUrls: List<String> = emptyList(),
     val authorName: String? = null,
     val publishedId: String? = null,
     val deletedAt: Long? = null,

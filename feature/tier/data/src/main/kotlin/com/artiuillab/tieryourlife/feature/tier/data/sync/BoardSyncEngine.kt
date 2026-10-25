@@ -12,6 +12,8 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.toCoverImageUrls
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.toStoredCoverImageUrls
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.BoardConflictDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequestDto
@@ -259,6 +261,7 @@ class BoardSyncEngine @Inject constructor(
             displayMode = board.displayMode,
             category = board.category,
             coverImageUrl = board.coverImageUrl,
+            coverImageUrls = board.coverImageUrls.toCoverImageUrls(),
             authorName = board.authorName,
             publishedId = board.publishedId,
             deletedAt = board.deletedAt,
@@ -303,6 +306,7 @@ private fun KeptBoardDto.toEntity(id: Long, uid: String) = TierListEntity(
     authorName = authorName,
     category = category,
     coverImageUrl = coverImageUrl,
+    coverImageUrls = coverImageUrls.toStoredCoverImageUrls(),
     uid = uid,
 )
 
