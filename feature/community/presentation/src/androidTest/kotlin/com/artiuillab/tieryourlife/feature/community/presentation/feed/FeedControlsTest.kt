@@ -223,6 +223,7 @@ internal class RecordingCommunity(
         after: String?,
         sort: FeedSort,
         following: Boolean,
+        topic: String?,
     ): Result<CommunityPage> {
         asked += Asked(category, sort, following)
         return Result.success(

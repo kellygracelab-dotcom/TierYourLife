@@ -50,6 +50,9 @@ interface TierRepository {
     /** No pictures leave the cover to the cards, one is the cover itself, two to six make a collage. */
     suspend fun setCover(id: Long, pictures: List<String>)
 
+    /** A known topic by id and name, a new one by name alone, or none; a known one leaves no draft behind. */
+    suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?)
+
     suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode)
 
     suspend fun renameTierList(id: Long, title: String)

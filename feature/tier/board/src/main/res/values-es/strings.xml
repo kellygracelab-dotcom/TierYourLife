@@ -16,6 +16,10 @@
     <string name="list_settings_cover">Portada</string>
     <string name="list_settings_cover_none_set">Ninguna</string>
     <string name="list_settings_cover_set">Elegida</string>
+    <string name="list_settings_topic">Tema</string>
+    <string name="list_settings_topic_none">Ninguno</string>
+    <string name="list_settings_topic_waiting">%1$s · pendiente de aprobación</string>
+    <string name="list_settings_public_too_many_topics">Tres de tus temas ya esperan a un moderador. Publica sin tema nuevo o espera.</string>
     <string name="list_settings_public">Pública</string>
     <string name="list_settings_public_banned_forever">Un moderador retiró una de tus listas y ya no puedes publicar.</string>
     <string name="list_settings_public_banned_until">Un moderador retiró una de tus listas. Podrás volver a publicar el %1$s.</string>

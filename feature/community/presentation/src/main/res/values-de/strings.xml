@@ -104,6 +104,7 @@
     <string name="report_note_label">Etwas hinzufügen (optional)</string>
     <string name="report_reason_hate">Hass oder Belästigung</string>
     <string name="report_reason_other">Etwas anderes</string>
+    <string name="report_reason_wrong_category">Falsche Rubrik oder falsches Thema</string>
     <string name="report_reason_sexual">Sexuelle Inhalte</string>
     <string name="report_reason_spam">Spam oder Werbung</string>
     <string name="report_reason_violence">Gewalt oder verstörende Inhalte</string>

@@ -47,11 +47,14 @@ import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.sett
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.ADDED_ITEMS_RESULT_KEY
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.COVER_CHANGED_RESULT_KEY
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.TOPIC_CHANGED_RESULT_KEY
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.coverPickerScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToCoverPicker
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTierDetail
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTopicPicker
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTrash
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.topicPickerScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.trashScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreen
 
@@ -204,12 +207,20 @@ private fun NavContent(
             },
             onOpenAiStudio = { tierListId, listTitle -> navController.navigateToAiStudio(tierListId, listTitle) },
             onChooseCover = { id -> navController.navigateToCoverPicker(id) },
+            onChooseTopic = { id -> navController.navigateToTopicPicker(id) },
         )
         coverPickerScreen(
             onBack = { navController.popBackStack() },
             // The board behind it reads its own row again rather than being told what changed.
             onSaved = {
                 navController.previousBackStackEntry?.savedStateHandle?.set(COVER_CHANGED_RESULT_KEY, true)
+                navController.popBackStack()
+            },
+        )
+        topicPickerScreen(
+            onBack = { navController.popBackStack() },
+            onSaved = {
+                navController.previousBackStackEntry?.savedStateHandle?.set(TOPIC_CHANGED_RESULT_KEY, true)
                 navController.popBackStack()
             },
         )

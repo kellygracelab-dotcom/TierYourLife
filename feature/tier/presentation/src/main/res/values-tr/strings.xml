@@ -151,6 +151,28 @@
     <string name="cover_picker_reset">Sıfırla</string>
     <string name="cover_picker_tab_cards">Kartlarınız · %1$d</string>
     <string name="cover_picker_tab_search">Görsel ara</string>
+    <string name="topic_picker_title">Konu</string>
+    <string name="topic_picker_done">Bitti</string>
+    <string name="topic_picker_hint">Konu ara veya adlandır</string>
+    <string name="topic_picker_none">Konu yok</string>
+    <string name="topic_picker_none_sub">Liste kendi bölümünde tek başına durur.</string>
+    <string name="topic_picker_create">“%1$s” konusunu oluştur</string>
+    <string name="topic_picker_create_note">Bir moderatörü bekler. O zamana kadar liste bu etiketle Diğer bölümünde durur.</string>
+    <plurals name="topic_picker_pending_count">
+        <item quantity="one">%2$d konudan %1$d tanesi bekliyor.</item>
+        <item quantity="other">%2$d konudan %1$d tanesi bekliyor.</item>
+    </plurals>
+    <string name="topic_picker_limit">Üç konunuz zaten bekliyor. Önce birine karar verilmeli.</string>
+    <string name="topic_picker_yours">Konularınız</string>
+    <string name="topic_picker_waiting">Onay bekliyor</string>
+    <string name="topic_picker_rejected">Reddedildi</string>
+    <string name="topic_picker_merged">Başka bir konuyla birleştirildi</string>
+    <string name="topic_picker_suggestion">“%1$s” konusuna benziyor</string>
+    <string name="topic_picker_new_waits">%1$s · onay bekleyecek</string>
+    <plurals name="topic_picker_lists">
+        <item quantity="one">%d liste</item>
+        <item quantity="other">%d liste</item>
+    </plurals>
     <string name="cover_picker_status_automatic">Hiçbir şey seçilmedi: listenin kendi görsellerinden en fazla altı</string>
     <string name="cover_picker_status_one">Tek görsel, kapağın tamamı</string>
     <plurals name="cover_picker_status_collage">

@@ -123,10 +123,14 @@ class TierDetailViewModel @Inject constructor(
                 onSuccess = { published ->
                     val recorded = messages.guard("Recording the published list") {
                         repository.setPublished(tierListId, published?.id, published?.fingerprint)
+                        // The server named the topic: a name that waited is a topic now.
+                        published?.topicId?.let { topicId ->
+                            repository.setTopic(tierListId, topicId, list.topicName ?: list.newTopicName, null)
+                        }
                     }
                     // Reading the list back would land after publicPending clears
-                    // and spring the switch back for a frame. The id is all that changed.
-                    if (recorded) showPublishedId(published?.id)
+                    // and spring the switch back for a frame. The id and the topic are all that changed.
+                    if (recorded) showPublished(published?.id, published?.topicId)
                     // Just sent, so nothing is behind any more.
                     publishedIsBehind = false
                 },
@@ -277,10 +281,17 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    private fun showPublishedId(publishedId: String?) {
+    private fun showPublished(publishedId: String?, topicId: String?) {
         val current = board
         if (current is TierDetailUiState.Success) {
-            board = TierDetailUiState.Success(current.list.copy(publishedId = publishedId))
+            val list = current.list
+            board = TierDetailUiState.Success(
+                if (topicId == null) {
+                    list.copy(publishedId = publishedId)
+                } else {
+                    list.copy(publishedId = publishedId, topicId = topicId, topicName = list.topicName ?: list.newTopicName, newTopicName = null)
+                },
+            )
         }
     }
 

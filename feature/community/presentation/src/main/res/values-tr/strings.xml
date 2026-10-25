@@ -104,6 +104,7 @@
     <string name="report_note_label">Eklemek istediğiniz bir şey (isteğe bağlı)</string>
     <string name="report_reason_hate">Nefret veya taciz</string>
     <string name="report_reason_other">Başka bir şey</string>
+    <string name="report_reason_wrong_category">Yanlış bölüm veya konu</string>
     <string name="report_reason_sexual">Cinsel içerik</string>
     <string name="report_reason_spam">Spam veya reklam</string>
     <string name="report_reason_violence">Şiddet veya rahatsız edici içerik</string>

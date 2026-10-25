@@ -273,6 +273,7 @@ private open class FakeFeedRepository(
         after: String?,
         sort: FeedSort,
         following: Boolean,
+        topic: String?,
     ): Result<CommunityPage> {
         cursorsAsked += after
         queriesAsked += query

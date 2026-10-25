@@ -161,6 +161,30 @@
     <string name="cover_picker_reset">Réinitialiser</string>
     <string name="cover_picker_tab_cards">Vos cartes · %1$d</string>
     <string name="cover_picker_tab_search">Recherche d\'images</string>
+    <string name="topic_picker_title">Thème</string>
+    <string name="topic_picker_done">Terminé</string>
+    <string name="topic_picker_hint">Chercher ou nommer un thème</string>
+    <string name="topic_picker_none">Sans thème</string>
+    <string name="topic_picker_none_sub">La liste reste seule dans sa rubrique.</string>
+    <string name="topic_picker_create">Créer le thème « %1$s »</string>
+    <string name="topic_picker_create_note">Attend un modérateur. Jusque-là la liste reste dans Autres avec cette étiquette.</string>
+    <plurals name="topic_picker_pending_count">
+        <item quantity="one">%1$d sur %2$d en attente.</item>
+        <item quantity="many">%1$d sur %2$d en attente.</item>
+        <item quantity="other">%1$d sur %2$d en attente.</item>
+    </plurals>
+    <string name="topic_picker_limit">Trois de vos thèmes attendent déjà. L\'un d\'eux doit être tranché d\'abord.</string>
+    <string name="topic_picker_yours">Vos thèmes</string>
+    <string name="topic_picker_waiting">En attente d\'approbation</string>
+    <string name="topic_picker_rejected">Refusé</string>
+    <string name="topic_picker_merged">Fusionné dans un autre thème</string>
+    <string name="topic_picker_suggestion">Ressemble à « %1$s »</string>
+    <string name="topic_picker_new_waits">%1$s · attendra l\'approbation</string>
+    <plurals name="topic_picker_lists">
+        <item quantity="one">%d liste</item>
+        <item quantity="many">%d listes</item>
+        <item quantity="other">%d listes</item>
+    </plurals>
     <string name="cover_picker_status_automatic">Rien de choisi : jusqu\'à six images de la liste elle-même</string>
     <string name="cover_picker_status_one">Une image, toute la couverture</string>
     <plurals name="cover_picker_status_collage">

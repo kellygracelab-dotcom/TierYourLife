@@ -100,6 +100,7 @@
     <string name="report_note_label">補足があれば（任意）</string>
     <string name="report_reason_hate">ヘイトや嫌がらせ</string>
     <string name="report_reason_other">その他</string>
+    <string name="report_reason_wrong_category">セクションまたはトピックが違う</string>
     <string name="report_reason_sexual">性的なコンテンツ</string>
     <string name="report_reason_spam">スパムや広告</string>
     <string name="report_reason_violence">暴力的・衝撃的なコンテンツ</string>

@@ -16,6 +16,10 @@
     <string name="list_settings_cover">Обложка</string>
     <string name="list_settings_cover_none_set">Нет</string>
     <string name="list_settings_cover_set">Выбрана</string>
+    <string name="list_settings_topic">Тема</string>
+    <string name="list_settings_topic_none">Нет</string>
+    <string name="list_settings_topic_waiting">%1$s · ждёт одобрения</string>
+    <string name="list_settings_public_too_many_topics">Три ваших темы уже ждут модератора. Опубликуйте без новой темы или дождитесь решения.</string>
     <string name="list_settings_public">Публичный</string>
     <string name="list_settings_public_banned_forever">Модератор снял один из ваших списков, и публиковать больше нельзя.</string>
     <string name="list_settings_public_banned_until">Модератор снял один из ваших списков. Публиковать снова можно с %1$s.</string>

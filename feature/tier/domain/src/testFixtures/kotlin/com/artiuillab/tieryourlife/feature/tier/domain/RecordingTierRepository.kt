@@ -52,6 +52,13 @@ class RecordingTierRepository(
 
     val covers = mutableListOf<Pair<Long, List<String>>>()
 
+    /** Every topic set, as (id, topicId, topicName, newTopicName). */
+    val topics = mutableListOf<List<Any?>>()
+
+    override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) {
+        topics += listOf(id, topicId, topicName, newTopicName)
+    }
+
     override suspend fun setCover(id: Long, pictures: List<String>) {
         covers += id to pictures
     }

@@ -120,6 +120,7 @@
     <string name="report_note_label">أي إضافة (اختياري)</string>
     <string name="report_reason_hate">كراهية أو تحرّش</string>
     <string name="report_reason_other">شيء آخر</string>
+    <string name="report_reason_wrong_category">قسم أو موضوع خاطئ</string>
     <string name="report_reason_sexual">محتوى جنسي</string>
     <string name="report_reason_spam">رسائل مزعجة أو إعلانات</string>
     <string name="report_reason_violence">عنف أو محتوى صادم</string>

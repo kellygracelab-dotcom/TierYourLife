@@ -112,6 +112,7 @@
     <string name="report_note_label">Coś do dodania (opcjonalnie)</string>
     <string name="report_reason_hate">Nienawiść lub nękanie</string>
     <string name="report_reason_other">Coś innego</string>
+    <string name="report_reason_wrong_category">Zły dział lub temat</string>
     <string name="report_reason_sexual">Treści seksualne</string>
     <string name="report_reason_spam">Spam lub reklama</string>
     <string name="report_reason_violence">Przemoc lub drastyczne treści</string>

@@ -108,6 +108,7 @@
     <string name="report_note_label">Algo a acrescentar (opcional)</string>
     <string name="report_reason_hate">Ódio ou assédio</string>
     <string name="report_reason_other">Outra coisa</string>
+    <string name="report_reason_wrong_category">Seção ou tema errados</string>
     <string name="report_reason_sexual">Conteúdo sexual</string>
     <string name="report_reason_spam">Spam ou publicidade</string>
     <string name="report_reason_violence">Violência ou conteúdo chocante</string>

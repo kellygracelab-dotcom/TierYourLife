@@ -161,6 +161,30 @@
     <string name="cover_picker_reset">Restablecer</string>
     <string name="cover_picker_tab_cards">Tus tarjetas · %1$d</string>
     <string name="cover_picker_tab_search">Buscar imágenes</string>
+    <string name="topic_picker_title">Tema</string>
+    <string name="topic_picker_done">Hecho</string>
+    <string name="topic_picker_hint">Buscar o nombrar un tema</string>
+    <string name="topic_picker_none">Sin tema</string>
+    <string name="topic_picker_none_sub">La lista queda sola en su sección.</string>
+    <string name="topic_picker_create">Crear el tema «%1$s»</string>
+    <string name="topic_picker_create_note">Espera a un moderador. Hasta entonces la lista queda en Otros con esta etiqueta.</string>
+    <plurals name="topic_picker_pending_count">
+        <item quantity="one">%1$d de %2$d en espera.</item>
+        <item quantity="many">%1$d de %2$d en espera.</item>
+        <item quantity="other">%1$d de %2$d en espera.</item>
+    </plurals>
+    <string name="topic_picker_limit">Tres de tus temas ya esperan. Primero hay que decidir uno.</string>
+    <string name="topic_picker_yours">Tus temas</string>
+    <string name="topic_picker_waiting">Pendiente de aprobación</string>
+    <string name="topic_picker_rejected">Rechazado</string>
+    <string name="topic_picker_merged">Unido a otro tema</string>
+    <string name="topic_picker_suggestion">Se parece a «%1$s»</string>
+    <string name="topic_picker_new_waits">%1$s · quedará pendiente de aprobación</string>
+    <plurals name="topic_picker_lists">
+        <item quantity="one">%d lista</item>
+        <item quantity="many">%d listas</item>
+        <item quantity="other">%d listas</item>
+    </plurals>
     <string name="cover_picker_status_automatic">Nada elegido: hasta seis imágenes de la propia lista</string>
     <string name="cover_picker_status_one">Una imagen, toda la portada</string>
     <plurals name="cover_picker_status_collage">

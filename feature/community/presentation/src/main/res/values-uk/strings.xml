@@ -112,6 +112,7 @@
     <string name="report_note_label">Щось додати (необовʼязково)</string>
     <string name="report_reason_hate">Ненависть або цькування</string>
     <string name="report_reason_other">Щось інше</string>
+    <string name="report_reason_wrong_category">Не той розділ чи тема</string>
     <string name="report_reason_sexual">Сексуальний контент</string>
     <string name="report_reason_spam">Спам або реклама</string>
     <string name="report_reason_violence">Насильство або шокуючий контент</string>

@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
+import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
@@ -116,6 +117,30 @@ class TierDetailViewModelTest {
 
         assertEquals(1, community.published.size)
         assertEquals("published-1", repository.publishedIds.single().second)
+    }
+
+    // The author named a topic the server had not seen; publishing is when it becomes one.
+    @Test
+    fun setPublic_recordsTheTopicTheServerNamed() = runBlocking {
+        val repository = FakeTierRepository(listWithOneCard().copy(newTopicName = "Oscars 2025"))
+        val community = FakeCommunityRepositoryForDetail(
+            publishResult = Result.success(Published("published-1", "sent", topicId = "t1")),
+        )
+        val viewModel = TierDetailViewModel(
+            repository,
+            community,
+            FakeAccountRepository(FakeAccountRepository.signedIn),
+            savedStateHandle(),
+        )
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+
+        viewModel.setPublic(true)
+        viewModel.screen.firstWithin { !it.publish.publishing }
+
+        assertEquals(listOf(listOf(1L, "t1", "Oscars 2025", null)), repository.topicsSet)
+        val shown = (viewModel.screen.value.board as TierDetailUiState.Success).list
+        assertEquals("t1", shown.topicId)
+        assertNull(shown.newTopicName)
     }
 
     // The switch reads publicPending while the request is in flight and the
@@ -416,6 +441,13 @@ private class FakeTierRepository(
 
     override suspend fun setCover(id: Long, pictures: List<String>) {
         list = list.copy(coverImageUrl = pictures.singleOrNull(), coverImageUrls = pictures.takeIf { it.size > 1 }.orEmpty())
+    }
+
+    val topicsSet = mutableListOf<List<Any?>>()
+
+    override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) {
+        topicsSet += listOf(id, topicId, topicName, newTopicName)
+        list = list.copy(topicId = topicId, topicName = topicName, newTopicName = newTopicName)
     }
 
     override suspend fun createFromTemplate(

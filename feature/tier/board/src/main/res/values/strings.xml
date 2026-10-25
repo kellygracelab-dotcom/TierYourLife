@@ -16,6 +16,10 @@
     <string name="list_settings_cover">Cover</string>
     <string name="list_settings_cover_none_set">None</string>
     <string name="list_settings_cover_set">Chosen</string>
+    <string name="list_settings_topic">Topic</string>
+    <string name="list_settings_topic_none">None</string>
+    <string name="list_settings_topic_waiting">%1$s · waiting for approval</string>
+    <string name="list_settings_public_too_many_topics">Three of your topics are waiting for a moderator. Publish without a new topic, or wait for one of them.</string>
     <string name="list_settings_public">Public</string>
     <string name="list_settings_public_banned_forever">A moderator took down one of your lists, and you can no longer publish.</string>
     <string name="list_settings_public_banned_until">A moderator took down one of your lists. You can publish again on %1$s.</string>

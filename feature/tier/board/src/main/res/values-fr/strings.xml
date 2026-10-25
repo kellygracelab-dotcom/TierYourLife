@@ -16,6 +16,10 @@
     <string name="list_settings_cover">Couverture</string>
     <string name="list_settings_cover_none_set">Aucune</string>
     <string name="list_settings_cover_set">Choisie</string>
+    <string name="list_settings_topic">Thème</string>
+    <string name="list_settings_topic_none">Aucun</string>
+    <string name="list_settings_topic_waiting">%1$s · en attente d\'approbation</string>
+    <string name="list_settings_public_too_many_topics">Trois de vos thèmes attendent déjà un modérateur. Publiez sans nouveau thème ou patientez.</string>
     <string name="list_settings_public">Publique</string>
     <string name="list_settings_public_banned_forever">La modération a retiré l’une de vos listes, et vous ne pouvez plus publier.</string>
     <string name="list_settings_public_banned_until">La modération a retiré l’une de vos listes. Vous pourrez publier à nouveau le %1$s.</string>

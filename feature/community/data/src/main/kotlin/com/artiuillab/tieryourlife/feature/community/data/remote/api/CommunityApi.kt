@@ -1,9 +1,13 @@
 package com.artiuillab.tieryourlife.feature.community.data.remote.api
 
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.AppointModeratorRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.FaceDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.FollowStateDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.FollowedAuthorsDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModerationQueueDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModeratorsDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.MoveListRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PendingTopicsDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedFeedDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIdDto
@@ -11,6 +15,11 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedLi
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ReportRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SuggestedAuthorsDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TakeDownRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicMergeRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicNameRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicSectionRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicsDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -29,6 +38,7 @@ interface CommunityApi {
         @Query("after") after: String? = null,
         @Query("sort") sort: String? = null,
         @Query("following") following: String? = null,
+        @Query("topic") topic: String? = null,
     ): PublishedFeedDto
 
     @GET("lists/follow/{authorUid}")
@@ -45,6 +55,52 @@ interface CommunityApi {
 
     @GET("lists/following")
     suspend fun following(): FollowedAuthorsDto
+
+    @GET("lists/topics")
+    suspend fun topics(
+        @Query("q") query: String? = null,
+        @Query("section") section: String? = null,
+        @Query("limit") limit: Int? = null,
+    ): TopicsDto
+
+    @GET("lists/topics/mine")
+    suspend fun myTopics(): TopicsDto
+
+    @GET("lists/topics/pending")
+    suspend fun pendingTopics(): PendingTopicsDto
+
+    @GET("lists/topics/{id}")
+    suspend fun topic(@Path("id") id: String): TopicDto
+
+    @POST("lists/topics/{id}/follow")
+    suspend fun followTopic(@Path("id") id: String)
+
+    @DELETE("lists/topics/{id}/follow")
+    suspend fun unfollowTopic(@Path("id") id: String)
+
+    @POST("lists/topics/{id}/approve")
+    suspend fun approveTopic(@Path("id") id: String, @Body request: TopicSectionRequestDto): TopicDto
+
+    @POST("lists/topics/{id}/rename")
+    suspend fun renameTopic(@Path("id") id: String, @Body request: TopicNameRequestDto): TopicDto
+
+    @POST("lists/topics/{id}/merge")
+    suspend fun mergeTopic(@Path("id") id: String, @Body request: TopicMergeRequestDto): TopicDto
+
+    @POST("lists/topics/{id}/reject")
+    suspend fun rejectTopic(@Path("id") id: String): TopicDto
+
+    @POST("lists/{id}/move")
+    suspend fun moveList(@Path("id") id: String, @Body request: MoveListRequestDto)
+
+    @GET("lists/moderators")
+    suspend fun moderators(): ModeratorsDto
+
+    @POST("lists/moderators/{uid}")
+    suspend fun appointModerator(@Path("uid") uid: String, @Body request: AppointModeratorRequestDto)
+
+    @DELETE("lists/moderators/{uid}")
+    suspend fun removeModerator(@Path("uid") uid: String)
 
     @POST("lists/{id}/taken")
     suspend fun noteTaken(@Path("id") id: String)

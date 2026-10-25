@@ -505,6 +505,7 @@ private fun ReportReason.labelRes(): Int = when (this) {
     ReportReason.Hate -> R.string.report_reason_hate
     ReportReason.Spam -> R.string.report_reason_spam
     ReportReason.Other -> R.string.report_reason_other
+    ReportReason.WrongCategory -> R.string.report_reason_wrong_category
 }
 
 @TierYourLifeDevicePreviews

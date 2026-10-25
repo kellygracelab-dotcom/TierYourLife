@@ -16,6 +16,10 @@
     <string name="list_settings_cover">カバー</string>
     <string name="list_settings_cover_none_set">なし</string>
     <string name="list_settings_cover_set">選択済み</string>
+    <string name="list_settings_topic">トピック</string>
+    <string name="list_settings_topic_none">なし</string>
+    <string name="list_settings_topic_waiting">%1$s · 承認待ち</string>
+    <string name="list_settings_public_too_many_topics">あなたのトピックが3件、モデレーターの確認を待っています。新しいトピックなしで公開するか、お待ちください。</string>
     <string name="list_settings_public">公開</string>
     <string name="list_settings_public_banned_forever">モデレーターがあなたのリストを1つ取り下げたため、今後は公開できません。</string>
     <string name="list_settings_public_banned_until">モデレーターがあなたのリストを1つ取り下げました。%1$s から再び公開できます。</string>

@@ -21,6 +21,11 @@ data class TierList(
     val coverImageUrl: String? = null,
     /** Two to six web pictures the author chose as a collage; empty while the cover is one picture or left to the cards. */
     val coverImageUrls: List<String> = emptyList(),
+    /** The community topic this list is filed under, once the server knows it. */
+    val topicId: String? = null,
+    val topicName: String? = null,
+    /** A topic the author named that the server has not seen yet; sent with the next publish and replaced by what comes back. */
+    val newTopicName: String? = null,
     /** On the copy kept after the same board changed on two phones: the other phone's name. */
     val arrivedFrom: String? = null,
     /** When anything about this board last changed. */

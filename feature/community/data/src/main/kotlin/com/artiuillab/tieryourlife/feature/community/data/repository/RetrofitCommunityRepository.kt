@@ -3,7 +3,10 @@ package com.artiuillab.tieryourlife.feature.community.data.repository
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.feature.community.data.remote.api.CommunityApi
 import com.artiuillab.tieryourlife.feature.community.data.remote.banNotice
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.AppointModeratorRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModerationReportDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.MoveListRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PendingTopicDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedItemDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListDto
@@ -11,7 +14,12 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedLi
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTierDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ReportRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TakeDownRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicMergeRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicNameRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicSectionRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.isAppUnverified
+import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
@@ -20,12 +28,16 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
+import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
+import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
+import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -54,6 +66,7 @@ class RetrofitCommunityRepository @Inject constructor(
         after: String?,
         sort: FeedSort,
         following: Boolean,
+        topic: String?,
     ): Result<CommunityPage> = attempt("Reading the community feed") {
         val page = api.feed(
             category = category?.id,
@@ -64,6 +77,7 @@ class RetrofitCommunityRepository @Inject constructor(
             // Sent only when wanted: an ordinary feed carries no parameter
             // the server has to read as false.
             following = "1".takeIf { following },
+            topic = topic,
         )
         CommunityPage(
             lists = page.lists.map { it.toSummary() },
@@ -90,6 +104,50 @@ class RetrofitCommunityRepository @Inject constructor(
         attempt("Reading who is followed") {
             api.following().authors.map { FollowedAuthor(uid = it.uid, name = it.name, photoUrl = it.photoUrl) }
         }
+
+    override suspend fun followedTopics(): Result<List<Topic>> =
+        attempt("Reading which topics are followed") { api.following().topics.map { it.toDomain() } }
+
+    override suspend fun topics(query: String?, section: ListCategory?): Result<List<Topic>> =
+        attempt("Searching topics") {
+            api.topics(query = query?.trim()?.takeIf { it.isNotEmpty() }, section = section?.id).topics.map { it.toDomain() }
+        }
+
+    override suspend fun myTopics(): Result<List<Topic>> =
+        attempt("Reading this person's topics") { api.myTopics().topics.map { it.toDomain() } }
+
+    override suspend fun topic(id: String): Result<Topic> = attempt("Reading a topic") { api.topic(id).toDomain() }
+
+    override suspend fun followTopic(id: String): Result<Unit> = attempt("Following a topic") { api.followTopic(id) }
+
+    override suspend fun unfollowTopic(id: String): Result<Unit> = attempt("Unfollowing a topic") { api.unfollowTopic(id) }
+
+    override suspend fun pendingTopics(): Result<List<PendingTopic>> =
+        attempt("Reading the topic queue") { api.pendingTopics().topics.map { it.toDomain() } }
+
+    override suspend fun approveTopic(id: String, section: ListCategory): Result<Topic> =
+        attempt("Approving a topic") { api.approveTopic(id, TopicSectionRequestDto(section.id)).toDomain() }
+
+    override suspend fun renameTopic(id: String, name: String): Result<Topic> =
+        attempt("Renaming a topic") { api.renameTopic(id, TopicNameRequestDto(name.trim())).toDomain() }
+
+    override suspend fun mergeTopic(id: String, into: String): Result<Topic> =
+        attempt("Merging a topic") { api.mergeTopic(id, TopicMergeRequestDto(into)).toDomain() }
+
+    override suspend fun rejectTopic(id: String): Result<Topic> = attempt("Rejecting a topic") { api.rejectTopic(id).toDomain() }
+
+    override suspend fun moveList(publishedId: String, category: ListCategory, topicId: String?): Result<Unit> =
+        attempt("Moving a list") { api.moveList(publishedId, MoveListRequestDto(category.id, topicId)) }
+
+    override suspend fun moderators(): Result<List<Moderator>> = attempt("Reading the moderators") {
+        api.moderators().moderators.map { Moderator(uid = it.uid, name = it.name, photoUrl = it.photoUrl, appointedAtMillis = it.appointedAt) }
+    }
+
+    override suspend fun appointModerator(uid: String, name: String?, photoUrl: String?): Result<Unit> =
+        attempt("Appointing a moderator") { api.appointModerator(uid, AppointModeratorRequestDto(name, photoUrl)) }
+
+    override suspend fun removeModerator(uid: String): Result<Unit> =
+        attempt("Removing a moderator") { api.removeModerator(uid) }
 
     override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> =
         attempt("Reading who to follow") {
@@ -120,8 +178,8 @@ class RetrofitCommunityRepository @Inject constructor(
         val up = pictures.sendNow(list.ownPictureIds(pictures))
         val request = list.toRequest(pictures, up)
         val existing = list.publishedId
-        val id = if (existing == null) api.publish(request).id else api.republish(existing, request).id
-        Result.success(Published(id = id, fingerprint = PublishFingerprint.of(list, pictures::pictureIdOf)))
+        val answer = if (existing == null) api.publish(request) else api.republish(existing, request)
+        Result.success(Published(id = answer.id, fingerprint = PublishFingerprint.of(list, pictures::pictureIdOf), topicId = answer.topicId))
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
@@ -200,7 +258,7 @@ private fun Throwable.asPublishError(): PublishError = when {
     isAppUnverified() -> PublishError.NotVerified
     this is HttpException -> when (code()) {
         403 -> banNotice()?.let { PublishError.Banned(it.untilMillis) } ?: PublishError.NotSignedIn
-        409 -> PublishError.TooManyLists
+        409 -> if (proxyCode() == TOO_MANY_PENDING_TOPICS) PublishError.TooManyPendingTopics else PublishError.TooManyLists
         413 -> PublishError.TooLarge
         422 -> PublishError.PictureRefused
         else -> PublishError.Unknown
@@ -209,6 +267,37 @@ private fun Throwable.asPublishError(): PublishError = when {
     this is IOException -> PublishError.Offline
     else -> PublishError.Unknown
 }
+
+private const val TOO_MANY_PENDING_TOPICS = "TOO_MANY_PENDING_TOPICS"
+
+private fun TopicDto.toDomain() = Topic(
+    id = id,
+    name = name,
+    section = ListCategory.fromId(section),
+    status = TopicStatus.fromId(status),
+    listCount = listCount,
+    followerCount = followerCount,
+    following = following,
+    createdBy = createdBy,
+    mergedInto = mergedInto,
+)
+
+private fun PendingTopicDto.toDomain() = PendingTopic(
+    topic = Topic(
+        id = id,
+        name = name,
+        section = ListCategory.fromId(section),
+        status = TopicStatus.fromId(status),
+        listCount = listCount,
+        followerCount = followerCount,
+        following = following,
+        createdBy = createdBy,
+        mergedInto = mergedInto,
+    ),
+    proposerName = proposerName,
+    requestedSection = ListCategory.fromId(requestedSection),
+    similar = similar.map { it.toDomain() },
+)
 
 private fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     id = id,
@@ -224,6 +313,8 @@ private fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     updatedAtMillis = updatedAt,
     takeCount = takeCount,
     anonymous = anonymous,
+    topicId = topicId,
+    topicName = topicName,
 )
 
 internal fun PublishedListDto.toDomain() = PublishedList(
@@ -240,6 +331,8 @@ internal fun PublishedListDto.toDomain() = PublishedList(
         tierColors = tierColors,
         updatedAtMillis = updatedAt,
         anonymous = anonymous,
+        topicId = topicId,
+        topicName = topicName,
     ),
     tiers = tiers.mapIndexed { index, tier ->
         Tier(
@@ -274,6 +367,9 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
     coverImageUrl = coverImageUrl?.takeIf { it.startsWith("https://") },
     coverPictureId = images.pictureIdOf(coverImageUrl)?.takeIf { it in uploaded },
     coverImageUrls = coverImageUrls.filter { it.startsWith("https://") },
+    topicId = topicId,
+    // A name the server has not seen yet; once it has, the id above is what travels.
+    newTopic = newTopicName?.takeIf { topicId == null },
     tiers = tiers.filterNot { it.isPool }.map {
         PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark)
     },
