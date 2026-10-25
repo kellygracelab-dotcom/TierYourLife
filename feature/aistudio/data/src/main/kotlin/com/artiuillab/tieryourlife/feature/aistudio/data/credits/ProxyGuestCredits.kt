@@ -28,10 +28,10 @@ class ProxyGuestCredits @Inject constructor(
         adopted.credits?.let(preferences::setLastKnownCredits)
         adopted.moved
     } catch (e: IOException) {
-        Timber.d(e, "Could not carry the guest balance over")
+        Timber.i(e, "Could not carry the guest balance over")
         false
     } catch (e: HttpException) {
-        Timber.d(e, "The server would not carry the guest balance over")
+        Timber.w(e, "The server would not carry the guest balance over")
         false
     }
 }

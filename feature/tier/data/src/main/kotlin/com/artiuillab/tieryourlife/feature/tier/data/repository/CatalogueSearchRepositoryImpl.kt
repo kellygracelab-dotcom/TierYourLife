@@ -15,6 +15,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.search.WikidataCandidate
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.serialization.SerializationException
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
@@ -93,6 +94,9 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
             } catch (exception: HttpException) {
                 Timber.w(exception, "TMDB search refused: HTTP ${exception.code()}")
                 Result.failure(exception)
+            } catch (exception: SerializationException) {
+                Timber.w(exception, "TMDB answered in a shape this app does not read")
+                Result.failure(exception)
             }
         }
         return timedOut ?: Result.failure<TmdbPage>(TimeoutException("TMDB search timed out"))
@@ -108,6 +112,9 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
                 Result.failure(exception)
             } catch (exception: HttpException) {
                 Timber.w(exception, "Wikidata search refused: HTTP ${exception.code()}")
+                Result.failure(exception)
+            } catch (exception: SerializationException) {
+                Timber.w(exception, "Wikidata answered in a shape this app does not read")
                 Result.failure(exception)
             }
         }
