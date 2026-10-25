@@ -10,6 +10,7 @@ object TierDetailTestTags {
     const val GENERATE_CHIP = "tier_detail_generate_chip"
     const val POOL_ITEMS = "tier_detail_pool_items"
     const val POOL_PANEL = "tier_detail_pool_panel"
+    const val POOL_TOGGLE = "tier_detail_pool_toggle"
     const val MOVE_SHEET = "tier_detail_move_sheet"
     const val MOVE_SHEET_REMOVE = "tier_detail_move_sheet_remove"
     const val MOVE_SHEET_POOL = "tier_detail_move_sheet_pool"

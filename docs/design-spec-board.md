@@ -67,6 +67,13 @@ itself — a three-way choice is too big for a menu item, so the menu became a s
 The pool under a ranked list is a collapsed 60dp bar with a count and an Add chip; it had
 never had a collapsed state before.
 
+Since 25.10 the pool under the rows is a sheet as well (`PoolSheet`). Folded, it is a strip:
+the handle, the count, up to three small pictures from the pool and the Add chip, so adding is
+never more than one tap away. Open, it is the row of cards it always was. It opens on its own
+only where there is ranking to do, someone's own board with cards left in the pool; a reader's
+pool and an empty one start folded. A tap on the strip or a pull on it switches, with the size
+animated, and a card dropped on the folded strip still lands in the pool.
+
 ## 4. Moving a card without dragging it
 
 Double-tap a poster — not a long press, which would be confused with the start of a drag —

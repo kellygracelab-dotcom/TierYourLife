@@ -198,6 +198,8 @@ class TierDetailLayoutTest : TierDetailScreenTestBase() {
 
         composeRule.onNodeWithTag(TierDetailTestTags.ADD_CHIP).assertDoesNotExist()
         composeRule.onNodeWithTag(TierDetailTestTags.GENERATE_CHIP).assertDoesNotExist()
+        // A reader's pool starts folded; the cards are there once it is opened.
+        composeRule.onNodeWithTag(TierDetailTestTags.POOL_TOGGLE).performClick()
         composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertIsDisplayed()
     }
 }
