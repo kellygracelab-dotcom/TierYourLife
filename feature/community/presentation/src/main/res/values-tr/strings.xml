@@ -3,6 +3,7 @@
     <string name="action_done">Tamam</string>
     <string name="action_follow">Takip et</string>
     <string name="action_following">Takiptesiniz</string>
+    <string name="action_unfollow">Takibi bırak</string>
     <string name="author_failed">Bu profil açılamadı.</string>
     <plurals name="author_followers_count">
         <item quantity="one">%d takipçi</item>

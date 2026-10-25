@@ -310,9 +310,10 @@ private fun Header(state: AuthorUiState.Ready, onToggleFollow: () -> Unit) {
  */
 @Composable
 private fun FollowButton(following: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    // Named for what the tap does: "Following" read as a state nobody could change.
     if (following) {
         OutlinedButton(onClick = onClick, modifier = modifier) {
-            Text(stringResource(R.string.action_following))
+            Text(stringResource(R.string.action_unfollow))
         }
     } else {
         Button(onClick = onClick, modifier = modifier) {

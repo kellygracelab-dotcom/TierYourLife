@@ -3,6 +3,7 @@
     <string name="action_done">Done</string>
     <string name="action_follow">Follow</string>
     <string name="action_following">Following</string>
+    <string name="action_unfollow">Unfollow</string>
     <string name="author_failed">Could not load this profile.</string>
     <plurals name="author_followers_count">
         <item quantity="one">%d follower</item>
