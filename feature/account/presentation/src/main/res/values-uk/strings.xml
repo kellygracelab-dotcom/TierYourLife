@@ -34,7 +34,8 @@
     <string name="account_face_body">Виберіть картку зі своїх списків.</string>
     <string name="account_face_no_cards">Жодна ваша картка ще не має каталожного зображення.</string>
     <string name="account_face_letter">Тільки літера</string>
-    <string name="account_face_note">Нічого не завантажується. Зображення залишається там, де воно вже є в мережі.</string>
+    <string name="account_face_gallery">Фото з галереї</string>
+    <string name="account_face_note">Зображення картки залишається там, де воно є в мережі. Фото з галереї перевіряється і зберігається в акаунті.</string>
     <string name="account_cd_change_face">Змінити аватар</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d генерація</item>

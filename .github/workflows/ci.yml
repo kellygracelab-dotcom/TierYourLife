@@ -90,10 +90,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 24 is minSdk and 34 is close to what the app actually targets. The two
+        # 26 is minSdk and 34 is close to what the app actually targets. The two
         # differ in ways this app touches — scoped storage, per-app language,
         # ImageDecoder — so a pass on one says little about the other.
-        api-level: [24, 34]
+        api-level: [26, 34]
 
     steps:
       - name: Checkout
@@ -117,40 +117,17 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      # Booting a cold emulator costs more than running the tests on it. The
-      # snapshot is built once per image and restored on every run after.
-      - name: Cache the emulator snapshot
-        uses: actions/cache@v6
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ matrix.api-level }}-x86_64-4096M
-
-      - name: Build the snapshot when there is nothing to restore
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          target: ${{ matrix.api-level >= 30 && 'google_apis' || 'default' }}
-          arch: x86_64
-          force-avd-creation: false
-          disable-animations: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disk-size: 4096M
-          script: echo "Snapshot written."
-
       - name: Run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
           target: ${{ matrix.api-level >= 30 && 'google_apis' || 'default' }}
           arch: x86_64
-          force-avd-creation: false
+          force-avd-creation: true
           disable-animations: true
-          # -no-snapshot-save so a run cannot leave its own leftovers in the
-          # cached image and change what the next one starts from.
+          # A cold boot every time. The snapshot that used to be cached never
+          # loaded ("different AVD configuration") and left an API 26 emulator
+          # unable to exit, which cost the whole timeout after a green run.
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           # The default 800M image fills up while installing five test APKs, and a
           # full disk surfaces as an opaque "Failed to install-write all apks".
