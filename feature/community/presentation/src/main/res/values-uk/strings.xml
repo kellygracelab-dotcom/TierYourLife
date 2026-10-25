@@ -3,6 +3,7 @@
     <string name="action_done">Готово</string>
     <string name="action_follow">Підписатися</string>
     <string name="action_following">Ви підписані</string>
+    <string name="action_unfollow">Відписатися</string>
     <string name="author_failed">Не вдалося відкрити профіль.</string>
     <plurals name="author_followers_count">
         <item quantity="one">%d підписник</item>

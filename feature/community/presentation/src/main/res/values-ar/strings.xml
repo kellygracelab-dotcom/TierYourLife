@@ -3,6 +3,7 @@
     <string name="action_done">تم</string>
     <string name="action_follow">متابعة</string>
     <string name="action_following">تتابعه</string>
+    <string name="action_unfollow">إلغاء المتابعة</string>
     <string name="author_failed">تعذّر فتح هذا الملف الشخصي.</string>
     <plurals name="author_followers_count">
         <item quantity="zero">لا متابعين</item>

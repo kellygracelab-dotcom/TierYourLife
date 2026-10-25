@@ -3,6 +3,7 @@
     <string name="action_done">Terminé</string>
     <string name="action_follow">Suivre</string>
     <string name="action_following">Abonné</string>
+    <string name="action_unfollow">Ne plus suivre</string>
     <string name="author_failed">Impossible d\'ouvrir ce profil.</string>
     <plurals name="author_followers_count">
         <item quantity="one">%d abonné</item>
