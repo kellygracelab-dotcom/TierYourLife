@@ -11,12 +11,18 @@ set -u
 
 adb shell settings put global verifier_verify_adb_installs 0
 
-# Read straight off the run, not after an `if`: a failed `if` with no `else`
+# The test runner's own lines stream into the job log as the run goes, so a
+# hang names the test it stopped on instead of leaving an hour of silence.
+adb logcat -c
+adb logcat -s TestRunner:I &
+logcat_pid=$!
+trap 'kill "$logcat_pid" 2>/dev/null' EXIT
+
+# Read straight off the pipeline, not after an `if`: a failed `if` with no `else`
 # is a success, and `status=$?` there reported every red run green.
 log=instrumentation.log
-./gradlew connectedDebugAndroidTest > "$log" 2>&1
-status=$?
-cat "$log"
+./gradlew connectedDebugAndroidTest 2>&1 | tee "$log"
+status=${PIPESTATUS[0]}
 
 if [ "$status" -eq 0 ]; then
   exit 0
