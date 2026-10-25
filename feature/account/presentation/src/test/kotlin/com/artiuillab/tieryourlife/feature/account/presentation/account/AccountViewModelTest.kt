@@ -47,6 +47,26 @@ class AccountViewModelTest {
         assertEquals(listOf("token-1"), repository.tokens)
     }
 
+    // Two libraries are never merged without asking, and an account that could
+    // not be read might hold one: the sign-in is undone instead.
+    @Test
+    fun signIn_whenTheAccountsBoardsCannotBeRead_undoesTheSignInAndSaysSo() = runBlocking {
+        var signedOut = false
+        val repository = FakeAccountRepository(onSignOut = { signedOut = true })
+        val viewModel = viewModel(
+            repository,
+            FakeGoogleCredential(GoogleCredentialResult.Token("token-1")),
+            merge = UnreadableAccount,
+        )
+
+        viewModel.signIn(picker::request)
+        val state = viewModel.state.firstWithin { it.notice != null }
+
+        assertEquals(AccountNotice.SignInFailed, state.notice)
+        assertEquals(true, signedOut)
+        assertNull(state.merge)
+    }
+
     // Closing the picker is a decision, not a fault: nothing should be said
     // about it, and the button has to come back to life.
     @Test
@@ -225,9 +245,10 @@ class AccountViewModelTest {
         credits: GenerationCredits = FakeGenerationCredits(),
         publishedLists: OwnLists = FakeOwnLists(),
         erasure: AccountErasure = NoErasure,
+        merge: BoardMerge = NoMerge,
     ): AccountViewModel {
         picker = credential
-        return AccountViewModel(repository, credits, publishedLists, FakeCommunityForAccount(), FakeAppPreferences(), NoMerge, erasure)
+        return AccountViewModel(repository, credits, publishedLists, FakeCommunityForAccount(), FakeAppPreferences(), merge, erasure)
     }
 }
 
@@ -279,6 +300,13 @@ private class FakeGenerationCredits(private val balance: Int? = null) : Generati
         reads++
         return balance
     }
+}
+
+/** The account's index would not load. */
+private object UnreadableAccount : BoardMerge {
+    override suspend fun choice(): MergeChoice? = null
+    override suspend fun keepEverything(fromThisPhone: String) = Unit
+    override suspend fun useAccountBoards() = Unit
 }
 
 /** Nothing on either side, so the question never comes up in these cases. */

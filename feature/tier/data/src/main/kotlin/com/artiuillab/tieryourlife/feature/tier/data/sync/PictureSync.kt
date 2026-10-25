@@ -87,16 +87,20 @@ class PictureSync @Inject constructor(
 
         var done = 0
         _restoring.value = PictureRestore.Progress(done = 0, total = missing.size)
-        missing.forEach { (itemUid, pictureId) ->
-            val bytes = vault.get(pictureId)
-            if (bytes != null) {
-                dao.setItemImage(itemUid, images.write(pictureId, bytes))
-                // Already up there, so it never needs sending back.
-                dao.rememberPicture(PictureSyncEntity(pictureId, System.currentTimeMillis()))
+        // A write that throws halfway must not leave the banner up until the app is killed.
+        try {
+            missing.forEach { (itemUid, pictureId) ->
+                val bytes = vault.get(pictureId)
+                if (bytes != null) {
+                    dao.setItemImage(itemUid, images.write(pictureId, bytes))
+                    // Already up there, so it never needs sending back.
+                    dao.rememberPicture(PictureSyncEntity(pictureId, System.currentTimeMillis()))
+                }
+                done++
+                _restoring.value = PictureRestore.Progress(done = done, total = missing.size)
             }
-            done++
-            _restoring.value = PictureRestore.Progress(done = done, total = missing.size)
+        } finally {
+            _restoring.value = PictureRestore.Progress.Idle
         }
-        _restoring.value = PictureRestore.Progress.Idle
     }
 }

@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.settings.presentation
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
@@ -14,7 +15,9 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Community
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupSettings
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardBackup
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -105,16 +108,28 @@ class SettingsViewModelTest {
         assertNull(viewModel.state.value.backupSettings)
     }
 
+    // Backup stays on when its copy could not be deleted; the switch alone
+    // would not say why turning it off did nothing.
+    @Test
+    fun turningBackupOff_whenTheCopyCannotBeDeleted_saysSo() = runBlocking {
+        val viewModel = viewModel(backup = FakeBackup(deletes = false))
+
+        viewModel.stopBackingUp()
+
+        assertEquals(UserMessage.ActionFailed, withTimeout(WAIT_MILLIS) { viewModel.userMessages.first() })
+    }
+
     private fun viewModel(
         preferences: FakeAppPreferences = FakeAppPreferences(),
         community: CommunityRepository = FakeCommunity(),
         account: AccountRepository = FakeAccountRepository(),
+        backup: BoardBackup = FakeBackup(),
     ) = SettingsViewModel(
         repository = RecordingTierRepository(),
         accountRepository = account,
         generationCredits = NoCredits,
         community = community,
-        backup = FakeBackup,
+        backup = backup,
         preferences = preferences,
     )
 }
@@ -124,7 +139,7 @@ private object NoCredits : GenerationCredits {
     override fun lastKnown(): Int? = null
 }
 
-private object FakeBackup : BoardBackup {
+private class FakeBackup(private val deletes: Boolean = true) : BoardBackup {
     override suspend fun settings() = BackupSettings(
         on = true,
         picturesOnWifiOnly = true,
@@ -134,7 +149,7 @@ private object FakeBackup : BoardBackup {
 
     override fun setPicturesOnWifiOnly(wifiOnly: Boolean) = Unit
     override fun start() = Unit
-    override suspend fun stopAndDelete(): Boolean = true
+    override suspend fun stopAndDelete(): Boolean = deletes
 }
 
 private class FakeCommunity(
@@ -160,3 +175,5 @@ private class FakeCommunity(
         reviewed = false,
     )
 }
+
+private const val WAIT_MILLIS = 5_000L
