@@ -71,8 +71,6 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedPoolSection
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRow
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierScreenTopBar
-import com.artiuillab.tieryourlife.feature.tier.board.components.rows.captionsExcept
-import com.artiuillab.tieryourlife.feature.tier.board.components.rows.rememberBandContentWidth
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItemSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierListSettingsScreenContent
@@ -272,7 +270,6 @@ private fun TierScreenBody(
     }
 
     val rankedTiers = list.tiers.filterNot { it.isPool }
-    val bandContentWidth = rememberBandContentWidth(list.tiers)
     val pool = list.tiers.firstOrNull { it.isPool }
     val layoutDirection = LocalLayoutDirection.current
     val dragController = remember { TierDragController() }
@@ -488,7 +485,6 @@ private fun TierScreenBody(
                             }
                             TierRow(
                                 tier = tier,
-                                bandContentWidth = bandContentWidth,
                                 modifier = itemModifier,
                                 displayMode = list.displayMode,
                                 dragController = dragController,
@@ -578,7 +574,6 @@ private fun TierScreenBody(
     val editingTier = editingTierId?.let { id -> list.tiers.firstOrNull { it.id == id } }
     if (editingTier != null) {
         TierEditorSheet(
-            otherCaptions = list.captionsExcept(editingTier.id),
             initialTier = editingTier,
             onDismiss = { editingTierId = null },
             onSave = { label, caption, colorLight, colorDark ->

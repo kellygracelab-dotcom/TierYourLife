@@ -31,9 +31,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
@@ -45,15 +45,12 @@ import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.BAND_CAPTION_PADDING
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.CAPTION_HIDDEN_FONT_SCALE
-import com.artiuillab.tieryourlife.feature.tier.board.components.rows.rememberBandContentWidth
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TIER_BAND_WIDTH
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
-
-private val PREVIEW_MIN_BAND_WIDTH = 52.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TierEditorSheet(
-    otherCaptions: List<String>,
     initialTier: Tier? = null,
     onDismiss: () -> Unit,
     onSave: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
@@ -64,7 +61,6 @@ fun TierEditorSheet(
         maxHeight = 640.dp,
     ) {
         TierEditorSheetContent(
-            otherCaptions = otherCaptions,
             initialTier = initialTier,
             onDismiss = onDismiss,
             onSave = onSave,
@@ -74,7 +70,6 @@ fun TierEditorSheet(
 
 @Composable
 fun TierEditorSheetContent(
-    otherCaptions: List<String> = emptyList(),
     initialTier: Tier? = null,
     onDismiss: () -> Unit,
     onSave: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
@@ -87,14 +82,6 @@ fun TierEditorSheetContent(
         )
     }
     val isLabelValid = label.isNotBlank()
-
-    // The preview draws the band at the width it will have on the board, not
-    // at the width of what is being typed: otherwise it promises one size and
-    // saving delivers another.
-    val allCaptions = remember(otherCaptions, caption) {
-        if (caption.isBlank()) otherCaptions else otherCaptions + caption
-    }
-    val bandContentWidth = rememberBandContentWidth(allCaptions)
 
     Column(Modifier.testTag(TierDetailTestTags.TIER_EDITOR_SHEET)) {
             Text(
@@ -139,7 +126,6 @@ fun TierEditorSheetContent(
                 LivePreviewRow(
                     label = label,
                     caption = caption.ifBlank { null },
-                    bandContentWidth = bandContentWidth,
                     colorLight = colorSelection.colorLight,
                     colorDark = colorSelection.colorDark,
                 )
@@ -210,7 +196,6 @@ fun TierEditorSheetContent(
 private fun LivePreviewRow(
     label: String,
     caption: String?,
-    bandContentWidth: Dp,
     colorLight: String,
     colorDark: String,
 ) {
@@ -220,7 +205,6 @@ private fun LivePreviewRow(
                 themeLabel = stringResource(R.string.tier_editor_theme_light),
                 label = label,
                 caption = caption,
-                bandContentWidth = bandContentWidth,
                 colorLight = colorLight,
                 colorDark = colorDark,
                 modifier = Modifier
@@ -233,7 +217,6 @@ private fun LivePreviewRow(
                 themeLabel = stringResource(R.string.tier_editor_theme_dark),
                 label = label,
                 caption = caption,
-                bandContentWidth = bandContentWidth,
                 colorLight = colorLight,
                 colorDark = colorDark,
                 modifier = Modifier
@@ -249,7 +232,6 @@ private fun LivePreviewCard(
     themeLabel: String,
     label: String,
     caption: String?,
-    bandContentWidth: Dp,
     colorLight: String,
     colorDark: String,
     modifier: Modifier = Modifier,
@@ -277,7 +259,7 @@ private fun LivePreviewCard(
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .width(maxOf(PREVIEW_MIN_BAND_WIDTH, bandContentWidth))
+                        .width(TIER_BAND_WIDTH)
                         .background(colors.band)
                         .padding(BAND_CAPTION_PADDING),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -287,8 +269,9 @@ private fun LivePreviewCard(
                     if (caption != null && LocalDensity.current.fontScale < CAPTION_HIDDEN_FONT_SCALE) {
                         Text(
                             text = caption,
-                            maxLines = 1,
+                            maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.Center,
                             style = TierYourLifeType.current.tierBandCaption,
                             color = colors.onBand.copy(alpha = 0.7f),
                         )

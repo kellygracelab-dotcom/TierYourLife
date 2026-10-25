@@ -65,7 +65,6 @@ import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
-import com.artiuillab.tieryourlife.feature.tier.board.components.rows.captionsExcept
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
@@ -167,7 +166,6 @@ fun TierListSettingsScreenContent(
 
     if (tierEditorVisible) {
         TierEditorSheet(
-            otherCaptions = list.captionsExcept(null),
             onDismiss = { tierEditorVisible = false },
             onSave = { label, caption, colorLight, colorDark ->
                 onAddTier(label, caption, colorLight, colorDark)
