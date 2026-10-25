@@ -14,11 +14,6 @@
     <string name="list_settings_category">Category</string>
     <string name="list_settings_category_none">Not chosen yet</string>
     <string name="list_settings_cover">Cover</string>
-    <string name="list_settings_cover_body">Pick one of this list\'s cards, or a picture from your gallery.</string>
-    <string name="list_settings_cover_gallery">Choose from gallery</string>
-    <string name="list_settings_cover_gallery_note">A gallery picture travels with the list when you publish it.</string>
-    <string name="list_settings_cover_no_cards">None of this list\'s cards have a picture yet.</string>
-    <string name="list_settings_cover_none">Remove cover</string>
     <string name="list_settings_cover_none_set">None</string>
     <string name="list_settings_cover_set">Chosen</string>
     <string name="list_settings_public">Public</string>

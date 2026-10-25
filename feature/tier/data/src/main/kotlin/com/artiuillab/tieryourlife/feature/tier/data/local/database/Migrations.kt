@@ -3,6 +3,13 @@ package com.artiuillab.tieryourlife.feature.tier.data.local.database
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
+/** The author's collage, beside the single cover rather than inside it: a list in that column would make every reader of one address a parser. */
+val MIGRATION_10_11 = object : Migration(10, 11) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN coverImageUrls TEXT")
+    }
+}
+
 /** Starred boards. A time rather than a boolean: null is "not starred", and the time orders the starred ones for free. */
 val MIGRATION_9_10 = object : Migration(9, 10) {
     override fun migrate(db: SupportSQLiteDatabase) {

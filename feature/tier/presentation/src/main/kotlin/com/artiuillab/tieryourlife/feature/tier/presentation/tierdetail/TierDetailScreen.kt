@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -19,6 +20,9 @@ fun TierDetailScreen(
     onBack: () -> Unit,
     onOpenList: (Long) -> Unit = {},
     onOpenAiStudio: (listTitle: String) -> Unit = {},
+    onChooseCover: () -> Unit = {},
+    coverChanged: Boolean = false,
+    onCoverChangeConsumed: () -> Unit = {},
     addedItemIds: List<Long> = emptyList(),
     onAddedItemConsumed: () -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
@@ -28,6 +32,14 @@ fun TierDetailScreen(
     val publish = screen.publish
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
     var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
+
+    // The picker is a screen of its own; the board reads its row again when it comes back changed.
+    LaunchedEffect(coverChanged) {
+        if (coverChanged) {
+            viewModel.loadTierList()
+            onCoverChangeConsumed()
+        }
+    }
 
     TierDetailScreenContent(
         state = state,
@@ -47,7 +59,7 @@ fun TierDetailScreen(
             onUpdatePublished = viewModel::updatePublished,
             onSetCategory = viewModel::setCategory,
             onCategoryNotChosen = viewModel::categoryNotChosen,
-            onSetCover = viewModel::setCoverImageUrl,
+            onChooseCover = onChooseCover,
             onAddClick = { addSheetVisible = true },
             onManualAddClick = { manualEntryVisible = true },
             onMoveItem = viewModel::moveItem,

@@ -21,6 +21,8 @@ data class SavedTemplate(
 class RecordingTierRepository(
     /** Stands in for a local copy that knows it was published. */
     private val publishedIdOfFirstList: String? = null,
+    /** What getTierListById finds. */
+    private val boards: List<TierList> = emptyList(),
 ) : TierRepository {
 
     val templates = mutableListOf<SavedTemplate>()
@@ -48,9 +50,13 @@ class RecordingTierRepository(
 
     override suspend fun setCategory(id: Long, category: ListCategory?) = Unit
 
-    override suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?) = Unit
+    val covers = mutableListOf<Pair<Long, List<String>>>()
 
-    override suspend fun getTierListById(id: Long): TierList? = null
+    override suspend fun setCover(id: Long, pictures: List<String>) {
+        covers += id to pictures
+    }
+
+    override suspend fun getTierListById(id: Long): TierList? = boards.firstOrNull { it.id == id }
     override suspend fun getAllTierLists(): List<TierList> = publishedIdOfFirstList
         ?.let { listOf(TierList(id = 7, title = "Local copy", tiers = emptyList(), publishedId = it)) }
         .orEmpty()

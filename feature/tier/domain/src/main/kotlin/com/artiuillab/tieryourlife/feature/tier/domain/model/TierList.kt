@@ -19,6 +19,8 @@ data class TierList(
     val category: ListCategory? = null,
     /** The author's own cover. A local pick never reaches the community. */
     val coverImageUrl: String? = null,
+    /** Two to six web pictures the author chose as a collage; empty while the cover is one picture or left to the cards. */
+    val coverImageUrls: List<String> = emptyList(),
     /** On the copy kept after the same board changed on two phones: the other phone's name. */
     val arrivedFrom: String? = null,
     /** When anything about this board last changed. */

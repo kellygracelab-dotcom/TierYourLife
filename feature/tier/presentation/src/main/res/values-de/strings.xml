@@ -145,4 +145,19 @@
     <string name="conflict_edited_here">Hier geändert %1$s</string>
     <string name="cover_unfold_title">Zum Sortieren aufklappen</string>
     <string name="cover_unfold_body">Karten verschieben geht nur auf dem inneren Display.</string>
+
+    <string name="cover_picker_title">Cover</string>
+    <string name="cover_picker_done">Fertig</string>
+    <string name="cover_picker_reset">Zurücksetzen</string>
+    <string name="cover_picker_tab_cards">Deine Karten · %1$d</string>
+    <string name="cover_picker_tab_search">Bildersuche</string>
+    <string name="cover_picker_status_automatic">Nichts gewählt: bis zu sechs Bilder der Liste selbst</string>
+    <string name="cover_picker_status_one">Ein Bild, das ganze Cover</string>
+    <plurals name="cover_picker_status_collage">
+        <item quantity="one">%1$d von %2$d gewählt, eine Collage</item>
+        <item quantity="other">%1$d von %2$d gewählt, eine Collage</item>
+    </plurals>
+    <string name="cover_picker_no_cards">Noch keine Karte dieser Liste hat ein Bild.</string>
+    <string name="cover_picker_gallery">Aus der Galerie wählen</string>
+    <string name="cover_picker_gallery_note">Ein Galeriebild ist das ganze Cover und reist mit der Liste, wenn du sie veröffentlichst.</string>
 </resources>

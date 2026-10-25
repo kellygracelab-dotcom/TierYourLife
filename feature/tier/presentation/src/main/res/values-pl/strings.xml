@@ -165,4 +165,21 @@
     <string name="conflict_edited_here">Zmieniono tutaj %1$s</string>
     <string name="cover_unfold_title">Rozłóż, aby uporządkować</string>
     <string name="cover_unfold_body">Przeciąganie kart wymaga wewnętrznego ekranu.</string>
+
+    <string name="cover_picker_title">Okładka</string>
+    <string name="cover_picker_done">Gotowe</string>
+    <string name="cover_picker_reset">Resetuj</string>
+    <string name="cover_picker_tab_cards">Twoje karty · %1$d</string>
+    <string name="cover_picker_tab_search">Szukaj obrazów</string>
+    <string name="cover_picker_status_automatic">Nic nie wybrano: do sześciu obrazów z samej listy</string>
+    <string name="cover_picker_status_one">Jeden obraz, cała okładka</string>
+    <plurals name="cover_picker_status_collage">
+        <item quantity="one">Wybrano %1$d z %2$d, kolaż</item>
+        <item quantity="few">Wybrano %1$d z %2$d, kolaż</item>
+        <item quantity="many">Wybrano %1$d z %2$d, kolaż</item>
+        <item quantity="other">Wybrano %1$d z %2$d, kolaż</item>
+    </plurals>
+    <string name="cover_picker_no_cards">Żadna karta tej listy nie ma jeszcze obrazu.</string>
+    <string name="cover_picker_gallery">Wybierz z galerii</string>
+    <string name="cover_picker_gallery_note">Obraz z galerii jest całą okładką i podróżuje z listą, gdy ją publikujesz.</string>
 </resources>

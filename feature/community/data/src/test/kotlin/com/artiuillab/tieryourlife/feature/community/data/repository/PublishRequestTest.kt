@@ -76,6 +76,15 @@ class PublishRequestTest {
     }
 
     @Test
+    fun `a chosen collage travels by its web addresses`() {
+        val collage = listOf(poster, "https://example.test/b.jpg")
+        val request = board.copy(coverImageUrl = null, coverImageUrls = collage).toRequest(Pictures, uploaded = emptySet())
+
+        assertEquals(collage, request.coverImageUrls)
+        assertNull(request.coverImageUrl)
+    }
+
+    @Test
     fun `a board without a category is published as other`() {
         val request = board.copy(category = null).toRequest(Pictures, uploaded = emptySet())
 

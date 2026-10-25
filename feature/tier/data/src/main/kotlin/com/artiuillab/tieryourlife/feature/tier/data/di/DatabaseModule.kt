@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_10_11
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_1_2
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_2_3
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_3_4
@@ -34,7 +35,10 @@ object DatabaseModule {
         TierDatabase::class.java,
         DATABASE_NAME,
     )
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
+        .addMigrations(
+            MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6,
+            MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11,
+        )
         // No destructive fallback of any kind. Opening a newer database with an
         // older build used to drop every table without a word, which turns
         // "you installed the wrong build" into "your library is gone" -- and

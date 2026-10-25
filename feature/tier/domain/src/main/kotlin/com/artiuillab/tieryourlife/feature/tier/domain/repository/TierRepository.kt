@@ -47,7 +47,8 @@ interface TierRepository {
     /** Starred at [at], or unstarred when it is null. */
     suspend fun setFavouritedAt(id: Long, at: Long?)
 
-    suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?)
+    /** No pictures leave the cover to the cards, one is the cover itself, two to six make a collage. */
+    suspend fun setCover(id: Long, pictures: List<String>)
 
     suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode)
 
