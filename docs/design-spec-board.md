@@ -20,19 +20,20 @@ and the pool sheet is docked over it.
 |---|---|
 | Tile | 44×64dp, never resized by how many neighbours it has — 44dp is already the floor for a drag target |
 | Item area | `FlowRow`, 10dp padding on every side, 8dp gap in both directions |
-| Tiles per line | Computed from width, not hardcoded: `(content width − band width − 20dp) ÷ 52dp`, rounded down. At 412dp that is 5 or 6 depending on the tier's own band width — tiers with captions of different lengths do not line up on the same count, and that is expected |
+| Tiles per line | Computed from width, not hardcoded: `(content width − 64dp band − 20dp) ÷ 52dp`, rounded down; the same count on every row of a board |
 | Row height | `10 + n×64 + (n−1)×8 + 10`, floored at 84dp. No cap — a 60-item tier is 12 lines and 780dp. Left open on purpose; see §7 |
-| The band | Stretches to the full row height and is **top-aligned, 10dp from the top, not centred**. On a one-line row the two are indistinguishable; on a four-line row centring would drop the letter 130dp into its own row and break the column of tier letters a reader scans down. The single most debatable decision here |
-| Band width | Wrap-content, min 56dp, max 33% of the row; caption on one line with an ellipsis. Disappears at a system font scale of 1.5× or more; the letter always stays |
+| The band | Stretches to the full row height; the letter and its caption are **centred vertically** (changed 25.10.2026 at Danylo's request: on a tall row the letter now sits level with the middle of its cards, not at the top) |
+| Band width | **Fixed, 64dp**, the same on every board (25.10.2026). A caption wraps to two lines inside it and is cut with an ellipsis after that; it never widens the band. Captions disappear at a system font scale of 1.5× or more; the letter always stays |
 | Insertion order across lines | Reading order — left to right, then down. It was never ambiguous before rows could wrap |
 | Drag auto-scroll | Within 72dp of the top or bottom edge, up to 600dp/s — unavoidable once the list is taller than the screen |
 | Dragging over a row | The whole row highlights, not a strip: the band colour at 24% over the surface, plus a 1dp outline |
 
-**Built differently, then reconciled.** The first build gave the band a fixed 66dp width and
-ignored font scale. The rule that later replaced it — one band width per board, measured from
-the longest caption, so a caption never moves the column of tier letters — lives in `TierRow`,
-and the tier editor's preview takes the same width from outside rather than promising a size
-that changes on save.
+**Built three ways.** The first build gave the band a fixed 66dp width and ignored font scale.
+Claude Design replaced that with one width per board measured from the longest caption, so a
+caption would never move the column of tier letters. On 25.10.2026 Danylo asked for the band
+never to grow with its text at all, and the width went back to a constant (`TIER_BAND_WIDTH`,
+64dp) that the tier editor's preview shares. New boards also start with letters alone; the
+default captions of September are gone.
 
 ## 2. Colour
 
@@ -65,6 +66,13 @@ itself — a three-way choice is too big for a menu item, so the menu became a s
 
 The pool under a ranked list is a collapsed 60dp bar with a count and an Add chip; it had
 never had a collapsed state before.
+
+Since 25.10 the pool under the rows is a sheet as well (`PoolSheet`). Folded, it is a strip:
+the handle, the count, up to three small pictures from the pool and the Add chip, so adding is
+never more than one tap away. Open, it is the row of cards it always was. It opens on its own
+only where there is ranking to do, someone's own board with cards left in the pool; a reader's
+pool and an empty one start folded. A tap on the strip or a pull on it switches, with the size
+animated, and a card dropped on the folded strip still lands in the pool.
 
 ## 4. Moving a card without dragging it
 

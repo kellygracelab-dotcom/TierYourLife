@@ -130,7 +130,7 @@ private class FailingTierRepository(
 
     override suspend fun setCategory(id: Long, category: ListCategory?) = Unit
 
-    override suspend fun setCoverImageUrl(id: Long, coverImageUrl: String?) = Unit
+    override suspend fun setCover(id: Long, pictures: List<String>) = Unit
 
     override suspend fun getTierListById(id: Long): TierList? {
         if (failReads) throw IllegalStateException("read failed")

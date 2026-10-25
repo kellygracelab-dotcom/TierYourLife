@@ -3,6 +3,13 @@
     <string name="action_done">Готово</string>
     <string name="action_follow">Підписатися</string>
     <string name="action_following">Ви підписані</string>
+    <string name="action_unfollow">Відписатися</string>
+    <string name="community_you_follow">Ви підписані · %1$d</string>
+    <string name="community_manage_following">Керувати</string>
+    <string name="community_day_today">Сьогодні</string>
+    <string name="community_day_yesterday">Вчора</string>
+    <string name="community_following_nobody">Ви поки ні на кого не підписані.</string>
+    <string name="community_author_unnamed">Автор</string>
     <string name="author_failed">Не вдалося відкрити профіль.</string>
     <plurals name="author_followers_count">
         <item quantity="one">%d підписник</item>
@@ -47,6 +54,13 @@
     <string name="community_open_failed">Не вдалося відкрити цей список</string>
     <string name="community_rank_it_your_way">Розкладіть його як забажаєте.</string>
     <string name="community_save_to_my_lists">Зберегти собі</string>
+    <string name="community_save_which_title">Яке ранжування зберегти?</string>
+    <string name="community_save_which_body">Копія у будь-якому разі ваша. Перекласти можна будь-коли.</string>
+    <string name="community_save_theirs">Як у автора</string>
+    <string name="community_save_mine">Як у мене</string>
+    <string name="community_save_mine_empty">Порожнім, розкладу сам</string>
+    <string name="community_saved_to_your_lists">Збережено у ваші списки.</string>
+    <string name="community_action_open">Відкрити</string>
     <string name="community_showing_mine">Моє</string>
     <string name="community_showing_theirs">Його розташування</string>
     <string name="community_someone_elses">Чужий список. Розкладіть його як забажаєте.</string>

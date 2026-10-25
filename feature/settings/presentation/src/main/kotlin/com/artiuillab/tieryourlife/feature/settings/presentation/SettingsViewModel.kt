@@ -93,7 +93,8 @@ class SettingsViewModel @Inject constructor(
     /** Confirmed on the way off only: turning it off deletes the copy. */
     fun stopBackingUp() {
         viewModelScope.launch {
-            backup.stopAndDelete()
+            // Still on and still holding the copy: the switch shows that, and this says why.
+            if (!backup.stopAndDelete()) messages.send(UserMessage.ActionFailed)
             loadBackupSettings()
         }
     }

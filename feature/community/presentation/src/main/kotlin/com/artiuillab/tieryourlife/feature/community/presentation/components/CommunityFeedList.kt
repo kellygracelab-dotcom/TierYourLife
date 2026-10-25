@@ -48,11 +48,19 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedTestTags
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.Day
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.FeedControlsRow
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.FollowedStrip
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.FollowingNobody
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.groupedByDay
 import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private const val CARD_ART_ASPECT = 1f
@@ -80,7 +88,7 @@ internal fun CommunityFeedList(
     feed: CommunityFeed,
     category: ListCategory?,
     onSelectCategory: (ListCategory?) -> Unit,
-    onOpen: (String) -> Unit,
+    onOpen: (PublishedListSummary) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     onOpenAuthor: ((String) -> Unit)? = null,
@@ -90,6 +98,7 @@ internal fun CommunityFeedList(
     showAuthor: Boolean = true,
     /** Null on the screens that are already one author's or one person's own. */
     controls: FeedControls? = null,
+    onManageFollowing: (() -> Unit)? = null,
 ) {
     val gridState = rememberLazyGridState()
     val shown = (feed as? CommunityFeed.Ready)?.lists?.size ?: 0
@@ -184,21 +193,40 @@ internal fun CommunityFeedList(
                     horizontalArrangement = Arrangement.spacedBy(if (wideEnoughForMoreColumns) 16.dp else 12.dp),
                     verticalArrangement = Arrangement.spacedBy(if (wideEnoughForMoreColumns) 16.dp else 12.dp),
                 ) {
-                    items(feed.lists, key = { it.id }) { summary ->
-                        val reported = feed.justHidden[summary.id]
-                        if (reported != null) {
-                            HiddenTile(reported)
-                            return@items
+                    val following = controls?.source == FeedSource.Following
+                    if (following && feed.followed.isNotEmpty()) {
+                        item(key = CommunityFeedTestTags.FOLLOWED_STRIP, span = { GridItemSpan(maxLineSpan) }) {
+                            FollowedStrip(followed = feed.followed, onManage = onManageFollowing)
                         }
-                        CommunityCard(
-                            summary = summary,
-                            onClick = { onOpen(summary.id) },
-                            onLongClick = onLongPress?.let { press -> { press(summary) } },
-                            showAuthor = showAuthor && !summary.editorial,
-                            onAuthorClick = onOpenAuthor?.takeUnless { summary.editorial }?.let { open ->
-                                { open(summary.authorUid) }
-                            },
-                        )
+                    }
+                    // A following feed in its newest-first order reads as days: the
+                    // headers say when, so the cards need not.
+                    val rows = feedRows(feed.lists, byDay = following && controls.sort == FeedSort.Recent)
+                    items(
+                        rows,
+                        key = { it.key },
+                        span = { row -> if (row is FeedRow.Card) GridItemSpan(1) else GridItemSpan(maxLineSpan) },
+                    ) { row ->
+                        when (row) {
+                            is FeedRow.DayHeader -> DayHeader(row.day)
+                            is FeedRow.Card -> {
+                                val summary = row.summary
+                                val reported = feed.justHidden[summary.id]
+                                if (reported != null) {
+                                    HiddenTile(reported)
+                                } else {
+                                    CommunityCard(
+                                        summary = summary,
+                                        onClick = { onOpen(summary) },
+                                        onLongClick = onLongPress?.let { press -> { press(summary) } },
+                                        showAuthor = showAuthor && !summary.editorial,
+                                        onAuthorClick = onOpenAuthor?.takeUnless { summary.editorial }?.let { open ->
+                                            { open(summary.authorUid) }
+                                        },
+                                    )
+                                }
+                            }
+                        }
                     }
 
                     if (feed.loadingMore) {
@@ -431,6 +459,42 @@ private fun CommunityFeedEmptyDarkPreview() = TierYourLifeTheme(true) {
 }
 
 /** Source and order. Absent where they make no sense: one author's lists, or your own. */
+private sealed interface FeedRow {
+    val key: String
+
+    data class DayHeader(val day: Day) : FeedRow {
+        override val key: String get() = "day-$day"
+    }
+
+    data class Card(val summary: PublishedListSummary) : FeedRow {
+        override val key: String get() = summary.id
+    }
+}
+
+private fun feedRows(lists: List<PublishedListSummary>, byDay: Boolean): List<FeedRow> {
+    if (!byDay) return lists.map { FeedRow.Card(it) }
+    val zone = ZoneId.systemDefault()
+    return groupedByDay(lists, LocalDate.now(zone), zone) { it.updatedAtMillis }.flatMap { (day, run) ->
+        listOf(FeedRow.DayHeader(day)) + run.map { FeedRow.Card(it) }
+    }
+}
+
+@Composable
+private fun DayHeader(day: Day) {
+    Text(
+        text = when (day) {
+            Day.Today -> stringResource(R.string.community_day_today)
+            Day.Yesterday -> stringResource(R.string.community_day_yesterday)
+            is Day.On -> day.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+        },
+        modifier = Modifier
+            .padding(top = 4.dp)
+            .testTag(CommunityFeedTestTags.DAY_HEADER),
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
 internal data class FeedControls(
     val source: FeedSource,
     val sort: FeedSort,

@@ -13,6 +13,4 @@ dependencies {
     implementation(projects.core.logging)
     implementation(projects.feature.community.domain)
     implementation(projects.feature.tier.domain)
-    implementation(libs.kotlinx.coroutines.core)
-    testImplementation(libs.junit)
 }

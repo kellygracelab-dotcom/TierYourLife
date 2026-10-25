@@ -17,9 +17,9 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TIER_BAND_WIDTH
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
@@ -134,30 +134,10 @@ class TierDetailLayoutTest : TierDetailScreenTestBase() {
         composeRule.runOnIdle { assertEquals(1, calls) }
     }
 
-    // The letters are the spine of the board, so they have to sit in a column:
-    // one width for every band, taken from the longest caption among them.
+    // The letters are the spine of the board and only work as a column, so a
+    // caption can never push its own band wider than the others.
     @Test
-    fun everyTierBand_isAsWideAsTheLongestCaptionOnTheBoard() {
-        val list = listOf(
-            tier(id = 1, label = "S", items = emptyList(), caption = "X"),
-            tier(id = 2, label = "A", items = emptyList(), caption = "Watchable"),
-        ).asTierList()
-        setScreen(TierDetailUiState.Success(list))
-
-        val shortBandWidth = composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).fetchSemanticsNode().boundsInRoot.width
-        val longBandWidth = composeRule.onNodeWithTag(TierDetailTestTags.tierBand(2)).fetchSemanticsNode().boundsInRoot.width
-        val minWidthPx = with(composeRule.density) { 56.dp.toPx() }
-
-        assertEquals("both bands must be one width", longBandWidth, shortBandWidth, 1f)
-        assertTrue("that width must clear the 56dp floor", shortBandWidth >= minWidthPx - 1f)
-    }
-
-    // 128dp rather than a third of the row: a third is the right shape on a
-    // phone and 360dp on a tablet, where the same caption would get a band five
-    // times the size for no reason. Both still apply and the tighter wins, so on
-    // a phone this is the fraction and nothing has moved.
-    @Test
-    fun aCaptionTooLongForTheRow_stopsAtAThirdOfIt() {
+    fun everyTierBand_isOneWidth_whateverItsCaption() {
         val list = listOf(
             tier(id = 1, label = "S", items = emptyList(), caption = "X"),
             tier(
@@ -169,12 +149,12 @@ class TierDetailLayoutTest : TierDetailScreenTestBase() {
         ).asTierList()
         setScreen(TierDetailUiState.Success(list))
 
-        val rowWidth = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot.width
         val shortBandWidth = composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).fetchSemanticsNode().boundsInRoot.width
         val longBandWidth = composeRule.onNodeWithTag(TierDetailTestTags.tierBand(2)).fetchSemanticsNode().boundsInRoot.width
+        val fixedWidthPx = with(composeRule.density) { TIER_BAND_WIDTH.toPx() }
 
-        assertEquals("both bands must still be one width", longBandWidth, shortBandWidth, 1f)
-        assertTrue("and that width stops at a third of the row", longBandWidth <= rowWidth / 3f + 1f)
+        assertEquals("both bands must be one width", longBandWidth, shortBandWidth, 1f)
+        assertEquals("and that width is the fixed one", fixedWidthPx, longBandWidth, 1f)
     }
 
     @Test
@@ -218,6 +198,8 @@ class TierDetailLayoutTest : TierDetailScreenTestBase() {
 
         composeRule.onNodeWithTag(TierDetailTestTags.ADD_CHIP).assertDoesNotExist()
         composeRule.onNodeWithTag(TierDetailTestTags.GENERATE_CHIP).assertDoesNotExist()
+        // A reader's pool starts folded; the cards are there once it is opened.
+        composeRule.onNodeWithTag(TierDetailTestTags.POOL_TOGGLE).performClick()
         composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertIsDisplayed()
     }
 }

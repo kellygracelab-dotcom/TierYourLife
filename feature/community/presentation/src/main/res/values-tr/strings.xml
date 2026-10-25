@@ -3,6 +3,13 @@
     <string name="action_done">Tamam</string>
     <string name="action_follow">Takip et</string>
     <string name="action_following">Takiptesiniz</string>
+    <string name="action_unfollow">Takibi bırak</string>
+    <string name="community_you_follow">Takip ettikleriniz · %1$d</string>
+    <string name="community_manage_following">Yönet</string>
+    <string name="community_day_today">Bugün</string>
+    <string name="community_day_yesterday">Dün</string>
+    <string name="community_following_nobody">Henüz kimseyi takip etmiyorsunuz.</string>
+    <string name="community_author_unnamed">Yazar</string>
     <string name="author_failed">Bu profil açılamadı.</string>
     <plurals name="author_followers_count">
         <item quantity="one">%d takipçi</item>
@@ -41,6 +48,13 @@
     <string name="community_open_failed">Bu liste açılamadı</string>
     <string name="community_rank_it_your_way">Nasıl istersen sırala.</string>
     <string name="community_save_to_my_lists">Listelerime kaydet</string>
+    <string name="community_save_which_title">Hangi sıralama kaydedilsin?</string>
+    <string name="community_save_which_body">Kopya her halükârda sizin. İstediğiniz zaman yeniden düzenleyebilirsiniz.</string>
+    <string name="community_save_theirs">Yazarınki</string>
+    <string name="community_save_mine">Benimki</string>
+    <string name="community_save_mine_empty">Boş, kendim yaparım</string>
+    <string name="community_saved_to_your_lists">Listelerinize kaydedildi.</string>
+    <string name="community_action_open">Aç</string>
     <string name="community_showing_mine">Benimki</string>
     <string name="community_showing_theirs">Onun sıralaması</string>
     <string name="community_someone_elses">Başkasının listesi. Nasıl istersen sırala.</string>

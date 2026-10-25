@@ -26,7 +26,7 @@ android {
 
     defaultConfig {
         applicationId = "com.artiuillab.tieryourlife"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 37
         versionCode = providers.gradleProperty("tieryourlife.versionCode").map(String::toInt).orElse(commitCount).get()
         versionName = "1.0"
@@ -115,5 +115,5 @@ dependencies {
     debugImplementation(libs.firebase.appcheck.debug)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.test.runner)
 }

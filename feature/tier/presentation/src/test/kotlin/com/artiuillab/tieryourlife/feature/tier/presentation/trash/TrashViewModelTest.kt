@@ -81,6 +81,34 @@ class TrashViewModelTest {
         assertTrue(community.unpublished.isEmpty())
     }
 
+    // Deleted for good, nothing on this phone could take its snapshot down any more.
+    @Test
+    fun emptyingTheTrash_keepsAListWhoseSnapshotWouldNotComeDown() = runBlocking {
+        val viewModel = TrashViewModel(TrashRepository(listOf(published, private, card)), Community(unpublishFails = true))
+        viewModel.state.firstWithin { it is TrashUiState.Success }
+
+        viewModel.emptyTrash()
+        val message = withTimeout(TIMEOUT_MILLIS) { viewModel.userMessages.first() }
+        val state = viewModel.state.firstWithin { (it as? TrashUiState.Success)?.entries == listOf(published) }
+
+        assertEquals(UserMessage.PublishedListStillPublic, message)
+        assertEquals(TrashUiState.Success(listOf(published)), state)
+    }
+
+    // Forgetting the id would leave the copy public with no switch left to turn it off.
+    @Test
+    fun restoringAListWhoseSnapshotWouldNotComeDown_keepsItsPublishedId() = runBlocking {
+        val repository = TrashRepository(listOf(published))
+        val viewModel = TrashViewModel(repository, Community(unpublishFails = true))
+        viewModel.state.firstWithin { it is TrashUiState.Success }
+
+        viewModel.restoreList(published.id)
+        val message = withTimeout(TIMEOUT_MILLIS) { viewModel.userMessages.first() }
+
+        assertEquals(UserMessage.PublishedListStillPublic, message)
+        assertEquals(null, repository.clearedPublishedId)
+    }
+
     @Test
     fun aFailedRestore_saysSoAndKeepsTheEntry() = runBlocking {
         val viewModel = TrashViewModel(TrashRepository(listOf(card), writesFail = true), Community())
@@ -93,10 +121,11 @@ class TrashViewModelTest {
         assertEquals(TrashUiState.Success(listOf(card)), viewModel.state.value)
     }
 
-    private class Community : FakeCommunityRepository() {
+    private class Community(private val unpublishFails: Boolean = false) : FakeCommunityRepository() {
         val unpublished = mutableListOf<String>()
 
         override suspend fun unpublish(publishedId: String): Result<Unit> {
+            if (unpublishFails) return Result.failure(IllegalStateException("offline"))
             unpublished += publishedId
             return Result.success(Unit)
         }
@@ -122,6 +151,8 @@ class TrashViewModelTest {
         override suspend fun restoreTierItem(id: Long) = remove { it is TrashEntry.DeletedItem && it.id == id }
 
         override suspend fun deleteTierItemPermanently(id: Long) = remove { it is TrashEntry.DeletedItem && it.id == id }
+
+        override suspend fun deleteTierListPermanently(id: Long) = remove { it is TrashEntry.DeletedList && it.id == id }
 
         override suspend fun emptyTrash() = remove { true }
 

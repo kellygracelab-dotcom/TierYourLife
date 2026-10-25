@@ -39,11 +39,6 @@
     <string name="home_empty_body">أفلام، ألعاب، مطاعم، ألبومات — أي شيء.</string>
     <string name="cd_new_list">قائمة جديدة</string>
     <string name="default_tier_list_title">قائمة بلا عنوان</string>
-    <string name="default_tier_caption_s">الأفضل</string>
-    <string name="default_tier_caption_a">ممتاز</string>
-    <string name="default_tier_caption_b">جيد</string>
-    <string name="default_tier_caption_c">مقبول</string>
-    <string name="default_tier_caption_d">الأسوأ</string>
     <string name="tier_lists_load_error">تعذّر تحميل القوائم.</string>
 
 
@@ -190,4 +185,23 @@
     <string name="conflict_edited_here">حُرّرت هنا %1$s</string>
     <string name="cover_unfold_title">افتح الهاتف للترتيب</string>
     <string name="cover_unfold_body">تحريك البطاقات يحتاج إلى الشاشة الداخلية.</string>
+
+    <string name="cover_picker_title">الغلاف</string>
+    <string name="cover_picker_done">تم</string>
+    <string name="cover_picker_reset">إعادة الضبط</string>
+    <string name="cover_picker_tab_cards">بطاقاتك · %1$d</string>
+    <string name="cover_picker_tab_search">البحث عن صور</string>
+    <string name="cover_picker_status_automatic">لم يُختر شيء: حتى ست صور من القائمة نفسها</string>
+    <string name="cover_picker_status_one">صورة واحدة، الغلاف كله</string>
+    <plurals name="cover_picker_status_collage">
+        <item quantity="zero">اختيرت %1$d من %2$d، ملصقة صور</item>
+        <item quantity="one">اختيرت %1$d من %2$d، ملصقة صور</item>
+        <item quantity="two">اختيرت %1$d من %2$d، ملصقة صور</item>
+        <item quantity="few">اختيرت %1$d من %2$d، ملصقة صور</item>
+        <item quantity="many">اختيرت %1$d من %2$d، ملصقة صور</item>
+        <item quantity="other">اختيرت %1$d من %2$d، ملصقة صور</item>
+    </plurals>
+    <string name="cover_picker_no_cards">لا تحمل أي بطاقة في هذه القائمة صورة بعد.</string>
+    <string name="cover_picker_gallery">الاختيار من المعرض</string>
+    <string name="cover_picker_gallery_note">صورة من المعرض تكون الغلاف كله وتسافر مع القائمة عند نشرها.</string>
 </resources>

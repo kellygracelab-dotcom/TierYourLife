@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -34,11 +33,11 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronIcon
 import com.artiuillab.tieryourlife.core.theme.ui.DragIcon
+import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 import com.artiuillab.tieryourlife.feature.tier.board.components.TierRibbon
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -97,17 +96,16 @@ internal fun TierListCard(
             // Trailing, so the stars line up in a column of their own. The
             // leading edge is where a name starts, and a column of stars there
             // would push every title across for the sake of two boards.
-            if (list.coverImageUrl != null) {
+            if (list.coverImageUrl != null || list.coverImageUrls.isNotEmpty()) {
                 // Own lists are known by their name; the cover is a reminder,
                 // not the whole card.
-                AsyncImage(
-                    model = list.coverImageUrl,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
+                ListArt(
+                    coverImageUrl = list.coverImageUrl,
+                    previewImages = list.coverImageUrls,
+                    tierColors = emptyList(),
                     modifier = Modifier
                         .size(COVER_THUMBNAIL)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+                        .clip(RoundedCornerShape(8.dp)),
                 )
                 Spacer(Modifier.width(12.dp))
             }

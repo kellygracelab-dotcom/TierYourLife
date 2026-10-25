@@ -19,7 +19,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 version = release(37)
             }
             defaultConfig {
-                minSdk = 24
+                minSdk = 26
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
             compileOptions {
@@ -38,10 +38,11 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
         dependencies {
             add("testImplementation", libs.findLibrary("junit").get())
-            add("testImplementation", project(":core:testing"))
-            add("androidTestImplementation", project(":core:testing"))
-            add("androidTestImplementation", libs.findLibrary("androidx-espresso-core").get())
+            add("testImplementation", dependencies.project(mapOf("path" to ":core:testing")))
+            add("androidTestImplementation", dependencies.project(mapOf("path" to ":core:testing")))
             add("androidTestImplementation", libs.findLibrary("androidx-junit").get())
+            // AndroidJUnitRunner itself, named above as the instrumentation runner.
+            add("androidTestImplementation", libs.findLibrary("androidx-test-runner").get())
         }
     }
 }

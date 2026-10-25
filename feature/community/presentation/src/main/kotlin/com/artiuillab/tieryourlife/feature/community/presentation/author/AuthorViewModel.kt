@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.feature.community.domain.model.EditorialAuthors
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -11,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.authorRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,6 +54,9 @@ class AuthorViewModel @Inject constructor(
     private val preferences: AppPreferences,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
+    private val messages = UserMessages()
+    val userMessages: Flow<UserMessage> = messages.flow
 
     private val route = savedStateHandle.authorRoute()
 
@@ -149,8 +155,13 @@ class AuthorViewModel @Inject constructor(
     fun report(publishedId: String, title: String, reason: ReportReason, note: String?) {
         hideList(publishedId, title)
         viewModelScope.launch {
-            community.report(publishedId, reason, note)
-                .onFailure { Timber.w(it, "Could not file the report") }
+            community.report(publishedId, reason, note).onFailure {
+                Timber.w(it, "Could not file the report")
+                // Back on the page, so it can be reported again; hidden, it never could.
+                preferences.unhideList(publishedId)
+                load()
+                messages.send(UserMessage.ActionFailed)
+            }
         }
     }
 }

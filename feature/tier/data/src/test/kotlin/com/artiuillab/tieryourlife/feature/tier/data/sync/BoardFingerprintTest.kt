@@ -87,6 +87,14 @@ class BoardFingerprintTest {
         assertNotEquals(fingerprint(), fingerprint(board = board.copy(title = "Sci-fi shows")))
     }
 
+    // The collage is kept by the account now, so a phone that changes it has to be seen to.
+    @Test
+    fun `choosing a different collage changes it`() {
+        val chosen = board.copy(coverImageUrls = "https://i/1.jpg\nhttps://i/2.jpg")
+        assertNotEquals(fingerprint(), fingerprint(board = chosen))
+        assertNotEquals(fingerprint(board = chosen), fingerprint(board = board.copy(coverImageUrls = "https://i/2.jpg\nhttps://i/1.jpg")))
+    }
+
     // Dragging one card past another is the edit this whole thing exists for,
     // and it moves no text at all.
     @Test

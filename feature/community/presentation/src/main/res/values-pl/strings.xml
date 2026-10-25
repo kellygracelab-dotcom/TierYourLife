@@ -3,6 +3,13 @@
     <string name="action_done">Gotowe</string>
     <string name="action_follow">Obserwuj</string>
     <string name="action_following">Obserwujesz</string>
+    <string name="action_unfollow">Przestań obserwować</string>
+    <string name="community_you_follow">Obserwujesz · %1$d</string>
+    <string name="community_manage_following">Zarządzaj</string>
+    <string name="community_day_today">Dzisiaj</string>
+    <string name="community_day_yesterday">Wczoraj</string>
+    <string name="community_following_nobody">Nie obserwujesz jeszcze nikogo.</string>
+    <string name="community_author_unnamed">Autor</string>
     <string name="author_failed">Nie udało się otworzyć tego profilu.</string>
     <plurals name="author_followers_count">
         <item quantity="one">%d obserwujący</item>
@@ -47,6 +54,13 @@
     <string name="community_open_failed">Nie udało się otworzyć tej listy</string>
     <string name="community_rank_it_your_way">Ułóż ją po swojemu.</string>
     <string name="community_save_to_my_lists">Zapisz u siebie</string>
+    <string name="community_save_which_title">Który układ zapisać?</string>
+    <string name="community_save_which_body">Kopia i tak jest twoja. Możesz ją przestawić w każdej chwili.</string>
+    <string name="community_save_theirs">Autora</string>
+    <string name="community_save_mine">Mój</string>
+    <string name="community_save_mine_empty">Pusty, ułożę sam</string>
+    <string name="community_saved_to_your_lists">Zapisano na twoich listach.</string>
+    <string name="community_action_open">Otwórz</string>
     <string name="community_showing_mine">Mój</string>
     <string name="community_showing_theirs">Jego układ</string>
     <string name="community_someone_elses">Cudza lista. Ułóż ją po swojemu.</string>

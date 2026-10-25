@@ -3,6 +3,13 @@
     <string name="action_done">Done</string>
     <string name="action_follow">Follow</string>
     <string name="action_following">Following</string>
+    <string name="action_unfollow">Unfollow</string>
+    <string name="community_you_follow">You follow · %1$d</string>
+    <string name="community_manage_following">Manage</string>
+    <string name="community_day_today">Today</string>
+    <string name="community_day_yesterday">Yesterday</string>
+    <string name="community_following_nobody">You follow nobody yet.</string>
+    <string name="community_author_unnamed">Author</string>
     <string name="author_failed">Could not load this profile.</string>
     <plurals name="author_followers_count">
         <item quantity="one">%d follower</item>
@@ -41,6 +48,13 @@
     <string name="community_open_failed">Could not open this list</string>
     <string name="community_rank_it_your_way">Rank it however you like.</string>
     <string name="community_save_to_my_lists">Save to my lists</string>
+    <string name="community_save_which_title">Which ranking to save?</string>
+    <string name="community_save_which_body">The copy is yours either way. You can rearrange it any time.</string>
+    <string name="community_save_theirs">The author\'s</string>
+    <string name="community_save_mine">Mine</string>
+    <string name="community_save_mine_empty">Unranked, I\'ll do it</string>
+    <string name="community_saved_to_your_lists">Saved to your lists.</string>
+    <string name="community_action_open">Open</string>
     <string name="community_showing_mine">Mine</string>
     <string name="community_showing_theirs">Their ranking</string>
     <string name="community_someone_elses">Someone else\'s list. Rank it however you like.</string>

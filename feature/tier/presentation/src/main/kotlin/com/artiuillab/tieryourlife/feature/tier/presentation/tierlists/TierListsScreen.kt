@@ -50,7 +50,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
@@ -108,15 +108,9 @@ fun TierListsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val defaultListTitle = stringResource(R.string.default_tier_list_title)
-    // Any board can be about anything, so the captions a new one starts with
-    // say how good something is and nothing about what it is.
-    val defaultTierCaptions = listOf(
-        stringResource(R.string.default_tier_caption_s),
-        stringResource(R.string.default_tier_caption_a),
-        stringResource(R.string.default_tier_caption_b),
-        stringResource(R.string.default_tier_caption_c),
-        stringResource(R.string.default_tier_caption_d),
-    )
+    // Letters alone: a caption says what the tier means for this board, and a
+    // new board does not know yet.
+    val defaultTierCaptions = emptyList<String>()
     val ownArrival = rememberArrival()
     val arrivedWith = arrival ?: ownArrival
     LaunchedEffect(arrivedWith) { arrivedWith?.let(viewModel::onArrival) }

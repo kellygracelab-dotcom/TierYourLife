@@ -7,10 +7,12 @@ import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
+import com.artiuillab.tieryourlife.feature.account.domain.FakeFacePhotos
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.account.domain.repository.FacePhotos
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
@@ -28,6 +30,7 @@ import org.junit.Assume.assumeFalse
 import org.junit.Assume.assumeTrue
 import org.junit.Rule
 import org.junit.Test
+import java.io.IOException
 
 class AccountViewModelTest {
 
@@ -45,6 +48,26 @@ class AccountViewModelTest {
         viewModel.state.firstWithin { !it.signingIn }
 
         assertEquals(listOf("token-1"), repository.tokens)
+    }
+
+    // Two libraries are never merged without asking, and an account that could
+    // not be read might hold one: the sign-in is undone instead.
+    @Test
+    fun signIn_whenTheAccountsBoardsCannotBeRead_undoesTheSignInAndSaysSo() = runBlocking {
+        var signedOut = false
+        val repository = FakeAccountRepository(onSignOut = { signedOut = true })
+        val viewModel = viewModel(
+            repository,
+            FakeGoogleCredential(GoogleCredentialResult.Token("token-1")),
+            merge = UnreadableAccount,
+        )
+
+        viewModel.signIn(picker::request)
+        val state = viewModel.state.firstWithin { it.notice != null }
+
+        assertEquals(AccountNotice.SignInFailed, state.notice)
+        assertEquals(true, signedOut)
+        assertNull(state.merge)
     }
 
     // Closing the picker is a decision, not a fault: nothing should be said
@@ -219,15 +242,61 @@ class AccountViewModelTest {
         assertEquals(false, state.deleting)
     }
 
+    // The photo goes up into the person's own folder, the server looks at it
+    // and answers with a public address, and that address is the face.
+    @Test
+    fun aPhotoFromTheGallery_goesUpAndBecomesTheFace() = runBlocking {
+        val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn)
+        val photos = FakeFacePhotos()
+        val viewModel = viewModel(repository, facePhotos = photos)
+
+        viewModel.setPhotoFromGallery("content://photos/1")
+        val state = viewModel.state.firstWithin { !it.makingFace && repository.photoUrls.isNotEmpty() }
+
+        assertEquals(listOf("content://photos/1"), photos.uploaded)
+        assertEquals(listOf<String?>(FakeCommunityRepository.FACE_URL), repository.photoUrls)
+        assertNull(state.notice)
+    }
+
+    @Test
+    fun aPhotoThatWillNotGoUp_leavesTheOldFaceAndSaysSo() = runBlocking {
+        val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn)
+        val viewModel = viewModel(repository, facePhotos = FakeFacePhotos(Result.failure(IOException("unreadable"))))
+
+        viewModel.setPhotoFromGallery("content://photos/1")
+        val state = viewModel.state.firstWithin { it.notice != null }
+
+        assertEquals(AccountNotice.FaceNotMade, state.notice)
+        assertEquals(emptyList<String?>(), repository.photoUrls)
+        assertEquals(false, state.makingFace)
+    }
+
+    // Refused by the server after the upload: the person hears about it the
+    // same way, and nothing is written to the account.
+    @Test
+    fun aPhotoTheServerRefuses_leavesTheOldFaceAndSaysSo() = runBlocking {
+        val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn)
+        val viewModel = viewModel(repository, community = RefusingFaces())
+
+        viewModel.setPhotoFromGallery("content://photos/1")
+        val state = viewModel.state.firstWithin { it.notice != null }
+
+        assertEquals(AccountNotice.FaceNotMade, state.notice)
+        assertEquals(emptyList<String?>(), repository.photoUrls)
+    }
+
     private fun viewModel(
         repository: AccountRepository = FakeAccountRepository(),
         credential: FakeGoogleCredential = FakeGoogleCredential(GoogleCredentialResult.Cancelled),
         credits: GenerationCredits = FakeGenerationCredits(),
         publishedLists: OwnLists = FakeOwnLists(),
         erasure: AccountErasure = NoErasure,
+        merge: BoardMerge = NoMerge,
+        community: FakeCommunityRepository = FakeCommunityForAccount(),
+        facePhotos: FacePhotos = FakeFacePhotos(),
     ): AccountViewModel {
         picker = credential
-        return AccountViewModel(repository, credits, publishedLists, FakeCommunityForAccount(), FakeAppPreferences(), NoMerge, erasure)
+        return AccountViewModel(repository, credits, publishedLists, community, FakeAppPreferences(), merge, erasure, facePhotos)
     }
 }
 
@@ -243,6 +312,10 @@ private object RefusingErasure : AccountErasure {
 }
 
 private class FakeCommunityForAccount : FakeCommunityRepository()
+
+private class RefusingFaces : FakeCommunityRepository() {
+    override suspend fun makeFace(pictureId: String): Result<String> = Result.failure(IllegalStateException("refused"))
+}
 
 private class FakeOwnLists(private val published: Int = 0, private val boards: Int = 0) : OwnLists {
     override suspend fun publishedCount(): Int = published
@@ -279,6 +352,13 @@ private class FakeGenerationCredits(private val balance: Int? = null) : Generati
         reads++
         return balance
     }
+}
+
+/** The account's index would not load. */
+private object UnreadableAccount : BoardMerge {
+    override suspend fun choice(): MergeChoice? = null
+    override suspend fun keepEverything(fromThisPhone: String) = Unit
+    override suspend fun useAccountBoards() = Unit
 }
 
 /** Nothing on either side, so the question never comes up in these cases. */

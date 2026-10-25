@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
+import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
@@ -11,6 +12,8 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.toCoverImageUrls
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.toStoredCoverImageUrls
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.BoardConflictDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequestDto
@@ -26,6 +29,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncedBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.planSync
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
+import retrofit2.HttpException
 import retrofit2.Response
 import timber.log.Timber
 import java.util.UUID
@@ -66,23 +70,23 @@ class BoardSyncEngine @Inject constructor(
 
         // Pictures before boards, so no board ever names a picture the other
         // phone cannot fetch yet.
-        runCatching { pictures.push() }
+        runSuspendCatching { pictures.push() }
             .onFailure { failure -> Timber.w(failure, "Pictures did not go up") }
 
         var carried = 0
         var refused = 0
         steps.forEach { step ->
-            runCatching { carry(step, fingerprints) }
+            runSuspendCatching { carry(step, fingerprints) }
                 .onSuccess { carried++ }
                 .onFailure { failure ->
                     refused++
                     Timber.w(failure, "Board sync: %s did not go through", step.uid)
                 }
         }
-        runCatching { pictures.pull(wantedPictures()) }
+        runSuspendCatching { pictures.pull(wantedPictures()) }
             .onFailure { failure -> Timber.w(failure, "Pictures did not come down") }
 
-        runCatching { forgetWhatIsNoLongerPublished() }
+        runSuspendCatching { forgetWhatIsNoLongerPublished() }
             .onFailure { failure -> Timber.w(failure, "Could not reconcile what is published") }
 
         // Only after a complete run: a partial one leaves the account behind,
@@ -171,13 +175,12 @@ class BoardSyncEngine @Inject constructor(
         val answer = api.keep(uid, request(board, fingerprint, basedOn))
 
         if (answer.isSuccessful) {
-            val revision = answer.body()?.revision ?: return
+            val revision = answer.body()?.revision ?: error("The account kept $uid but named no revision")
             return remember(uid, revision, fingerprint)
         }
-        val theirs = conflictBoard(answer) ?: run {
-            Timber.w("Board sync: the account would not take %s (%d)", uid, answer.code())
-            return
-        }
+        // Thrown rather than logged and returned: the run counts it as refused,
+        // so the last-synced time stays put and the stuck banner can show.
+        val theirs = conflictBoard(answer) ?: throw HttpException(answer)
 
         // Our own board coming back: the last write's answer never arrived.
         // Same content, so take the missed number and stop -- otherwise a
@@ -188,15 +191,14 @@ class BoardSyncEngine @Inject constructor(
 
         adopt(theirs, asCopy = true)
         val second = api.keep(uid, request(board, fingerprint, basedOn = theirs.revision))
-        if (second.isSuccessful) {
-            second.body()?.let { remember(uid, it.revision, fingerprint) }
-        }
+        if (!second.isSuccessful) throw HttpException(second)
+        second.body()?.let { remember(uid, it.revision, fingerprint) }
     }
 
     private fun conflictBoard(answer: Response<*>): KeptBoardDto? {
         if (answer.code() != HTTP_CONFLICT) return null
         val body = answer.errorBody()?.string() ?: return null
-        return runCatching { json.decodeFromString<BoardConflictDto>(body).board }.getOrNull()
+        return runSuspendCatching { json.decodeFromString<BoardConflictDto>(body).board }.getOrNull()
     }
 
     /** The account's copy replaces what is here, uid and all. */
@@ -259,6 +261,7 @@ class BoardSyncEngine @Inject constructor(
             displayMode = board.displayMode,
             category = board.category,
             coverImageUrl = board.coverImageUrl,
+            coverImageUrls = board.coverImageUrls.toCoverImageUrls(),
             authorName = board.authorName,
             publishedId = board.publishedId,
             deletedAt = board.deletedAt,
@@ -303,6 +306,7 @@ private fun KeptBoardDto.toEntity(id: Long, uid: String) = TierListEntity(
     authorName = authorName,
     category = category,
     coverImageUrl = coverImageUrl,
+    coverImageUrls = coverImageUrls.toStoredCoverImageUrls(),
     uid = uid,
 )
 

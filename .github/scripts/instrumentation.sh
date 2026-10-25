@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The instrumentation run, with one retry for two specific mishaps: the
 # emulator finishing a module's tests with no results file ("296/296
-# completed, 0 failed" and a missing XML), and the API 24 image dropping an
+# completed, 0 failed" and a missing XML), and the emulator dropping an
 # install session ("Failed to install-write all apks"). A failing test fails
 # twice and is reported the first time, so this cannot turn a real failure green.
 #
@@ -11,12 +11,30 @@ set -u
 
 adb shell settings put global verifier_verify_adb_installs 0
 
-# Read straight off the run, not after an `if`: a failed `if` with no `else`
+# The test runner's own lines stream into the job log as the run goes, so a
+# hang names the test it stopped on instead of leaving an hour of silence.
+adb logcat -c
+adb logcat -s TestRunner:I &
+logcat_pid=$!
+
+# The runner kills the emulator after this script and waits for it to go;
+# on API 26 it printed "removeAll" and never went, twenty-two silent minutes
+# after a green run until the job's timeout. So it is put down here, hard,
+# and the runner's own kill finds nothing left to wait for.
+stop_everything() {
+  kill "$logcat_pid" 2>/dev/null
+  adb emu kill >/dev/null 2>&1
+  sleep 5
+  pkill -9 -f "avd test" >/dev/null 2>&1
+  return 0
+}
+trap stop_everything EXIT
+
+# Read straight off the pipeline, not after an `if`: a failed `if` with no `else`
 # is a success, and `status=$?` there reported every red run green.
 log=instrumentation.log
-./gradlew connectedDebugAndroidTest > "$log" 2>&1
-status=$?
-cat "$log"
+./gradlew connectedDebugAndroidTest 2>&1 | tee "$log"
+status=${PIPESTATUS[0]}
 
 if [ "$status" -eq 0 ]; then
   exit 0

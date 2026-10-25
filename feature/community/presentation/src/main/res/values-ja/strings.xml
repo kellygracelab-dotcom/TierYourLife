@@ -3,6 +3,13 @@
     <string name="action_done">完了</string>
     <string name="action_follow">フォロー</string>
     <string name="action_following">フォロー中</string>
+    <string name="action_unfollow">フォロー解除</string>
+    <string name="community_you_follow">フォロー中 · %1$d</string>
+    <string name="community_manage_following">管理</string>
+    <string name="community_day_today">今日</string>
+    <string name="community_day_yesterday">昨日</string>
+    <string name="community_following_nobody">まだ誰もフォローしていません。</string>
+    <string name="community_author_unnamed">作者</string>
     <string name="author_failed">このプロフィールを開けませんでした。</string>
     <plurals name="author_followers_count">
         <item quantity="other">フォロワー %d 人</item>
@@ -38,6 +45,13 @@
     <string name="community_open_failed">このリストを開けませんでした</string>
     <string name="community_rank_it_your_way">好きなように並べてください。</string>
     <string name="community_save_to_my_lists">自分のリストに保存</string>
+    <string name="community_save_which_title">どちらの並べ方を保存しますか？</string>
+    <string name="community_save_which_body">コピーはどちらでもあなたのものです。いつでも並べ直せます。</string>
+    <string name="community_save_theirs">作者の並べ方</string>
+    <string name="community_save_mine">自分の並べ方</string>
+    <string name="community_save_mine_empty">未整理のまま、自分でやる</string>
+    <string name="community_saved_to_your_lists">あなたのリストに保存しました。</string>
+    <string name="community_action_open">開く</string>
     <string name="community_showing_mine">自分の並べ方</string>
     <string name="community_showing_theirs">作者の並べ方</string>
     <string name="community_someone_elses">ほかの人のリストです。好きなように並べてください。</string>

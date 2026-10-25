@@ -16,7 +16,6 @@ kotlin {
 
 dependencies {
     implementation(libs.javax.inject)
-    implementation(libs.kotlinx.coroutines.core)
-    testImplementation(libs.junit)
-    testFixturesImplementation(libs.kotlinx.coroutines.core)
+    // The account arrives as a Flow, so whoever reads it needs coroutines too.
+    api(libs.kotlinx.coroutines.core)
 }

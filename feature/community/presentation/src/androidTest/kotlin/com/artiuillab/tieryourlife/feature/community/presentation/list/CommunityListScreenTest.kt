@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.CommunityTestTags
+import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -122,6 +123,82 @@ class CommunityListScreenTest {
         }
 
         composeRule.onNodeWithTag(CommunityListTestTags.MORE).assertDoesNotExist()
+    }
+
+    @Test
+    fun whileLoading_whatTheCardShowed_isAlreadyOnScreen() {
+        composeRule.setContent {
+            TierYourLifeTheme {
+                CommunityListScreenContent(
+                    state = CommunityListUiState.Loading,
+                    onBack = {},
+                    onMoveItem = { _, _, _ -> },
+                    onSave = {},
+                    onRetry = {},
+                    preview = ListPreview(title = "Sci-fi films", authorName = "Olena M.", itemCount = 6, tierColors = listOf("#B03A32")),
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(CommunityListTestTags.SKELETON).assertIsDisplayed()
+        composeRule.onNodeWithText("Sci-fi films").assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.community_by_author, "Olena M.")).assertIsDisplayed()
+    }
+
+    @Test
+    fun onceSaved_theBarOffersTheCopyInsteadOfSavingAgain() {
+        var opened: Long? = null
+        composeRule.setContent {
+            TierYourLifeTheme {
+                CommunityListScreenContent(
+                    state = successState().copy(savedId = 7L),
+                    onBack = {},
+                    onMoveItem = { _, _, _ -> },
+                    onSave = {},
+                    onRetry = {},
+                    onOpenSaved = { opened = it },
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertDoesNotExist()
+        composeRule.onNodeWithTag(CommunityListTestTags.OPEN_SAVED).performClick()
+        assertEquals(7L, opened)
+    }
+
+    // The pool starts folded on someone else's arrangement; what the reader does
+    // with the board must not fold away with it.
+    @Test
+    fun theSwitchAndTheSave_sitInTheFoldedStrip() {
+        setScreen()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertDoesNotExist()
+        composeRule.onNodeWithTag(CommunityListTestTags.showing(Showing.Theirs)).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertIsDisplayed()
+    }
+
+    // A reader who glanced at the author's half and tapped Save did not mean
+    // to throw their own away, nor the other way round: the save asks.
+    @Test
+    fun saving_asksWhoseArrangementToKeep() {
+        var chosen: Showing? = null
+        composeRule.setContent {
+            TierYourLifeTheme {
+                CommunityListScreenContent(
+                    state = successState(),
+                    onBack = {},
+                    onMoveItem = { _, _, _ -> },
+                    onSave = { chosen = it },
+                    onRetry = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(CommunityListTestTags.SAVE).performClick()
+        composeRule.onNodeWithTag(CommunityListTestTags.SAVE_CHOICE).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityListTestTags.SAVE_THEIRS).performClick()
+
+        assertEquals(Showing.Theirs, chosen)
     }
 
     private fun openOverflow() {

@@ -3,6 +3,13 @@
     <string name="action_done">تم</string>
     <string name="action_follow">متابعة</string>
     <string name="action_following">تتابعه</string>
+    <string name="action_unfollow">إلغاء المتابعة</string>
+    <string name="community_you_follow">تتابع · %1$d</string>
+    <string name="community_manage_following">إدارة</string>
+    <string name="community_day_today">اليوم</string>
+    <string name="community_day_yesterday">أمس</string>
+    <string name="community_following_nobody">لا تتابع أحداً بعد.</string>
+    <string name="community_author_unnamed">المؤلف</string>
     <string name="author_failed">تعذّر فتح هذا الملف الشخصي.</string>
     <plurals name="author_followers_count">
         <item quantity="zero">لا متابعين</item>
@@ -53,6 +60,13 @@
     <string name="community_open_failed">تعذّر فتح هذه القائمة</string>
     <string name="community_rank_it_your_way">رتّبها كما يحلو لك.</string>
     <string name="community_save_to_my_lists">احفظ في قوائمي</string>
+    <string name="community_save_which_title">أي ترتيب تريد حفظه؟</string>
+    <string name="community_save_which_body">النسخة لك في كل الأحوال. يمكنك إعادة ترتيبها في أي وقت.</string>
+    <string name="community_save_theirs">ترتيب المؤلف</string>
+    <string name="community_save_mine">ترتيبي</string>
+    <string name="community_save_mine_empty">بلا ترتيب، سأرتبها بنفسي</string>
+    <string name="community_saved_to_your_lists">تم الحفظ في قوائمك.</string>
+    <string name="community_action_open">فتح</string>
     <string name="community_showing_mine">ترتيبي</string>
     <string name="community_showing_theirs">ترتيبه</string>
     <string name="community_someone_elses">قائمة شخص آخر. رتّبها كما يحلو لك.</string>

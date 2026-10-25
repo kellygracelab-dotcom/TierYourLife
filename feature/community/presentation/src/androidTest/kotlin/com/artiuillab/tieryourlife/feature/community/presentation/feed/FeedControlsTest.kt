@@ -9,12 +9,15 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -103,6 +106,25 @@ class FeedControlsTest {
         val offered = feed(viewModel) { it is CommunityFeed.FollowingNobody && !it.loading }
 
         assertEquals(listOf("a", "b"), (offered as CommunityFeed.FollowingNobody).authors.map { it.uid })
+    }
+
+    // Every arrival asks again; the people already on screen stay there while
+    // it does, instead of blinking out and back.
+    @Test
+    fun askingAgainWhileFollowingNobody_keepsThePeopleOnScreen() = runBlocking {
+        val community = RecordingCommunity(followsNobody = true, suggestions = listOf(author("a"), author("b")))
+        val viewModel = started(community)
+        ready(viewModel)
+        viewModel.selectSource(FeedSource.Following)
+        feed(viewModel) { it is CommunityFeed.FollowingNobody && !it.loading }
+
+        val seen = mutableListOf<CommunityFeed>()
+        val watcher = launch(Dispatchers.Unconfined) { viewModel.state.collect { seen += it.feed } }
+        viewModel.load()
+        eventually("the second answer") { community.asked.size.takeIf { it >= 3 } }
+        watcher.cancel()
+
+        assertTrue(seen.none { it is CommunityFeed.Loading || (it is CommunityFeed.FollowingNobody && (it.loading || it.authors.isEmpty())) })
     }
 
     // A list that removes what you just touched makes the next tap land on

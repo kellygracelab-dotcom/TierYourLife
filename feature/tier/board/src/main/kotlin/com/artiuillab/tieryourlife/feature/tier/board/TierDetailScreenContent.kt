@@ -66,13 +66,11 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TIER_LIST_
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TrashTarget
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
-import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolPanel
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedPoolSection
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRow
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierScreenTopBar
-import com.artiuillab.tieryourlife.feature.tier.board.components.rows.captionsExcept
-import com.artiuillab.tieryourlife.feature.tier.board.components.rows.rememberBandContentWidth
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItemSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierListSettingsScreenContent
@@ -115,6 +113,7 @@ fun TierDetailScreenContent(
     subtitle: String? = null,
     onReaderMoreClick: (() -> Unit)? = null,
     belowTopBar: (@Composable () -> Unit)? = null,
+    poolAccessories: (@Composable (folded: Boolean) -> Unit)? = null,
 ) {
     // Beside the board once there is room. Held back on a short window too: a
     // phone in landscape is wide enough for the column and too short for the board.
@@ -132,7 +131,7 @@ fun TierDetailScreenContent(
                     onSelect = onOpenList,
                 )
             }
-            TierDetailPane(state, actions, addedItemIds, userMessages, readOnly, subtitle, onReaderMoreClick, belowTopBar)
+            TierDetailPane(state, actions, addedItemIds, userMessages, readOnly, subtitle, onReaderMoreClick, belowTopBar, poolAccessories)
         }
     }
 }
@@ -150,6 +149,7 @@ private fun TierDetailPane(
     subtitle: String?,
     onReaderMoreClick: (() -> Unit)?,
     belowTopBar: (@Composable () -> Unit)?,
+    poolAccessories: (@Composable (folded: Boolean) -> Unit)?,
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -184,6 +184,7 @@ private fun TierDetailPane(
                     subtitle = subtitle,
                     onReaderMoreClick = onReaderMoreClick,
                     belowTopBar = belowTopBar,
+                    poolAccessories = poolAccessories,
                 )
             }
 
@@ -211,6 +212,7 @@ private fun TierScreenBody(
     subtitle: String? = null,
     onReaderMoreClick: (() -> Unit)? = null,
     belowTopBar: (@Composable () -> Unit)? = null,
+    poolAccessories: (@Composable (folded: Boolean) -> Unit)? = null,
 ) {
     val onBack = actions.onBack
     val onAddClick = actions.onAddClick
@@ -261,7 +263,7 @@ private fun TierScreenBody(
             onUpdatePublished = actions.onUpdatePublished,
             onSetCategory = actions.onSetCategory,
             onCategoryNotChosen = actions.onCategoryNotChosen,
-            onSetCover = actions.onSetCover,
+            onChooseCover = actions.onChooseCover,
             onAddCards = {
                 listSettingsVisible = false
                 actions.onAddClick()
@@ -272,7 +274,6 @@ private fun TierScreenBody(
     }
 
     val rankedTiers = list.tiers.filterNot { it.isPool }
-    val bandContentWidth = rememberBandContentWidth(list.tiers)
     val pool = list.tiers.firstOrNull { it.isPool }
     val layoutDirection = LocalLayoutDirection.current
     val dragController = remember { TierDragController() }
@@ -488,7 +489,6 @@ private fun TierScreenBody(
                             }
                             TierRow(
                                 tier = tier,
-                                bandContentWidth = bandContentWidth,
                                 modifier = itemModifier,
                                 displayMode = list.displayMode,
                                 dragController = dragController,
@@ -504,7 +504,7 @@ private fun TierScreenBody(
                     }
 
                     if (pool != null) {
-                        PoolPanel(
+                        PoolSheet(
                             pool = pool,
                             onAddClick = onAddClick,
                             onGenerateClick = onGenerateClick,
@@ -513,6 +513,7 @@ private fun TierScreenBody(
                             onDeleteItem = deleteAndAnnounce,
                             onDoubleTap = { itemId -> chooserItemId = itemId },
                             readOnly = readOnly,
+                            accessories = poolAccessories,
                         )
                     }
                 }
@@ -578,7 +579,6 @@ private fun TierScreenBody(
     val editingTier = editingTierId?.let { id -> list.tiers.firstOrNull { it.id == id } }
     if (editingTier != null) {
         TierEditorSheet(
-            otherCaptions = list.captionsExcept(editingTier.id),
             initialTier = editingTier,
             onDismiss = { editingTierId = null },
             onSave = { label, caption, colorLight, colorDark ->

@@ -3,6 +3,13 @@
     <string name="action_done">Hecho</string>
     <string name="action_follow">Seguir</string>
     <string name="action_following">Siguiendo</string>
+    <string name="action_unfollow">Dejar de seguir</string>
+    <string name="community_you_follow">Sigues a · %1$d</string>
+    <string name="community_manage_following">Gestionar</string>
+    <string name="community_day_today">Hoy</string>
+    <string name="community_day_yesterday">Ayer</string>
+    <string name="community_following_nobody">Aún no sigues a nadie.</string>
+    <string name="community_author_unnamed">Autor</string>
     <string name="author_failed">No se pudo abrir este perfil.</string>
     <plurals name="author_followers_count">
         <item quantity="one">%d seguidor</item>
@@ -44,6 +51,13 @@
     <string name="community_open_failed">No se pudo abrir esta lista</string>
     <string name="community_rank_it_your_way">Ordénala como quieras.</string>
     <string name="community_save_to_my_lists">Guardar en mis listas</string>
+    <string name="community_save_which_title">¿Qué orden guardar?</string>
+    <string name="community_save_which_body">La copia es tuya en cualquier caso. Puedes reordenarla cuando quieras.</string>
+    <string name="community_save_theirs">La del autor</string>
+    <string name="community_save_mine">La mía</string>
+    <string name="community_save_mine_empty">Sin ordenar, lo haré yo</string>
+    <string name="community_saved_to_your_lists">Guardado en tus listas.</string>
+    <string name="community_action_open">Abrir</string>
     <string name="community_showing_mine">El mío</string>
     <string name="community_showing_theirs">Su orden</string>
     <string name="community_someone_elses">Lista de otra persona. Ordénala como quieras.</string>

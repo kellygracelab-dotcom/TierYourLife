@@ -157,6 +157,20 @@ class BoardSyncEngineTest {
         assertEquals(3, boards.kept.last().second.basedOn)
     }
 
+    // A board the account keeps turning down is not backed up, and saying it
+    // was would hide the stuck banner from the one person who needs it.
+    @Test
+    fun aWriteRefusedForAnotherReason_isCountedAsRefused_notCarried() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        boards.refuseWithCode = 413
+
+        val report = engine().sync()
+
+        assertEquals(1, report.refused)
+        assertEquals(0, report.carried)
+        assertTrue(dao.allSyncRecords().none { it.listUid == uid })
+    }
+
     @Test
     fun aStepThatFails_isCountedAndTheRunCarriesOn() = runBlocking {
         givenLocalBoard("Films")
@@ -210,6 +224,7 @@ class BoardSyncEngineTest {
         val kept = mutableListOf<Pair<String, KeepBoardRequestDto>>()
         var refuseNextWith: KeptBoardDto? = null
         var keepFails = false
+        var refuseWithCode: Int? = null
 
         override suspend fun index(after: String?) = KeptBoardIndexDto(
             server.values.map { KeptBoardSummaryDto(it.uid, it.revision, it.deleted, it.fingerprint) },
@@ -219,6 +234,7 @@ class BoardSyncEngineTest {
 
         override suspend fun keep(uid: String, request: KeepBoardRequestDto): Response<KeptBoardRevisionDto> {
             if (keepFails) throw IOException("offline")
+            refuseWithCode?.let { code -> return Response.error(code, "".toResponseBody("application/json".toMediaType())) }
             refuseNextWith?.let { theirs ->
                 refuseNextWith = null
                 val body = networkJson.encodeToString(BoardConflictDto.serializer(), BoardConflictDto(board = theirs))

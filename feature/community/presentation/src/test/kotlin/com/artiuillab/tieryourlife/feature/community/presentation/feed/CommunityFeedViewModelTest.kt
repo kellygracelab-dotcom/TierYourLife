@@ -7,6 +7,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityReposit
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
+import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -224,6 +226,19 @@ class CommunityFeedViewModelTest {
         assertEquals(listOf(null, "ghibli", null), community.queriesAsked)
     }
 
+    @Test
+    fun aFollowingFeed_bringsThePeopleItIsMadeOf() = runBlocking {
+        val community = object : FakeFeedRepository(feed = listOf(published("a", "One"))) {
+            override suspend fun following() = Result.success(listOf(FollowedAuthor("u1", "Ann", null)))
+        }
+        val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
+        viewModel.selectSource(FeedSource.Following)
+
+        val state = viewModel.state.firstWithin { readyFeed(it)?.followed?.isNotEmpty() == true }
+
+        assertEquals(listOf("u1"), readyFeed(state)!!.followed.map { it.uid })
+    }
+
     private fun shownIds(viewModel: CommunityFeedViewModel): List<String> =
         readyFeed(viewModel.state.value)!!.lists.map { it.id }
 
@@ -240,7 +255,7 @@ class CommunityFeedViewModelTest {
     )
 }
 
-private class FakeFeedRepository(
+private open class FakeFeedRepository(
     private val feed: List<PublishedListSummary> = emptyList(),
     /** Pages after the first, in order. The cursor to each is its index. */
     private val nextPages: List<List<PublishedListSummary>> = emptyList(),

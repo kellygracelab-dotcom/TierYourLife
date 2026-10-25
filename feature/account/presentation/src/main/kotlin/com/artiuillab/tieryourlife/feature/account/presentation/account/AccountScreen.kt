@@ -1,5 +1,8 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +35,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
@@ -61,6 +64,9 @@ fun AccountScreen(
     val context = LocalContext.current
     val googleCredential = rememberGoogleCredential()
     val fromThisPhone = stringResource(R.string.merge_name_suffix)
+    val pickPhoto = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) viewModel.setPhotoFromGallery(uri.toString())
+    }
 
     AccountScreenContent(
         state = state,
@@ -71,6 +77,7 @@ fun AccountScreen(
         onDeleteAccount = viewModel::deleteAccount,
         onSetName = viewModel::setDisplayName,
         onSetPhoto = viewModel::setPhoto,
+        onPickPhoto = { pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
         onNoticeShown = viewModel::dismissNotice,
         onBackUpBoardsChange = viewModel::setBackUpBoards,
         onMergeKeepChange = viewModel::setMergeKeep,
@@ -89,6 +96,7 @@ internal fun AccountScreenContent(
     onDeleteAccount: () -> Unit = {},
     onSetName: (String) -> Unit = {},
     onSetPhoto: (String?) -> Unit = {},
+    onPickPhoto: () -> Unit = {},
     onNoticeShown: () -> Unit = {},
     onOpenPublished: () -> Unit = {},
     onBackUpBoardsChange: (Boolean) -> Unit = {},
@@ -161,6 +169,7 @@ internal fun AccountScreenContent(
                         onSignOut = onSignOut,
                         onDeleteAccount = onDeleteAccount,
                         deleting = state.deleting,
+                        makingFace = state.makingFace,
                     )
                     }
                 }
@@ -187,6 +196,10 @@ internal fun AccountScreenContent(
                 onDismiss = { faceSheetVisible = false },
                 onChoose = {
                     onSetPhoto(it)
+                    faceSheetVisible = false
+                },
+                onPickPhoto = {
+                    onPickPhoto()
                     faceSheetVisible = false
                 },
             )

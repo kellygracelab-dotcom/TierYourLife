@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.data.repository
 
+import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.feature.community.data.remote.api.CommunityApi
 import com.artiuillab.tieryourlife.feature.community.data.remote.banNotice
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModerationReportDto
@@ -17,6 +18,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.EditorialAuthors
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
@@ -32,6 +34,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.OwnPictures
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PublishFingerprint
+import kotlinx.coroutines.CancellationException
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
@@ -83,6 +86,11 @@ class RetrofitCommunityRepository @Inject constructor(
             FollowState(following = state.following, followers = state.followers)
         }
 
+    override suspend fun following(): Result<List<FollowedAuthor>> =
+        attempt("Reading who is followed") {
+            api.following().authors.map { FollowedAuthor(uid = it.uid, name = it.name, photoUrl = it.photoUrl) }
+        }
+
     override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> =
         attempt("Reading who to follow") {
             api.suggestedAuthors().authors
@@ -114,6 +122,8 @@ class RetrofitCommunityRepository @Inject constructor(
         val existing = list.publishedId
         val id = if (existing == null) api.publish(request).id else api.republish(existing, request).id
         Result.success(Published(id = id, fingerprint = PublishFingerprint.of(list, pictures::pictureIdOf)))
+    } catch (e: CancellationException) {
+        throw e
     } catch (e: Exception) {
         Timber.w(e, "Publishing failed")
         Result.failure(PublishRefused(e.asPublishError()))
@@ -176,7 +186,7 @@ class RetrofitCommunityRepository @Inject constructor(
  * place that says which of the ten calls failed, and why.
  */
 private inline fun <T> attempt(what: String, block: () -> T): Result<T> =
-    runCatching(block).fold(
+    runSuspendCatching(block).fold(
         onSuccess = { Result.success(it) },
         onFailure = { failure ->
             Timber.w(failure, "%s failed", what)
@@ -263,6 +273,7 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
     category = (category ?: ListCategory.Other).id,
     coverImageUrl = coverImageUrl?.takeIf { it.startsWith("https://") },
     coverPictureId = images.pictureIdOf(coverImageUrl)?.takeIf { it in uploaded },
+    coverImageUrls = coverImageUrls.filter { it.startsWith("https://") },
     tiers = tiers.filterNot { it.isPool }.map {
         PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark)
     },

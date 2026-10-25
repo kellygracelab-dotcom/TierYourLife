@@ -3,10 +3,13 @@ package com.artiuillab.tieryourlife.feature.community.presentation.feed
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.opensOn
@@ -15,6 +18,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,6 +33,9 @@ class CommunityFeedViewModel @Inject constructor(
     private val community: CommunityRepository,
     private val preferences: AppPreferences,
 ) : ViewModel() {
+
+    private val messages = UserMessages()
+    val userMessages: Flow<UserMessage> = messages.flow
 
     private val _state = MutableStateFlow(CommunityFeedUiState())
     val state: StateFlow<CommunityFeedUiState> = _state.asStateFlow()
@@ -81,11 +88,19 @@ class CommunityFeedViewModel @Inject constructor(
             onSuccess = { page ->
                 cursor = page.nextCursor
                 if (page.followingNobody) {
-                    CommunityFeed.FollowingNobody()
+                    // The people to follow come with the answer, not a moment
+                    // after it: shown in two steps, the screen blinked on every
+                    // arrival, and coming back from a profile blinked it again.
+                    val shown = feed as? CommunityFeed.FollowingNobody
+                    val authors = community.suggestedAuthors()
+                        .onFailure { Timber.w(it, "Reading who to follow failed") }
+                        .getOrElse { shown?.authors.orEmpty() }
+                    CommunityFeed.FollowingNobody(authors = authors, loading = false, followed = shown?.followed.orEmpty())
                 } else {
                     CommunityFeed.Ready(
                         lists = page.lists.filterNot(::isHidden),
                         canLoadMore = page.nextCursor != null,
+                        followed = if (source == FeedSource.Following) whoIsFollowed() else emptyList(),
                     )
                 }
             },
@@ -96,25 +111,12 @@ class CommunityFeedViewModel @Inject constructor(
             },
         )
         emit()
-        // Only once the state above is set: an early answer arrives while
-        // still Loading and leaves the spinner up for good.
-        if (feed is CommunityFeed.FollowingNobody) {
-            loadSuggestedAuthors()
-        }
     }
 
-    private fun loadSuggestedAuthors() {
-        viewModelScope.launch {
-            val authors = community.suggestedAuthors()
-                .onFailure { Timber.w(it, "Reading who to follow failed") }
-                .getOrDefault(emptyList())
-            // Only if the screen is still the one that asked. Switching back to
-            // everybody while this was in flight must not put it back.
-            val shown = feed as? CommunityFeed.FollowingNobody ?: return@launch
-            feed = shown.copy(authors = authors, loading = false)
-            emit()
-        }
-    }
+    /** The strip above a following feed. Without it the feed still stands, so a failure here is a note, not a state. */
+    private suspend fun whoIsFollowed(): List<FollowedAuthor> = community.following()
+        .onFailure { Timber.w(it, "Reading who is followed failed") }
+        .getOrDefault(emptyList())
 
     private fun reload() {
         feed = CommunityFeed.Loading
@@ -251,8 +253,17 @@ class CommunityFeedViewModel @Inject constructor(
         preferences.hideList(summary.id, summary.title)
         noteHidden(summary.id, reported = true)
         viewModelScope.launch {
-            community.report(summary.id, reason, note)
-                .onFailure { Timber.w(it, "Could not file the report") }
+            community.report(summary.id, reason, note).onFailure {
+                Timber.w(it, "Could not file the report")
+                // Back on screen, so it can be reported again; hidden, it never could.
+                preferences.unhideList(summary.id)
+                val current = feed as? CommunityFeed.Ready
+                if (current != null) {
+                    feed = current.copy(justHidden = current.justHidden - summary.id)
+                    emit()
+                }
+                messages.send(UserMessage.ActionFailed)
+            }
         }
     }
 

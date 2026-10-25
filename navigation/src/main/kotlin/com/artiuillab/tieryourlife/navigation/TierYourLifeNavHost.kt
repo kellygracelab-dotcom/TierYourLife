@@ -1,7 +1,14 @@
 package com.artiuillab.tieryourlife.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -23,12 +30,15 @@ import com.artiuillab.tieryourlife.feature.account.presentation.navigation.navig
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.aiStudioScreen
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.navigateToAiStudio
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.authorScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.followingScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.moderationScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.myPublishedScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToAuthor
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToCommunityList
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToFollowing
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToModeration
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToMyPublished
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.hiddenScreen
@@ -36,7 +46,10 @@ import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.navi
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.navigateToSettings
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.settingsScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.ADDED_ITEMS_RESULT_KEY
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.COVER_CHANGED_RESULT_KEY
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.coverPickerScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToCoverPicker
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTierDetail
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTrash
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailScreen
@@ -123,12 +136,31 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
                     onOpenList = { id -> navController.navigateToCommunityList(id) },
                     onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
                     onSettingsClick = { navController.navigateToSettings() },
+                    onManageFollowing = { navController.navigateToFollowing() },
                     tabs = tabs,
                 )
             },
         )
     }
 }
+
+private const val PUSH_MILLIS = 260
+private const val POP_MILLIS = 220
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.betweenTopLevels(): Boolean =
+    isTopLevel(initialState) && isTopLevel(targetState)
+
+private fun isTopLevel(entry: NavBackStackEntry): Boolean = railDestinationFor(entry.destination.route, false) != null
+
+/** The next screen slides in whole over the one that stays put. Nothing fades: two translucent screens over a dark window made a frame darker than either, which read as a flash. */
+private fun pushIn(): EnterTransition =
+    slideInHorizontally(tween(PUSH_MILLIS, easing = FastOutSlowInEasing)) { width -> width }
+
+/** Kept exactly as it is for the whole push, and only then let go. */
+private fun holdBeneath(millis: Int): ExitTransition = fadeOut(tween(millis), targetAlpha = 1f)
+
+private fun popOut(): ExitTransition =
+    slideOutHorizontally(tween(POP_MILLIS, easing = FastOutSlowInEasing)) { width -> width }
 
 /** Top-level destinations replace each other rather than piling up. */
 private fun NavHostController.navigateToHome(community: Boolean, makeBoard: Boolean = false) {
@@ -146,14 +178,17 @@ private fun NavContent(
     languageTag: String?,
     onLanguageTagChange: (String?) -> Unit,
 ) {
-    // Default cross-fades look like a flash because destinations share the same surface.
+    // One set of rules for every screen: the next one slides in a little and
+    // fades up over the one that stays beneath; back is the same, shorter.
+    // Siblings at the top level only fade: nothing is above or below them.
     NavHost(
         navController = navController,
         startDestination = Route.TierLists(),
-        enterTransition = { EnterTransition.None },
-        exitTransition = { ExitTransition.None },
-        popEnterTransition = { EnterTransition.None },
-        popExitTransition = { ExitTransition.None },
+        enterTransition = { if (betweenTopLevels()) fadeIn(tween(PUSH_MILLIS)) else pushIn() },
+        exitTransition = { if (betweenTopLevels()) fadeOut(tween(PUSH_MILLIS)) else holdBeneath(PUSH_MILLIS) },
+        // The screen underneath is already whole; it has nothing to animate.
+        popEnterTransition = { if (betweenTopLevels()) fadeIn(tween(POP_MILLIS)) else EnterTransition.None },
+        popExitTransition = { if (betweenTopLevels()) fadeOut(tween(POP_MILLIS)) else popOut() },
     ) {
         homeScreen(navController)
         tierDetailScreen(
@@ -166,6 +201,15 @@ private fun NavContent(
                 }
             },
             onOpenAiStudio = { tierListId, listTitle -> navController.navigateToAiStudio(tierListId, listTitle) },
+            onChooseCover = { id -> navController.navigateToCoverPicker(id) },
+        )
+        coverPickerScreen(
+            onBack = { navController.popBackStack() },
+            // The board behind it reads its own row again rather than being told what changed.
+            onSaved = {
+                navController.previousBackStackEntry?.savedStateHandle?.set(COVER_CHANGED_RESULT_KEY, true)
+                navController.popBackStack()
+            },
         )
         settingsScreen(
             onBack = { navController.popBackStack() },
@@ -191,17 +235,24 @@ private fun NavContent(
         )
         myPublishedScreen(
             onBack = { navController.popBackStack() },
-            onOpen = { id -> navController.navigateToCommunityList(id) },
+            onOpen = { route -> navController.navigateToCommunityList(route) },
         )
         authorScreen(
             onBack = { navController.popBackStack() },
-            onOpenList = { id -> navController.navigateToCommunityList(id) },
+            onOpenList = { route -> navController.navigateToCommunityList(route) },
+        )
+        followingScreen(
+            onBack = { navController.popBackStack() },
+            onOpenAuthor = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
         )
         communityListScreen(
             onBack = { navController.popBackStack() },
-            onSaved = { id ->
-                navController.popBackStack()
-                navController.navigateToTierDetail(id)
+            // The copy takes the published list's place: one move, and back
+            // leads to where the list was found.
+            onOpenSaved = { id ->
+                navController.navigate(Route.TierDetail(id)) {
+                    popUpTo<CommunityRoute.CommunityList> { inclusive = true }
+                }
             },
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
         )

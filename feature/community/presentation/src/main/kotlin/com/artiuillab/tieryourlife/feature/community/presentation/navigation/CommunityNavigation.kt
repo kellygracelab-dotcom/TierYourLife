@@ -4,27 +4,34 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.artiuillab.tieryourlife.feature.community.presentation.author.AuthorScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.following.FollowingScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.ModerationScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.published.MyPublishedScreen
 
 fun NavGraphBuilder.communityListScreen(
     onBack: () -> Unit,
-    onSaved: (Long) -> Unit,
+    onOpenSaved: (Long) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
 ) {
     composable<CommunityRoute.CommunityList> {
-        CommunityListScreen(onBack = onBack, onSaved = onSaved, onAuthorClick = onAuthorClick)
+        CommunityListScreen(onBack = onBack, onOpenSaved = onOpenSaved, onAuthorClick = onAuthorClick)
     }
 }
 
+/** With what the card showed, so the screen has something to draw before the answer. */
+fun NavController.navigateToCommunityList(route: CommunityRoute.CommunityList) {
+    navigate(route)
+}
+
+/** By id alone, from a place that holds no card: the screen waits with a spinner. */
 fun NavController.navigateToCommunityList(publishedId: String) {
     navigate(CommunityRoute.CommunityList(publishedId))
 }
 
 fun NavGraphBuilder.authorScreen(
     onBack: () -> Unit,
-    onOpenList: (String) -> Unit,
+    onOpenList: (CommunityRoute.CommunityList) -> Unit,
 ) {
     composable<CommunityRoute.Author> {
         AuthorScreen(onBack = onBack, onOpenList = onOpenList)
@@ -35,7 +42,7 @@ fun NavController.navigateToAuthor(uid: String, name: String, photoUrl: String?)
     navigate(CommunityRoute.Author(uid, name, photoUrl))
 }
 
-fun NavGraphBuilder.myPublishedScreen(onBack: () -> Unit, onOpen: (String) -> Unit) {
+fun NavGraphBuilder.myPublishedScreen(onBack: () -> Unit, onOpen: (CommunityRoute.CommunityList) -> Unit) {
     composable<CommunityRoute.MyPublished> {
         MyPublishedScreen(onBack = onBack, onOpen = onOpen)
     }
@@ -43,6 +50,19 @@ fun NavGraphBuilder.myPublishedScreen(onBack: () -> Unit, onOpen: (String) -> Un
 
 fun NavController.navigateToMyPublished() {
     navigate(CommunityRoute.MyPublished)
+}
+
+fun NavGraphBuilder.followingScreen(
+    onBack: () -> Unit,
+    onOpenAuthor: (uid: String, name: String, photoUrl: String?) -> Unit,
+) {
+    composable<CommunityRoute.Following> {
+        FollowingScreen(onBack = onBack, onOpenAuthor = onOpenAuthor)
+    }
+}
+
+fun NavController.navigateToFollowing() {
+    navigate(CommunityRoute.Following)
 }
 
 fun NavGraphBuilder.moderationScreen(onBack: () -> Unit, onOpenList: (String) -> Unit) {

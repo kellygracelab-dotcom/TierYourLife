@@ -24,11 +24,6 @@
     <string name="home_empty_body">映画、ゲーム、レストラン、アルバム、なんでも。</string>
     <string name="cd_new_list">新しいリスト</string>
     <string name="default_tier_list_title">無題のリスト</string>
-    <string name="default_tier_caption_s">最高</string>
-    <string name="default_tier_caption_a">とても良い</string>
-    <string name="default_tier_caption_b">良い</string>
-    <string name="default_tier_caption_c">まあまあ</string>
-    <string name="default_tier_caption_d">最低</string>
     <string name="tier_lists_load_error">リストを読み込めませんでした。</string>
 
 
@@ -140,4 +135,18 @@
     <string name="conflict_edited_here">ここで編集 %1$s</string>
     <string name="cover_unfold_title">開いて並べ替え</string>
     <string name="cover_unfold_body">カードの移動には内側の画面が必要です。</string>
+
+    <string name="cover_picker_title">カバー</string>
+    <string name="cover_picker_done">完了</string>
+    <string name="cover_picker_reset">リセット</string>
+    <string name="cover_picker_tab_cards">あなたのカード · %1$d</string>
+    <string name="cover_picker_tab_search">画像を検索</string>
+    <string name="cover_picker_status_automatic">未選択: リスト自身の画像を最大6枚</string>
+    <string name="cover_picker_status_one">1枚の画像がカバー全体になります</string>
+    <plurals name="cover_picker_status_collage">
+        <item quantity="other">%2$d枚中%1$d枚を選択、コラージュ</item>
+    </plurals>
+    <string name="cover_picker_no_cards">このリストのカードにはまだ画像がありません。</string>
+    <string name="cover_picker_gallery">ギャラリーから選ぶ</string>
+    <string name="cover_picker_gallery_note">ギャラリーの画像はカバー全体になり、公開時にリストと一緒に送られます。</string>
 </resources>

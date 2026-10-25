@@ -91,7 +91,7 @@ class FollowingAnAuthorTest {
         val viewModel = viewModel(community)
         ready(viewModel)
 
-        viewModel.saveToMyLists {}
+        viewModel.saveToMyLists(Showing.Mine)
 
         assertEquals("abc", eventually("the take to be counted") { community.taken.firstOrNull() })
     }
@@ -105,10 +105,10 @@ class FollowingAnAuthorTest {
         val viewModel = viewModel(community, tiers)
         ready(viewModel)
 
-        var savedId: Long? = null
-        viewModel.saveToMyLists { savedId = it }
+        viewModel.saveToMyLists(Showing.Mine)
 
-        assertTrue(eventually("the board to be saved") { savedId } > 0)
+        val savedId = eventually("the board to be saved") { (viewModel.state.value as? CommunityListUiState.Success)?.savedId }
+        assertTrue(savedId > 0)
     }
 
     /** The button answers before the server does on purpose, so a check on what reached the server has to wait for it. */

@@ -1,8 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.board.components.drag
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.size
@@ -21,11 +19,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.testTag
@@ -53,6 +53,7 @@ fun DraggableTile(
 ) {
     var rootPosition by remember { mutableStateOf(Offset.Zero) }
     val isDragging = dragController.draggedPayload?.itemId == item.id
+    val haptic = LocalHapticFeedback.current
     val baseViewConfiguration = LocalViewConfiguration.current
     val dragViewConfiguration = remember(baseViewConfiguration) {
         ShortLongPressViewConfiguration(baseViewConfiguration, DRAG_LONG_PRESS_TIMEOUT_MILLIS)
@@ -71,8 +72,9 @@ fun DraggableTile(
                     onPositioned(coordinates.boundsInRoot())
                 }
                 .pointerInput(item.id, sourceTierId) {
-                    detectDragGesturesAfterLongPress(
+                    detectTileDrag(
                         onDragStart = { offsetInTile ->
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             dragController.beginDrag(
                                 DragPayload(
                                     itemId = item.id,
@@ -100,7 +102,7 @@ fun DraggableTile(
                     )
                 }
                 .pointerInput(item.id) {
-                    detectTapGestures(onDoubleTap = { onDoubleTap(item.id) })
+                    detectDoubleTapOnPress { onDoubleTap(item.id) }
                 },
         ) {
             if (isDragging) {

@@ -46,6 +46,18 @@ data class SuggestedAuthorsDto(
 )
 
 @Serializable
+data class FollowedAuthorDto(
+    val uid: String,
+    val name: String = "",
+    val photoUrl: String? = null,
+)
+
+@Serializable
+data class FollowedAuthorsDto(
+    val authors: List<FollowedAuthorDto> = emptyList(),
+)
+
+@Serializable
 data class PublishedTierDto(
     val label: String,
     val caption: String? = null,
@@ -95,6 +107,8 @@ data class PublishListRequestDto(
     val category: String,
     val coverImageUrl: String? = null,
     val coverPictureId: String? = null,
+    /** The author's collage, web addresses only; a single cover above it wins when set. */
+    val coverImageUrls: List<String> = emptyList(),
     val tiers: List<PublishedTierDto>,
     val items: List<PublishedItemDto>,
 )

@@ -15,7 +15,8 @@ data class MergeChoice(val accountBoards: Int, val localBoards: Int) {
 
 interface BoardMerge {
 
-    suspend fun choice(): MergeChoice
+    /** Null when the account could not be read: unknown is not empty, and empty would merge without asking. */
+    suspend fun choice(): MergeChoice?
 
     /** Both survive; boards from this phone sharing a name with one in the account are renamed. */
     suspend fun keepEverything(fromThisPhone: String)

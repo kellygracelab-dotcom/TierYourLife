@@ -36,6 +36,11 @@ class PublishFingerprintTest {
     }
 
     @Test
+    fun choosingADifferentCollage_showsUp() {
+        assertNotEquals(print(board()), print(board(collage = listOf("https://example.test/a.jpg", "https://example.test/b.jpg"))))
+    }
+
+    @Test
     fun renamingATier_showsUp() {
         assertNotEquals(print(board()), print(board(tierLabel = "A")))
     }
@@ -99,6 +104,7 @@ class PublishFingerprintTest {
         title: String = "Sci-fi films",
         category: ListCategory? = ListCategory.FilmTv,
         cover: String? = "https://example.test/cover.jpg",
+        collage: List<String> = emptyList(),
         mode: TierListDisplayMode = TierListDisplayMode.WRAP,
         tierLabel: String = "S",
         tierColour: String = "#B03A32",
@@ -112,6 +118,7 @@ class PublishFingerprintTest {
         displayMode = mode,
         category = category,
         coverImageUrl = cover,
+        coverImageUrls = collage,
         tiers = listOf(
             Tier(
                 id = 1,

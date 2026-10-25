@@ -63,7 +63,7 @@ internal fun AuthorLine(
                 label = {
                     Text(
                         stringResource(
-                            if (follow.following) R.string.action_following else R.string.action_follow,
+                            if (follow.following) R.string.action_unfollow else R.string.action_follow,
                         ),
                     )
                 },

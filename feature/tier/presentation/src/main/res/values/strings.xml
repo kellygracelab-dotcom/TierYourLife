@@ -27,11 +27,6 @@
     <string name="home_empty_body">Films, games, restaurants, albums — anything at all.</string>
     <string name="cd_new_list">New list</string>
     <string name="default_tier_list_title">Untitled list</string>
-    <string name="default_tier_caption_s">Best</string>
-    <string name="default_tier_caption_a">Great</string>
-    <string name="default_tier_caption_b">Good</string>
-    <string name="default_tier_caption_c">Okay</string>
-    <string name="default_tier_caption_d">Worst</string>
     <string name="tier_lists_load_error">Couldn’t load your lists.</string>
 
 
@@ -150,4 +145,19 @@
     <string name="conflict_edited_here">Edited here %1$s</string>
     <string name="cover_unfold_title">Unfold to rank</string>
     <string name="cover_unfold_body">Moving cards needs the inner screen.</string>
+
+    <string name="cover_picker_title">Cover</string>
+    <string name="cover_picker_done">Done</string>
+    <string name="cover_picker_reset">Reset</string>
+    <string name="cover_picker_tab_cards">Your cards · %1$d</string>
+    <string name="cover_picker_tab_search">Picture search</string>
+    <string name="cover_picker_status_automatic">Nothing chosen: up to six of the list\'s own pictures</string>
+    <string name="cover_picker_status_one">One picture, the whole cover</string>
+    <plurals name="cover_picker_status_collage">
+        <item quantity="one">%1$d of %2$d chosen, a collage</item>
+        <item quantity="other">%1$d of %2$d chosen, a collage</item>
+    </plurals>
+    <string name="cover_picker_no_cards">None of this list\'s cards have a picture yet.</string>
+    <string name="cover_picker_gallery">Choose from gallery</string>
+    <string name="cover_picker_gallery_note">A gallery picture is the whole cover and travels with the list when you publish it.</string>
 </resources>

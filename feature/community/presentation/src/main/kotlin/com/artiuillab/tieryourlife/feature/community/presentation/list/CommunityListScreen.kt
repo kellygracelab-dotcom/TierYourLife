@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
-import androidx.compose.foundation.background
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,11 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
@@ -35,7 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
@@ -54,13 +53,14 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
-private val SAVE_BAR_MIN_HEIGHT = 72.dp
+private val SWITCH_HEIGHT = 36.dp
 private val SAVE_BUTTON_MAX_WIDTH = 180.dp
+private const val PHASE_FADE_MILLIS = 220
 
 @Composable
 fun CommunityListScreen(
     onBack: () -> Unit,
-    onSaved: (Long) -> Unit,
+    onOpenSaved: (Long) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     viewModel: CommunityListViewModel = hiltViewModel(),
 ) {
@@ -70,8 +70,10 @@ fun CommunityListScreen(
         state = state,
         onBack = onBack,
         onMoveItem = viewModel::moveItem,
-        onSave = { viewModel.saveToMyLists(onSaved) },
+        onSave = viewModel::saveToMyLists,
         onRetry = viewModel::load,
+        preview = viewModel.preview,
+        onOpenSaved = onOpenSaved,
         onShow = viewModel::show,
         onAuthorClick = onAuthorClick,
         onHide = {
@@ -92,9 +94,12 @@ fun CommunityListScreenContent(
     state: CommunityListUiState,
     onBack: () -> Unit,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
-    onSave: () -> Unit,
+    onSave: (Showing) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    /** What the card that opened this list showed; null when it was opened by id alone. */
+    preview: ListPreview? = null,
+    onOpenSaved: (Long) -> Unit = {},
     onShow: (Showing) -> Unit = {},
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit = { _, _, _ -> },
     onHide: () -> Unit = {},
@@ -105,79 +110,105 @@ fun CommunityListScreenContent(
     var actionsVisible by remember { mutableStateOf(false) }
     var reportVisible by remember { mutableStateOf(false) }
     var reportedFrom by remember { mutableStateOf(false) }
+    var saveChoiceVisible by remember { mutableStateOf(false) }
 
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-        when (state) {
-            CommunityListUiState.Loading -> TierDetailScreenContent(
-                state = TierDetailUiState.Loading,
-                actions = TierDetailActions(onBack = onBack),
-                readOnly = true,
-            )
-
-            CommunityListUiState.Error -> Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Column(
-                    Modifier
-                        .atMost(ContentWidth.Message)
-                        .testTag(CommunityListTestTags.ERROR),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        text = stringResource(R.string.community_open_failed),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center,
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    TextButton(onClick = onRetry) { Text(stringResource(ThemeR.string.action_try_again)) }
-                }
-            }
-
-            is CommunityListUiState.Success -> Column(
-                Modifier
-                    .fillMaxSize()
-                    .testTag(CommunityListTestTags.SCREEN),
-            ) {
-                Box(Modifier.weight(1f)) {
+        // The placeholder, the board and the failure trade places with a short
+        // fade, never with a blank frame between them.
+        Crossfade(targetState = state.phase, animationSpec = tween(PHASE_FADE_MILLIS), label = "community list") { phase ->
+            when (phase) {
+                Phase.Loading -> if (preview != null) {
+                    ListSkeleton(preview = preview, onBack = onBack)
+                } else {
                     TierDetailScreenContent(
-                        // Read-only while their arrangement is on screen.
-                        state = TierDetailUiState.Success(state.shown),
-                        actions = TierDetailActions(onBack = onBack, onMoveItem = onMoveItem),
-                        // Theirs is theirs; yours is yours to arrange, and what
-                        // you save is whichever is on screen.
-                        readOnly = state.showing == Showing.Theirs,
-                        onReaderMoreClick = { actionsVisible = true },
-                        belowTopBar = {
-                            // A list that stands without an author has no line to pin here.
-                            if (!state.editorial) {
-                                AuthorLine(
-                                    name = state.authorName,
-                                    photoUrl = state.authorPhotoUrl,
-                                    follow = state.follow,
-                                    onOpenAuthor = {
-                                        onAuthorClick(state.authorUid, state.authorName, state.authorPhotoUrl)
-                                    },
-                                    onToggleFollow = onToggleFollow,
-                                )
-                            }
-                        },
+                        state = TierDetailUiState.Loading,
+                        actions = TierDetailActions(onBack = onBack),
+                        readOnly = true,
                     )
                 }
-                // Only where there is something to switch to: a snapshot without
-                // the author's arrangement has one half.
-                if (state.knowsTheirs) {
-                    WhoseArrangement(showing = state.showing, onShow = onShow)
+
+                Phase.Error -> Box(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Column(
+                        Modifier
+                            .atMost(ContentWidth.Message)
+                            .testTag(CommunityListTestTags.ERROR),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.community_open_failed),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            textAlign = TextAlign.Center,
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        TextButton(onClick = onRetry) { Text(stringResource(ThemeR.string.action_try_again)) }
+                    }
                 }
-                SaveBar(arranged = state.arranged, editorial = state.editorial, saving = state.saving, onSave = onSave)
+
+                Phase.Ready -> {
+                    // While the fade runs the state may already be another phase's.
+                    val loaded = state as? CommunityListUiState.Success ?: return@Crossfade
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .testTag(CommunityListTestTags.SCREEN),
+                    ) {
+                        TierDetailScreenContent(
+                            // Read-only while their arrangement is on screen.
+                            state = TierDetailUiState.Success(loaded.shown),
+                            actions = TierDetailActions(onBack = onBack, onMoveItem = onMoveItem),
+                            // Theirs is theirs; yours is yours to arrange, and what
+                            // you save is whichever is on screen.
+                            readOnly = loaded.showing == Showing.Theirs,
+                            onReaderMoreClick = { actionsVisible = true },
+                            belowTopBar = {
+                                // A list that stands without an author has no line to pin here.
+                                if (!loaded.editorial) {
+                                    AuthorLine(
+                                        name = loaded.authorName,
+                                        photoUrl = loaded.authorPhotoUrl,
+                                        follow = loaded.follow,
+                                        onOpenAuthor = {
+                                            onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl)
+                                        },
+                                        onToggleFollow = onToggleFollow,
+                                    )
+                                }
+                            },
+                            // In the pool sheet's strip, in reach whether the pool is folded or open.
+                            poolAccessories = { _ ->
+                                ReaderStrip(
+                                    state = loaded,
+                                    onShow = onShow,
+                                    // Two arrangements to choose from only once the author's is known.
+                                    onSaveClick = { if (loaded.knowsTheirs) saveChoiceVisible = true else onSave(Showing.Mine) },
+                                    onOpenSaved = onOpenSaved,
+                                )
+                            },
+                        )
+                    }
+                }
             }
         }
 
         val loaded = state as? CommunityListUiState.Success
         if (loaded != null) {
+            if (saveChoiceVisible) {
+                SaveChoiceDialog(
+                    arranged = loaded.arranged,
+                    onDismiss = { saveChoiceVisible = false },
+                    onChoose = { which ->
+                        saveChoiceVisible = false
+                        onSave(which)
+                    },
+                )
+            }
+
             if (actionsVisible) {
                 ListActionsSheet(
                     title = loaded.list.title,
@@ -232,21 +263,122 @@ fun CommunityListScreenContent(
     }
 }
 
+/**
+ * What the reader does with the board, in the pool sheet's strip: whose
+ * arrangement is on screen, the save (or the copy once there is one), and
+ * under them the sentence that explains the button.
+ */
+@Composable
+private fun ReaderStrip(
+    state: CommunityListUiState.Success,
+    onShow: (Showing) -> Unit,
+    onSaveClick: () -> Unit,
+    onOpenSaved: (Long) -> Unit,
+) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            // Only where there is something to switch to: a snapshot without
+            // the author's arrangement has one half.
+            if (state.knowsTheirs) {
+                WhoseArrangement(showing = state.showing, onShow = onShow)
+            }
+            Spacer(Modifier.weight(1f))
+            val savedId = state.savedId
+            if (savedId != null) {
+                Button(
+                    onClick = { onOpenSaved(savedId) },
+                    modifier = Modifier
+                        .widthIn(max = SAVE_BUTTON_MAX_WIDTH)
+                        .testTag(CommunityListTestTags.OPEN_SAVED),
+                ) {
+                    Text(text = stringResource(R.string.community_action_open), textAlign = TextAlign.Center)
+                }
+            } else {
+                Button(
+                    onClick = onSaveClick,
+                    enabled = !state.saving,
+                    modifier = Modifier
+                        .widthIn(max = SAVE_BUTTON_MAX_WIDTH)
+                        .testTag(CommunityListTestTags.SAVE),
+                ) {
+                    Text(
+                        text = stringResource(R.string.community_save_to_my_lists),
+                        textAlign = TextAlign.Center,
+                        maxLines = 2,
+                    )
+                }
+            }
+        }
+        Text(
+            text = stringResource(
+                when {
+                    state.savedId != null -> R.string.community_saved_to_your_lists
+                    state.arranged -> R.string.community_not_saved_yet
+                    // "Someone else's" would name an owner a list without an author does not have.
+                    state.editorial -> R.string.community_rank_it_your_way
+                    else -> R.string.community_someone_elses
+                },
+            ),
+            modifier = Modifier
+                .padding(top = 4.dp)
+                .testTag(CommunityListTestTags.STATUS),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+/**
+ * Asked at the moment of saving rather than read off the switch: a reader
+ * who glanced at the author's half and tapped Save did not mean to throw
+ * their own away, nor the other way round.
+ */
+@Composable
+private fun SaveChoiceDialog(arranged: Boolean, onDismiss: () -> Unit, onChoose: (Showing) -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.testTag(CommunityListTestTags.SAVE_CHOICE),
+        title = { Text(stringResource(R.string.community_save_which_title)) },
+        text = { Text(stringResource(R.string.community_save_which_body)) },
+        confirmButton = {
+            TextButton(
+                onClick = { onChoose(Showing.Theirs) },
+                modifier = Modifier.testTag(CommunityListTestTags.SAVE_THEIRS),
+            ) { Text(stringResource(R.string.community_save_theirs)) }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = { onChoose(Showing.Mine) },
+                modifier = Modifier.testTag(CommunityListTestTags.SAVE_MINE),
+            ) {
+                // Nothing arranged yet: what "mine" would keep is every card unranked, and that is said plainly.
+                Text(stringResource(if (arranged) R.string.community_save_mine else R.string.community_save_mine_empty))
+            }
+        },
+    )
+}
+
 /** Two boards, not one: a reader who glances at the author's finds their own work where they left it. */
 @Composable
 private fun WhoseArrangement(showing: Showing, onShow: (Showing) -> Unit) {
-    SingleChoiceSegmentedButtonRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .height(40.dp),
-    ) {
+    SingleChoiceSegmentedButtonRow(modifier = Modifier.height(SWITCH_HEIGHT)) {
         Showing.entries.forEachIndexed { index, which ->
             SegmentedButton(
                 selected = showing == which,
                 onClick = { onShow(which) },
                 shape = SegmentedButtonDefaults.itemShape(index, Showing.entries.size),
                 modifier = Modifier.testTag(CommunityListTestTags.showing(which)),
+                // The fill already says which; a tick beside two short words only crowds them.
+                icon = {},
             ) {
                 Text(
                     stringResource(
@@ -262,59 +394,14 @@ private fun WhoseArrangement(showing: Showing, onShow: (Showing) -> Unit) {
     }
 }
 
-@Composable
-private fun SaveBar(arranged: Boolean, editorial: Boolean, saving: Boolean, onSave: () -> Unit) {
-    // Two lines each and the bar grows: "Save to my lists" is half again as long in German.
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-            .navigationBarsPadding()
-            .heightIn(min = SAVE_BAR_MIN_HEIGHT)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        // The tint spans the window, the sentence and the button it explains
-        // do not: apart they read as two unrelated things.
-        Row(
-            modifier = Modifier.atMost(ContentWidth.Reading),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(
-                    when {
-                        arranged -> R.string.community_not_saved_yet
-                        // "Someone else's" would name an owner a list without an author does not have.
-                        editorial -> R.string.community_rank_it_your_way
-                        else -> R.string.community_someone_elses
-                    },
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag(CommunityListTestTags.STATUS),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Spacer(Modifier.width(12.dp))
-            Button(
-                onClick = onSave,
-                enabled = !saving,
-                modifier = Modifier
-                    .widthIn(max = SAVE_BUTTON_MAX_WIDTH)
-                    .testTag(CommunityListTestTags.SAVE),
-            ) {
-                Text(
-                    text = stringResource(R.string.community_save_to_my_lists),
-                    textAlign = TextAlign.Center,
-                    maxLines = 2,
-                )
-            }
-        }
+private enum class Phase { Loading, Ready, Error }
+
+private val CommunityListUiState.phase: Phase
+    get() = when (this) {
+        CommunityListUiState.Loading -> Phase.Loading
+        is CommunityListUiState.Success -> Phase.Ready
+        CommunityListUiState.Error -> Phase.Error
     }
-}
 
 private val previewList = TierList(
     id = 0,

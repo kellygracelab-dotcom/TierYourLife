@@ -1,6 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.navigation
 
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,6 +33,21 @@ class RouteFromHandleTest {
     @Test
     fun aPublishedListRoute_readsTheSameWithoutBundle() {
         val route = CommunityRoute.CommunityList(publishedId = "abc")
+        val entry = entryFor(route)
+
+        assertEquals(entry.toRoute<CommunityRoute.CommunityList>(), entry.savedStateHandle.communityListRoute())
+        assertEquals(route, entry.savedStateHandle.communityListRoute())
+    }
+
+    @Test
+    fun aPublishedListRouteWithWhatTheCardShowed_readsTheSameWithoutBundle() {
+        val route = CommunityRoute.CommunityList(
+            publishedId = "abc",
+            title = "Every A24 film",
+            authorName = "Olena M.",
+            itemCount = 12,
+            tierColors = "#B03A32,#C06A25",
+        )
         val entry = entryFor(route)
 
         assertEquals(entry.toRoute<CommunityRoute.CommunityList>(), entry.savedStateHandle.communityListRoute())

@@ -14,7 +14,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -113,17 +112,16 @@ class CommunityListViewModelTest {
     // Keeping a list the way its author ranked it is a reason to save it, not
     // a mistake to correct.
     @Test
-    fun saving_keepsWhicheverArrangementIsOnScreen() = runBlocking {
+    fun savingTheirs_keepsTheAuthorsArrangement() = runBlocking {
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
         viewModel.state.firstWithin { it is CommunityListUiState.Success }
-        viewModel.show(Showing.Theirs)
+        // The switch shows the reader's own half; the choice at saving is what counts.
+        viewModel.show(Showing.Mine)
 
-        val savedId = CompletableDeferred<Long>()
-        viewModel.saveToMyLists { savedId.complete(it) }
-        savedId.await()
+        viewModel.saveToMyLists(Showing.Theirs)
 
-        val theirs = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        val theirs = viewModel.state.firstWithin { it.saved() } as CommunityListUiState.Success
         val template = tiers.templates.single()
         assertEquals(
             theirs.list.tiers.filterNot { it.isPool }.map { it.items.size },
@@ -140,12 +138,10 @@ class CommunityListViewModelTest {
         val viewModel = viewModel(tiers = tiers)
         viewModel.state.firstWithin { it is CommunityListUiState.Success }
 
-        // The view model clears `saving` before it calls back, so waiting on the
-        // flag can win the race against the id it is waiting for.
-        val savedId = CompletableDeferred<Long>()
-        viewModel.saveToMyLists { savedId.complete(it) }
-        assertEquals(7L, savedId.await())
+        viewModel.saveToMyLists(Showing.Mine)
+        val saved = viewModel.state.firstWithin { it.saved() } as CommunityListUiState.Success
 
+        assertEquals(7L, saved.savedId)
         val template = tiers.templates.single()
         assertEquals("Every A24 film", template.title)
         assertEquals("Olena M.", template.authorName)
@@ -162,14 +158,42 @@ class CommunityListViewModelTest {
         assertEquals(CommunityListUiState.Error, state)
     }
 
+    @Test
+    fun whatTheCardShowed_isReadyBeforeTheListIs() {
+        val viewModel = viewModel(
+            handle = SavedStateHandle(
+                mapOf(
+                    "publishedId" to "abc",
+                    "title" to "Every A24 film",
+                    "authorName" to "Olena M.",
+                    "itemCount" to 2,
+                    "tierColors" to "#B03A32,#C06A25",
+                ),
+            ),
+        )
+
+        assertEquals(
+            ListPreview(title = "Every A24 film", authorName = "Olena M.", itemCount = 2, tierColors = listOf("#B03A32", "#C06A25")),
+            viewModel.preview,
+        )
+    }
+
+    @Test
+    fun aListOpenedByIdAlone_hasNothingToDrawAhead() {
+        assertEquals(null, viewModel().preview)
+    }
+
+    private fun CommunityListUiState.saved() = (this as? CommunityListUiState.Success)?.savedId != null
+
     private fun viewModel(
         community: CommunityRepository = TestCommunity(),
         tiers: RecordingTierRepository = RecordingTierRepository(),
+        handle: SavedStateHandle = SavedStateHandle(mapOf("publishedId" to "abc")),
     ) = CommunityListViewModel(
         community = community,
         tiers = tiers,
         preferences = FakeAppPreferences(),
-        savedStateHandle = SavedStateHandle(mapOf("publishedId" to "abc")),
+        savedStateHandle = handle,
     )
 }
 

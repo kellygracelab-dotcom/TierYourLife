@@ -64,6 +64,16 @@ class CatalogueSearchRepositoryPagingTest {
         assertFalse(repository.search("marvel", languageTag = "en-GB", page = 500).getOrThrow().hasMore)
     }
 
+    // A row with a title and an empty frame is not a card anyone will drag.
+    @Test
+    fun aResultWithoutAPicture_isLeftOut() = runBlocking {
+        val repository = repositoryWith(FakeTmdbApi(totalPages = 1, picturesOnEvery = 2))
+
+        val page = repository.search("marvel", languageTag = "en-GB", page = 1).getOrThrow()
+
+        assertEquals(listOf("tmdb:100"), page.items.map { it.id })
+    }
+
     @Test
     fun aPageThatFailsIsReportedRatherThanComingBackEmpty() = runBlocking {
         val repository = repositoryWith(FailingTmdbApi())
@@ -79,7 +89,7 @@ class CatalogueSearchRepositoryPagingTest {
     ) = CatalogueSearchRepositoryImpl(tmdb, wikidata, FakeWikidataSparqlApi())
 }
 
-private class FakeTmdbApi(private val totalPages: Int) : TmdbApi {
+private class FakeTmdbApi(private val totalPages: Int, private val picturesOnEvery: Int = 1) : TmdbApi {
 
     val requestedPages = mutableListOf<Int>()
 
@@ -92,7 +102,7 @@ private class FakeTmdbApi(private val totalPages: Int) : TmdbApi {
                     id = (page * 100 + index).toLong(),
                     mediaType = "movie",
                     title = "Film $page-$index",
-                    posterPath = "/poster$page$index.jpg",
+                    posterPath = "/poster$page$index.jpg".takeIf { index % picturesOnEvery == 0 },
                 )
             },
             totalPages = totalPages,

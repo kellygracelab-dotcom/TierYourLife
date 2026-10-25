@@ -35,12 +35,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.MoreIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -53,7 +55,10 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Lis
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private val PORTRAIT_SIZE = 80.dp
@@ -61,7 +66,7 @@ private val PORTRAIT_SIZE = 80.dp
 @Composable
 fun AuthorScreen(
     onBack: () -> Unit,
-    onOpenList: (String) -> Unit,
+    onOpenList: (CommunityRoute.CommunityList) -> Unit,
     viewModel: AuthorViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -77,6 +82,7 @@ fun AuthorScreen(
         },
         onReport = viewModel::report,
         onToggleFollow = viewModel::toggleFollow,
+        userMessages = viewModel.userMessages,
     )
 }
 
@@ -84,13 +90,14 @@ fun AuthorScreen(
 fun AuthorScreenContent(
     state: AuthorUiState,
     onBack: () -> Unit,
-    onOpenList: (String) -> Unit,
+    onOpenList: (CommunityRoute.CommunityList) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     onHideList: (id: String, title: String) -> Unit = { _, _ -> },
     onHideAuthor: () -> Unit = {},
     onReport: (id: String, title: String, ReportReason, String?) -> Unit = { _, _, _, _ -> },
     onToggleFollow: () -> Unit = {},
+    userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     var authorActionsVisible by remember { mutableStateOf(false) }
     var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
@@ -98,6 +105,7 @@ fun AuthorScreenContent(
     var reportedFrom by remember { mutableStateOf<PublishedListSummary?>(null) }
 
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
+        ActionFailedSnackbar(userMessages)
         Column(Modifier.fillMaxSize().testTag(AuthorTestTags.SCREEN)) {
             AuthorTopBar(
                 onBack = onBack,
@@ -143,7 +151,7 @@ fun AuthorScreenContent(
                             feed = CommunityFeed.Ready(state.lists),
                             category = null,
                             onSelectCategory = {},
-                            onOpen = onOpenList,
+                            onOpen = { onOpenList(CommunityRoute.CommunityList.of(it)) },
                             onRetry = onRetry,
                             onLongPress = { summary -> actionsFor = summary },
                             showCategories = false,
@@ -303,9 +311,10 @@ private fun Header(state: AuthorUiState.Ready, onToggleFollow: () -> Unit) {
  */
 @Composable
 private fun FollowButton(following: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    // Named for what the tap does: "Following" read as a state nobody could change.
     if (following) {
         OutlinedButton(onClick = onClick, modifier = modifier) {
-            Text(stringResource(R.string.action_following))
+            Text(stringResource(R.string.action_unfollow))
         }
     } else {
         Button(onClick = onClick, modifier = modifier) {

@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.community.data.remote.api
 
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.FaceDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.FollowStateDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.FollowedAuthorsDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModerationQueueDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedFeedDto
@@ -41,6 +42,9 @@ interface CommunityApi {
 
     @GET("lists/follow")
     suspend fun suggestedAuthors(): SuggestedAuthorsDto
+
+    @GET("lists/following")
+    suspend fun following(): FollowedAuthorsDto
 
     @POST("lists/{id}/taken")
     suspend fun noteTaken(@Path("id") id: String)

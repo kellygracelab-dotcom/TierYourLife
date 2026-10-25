@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
@@ -88,7 +89,9 @@ class TierDetailViewModel @Inject constructor(
 
     private fun refreshPublishedStanding() {
         viewModelScope.launch {
-            val standing = runCatching { repository.publishedStanding() }.getOrNull() ?: return@launch
+            val standing = runSuspendCatching { repository.publishedStanding() }
+                .onFailure { Timber.w(it, "Comparing the published copy failed") }
+                .getOrNull() ?: return@launch
             val id = (board as? TierDetailUiState.Success)?.list?.publishedId
             publishedIsBehind = id != null && id in standing.knownBehind
         }
@@ -151,15 +154,12 @@ class TierDetailViewModel @Inject constructor(
         categoryWanted = false
     }
 
-    fun setCoverImageUrl(coverImageUrl: String?) {
-        mutate("Setting the cover") { repository.setCoverImageUrl(tierListId, coverImageUrl) }
-    }
-
     fun loadTierList() {
         viewModelScope.launch { reloadTierList() }
         viewModelScope.launch {
-            runCatching { repository.getAllTierLists() }
+            runSuspendCatching { repository.getAllTierLists() }
                 .onSuccess { lists -> allLists = lists }
+                .onFailure { Timber.w(it, "Reading the lists beside this board failed") }
         }
     }
 

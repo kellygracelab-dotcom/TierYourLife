@@ -13,11 +13,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
+import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.HomeTopBar
 import com.artiuillab.tieryourlife.core.theme.ui.OnResumeEffect
 import com.artiuillab.tieryourlife.core.theme.ui.SearchTopBar
@@ -30,7 +32,10 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Fee
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 /**
  * The community half of the home screen: everybody's published lists, or the
@@ -40,9 +45,10 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
  */
 @Composable
 fun CommunityFeedScreen(
-    onOpenList: (String) -> Unit,
+    onOpenList: (CommunityRoute.CommunityList) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onSettingsClick: () -> Unit,
+    onManageFollowing: () -> Unit = {},
     tabs: @Composable () -> Unit = {},
     viewModel: CommunityFeedViewModel = hiltViewModel(),
 ) {
@@ -56,6 +62,7 @@ fun CommunityFeedScreen(
         onOpenList = onOpenList,
         onAuthorClick = onAuthorClick,
         onSettingsClick = onSettingsClick,
+        onManageFollowing = onManageFollowing,
         onSearchClick = viewModel::enterSearch,
         onQueryChange = viewModel::updateQuery,
         onCloseSearch = viewModel::exitSearch,
@@ -69,6 +76,7 @@ fun CommunityFeedScreen(
         onHideAuthor = viewModel::hideAuthor,
         onReportList = viewModel::report,
         tabs = tabs,
+        userMessages = viewModel.userMessages,
     )
 }
 
@@ -76,9 +84,10 @@ fun CommunityFeedScreen(
 @Composable
 fun CommunityFeedScreenContent(
     state: CommunityFeedUiState,
-    onOpenList: (String) -> Unit = {},
+    onOpenList: (CommunityRoute.CommunityList) -> Unit = {},
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit = { _, _, _ -> },
     onSettingsClick: () -> Unit = {},
+    onManageFollowing: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onQueryChange: (String) -> Unit = {},
     onCloseSearch: () -> Unit = {},
@@ -92,6 +101,7 @@ fun CommunityFeedScreenContent(
     onHideAuthor: (uid: String, name: String) -> Unit = { _, _ -> },
     onReportList: (PublishedListSummary, ReportReason, String?) -> Unit = { _, _, _ -> },
     tabs: @Composable () -> Unit = {},
+    userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val hasRail = currentWindowShape.hasRail
     val searching = state.query != null
@@ -102,6 +112,7 @@ fun CommunityFeedScreenContent(
     BackHandler(enabled = searching, onBack = onCloseSearch)
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
+        ActionFailedSnackbar(userMessages)
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize()) {
                 if (searching) {
@@ -123,7 +134,8 @@ fun CommunityFeedScreenContent(
                     feed = state.feed,
                     category = state.category,
                     onSelectCategory = onSelectCategory,
-                    onOpen = onOpenList,
+                    onOpen = { onOpenList(CommunityRoute.CommunityList.of(it)) },
+                    onManageFollowing = onManageFollowing,
                     onRetry = onRetry,
                     onNearEnd = onLoadMore,
                     onLongPress = { actionsFor = it },

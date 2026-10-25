@@ -30,11 +30,6 @@
     <string name="home_empty_body">Films, jeux, restaurants, albums — tout ce que vous voulez.</string>
     <string name="cd_new_list">Nouvelle liste</string>
     <string name="default_tier_list_title">Liste sans titre</string>
-    <string name="default_tier_caption_s">Le meilleur</string>
-    <string name="default_tier_caption_a">Excellent</string>
-    <string name="default_tier_caption_b">Bien</string>
-    <string name="default_tier_caption_c">Correct</string>
-    <string name="default_tier_caption_d">Le pire</string>
     <string name="tier_lists_load_error">Impossible de charger les listes.</string>
 
 
@@ -160,4 +155,20 @@
     <string name="conflict_edited_here">Modifié ici %1$s</string>
     <string name="cover_unfold_title">Dépliez pour classer</string>
     <string name="cover_unfold_body">Déplacer les cartes demande l’écran intérieur.</string>
+
+    <string name="cover_picker_title">Couverture</string>
+    <string name="cover_picker_done">Terminé</string>
+    <string name="cover_picker_reset">Réinitialiser</string>
+    <string name="cover_picker_tab_cards">Vos cartes · %1$d</string>
+    <string name="cover_picker_tab_search">Recherche d\'images</string>
+    <string name="cover_picker_status_automatic">Rien de choisi : jusqu\'à six images de la liste elle-même</string>
+    <string name="cover_picker_status_one">Une image, toute la couverture</string>
+    <plurals name="cover_picker_status_collage">
+        <item quantity="one">%1$d sur %2$d choisies, un collage</item>
+        <item quantity="many">%1$d sur %2$d choisies, un collage</item>
+        <item quantity="other">%1$d sur %2$d choisies, un collage</item>
+    </plurals>
+    <string name="cover_picker_no_cards">Aucune carte de cette liste n\'a encore d\'image.</string>
+    <string name="cover_picker_gallery">Choisir dans la galerie</string>
+    <string name="cover_picker_gallery_note">Une image de la galerie devient toute la couverture et voyage avec la liste quand vous la publiez.</string>
 </resources>

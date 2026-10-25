@@ -3,6 +3,13 @@
     <string name="action_done">Готово</string>
     <string name="action_follow">Подписаться</string>
     <string name="action_following">Вы подписаны</string>
+    <string name="action_unfollow">Отписаться</string>
+    <string name="community_you_follow">Вы подписаны · %1$d</string>
+    <string name="community_manage_following">Управлять</string>
+    <string name="community_day_today">Сегодня</string>
+    <string name="community_day_yesterday">Вчера</string>
+    <string name="community_following_nobody">Вы пока ни на кого не подписаны.</string>
+    <string name="community_author_unnamed">Автор</string>
     <string name="author_failed">Не удалось открыть профиль.</string>
     <plurals name="author_followers_count">
         <item quantity="one">%d подписчик</item>
@@ -47,6 +54,13 @@
     <string name="community_open_failed">Не удалось открыть этот список</string>
     <string name="community_rank_it_your_way">Разложите его как захотите.</string>
     <string name="community_save_to_my_lists">Сохранить себе</string>
+    <string name="community_save_which_title">Какое ранжирование сохранить?</string>
+    <string name="community_save_which_body">Копия в любом случае ваша. Переразложить можно в любой момент.</string>
+    <string name="community_save_theirs">Как у автора</string>
+    <string name="community_save_mine">Как у меня</string>
+    <string name="community_save_mine_empty">Пустым, разложу сам</string>
+    <string name="community_saved_to_your_lists">Сохранено в ваши списки.</string>
+    <string name="community_action_open">Открыть</string>
     <string name="community_showing_mine">Моя</string>
     <string name="community_showing_theirs">Его расстановка</string>
     <string name="community_someone_elses">Чужой список. Разложите его как захотите.</string>
