@@ -30,6 +30,7 @@ object BoardFingerprint {
             board.displayMode,
             board.category,
             board.coverImageUrl,
+            board.coverImageUrls,
             board.authorName,
             board.deletedAt?.toString(),
         )
