@@ -90,10 +90,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 24 is minSdk and 34 is close to what the app actually targets. The two
+        # 26 is minSdk and 34 is close to what the app actually targets. The two
         # differ in ways this app touches — scoped storage, per-app language,
         # ImageDecoder — so a pass on one says little about the other.
-        api-level: [24, 34]
+        api-level: [26, 34]
 
     steps:
       - name: Checkout

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The instrumentation run, with one retry for two specific mishaps: the
 # emulator finishing a module's tests with no results file ("296/296
-# completed, 0 failed" and a missing XML), and the API 24 image dropping an
+# completed, 0 failed" and a missing XML), and the emulator dropping an
 # install session ("Failed to install-write all apks"). A failing test fails
 # twice and is reported the first time, so this cannot turn a real failure green.
 #
