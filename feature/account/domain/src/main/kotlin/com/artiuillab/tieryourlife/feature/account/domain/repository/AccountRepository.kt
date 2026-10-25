@@ -8,6 +8,9 @@ interface AccountRepository {
 
     val account: Flow<Account>
 
+    /** The account as it stands this instant, for a screen's first frame; [account] is the one to follow. */
+    fun current(): Account
+
     suspend fun signInWithGoogle(idToken: String): SignInOutcome
 
     /** Renames the author the community shows. Answers whether it stuck. */

@@ -29,6 +29,11 @@ interface AppPreferences {
 
     fun setLastKnownTrashCount(count: Int)
 
+    /** Bytes of pictures the account held when this phone last measured: a row that opens with a number, not a blank. */
+    fun lastKnownStoredBytes(): Long
+
+    fun setLastKnownStoredBytes(bytes: Long)
+
     /** Local: nobody is told. Undoable, hence the name kept beside the id. */
     fun hiddenListIds(): Set<String>
 

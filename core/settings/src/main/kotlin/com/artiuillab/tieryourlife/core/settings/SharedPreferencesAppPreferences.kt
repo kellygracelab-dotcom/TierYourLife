@@ -20,6 +20,7 @@ private const val KEY_LAST_SYNCED_AT = "last_synced_at"
 private const val KEY_CONFLICTS_SEEN = "conflicts_seen"
 private const val KEY_LAST_KNOWN_REPORTS = "last_known_reports"
 private const val KEY_LAST_KNOWN_TRASH = "last_known_trash"
+private const val KEY_LAST_KNOWN_STORED_BYTES = "last_known_stored_bytes"
 
 @Singleton
 class SharedPreferencesAppPreferences @Inject constructor(
@@ -65,6 +66,12 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun setLastKnownTrashCount(count: Int) {
         prefs.edit { putInt(KEY_LAST_KNOWN_TRASH, count) }
+    }
+
+    override fun lastKnownStoredBytes(): Long = prefs.getLong(KEY_LAST_KNOWN_STORED_BYTES, 0L)
+
+    override fun setLastKnownStoredBytes(bytes: Long) {
+        prefs.edit { putLong(KEY_LAST_KNOWN_STORED_BYTES, bytes) }
     }
 
     // Rows by default: they say how many cards are ranked and how many wait,
