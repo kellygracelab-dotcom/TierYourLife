@@ -54,6 +54,8 @@
     <string name="community_open_failed">تعذّر فتح هذه القائمة</string>
     <string name="community_rank_it_your_way">رتّبها كما يحلو لك.</string>
     <string name="community_save_to_my_lists">احفظ في قوائمي</string>
+    <string name="community_saved_to_your_lists">تم الحفظ في قوائمك.</string>
+    <string name="community_action_open">فتح</string>
     <string name="community_showing_mine">ترتيبي</string>
     <string name="community_showing_theirs">ترتيبه</string>
     <string name="community_someone_elses">قائمة شخص آخر. رتّبها كما يحلو لك.</string>

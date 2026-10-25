@@ -1,7 +1,13 @@
 package com.artiuillab.tieryourlife.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -23,6 +29,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.navigation.navig
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.aiStudioScreen
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.navigateToAiStudio
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.authorScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.moderationScreen
@@ -130,6 +137,28 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
     }
 }
 
+private const val PUSH_MILLIS = 220
+private const val POP_MILLIS = 180
+
+/** How far the next screen starts to the side, as a share of the width: a nudge, not a slide. */
+private const val PUSH_OFFSET_SHARE = 10
+
+/** How much of the screen beneath is left showing while the next one settles over it. */
+private const val BENEATH_ALPHA = 0.8f
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.betweenTopLevels(): Boolean =
+    isTopLevel(initialState) && isTopLevel(targetState)
+
+private fun isTopLevel(entry: NavBackStackEntry): Boolean = railDestinationFor(entry.destination.route, false) != null
+
+private fun pushIn(): EnterTransition =
+    fadeIn(tween(PUSH_MILLIS)) + slideInHorizontally(tween(PUSH_MILLIS)) { width -> width / PUSH_OFFSET_SHARE }
+
+private fun stayBeneath(millis: Int): ExitTransition = fadeOut(tween(millis), targetAlpha = BENEATH_ALPHA)
+
+private fun popOut(): ExitTransition =
+    fadeOut(tween(POP_MILLIS)) + slideOutHorizontally(tween(POP_MILLIS)) { width -> width / PUSH_OFFSET_SHARE }
+
 /** Top-level destinations replace each other rather than piling up. */
 private fun NavHostController.navigateToHome(community: Boolean, makeBoard: Boolean = false) {
     navigate(Route.TierLists(community, makeBoard)) {
@@ -146,14 +175,16 @@ private fun NavContent(
     languageTag: String?,
     onLanguageTagChange: (String?) -> Unit,
 ) {
-    // Default cross-fades look like a flash because destinations share the same surface.
+    // One set of rules for every screen: the next one slides in a little and
+    // fades up over the one that stays beneath; back is the same, shorter.
+    // Siblings at the top level only fade: nothing is above or below them.
     NavHost(
         navController = navController,
         startDestination = Route.TierLists(),
-        enterTransition = { EnterTransition.None },
-        exitTransition = { ExitTransition.None },
-        popEnterTransition = { EnterTransition.None },
-        popExitTransition = { ExitTransition.None },
+        enterTransition = { if (betweenTopLevels()) fadeIn(tween(PUSH_MILLIS)) else pushIn() },
+        exitTransition = { if (betweenTopLevels()) fadeOut(tween(PUSH_MILLIS)) else stayBeneath(PUSH_MILLIS) },
+        popEnterTransition = { if (betweenTopLevels()) fadeIn(tween(POP_MILLIS)) else fadeIn(tween(POP_MILLIS), initialAlpha = BENEATH_ALPHA) },
+        popExitTransition = { if (betweenTopLevels()) fadeOut(tween(POP_MILLIS)) else popOut() },
     ) {
         homeScreen(navController)
         tierDetailScreen(
@@ -191,17 +222,20 @@ private fun NavContent(
         )
         myPublishedScreen(
             onBack = { navController.popBackStack() },
-            onOpen = { id -> navController.navigateToCommunityList(id) },
+            onOpen = { route -> navController.navigateToCommunityList(route) },
         )
         authorScreen(
             onBack = { navController.popBackStack() },
-            onOpenList = { id -> navController.navigateToCommunityList(id) },
+            onOpenList = { route -> navController.navigateToCommunityList(route) },
         )
         communityListScreen(
             onBack = { navController.popBackStack() },
-            onSaved = { id ->
-                navController.popBackStack()
-                navController.navigateToTierDetail(id)
+            // The copy takes the published list's place: one move, and back
+            // leads to where the list was found.
+            onOpenSaved = { id ->
+                navController.navigate(Route.TierDetail(id)) {
+                    popUpTo<CommunityRoute.CommunityList> { inclusive = true }
+                }
             },
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
         )

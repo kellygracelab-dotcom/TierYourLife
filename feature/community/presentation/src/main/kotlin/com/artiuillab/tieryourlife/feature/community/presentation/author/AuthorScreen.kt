@@ -55,6 +55,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Lis
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -65,7 +66,7 @@ private val PORTRAIT_SIZE = 80.dp
 @Composable
 fun AuthorScreen(
     onBack: () -> Unit,
-    onOpenList: (String) -> Unit,
+    onOpenList: (CommunityRoute.CommunityList) -> Unit,
     viewModel: AuthorViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -89,7 +90,7 @@ fun AuthorScreen(
 fun AuthorScreenContent(
     state: AuthorUiState,
     onBack: () -> Unit,
-    onOpenList: (String) -> Unit,
+    onOpenList: (CommunityRoute.CommunityList) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     onHideList: (id: String, title: String) -> Unit = { _, _ -> },
@@ -150,7 +151,7 @@ fun AuthorScreenContent(
                             feed = CommunityFeed.Ready(state.lists),
                             category = null,
                             onSelectCategory = {},
-                            onOpen = onOpenList,
+                            onOpen = { onOpenList(CommunityRoute.CommunityList.of(it)) },
                             onRetry = onRetry,
                             onLongPress = { summary -> actionsFor = summary },
                             showCategories = false,

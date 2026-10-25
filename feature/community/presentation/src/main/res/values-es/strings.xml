@@ -45,6 +45,8 @@
     <string name="community_open_failed">No se pudo abrir esta lista</string>
     <string name="community_rank_it_your_way">Ordénala como quieras.</string>
     <string name="community_save_to_my_lists">Guardar en mis listas</string>
+    <string name="community_saved_to_your_lists">Guardado en tus listas.</string>
+    <string name="community_action_open">Abrir</string>
     <string name="community_showing_mine">El mío</string>
     <string name="community_showing_theirs">Su orden</string>
     <string name="community_someone_elses">Lista de otra persona. Ordénala como quieras.</string>

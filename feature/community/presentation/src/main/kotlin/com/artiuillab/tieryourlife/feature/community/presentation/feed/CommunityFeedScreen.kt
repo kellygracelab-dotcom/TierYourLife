@@ -32,6 +32,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Fee
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -44,7 +45,7 @@ import kotlinx.coroutines.flow.emptyFlow
  */
 @Composable
 fun CommunityFeedScreen(
-    onOpenList: (String) -> Unit,
+    onOpenList: (CommunityRoute.CommunityList) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onSettingsClick: () -> Unit,
     tabs: @Composable () -> Unit = {},
@@ -81,7 +82,7 @@ fun CommunityFeedScreen(
 @Composable
 fun CommunityFeedScreenContent(
     state: CommunityFeedUiState,
-    onOpenList: (String) -> Unit = {},
+    onOpenList: (CommunityRoute.CommunityList) -> Unit = {},
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit = { _, _, _ -> },
     onSettingsClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
@@ -130,7 +131,7 @@ fun CommunityFeedScreenContent(
                     feed = state.feed,
                     category = state.category,
                     onSelectCategory = onSelectCategory,
-                    onOpen = onOpenList,
+                    onOpen = { onOpenList(CommunityRoute.CommunityList.of(it)) },
                     onRetry = onRetry,
                     onNearEnd = onLoadMore,
                     onLongPress = { actionsFor = it },

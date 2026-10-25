@@ -124,6 +124,47 @@ class CommunityListScreenTest {
         composeRule.onNodeWithTag(CommunityListTestTags.MORE).assertDoesNotExist()
     }
 
+    @Test
+    fun whileLoading_whatTheCardShowed_isAlreadyOnScreen() {
+        composeRule.setContent {
+            TierYourLifeTheme {
+                CommunityListScreenContent(
+                    state = CommunityListUiState.Loading,
+                    onBack = {},
+                    onMoveItem = { _, _, _ -> },
+                    onSave = {},
+                    onRetry = {},
+                    preview = ListPreview(title = "Sci-fi films", authorName = "Olena M.", itemCount = 6, tierColors = listOf("#B03A32")),
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(CommunityListTestTags.SKELETON).assertIsDisplayed()
+        composeRule.onNodeWithText("Sci-fi films").assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.community_by_author, "Olena M.")).assertIsDisplayed()
+    }
+
+    @Test
+    fun onceSaved_theBarOffersTheCopyInsteadOfSavingAgain() {
+        var opened: Long? = null
+        composeRule.setContent {
+            TierYourLifeTheme {
+                CommunityListScreenContent(
+                    state = successState().copy(savedId = 7L),
+                    onBack = {},
+                    onMoveItem = { _, _, _ -> },
+                    onSave = {},
+                    onRetry = {},
+                    onOpenSaved = { opened = it },
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertDoesNotExist()
+        composeRule.onNodeWithTag(CommunityListTestTags.OPEN_SAVED).performClick()
+        assertEquals(7L, opened)
+    }
+
     private fun openOverflow() {
         composeRule.onNodeWithContentDescription(string(ThemeR.string.tier_detail_content_description_more))
             .performClick()

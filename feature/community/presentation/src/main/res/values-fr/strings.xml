@@ -45,6 +45,8 @@
     <string name="community_open_failed">Impossible d\'ouvrir cette liste</string>
     <string name="community_rank_it_your_way">Classez-la librement.</string>
     <string name="community_save_to_my_lists">Enregistrer dans mes listes</string>
+    <string name="community_saved_to_your_lists">Enregistré dans vos listes.</string>
+    <string name="community_action_open">Ouvrir</string>
     <string name="community_showing_mine">Le mien</string>
     <string name="community_showing_theirs">Son classement</string>
     <string name="community_someone_elses">Liste de quelqu\'un d\'autre. Classez-la librement.</string>
