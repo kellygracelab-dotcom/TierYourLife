@@ -31,6 +31,8 @@ sealed interface CommunityListUiState {
         /** Null until the server answers whether this author is followed. */
         val follow: FollowState? = null,
         val saving: Boolean = false,
+        /** The reader's own copy once there is one: the bar then offers to open it instead of saving again. */
+        val savedId: Long? = null,
     ) : CommunityListUiState {
         /** What the board area is drawing right now. */
         val shown: TierList get() = if (showing == Showing.Theirs) list else mine

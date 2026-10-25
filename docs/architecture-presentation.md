@@ -136,3 +136,10 @@ destination extensions, `NavController.navigateToX(...)` offers — in the featu
 `navigation/` package. Features know their own screens and never another feature's
 routes; cross-feature transitions are callbacks wired in `:navigation`'s host. Results
 travel back through the previous back-stack entry's `SavedStateHandle`.
+
+Transitions are set once, in the host, and nowhere else: the next screen slides in a
+tenth of the width and fades up over the one that stays beneath (220 ms); back runs the
+same way out (180 ms); top-level siblings only fade. A route carries what the card that
+opened it already showed (`CommunityRoute.CommunityList` takes the title, author, size and
+palette), and the screen draws that as a skeleton until the answer lands, so no destination
+is ever a blank frame.

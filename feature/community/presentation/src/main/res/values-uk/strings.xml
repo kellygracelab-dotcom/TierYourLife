@@ -48,6 +48,8 @@
     <string name="community_open_failed">Не вдалося відкрити цей список</string>
     <string name="community_rank_it_your_way">Розкладіть його як забажаєте.</string>
     <string name="community_save_to_my_lists">Зберегти собі</string>
+    <string name="community_saved_to_your_lists">Збережено у ваші списки.</string>
+    <string name="community_action_open">Відкрити</string>
     <string name="community_showing_mine">Моє</string>
     <string name="community_showing_theirs">Його розташування</string>
     <string name="community_someone_elses">Чужий список. Розкладіть його як забажаєте.</string>

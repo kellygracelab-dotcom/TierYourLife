@@ -80,7 +80,7 @@ internal fun CommunityFeedList(
     feed: CommunityFeed,
     category: ListCategory?,
     onSelectCategory: (ListCategory?) -> Unit,
-    onOpen: (String) -> Unit,
+    onOpen: (PublishedListSummary) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     onOpenAuthor: ((String) -> Unit)? = null,
@@ -192,7 +192,7 @@ internal fun CommunityFeedList(
                         }
                         CommunityCard(
                             summary = summary,
-                            onClick = { onOpen(summary.id) },
+                            onClick = { onOpen(summary) },
                             onLongClick = onLongPress?.let { press -> { press(summary) } },
                             showAuthor = showAuthor && !summary.editorial,
                             onAuthorClick = onOpenAuthor?.takeUnless { summary.editorial }?.let { open ->

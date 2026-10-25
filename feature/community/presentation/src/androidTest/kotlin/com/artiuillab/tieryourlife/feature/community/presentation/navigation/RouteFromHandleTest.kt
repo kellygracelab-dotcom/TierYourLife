@@ -40,6 +40,21 @@ class RouteFromHandleTest {
     }
 
     @Test
+    fun aPublishedListRouteWithWhatTheCardShowed_readsTheSameWithoutBundle() {
+        val route = CommunityRoute.CommunityList(
+            publishedId = "abc",
+            title = "Every A24 film",
+            authorName = "Olena M.",
+            itemCount = 12,
+            tierColors = "#B03A32,#C06A25",
+        )
+        val entry = entryFor(route)
+
+        assertEquals(entry.toRoute<CommunityRoute.CommunityList>(), entry.savedStateHandle.communityListRoute())
+        assertEquals(route, entry.savedStateHandle.communityListRoute())
+    }
+
+    @Test
     fun anAuthorRouteWithAFace_readsTheSameWithoutBundle() {
         val route = CommunityRoute.Author(authorUid = "u1", authorName = "Ann", authorPhotoUrl = "https://example.test/a.jpg")
         val entry = entryFor(route)

@@ -49,6 +49,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CoverIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.presentation.R
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -58,7 +59,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 @Composable
 fun MyPublishedScreen(
     onBack: () -> Unit,
-    onOpen: (String) -> Unit,
+    onOpen: (CommunityRoute.CommunityList) -> Unit,
     viewModel: MyPublishedViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -77,7 +78,7 @@ fun MyPublishedScreen(
 fun MyPublishedScreenContent(
     state: MyPublishedUiState,
     onBack: () -> Unit,
-    onOpen: (String) -> Unit = {},
+    onOpen: (CommunityRoute.CommunityList) -> Unit = {},
     onTakeDown: (String) -> Unit = {},
     onUpdate: (String) -> Unit = {},
     onRetry: () -> Unit = {},
@@ -125,7 +126,7 @@ fun MyPublishedScreenContent(
                                     busy = state.removing != null || state.updating != null,
                                     canUpdate = summary.id in state.canUpdate,
                                     behind = summary.id in state.behind,
-                                    onOpen = { onOpen(summary.id) },
+                                    onOpen = { onOpen(CommunityRoute.CommunityList.of(summary)) },
                                     onUpdate = { onUpdate(summary.id) },
                                     onTakeDown = { onTakeDown(summary.id) },
                                 )
