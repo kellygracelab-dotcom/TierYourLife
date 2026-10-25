@@ -4,6 +4,12 @@
     <string name="action_follow">Obserwuj</string>
     <string name="action_following">Obserwujesz</string>
     <string name="action_unfollow">Przestań obserwować</string>
+    <string name="community_you_follow">Obserwujesz · %1$d</string>
+    <string name="community_manage_following">Zarządzaj</string>
+    <string name="community_day_today">Dzisiaj</string>
+    <string name="community_day_yesterday">Wczoraj</string>
+    <string name="community_following_nobody">Nie obserwujesz jeszcze nikogo.</string>
+    <string name="community_author_unnamed">Autor</string>
     <string name="author_failed">Nie udało się otworzyć tego profilu.</string>
     <plurals name="author_followers_count">
         <item quantity="one">%d obserwujący</item>

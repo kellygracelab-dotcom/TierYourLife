@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -35,6 +36,9 @@ interface CommunityRepository {
 
     /** Whether this person follows that author, and how many people do. */
     suspend fun followState(authorUid: String): Result<FollowState>
+
+    /** Whom this person follows, with names and faces, for the strip above the feed and the list that unfollows. */
+    suspend fun following(): Result<List<FollowedAuthor>>
 
     /** For somebody who follows nobody yet: drawn from the lists people have taken most, the only standing anybody has here. */
     suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>>

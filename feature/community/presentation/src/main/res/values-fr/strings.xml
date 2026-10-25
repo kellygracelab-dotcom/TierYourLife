@@ -4,6 +4,12 @@
     <string name="action_follow">Suivre</string>
     <string name="action_following">Abonné</string>
     <string name="action_unfollow">Ne plus suivre</string>
+    <string name="community_you_follow">Vous suivez · %1$d</string>
+    <string name="community_manage_following">Gérer</string>
+    <string name="community_day_today">Aujourd\'hui</string>
+    <string name="community_day_yesterday">Hier</string>
+    <string name="community_following_nobody">Vous ne suivez encore personne.</string>
+    <string name="community_author_unnamed">Auteur</string>
     <string name="author_failed">Impossible d\'ouvrir ce profil.</string>
     <plurals name="author_followers_count">
         <item quantity="one">%d abonné</item>

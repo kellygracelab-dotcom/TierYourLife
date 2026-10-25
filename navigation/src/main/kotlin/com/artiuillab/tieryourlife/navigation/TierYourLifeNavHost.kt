@@ -32,10 +32,12 @@ import com.artiuillab.tieryourlife.feature.community.presentation.feed.Community
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.authorScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.followingScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.moderationScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.myPublishedScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToAuthor
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToCommunityList
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToFollowing
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToModeration
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToMyPublished
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.hiddenScreen
@@ -133,6 +135,7 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
                     onOpenList = { id -> navController.navigateToCommunityList(id) },
                     onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
                     onSettingsClick = { navController.navigateToSettings() },
+                    onManageFollowing = { navController.navigateToFollowing() },
                     tabs = tabs,
                 )
             },
@@ -239,6 +242,10 @@ private fun NavContent(
         authorScreen(
             onBack = { navController.popBackStack() },
             onOpenList = { route -> navController.navigateToCommunityList(route) },
+        )
+        followingScreen(
+            onBack = { navController.popBackStack() },
+            onOpenAuthor = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
         )
         communityListScreen(
             onBack = { navController.popBackStack() },
