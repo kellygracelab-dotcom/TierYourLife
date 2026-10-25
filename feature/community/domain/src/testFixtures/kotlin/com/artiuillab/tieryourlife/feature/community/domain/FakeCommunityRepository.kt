@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -37,6 +38,8 @@ open class FakeCommunityRepository : CommunityRepository {
 
     override suspend fun followState(authorUid: String): Result<FollowState> =
         Result.success(FollowState(following = false, followers = 0))
+
+    override suspend fun following(): Result<List<FollowedAuthor>> = Result.success(emptyList())
 
     override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> = Result.success(emptyList())
 

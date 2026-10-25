@@ -26,6 +26,13 @@ val FeedSource.opensOn: FeedSort
 /** Whether this person follows an author, and how many people do. */
 data class FollowState(val following: Boolean, val followers: Int)
 
+/** Somebody this person follows. The name is empty for an author who has no list left. */
+data class FollowedAuthor(
+    val uid: String,
+    val name: String,
+    val photoUrl: String?,
+)
+
 /** Somebody worth following, for a screen that has nobody yet. */
 data class SuggestedAuthor(
     val uid: String,

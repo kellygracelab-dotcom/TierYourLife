@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.artiuillab.tieryourlife.feature.community.presentation.author.AuthorScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.following.FollowingScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.ModerationScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.published.MyPublishedScreen
@@ -43,6 +44,19 @@ fun NavGraphBuilder.myPublishedScreen(onBack: () -> Unit, onOpen: (String) -> Un
 
 fun NavController.navigateToMyPublished() {
     navigate(CommunityRoute.MyPublished)
+}
+
+fun NavGraphBuilder.followingScreen(
+    onBack: () -> Unit,
+    onOpenAuthor: (uid: String, name: String, photoUrl: String?) -> Unit,
+) {
+    composable<CommunityRoute.Following> {
+        FollowingScreen(onBack = onBack, onOpenAuthor = onOpenAuthor)
+    }
+}
+
+fun NavController.navigateToFollowing() {
+    navigate(CommunityRoute.Following)
 }
 
 fun NavGraphBuilder.moderationScreen(onBack: () -> Unit, onOpenList: (String) -> Unit) {

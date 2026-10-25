@@ -20,6 +20,10 @@ sealed interface CommunityRoute {
 
     @Serializable
     data object MyPublished : CommunityRoute
+
+    /** Everyone this person follows, with a way to stop. */
+    @Serializable
+    data object Following : CommunityRoute
 }
 
 /**

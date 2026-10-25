@@ -4,6 +4,12 @@
     <string name="action_follow">Подписаться</string>
     <string name="action_following">Вы подписаны</string>
     <string name="action_unfollow">Отписаться</string>
+    <string name="community_you_follow">Вы подписаны · %1$d</string>
+    <string name="community_manage_following">Управлять</string>
+    <string name="community_day_today">Сегодня</string>
+    <string name="community_day_yesterday">Вчера</string>
+    <string name="community_following_nobody">Вы пока ни на кого не подписаны.</string>
+    <string name="community_author_unnamed">Автор</string>
     <string name="author_failed">Не удалось открыть профиль.</string>
     <plurals name="author_followers_count">
         <item quantity="one">%d подписчик</item>

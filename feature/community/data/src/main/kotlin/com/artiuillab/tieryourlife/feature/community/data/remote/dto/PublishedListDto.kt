@@ -46,6 +46,18 @@ data class SuggestedAuthorsDto(
 )
 
 @Serializable
+data class FollowedAuthorDto(
+    val uid: String,
+    val name: String = "",
+    val photoUrl: String? = null,
+)
+
+@Serializable
+data class FollowedAuthorsDto(
+    val authors: List<FollowedAuthorDto> = emptyList(),
+)
+
+@Serializable
 data class PublishedTierDto(
     val label: String,
     val caption: String? = null,

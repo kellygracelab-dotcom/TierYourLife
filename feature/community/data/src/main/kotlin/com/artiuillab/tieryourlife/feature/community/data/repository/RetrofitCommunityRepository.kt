@@ -18,6 +18,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.EditorialAuthors
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
@@ -83,6 +84,11 @@ class RetrofitCommunityRepository @Inject constructor(
         attempt("Reading whether an author is followed") {
             val state = api.followState(authorUid)
             FollowState(following = state.following, followers = state.followers)
+        }
+
+    override suspend fun following(): Result<List<FollowedAuthor>> =
+        attempt("Reading who is followed") {
+            api.following().authors.map { FollowedAuthor(uid = it.uid, name = it.name, photoUrl = it.photoUrl) }
         }
 
     override suspend fun suggestedAuthors(): Result<List<SuggestedAuthor>> =

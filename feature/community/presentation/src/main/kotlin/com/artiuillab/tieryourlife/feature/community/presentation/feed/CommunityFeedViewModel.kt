@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.opensOn
@@ -99,6 +100,7 @@ class CommunityFeedViewModel @Inject constructor(
                     CommunityFeed.Ready(
                         lists = page.lists.filterNot(::isHidden),
                         canLoadMore = page.nextCursor != null,
+                        followed = if (source == FeedSource.Following) whoIsFollowed() else emptyList(),
                     )
                 }
             },
@@ -110,6 +112,11 @@ class CommunityFeedViewModel @Inject constructor(
         )
         emit()
     }
+
+    /** The strip above a following feed. Without it the feed still stands, so a failure here is a note, not a state. */
+    private suspend fun whoIsFollowed(): List<FollowedAuthor> = community.following()
+        .onFailure { Timber.w(it, "Reading who is followed failed") }
+        .getOrDefault(emptyList())
 
     private fun reload() {
         feed = CommunityFeed.Loading
