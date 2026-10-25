@@ -8,7 +8,7 @@
 [![CI](https://github.com/kellygracelab-dotcom/TierYourLife/actions/workflows/ci.yml/badge.svg)](https://github.com/kellygracelab-dotcom/TierYourLife/actions/workflows/ci.yml)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.4-7F52FF?logo=kotlin&logoColor=white)
 ![Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)
-![minSdk](https://img.shields.io/badge/minSdk-24-3DDC84?logo=android&logoColor=white)
+![minSdk](https://img.shields.io/badge/minSdk-26-3DDC84?logo=android&logoColor=white)
 
 Built from scratch, in the open, as a learning flagship — the commit history is the story.
 Heading for Google Play; the listing link goes here when it exists.
@@ -166,7 +166,7 @@ Decisions, not just results — each is a small file with its reasoning written 
 ## Tests
 
 Every push runs the whole suite: JVM tests for the pure logic, and the full instrumentation
-suite on emulators at API 24 and 34.
+suite on emulators at API 26 and 34.
 
 | Where | What they cover |
 |---|---|
@@ -198,7 +198,7 @@ was produced is a reasonable thing to want to know.
 git clone https://github.com/kellygracelab-dotcom/TierYourLife.git
 ```
 
-Open in Android Studio and run the `app` configuration. minSdk 24, targetSdk 37, JDK 21.
+Open in Android Studio and run the `app` configuration. minSdk 26, targetSdk 37, JDK 21.
 
 Everything local works from a clean clone: boards, drag and drop, trash, export, languages, and
 catalogue search through Wikidata. The online half — TMDB, the community, publishing, boards kept

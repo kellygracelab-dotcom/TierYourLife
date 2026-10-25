@@ -31,7 +31,8 @@
     <string name="account_face_body">自分のリストのカードから選べます。</string>
     <string name="account_face_no_cards">カタログの画像が付いたカードはまだありません。</string>
     <string name="account_face_letter">頭文字だけ</string>
-    <string name="account_face_note">アップロードはしません。画像はウェブ上の元の場所に置かれたままです。</string>
+    <string name="account_face_gallery">ギャラリーの写真</string>
+    <string name="account_face_note">カードの画像はウェブ上の元の場所に置かれたままです。ギャラリーの写真は確認のうえ、アカウントに保存されます。</string>
     <string name="account_cd_change_face">アイコンを変更</string>
     <plurals name="account_credits">
         <item quantity="other">%1$d 回の生成</item>
