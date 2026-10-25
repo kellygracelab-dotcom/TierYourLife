@@ -48,6 +48,11 @@
     <string name="community_open_failed">Diese Liste ließ sich nicht öffnen</string>
     <string name="community_rank_it_your_way">Ordne sie frei.</string>
     <string name="community_save_to_my_lists">In meine Listen speichern</string>
+    <string name="community_save_which_title">Welche Anordnung speichern?</string>
+    <string name="community_save_which_body">Die Kopie gehört in jedem Fall dir. Du kannst sie jederzeit neu ordnen.</string>
+    <string name="community_save_theirs">Die des Autors</string>
+    <string name="community_save_mine">Meine</string>
+    <string name="community_save_mine_empty">Unsortiert, ich mache es selbst</string>
     <string name="community_saved_to_your_lists">In deinen Listen gespeichert.</string>
     <string name="community_action_open">Öffnen</string>
     <string name="community_showing_mine">Meine</string>

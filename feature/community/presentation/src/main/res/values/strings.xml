@@ -48,6 +48,11 @@
     <string name="community_open_failed">Could not open this list</string>
     <string name="community_rank_it_your_way">Rank it however you like.</string>
     <string name="community_save_to_my_lists">Save to my lists</string>
+    <string name="community_save_which_title">Which ranking to save?</string>
+    <string name="community_save_which_body">The copy is yours either way. You can rearrange it any time.</string>
+    <string name="community_save_theirs">The author\'s</string>
+    <string name="community_save_mine">Mine</string>
+    <string name="community_save_mine_empty">Unranked, I\'ll do it</string>
     <string name="community_saved_to_your_lists">Saved to your lists.</string>
     <string name="community_action_open">Open</string>
     <string name="community_showing_mine">Mine</string>

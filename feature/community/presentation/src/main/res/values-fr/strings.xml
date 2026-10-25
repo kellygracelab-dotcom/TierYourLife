@@ -51,6 +51,11 @@
     <string name="community_open_failed">Impossible d\'ouvrir cette liste</string>
     <string name="community_rank_it_your_way">Classez-la librement.</string>
     <string name="community_save_to_my_lists">Enregistrer dans mes listes</string>
+    <string name="community_save_which_title">Quel classement enregistrer ?</string>
+    <string name="community_save_which_body">La copie est à vous dans tous les cas. Vous pourrez la réorganiser à tout moment.</string>
+    <string name="community_save_theirs">Celui de l\'auteur</string>
+    <string name="community_save_mine">Le mien</string>
+    <string name="community_save_mine_empty">Vide, je le ferai moi-même</string>
     <string name="community_saved_to_your_lists">Enregistré dans vos listes.</string>
     <string name="community_action_open">Ouvrir</string>
     <string name="community_showing_mine">Le mien</string>
