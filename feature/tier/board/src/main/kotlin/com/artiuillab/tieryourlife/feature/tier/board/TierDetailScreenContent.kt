@@ -65,6 +65,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.ScrollAwayHeader
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.ui.DeletedItemSnackbarHost
@@ -544,7 +545,12 @@ private fun TierScreenBody(
                             .fillMaxWidth()
                             .testTag(TierDetailTestTags.TIER_LIST)
                             .onGloballyPositioned { coordinates -> tierListBounds = coordinates.boundsInRoot() },
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                        // The last tier clears the navigation bar unless the pool lies under the rows and does.
+                        contentPadding = if (pool != null && !poolBeside && !glanceable) {
+                            PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                        } else {
+                            systemBarsContentPadding(start = 12.dp, top = 4.dp, end = 12.dp, bottom = 4.dp)
+                        },
                         verticalArrangement = Arrangement.spacedBy(LocalTierRowDensity.current.rowGap),
                     ) {
 

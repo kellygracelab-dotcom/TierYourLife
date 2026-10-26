@@ -3,7 +3,6 @@ package com.artiuillab.tieryourlife.feature.community.presentation.moderation.co
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +29,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
@@ -94,7 +94,7 @@ internal fun ModeratorsPane(
                     )
                 }
             } else {
-                LazyColumn(contentPadding = PaddingValues(bottom = 32.dp)) {
+                LazyColumn(contentPadding = systemBarsContentPadding(bottom = 32.dp)) {
                     items(state.moderators, key = { it.uid }) { moderator ->
                         ModeratorRow(moderator = moderator, busy = state.busy, onRemove = { onRemove(moderator.uid) })
                     }

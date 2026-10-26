@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -58,6 +57,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.isShortWindow
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.ui.DeletedItemSnackbarHost
@@ -533,7 +533,7 @@ private fun BoardsGrid(columns: GridCells, content: LazyGridScope.() -> Unit) {
         LazyVerticalGrid(
             columns = columns,
             modifier = Modifier.fillMaxSize().testTag(TierListsTestTags.LISTS),
-            contentPadding = PaddingValues(start = side, end = side, bottom = 96.dp),
+            contentPadding = systemBarsContentPadding(start = side, end = side, bottom = 96.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             content = content,

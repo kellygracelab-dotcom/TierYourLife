@@ -281,15 +281,27 @@ private fun HomeBody(
     val selectTab: (Int) -> Unit = { page -> scope.launch { pager.animateScrollToPage(page) } }
 
     if (searching) {
-        Column(Modifier.fillMaxSize()) {
-            SearchTopBar(query = explore.query.orEmpty(), onQueryChange = exploreCalls.onQueryChange, onClose = exploreCalls.onExitSearch)
+        Column(Modifier.fillMaxSize().statusBarsPadding()) {
+            SearchTopBar(
+                query = explore.query.orEmpty(),
+                onQueryChange = exploreCalls.onQueryChange,
+                onClose = exploreCalls.onExitSearch,
+                statusBarPadding = false,
+            )
             SearchResultsGrid(explore.results, layout, CardActions(destinations.onOpenList) { exploreMenu = it })
         }
     } else {
+        // The status bar's strip stays put; the header slides under it and back,
+        // and the tabs pinned below it never reach the clock.
         EnterAlwaysColumn(
+            modifier = Modifier.statusBarsPadding(),
             header = {
                 when (layout) {
-                    HomeLayout.Portrait -> HomeTopBar(onSearchClick = exploreCalls.onEnterSearch, onSettingsClick = destinations.onSettings)
+                    HomeLayout.Portrait -> HomeTopBar(
+                        onSearchClick = exploreCalls.onEnterSearch,
+                        onSettingsClick = destinations.onSettings,
+                        statusBarPadding = false,
+                    )
                     HomeLayout.CompactHeight -> CompactBar(pager.currentPage, selectTab, exploreCalls.onEnterSearch)
                     else -> RailBar(exploreCalls.onEnterSearch)
                 }
@@ -402,7 +414,7 @@ private fun SubTab(label: String, selected: Boolean, tag: String, onClick: () ->
 /** A short window's one bar (§6.1): the name, the two tabs inline, and search. It scrolls away with the content. */
 @Composable
 private fun CompactBar(selected: Int, onSelect: (Int) -> Unit, onSearch: () -> Unit) {
-    Column(Modifier.statusBarsPadding()) {
+    Column {
         Row(
             Modifier
                 .fillMaxWidth()
@@ -459,7 +471,6 @@ private fun InlineTab(label: String, selected: Boolean, tag: String, onClick: ()
 private fun RailBar(onSearch: () -> Unit) {
     Row(
         Modifier
-            .statusBarsPadding()
             .fillMaxWidth()
             .height(64.dp)
             .padding(start = 24.dp, end = 12.dp),

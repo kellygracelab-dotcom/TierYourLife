@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.TopicQueueTestTags
@@ -79,7 +79,7 @@ internal fun TopicQueue(
             )
         } else {
             LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 32.dp),
+                contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = 32.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 items(state.pending, key = { it.topic.id }) { pending ->

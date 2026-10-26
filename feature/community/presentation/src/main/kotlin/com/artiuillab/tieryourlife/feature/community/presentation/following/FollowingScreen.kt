@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,6 +49,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
 import com.artiuillab.tieryourlife.core.theme.layout.topBarTitleStyle
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
@@ -138,7 +138,7 @@ fun FollowingScreenContent(
                             is FollowingUiState.Ready -> if (state.isEmpty) {
                                 Message(text = stringResource(R.string.community_following_nobody), testTag = FollowingTestTags.EMPTY)
                             } else {
-                                LazyColumn(contentPadding = PaddingValues(bottom = 16.dp)) {
+                                LazyColumn(contentPadding = systemBarsContentPadding(bottom = 16.dp)) {
                                     sectionsBlock(state, onToggle, onOpenSection)
                                     topicsBlock(state, onToggle, onOpenTopic)
                                     peopleBlock(state, onToggle, onOpenAuthor)

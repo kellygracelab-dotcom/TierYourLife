@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -206,7 +206,7 @@ internal fun CommunityFeedList(
                     },
                     state = gridState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(
+                    contentPadding = systemBarsContentPadding(
                         start = if (wideEnoughForMoreColumns) 24.dp else 16.dp,
                         end = if (wideEnoughForMoreColumns) 24.dp else 16.dp,
                         bottom = 96.dp,

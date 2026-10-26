@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,6 +41,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
 import com.artiuillab.tieryourlife.core.theme.layout.topBarTitleStyle
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
@@ -123,7 +123,7 @@ fun MyPublishedScreenContent(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                                 LazyColumn(
-                                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 32.dp),
+                                    contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = 32.dp),
                                     verticalArrangement = Arrangement.spacedBy(12.dp),
                                 ) {
                                     items(state.lists, key = { it.id }) { summary ->

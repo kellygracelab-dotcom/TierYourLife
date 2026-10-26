@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,6 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.ColumnAlignedTopBar
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -70,7 +70,7 @@ fun BoardIndex(
                 // somebody scrolled to.
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth().selectableGroup(),
-                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
+                    contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(lists, key = { it.id }) { list ->

@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.ui.DeleteIcon
 import com.artiuillab.tieryourlife.core.theme.ui.RestoreIcon
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
@@ -46,7 +47,7 @@ internal fun TrashList(
     onRestoreItem: (Long) -> Unit,
     onRemoveRequested: (TrashEntry) -> Unit,
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize().testTag(TrashTestTags.LIST)) {
+    LazyColumn(modifier = Modifier.fillMaxSize().testTag(TrashTestTags.LIST), contentPadding = systemBarsContentPadding()) {
         items(entries, key = { TrashTestTags.row(it) }) { entry ->
             when (entry) {
                 is TrashEntry.DeletedList -> TrashListRow(

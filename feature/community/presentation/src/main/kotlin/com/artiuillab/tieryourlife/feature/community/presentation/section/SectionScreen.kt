@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -63,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -164,6 +164,8 @@ fun SectionScreenContent(
             when (layout) {
                 HomeLayout.Cover -> CoverSection(state, onBack, onOpenList, snackbar)
                 HomeLayout.CompactHeight -> EnterAlwaysColumn(
+                    // The inset stays with the screen while the bar leaves.
+                    modifier = Modifier.statusBarsPadding(),
                     header = { CompactSectionBar(state, onBack, calls.onToggleSectionFollow) },
                     body = { SectionFeed(state, layout, feed, calls, cards, headerShown = false, onOpenWaiting = { waitingTopic = it }) },
                 )
@@ -245,7 +247,7 @@ private fun SectionFeed(
                         modifier = Modifier
                             .then(if (layout == HomeLayout.Wide) Modifier.widthIn(max = WideContentMax) else Modifier)
                             .fillMaxSize(),
-                        contentPadding = PaddingValues(start = sideOf(layout), end = sideOf(layout), bottom = 16.dp),
+                        contentPadding = systemBarsContentPadding(start = sideOf(layout), end = sideOf(layout), bottom = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
@@ -347,7 +349,7 @@ private fun CollapsingBar(state: SectionUiState, grid: LazyGridState, onBack: ()
 /** A short window's one bar for a section: back, the name, the counts, and Follow. It scrolls away with the lists. */
 @Composable
 private fun CompactSectionBar(state: SectionUiState, onBack: () -> Unit, onToggleFollow: () -> Unit) {
-    Column(Modifier.statusBarsPadding()) {
+    Column {
         Row(
             Modifier
                 .fillMaxWidth()

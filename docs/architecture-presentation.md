@@ -129,6 +129,33 @@ is a coherent subsystem with its own vocabulary (`drag/` — the drag engine; `s
 modal surfaces; `rows/` — the tier/tile rendering), not an alphabetical bucket. Small
 `components/` folders stay flat.
 
+## Bars and system insets
+
+Every screen keeps clear of the system bars itself, by one rule (written in
+`core/theme/layout/SystemBars.kt`):
+
+- **The status bar belongs to the screen.** A bar that scrolls away never
+  carries the status-bar inset; the container does (`BarredScreen`,
+  `ScrollAwayHeader`'s modifier, Community's `EnterAlwaysColumn`), so whatever
+  is pinned under a leaving bar stops at the clock instead of sliding under it.
+- **The navigation bar belongs to the end of what scrolls.** Lists, grids,
+  board rows and settings columns end with `systemBarsContentPadding(...)`
+  (or `navigationBarsPadding()` inside a scrolling column), adding whatever
+  floats over their end (a button, a strip). Board rows skip it while the pool
+  lies under them, since the pool already clears the bar.
+- **The sides are the root's.** `AppRoot` pads the cutout and a sideways
+  navigation bar once; nothing below adds them again.
+- **No bar, no gap.** Every inset reads zero where its bar is absent (gesture
+  navigation leaves a slim one), and the keyboard is never counted twice.
+
+Screen bars stand on their content's column (`ColumnAlignedTopBar`, or a bar
+inside the screen's `CenteredContent`): the title starts and the last button
+ends where the content does. Below 480dp of height every bar is 48dp and
+leaves with the content (`BarredScreen`), counts move into it (Your lists),
+filter chips are the first scrolling item and never pinned; elsewhere bars
+stay 56dp and pinned. Screenshots with faked bars (`SystemBarsScreenshotTest`
+in board, Your lists and Community) prove nothing sits under either bar.
+
 ## Navigation
 
 Each feature owns its routes: `@Serializable` route types, `NavGraphBuilder.xScreen(...)`
