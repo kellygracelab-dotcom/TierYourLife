@@ -45,6 +45,11 @@
     <string name="community_open_failed">このリストを開けませんでした</string>
     <string name="community_rank_it_your_way">好きなように並べてください。</string>
     <string name="community_save_to_my_lists">自分のリストに保存</string>
+    <string name="community_save_which_title">どちらの並べ方を保存しますか？</string>
+    <string name="community_save_which_body">コピーはどちらでもあなたのものです。いつでも並べ直せます。</string>
+    <string name="community_save_theirs">作者の並べ方</string>
+    <string name="community_save_mine">自分の並べ方</string>
+    <string name="community_save_mine_empty">未整理のまま、自分でやる</string>
     <string name="community_saved_to_your_lists">あなたのリストに保存しました。</string>
     <string name="community_action_open">開く</string>
     <string name="community_showing_mine">自分の並べ方</string>

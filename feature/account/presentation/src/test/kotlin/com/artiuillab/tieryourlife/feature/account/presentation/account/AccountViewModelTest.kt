@@ -377,6 +377,8 @@ private class FakeAppPreferences : AppPreferences {
     override fun setLanguageTag(tag: String?) = Unit
     override fun lastKnownCredits(): Int? = null
     override fun setLastKnownCredits(credits: Int?) = Unit
+    override fun lastKnownStoredBytes(): Long = 0L
+    override fun setLastKnownStoredBytes(bytes: Long) = Unit
 
     override fun lastKnownPendingReports(): Int? = null
 

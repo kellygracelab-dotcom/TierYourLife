@@ -231,6 +231,10 @@ private object OnWifiAlways : AppPreferences, Connection {
     override fun lastKnownTrashCount(): Int = 0
 
     override fun setLastKnownTrashCount(count: Int) = Unit
+
+    override fun lastKnownStoredBytes(): Long = 0L
+
+    override fun setLastKnownStoredBytes(bytes: Long) = Unit
     override fun hiddenListIds(): Set<String> = emptySet()
     override fun hiddenLists(): List<HiddenEntry> = emptyList()
     override fun hideList(publishedId: String, title: String) = Unit

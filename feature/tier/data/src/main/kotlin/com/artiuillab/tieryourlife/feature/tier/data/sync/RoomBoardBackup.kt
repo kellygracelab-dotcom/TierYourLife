@@ -20,10 +20,16 @@ class RoomBoardBackup @Inject constructor(
     private val api: BoardsApi,
 ) : BoardBackup {
 
-    override suspend fun settings() = BackupSettings(
+    override suspend fun settings(): BackupSettings {
+        val bytes = storedBytes()
+        preferences.setLastKnownStoredBytes(bytes)
+        return settingsNow().copy(storedBytes = bytes)
+    }
+
+    override fun settingsNow() = BackupSettings(
         on = preferences.backUpBoards(),
         picturesOnWifiOnly = preferences.picturesOnWifiOnly(),
-        storedBytes = storedBytes(),
+        storedBytes = preferences.lastKnownStoredBytes(),
         lastSyncedAtMs = preferences.lastSyncedAtMs(),
     )
 

@@ -51,6 +51,11 @@
     <string name="community_open_failed">No se pudo abrir esta lista</string>
     <string name="community_rank_it_your_way">Ordénala como quieras.</string>
     <string name="community_save_to_my_lists">Guardar en mis listas</string>
+    <string name="community_save_which_title">¿Qué orden guardar?</string>
+    <string name="community_save_which_body">La copia es tuya en cualquier caso. Puedes reordenarla cuando quieras.</string>
+    <string name="community_save_theirs">La del autor</string>
+    <string name="community_save_mine">La mía</string>
+    <string name="community_save_mine_empty">Sin ordenar, lo haré yo</string>
     <string name="community_saved_to_your_lists">Guardado en tus listas.</string>
     <string name="community_action_open">Abrir</string>
     <string name="community_showing_mine">El mío</string>

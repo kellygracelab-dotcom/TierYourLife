@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
@@ -54,7 +55,7 @@ import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private val SWITCH_HEIGHT = 36.dp
 private val SAVE_BUTTON_MAX_WIDTH = 180.dp
-private const val PHASE_FADE_MILLIS = 150
+private const val PHASE_FADE_MILLIS = 220
 
 @Composable
 fun CommunityListScreen(
@@ -93,7 +94,7 @@ fun CommunityListScreenContent(
     state: CommunityListUiState,
     onBack: () -> Unit,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
-    onSave: () -> Unit,
+    onSave: (Showing) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     /** What the card that opened this list showed; null when it was opened by id alone. */
@@ -109,6 +110,7 @@ fun CommunityListScreenContent(
     var actionsVisible by remember { mutableStateOf(false) }
     var reportVisible by remember { mutableStateOf(false) }
     var reportedFrom by remember { mutableStateOf(false) }
+    var saveChoiceVisible by remember { mutableStateOf(false) }
 
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         // The placeholder, the board and the failure trade places with a short
@@ -180,7 +182,13 @@ fun CommunityListScreenContent(
                             },
                             // In the pool sheet's strip, in reach whether the pool is folded or open.
                             poolAccessories = { _ ->
-                                ReaderStrip(state = loaded, onShow = onShow, onSave = onSave, onOpenSaved = onOpenSaved)
+                                ReaderStrip(
+                                    state = loaded,
+                                    onShow = onShow,
+                                    // Two arrangements to choose from only once the author's is known.
+                                    onSaveClick = { if (loaded.knowsTheirs) saveChoiceVisible = true else onSave(Showing.Mine) },
+                                    onOpenSaved = onOpenSaved,
+                                )
                             },
                         )
                     }
@@ -190,6 +198,17 @@ fun CommunityListScreenContent(
 
         val loaded = state as? CommunityListUiState.Success
         if (loaded != null) {
+            if (saveChoiceVisible) {
+                SaveChoiceDialog(
+                    arranged = loaded.arranged,
+                    onDismiss = { saveChoiceVisible = false },
+                    onChoose = { which ->
+                        saveChoiceVisible = false
+                        onSave(which)
+                    },
+                )
+            }
+
             if (actionsVisible) {
                 ListActionsSheet(
                     title = loaded.list.title,
@@ -253,7 +272,7 @@ fun CommunityListScreenContent(
 private fun ReaderStrip(
     state: CommunityListUiState.Success,
     onShow: (Showing) -> Unit,
-    onSave: () -> Unit,
+    onSaveClick: () -> Unit,
     onOpenSaved: (Long) -> Unit,
 ) {
     Column(
@@ -283,7 +302,7 @@ private fun ReaderStrip(
                 }
             } else {
                 Button(
-                    onClick = onSave,
+                    onClick = onSaveClick,
                     enabled = !state.saving,
                     modifier = Modifier
                         .widthIn(max = SAVE_BUTTON_MAX_WIDTH)
@@ -318,6 +337,36 @@ private fun ReaderStrip(
     }
 }
 
+/**
+ * Asked at the moment of saving rather than read off the switch: a reader
+ * who glanced at the author's half and tapped Save did not mean to throw
+ * their own away, nor the other way round.
+ */
+@Composable
+private fun SaveChoiceDialog(arranged: Boolean, onDismiss: () -> Unit, onChoose: (Showing) -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.testTag(CommunityListTestTags.SAVE_CHOICE),
+        title = { Text(stringResource(R.string.community_save_which_title)) },
+        text = { Text(stringResource(R.string.community_save_which_body)) },
+        confirmButton = {
+            TextButton(
+                onClick = { onChoose(Showing.Theirs) },
+                modifier = Modifier.testTag(CommunityListTestTags.SAVE_THEIRS),
+            ) { Text(stringResource(R.string.community_save_theirs)) }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = { onChoose(Showing.Mine) },
+                modifier = Modifier.testTag(CommunityListTestTags.SAVE_MINE),
+            ) {
+                // Nothing arranged yet: what "mine" would keep is every card unranked, and that is said plainly.
+                Text(stringResource(if (arranged) R.string.community_save_mine else R.string.community_save_mine_empty))
+            }
+        },
+    )
+}
+
 /** Two boards, not one: a reader who glances at the author's finds their own work where they left it. */
 @Composable
 private fun WhoseArrangement(showing: Showing, onShow: (Showing) -> Unit) {
@@ -328,6 +377,8 @@ private fun WhoseArrangement(showing: Showing, onShow: (Showing) -> Unit) {
                 onClick = { onShow(which) },
                 shape = SegmentedButtonDefaults.itemShape(index, Showing.entries.size),
                 modifier = Modifier.testTag(CommunityListTestTags.showing(which)),
+                // The fill already says which; a tick beside two short words only crowds them.
+                icon = {},
             ) {
                 Text(
                     stringResource(

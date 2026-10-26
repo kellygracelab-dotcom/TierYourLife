@@ -60,6 +60,11 @@
     <string name="community_open_failed">تعذّر فتح هذه القائمة</string>
     <string name="community_rank_it_your_way">رتّبها كما يحلو لك.</string>
     <string name="community_save_to_my_lists">احفظ في قوائمي</string>
+    <string name="community_save_which_title">أي ترتيب تريد حفظه؟</string>
+    <string name="community_save_which_body">النسخة لك في كل الأحوال. يمكنك إعادة ترتيبها في أي وقت.</string>
+    <string name="community_save_theirs">ترتيب المؤلف</string>
+    <string name="community_save_mine">ترتيبي</string>
+    <string name="community_save_mine_empty">بلا ترتيب، سأرتبها بنفسي</string>
     <string name="community_saved_to_your_lists">تم الحفظ في قوائمك.</string>
     <string name="community_action_open">فتح</string>
     <string name="community_showing_mine">ترتيبي</string>
