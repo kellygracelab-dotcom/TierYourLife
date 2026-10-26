@@ -139,7 +139,7 @@ travel back through the previous back-stack entry's `SavedStateHandle`.
 
 Transitions are set once, in the host, and nowhere else: the next screen slides in whole
 over the one beneath, which stays exactly as it is (260 ms); back slides it out the same way
-(220 ms); top-level siblings only fade. Nothing else fades: two translucent screens over a
+(340 ms, eased at both ends: 220 ms read as yanked away); top-level siblings only fade. Nothing else fades: two translucent screens over a
 dark window made a frame darker than either, which read as a flash. A route carries what the card that
 opened it already showed (`CommunityRoute.CommunityList` takes the title, author, size and
 palette), and the screen draws that as a skeleton until the answer lands, so no destination

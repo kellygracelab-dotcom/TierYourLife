@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.navigation
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -151,7 +152,7 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
 }
 
 private const val PUSH_MILLIS = 260
-private const val POP_MILLIS = 220
+private const val POP_MILLIS = 340
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.betweenTopLevels(): Boolean =
     isTopLevel(initialState) && isTopLevel(targetState)
@@ -165,8 +166,9 @@ private fun pushIn(): EnterTransition =
 /** Kept exactly as it is for the whole push, and only then let go. */
 private fun holdBeneath(millis: Int): ExitTransition = fadeOut(tween(millis), targetAlpha = 1f)
 
+/** Longer than the push and eased at both ends: a quick exit read as the screen being yanked away. */
 private fun popOut(): ExitTransition =
-    slideOutHorizontally(tween(POP_MILLIS, easing = FastOutSlowInEasing)) { width -> width }
+    slideOutHorizontally(tween(POP_MILLIS, easing = EaseInOutCubic)) { width -> width }
 
 /** Top-level destinations replace each other rather than piling up. */
 private fun NavHostController.navigateToHome(community: Boolean, makeBoard: Boolean = false) {

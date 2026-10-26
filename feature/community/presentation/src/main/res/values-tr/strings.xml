@@ -56,7 +56,7 @@
     <string name="community_saved_to_your_lists">Listelerinize kaydedildi.</string>
     <string name="community_action_open">Aç</string>
     <string name="community_showing_mine">Benimki</string>
-    <string name="community_showing_theirs">Onun sıralaması</string>
+    <string name="community_showing_theirs">Onunki</string>
     <string name="community_someone_elses">Başkasının listesi. Nasıl istersen sırala.</string>
     <string name="community_tile_hidden">Sizin için gizlendi</string>
     <string name="community_tile_reported">Bildirildi. Bir kişi inceleyecek.</string>

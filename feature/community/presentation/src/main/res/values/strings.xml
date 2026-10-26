@@ -56,7 +56,7 @@
     <string name="community_saved_to_your_lists">Saved to your lists.</string>
     <string name="community_action_open">Open</string>
     <string name="community_showing_mine">Mine</string>
-    <string name="community_showing_theirs">Their ranking</string>
+    <string name="community_showing_theirs">Theirs</string>
     <string name="community_someone_elses">Someone else\'s list. Rank it however you like.</string>
     <string name="community_tile_hidden">Hidden for you</string>
     <string name="community_tile_reported">Reported. A person will look at it.</string>
