@@ -172,4 +172,16 @@
     <string name="home_following_empty_topics">Ainda não há nada dos temas que você segue.</string>
     <string name="moderation_action_move">Mover…</string>
     <string name="moderation_moderators_unavailable">Não foi possível ler a lista de moderadores.</string>
+    <string name="community_rankings_title">Rankings · %1$d</string>
+    <string name="community_rankings_body">As mesmas cartas, colocadas do jeito de alguém. Escolha de quem mostrar as fileiras.</string>
+    <string name="community_ranking_author">Autor da lista</string>
+    <string name="community_ranking_you">Você</string>
+    <string name="community_ranking_withdraw">Retirar</string>
+    <string name="community_based_on">Baseada em “%1$s” de %2$s</string>
+    <string name="community_showing_ranking_of">Mostrando: %1$s</string>
+    <plurals name="community_rankings_count">
+        <item quantity="one">%d ranking</item>
+        <item quantity="many">%d rankings</item>
+        <item quantity="other">%d rankings</item>
+    </plurals>
 </resources>

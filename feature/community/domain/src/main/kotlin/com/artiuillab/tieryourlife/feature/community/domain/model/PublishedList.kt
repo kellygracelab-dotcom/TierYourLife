@@ -25,6 +25,10 @@ data class PublishedListSummary(
     /** The topic the author filed it under, if any; the name travels too, so a card needs no second read. */
     val topicId: String? = null,
     val topicName: String? = null,
+    /** How many readers have placed these cards their own way. */
+    val rankingCount: Int = 0,
+    /** The list this one was made from, when a reader changed the cards rather than only placing them. */
+    val basedOn: BasedOn? = null,
 ) {
     /** Shown without its author, and leading to no profile. */
     val editorial: Boolean get() = EditorialAuthors.isEditorial(authorUid, anonymous)
@@ -43,3 +47,6 @@ data class PublishedList(
      */
     val arrangement: List<Int?> = emptyList(),
 )
+
+/** A list a copy was changed from: named on the copy's page, and a tap away. */
+data class BasedOn(val id: String, val title: String, val authorName: String)

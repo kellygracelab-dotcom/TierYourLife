@@ -146,4 +146,5 @@
         <item quantity="other">%d no grupo</item>
     </plurals>
     <string name="list_settings_public_topic_unavailable">Esse tema não está mais disponível: foi mesclado, recusado ou é de outra pessoa. A lista ficou sem tema; escolha outro ou publique sem tema.</string>
+    <string name="list_settings_public_ranking_body">Publicada como seu ranking da lista de %1$s; o feed não mostra uma segunda lista.</string>
 </resources>

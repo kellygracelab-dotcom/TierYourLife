@@ -26,6 +26,8 @@ fun TierDetailScreen(
     onChooseTopic: () -> Unit = {},
     topicChanged: Boolean = false,
     onTopicChangeConsumed: () -> Unit = {},
+    /** The published list this board is out as a ranking of, from the credit under the title. */
+    onOpenPublishedList: (String) -> Unit = {},
     addedItemIds: List<Long> = emptyList(),
     onAddedItemConsumed: () -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
@@ -50,12 +52,20 @@ fun TierDetailScreen(
         }
     }
 
+    val credit: (@Composable () -> Unit)? = when (val loaded = state) {
+        is TierDetailUiState.Success -> loaded.list.rankingOf?.let { rankingOf ->
+            { RankingCredit(authorName = loaded.list.authorName.orEmpty(), onOpen = { onOpenPublishedList(rankingOf) }) }
+        }
+        else -> null
+    }
+
     TierDetailScreenContent(
         state = state,
         allLists = screen.allLists,
         onOpenList = onOpenList,
         addedItemIds = addedItemIds,
         userMessages = viewModel.userMessages,
+        belowTopBar = credit,
         actions = TierDetailActions(
             onBack = onBack,
             signedIn = screen.signedIn,

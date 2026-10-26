@@ -160,4 +160,14 @@
     <string name="home_following_empty_topics">フォロー中のトピックからの投稿はまだありません。</string>
     <string name="moderation_action_move">移動…</string>
     <string name="moderation_moderators_unavailable">モデレーターの一覧を読み込めませんでした。</string>
+    <string name="community_rankings_title">ランキング · %1$d</string>
+    <string name="community_rankings_body">同じカードを誰かが自分流に並べたものです。誰の並びを表示するか選んでください。</string>
+    <string name="community_ranking_author">リストの作者</string>
+    <string name="community_ranking_you">あなた</string>
+    <string name="community_ranking_withdraw">取り下げる</string>
+    <string name="community_based_on">%2$sの「%1$s」をもとに</string>
+    <string name="community_showing_ranking_of">表示中: %1$s</string>
+    <plurals name="community_rankings_count">
+        <item quantity="other">ランキング%d件</item>
+    </plurals>
 </resources>

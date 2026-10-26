@@ -190,4 +190,19 @@
     <string name="home_following_empty_topics">لا شيء بعد من المواضيع التي تتابعها.</string>
     <string name="moderation_action_move">نقل…</string>
     <string name="moderation_moderators_unavailable">تعذّرت قراءة قائمة المشرفين.</string>
+    <string name="community_rankings_title">الترتيبات · %1$d</string>
+    <string name="community_rankings_body">البطاقات نفسها مرتبة على طريقة شخص آخر. اختر صفوف من تريد عرضها.</string>
+    <string name="community_ranking_author">صاحب القائمة</string>
+    <string name="community_ranking_you">أنت</string>
+    <string name="community_ranking_withdraw">سحب</string>
+    <string name="community_based_on">مبني على «%1$s» لـ %2$s</string>
+    <string name="community_showing_ranking_of">المعروض: %1$s</string>
+    <plurals name="community_rankings_count">
+        <item quantity="zero">لا ترتيبات</item>
+        <item quantity="one">ترتيب واحد</item>
+        <item quantity="two">ترتيبان</item>
+        <item quantity="few">%d ترتيبات</item>
+        <item quantity="many">%d ترتيبًا</item>
+        <item quantity="other">%d ترتيب</item>
+    </plurals>
 </resources>

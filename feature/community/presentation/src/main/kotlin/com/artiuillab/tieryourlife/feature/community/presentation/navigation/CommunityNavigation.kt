@@ -13,9 +13,11 @@ fun NavGraphBuilder.communityListScreen(
     onBack: () -> Unit,
     onOpenSaved: (Long) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
+    /** Another published list named on this one: the one it was based on. */
+    onOpenList: (String) -> Unit = {},
 ) {
     composable<CommunityRoute.CommunityList> {
-        CommunityListScreen(onBack = onBack, onOpenSaved = onOpenSaved, onAuthorClick = onAuthorClick)
+        CommunityListScreen(onBack = onBack, onOpenSaved = onOpenSaved, onAuthorClick = onAuthorClick, onOpenList = onOpenList)
     }
 }
 

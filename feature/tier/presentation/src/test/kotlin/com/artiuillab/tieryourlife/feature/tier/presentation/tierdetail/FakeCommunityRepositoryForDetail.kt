@@ -14,6 +14,12 @@ internal class FakeCommunityRepositoryForDetail(
 ) : FakeCommunityRepository() {
     val published = mutableListOf<TierList>()
     val unpublished = mutableListOf<String>()
+    val withdrawn = mutableListOf<String>()
+
+    override suspend fun withdrawRanking(listId: String): Result<Unit> {
+        withdrawn += listId
+        return Result.success(Unit)
+    }
 
     override suspend fun topic(id: String): Result<Topic> = Result.success(
         Topic(id = id, name = "Oscars 2025", section = ListCategory.FilmTv.takeIf { topicStatus == TopicStatus.Approved }, status = topicStatus),

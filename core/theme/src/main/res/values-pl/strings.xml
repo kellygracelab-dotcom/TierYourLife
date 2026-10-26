@@ -37,4 +37,5 @@
         <item quantity="other">%d ocenione</item>
     </plurals>
     <string name="tier_lists_title">Twoje listy</string>
+    <string name="snack_published_as_ranking">Opublikowana jako twój ranking tej listy. W kanale nie pojawia się druga lista.</string>
 </resources>

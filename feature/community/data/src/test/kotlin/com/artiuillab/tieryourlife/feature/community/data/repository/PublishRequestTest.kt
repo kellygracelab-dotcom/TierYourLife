@@ -84,6 +84,15 @@ class PublishRequestTest {
         assertNull(request.coverImageUrl)
     }
 
+    // The server decides whether the same cards make this a ranking of that list; the phone only says where they came from.
+    @Test
+    fun `a copy names the list it was taken from`() {
+        val request = board.copy(takenFrom = "src-1").toRequest(Pictures, uploaded = emptySet())
+
+        assertEquals("src-1", request.takenFrom)
+        assertNull(board.toRequest(Pictures, uploaded = emptySet()).takenFrom)
+    }
+
     @Test
     fun `a board without a category is published as other`() {
         val request = board.copy(category = null).toRequest(Pictures, uploaded = emptySet())

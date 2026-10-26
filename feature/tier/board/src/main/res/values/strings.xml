@@ -136,4 +136,5 @@
         <item quantity="other">%d in pool</item>
     </plurals>
     <string name="list_settings_public_topic_unavailable">That topic is no longer open: merged, turned down or somebody else’s. The list has no topic now; pick another or publish without one.</string>
+    <string name="list_settings_public_ranking_body">Out as your ranking of %1$s’s list; the feed shows no second list.</string>
 </resources>

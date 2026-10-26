@@ -99,8 +99,14 @@ class TrashViewModel @Inject constructor(
         return entries.filterIsInstance<TrashEntry.DeletedList>()
             .filter { it.id in ids }
             .mapNotNull { list ->
-                val publishedId = list.publishedId ?: return@mapNotNull null
-                community.unpublish(publishedId).fold(
+                val rankingOf = list.rankingOf
+                val publishedId = list.publishedId
+                val takenDown = when {
+                    rankingOf != null -> community.withdrawRanking(rankingOf)
+                    publishedId != null -> community.unpublish(publishedId)
+                    else -> return@mapNotNull null
+                }
+                takenDown.fold(
                     onSuccess = { null },
                     onFailure = {
                         Timber.w(it, "Could not take a trashed list out of the community")

@@ -182,4 +182,6 @@
     <string name="cover_picker_no_cards">Noch keine Karte dieser Liste hat ein Bild.</string>
     <string name="cover_picker_gallery">Aus der Galerie wählen</string>
     <string name="cover_picker_gallery_note">Ein Galeriebild ist das ganze Cover und reist mit der Liste, wenn du sie veröffentlichst.</string>
+    <string name="tier_detail_ranking_of">Deine Reihung einer Liste von %1$s</string>
+    <string name="tier_detail_open_original">Öffnen</string>
 </resources>

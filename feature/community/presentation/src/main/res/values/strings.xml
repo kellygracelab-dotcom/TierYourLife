@@ -166,4 +166,15 @@
     <string name="home_following_empty_topics">Nothing from the topics you follow yet.</string>
     <string name="moderation_action_move">Move…</string>
     <string name="moderation_moderators_unavailable">Could not read who moderates.</string>
+    <string name="community_rankings_title">Rankings · %1$d</string>
+    <string name="community_rankings_body">The same cards, placed somebody’s way. Choose whose rows to show.</string>
+    <string name="community_ranking_author">Author of the list</string>
+    <string name="community_ranking_you">You</string>
+    <string name="community_ranking_withdraw">Withdraw</string>
+    <string name="community_based_on">Based on “%1$s” by %2$s</string>
+    <string name="community_showing_ranking_of">Showing: %1$s</string>
+    <plurals name="community_rankings_count">
+        <item quantity="one">%d ranking</item>
+        <item quantity="other">%d rankings</item>
+    </plurals>
 </resources>

@@ -29,4 +29,5 @@
         <item quantity="other">%d eingestuft</item>
     </plurals>
     <string name="tier_lists_title">Deine Listen</string>
+    <string name="snack_published_as_ranking">Draußen als deine Reihung dieser Liste. Im Feed erscheint keine zweite Liste.</string>
 </resources>

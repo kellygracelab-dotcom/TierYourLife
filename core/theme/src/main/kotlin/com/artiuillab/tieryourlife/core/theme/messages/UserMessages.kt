@@ -14,6 +14,9 @@ enum class UserMessage {
      * the community could not be taken down.
      */
     PublishedListStillPublic,
+
+    /** The copy went out as this person's ranking of the list it was taken from, not as a second list. */
+    PublishedAsRanking,
 }
 
 class UserMessages {

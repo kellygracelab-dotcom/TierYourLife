@@ -169,4 +169,6 @@
     <string name="cover_picker_no_cards">このリストのカードにはまだ画像がありません。</string>
     <string name="cover_picker_gallery">ギャラリーから選ぶ</string>
     <string name="cover_picker_gallery_note">ギャラリーの画像はカバー全体になり、公開時にリストと一緒に送られます。</string>
+    <string name="tier_detail_ranking_of">%1$sのリストのあなたのランキング</string>
+    <string name="tier_detail_open_original">開く</string>
 </resources>

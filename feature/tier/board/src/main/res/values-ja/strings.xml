@@ -126,4 +126,5 @@
         <item quantity="other">プールに%d件</item>
     </plurals>
     <string name="list_settings_public_topic_unavailable">このトピックは使えなくなりました（統合、却下、または他の人のものです）。リストのトピックは外れました。別のトピックを選ぶか、トピックなしで公開してください。</string>
+    <string name="list_settings_public_ranking_body">%1$sのリストのあなたのランキングとして公開中です。フィードに2つ目のリストは出ません。</string>
 </resources>

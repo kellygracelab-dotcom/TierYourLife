@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.feature.community.data.remote.api.CommunityApi
 import com.artiuillab.tieryourlife.feature.community.data.remote.banNotice
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.AppointModeratorRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.BasedOnDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModerationReportDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.MoveListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PendingTopicDto
@@ -12,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIt
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListSummaryDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTierDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.RankingDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ReportRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TakeDownRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicDto
@@ -22,6 +24,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.isAppUnverified
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
+import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.EditorialAuthors
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
@@ -35,6 +38,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
+import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
@@ -165,6 +170,15 @@ class RetrofitCommunityRepository @Inject constructor(
         api.noteTaken(publishedId)
     }
 
+    override suspend fun rankings(listId: String, after: String?): Result<RankingsPage> = attempt("Reading a list's rankings") {
+        val page = api.rankings(listId, after)
+        RankingsPage(rankings = page.rankings.map { it.toDomain() }, nextCursor = page.nextCursor)
+    }
+
+    override suspend fun withdrawRanking(listId: String): Result<Unit> = attempt("Taking a ranking down") {
+        api.deleteMyRanking(listId)
+    }
+
     override suspend fun myPublished(): Result<List<PublishedListSummary>> = attempt("Reading what this account has published") {
         api.myPublished().lists.map { it.toSummary() }
     }
@@ -181,7 +195,14 @@ class RetrofitCommunityRepository @Inject constructor(
         val request = list.toRequest(pictures, up)
         val existing = list.publishedId
         val answer = if (existing == null) api.publish(request) else api.republish(existing, request)
-        Result.success(Published(id = answer.id, fingerprint = PublishFingerprint.of(list, pictures::pictureIdOf), topicId = answer.topicId))
+        Result.success(
+            Published(
+                id = answer.id,
+                fingerprint = PublishFingerprint.of(list, pictures::pictureIdOf),
+                topicId = answer.topicId,
+                ranking = answer.ranking,
+            ),
+        )
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
@@ -324,6 +345,8 @@ private fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     anonymous = anonymous,
     topicId = topicId,
     topicName = topicName,
+    rankingCount = rankingCount,
+    basedOn = basedOn?.toDomain(),
 )
 
 internal fun PublishedListDto.toDomain() = PublishedList(
@@ -342,6 +365,8 @@ internal fun PublishedListDto.toDomain() = PublishedList(
         anonymous = anonymous,
         topicId = topicId,
         topicName = topicName,
+        rankingCount = rankingCount,
+        basedOn = basedOn?.toDomain(),
     ),
     tiers = tiers.mapIndexed { index, tier ->
         Tier(
@@ -379,6 +404,7 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
     topicId = topicId,
     // A name the server has not seen yet; once it has, the id above is what travels.
     newTopic = newTopicName?.takeIf { topicId == null },
+    takenFrom = takenFrom,
     tiers = tiers.filterNot { it.isPool }.map {
         PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark)
     },
@@ -399,4 +425,16 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
             }
         }
     },
+)
+
+private fun BasedOnDto.toDomain() = BasedOn(id = id, title = title, authorName = authorName)
+
+private fun RankingDto.toDomain() = Ranking(
+    uid = uid,
+    authorName = authorName,
+    authorPhotoUrl = authorPhotoUrl,
+    arrangement = arrangement,
+    tierLabels = tierLabels,
+    updatedAtMillis = updatedAtMs,
+    mine = mine,
 )

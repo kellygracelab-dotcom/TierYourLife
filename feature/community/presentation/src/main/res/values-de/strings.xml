@@ -166,4 +166,15 @@
     <string name="home_following_empty_topics">Aus den Themen, denen du folgst, gibt es noch nichts.</string>
     <string name="moderation_action_move">Verschieben…</string>
     <string name="moderation_moderators_unavailable">Die Moderatorenliste konnte nicht gelesen werden.</string>
+    <string name="community_rankings_title">Reihungen · %1$d</string>
+    <string name="community_rankings_body">Dieselben Karten, von jemandem anders gesetzt. Wähle, wessen Reihen gezeigt werden.</string>
+    <string name="community_ranking_author">Autor der Liste</string>
+    <string name="community_ranking_you">Du</string>
+    <string name="community_ranking_withdraw">Zurückziehen</string>
+    <string name="community_based_on">Nach „%1$s“ von %2$s</string>
+    <string name="community_showing_ranking_of">Gezeigt: %1$s</string>
+    <plurals name="community_rankings_count">
+        <item quantity="one">%d Reihung</item>
+        <item quantity="other">%d Reihungen</item>
+    </plurals>
 </resources>

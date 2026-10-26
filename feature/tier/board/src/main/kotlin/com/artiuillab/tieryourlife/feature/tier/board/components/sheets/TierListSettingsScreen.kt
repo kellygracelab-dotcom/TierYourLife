@@ -107,7 +107,8 @@ fun TierListSettingsScreenContent(
         // New tier off the bottom of an ordinary phone.
         CenteredContent(ContentWidth.Reading, modifier = Modifier.verticalScroll(rememberScrollState())) {
             PublishSection(
-                published = publicPending ?: (list.publishedId != null),
+                published = publicPending ?: list.isPublic,
+                asRankingOf = if (list.rankingOf != null) list.authorName.orEmpty() else null,
                 signedIn = signedIn,
                 hasItems = list.tiers.any { it.items.isNotEmpty() },
                 busy = publishing,
@@ -419,6 +420,8 @@ private fun TierListSettingsScreenDarkPreview() = TierYourLifeTheme(true) {
 @Composable
 private fun PublishSection(
     published: Boolean,
+    /** The author of the list this board is out as a ranking of, when it is. */
+    asRankingOf: String?,
     signedIn: Boolean,
     hasItems: Boolean,
     busy: Boolean,
@@ -449,7 +452,11 @@ private fun PublishSection(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = stringResource(caption),
+                    text = if (published && asRankingOf != null) {
+                        stringResource(R.string.list_settings_public_ranking_body, asRankingOf)
+                    } else {
+                        stringResource(caption)
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

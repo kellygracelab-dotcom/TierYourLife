@@ -11,6 +11,8 @@ sealed interface TrashEntry {
         override val deletedAtMillis: Long,
         /** Set on a list trashed before deleting also took it out of the community. */
         val publishedId: String? = null,
+        /** The same for a list that was out as a ranking of somebody's. */
+        val rankingOf: String? = null,
     ) : TrashEntry
 
     data class DeletedItem(

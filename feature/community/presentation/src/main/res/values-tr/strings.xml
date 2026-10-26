@@ -166,4 +166,15 @@
     <string name="home_following_empty_topics">Takip ettiğiniz konulardan henüz bir şey yok.</string>
     <string name="moderation_action_move">Taşı…</string>
     <string name="moderation_moderators_unavailable">Moderatör listesi okunamadı.</string>
+    <string name="community_rankings_title">Sıralamalar · %1$d</string>
+    <string name="community_rankings_body">Aynı kartlar, birinin kendi usulünce dizilmiş. Kimin sıralarının gösterileceğini seçin.</string>
+    <string name="community_ranking_author">Listenin yazarı</string>
+    <string name="community_ranking_you">Siz</string>
+    <string name="community_ranking_withdraw">Geri çek</string>
+    <string name="community_based_on">%2$s tarafından “%1$s” temel alınarak</string>
+    <string name="community_showing_ranking_of">Gösterilen: %1$s</string>
+    <plurals name="community_rankings_count">
+        <item quantity="one">%d sıralama</item>
+        <item quantity="other">%d sıralama</item>
+    </plurals>
 </resources>

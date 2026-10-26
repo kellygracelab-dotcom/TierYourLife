@@ -208,4 +208,6 @@
     <string name="cover_picker_no_cards">У жодної картки списку ще немає зображення.</string>
     <string name="cover_picker_gallery">Вибрати з галереї</string>
     <string name="cover_picker_gallery_note">Зображення з галереї стає всією обкладинкою і їде разом зі списком, коли ви його публікуєте.</string>
+    <string name="tier_detail_ranking_of">Ваше ранжування списку від %1$s</string>
+    <string name="tier_detail_open_original">Відкрити</string>
 </resources>

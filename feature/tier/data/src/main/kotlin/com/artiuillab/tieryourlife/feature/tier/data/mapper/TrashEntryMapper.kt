@@ -11,6 +11,7 @@ internal fun DeletedTierListRow.toDomain(): TrashEntry.DeletedList =
         itemCount = itemCount,
         deletedAtMillis = deletedAt,
         publishedId = publishedId,
+        rankingOf = rankingOf,
     )
 
 internal fun DeletedTierItemRow.toDomain(): TrashEntry.DeletedItem =
