@@ -154,7 +154,8 @@ class TopicPickerViewModelTest {
         val repository = RecordingTierRepository(boards = listOf(board(topicId = "p1", topicName = "Waiting 1", newTopicName = "Waiting 1")))
         val picker = pickerFor(repository, TopicsFake(mine = listOf(pending(1).copy(status = TopicStatus.Rejected))))
 
-        picker.state.firstWithin { it.chosen == TopicChoice.None }
+        // The board is read first, so the empty start does not count as the answer.
+        picker.state.firstWithin { it.title == "Films" && it.chosen == TopicChoice.None }
 
         assertEquals(listOf(listOf(1L, null, null, null)), repository.topics)
     }
