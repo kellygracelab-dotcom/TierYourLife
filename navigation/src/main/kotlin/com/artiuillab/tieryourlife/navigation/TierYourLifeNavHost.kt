@@ -269,6 +269,7 @@ private fun NavContent(
             onBack = { navController.popBackStack() },
             onOpenAuthor = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
             onOpenTopic = { route -> navController.navigateToTopic(route) },
+            onOpenSection = { route -> navController.navigateToSection(route) },
         )
         topicScreen(
             onBack = { navController.popBackStack() },

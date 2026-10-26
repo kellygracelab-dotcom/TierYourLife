@@ -37,16 +37,16 @@ class FollowingScreenTest {
     }
 
     @Test
-    fun theUnfollowButton_namesThePerson() {
-        var unfollowed: String? = null
+    fun thePersonsButton_asksForThatPerson() {
+        var toggled: String? = null
         setScreen(
             FollowingUiState.Ready(listOf(FollowedAuthor(uid = "a", name = "Olena M.", photoUrl = null))),
-            onUnfollow = { unfollowed = it },
+            onToggle = { toggled = it },
         )
 
-        composeRule.onNodeWithTag(FollowingTestTags.unfollow("a")).performClick()
+        composeRule.onNodeWithTag(FollowingTestTags.toggle(FollowKeys.person("a"))).performClick()
 
-        assertEquals("a", unfollowed)
+        assertEquals(FollowKeys.person("a"), toggled)
     }
 
     @Test
@@ -56,14 +56,14 @@ class FollowingScreenTest {
         composeRule.onNodeWithTag(FollowingTestTags.EMPTY).assertIsDisplayed()
     }
 
-    private fun setScreen(state: FollowingUiState, onUnfollow: (String) -> Unit = {}) {
+    private fun setScreen(state: FollowingUiState, onToggle: (String) -> Unit = {}) {
         composeRule.setContent {
             TierYourLifeTheme {
                 FollowingScreenContent(
                     state = state,
                     onBack = {},
                     onOpenAuthor = { _, _, _ -> },
-                    onUnfollow = onUnfollow,
+                    onToggle = onToggle,
                     onRetry = {},
                 )
             }

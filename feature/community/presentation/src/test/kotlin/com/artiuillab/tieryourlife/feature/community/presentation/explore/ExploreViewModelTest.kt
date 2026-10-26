@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.explore
 
+import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
@@ -13,15 +14,14 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListS
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CachedFeed
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
