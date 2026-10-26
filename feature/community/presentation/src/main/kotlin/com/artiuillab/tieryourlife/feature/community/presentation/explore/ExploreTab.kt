@@ -80,8 +80,10 @@ internal fun TilesBlock(
     val all = ListCategory.entries
     when (layout) {
         HomeLayout.CompactHeight -> LazyRow(
-            modifier = modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(top = 12.dp),
+            modifier = modifier
+                .fillMaxWidth()
+                .edgeToEdge(gridSide(layout)),
+            contentPadding = PaddingValues(top = 12.dp, start = gridSide(layout), end = gridSide(layout)),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(all, key = { it.id }) { section -> tile(section, Modifier.size(width = 160.dp, height = 88.dp), false) }
@@ -142,8 +144,8 @@ internal fun ExploreTab(
                 columns = GridCells.Fixed(layout.feedColumns),
                 state = gridState,
                 modifier = Modifier
-                    .fillMaxSize()
                     .then(if (layout == HomeLayout.Wide) Modifier.widthIn(max = WideContentMax) else Modifier)
+                    .fillMaxSize()
                     .testTag(ExploreTestTags.SCREEN),
                 contentPadding = PaddingValues(start = gridSide(layout), end = gridSide(layout), bottom = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(feedSpacing(layout)),

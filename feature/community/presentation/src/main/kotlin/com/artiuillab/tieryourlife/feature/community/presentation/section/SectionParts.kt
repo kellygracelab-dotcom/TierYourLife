@@ -50,6 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -65,6 +66,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.Follow
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowToggle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScheduleIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.countText
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.edgeToEdge
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.TopicSquare
 import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -166,6 +168,7 @@ internal fun TopicChipsRow(
     onSelect: (Topic?) -> Unit,
     onOpenWaiting: (Topic) -> Unit,
     onSuggest: (() -> Unit)?,
+    side: Dp = 0.dp,
 ) {
     val listState = rememberLazyListState()
     val chips = topics
@@ -176,8 +179,11 @@ internal fun TopicChipsRow(
     }
     LazyRow(
         state = listState,
-        modifier = Modifier.testTag(SectionTestTags.CHIPS),
-        contentPadding = PaddingValues(top = 12.dp, bottom = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .edgeToEdge(side)
+            .testTag(SectionTestTags.CHIPS),
+        contentPadding = PaddingValues(start = side, top = 12.dp, end = side, bottom = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item(key = "all") {

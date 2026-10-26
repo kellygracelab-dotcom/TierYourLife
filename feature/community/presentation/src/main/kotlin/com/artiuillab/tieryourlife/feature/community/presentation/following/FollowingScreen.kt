@@ -36,7 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -146,25 +146,25 @@ fun FollowingScreenContent(
 
 @Composable
 private fun ManageSnackbars(notices: Flow<ManageNotice>, snackbar: SnackbarHostState, onToggle: (String) -> Unit) {
-    val context = LocalContext.current
+    val resources = LocalResources.current
     LaunchedEffect(notices) {
         notices.collect { notice ->
             when (notice) {
                 is ManageNotice.Stopped -> {
                     val shown = if (notice.key.startsWith("s:")) {
-                        ListCategory.fromId(notice.name)?.let { context.getString(it.labelRes) } ?: notice.name
+                        ListCategory.fromId(notice.name)?.let { resources.getString(it.labelRes) } ?: notice.name
                     } else {
                         notice.name
                     }
                     val result = snackbar.showSnackbar(
-                        message = context.getString(R.string.explore_unfollowed, shown),
-                        actionLabel = context.getString(R.string.explore_undo),
+                        message = resources.getString(R.string.explore_unfollowed, shown),
+                        actionLabel = resources.getString(R.string.explore_undo),
                         duration = SnackbarDuration.Long,
                     )
                     if (result == SnackbarResult.ActionPerformed) onToggle(notice.key)
                 }
 
-                ManageNotice.Failed -> snackbar.showSnackbar(context.getString(ThemeR.string.snack_action_failed))
+                ManageNotice.Failed -> snackbar.showSnackbar(resources.getString(ThemeR.string.snack_action_failed))
             }
         }
     }

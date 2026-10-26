@@ -10,6 +10,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
@@ -33,6 +34,14 @@ internal val CompactHeightBelow = 480.dp
 
 /** Wide windows centre their content rather than stretch it (§7.1). */
 internal val WideContentMax = 1080.dp
+
+/** Lets a child of a padded grid reach both edges of the window, as a header or a scrolling row should. */
+internal fun Modifier.edgeToEdge(side: Dp): Modifier = layout { measurable, constraints ->
+    val extra = side.roundToPx()
+    val width = constraints.maxWidth + 2 * extra
+    val placeable = measurable.measure(constraints.copy(minWidth = width, maxWidth = width))
+    layout(constraints.maxWidth, placeable.height) { placeable.place(-extra, 0) }
+}
 
 internal fun homeLayoutFor(shape: WindowShape, height: Dp): HomeLayout = when {
     shape == WindowShape.Cover -> HomeLayout.Cover

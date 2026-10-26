@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -216,33 +218,34 @@ private fun NoticeSnackbars(
     onUndoUnfollow: (ListCategory) -> Unit,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     LaunchedEffect(notices) {
         notices.collect { notice ->
             when (notice) {
                 is CommunityNotice.RefreshFailed -> {
                     val time = android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date(notice.showingFromMillis))
                     val result = snackbar.showSnackbar(
-                        message = context.getString(R.string.explore_refresh_failed, time),
-                        actionLabel = context.getString(R.string.explore_retry),
+                        message = resources.getString(R.string.explore_refresh_failed, time),
+                        actionLabel = resources.getString(R.string.explore_retry),
                     )
                     if (result == SnackbarResult.ActionPerformed) exploreFeed.onRefresh()
                 }
 
-                CommunityNotice.FollowFailed -> snackbar.showSnackbar(context.getString(R.string.explore_follow_failed))
+                CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.getString(R.string.explore_follow_failed))
                 is CommunityNotice.NowFollowing -> snackbar.showSnackbar(
-                    context.getString(R.string.explore_now_following, context.getString(notice.section.labelRes)),
+                    resources.getString(R.string.explore_now_following, resources.getString(notice.section.labelRes)),
                 )
 
                 is CommunityNotice.Unfollowed -> {
                     val result = snackbar.showSnackbar(
-                        message = context.getString(R.string.explore_unfollowed, context.getString(notice.section.labelRes)),
-                        actionLabel = context.getString(R.string.explore_undo),
+                        message = resources.getString(R.string.explore_unfollowed, resources.getString(notice.section.labelRes)),
+                        actionLabel = resources.getString(R.string.explore_undo),
                         duration = SnackbarDuration.Long,
                     )
                     if (result == SnackbarResult.ActionPerformed) onUndoUnfollow(notice.section)
                 }
 
-                CommunityNotice.ActionFailed -> snackbar.showSnackbar(context.getString(ThemeR.string.snack_action_failed))
+                CommunityNotice.ActionFailed -> snackbar.showSnackbar(resources.getString(ThemeR.string.snack_action_failed))
             }
         }
     }
@@ -358,14 +361,22 @@ private fun HomeBody(
     waitingTopic?.let { topic -> WaitingTopicSheet(topic = topic, onDismiss = { waitingTopic = null }) }
 }
 
-/** Explore · Following (§1.2): two equal tabs under the bar, or hugging their labels beside a rail's title. */
+/** Explore · Following (§1.2): two equal tabs under a phone's bar, or hugging their labels under a rail's title (§7.1). */
 @Composable
 private fun SubTabs(selected: Int, onSelect: (Int) -> Unit, inset: Boolean) {
+    if (inset) {
+        Column(Modifier.fillMaxWidth()) {
+            Row(Modifier.padding(start = 12.dp)) {
+                InlineTab(stringResource(R.string.explore_tab_explore), selected == 0, ExploreTestTags.TAB_EXPLORE) { onSelect(0) }
+                InlineTab(stringResource(R.string.explore_tab_following), selected == 1, ExploreTestTags.TAB_FOLLOWING) { onSelect(1) }
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        }
+        return
+    }
     SecondaryTabRow(
         selectedTabIndex = selected,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = if (inset) 12.dp else 0.dp),
+        modifier = Modifier.fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.surface,
         divider = { HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant) },
     ) {
@@ -419,8 +430,8 @@ private fun InlineTab(label: String, selected: Boolean, tag: String, onClick: ()
     Column(
         Modifier
             .height(48.dp)
+            .width(IntrinsicSize.Max)
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp)
             .testTag(tag),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -428,12 +439,14 @@ private fun InlineTab(label: String, selected: Boolean, tag: String, onClick: ()
         Spacer(Modifier.weight(1f))
         Text(
             label,
+            modifier = Modifier.padding(horizontal = 16.dp),
             style = MaterialTheme.typography.titleSmall,
             color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.weight(1f))
         Box(
             Modifier
+                .padding(horizontal = 12.dp)
                 .height(2.dp)
                 .fillMaxWidth()
                 .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent),

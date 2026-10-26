@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -48,14 +49,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -84,6 +86,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.OpenIn
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScrolledDownWatcher
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.WideContentMax
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.countText
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.edgeToEdge
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.feedItems
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.homeLayoutFor
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.rememberSkeletonAlpha
@@ -182,26 +185,27 @@ private fun SectionNotices(
     onFollowAgain: () -> Unit,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     LaunchedEffect(notices) {
         notices.collect { notice ->
             when (notice) {
                 is CommunityNotice.RefreshFailed -> {
                     val time = android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date(notice.showingFromMillis))
-                    val result = snackbar.showSnackbar(context.getString(R.string.explore_refresh_failed, time), context.getString(R.string.explore_retry))
+                    val result = snackbar.showSnackbar(resources.getString(R.string.explore_refresh_failed, time), resources.getString(R.string.explore_retry))
                     if (result == SnackbarResult.ActionPerformed) onRefresh()
                 }
 
                 is CommunityNotice.Unfollowed -> {
                     val result = snackbar.showSnackbar(
-                        message = context.getString(R.string.explore_unfollowed, context.getString(notice.section.labelRes)),
-                        actionLabel = context.getString(R.string.explore_undo),
+                        message = resources.getString(R.string.explore_unfollowed, resources.getString(notice.section.labelRes)),
+                        actionLabel = resources.getString(R.string.explore_undo),
                         duration = SnackbarDuration.Long,
                     )
                     if (result == SnackbarResult.ActionPerformed) onFollowAgain()
                 }
 
-                CommunityNotice.FollowFailed -> snackbar.showSnackbar(context.getString(R.string.explore_follow_failed))
-                CommunityNotice.ActionFailed -> snackbar.showSnackbar(context.getString(ThemeR.string.snack_action_failed))
+                CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.getString(R.string.explore_follow_failed))
+                CommunityNotice.ActionFailed -> snackbar.showSnackbar(resources.getString(ThemeR.string.snack_action_failed))
                 is CommunityNotice.NowFollowing -> Unit
             }
         }
@@ -239,8 +243,8 @@ private fun SectionFeed(
                         columns = GridCells.Fixed(layout.feedColumns),
                         state = grid,
                         modifier = Modifier
-                            .fillMaxSize()
-                            .then(if (layout == HomeLayout.Wide) Modifier.widthIn(max = WideContentMax) else Modifier),
+                            .then(if (layout == HomeLayout.Wide) Modifier.widthIn(max = WideContentMax) else Modifier)
+                            .fillMaxSize(),
                         contentPadding = PaddingValues(start = sideOf(layout), end = sideOf(layout), bottom = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -250,7 +254,7 @@ private fun SectionFeed(
                                 SectionHeader(state.section, state.stats, calls.onToggleSectionFollow, Modifier.edgeToEdge(sideOf(layout)))
                             }
                         }
-                        sectionControls(state, calls, onOpenWaiting)
+                        sectionControls(state, calls, onOpenWaiting, sideOf(layout))
                         feedItems(state.feed, layout, alpha, cards, feed.onRetry, reasonFor = { null })
                     }
                 }
@@ -272,15 +276,7 @@ private fun SectionFeed(
 
 private fun sideOf(layout: HomeLayout) = if (layout == HomeLayout.Wide) 24.dp else 16.dp
 
-/** The header runs edge to edge while everything under it keeps the page's side margins. */
-private fun Modifier.edgeToEdge(side: androidx.compose.ui.unit.Dp): Modifier = layout { measurable, constraints ->
-    val extra = side.roundToPx()
-    val width = constraints.maxWidth + 2 * extra
-    val placeable = measurable.measure(constraints.copy(minWidth = width, maxWidth = width))
-    layout(constraints.maxWidth, placeable.height) { placeable.place(-extra, 0) }
-}
-
-private fun LazyGridScope.sectionControls(state: SectionUiState, calls: SectionCallbacks, onOpenWaiting: (Topic) -> Unit) {
+private fun LazyGridScope.sectionControls(state: SectionUiState, calls: SectionCallbacks, onOpenWaiting: (Topic) -> Unit, side: Dp) {
     item(key = "chips", span = { GridItemSpan(maxLineSpan) }) {
         Box {
             TopicChipsRow(
@@ -290,6 +286,7 @@ private fun LazyGridScope.sectionControls(state: SectionUiState, calls: SectionC
                 onSelect = calls.onSelectTopic,
                 onOpenWaiting = onOpenWaiting,
                 onSuggest = null,
+                side = side,
             )
         }
     }
@@ -326,7 +323,7 @@ private fun CollapsingBar(state: SectionUiState, grid: LazyGridState, onBack: ()
             .background(MaterialTheme.colorScheme.surface.copy(alpha = collapsed))
             .statusBarsPadding()
             .height(64.dp)
-            .padding(horizontal = 4.dp)
+            .padding(start = 4.dp, end = 12.dp)
             .testTag(SectionTestTags.BAR),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -355,7 +352,7 @@ private fun CompactSectionBar(state: SectionUiState, onBack: () -> Unit, onToggl
             Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .padding(horizontal = 4.dp)
+                .padding(start = 4.dp, end = 12.dp)
                 .testTag(SectionTestTags.BAR),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -374,7 +371,7 @@ private fun CompactSectionBar(state: SectionUiState, onBack: () -> Unit, onToggl
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-            } ?: androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+            } ?: Spacer(Modifier.weight(1f))
             FollowToggle(following = state.stats?.following == true, onClick = onToggleFollow, size = FollowSize.Compact)
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)

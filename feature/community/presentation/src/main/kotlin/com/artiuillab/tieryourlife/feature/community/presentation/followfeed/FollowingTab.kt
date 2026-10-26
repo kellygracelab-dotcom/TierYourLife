@@ -105,8 +105,8 @@ internal fun FollowingTab(
                 columns = GridCells.Fixed(layout.feedColumns),
                 state = gridState,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .then(if (layout == HomeLayout.Wide) Modifier.widthIn(max = WideContentMax) else Modifier),
+                    .then(if (layout == HomeLayout.Wide) Modifier.widthIn(max = WideContentMax) else Modifier)
+                    .fillMaxSize(),
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
