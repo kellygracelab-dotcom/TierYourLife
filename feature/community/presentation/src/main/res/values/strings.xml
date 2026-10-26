@@ -246,4 +246,9 @@
         <item quantity="other">%1$s lists</item>
     </plurals>
     <string name="community_save_short">Save</string>
+    <plurals name="moderation_open_count">
+        <item quantity="one">%1$d open</item>
+        <item quantity="other">%1$d open</item>
+    </plurals>
+    <string name="moderation_refresh">Refresh</string>
 </resources>

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +15,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.ui.ClearIcon
@@ -28,25 +26,25 @@ import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 @Composable
 internal fun HomeHeader(totalListCount: Int, rankedCount: Int) {
-    // The counters head the boards below them, so they keep the boards' measure.
-    CenteredContent(
-        ContentWidth.Reading,
-        Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
-    ) {
-        if (totalListCount > 0) {
-            Text(
-                text = stringResource(
-                    R.string.tier_lists_summary,
-                    pluralStringResource(ThemeR.plurals.tier_lists_count, totalListCount, totalListCount),
-                    pluralStringResource(ThemeR.plurals.tier_lists_rankings_count, rankedCount, rankedCount),
-                    stringResource(R.string.tier_lists_private),
-                ),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+    // The first line of the boards' own column, so it starts where they start.
+    if (totalListCount > 0) {
+        Text(
+            text = homeSummary(totalListCount, rankedCount),
+            modifier = Modifier.padding(top = 12.dp, bottom = 4.dp).testTag(TierListsTestTags.SUMMARY),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
+
+/** The counts the header says, also said in the bar where the window has no room for a line of their own. */
+@Composable
+internal fun homeSummary(totalListCount: Int, rankedCount: Int): String = stringResource(
+    R.string.tier_lists_summary,
+    pluralStringResource(ThemeR.plurals.tier_lists_count, totalListCount, totalListCount),
+    pluralStringResource(ThemeR.plurals.tier_lists_rankings_count, rankedCount, rankedCount),
+    stringResource(R.string.tier_lists_private),
+)
 
 @Composable
 internal fun SelectionTopBar(count: Int, onClose: () -> Unit, onDelete: () -> Unit) {
@@ -59,8 +57,7 @@ internal fun SelectionTopBar(count: Int, onClose: () -> Unit, onDelete: () -> Un
     ) {
         Row(
             modifier = Modifier
-                .atMost(ContentWidth.Reading)
-                .statusBarsPadding()
+                .atMost(ContentWidth.Board)
                 .height(56.dp)
                 .padding(horizontal = 4.dp)
                 .testTag(TierListsTestTags.SELECTION_BAR),

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
@@ -38,9 +37,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
@@ -112,56 +113,62 @@ fun AuthorScreenContent(
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         ActionFailedSnackbar(userMessages)
         Column(Modifier.fillMaxSize().testTag(AuthorTestTags.SCREEN)) {
-            AuthorTopBar(
-                onBack = onBack,
-                onMoreClick = if (state is AuthorUiState.Ready) {
-                    { authorActionsVisible = true }
-                } else {
-                    null
+            BarredScreen(
+                bar = {
+                    AuthorTopBar(
+                        onBack = onBack,
+                        onMoreClick = if (state is AuthorUiState.Ready) {
+                            { authorActionsVisible = true }
+                        } else {
+                            null
+                        },
+                    )
                 },
-            )
+            ) {
+                Column(Modifier.fillMaxSize()) {
+                    when (state) {
+                        AuthorUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
 
-            when (state) {
-                AuthorUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
+                        AuthorUiState.Failed -> Message(
+                            title = stringResource(R.string.author_failed),
+                            body = stringResource(R.string.home_community_failed_body),
+                            action = stringResource(ThemeR.string.action_try_again),
+                            onAction = onRetry,
+                        )
 
-                AuthorUiState.Failed -> Message(
-                    title = stringResource(R.string.author_failed),
-                    body = stringResource(R.string.home_community_failed_body),
-                    action = stringResource(ThemeR.string.action_try_again),
-                    onAction = onRetry,
-                )
-
-                AuthorUiState.Unavailable -> Message(
-                    title = stringResource(R.string.author_unavailable),
-                    body = stringResource(R.string.author_unavailable_body),
-                    action = null,
-                    onAction = {},
-                )
-
-                is AuthorUiState.Ready -> CenteredContent(ContentWidth.Board) {
-                    Header(state, onToggleFollow = onToggleFollow)
-                    if (state.lists.isEmpty()) {
-                        Message(
-                            title = stringResource(R.string.author_no_public_lists),
-                            // Answers the question a reader actually has: what
-                            // happens to the copy they already took.
-                            body = stringResource(R.string.author_no_public_lists_body),
+                        AuthorUiState.Unavailable -> Message(
+                            title = stringResource(R.string.author_unavailable),
+                            body = stringResource(R.string.author_unavailable_body),
                             action = null,
                             onAction = {},
                         )
-                    } else {
-                        CommunityFeedList(
-                            feed = CommunityFeed.Ready(state.lists),
-                            category = null,
-                            onSelectCategory = {},
-                            onOpen = { onOpenList(CommunityRoute.CommunityList.of(it)) },
-                            onRetry = onRetry,
-                            onLongPress = { summary -> actionsFor = summary },
-                            showCategories = false,
-                            showAuthor = false,
-                        )
+
+                        is AuthorUiState.Ready -> CenteredContent(ContentWidth.Board) {
+                            Header(state, onToggleFollow = onToggleFollow)
+                            if (state.lists.isEmpty()) {
+                                Message(
+                                    title = stringResource(R.string.author_no_public_lists),
+                                    // Answers the question a reader actually has: what
+                                    // happens to the copy they already took.
+                                    body = stringResource(R.string.author_no_public_lists_body),
+                                    action = null,
+                                    onAction = {},
+                                )
+                            } else {
+                                CommunityFeedList(
+                                    feed = CommunityFeed.Ready(state.lists),
+                                    category = null,
+                                    onSelectCategory = {},
+                                    onOpen = { onOpenList(CommunityRoute.CommunityList.of(it)) },
+                                    onRetry = onRetry,
+                                    onLongPress = { summary -> actionsFor = summary },
+                                    showCategories = false,
+                                    showAuthor = false,
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -235,8 +242,7 @@ private fun AuthorTopBar(onBack: () -> Unit, onMoreClick: (() -> Unit)?) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp),
+            .height(topBarHeight()),
         contentAlignment = Alignment.Center,
     ) {
         // The bar spans the window; back and overflow keep the body's measure,

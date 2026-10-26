@@ -10,7 +10,7 @@
         <item quantity="many">%1$d списків</item>
         <item quantity="other">%1$d списку</item>
     </plurals>
-    <string name="search_no_results_title">Немає списків за запитом «%1$s»</string>
+    <string name="search_no_results_title">Немає списків з назвою «%1$s»</string>
     <string name="search_no_results_body">Спробуйте коротше слово або перевірте орфографію.</string>
 
     <plurals name="selection_count">
@@ -210,4 +210,5 @@
     <string name="cover_picker_gallery_note">Зображення з галереї стає всією обкладинкою і їде разом зі списком, коли ви його публікуєте.</string>
     <string name="tier_detail_ranking_of">Ваше ранжування списку від %1$s</string>
     <string name="tier_detail_open_original">Відкрити</string>
+    <string name="search_names_only">лише назви</string>
 </resources>

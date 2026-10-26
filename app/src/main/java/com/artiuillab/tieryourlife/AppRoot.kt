@@ -17,6 +17,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.BoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.InMemoryBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
+import com.artiuillab.tieryourlife.core.theme.layout.LocalShortWindow
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.navigation.TierYourLifeContent
@@ -51,7 +52,11 @@ fun AppRoot(
                 height = maxHeight,
                 shareable = activity?.isInMultiWindowMode == true,
             )
-            CompositionLocalProvider(LocalWindowShape provides shape, LocalBoardLayoutMemory provides boardLayoutMemory) {
+            CompositionLocalProvider(
+                LocalWindowShape provides shape,
+                LocalShortWindow provides WindowShape.isShort(maxHeight),
+                LocalBoardLayoutMemory provides boardLayoutMemory,
+            ) {
                 TierYourLifeContent(
                     themeChoice = state.themeChoice,
                     onThemeChoiceChange = onThemeChoiceChange,

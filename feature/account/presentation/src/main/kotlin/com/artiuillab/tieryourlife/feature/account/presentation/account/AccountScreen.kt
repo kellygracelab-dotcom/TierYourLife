@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -38,8 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
@@ -128,55 +130,63 @@ internal fun AccountScreenContent(
                 .fillMaxSize()
                 .testTag(AccountTestTags.SCREEN),
         ) {
-            CloseBar(if (state.merge != null) onAbandonMerge else onClose)
-            Column(
-                Modifier
-                    .atMost(ContentWidth.Reading)
-                    .align(Alignment.CenterHorizontally)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 24.dp)
-                    .padding(top = 8.dp, bottom = 32.dp),
+            BarredScreen(
+                bar = {
+                    CloseBar(if (state.merge != null) onAbandonMerge else onClose)
+                },
             ) {
-                val merge = state.merge
-                when {
-                    // Before anything is written either way, so closing it
-                    // leaves the person exactly where they were.
-                    merge != null -> MergePicker(
-                        choice = merge,
-                        keep = state.mergeKeep,
-                        onKeepChange = onMergeKeepChange,
-                        onContinue = onApplyMerge,
-                    )
+                Column(Modifier.fillMaxSize()) {
+                    Column(
+                        Modifier
+                            .atMost(ContentWidth.Reading)
+                            .align(Alignment.CenterHorizontally)
+                            .verticalScroll(rememberScrollState())
+                            .navigationBarsPadding()
+                            .padding(horizontal = 24.dp)
+                            .padding(top = 8.dp, bottom = 32.dp),
+                    ) {
+                        val merge = state.merge
+                        when {
+                            // Before anything is written either way, so closing it
+                            // leaves the person exactly where they were.
+                            merge != null -> MergePicker(
+                                choice = merge,
+                                keep = state.mergeKeep,
+                                onKeepChange = onMergeKeepChange,
+                                onContinue = onApplyMerge,
+                            )
 
-                    else -> when (val account = state.account) {
-                    // Painting either panel before Firebase answers means
-                    // painting the wrong one and swapping it a frame later.
-                    Account.Unknown -> Unit
+                            else -> when (val account = state.account) {
+                            // Painting either panel before Firebase answers means
+                            // painting the wrong one and swapping it a frame later.
+                            Account.Unknown -> Unit
 
-                    Account.Guest -> SignInPitch(
-                        signingIn = state.signingIn,
-                        boardCount = state.boardCount,
-                        backUpBoards = state.backUpBoards,
-                        onBackUpBoardsChange = onBackUpBoardsChange,
-                        onSignIn = onSignIn,
-                        onNotNow = onClose,
-                    )
+                            Account.Guest -> SignInPitch(
+                                signingIn = state.signingIn,
+                                boardCount = state.boardCount,
+                                backUpBoards = state.backUpBoards,
+                                onBackUpBoardsChange = onBackUpBoardsChange,
+                                onSignIn = onSignIn,
+                                onNotNow = onClose,
+                            )
 
-                    is Account.SignedIn -> SignedInPanel(
-                        email = account.email,
-                        photoUrl = state.shownFace,
-                        displayName = account.displayName,
-                        publicListCount = state.publicListCount,
-                        credits = state.credits,
-                        onEditName = { nicknameDialogVisible = true },
-                        onEditFace = { faceSheetVisible = true },
-                        onOpenPublished = onOpenPublished,
-                        onDone = onClose,
-                        onSignOut = onSignOut,
-                        onDeleteAccount = onDeleteAccount,
-                        deleting = state.deleting,
-                        makingFace = state.makingFace,
-                    )
+                            is Account.SignedIn -> SignedInPanel(
+                                email = account.email,
+                                photoUrl = state.shownFace,
+                                displayName = account.displayName,
+                                publicListCount = state.publicListCount,
+                                credits = state.credits,
+                                onEditName = { nicknameDialogVisible = true },
+                                onEditFace = { faceSheetVisible = true },
+                                onOpenPublished = onOpenPublished,
+                                onDone = onClose,
+                                onSignOut = onSignOut,
+                                onDeleteAccount = onDeleteAccount,
+                                deleting = state.deleting,
+                                makingFace = state.makingFace,
+                            )
+                            }
+                        }
                     }
                 }
             }
@@ -232,8 +242,7 @@ private fun CloseBar(onClose: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp)
+            .height(topBarHeight())
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

@@ -123,7 +123,7 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
         )
 
         openListSettings()
-        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_STRIP).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_STRIP).performScrollTo().performClick()
 
         composeRule.runOnIdle {
             assertEquals(1, callCount)
@@ -194,9 +194,9 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
 
         openListSettings()
 
-        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_WRAP).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_STRIP).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_RANKED).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_WRAP).performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_STRIP).performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_RANKED).performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).performScrollTo().assertIsDisplayed()
     }
 
@@ -428,7 +428,7 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
         composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).assertIsDisplayed()
 
         openListSettings()
-        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_RANKED).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_RANKED).performScrollTo().performClick()
         composeRule.onNodeWithContentDescription(
             string(ThemeR.string.tier_detail_content_description_back),
         ).performClick()

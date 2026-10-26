@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronDownIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ClearIcon
@@ -64,12 +65,13 @@ internal fun BoardControlsRow(
     onClearPublished: () -> Unit,
     onToggleView: () -> Unit,
     modifier: Modifier = Modifier,
+    horizontalPadding: Dp = 16.dp,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(ROW_HEIGHT)
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = horizontalPadding)
             .testTag(TierListsTestTags.BOARD_CONTROLS),
         verticalAlignment = Alignment.CenterVertically,
     ) {

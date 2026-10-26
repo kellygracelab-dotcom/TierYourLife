@@ -27,12 +27,20 @@ here.
 
 The search field **replaces** the top bar; it does not appear under the title. The heading is
 redundant beside a field, and the summary describes the library rather than the results. The
-corner button hides — there is nothing to create from a search. The field is the same
-fully-rounded 56dp shape as the catalogue search sheet, so search looks like search everywhere.
+corner button hides — there is nothing to create from a search, and so do the sort and filter
+chips. The bar is back, then a 40dp fully-rounded field in the search-field shade (16/24 type,
+a 20dp clear in a 40dp box) standing on the boards' column; 56dp tall, 48dp in a short window
+(§2.3 of the landscape spec). In a short window the bar holds only while the keyboard is up;
+put the keyboard away and the results stay, the field stays in the bar, and the bar leaves
+with the results again. The results end above the keyboard. Back closes the search and the
+boards are where they were left.
 
 Matching is case-insensitive and anywhere in the name — "piz" finds "Pizza in Lisbon" — as you
-type, with no submit. It searches names only, not the cards inside. The count line above the
-results never changes shape between states, so the list does not jump while typing. No
+type, with no submit. It searches names only, not the cards inside, and the count line says
+so: "3 lists · names only". The count line never changes shape between states, so the list
+does not jump while typing. Rows become two lines (64dp, a 44dp picture, the name, how far
+along) in the same grid; boards shown as pictures stay pictures, since turning them into rows
+made the results read as somebody else's lists. Nothing found reads "No lists called …". No
 "create it" escape in the empty state: the corner button is one gesture away once search
 closes.
 

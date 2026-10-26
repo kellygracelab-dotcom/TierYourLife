@@ -246,4 +246,9 @@
         <item quantity="other">%1$s Listen</item>
     </plurals>
     <string name="community_save_short">Speichern</string>
+    <plurals name="moderation_open_count">
+        <item quantity="one">%1$d offen</item>
+        <item quantity="other">%1$d offen</item>
+    </plurals>
+    <string name="moderation_refresh">Aktualisieren</string>
 </resources>

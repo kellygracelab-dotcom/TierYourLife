@@ -19,6 +19,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
@@ -46,11 +47,13 @@ class TierDetailShapesScreenshotTest {
         shape: WindowShape,
         readOnly: Boolean = false,
         dark: Boolean = false,
+        allLists: List<TierList> = emptyList(),
     ) {
         composeRule.setContent {
             CompositionLocalProvider(LocalWindowShape provides shape) {
                 TierYourLifeTheme(darkTheme = dark) {
                     TierDetailScreenContent(
+                        allLists = allLists,
                         state = TierDetailUiState.Success(previewTierList),
                         readOnly = readOnly,
                         onReaderMoreClick = if (readOnly) ({}) else null,
@@ -85,6 +88,16 @@ class TierDetailShapesScreenshotTest {
     fun readersBoard_tabletLandscape() = capture("board_reader_tablet_landscape", WindowShape.of(1280.dp, 800.dp), readOnly = true)
 
     @Test
+    @Config(qualifiers = TABLET_LANDSCAPE)
+    fun ownBoard_tabletLandscape_besideYourLists() =
+        capture("board_tablet_landscape_index", WindowShape.of(1280.dp, 800.dp), allLists = yourLists)
+
+    @Test
+    @Config(qualifiers = TABLET_LANDSCAPE)
+    fun ownBoard_tabletLandscape_besideYourLists_dark() =
+        capture("board_tablet_landscape_index_dark", WindowShape.of(1280.dp, 800.dp), dark = true, allLists = yourLists)
+
+    @Test
     @Config(qualifiers = TABLET_PORTRAIT)
     fun ownBoard_tabletPortrait() = capture("board_tablet_portrait", WindowShape.of(800.dp, 1280.dp))
 
@@ -95,6 +108,13 @@ class TierDetailShapesScreenshotTest {
     @Test
     @Config(qualifiers = FLIP_COVER)
     fun readersBoard_flipCover() = capture("board_reader_flip_cover", WindowShape.of(360.dp, 380.dp), readOnly = true)
+
+    private val yourLists = listOf(
+        previewTierList,
+        previewTierList.copy(id = 2, title = "Board games"),
+        previewTierList.copy(id = 3, title = "Coffee in town"),
+        previewTierList.copy(id = 4, title = "Albums of 2025"),
+    )
 
     private companion object {
         const val PHONE_LANDSCAPE = "w914dp-h411dp-normal-long-notround-land-420dpi-keyshidden-nonav"

@@ -50,6 +50,15 @@ reject) and, for the owner alone, Moderators (appoint by account id, remove);
 an author's page offers the owner "make / remove moderator" once that list
 has answered.
 
+The queue's bar stands on its column: **Reports**, how many are open, the
+covers' eye (struck through while they show, since a tap puts them away)
+and an overflow that asks the server again. The chips are the first thing
+the queue scrolls, never a pinned row; in a short window one pane wide they
+ride in the slim bar instead, as Community's tabs do. Wide enough for two
+panes, the queue keeps its own bar beside the reported list's. Loading,
+failure and an empty queue sit under the chips, so switching back is never
+lost with them.
+
 **After review** (same PR): Follow exists only on an approved topic, since
 the server refuses the rest. A board whose new name the server took keeps the
 name beside the id while a moderator has yet to decide, so the settings row

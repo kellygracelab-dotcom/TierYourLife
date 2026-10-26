@@ -246,4 +246,9 @@
         <item quantity="other">%1$s liste</item>
     </plurals>
     <string name="community_save_short">Kaydet</string>
+    <plurals name="moderation_open_count">
+        <item quantity="one">%1$d açık</item>
+        <item quantity="other">%1$d açık</item>
+    </plurals>
+    <string name="moderation_refresh">Yenile</string>
 </resources>

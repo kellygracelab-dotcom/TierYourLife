@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -48,8 +46,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
+import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
+import com.artiuillab.tieryourlife.core.theme.layout.topBarTitleStyle
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSection
@@ -115,26 +117,33 @@ fun FollowingScreenContent(
                     .fillMaxSize()
                     .testTag(FollowingTestTags.SCREEN),
             ) {
-                TopBar(onBack = onBack)
-                when (state) {
-                    FollowingUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
+                BarredScreen(
+                    bar = {
+                        TopBar(onBack = onBack)
+                    },
+                ) {
+                    Column(Modifier.fillMaxSize()) {
+                        when (state) {
+                            FollowingUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
+                            }
 
-                    FollowingUiState.Failed -> Message(
-                        text = stringResource(R.string.home_community_failed),
-                        action = stringResource(ThemeR.string.action_try_again),
-                        onAction = onRetry,
-                        testTag = FollowingTestTags.FAILED,
-                    )
+                            FollowingUiState.Failed -> Message(
+                                text = stringResource(R.string.home_community_failed),
+                                action = stringResource(ThemeR.string.action_try_again),
+                                onAction = onRetry,
+                                testTag = FollowingTestTags.FAILED,
+                            )
 
-                    is FollowingUiState.Ready -> if (state.isEmpty) {
-                        Message(text = stringResource(R.string.community_following_nobody), testTag = FollowingTestTags.EMPTY)
-                    } else {
-                        LazyColumn(contentPadding = PaddingValues(bottom = 16.dp)) {
-                            sectionsBlock(state, onToggle, onOpenSection)
-                            topicsBlock(state, onToggle, onOpenTopic)
-                            peopleBlock(state, onToggle, onOpenAuthor)
+                            is FollowingUiState.Ready -> if (state.isEmpty) {
+                                Message(text = stringResource(R.string.community_following_nobody), testTag = FollowingTestTags.EMPTY)
+                            } else {
+                                LazyColumn(contentPadding = systemBarsContentPadding(bottom = 16.dp)) {
+                                    sectionsBlock(state, onToggle, onOpenSection)
+                                    topicsBlock(state, onToggle, onOpenTopic)
+                                    peopleBlock(state, onToggle, onOpenAuthor)
+                                }
+                            }
                         }
                     }
                 }
@@ -308,8 +317,7 @@ private fun TopBar(onBack: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .height(60.dp)
+            .height(topBarHeight())
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -323,7 +331,7 @@ private fun TopBar(onBack: () -> Unit) {
         Text(
             text = stringResource(R.string.action_following),
             modifier = Modifier.padding(horizontal = 4.dp),
-            style = MaterialTheme.typography.titleLarge,
+            style = topBarTitleStyle(),
             color = MaterialTheme.colorScheme.onSurface,
         )
     }

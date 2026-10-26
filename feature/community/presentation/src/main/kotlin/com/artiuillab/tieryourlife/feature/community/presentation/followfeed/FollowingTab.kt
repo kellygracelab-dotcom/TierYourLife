@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.core.theme.ui.TuneIcon
@@ -107,7 +108,7 @@ internal fun FollowingTab(
                 modifier = Modifier
                     .then(if (layout == HomeLayout.Wide) Modifier.widthIn(max = WideContentMax) else Modifier)
                     .fillMaxSize(),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {

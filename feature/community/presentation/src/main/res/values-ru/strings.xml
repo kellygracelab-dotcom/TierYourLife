@@ -270,4 +270,11 @@
         <item quantity="other">%1$s списка</item>
     </plurals>
     <string name="community_save_short">Сохранить</string>
+    <plurals name="moderation_open_count">
+        <item quantity="one">%1$d открытая</item>
+        <item quantity="few">%1$d открытые</item>
+        <item quantity="many">%1$d открытых</item>
+        <item quantity="other">%1$d открытых</item>
+    </plurals>
+    <string name="moderation_refresh">Обновить</string>
 </resources>

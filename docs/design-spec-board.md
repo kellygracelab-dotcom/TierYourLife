@@ -163,6 +163,20 @@ Undo as before. A card let go over nothing springs back in 160ms. Autoscroll
 zones are 48dp with speed rising toward the edge. A haptic tick marks the lift
 and each change of row.
 
+### Settings of a list
+
+**New tier** is the first row, under the bar, so it is there the moment the
+page opens; the column ends clear of the navigation bar (and of the sides when
+sideways), so the last row never sits under it.
+
+### System bars
+
+The status bar's strip stays with the screen while the compact bar leaves;
+the last tier clears the navigation bar whenever nothing lies under the rows
+(pool beside them, a reader's board, the cover), and the pool clears it when
+it lies under them. Rule and screenshots: `architecture-presentation.md`,
+*Bars and system insets*.
+
 ## 8. Left open
 
 - **A cap on row height.** None today. The design said outright "say the word if you want a

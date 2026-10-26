@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
 import com.artiuillab.tieryourlife.feature.community.presentation.R
@@ -147,7 +148,7 @@ internal fun ExploreTab(
                     .then(if (layout == HomeLayout.Wide) Modifier.widthIn(max = WideContentMax) else Modifier)
                     .fillMaxSize()
                     .testTag(ExploreTestTags.SCREEN),
-                contentPadding = PaddingValues(start = gridSide(layout), end = gridSide(layout), bottom = 16.dp),
+                contentPadding = systemBarsContentPadding(start = gridSide(layout), end = gridSide(layout), bottom = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(feedSpacing(layout)),
                 verticalArrangement = Arrangement.spacedBy(feedSpacing(layout)),
             ) {

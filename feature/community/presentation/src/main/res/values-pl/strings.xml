@@ -270,4 +270,11 @@
         <item quantity="other">%1$s listy</item>
     </plurals>
     <string name="community_save_short">Zapisz</string>
+    <plurals name="moderation_open_count">
+        <item quantity="one">%1$d otwarte</item>
+        <item quantity="few">%1$d otwarte</item>
+        <item quantity="many">%1$d otwartych</item>
+        <item quantity="other">%1$d otwartego</item>
+    </plurals>
+    <string name="moderation_refresh">Odśwież</string>
 </resources>

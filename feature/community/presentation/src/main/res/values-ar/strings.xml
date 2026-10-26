@@ -294,4 +294,13 @@
         <item quantity="other">%1$s قائمة</item>
     </plurals>
     <string name="community_save_short">حفظ</string>
+    <plurals name="moderation_open_count">
+        <item quantity="zero">%1$d مفتوحة</item>
+        <item quantity="one">%1$d مفتوحة</item>
+        <item quantity="two">%1$d مفتوحتان</item>
+        <item quantity="few">%1$d مفتوحة</item>
+        <item quantity="many">%1$d مفتوحة</item>
+        <item quantity="other">%1$d مفتوحة</item>
+    </plurals>
+    <string name="moderation_refresh">تحديث</string>
 </resources>
