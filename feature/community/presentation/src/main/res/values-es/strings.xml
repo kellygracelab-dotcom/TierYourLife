@@ -58,8 +58,8 @@
     <string name="community_save_mine_empty">Sin ordenar, lo haré yo</string>
     <string name="community_saved_to_your_lists">Guardado en tus listas.</string>
     <string name="community_action_open">Abrir</string>
-    <string name="community_showing_mine">El mío</string>
-    <string name="community_showing_theirs">Su orden</string>
+    <string name="community_showing_mine">Mío</string>
+    <string name="community_showing_theirs">Suyo</string>
     <string name="community_someone_elses">Lista de otra persona. Ordénala como quieras.</string>
     <string name="community_tile_hidden">Oculto para ti</string>
     <string name="community_tile_reported">Denunciado. Una persona lo revisará.</string>

@@ -89,7 +89,7 @@ tier colour with grey cards spread by the count. The board replaces it with a
 
 Transitions are one set of rules in the host: the next screen slides in
 whole over the one beneath, which stays as it is (260 ms); back slides it out
-the same way (220 ms); top-level siblings only fade. Nothing else fades, since
+the same way, slower and eased at both ends (340 ms; 220 ms read as yanked); top-level siblings only fade. Nothing else fades, since
 two translucent screens over a dark window read as a flash. The skeleton's
 rows use the board's own tile size and leave room for the folded pool strip,
 so nothing moves when the board lands. "Save to my lists" stays
