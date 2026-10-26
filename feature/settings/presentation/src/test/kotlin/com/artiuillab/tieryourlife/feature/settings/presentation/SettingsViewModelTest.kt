@@ -99,6 +99,16 @@ class SettingsViewModelTest {
         assertNotNull(viewModel.state.firstWithin { it.backupSettings != null }.backupSettings)
     }
 
+    // The first frame is the whole screen: the account and the backup row are
+    // known before anything has been loaded, and only corrected afterwards.
+    @Test
+    fun opensWithTheAccountAndTheBackupRowAlreadyKnown() {
+        val viewModel = viewModel(account = FakeAccountRepository(initial = FakeAccountRepository.signedIn))
+
+        assertEquals(FakeAccountRepository.signedIn, viewModel.state.value.account)
+        assertNotNull(viewModel.state.value.backupSettings)
+    }
+
     @Test
     fun aGuest_hasNoBackupSectionAtAll() = runBlocking {
         val viewModel = viewModel(account = FakeAccountRepository())
@@ -140,7 +150,9 @@ private object NoCredits : GenerationCredits {
 }
 
 private class FakeBackup(private val deletes: Boolean = true) : BoardBackup {
-    override suspend fun settings() = BackupSettings(
+    override suspend fun settings() = settingsNow()
+
+    override fun settingsNow() = BackupSettings(
         on = true,
         picturesOnWifiOnly = true,
         storedBytes = 0,

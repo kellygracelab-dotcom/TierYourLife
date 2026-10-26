@@ -27,6 +27,9 @@ interface BoardBackup {
 
     suspend fun settings(): BackupSettings
 
+    /** The same, from what this phone already knows, for a screen's first frame; [settings] measures afresh. */
+    fun settingsNow(): BackupSettings
+
     fun setPicturesOnWifiOnly(wifiOnly: Boolean)
 
     /** Nothing else has to happen: the next run sends what the account is missing. */

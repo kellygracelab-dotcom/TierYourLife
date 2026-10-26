@@ -19,6 +19,8 @@ open class FakeAccountRepository(
 
     override val account: Flow<Account> = accounts
 
+    override fun current(): Account = accounts.value
+
     override suspend fun signInWithGoogle(idToken: String): SignInOutcome {
         tokens += idToken
         if (outcome is SignInOutcome.Success) {
