@@ -177,4 +177,72 @@
         <item quantity="one">%d sıralama</item>
         <item quantity="other">%d sıralama</item>
     </plurals>
+    <string name="explore_tab_explore">Keşfet</string>
+    <string name="explore_tab_following">Takip</string>
+    <string name="explore_title_community">Topluluk</string>
+    <string name="explore_popular_this_week">Bu haftanın popülerleri</string>
+    <string name="explore_follow_section">%1$s bölümünü takip et</string>
+    <string name="explore_unfollow_section">%1$s takibini bırak</string>
+    <string name="explore_open_section">%1$s bölümünü aç</string>
+    <string name="explore_now_following">%1$s takip ediliyor</string>
+    <string name="explore_unfollowed">%1$s takibi bırakıldı</string>
+    <string name="explore_undo">Geri al</string>
+    <string name="explore_follow_failed">Takip edilemedi. Tekrar deneyin.</string>
+    <string name="explore_new_lists">Yeni listeler</string>
+    <string name="explore_offline">Çevrimdışı · %1$s tarihli listeler</string>
+    <string name="explore_retry">Tekrar dene</string>
+    <string name="explore_refresh_failed">Yenilenemedi. %1$s tarihli listeler gösteriliyor.</string>
+    <string name="explore_failed_title">Topluluk listeleri yüklenemedi</string>
+    <string name="explore_failed_body">Bağlantınızı kontrol edin. Kendi listeleriniz bu cihazda.</string>
+    <string name="explore_try_again">Tekrar dene</string>
+    <string name="explore_follow">Takip et</string>
+    <string name="explore_following">Takip ediliyor</string>
+    <string name="explore_tile_description">%1$s, %2$s</string>
+    <string name="explore_search_nothing">Eşleşen bir şey yok.</string>
+    <string name="section_all">Tümü</string>
+    <string name="section_suggest_topic">Konu öner</string>
+    <string name="section_sort_popular">Popüler</string>
+    <string name="section_sort_newest">En yeni</string>
+    <string name="section_share">Bölümü paylaş</string>
+    <string name="section_topic_waiting_chip">%1$s · bekliyor</string>
+    <string name="section_waiting_status">Moderatör bekleniyor</string>
+    <string name="section_waiting_body">Bir moderatör inceleyecek. Onaylanınca listeleriniz burada görünür; o zamana kadar %1$s bölümündeler.</string>
+    <string name="section_waiting_only_you">O zamana kadar bu konuyu yalnızca siz görürsünüz.</string>
+    <string name="section_ok">Tamam</string>
+    <string name="section_counts">%1$s · %2$s</string>
+    <string name="section_share_text">TierYourLife’ta %1$s</string>
+    <string name="following_strip_manage">Yönet</string>
+    <string name="following_reason_section">%1$s bölümünde</string>
+    <string name="following_empty_title">Henüz hiçbir şeyi takip etmiyorsunuz</string>
+    <string name="following_empty_body">Bir bölümü, konuyu ya da kişiyi takip edin; yeni listeleri önce buraya gelsin.</string>
+    <string name="following_empty_helper">Bir bölümü takip etmek için + simgesine dokunun. Konular bölümlerin içinde, kişiler profillerinde.</string>
+    <string name="following_nothing_published">Takip ettikleriniz henüz bir şey yayımlamadı.</string>
+    <string name="following_go_explore">Keşfet’e git</string>
+    <string name="manage_sections">Bölümler · %1$d</string>
+    <string name="manage_topics">Konular · %1$d</string>
+    <string name="manage_people">Kişiler · %1$d</string>
+    <string name="manage_topic_supporting">%1$s bölümünde · %2$s</string>
+    <string name="manage_waiting_supporting">%1$s bölümünde · moderatör bekliyor</string>
+    <string name="cover_open_main">Ana ekranda aç</string>
+    <string name="cover_open_phone">Devam etmek için telefonu açın</string>
+    <plurals name="explore_new_this_week">
+        <item quantity="one">bu hafta %1$s yeni</item>
+        <item quantity="other">bu hafta %1$s yeni</item>
+    </plurals>
+    <plurals name="explore_cards">
+        <item quantity="one">%1$s kart</item>
+        <item quantity="other">%1$s kart</item>
+    </plurals>
+    <plurals name="explore_rankings">
+        <item quantity="one">%1$s sıralama</item>
+        <item quantity="other">%1$s sıralama</item>
+    </plurals>
+    <plurals name="explore_followers">
+        <item quantity="one">%1$s takipçi</item>
+        <item quantity="other">%1$s takipçi</item>
+    </plurals>
+    <plurals name="explore_lists">
+        <item quantity="one">%1$s liste</item>
+        <item quantity="other">%1$s liste</item>
+    </plurals>
 </resources>

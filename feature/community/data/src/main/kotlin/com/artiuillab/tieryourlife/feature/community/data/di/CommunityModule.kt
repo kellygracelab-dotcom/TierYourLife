@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.community.data.cache.RoomCommunityFee
 import com.artiuillab.tieryourlife.feature.community.data.cache.SystemCommunityNetwork
 import com.artiuillab.tieryourlife.feature.community.data.remote.api.CommunityApi
 import com.artiuillab.tieryourlife.feature.community.data.repository.RetrofitCommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityNetwork
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
@@ -55,5 +56,8 @@ abstract class CommunityModule {
 
         @Provides
         fun provideFeedCacheDao(database: FeedCacheDatabase): FeedCacheDao = database.feedCache()
+
+        @Provides
+        fun provideCommunityClock(): CommunityClock = CommunityClock { System.currentTimeMillis() }
     }
 }

@@ -14,6 +14,11 @@ interface CommunityFeedCache {
     suspend fun write(key: String, page: CommunityPage, fetchedAtMillis: Long)
 }
 
+/** The time, asked for rather than read, so a test can say when it is. */
+fun interface CommunityClock {
+    fun nowMillis(): Long
+}
+
 /** When the phone gets a usable network back: what lets a failed feed try again without a button. */
 interface CommunityNetwork {
     val available: Flow<Unit>

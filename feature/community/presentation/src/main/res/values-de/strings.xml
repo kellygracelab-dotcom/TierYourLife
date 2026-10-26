@@ -177,4 +177,72 @@
         <item quantity="one">%d Reihung</item>
         <item quantity="other">%d Reihungen</item>
     </plurals>
+    <string name="explore_tab_explore">Entdecken</string>
+    <string name="explore_tab_following">Gefolgt</string>
+    <string name="explore_title_community">Community</string>
+    <string name="explore_popular_this_week">Beliebt diese Woche</string>
+    <string name="explore_follow_section">%1$s folgen</string>
+    <string name="explore_unfollow_section">%1$s entfolgen</string>
+    <string name="explore_open_section">%1$s öffnen</string>
+    <string name="explore_now_following">Du folgst %1$s</string>
+    <string name="explore_unfollowed">Du folgst %1$s nicht mehr</string>
+    <string name="explore_undo">Rückgängig</string>
+    <string name="explore_follow_failed">Folgen fehlgeschlagen. Versuch es noch einmal.</string>
+    <string name="explore_new_lists">Neue Listen</string>
+    <string name="explore_offline">Offline · Listen von %1$s</string>
+    <string name="explore_retry">Erneut</string>
+    <string name="explore_refresh_failed">Aktualisieren fehlgeschlagen. Listen von %1$s.</string>
+    <string name="explore_failed_title">Community-Listen konnten nicht geladen werden</string>
+    <string name="explore_failed_body">Prüfe deine Verbindung. Deine eigenen Listen sind auf diesem Gerät.</string>
+    <string name="explore_try_again">Erneut versuchen</string>
+    <string name="explore_follow">Folgen</string>
+    <string name="explore_following">Gefolgt</string>
+    <string name="explore_tile_description">%1$s, %2$s</string>
+    <string name="explore_search_nothing">Nichts gefunden.</string>
+    <string name="section_all">Alle</string>
+    <string name="section_suggest_topic">Thema vorschlagen</string>
+    <string name="section_sort_popular">Beliebt</string>
+    <string name="section_sort_newest">Neueste</string>
+    <string name="section_share">Bereich teilen</string>
+    <string name="section_topic_waiting_chip">%1$s · wartet</string>
+    <string name="section_waiting_status">Wartet auf Moderation</string>
+    <string name="section_waiting_body">Ein Moderator sieht es sich an. Deine Listen erscheinen hier nach der Freigabe; bis dahin stehen sie in %1$s.</string>
+    <string name="section_waiting_only_you">Bis dahin siehst nur du dieses Thema.</string>
+    <string name="section_ok">OK</string>
+    <string name="section_counts">%1$s · %2$s</string>
+    <string name="section_share_text">%1$s auf TierYourLife</string>
+    <string name="following_strip_manage">Verwalten</string>
+    <string name="following_reason_section">In %1$s</string>
+    <string name="following_empty_title">Du folgst noch nichts</string>
+    <string name="following_empty_body">Folge einem Bereich, einem Thema oder einer Person, und ihre neuen Listen kommen zuerst hier an.</string>
+    <string name="following_empty_helper">Tippe auf +, um einem Bereich zu folgen. Themen stehen in den Bereichen, Personen in ihrem Profil.</string>
+    <string name="following_nothing_published">Wem du folgst, hat noch nichts veröffentlicht.</string>
+    <string name="following_go_explore">Zu Entdecken</string>
+    <string name="manage_sections">Bereiche · %1$d</string>
+    <string name="manage_topics">Themen · %1$d</string>
+    <string name="manage_people">Personen · %1$d</string>
+    <string name="manage_topic_supporting">In %1$s · %2$s</string>
+    <string name="manage_waiting_supporting">In %1$s · wartet auf Moderation</string>
+    <string name="cover_open_main">Auf dem Hauptbildschirm öffnen</string>
+    <string name="cover_open_phone">Klapp das Telefon auf, um weiterzumachen</string>
+    <plurals name="explore_new_this_week">
+        <item quantity="one">%1$s neu diese Woche</item>
+        <item quantity="other">%1$s neu diese Woche</item>
+    </plurals>
+    <plurals name="explore_cards">
+        <item quantity="one">%1$s Karte</item>
+        <item quantity="other">%1$s Karten</item>
+    </plurals>
+    <plurals name="explore_rankings">
+        <item quantity="one">%1$s Reihung</item>
+        <item quantity="other">%1$s Reihungen</item>
+    </plurals>
+    <plurals name="explore_followers">
+        <item quantity="one">%1$s Follower</item>
+        <item quantity="other">%1$s Follower</item>
+    </plurals>
+    <plurals name="explore_lists">
+        <item quantity="one">%1$s Liste</item>
+        <item quantity="other">%1$s Listen</item>
+    </plurals>
 </resources>

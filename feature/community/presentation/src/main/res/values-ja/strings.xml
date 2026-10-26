@@ -170,4 +170,67 @@
     <plurals name="community_rankings_count">
         <item quantity="other">ランキング%d件</item>
     </plurals>
+    <string name="explore_tab_explore">見つける</string>
+    <string name="explore_tab_following">フォロー中</string>
+    <string name="explore_title_community">コミュニティ</string>
+    <string name="explore_popular_this_week">今週の人気</string>
+    <string name="explore_follow_section">%1$sをフォロー</string>
+    <string name="explore_unfollow_section">%1$sのフォローを解除</string>
+    <string name="explore_open_section">%1$sを開く</string>
+    <string name="explore_now_following">%1$sをフォローしました</string>
+    <string name="explore_unfollowed">%1$sのフォローを解除しました</string>
+    <string name="explore_undo">元に戻す</string>
+    <string name="explore_follow_failed">フォローできませんでした。もう一度お試しください。</string>
+    <string name="explore_new_lists">新しいリスト</string>
+    <string name="explore_offline">オフライン · %1$sのリストを表示中</string>
+    <string name="explore_retry">再試行</string>
+    <string name="explore_refresh_failed">更新できませんでした。%1$sのリストを表示中です。</string>
+    <string name="explore_failed_title">コミュニティのリストを読み込めませんでした</string>
+    <string name="explore_failed_body">接続を確認してください。自分のリストはこの端末にあります。</string>
+    <string name="explore_try_again">もう一度試す</string>
+    <string name="explore_follow">フォロー</string>
+    <string name="explore_following">フォロー中</string>
+    <string name="explore_tile_description">%1$s、%2$s</string>
+    <string name="explore_search_nothing">一致するものがありません。</string>
+    <string name="section_all">すべて</string>
+    <string name="section_suggest_topic">トピックを提案</string>
+    <string name="section_sort_popular">人気</string>
+    <string name="section_sort_newest">新着</string>
+    <string name="section_share">セクションを共有</string>
+    <string name="section_topic_waiting_chip">%1$s · 審査待ち</string>
+    <string name="section_waiting_status">モデレーターの確認待ち</string>
+    <string name="section_waiting_body">モデレーターが確認します。承認されるとリストがここに表示されます。それまでは%1$sにあります。</string>
+    <string name="section_waiting_only_you">それまでこのトピックはあなたにしか見えません。</string>
+    <string name="section_ok">OK</string>
+    <string name="section_counts">%1$s · %2$s</string>
+    <string name="section_share_text">TierYourLifeの%1$s</string>
+    <string name="following_strip_manage">管理</string>
+    <string name="following_reason_section">%1$s内</string>
+    <string name="following_empty_title">まだ何もフォローしていません</string>
+    <string name="following_empty_body">セクション、トピック、人をフォローすると、新しいリストが真っ先にここに届きます。</string>
+    <string name="following_empty_helper">+をタップしてセクションをフォロー。トピックは各セクションの中に、人はプロフィールにあります。</string>
+    <string name="following_nothing_published">フォロー中の人はまだ何も公開していません。</string>
+    <string name="following_go_explore">見つけるへ</string>
+    <string name="manage_sections">セクション · %1$d</string>
+    <string name="manage_topics">トピック · %1$d</string>
+    <string name="manage_people">人 · %1$d</string>
+    <string name="manage_topic_supporting">%1$s内 · %2$s</string>
+    <string name="manage_waiting_supporting">%1$s内 · モデレーターの確認待ち</string>
+    <string name="cover_open_main">メイン画面で開く</string>
+    <string name="cover_open_phone">続けるには端末を開いてください</string>
+    <plurals name="explore_new_this_week">
+        <item quantity="other">今週の新着%1$s件</item>
+    </plurals>
+    <plurals name="explore_cards">
+        <item quantity="other">%1$s枚のカード</item>
+    </plurals>
+    <plurals name="explore_rankings">
+        <item quantity="other">ランキング%1$s件</item>
+    </plurals>
+    <plurals name="explore_followers">
+        <item quantity="other">フォロワー%1$s人</item>
+    </plurals>
+    <plurals name="explore_lists">
+        <item quantity="other">%1$s件のリスト</item>
+    </plurals>
 </resources>
