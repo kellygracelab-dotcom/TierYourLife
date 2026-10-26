@@ -233,4 +233,5 @@
     <plurals name="explore_lists">
         <item quantity="other">%1$s件のリスト</item>
     </plurals>
+    <string name="community_save_short">保存</string>
 </resources>

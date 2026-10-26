@@ -245,4 +245,5 @@
         <item quantity="one">%1$s liste</item>
         <item quantity="other">%1$s liste</item>
     </plurals>
+    <string name="community_save_short">Kaydet</string>
 </resources>

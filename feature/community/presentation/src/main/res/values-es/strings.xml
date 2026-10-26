@@ -257,4 +257,5 @@
         <item quantity="many">%1$s listas</item>
         <item quantity="other">%1$s listas</item>
     </plurals>
+    <string name="community_save_short">Guardar</string>
 </resources>

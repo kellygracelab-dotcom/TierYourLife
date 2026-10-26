@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -199,6 +200,30 @@ fun CommunityListScreenContent(
                                     // Two arrangements to choose from only once the author's is known.
                                     onSaveClick = { if (loaded.knowsTheirs) saveChoiceVisible = true else onSave(Showing.Mine) },
                                     onOpenSaved = onOpenSaved,
+                                )
+                            },
+                            // The strip's sentence, under the side pool's title.
+                            poolNote = { ReaderStatusLine(loaded) },
+                            // The same, in the bar, when the pool sits beside the rows.
+                            barExtras = { mode ->
+                                ReaderBarControls(
+                                    state = loaded,
+                                    mode = mode,
+                                    onShow = onShow,
+                                    onSaveClick = { if (loaded.knowsTheirs) saveChoiceVisible = true else onSave(Showing.Mine) },
+                                    onOpenSaved = onOpenSaved,
+                                    onOpenAuthor = { onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl) },
+                                    onOpenRankings = {
+                                        onOpenRankings()
+                                        rankingsVisible = true
+                                    },
+                                )
+                            },
+                            // On a tablet held upright the bar grows and says who and where under the title.
+                            titleSubline = {
+                                AuthorAndSection(
+                                    state = loaded,
+                                    onOpenAuthor = { onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl) },
                                 )
                             },
                         )
@@ -374,15 +399,7 @@ private fun ReaderStrip(
             }
         }
         Text(
-            text = stringResource(
-                when {
-                    state.savedId != null -> R.string.community_saved_to_your_lists
-                    state.arranged -> R.string.community_not_saved_yet
-                    // "Someone else's" would name an owner a list without an author does not have.
-                    state.editorial -> R.string.community_rank_it_your_way
-                    else -> R.string.community_someone_elses
-                },
-            ),
+            text = stringResource(state.statusRes),
             modifier = Modifier
                 .padding(top = 4.dp)
                 .testTag(CommunityListTestTags.STATUS),
@@ -426,8 +443,8 @@ private fun SaveChoiceDialog(arranged: Boolean, chosenName: String?, onDismiss: 
 
 /** Two boards, not one: a reader who glances at the author's finds their own work where they left it. */
 @Composable
-private fun WhoseArrangement(showing: Showing, theirsLabel: String, onShow: (Showing) -> Unit) {
-    SingleChoiceSegmentedButtonRow(modifier = Modifier.height(SWITCH_HEIGHT)) {
+internal fun WhoseArrangement(showing: Showing, theirsLabel: String, onShow: (Showing) -> Unit, height: Dp = SWITCH_HEIGHT) {
+    SingleChoiceSegmentedButtonRow(modifier = Modifier.height(height)) {
         Showing.entries.forEachIndexed { index, which ->
             SegmentedButton(
                 selected = showing == which,
@@ -498,5 +515,28 @@ private fun CommunityListArrangedDarkPreview() = TierYourLifeTheme(true) {
         onMoveItem = { _, _, _ -> },
         onSave = {},
         onRetry = {},
+    )
+}
+
+/** What the reader's copy is, in the words of the strip's sentence. */
+private val CommunityListUiState.Success.statusRes: Int
+    get() = when {
+        savedId != null -> R.string.community_saved_to_your_lists
+        arranged -> R.string.community_not_saved_yet
+        // "Someone else's" would name an owner a list without an author does not have.
+        editorial -> R.string.community_rank_it_your_way
+        else -> R.string.community_someone_elses
+    }
+
+/** The same sentence, small, under the side pool's title. */
+@Composable
+private fun ReaderStatusLine(state: CommunityListUiState.Success) {
+    Text(
+        text = stringResource(state.statusRes),
+        modifier = Modifier.testTag(CommunityListTestTags.STATUS),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        maxLines = 3,
+        overflow = TextOverflow.Ellipsis,
     )
 }

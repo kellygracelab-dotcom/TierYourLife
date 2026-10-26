@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 /** Whose arrangement is on screen. */
@@ -39,6 +40,8 @@ sealed interface CommunityListUiState {
         val rankingCount: Int = 0,
         /** The list this one was changed from, when the author took it from somebody. */
         val basedOn: BasedOn? = null,
+        /** The section it is filed under, said beside the author where the bar has room. */
+        val section: ListCategory? = null,
         /** Readers' placings, once asked for; this reader's own first. */
         val rankings: List<Ranking> = emptyList(),
         val rankingsLoading: Boolean = false,

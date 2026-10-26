@@ -110,6 +110,7 @@ class CommunityListViewModel @Inject constructor(
                         editorial = answer.summary.editorial,
                         rankingCount = answer.summary.rankingCount,
                         basedOn = answer.summary.basedOn,
+                        section = answer.summary.category,
                     )
                 },
                 onFailure = { CommunityListUiState.Error },

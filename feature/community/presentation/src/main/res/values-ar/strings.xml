@@ -293,4 +293,5 @@
         <item quantity="many">%1$s قائمة</item>
         <item quantity="other">%1$s قائمة</item>
     </plurals>
+    <string name="community_save_short">حفظ</string>
 </resources>

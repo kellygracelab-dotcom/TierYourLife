@@ -257,4 +257,5 @@
         <item quantity="many">%1$s listes</item>
         <item quantity="other">%1$s listes</item>
     </plurals>
+    <string name="community_save_short">Enregistrer</string>
 </resources>
