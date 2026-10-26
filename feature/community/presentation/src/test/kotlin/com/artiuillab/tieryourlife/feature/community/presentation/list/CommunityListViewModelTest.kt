@@ -16,6 +16,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -225,6 +226,8 @@ class CommunityListViewModelTest {
         assertEquals(null, gone.chosenRanking)
         assertEquals(gone.list, gone.theirs)
 
+        // Only now does the server refuse: the optimistic state above must not depend on who is faster.
+        community.refusal.complete(Unit)
         viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.rankingCount == 1 }
         assertEquals(listOf("abc"), community.withdrawn)
     }
@@ -249,6 +252,9 @@ private class TestCommunity(
 ) : FakeCommunityRepository() {
     val withdrawn = mutableListOf<String>()
 
+    /** Held until the test lets the refusal through. */
+    val refusal = CompletableDeferred<Unit>()
+
     override suspend fun open(id: String): Result<PublishedList> =
         Result.success(published.copy(summary = published.summary.copy(rankingCount = rankings.size)))
 
@@ -259,7 +265,9 @@ private class TestCommunity(
 
     override suspend fun withdrawRanking(listId: String): Result<Unit> {
         withdrawn += listId
-        return if (refusesWithdrawal) Result.failure(IllegalStateException("offline")) else Result.success(Unit)
+        if (!refusesWithdrawal) return Result.success(Unit)
+        refusal.await()
+        return Result.failure(IllegalStateException("offline"))
     }
 }
 
