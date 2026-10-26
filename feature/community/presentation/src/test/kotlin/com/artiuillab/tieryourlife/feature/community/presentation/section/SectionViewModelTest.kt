@@ -43,6 +43,9 @@ class SectionViewModelTest {
         val asked = mutableListOf<Triple<ListCategory?, String?, FeedSort>>()
         val newestAsked = CompletableDeferred<Unit>()
 
+        /** Held until the test has read the optimistic state; the refusal comes after. */
+        val refusal = CompletableDeferred<Unit>()
+
         override suspend fun sections(): Result<List<SectionStats>> =
             Result.success(ListCategory.entries.map { SectionStats(it, listCount = 812, followerCount = 3410) })
 
@@ -62,8 +65,11 @@ class SectionViewModelTest {
             return Result.success(CommunityPage(listOf(summary(topic ?: "all", ListCategory.Games))))
         }
 
-        override suspend fun followSection(section: ListCategory): Result<Unit> =
-            if (followFails) Result.failure(IOException("offline")) else Result.success(Unit)
+        override suspend fun followSection(section: ListCategory): Result<Unit> {
+            if (!followFails) return Result.success(Unit)
+            refusal.await()
+            return Result.failure(IOException("offline"))
+        }
 
         override suspend fun followTopic(id: String): Result<Unit> =
             if (followFails) Result.failure(IOException("offline")) else Result.success(Unit)
@@ -142,7 +148,8 @@ class SectionViewModelTest {
 
     @Test
     fun followingTheSection_goesBackWhenRefused() = runBlocking {
-        val viewModel = viewModel(Community(followFails = true))
+        val community = Community(followFails = true)
+        val viewModel = viewModel(community)
         viewModel.open()
         viewModel.state.firstWithin { it.stats != null }
 
@@ -150,6 +157,7 @@ class SectionViewModelTest {
         assertTrue(viewModel.state.value.stats?.following == true)
         assertEquals(3411, viewModel.state.value.stats?.followerCount)
 
+        community.refusal.complete(Unit)
         assertEquals(CommunityNotice.FollowFailed, withTimeout(5_000) { viewModel.notices.first() })
         assertFalse(viewModel.state.value.stats?.following == true)
     }
