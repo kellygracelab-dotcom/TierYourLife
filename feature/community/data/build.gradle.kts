@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.tieryourlife.android.library)
     alias(libs.plugins.tieryourlife.hilt)
     alias(libs.plugins.tieryourlife.network)
+    alias(libs.plugins.tieryourlife.room.library)
 }
 
 android {

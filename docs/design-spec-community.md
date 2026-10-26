@@ -6,6 +6,10 @@ evening. The board spec (`design-spec-board.md`) covers the board itself; this
 one covers everything around a published list. Each section names what is
 built and where the rest stands.
 
+> **26.10.2026:** the Community home is redesigned by Claude Design (Explore with nine section tiles, section pages,
+> following a section, cache-first loading, landscape, tablets and the Flip cover). The full implementation spec is
+> [design-spec-community-explore.md](design-spec-community-explore.md); where it and this file disagree, it wins.
+
 ## 1. Sections and topics
 
 Two levels. The nine fixed, localised **sections** (`ListCategory`) stay. Inside
