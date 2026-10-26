@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
@@ -33,12 +32,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.layout.ColumnAlignedTopBar
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
-val BOARD_INDEX_WIDTH: Dp = 320.dp
+val BOARD_INDEX_WIDTH: Dp = 360.dp
 
 /**
  * Every board beside the open one, as text: boards somebody knows by name are
@@ -58,15 +58,11 @@ fun BoardIndex(
     ) {
         Box {
             Column(Modifier.statusBarsPadding()) {
-                Text(
-                    text = stringResource(ThemeR.string.tier_lists_title),
-                    modifier = Modifier.height(64.dp).padding(start = 16.dp, top = 18.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
+                // Its own bar on its own pane: the board beside it has another.
+                ColumnAlignedTopBar(title = stringResource(ThemeR.string.tier_lists_title), compact = false)
                 Text(
                     text = pluralStringResource(ThemeR.plurals.tier_lists_count, lists.size, lists.size),
-                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp, bottom = 8.dp),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
