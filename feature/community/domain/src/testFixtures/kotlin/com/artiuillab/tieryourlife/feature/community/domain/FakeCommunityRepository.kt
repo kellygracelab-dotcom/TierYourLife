@@ -12,6 +12,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
@@ -51,6 +52,15 @@ open class FakeCommunityRepository : CommunityRepository {
     override suspend fun myTopics(): Result<List<Topic>> = Result.success(emptyList())
 
     override suspend fun topic(id: String): Result<Topic> = notSetUp("topic")
+
+    override suspend fun sections(): Result<List<SectionStats>> =
+        Result.success(ListCategory.entries.map { SectionStats(it) })
+
+    override suspend fun followSection(section: ListCategory): Result<Unit> = Result.success(Unit)
+
+    override suspend fun unfollowSection(section: ListCategory): Result<Unit> = Result.success(Unit)
+
+    override suspend fun warmUp(): Result<Unit> = Result.success(Unit)
 
     override suspend fun followTopic(id: String): Result<Unit> = Result.success(Unit)
 

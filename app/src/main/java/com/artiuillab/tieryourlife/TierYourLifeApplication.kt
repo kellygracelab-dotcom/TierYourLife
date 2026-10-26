@@ -6,6 +6,7 @@ import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import com.artiuillab.tieryourlife.core.logging.CrashKeys
 import com.artiuillab.tieryourlife.core.logging.Logging
+import com.artiuillab.tieryourlife.feature.community.data.warmup.CommunityWarmUp
 import com.artiuillab.tieryourlife.feature.tier.data.sync.SyncOnReconnect
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.HiltAndroidApp
@@ -21,6 +22,9 @@ class TierYourLifeApplication : Application(), SingletonImageLoader.Factory {
     @Inject
     lateinit var syncOnReconnect: SyncOnReconnect
 
+    @Inject
+    lateinit var communityWarmUp: CommunityWarmUp
+
     override fun onCreate() {
         super.onCreate()
         AppCheckInstaller.install(this)
@@ -30,6 +34,7 @@ class TierYourLifeApplication : Application(), SingletonImageLoader.Factory {
         // somebody deep inside a board when the signal comes back, with no
         // screen watching that would ever ask.
         syncOnReconnect.start()
+        communityWarmUp.start()
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader = imageLoader

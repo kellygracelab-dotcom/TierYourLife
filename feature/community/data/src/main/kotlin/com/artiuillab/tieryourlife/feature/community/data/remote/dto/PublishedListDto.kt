@@ -60,6 +60,7 @@ data class FollowedAuthorDto(
 data class FollowedAuthorsDto(
     val authors: List<FollowedAuthorDto> = emptyList(),
     val topics: List<TopicDto> = emptyList(),
+    val sections: List<FollowedSectionDto> = emptyList(),
 )
 
 @Serializable

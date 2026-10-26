@@ -58,6 +58,13 @@ sealed interface CommunityRoute {
     @Serializable
     data object MyPublished : CommunityRoute
 
+    /**
+     * One section's page (§3), with a topic chosen when [topicId] is set.
+     * [sectionId] is a [com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory] id.
+     */
+    @Serializable
+    data class Section(val sectionId: String, val topicId: String? = null) : CommunityRoute
+
     /** Everyone this person follows, with a way to stop. */
     @Serializable
     data object Following : CommunityRoute
@@ -102,6 +109,11 @@ internal fun SavedStateHandle.topicRoute() = CommunityRoute.Topic(
     topicId = required(CommunityRoute.Topic::topicId.name),
     name = get<String>(CommunityRoute.Topic::name.name),
     section = get<String>(CommunityRoute.Topic::section.name),
+)
+
+internal fun SavedStateHandle.sectionRoute() = CommunityRoute.Section(
+    sectionId = required(CommunityRoute.Section::sectionId.name),
+    topicId = get<String>(CommunityRoute.Section::topicId.name),
 )
 
 private fun <T : Any> SavedStateHandle.required(key: String): T =

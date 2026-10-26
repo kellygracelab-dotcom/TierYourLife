@@ -58,12 +58,17 @@ fun NavGraphBuilder.followingScreen(
     onBack: () -> Unit,
     onOpenAuthor: (uid: String, name: String, photoUrl: String?) -> Unit,
     onOpenTopic: (CommunityRoute.Topic) -> Unit,
+    onOpenSection: (CommunityRoute.Section) -> Unit = {},
 ) {
     composable<CommunityRoute.Following> {
         FollowingScreen(
             onBack = onBack,
             onOpenAuthor = onOpenAuthor,
-            onOpenTopic = { onOpenTopic(CommunityRoute.Topic.of(it)) },
+            onOpenTopic = { topic ->
+                val section = topic.section
+                if (section != null) onOpenSection(CommunityRoute.Section(section.id, topic.id)) else onOpenTopic(CommunityRoute.Topic.of(topic))
+            },
+            onOpenSection = { onOpenSection(CommunityRoute.Section(it.id)) },
         )
     }
 }
