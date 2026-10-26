@@ -67,4 +67,9 @@
     <string name="account_delete_keeps_local">Bu telefondaki panolar yerinde kalır.</string>
     <string name="account_delete_confirm">Kalıcı olarak sil</string>
     <string name="account_error_not_deleted">Hesap silinmedi. Yeniden deneyin.</string>
+    <string name="account_face_position_title">Fotoğrafı yerleştir</string>
+    <string name="account_face_position_body">Resmi sürükleyin, yakınlaştırmak için iki parmakla açın. Daire, başkalarının göreceği kısımdır.</string>
+    <string name="account_face_position_use">Bunu kullan</string>
+    <string name="account_face_position_failed">Resim burada gösterilemedi. Yine de olduğu gibi kullanılabilir.</string>
+    <string name="account_face_position_frame">Daireye yerleştirilecek resim</string>
 </resources>
