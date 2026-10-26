@@ -146,8 +146,8 @@ fun FloatingDragTile(dragController: TierDragController) {
                 .testTag(TierDetailTestTags.FLOATING_DRAG_TILE)
                 .graphicsLayer {
                     rotationZ = -4f
-                    scaleX = 1.06f
-                    scaleY = 1.06f
+                    scaleX = 1.08f
+                    scaleY = 1.08f
                 }
                 .shadow(elevation = 12.dp, shape = shape)
                 .clip(shape)

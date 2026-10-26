@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.board.components.rows
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -67,8 +68,6 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 
-private val MIN_TIER_ROW_HEIGHT = 84.dp
-
 /** Every band on every board: a caption lives inside this width, it never widens it. */
 val TIER_BAND_WIDTH = 64.dp
 val BAND_CAPTION_PADDING = 6.dp
@@ -90,6 +89,7 @@ fun TierRow(
     onEditTier: (tierId: Long) -> Unit = {},
 ) {
     val colors = tierRowColors(tier.colorLight, tier.colorDark)
+    val rowDensity = LocalTierRowDensity.current
     val isHovered = dragController.isDragging && dragController.hoveredTierId == tier.id
     val surface = MaterialTheme.colorScheme.surface
     val rowBackground = if (isHovered) rowTintFor(colors.band, surface, ROW_HOVER_TINT_ALPHA) else colors.rowTint
@@ -113,7 +113,7 @@ fun TierRow(
     }
 
     val rowHeightModifier = if (collapsed || displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
-        Modifier.height(MIN_TIER_ROW_HEIGHT)
+        Modifier.height(rowDensity.occupiedHeight)
     } else {
         Modifier.height(IntrinsicSize.Min)
     }
@@ -125,10 +125,10 @@ fun TierRow(
         ShortLongPressViewConfiguration(baseViewConfiguration, DRAG_LONG_PRESS_TIMEOUT_MILLIS)
     }
     val density = LocalDensity.current
-    val slotHeightPx = with(density) { (MIN_TIER_ROW_HEIGHT + TIER_LIST_ITEM_SPACING).toPx() }
+    val slotHeightPx = with(density) { (rowDensity.occupiedHeight + TIER_LIST_ITEM_SPACING).toPx() }
 
     Box(modifier.fillMaxWidth()) {
-        val bandWidth = TIER_BAND_WIDTH
+        val bandWidth = rowDensity.bandWidth
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -139,7 +139,9 @@ fun TierRow(
                 .testTag(TierDetailTestTags.tierRow(tier.id))
                 .background(rowBackground)
                 .then(
-                    if (isHovered) {
+                    if (isHovered && rowDensity.ringOnHover) {
+                        Modifier.border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
+                    } else if (isHovered) {
                         Modifier.dashedBorder(width = 2.dp, color = colors.band, cornerRadius = 12.dp)
                     } else {
                         Modifier
@@ -231,20 +233,20 @@ fun TierRow(
                 state = stripState,
                 modifier = Modifier
                     .weight(1f)
-                    .height(MIN_TIER_ROW_HEIGHT)
+                    .height(rowDensity.occupiedHeight)
                     .onGloballyPositioned { coordinates ->
                         dragController.registerItemsRowBounds(tier.id, coordinates.boundsInRoot())
                     }
                     .testTag(TierDetailTestTags.tierItems(tier.id)),
-                contentPadding = PaddingValues(10.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(rowDensity.padding),
+                horizontalArrangement = Arrangement.spacedBy(rowDensity.gap),
             ) {
                 items(tier.items, key = { it.id }) { item ->
                     DraggableTile(
                         item = item,
                         sourceTierId = tier.id,
-                        width = 44.dp,
-                        height = 64.dp,
+                        width = rowDensity.tileWidth,
+                        height = rowDensity.tileHeight,
                         dragController = dragController,
                         onMoveItem = onMoveItem,
                         onDeleteItem = onDeleteItem,
@@ -256,18 +258,18 @@ fun TierRow(
             FlowRow(
                 modifier = Modifier
                     .weight(1f)
-                    .heightIn(min = MIN_TIER_ROW_HEIGHT)
-                    .padding(10.dp)
+                    .heightIn(min = rowDensity.emptyHeight)
+                    .padding(rowDensity.padding)
                     .testTag(TierDetailTestTags.tierItems(tier.id)),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(rowDensity.gap),
+                verticalArrangement = Arrangement.spacedBy(rowDensity.gap),
             ) {
                 tier.items.forEachIndexed { index, item ->
                     DraggableTile(
                         item = item,
                         sourceTierId = tier.id,
-                        width = 44.dp,
-                        height = 64.dp,
+                        width = rowDensity.tileWidth,
+                        height = rowDensity.tileHeight,
                         dragController = dragController,
                         onMoveItem = onMoveItem,
                         onDeleteItem = onDeleteItem,

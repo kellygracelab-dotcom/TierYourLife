@@ -108,6 +108,13 @@ also holds the reader's Theirs / Mine switch and the Save button, with the
 sentence that explains it, so both are in reach whether the pool is folded or
 open.
 
+Where the pool stands beside the rows (a short window, a wide one held
+sideways; the board spec's section 7), the switch and Save move into the bar
+(the switch at 32dp, Save at 36dp) and the sentence goes under the side pool's
+title. A short window's single bar also carries the author as a chip, and the
+rankings chip when there are any, since the author line has no row of its own
+there. The skeleton follows the same rules, so nothing moves when the list lands.
+
 ## 5. The cover
 
 One chosen picture shows alone; two to six make a collage of exactly those, in

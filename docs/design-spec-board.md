@@ -116,7 +116,32 @@ queuing — a queue means the Undo you are reaching for belongs to a removal two
 | Dismissing | Close, scrim, drag down or back all discard the selection. There is no draft |
 | Words | "Films" became "items" everywhere but the source's own name — this is not a films app, and TMDB is one source of several |
 
-## 7. Left open
+## 7. Short windows, tablets and the cover
+
+Settled with Claude Design on 26.10 after Danylo's walkthrough of the Flip held
+sideways ("all the working content sits in thin strips"). The rule of thumb:
+**height decides what stays pinned; width decides where the pool goes.** A
+short window is one under 480dp of height (`WindowShape.isShort`): a phone held
+sideways, a Flip's cover, half a phone in split view.
+
+| Window | Bar | Rows (`TierRowDensity`) | Pool |
+|---|---|---|---|
+| Short (< 480dp tall) | One 48dp bar that leaves with the rows and comes back on the first scroll up (`ScrollAwayHeader`); the status-bar inset stays put | Compact: band 64, empty row 56, occupied 72, cards 40×58, gap 6; a hovered row gets a 2dp primary ring | A 216dp card at the end edge, three cards abreast |
+| Wide and held sideways (≥ 840dp wide, wider than tall), e.g. 1280×800 | The usual 56dp bar, spanning the window since the board does | Roomy: band 80, empty 72, occupied 96, cards 52×76 | A 284dp card beside the rows, as tall as its content |
+| A tablet upright, e.g. 800×1280 | The usual bar | Roomy | The sheet under the rows, two lines of cards when open |
+| Everything else | As before | Regular: band 64, row 84, cards 44×64 | The sheet under the rows |
+| A cover | Back and title only | Compact | None: a cover shows a board, it does not build one |
+
+The side pool is open while anything is left to rank and folds to a 56dp strip
+(the way back, a check when empty, the count, Add) when it is empty or the
+person folds it; the choice lasts for the session. Its head holds the count,
+the Add-a-card field and, where offered, the AI studio. A card dropped on it
+lands where the finger points, by the grid rule the rows use. While the pool is
+beside the rows the trash sits low on the rows' side, and the autoscroll edge
+is 48dp instead of 72 in a short window. The lifted card is scaled 1.08 and
+tilted 4°.
+
+## 8. Left open
 
 - **A cap on row height.** None today. The design said outright "say the word if you want a
   cap", and nobody has.

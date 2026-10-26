@@ -137,4 +137,5 @@
     </plurals>
     <string name="list_settings_public_topic_unavailable">Bu konu artık açık değil: birleştirildi, reddedildi ya da başkasına ait. Listenin konusu kaldırıldı; başka bir konu seçin ya da konusuz yayınlayın.</string>
     <string name="list_settings_public_ranking_body">%1$s adlı kişinin listesinin sizin sıralamanız olarak yayında; akışta ikinci bir liste görünmez.</string>
+    <string name="tier_detail_add_card">Kart ekle</string>
 </resources>

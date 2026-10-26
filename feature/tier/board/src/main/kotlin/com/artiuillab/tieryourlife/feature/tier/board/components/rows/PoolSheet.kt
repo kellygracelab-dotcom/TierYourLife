@@ -20,6 +20,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -89,6 +92,8 @@ fun PoolSheet(
     readOnly: Boolean = false,
     /** What the screen around the board puts in the strip, folded or open: a reader's switch and save. */
     accessories: (@Composable (folded: Boolean) -> Unit)? = null,
+    /** Two lines of cards when open, for a wide window that is not short. */
+    twoRows: Boolean = false,
 ) {
     var expanded by rememberSaveable(pool.id) { mutableStateOf(!readOnly && pool.items.isNotEmpty()) }
     val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
@@ -204,7 +209,15 @@ fun PoolSheet(
                 }
             }
         }
-        if (expanded) {
+        if (expanded && twoRows) {
+            PoolCardsTwoRows(
+                pool = pool,
+                dragController = dragController,
+                onMoveItem = onMoveItem,
+                onDeleteItem = onDeleteItem,
+                onDoubleTap = onDoubleTap,
+            )
+        } else if (expanded) {
             PoolCards(
                 pool = pool,
                 dragController = dragController,
@@ -264,6 +277,46 @@ private fun PoolCards(
                 dragController = dragController,
                 onMoveItem = onMoveItem,
                 onDeleteItem = onDeleteItem,
+                onDoubleTap = onDoubleTap,
+            )
+        }
+    }
+}
+
+/**
+ * Two lines of cards scrolling sideways. A drop goes by the cards' own places,
+ * the rule the rows use for their grids, so the strip's single-row bookkeeping
+ * is let go.
+ */
+@Composable
+private fun PoolCardsTwoRows(
+    pool: Tier,
+    dragController: TierDragController,
+    onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
+    onDeleteItem: (itemId: Long) -> Unit,
+    onDoubleTap: (itemId: Long) -> Unit,
+) {
+    SideEffect { dragController.unregisterItemsRow(pool.id) }
+    LazyHorizontalGrid(
+        rows = GridCells.Fixed(2),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(POOL_TILE_HEIGHT * 2 + 10.dp)
+            .testTag(TierDetailTestTags.POOL_ITEMS),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        itemsIndexed(pool.items, key = { _, item -> item.id }) { index, item ->
+            DraggableTile(
+                item = item,
+                sourceTierId = pool.id,
+                width = POOL_TILE_WIDTH,
+                height = POOL_TILE_HEIGHT,
+                dragController = dragController,
+                onMoveItem = onMoveItem,
+                onDeleteItem = onDeleteItem,
+                onPositioned = { bounds -> dragController.registerTileBounds(pool.id, item.id, index, bounds) },
                 onDoubleTap = onDoubleTap,
             )
         }

@@ -157,4 +157,5 @@
     </plurals>
     <string name="list_settings_public_topic_unavailable">Ця тема більше недоступна: її об’єднали, відхилили або вона чужа. Тему зі списку знято; оберіть іншу або публікуйте без неї.</string>
     <string name="list_settings_public_ranking_body">Опублікована як ваше ранжування списку %1$s; другого списку в стрічці немає.</string>
+    <string name="tier_detail_add_card">Додати картку</string>
 </resources>

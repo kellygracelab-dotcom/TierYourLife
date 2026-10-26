@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -26,6 +29,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -41,6 +45,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -55,6 +60,8 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.ScrollAwayHeader
+import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
@@ -66,10 +73,15 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TIER_LIST_
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TrashTarget
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalTierRowDensity
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_COLUMN_WIDE_WIDTH
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_COLUMN_WIDTH
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolColumn
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedPoolSection
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRow
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRowDensity
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierScreenTopBar
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItemSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorSheet
@@ -87,6 +99,9 @@ import kotlinx.coroutines.launch
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private val TIER_LIST_AUTOSCROLL_EDGE = 72.dp
+
+/** Lower rows, a lower edge: 72 of a short window's 300 was a quarter of the board scrolling under the finger. */
+private val SHORT_AUTOSCROLL_EDGE = 48.dp
 private const val TIER_LIST_AUTOSCROLL_MAX_SPEED_DP_PER_SEC = 600
 
 private const val LOADING_SPINNER_DELAY_MILLIS = 150L
@@ -114,6 +129,14 @@ fun TierDetailScreenContent(
     onReaderMoreClick: (() -> Unit)? = null,
     belowTopBar: (@Composable () -> Unit)? = null,
     poolAccessories: (@Composable (folded: Boolean) -> Unit)? = null,
+    /**
+     * The same controls as [poolAccessories], for the bar when the pool sits
+     * beside the rows; `compact` is a short window's single bar, which then
+     * also has to say what [belowTopBar] would have said.
+     */
+    barExtras: (@Composable RowScope.(compact: Boolean) -> Unit)? = null,
+    /** A line under the side pool's title, where [poolAccessories]' sentence goes when the pool is beside the rows. */
+    poolNote: (@Composable () -> Unit)? = null,
 ) {
     // Beside the board once there is room. Held back on a short window too: a
     // phone in landscape is wide enough for the column and too short for the board.
@@ -131,7 +154,19 @@ fun TierDetailScreenContent(
                     onSelect = onOpenList,
                 )
             }
-            TierDetailPane(state, actions, addedItemIds, userMessages, readOnly, subtitle, onReaderMoreClick, belowTopBar, poolAccessories)
+            TierDetailPane(
+                state = state,
+                actions = actions,
+                addedItemIds = addedItemIds,
+                userMessages = userMessages,
+                readOnly = readOnly,
+                subtitle = subtitle,
+                onReaderMoreClick = onReaderMoreClick,
+                belowTopBar = belowTopBar,
+                poolAccessories = poolAccessories,
+                barExtras = barExtras,
+                poolNote = poolNote,
+            )
         }
     }
 }
@@ -150,6 +185,8 @@ private fun TierDetailPane(
     onReaderMoreClick: (() -> Unit)?,
     belowTopBar: (@Composable () -> Unit)?,
     poolAccessories: (@Composable (folded: Boolean) -> Unit)?,
+    barExtras: (@Composable RowScope.(compact: Boolean) -> Unit)?,
+    poolNote: (@Composable () -> Unit)?,
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -185,6 +222,8 @@ private fun TierDetailPane(
                     onReaderMoreClick = onReaderMoreClick,
                     belowTopBar = belowTopBar,
                     poolAccessories = poolAccessories,
+                    barExtras = barExtras,
+                    poolNote = poolNote,
                 )
             }
 
@@ -213,6 +252,8 @@ private fun TierScreenBody(
     onReaderMoreClick: (() -> Unit)? = null,
     belowTopBar: (@Composable () -> Unit)? = null,
     poolAccessories: (@Composable (folded: Boolean) -> Unit)? = null,
+    barExtras: (@Composable RowScope.(compact: Boolean) -> Unit)? = null,
+    poolNote: (@Composable () -> Unit)? = null,
 ) {
     val onBack = actions.onBack
     val onAddClick = actions.onAddClick
@@ -374,7 +415,8 @@ private fun TierScreenBody(
     val tierListState = rememberLazyListState()
     var tierListBounds by remember { mutableStateOf(Rect.Zero) }
 
-    val autoscrollEdgePx = with(density) { TIER_LIST_AUTOSCROLL_EDGE.toPx() }
+    var autoscrollEdge by remember { mutableStateOf(TIER_LIST_AUTOSCROLL_EDGE) }
+    val autoscrollEdgePx = with(density) { autoscrollEdge.toPx() }
     val autoscrollMaxSpeedPx = with(density) { TIER_LIST_AUTOSCROLL_MAX_SPEED_DP_PER_SEC.dp.toPx() }
 
     fun autoscrollSpeedNow(): Float {
@@ -411,32 +453,48 @@ private fun TierScreenBody(
     }
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
-        Column(Modifier.fillMaxSize()) {
+        // Height decides what stays pinned, width where the pool goes. A cover
+        // shows the board and nothing to work it with. A short window keeps one
+        // bar, which leaves with the rows, and lowers the rows; a wide window
+        // held sideways gives the pool width instead of the rows' height.
+        val glanceable = currentWindowShape.isGlanceable
+        val short = WindowShape.isShort(maxHeight)
+        val poolBeside = !glanceable && (short || (maxWidth >= WindowShape.WideFrom && maxWidth > maxHeight))
+        var poolColumnWidth by remember { mutableStateOf(0.dp) }
+        val poolRowsTwo = maxWidth >= WindowShape.MediumFrom
+        SideEffect { autoscrollEdge = if (short) SHORT_AUTOSCROLL_EDGE else TIER_LIST_AUTOSCROLL_EDGE }
+
+        val bar: @Composable () -> Unit = {
             TierScreenTopBar(
                 title = list.title,
                 onBack = onBack,
                 onManualAdd = onManualAddClick,
                 onMoreClick = { listSettingsVisible = true },
                 onRenameList = onRenameList,
-                titleEditable = !readOnly,
-                readOnly = readOnly,
+                titleEditable = !readOnly && !glanceable,
+                readOnly = readOnly || glanceable,
                 subtitle = subtitle,
-                onReaderMoreClick = onReaderMoreClick,
+                onReaderMoreClick = onReaderMoreClick.takeUnless { glanceable },
+                compact = short,
+                trailing = barExtras?.takeIf { poolBeside }?.let { extras -> { extras(short) } },
+                insetStatusBar = !short,
+                spanWindow = poolBeside,
             )
-
-            // Under the bar, never over it: the bar carries the status-bar
-            // inset, so anything placed above it sits beneath the clock.
-            belowTopBar?.invoke()
-
+        }
+        val board: @Composable (Modifier) -> Unit = { boardModifier ->
+            Row(boardModifier) {
             CenteredContent(max = ContentWidth.Board, modifier = Modifier.weight(1f)) {
+
                 if (list.displayMode == TierListDisplayMode.FLAT_RANKED) {
+
                     RankedList(
                         rankedTiers = rankedTiers,
                         onSelect = { itemId -> chooserItemId = itemId },
                         modifier = Modifier.weight(1f),
                     )
 
-                    if (pool != null) {
+                    if (pool != null && !glanceable) {
+
                         RankedPoolSection(
                             pool = pool,
                             onAddClick = onAddClick,
@@ -446,11 +504,16 @@ private fun TierScreenBody(
                         )
                     }
                 } else {
+
                     val visualTierOrder = dragController.visualTierOrder
+
                     val displayedTiers = if ((dragController.isDraggingTier || dragController.isSettlingTier) && visualTierOrder.isNotEmpty()) {
+
                         val indexById = visualTierOrder.withIndex().associate { (index, id) -> id to index }
+
                         rankedTiers.sortedBy { indexById[it.id] ?: Int.MAX_VALUE }
                     } else {
+
                         rankedTiers
                     }
 
@@ -464,27 +527,40 @@ private fun TierScreenBody(
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                         verticalArrangement = Arrangement.spacedBy(TIER_LIST_ITEM_SPACING),
                     ) {
+
                         items(displayedTiers, key = { it.id }) { tier ->
+
                             val itemModifier = when (tier.id) {
+
                                 dragController.draggedTierId -> {
+
                                     Modifier
                                         .zIndex(1f)
                                         .graphicsLayer {
+
                                             translationY = dragController.draggedTierOffsetYPx
+
                                             scaleX = 1.02f
+
                                             scaleY = 1.02f
                                         }
                                         .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                                 }
 
                                 dragController.settlingTierId -> {
+
                                     val settleOffset = remember(dragController.settlingTierId) {
+
                                         Animatable(dragController.draggedTierOffsetYPx)
                                     }
+
                                     LaunchedEffect(dragController.settlingTierId) {
+
                                         settleOffset.animateTo(0f, tween(durationMillis = 150))
+
                                         dragController.finishSettling()
                                     }
+
                                     Modifier
                                         .zIndex(1f)
                                         .graphicsLayer { translationY = settleOffset.value }
@@ -493,6 +569,7 @@ private fun TierScreenBody(
 
                                 else -> Modifier.animateItem()
                             }
+
                             TierRow(
                                 tier = tier,
                                 modifier = itemModifier,
@@ -509,7 +586,8 @@ private fun TierScreenBody(
                         }
                     }
 
-                    if (pool != null) {
+                    if (pool != null && !poolBeside && !glanceable) {
+
                         PoolSheet(
                             pool = pool,
                             onAddClick = onAddClick,
@@ -520,14 +598,67 @@ private fun TierScreenBody(
                             onDoubleTap = { itemId -> chooserItemId = itemId },
                             readOnly = readOnly,
                             accessories = poolAccessories,
+                            // A tablet held upright has the width for two lines of cards and not the height to waste on one.
+                            twoRows = poolRowsTwo,
                         )
                     }
+                }
+            }
+
+                if (pool != null && poolBeside && list.displayMode != TierListDisplayMode.FLAT_RANKED) {
+                    PoolColumn(
+                        pool = pool,
+                        onAddClick = onAddClick,
+                        onGenerateClick = onGenerateClick,
+                        dragController = dragController,
+                        onMoveItem = onMoveItem,
+                        onDeleteItem = deleteAndAnnounce,
+                        onDoubleTap = { itemId -> chooserItemId = itemId },
+                        readOnly = readOnly,
+                        openWidth = if (short) POOL_COLUMN_WIDTH else POOL_COLUMN_WIDE_WIDTH,
+                        note = poolNote,
+                        modifier = Modifier
+                            .onSizeChanged { size -> poolColumnWidth = with(density) { size.width.toDp() } }
+                            .navigationBarsPadding()
+                            .padding(start = 4.dp, end = 8.dp, top = 4.dp, bottom = 8.dp),
+                    )
+                }
+            }
+        }
+
+        CompositionLocalProvider(LocalTierRowDensity provides TierRowDensity.of(short, poolBeside, maxWidth)) {
+            if (short) {
+                // The inset stays with the screen; the bar slides under it and back.
+                ScrollAwayHeader(header = bar, modifier = Modifier.fillMaxSize().statusBarsPadding()) {
+                    board(Modifier.fillMaxSize())
+                }
+            } else {
+                Column(Modifier.fillMaxSize()) {
+                    bar()
+                    // Under the bar, never over it: the bar carries the status-bar
+                    // inset, so anything placed above it sits beneath the clock.
+                    belowTopBar?.invoke()
+                    board(Modifier.weight(1f))
                 }
             }
         }
 
         if (dragController.isDragging) {
-            if (!readOnly) {
+            if (!readOnly && poolBeside) {
+                // Beside the pool, low on the rows' side: the pool's own top is
+                // the window's, so the place above it is off screen.
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(end = poolColumnWidth, bottom = 16.dp),
+                ) {
+                    TrashTarget(
+                        dragController = dragController,
+                        poolTierId = null,
+                        modifier = Modifier.align(Alignment.BottomEnd),
+                    )
+                }
+            } else if (!readOnly) {
                 // The trash sits at the edge of the board a finger is dragging
                 // over, not at the edge of the window it is floating in.
                 Box(
@@ -546,7 +677,7 @@ private fun TierScreenBody(
             FloatingDragTile(dragController)
         }
 
-        val poolTop = pool?.id?.let { dragController.tierBounds(it)?.top }
+        val poolTop = pool?.id?.takeUnless { poolBeside }?.let { dragController.tierBounds(it)?.top }
         val bottomGap = if (poolTop != null) {
             (maxHeight - with(density) { poolTop.toDp() }) + 16.dp
         } else {
