@@ -58,7 +58,7 @@ fun ReportDialog(
                     .testTag(CommunityTestTags.REPORT_DIALOG),
             ) {
                 Column(Modifier.selectableGroup()) {
-                    ReportReason.entries.forEach { option ->
+                    ReportReason.offered.forEach { option ->
                         ReasonRow(
                             option = option,
                             selected = option == reason,
@@ -127,6 +127,7 @@ private fun ReportReason.labelRes(): Int = when (this) {
     ReportReason.Hate -> R.string.report_reason_hate
     ReportReason.Spam -> R.string.report_reason_spam
     ReportReason.Other -> R.string.report_reason_other
+    ReportReason.WrongCategory -> R.string.report_reason_wrong_category
 }
 
 @TierYourLifeDevicePreviews

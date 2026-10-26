@@ -47,6 +47,10 @@ class SettingsViewModel @Inject constructor(
             credits = generationCredits.lastKnown().takeIf { Features.GENERATION_OFFERED },
             trashCount = preferences.lastKnownTrashCount(),
             pendingReports = preferences.lastKnownPendingReports(),
+            // Known this instant, so the first frame is the whole screen; the
+            // flow and the measured settings follow and correct it.
+            account = accountRepository.current(),
+            backupSettings = backup.settingsNow().takeIf { accountRepository.current() is Account.SignedIn },
         ),
     )
     val state: StateFlow<SettingsUiState> = _state.asStateFlow()

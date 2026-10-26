@@ -45,6 +45,8 @@ class FirebaseAccountRepository @Inject constructor(
         profileEdits,
     ).map { auth.currentUser.toAccount() }.distinctUntilChanged()
 
+    override fun current(): Account = auth.currentUser.toAccount()
+
     override suspend fun signInWithGoogle(idToken: String): SignInOutcome {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         val guest = auth.currentUser?.takeIf { it.isAnonymous }

@@ -64,6 +64,24 @@ class RouteFromHandleTest {
     }
 
     @Test
+    fun aTopicRouteWithWhatTheChipShowed_readsTheSameWithoutBundle() {
+        val route = CommunityRoute.Topic(topicId = "t1", name = "Pokémon", section = "games")
+        val entry = entryFor(route)
+
+        assertEquals(entry.toRoute<CommunityRoute.Topic>(), entry.savedStateHandle.topicRoute())
+        assertEquals(route, entry.savedStateHandle.topicRoute())
+    }
+
+    @Test
+    fun aTopicRouteByIdAlone_readsTheSameWithoutBundle() {
+        val route = CommunityRoute.Topic(topicId = "t1")
+        val entry = entryFor(route)
+
+        assertEquals(entry.toRoute<CommunityRoute.Topic>(), entry.savedStateHandle.topicRoute())
+        assertEquals(route, entry.savedStateHandle.topicRoute())
+    }
+
+    @Test
     fun anAuthorRouteWithoutAFace_readsTheSameWithoutBundle() {
         val route = CommunityRoute.Author(authorUid = "u1", authorName = "Ann")
         val entry = entryFor(route)

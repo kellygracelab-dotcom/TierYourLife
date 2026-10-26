@@ -42,20 +42,26 @@ import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
+import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
+import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
+import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private val FACE_SIZE = 40.dp
 
-/** Everyone this person follows, each with the one thing to do about them here: stop. */
+/** Everyone and everything this person follows, each with the one thing to do about it here: stop. */
 @Composable
 fun FollowingScreen(
     onBack: () -> Unit,
     onOpenAuthor: (uid: String, name: String, photoUrl: String?) -> Unit,
+    onOpenTopic: (Topic) -> Unit,
     viewModel: FollowingViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -65,6 +71,8 @@ fun FollowingScreen(
         onOpenAuthor = onOpenAuthor,
         onUnfollow = viewModel::unfollow,
         onRetry = viewModel::load,
+        onOpenTopic = onOpenTopic,
+        onUnfollowTopic = viewModel::unfollowTopic,
         userMessages = viewModel.userMessages,
     )
 }
@@ -77,6 +85,8 @@ fun FollowingScreenContent(
     onUnfollow: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onOpenTopic: (Topic) -> Unit = {},
+    onUnfollowTopic: (String) -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
@@ -99,22 +109,60 @@ fun FollowingScreenContent(
                     testTag = FollowingTestTags.FAILED,
                 )
 
-                is FollowingUiState.Ready -> if (state.authors.isEmpty()) {
+                is FollowingUiState.Ready -> if (state.authors.isEmpty() && state.topics.isEmpty()) {
                     Message(text = stringResource(R.string.community_following_nobody), testTag = FollowingTestTags.EMPTY)
                 } else {
-                    LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
-                        items(state.authors, key = { it.uid }) { person ->
-                            FollowedRow(
-                                person = person,
-                                onOpen = { onOpenAuthor(person.uid, person.name, person.photoUrl) },
-                                onUnfollow = { onUnfollow(person.uid) },
-                            )
-                        }
-                    }
+                    Followed(
+                        state = state,
+                        onOpenAuthor = onOpenAuthor,
+                        onUnfollow = onUnfollow,
+                        onOpenTopic = onOpenTopic,
+                        onUnfollowTopic = onUnfollowTopic,
+                    )
                 }
             }
         }
     }
+}
+
+@Composable
+private fun Followed(
+    state: FollowingUiState.Ready,
+    onOpenAuthor: (uid: String, name: String, photoUrl: String?) -> Unit,
+    onUnfollow: (String) -> Unit,
+    onOpenTopic: (Topic) -> Unit,
+    onUnfollowTopic: (String) -> Unit,
+) {
+    LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
+        // Headed only once there are two kinds; one kind alone needs no name.
+        if (state.authors.isNotEmpty() && state.topics.isNotEmpty()) {
+            item(key = "people") { Heading(stringResource(R.string.following_people)) }
+        }
+        items(state.authors, key = { "person-" + it.uid }) { person ->
+            FollowedRow(
+                person = person,
+                onOpen = { onOpenAuthor(person.uid, person.name, person.photoUrl) },
+                onUnfollow = { onUnfollow(person.uid) },
+            )
+        }
+        if (state.topics.isNotEmpty()) {
+            item(key = "topics") {
+                Heading(stringResource(R.string.following_topics), modifier = Modifier.testTag(FollowingTestTags.TOPICS))
+            }
+        }
+        items(state.topics, key = { "topic-" + it.id }) { topic ->
+            TopicRow(
+                topic = topic,
+                onOpen = { onOpenTopic(topic) },
+                onUnfollow = { onUnfollowTopic(topic.id) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun Heading(text: String, modifier: Modifier = Modifier) {
+    SectionLabel(text = text, modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp))
 }
 
 @Composable
@@ -172,6 +220,39 @@ private fun FollowedRow(person: FollowedAuthor, onOpen: () -> Unit, onUnfollow: 
 }
 
 @Composable
+private fun TopicRow(topic: Topic, onOpen: () -> Unit, onUnfollow: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onOpen)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .testTag(FollowingTestTags.topicRow(topic.id)),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = topic.name,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            // The shelf it sits on, or that it has none yet.
+            Text(
+                text = topic.section?.let { stringResource(it.labelRes) }
+                    ?: stringResource(R.string.topic_waiting_short),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        OutlinedButton(onClick = onUnfollow, modifier = Modifier.testTag(FollowingTestTags.unfollowTopic(topic.id))) {
+            Text(stringResource(R.string.action_unfollow))
+        }
+    }
+}
+
+@Composable
 private fun Message(text: String, testTag: String, action: String? = null, onAction: () -> Unit = {}) {
     Box(
         Modifier
@@ -204,9 +285,13 @@ private fun Message(text: String, testTag: String, action: String? = null, onAct
 private fun FollowingPreview() = TierYourLifeTheme {
     FollowingScreenContent(
         state = FollowingUiState.Ready(
-            listOf(
+            authors = listOf(
                 FollowedAuthor(uid = "a", name = "Olena M.", photoUrl = null),
                 FollowedAuthor(uid = "b", name = "", photoUrl = null),
+            ),
+            topics = listOf(
+                Topic(id = "t1", name = "Pokémon", section = ListCategory.Games, status = TopicStatus.Approved),
+                Topic(id = "t2", name = "Kharkiv cafés", section = null, status = TopicStatus.Pending),
             ),
         ),
         onBack = {},

@@ -41,6 +41,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.navigation.nav
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToFollowing
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToModeration
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToMyPublished
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToTopic
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.topicScreen
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.hiddenScreen
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.navigateToHidden
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.navigateToSettings
@@ -48,11 +50,14 @@ import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.sett
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.ADDED_ITEMS_RESULT_KEY
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.COVER_CHANGED_RESULT_KEY
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.TOPIC_CHANGED_RESULT_KEY
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.coverPickerScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToCoverPicker
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTierDetail
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTopicPicker
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTrash
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.topicPickerScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.trashScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreen
 
@@ -137,6 +142,7 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
                     onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
                     onSettingsClick = { navController.navigateToSettings() },
                     onManageFollowing = { navController.navigateToFollowing() },
+                    onOpenTopic = { route -> navController.navigateToTopic(route) },
                     tabs = tabs,
                 )
             },
@@ -202,12 +208,20 @@ private fun NavContent(
             },
             onOpenAiStudio = { tierListId, listTitle -> navController.navigateToAiStudio(tierListId, listTitle) },
             onChooseCover = { id -> navController.navigateToCoverPicker(id) },
+            onChooseTopic = { id -> navController.navigateToTopicPicker(id) },
         )
         coverPickerScreen(
             onBack = { navController.popBackStack() },
             // The board behind it reads its own row again rather than being told what changed.
             onSaved = {
                 navController.previousBackStackEntry?.savedStateHandle?.set(COVER_CHANGED_RESULT_KEY, true)
+                navController.popBackStack()
+            },
+        )
+        topicPickerScreen(
+            onBack = { navController.popBackStack() },
+            onSaved = {
+                navController.previousBackStackEntry?.savedStateHandle?.set(TOPIC_CHANGED_RESULT_KEY, true)
                 navController.popBackStack()
             },
         )
@@ -244,6 +258,12 @@ private fun NavContent(
         followingScreen(
             onBack = { navController.popBackStack() },
             onOpenAuthor = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
+            onOpenTopic = { route -> navController.navigateToTopic(route) },
+        )
+        topicScreen(
+            onBack = { navController.popBackStack() },
+            onOpenList = { route -> navController.navigateToCommunityList(route) },
+            onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
         )
         communityListScreen(
             onBack = { navController.popBackStack() },

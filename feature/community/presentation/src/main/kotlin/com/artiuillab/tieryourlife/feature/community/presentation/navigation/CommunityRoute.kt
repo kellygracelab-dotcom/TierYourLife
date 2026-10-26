@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.presentation.list.ListPreview
 import kotlinx.serialization.Serializable
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic as TopicModel
 
 sealed interface CommunityRoute {
     /**
@@ -60,6 +61,22 @@ sealed interface CommunityRoute {
     /** Everyone this person follows, with a way to stop. */
     @Serializable
     data object Following : CommunityRoute
+
+    /**
+     * One topic's page. The name and section travel so the header is right
+     * before the server answers; a chip that knows only the id sends the id.
+     */
+    @Serializable
+    data class Topic(
+        val topicId: String,
+        val name: String? = null,
+        /** A [com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory] id; null while the topic waits. */
+        val section: String? = null,
+    ) : CommunityRoute {
+        companion object {
+            fun of(topic: TopicModel) = Topic(topicId = topic.id, name = topic.name, section = topic.section?.id)
+        }
+    }
 }
 
 /**
@@ -79,6 +96,12 @@ internal fun SavedStateHandle.authorRoute() = CommunityRoute.Author(
     authorUid = required(CommunityRoute.Author::authorUid.name),
     authorName = required(CommunityRoute.Author::authorName.name),
     authorPhotoUrl = get<String>(CommunityRoute.Author::authorPhotoUrl.name),
+)
+
+internal fun SavedStateHandle.topicRoute() = CommunityRoute.Topic(
+    topicId = required(CommunityRoute.Topic::topicId.name),
+    name = get<String>(CommunityRoute.Topic::name.name),
+    section = get<String>(CommunityRoute.Topic::section.name),
 )
 
 private fun <T : Any> SavedStateHandle.required(key: String): T =

@@ -11,12 +11,16 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.presentation.moderation.OwnerMemory
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.authorRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -48,10 +52,14 @@ sealed interface AuthorUiState {
     data object Unavailable : AuthorUiState
 }
 
+/** What the owner may do about this person's standing; null for everyone who is not the owner. */
+enum class ModeratorAction { Make, Remove }
+
 @HiltViewModel
 class AuthorViewModel @Inject constructor(
     private val community: CommunityRepository,
     private val preferences: AppPreferences,
+    private val owner: OwnerMemory,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -64,6 +72,17 @@ class AuthorViewModel @Inject constructor(
     val state: StateFlow<AuthorUiState> = _state.asStateFlow()
 
     private val unavailable = EditorialAuthors.isEditorial(route.authorUid)
+
+    /** Offered only once the moderators list has answered the owner; before that nobody is known to be the owner. */
+    val moderatorAction: StateFlow<ModeratorAction?> = owner.moderators
+        .map { moderators ->
+            when {
+                moderators == null || unavailable -> null
+                route.authorUid in moderators -> ModeratorAction.Remove
+                else -> ModeratorAction.Make
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     init {
         if (unavailable) {
@@ -136,6 +155,26 @@ class AuthorViewModel @Inject constructor(
                     AuthorUiState.Failed
                 },
             )
+        }
+    }
+
+    fun toggleModerator() {
+        val action = moderatorAction.value ?: return
+        val shown = _state.value as? AuthorUiState.Ready
+        viewModelScope.launch {
+            val result = when (action) {
+                ModeratorAction.Make -> community.appointModerator(
+                    route.authorUid,
+                    shown?.name ?: route.authorName,
+                    shown?.photoUrl ?: route.authorPhotoUrl,
+                ).onSuccess { owner.appointed(route.authorUid) }
+                ModeratorAction.Remove -> community.removeModerator(route.authorUid)
+                    .onSuccess { owner.removed(route.authorUid) }
+            }
+            result.onFailure { error ->
+                Timber.w(error, "Changing who moderates failed")
+                messages.send(UserMessage.ActionFailed)
+            }
         }
     }
 

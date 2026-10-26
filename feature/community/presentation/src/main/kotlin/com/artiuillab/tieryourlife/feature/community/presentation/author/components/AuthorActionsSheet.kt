@@ -23,8 +23,10 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.core.theme.ui.HideIcon
+import com.artiuillab.tieryourlife.core.theme.ui.PersonIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.author.AuthorTestTags
+import com.artiuillab.tieryourlife.feature.community.presentation.author.ModeratorAction
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
 
 /**
@@ -39,6 +41,9 @@ fun AuthorActionsSheet(
     photoUrl: String?,
     onDismiss: () -> Unit,
     onHideAuthor: () -> Unit,
+    /** The owner's one extra line; null for everyone else. */
+    moderatorAction: ModeratorAction? = null,
+    onModeratorAction: () -> Unit = {},
 ) {
     AdaptiveSheet(
         onDismiss = onDismiss,
@@ -73,6 +78,32 @@ fun AuthorActionsSheet(
                 color = MaterialTheme.colorScheme.outlineVariant,
             )
 
+            if (moderatorAction != null) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onModeratorAction)
+                        .testTag(AuthorTestTags.ACTION_MODERATOR)
+                        .padding(horizontal = 24.dp, vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    PersonIcon(20.dp, MaterialTheme.colorScheme.onSurface)
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        text = stringResource(
+                            when (moderatorAction) {
+                                ModeratorAction.Make -> R.string.author_make_moderator
+                                ModeratorAction.Remove -> R.string.author_remove_moderator
+                            },
+                            name,
+                        ),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
             Row(
                 Modifier
                     .fillMaxWidth()

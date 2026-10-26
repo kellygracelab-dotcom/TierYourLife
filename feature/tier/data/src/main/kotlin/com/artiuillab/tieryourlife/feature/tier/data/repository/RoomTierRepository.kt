@@ -95,6 +95,10 @@ class RoomTierRepository internal constructor(
         dao.setCover(id, coverImageUrl = pictures.singleOrNull(), coverImageUrls = pictures.toStoredCoverImageUrls())
     }
 
+    override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) {
+        dao.setTopic(id, topicId = topicId, topicName = topicName, newTopicName = newTopicName?.trim()?.takeIf { it.isNotEmpty() })
+    }
+
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) {
         dao.updateTierListDisplayMode(id, displayMode.name)
     }

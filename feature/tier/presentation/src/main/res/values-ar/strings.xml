@@ -191,6 +191,36 @@
     <string name="cover_picker_reset">إعادة الضبط</string>
     <string name="cover_picker_tab_cards">بطاقاتك · %1$d</string>
     <string name="cover_picker_tab_search">البحث عن صور</string>
+    <string name="topic_picker_title">الموضوع</string>
+    <string name="topic_picker_done">تم</string>
+    <string name="topic_picker_hint">ابحث عن موضوع أو سمّه</string>
+    <string name="topic_picker_none">بلا موضوع</string>
+    <string name="topic_picker_none_sub">تبقى القائمة في قسمها وحدها.</string>
+    <string name="topic_picker_create">إنشاء الموضوع «%1$s»</string>
+    <string name="topic_picker_create_note">ينتظر مشرفاً. حتى ذلك الحين تبقى القائمة في «أخرى» مع هذه الشارة.</string>
+    <plurals name="topic_picker_pending_count">
+        <item quantity="zero">%1$d من %2$d بالانتظار.</item>
+        <item quantity="one">واحد من %2$d بالانتظار.</item>
+        <item quantity="two">اثنان من %2$d بالانتظار.</item>
+        <item quantity="few">%1$d من %2$d بالانتظار.</item>
+        <item quantity="many">%1$d من %2$d بالانتظار.</item>
+        <item quantity="other">%1$d من %2$d بالانتظار.</item>
+    </plurals>
+    <string name="topic_picker_limit">ثلاثة من مواضيعك تنتظر بالفعل. يجب أن يُحسم أحدها أولاً.</string>
+    <string name="topic_picker_yours">مواضيعك</string>
+    <string name="topic_picker_waiting">بانتظار الموافقة</string>
+    <string name="topic_picker_rejected">مرفوض</string>
+    <string name="topic_picker_merged">ضُمّ إلى موضوع آخر</string>
+    <string name="topic_picker_suggestion">يشبه «%1$s»</string>
+    <string name="topic_picker_new_waits">%1$s · سينتظر الموافقة</string>
+    <plurals name="topic_picker_lists">
+        <item quantity="zero">لا قوائم</item>
+        <item quantity="one">قائمة واحدة</item>
+        <item quantity="two">قائمتان</item>
+        <item quantity="few">%d قوائم</item>
+        <item quantity="many">%d قائمة</item>
+        <item quantity="other">%d قائمة</item>
+    </plurals>
     <string name="cover_picker_status_automatic">لم يُختر شيء: حتى ست صور من القائمة نفسها</string>
     <string name="cover_picker_status_one">صورة واحدة، الغلاف كله</string>
     <plurals name="cover_picker_status_collage">

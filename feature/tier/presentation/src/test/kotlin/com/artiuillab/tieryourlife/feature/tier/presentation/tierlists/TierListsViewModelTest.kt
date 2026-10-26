@@ -325,6 +325,7 @@ internal class FakeTierRepository(initial: List<TierList>) : TierRepository {
     override suspend fun setCategory(id: Long, category: ListCategory?) = Unit
 
     override suspend fun setCover(id: Long, pictures: List<String>) = Unit
+    override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) = Unit
 
     private val lists = initial.associateBy { it.id }.toMutableMap()
     private val trashed = mutableMapOf<Long, TierList>()

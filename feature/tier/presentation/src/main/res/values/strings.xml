@@ -151,6 +151,28 @@
     <string name="cover_picker_reset">Reset</string>
     <string name="cover_picker_tab_cards">Your cards · %1$d</string>
     <string name="cover_picker_tab_search">Picture search</string>
+    <string name="topic_picker_title">Topic</string>
+    <string name="topic_picker_done">Done</string>
+    <string name="topic_picker_hint">Search or name a topic</string>
+    <string name="topic_picker_none">No topic</string>
+    <string name="topic_picker_none_sub">The list sits in its section alone.</string>
+    <string name="topic_picker_create">Create topic “%1$s”</string>
+    <string name="topic_picker_create_note">Waits for a moderator. Until then the list sits under Other with this label.</string>
+    <plurals name="topic_picker_pending_count">
+        <item quantity="one">%1$d of %2$d waiting.</item>
+        <item quantity="other">%1$d of %2$d waiting.</item>
+    </plurals>
+    <string name="topic_picker_limit">Three of your topics are already waiting. One of them has to be decided first.</string>
+    <string name="topic_picker_yours">Your topics</string>
+    <string name="topic_picker_waiting">Waiting for approval</string>
+    <string name="topic_picker_rejected">Turned down</string>
+    <string name="topic_picker_merged">Folded into another topic</string>
+    <string name="topic_picker_suggestion">Looks like “%1$s”</string>
+    <string name="topic_picker_new_waits">%1$s · will wait for approval</string>
+    <plurals name="topic_picker_lists">
+        <item quantity="one">%d list</item>
+        <item quantity="other">%d lists</item>
+    </plurals>
     <string name="cover_picker_status_automatic">Nothing chosen: up to six of the list\'s own pictures</string>
     <string name="cover_picker_status_one">One picture, the whole cover</string>
     <plurals name="cover_picker_status_collage">

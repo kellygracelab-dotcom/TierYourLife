@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,6 +22,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedTestTags
@@ -34,7 +36,13 @@ private const val FACES_SHOWN = 8
  * is where a person is acted on.
  */
 @Composable
-internal fun FollowedStrip(followed: List<FollowedAuthor>, onManage: (() -> Unit)?, modifier: Modifier = Modifier) {
+internal fun FollowedStrip(
+    followed: List<FollowedAuthor>,
+    onManage: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+    topics: List<Topic> = emptyList(),
+    onOpenTopic: (Topic) -> Unit = {},
+) {
     Column(
         modifier
             .fillMaxWidth()
@@ -42,7 +50,7 @@ internal fun FollowedStrip(followed: List<FollowedAuthor>, onManage: (() -> Unit
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = stringResource(R.string.community_you_follow, followed.size),
+                text = stringResource(R.string.community_you_follow, followed.size + topics.size),
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -56,9 +64,18 @@ internal fun FollowedStrip(followed: List<FollowedAuthor>, onManage: (() -> Unit
         Row(
             modifier = Modifier.horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             followed.take(FACES_SHOWN).forEach { person ->
                 AuthorFace(photoUrl = person.photoUrl, name = person.name.ifEmpty { null }, size = FACE_SIZE)
+            }
+            // Topics are words, so they are chips, and a chip is a way in where a face is a reminder.
+            topics.forEach { topic ->
+                AssistChip(
+                    onClick = { onOpenTopic(topic) },
+                    label = { Text(topic.name) },
+                    modifier = Modifier.testTag(CommunityFeedTestTags.followedTopic(topic.id)),
+                )
             }
             if (followed.size > FACES_SHOWN) {
                 Box(

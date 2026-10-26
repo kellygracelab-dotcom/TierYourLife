@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
+import com.artiuillab.tieryourlife.core.theme.ui.CategoryIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FlagIcon
 import com.artiuillab.tieryourlife.core.theme.ui.HideIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PersonIcon
@@ -46,6 +47,8 @@ fun ListActionsSheet(
     onOpenAuthor: (() -> Unit)?,
     onHide: () -> Unit,
     onReport: () -> Unit,
+    /** On a topic's page: the list is fine, it is just not of this topic. Nothing hides; a moderator moves it. */
+    onWrongTopic: (() -> Unit)? = null,
 ) {
     AdaptiveSheet(
         onDismiss = onDismiss,
@@ -99,6 +102,14 @@ fun ListActionsSheet(
                     testTag = CommunityTestTags.ACTION_VIEW_AUTHOR,
                     onClick = onOpenAuthor,
                     icon = { size, tint -> PersonIcon(size, tint) },
+                )
+            }
+            if (onWrongTopic != null) {
+                ActionRow(
+                    text = stringResource(R.string.community_action_not_this_topic),
+                    testTag = CommunityTestTags.ACTION_WRONG_TOPIC,
+                    onClick = onWrongTopic,
+                    icon = { size, tint -> CategoryIcon(size, tint) },
                 )
             }
             ActionRow(

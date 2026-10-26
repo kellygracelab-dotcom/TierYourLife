@@ -145,6 +145,9 @@ interface TierDao {
     @Query("UPDATE tier_lists SET coverImageUrl = :coverImageUrl, coverImageUrls = :coverImageUrls WHERE id = :id")
     suspend fun setCover(id: Long, coverImageUrl: String?, coverImageUrls: String?)
 
+    @Query("UPDATE tier_lists SET topicId = :topicId, topicName = :topicName, newTopicName = :newTopicName WHERE id = :id")
+    suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?)
+
     // The captions come from the caller: they are shown to the reader, so they
     // belong to a screen's resources and follow the language it is drawn in.
     @Transaction

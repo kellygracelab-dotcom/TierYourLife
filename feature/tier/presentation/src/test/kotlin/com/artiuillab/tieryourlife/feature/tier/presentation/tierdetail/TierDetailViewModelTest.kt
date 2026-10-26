@@ -6,6 +6,8 @@ import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
+import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
+import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
@@ -116,6 +118,55 @@ class TierDetailViewModelTest {
 
         assertEquals(1, community.published.size)
         assertEquals("published-1", repository.publishedIds.single().second)
+    }
+
+    // The author named a topic the server had not seen; publishing is when it becomes
+    // one, and the name stays beside the id while a moderator has yet to decide.
+    @Test
+    fun setPublic_keepsTheWaitingMark_whileTheServerSaysTheTopicWaits() = runBlocking {
+        val (repository, viewModel) = publishedWithNewTopic(TopicStatus.Pending)
+
+        assertEquals(listOf(listOf(1L, "t1", "Oscars 2025", "Oscars 2025")), repository.topicsSet)
+        val shown = (viewModel.screen.value.board as TierDetailUiState.Success).list
+        assertEquals("t1", shown.topicId)
+        assertEquals("Oscars 2025", shown.newTopicName)
+    }
+
+    @Test
+    fun setPublic_dropsTheWaitingMark_whenTheNameWasATopicAlready() = runBlocking {
+        val (repository, viewModel) = publishedWithNewTopic(TopicStatus.Approved)
+
+        assertEquals(listOf(listOf(1L, "t1", "Oscars 2025", null)), repository.topicsSet)
+        assertNull((viewModel.screen.value.board as TierDetailUiState.Success).list.newTopicName)
+    }
+
+    // Merged away, turned down or somebody else's: the server will not take it, so the board stops asking.
+    @Test
+    fun setPublic_forgetsATopicTheServerWillNotTake() = runBlocking {
+        val repository = FakeTierRepository(listWithOneCard().copy(topicId = "t9", topicName = "Old word"))
+        val community = FakeCommunityRepositoryForDetail(publishResult = Result.failure(PublishRefused(PublishError.TopicUnavailable)))
+        val viewModel = TierDetailViewModel(repository, community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+
+        viewModel.setPublic(true)
+        viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.topicId == null }
+
+        assertEquals(PublishError.TopicUnavailable, viewModel.screen.value.publish.error)
+        assertEquals(listOf(listOf(1L, null, null, null)), repository.topicsSet)
+    }
+
+    /** A board whose new topic name the server took, answering with an id and, when asked about it, with [status]. */
+    private suspend fun publishedWithNewTopic(status: TopicStatus): Pair<FakeTierRepository, TierDetailViewModel> {
+        val repository = FakeTierRepository(listWithOneCard().copy(newTopicName = "Oscars 2025"))
+        val community = FakeCommunityRepositoryForDetail(
+            publishResult = Result.success(Published("published-1", "sent", topicId = "t1")),
+            topicStatus = status,
+        )
+        val viewModel = TierDetailViewModel(repository, community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+        viewModel.setPublic(true)
+        viewModel.screen.firstWithin { !it.publish.publishing }
+        return repository to viewModel
     }
 
     // The switch reads publicPending while the request is in flight and the
@@ -416,6 +467,13 @@ private class FakeTierRepository(
 
     override suspend fun setCover(id: Long, pictures: List<String>) {
         list = list.copy(coverImageUrl = pictures.singleOrNull(), coverImageUrls = pictures.takeIf { it.size > 1 }.orEmpty())
+    }
+
+    val topicsSet = mutableListOf<List<Any?>>()
+
+    override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) {
+        topicsSet += listOf(id, topicId, topicName, newTopicName)
+        list = list.copy(topicId = topicId, topicName = topicName, newTopicName = newTopicName)
     }
 
     override suspend fun createFromTemplate(

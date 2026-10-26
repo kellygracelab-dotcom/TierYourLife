@@ -46,13 +46,17 @@ import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedTestTags
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.FollowingFilter
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.Day
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.FeedControlsRow
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.FollowedStrip
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.FollowingFilterRow
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.FollowingNobody
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.YourTopicsRow
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.groupedByDay
 import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
@@ -99,6 +103,9 @@ internal fun CommunityFeedList(
     /** Null on the screens that are already one author's or one person's own. */
     controls: FeedControls? = null,
     onManageFollowing: (() -> Unit)? = null,
+    /** This person's own topics, as chips above the sections; empty where that row has no place. */
+    yourTopics: List<Topic> = emptyList(),
+    onOpenTopic: (Topic) -> Unit = {},
 ) {
     val gridState = rememberLazyGridState()
     val shown = (feed as? CommunityFeed.Ready)?.lists?.size ?: 0
@@ -122,6 +129,16 @@ internal fun CommunityFeedList(
                 onSelectSort = controls.onSelectSort,
                 modifier = Modifier.padding(bottom = 8.dp),
             )
+        }
+        if (controls != null && controls.source == FeedSource.Following && feed is CommunityFeed.Ready) {
+            FollowingFilterRow(
+                selected = controls.followingFilter,
+                onSelect = controls.onSelectFollowingFilter,
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+        }
+        if (yourTopics.isNotEmpty()) {
+            YourTopicsRow(topics = yourTopics, onOpen = onOpenTopic, modifier = Modifier.padding(bottom = 8.dp))
         }
         if (showCategories) {
             CategoryFilterRow(
@@ -160,22 +177,26 @@ internal fun CommunityFeedList(
             )
 
             is CommunityFeed.Ready -> if (feed.lists.isEmpty()) {
-                CommunityMessage(
-                    // Following says who is missing, everybody says what is.
-                    title = if (controls?.source == FeedSource.Following) {
-                        followingEmptyTitle(category)
-                    } else {
-                        stringResource(R.string.home_community_empty)
-                    },
-                    body = if (controls?.source == FeedSource.Following) {
-                        ""
-                    } else {
-                        stringResource(R.string.home_community_empty_body)
-                    },
-                    action = null,
-                    onAction = {},
-                    testTag = CommunityTestTags.COMMUNITY_EMPTY,
-                )
+                val following = controls?.source == FeedSource.Following
+                if (following) EmptyFollowingStrip(feed, onManageFollowing, onOpenTopic)
+                if (feed.loadingMore) {
+                    Box(Modifier.fillMaxWidth().padding(top = 32.dp), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(Modifier.testTag(CommunityTestTags.COMMUNITY_LOADING))
+                    }
+                } else {
+                    CommunityMessage(
+                        // Following says who is missing, everybody says what is.
+                        title = if (following) {
+                            followingEmptyTitle(category, controls.followingFilter)
+                        } else {
+                            stringResource(R.string.home_community_empty)
+                        },
+                        body = if (following) "" else stringResource(R.string.home_community_empty_body),
+                        action = null,
+                        onAction = {},
+                        testTag = CommunityTestTags.COMMUNITY_EMPTY,
+                    )
+                }
             } else {
                 LazyVerticalGrid(
                     columns = if (wideEnoughForMoreColumns) {
@@ -194,9 +215,14 @@ internal fun CommunityFeedList(
                     verticalArrangement = Arrangement.spacedBy(if (wideEnoughForMoreColumns) 16.dp else 12.dp),
                 ) {
                     val following = controls?.source == FeedSource.Following
-                    if (following && feed.followed.isNotEmpty()) {
+                    if (following && (feed.followed.isNotEmpty() || feed.followedTopics.isNotEmpty())) {
                         item(key = CommunityFeedTestTags.FOLLOWED_STRIP, span = { GridItemSpan(maxLineSpan) }) {
-                            FollowedStrip(followed = feed.followed, onManage = onManageFollowing)
+                            FollowedStrip(
+                                followed = feed.followed,
+                                topics = feed.followedTopics,
+                                onManage = onManageFollowing,
+                                onOpenTopic = onOpenTopic,
+                            )
                         }
                     }
                     // A following feed in its newest-first order reads as days: the
@@ -328,6 +354,19 @@ private fun CommunityCard(
                     photoUrl = summary.authorPhotoUrl,
                     onClick = onAuthorClick,
                     testTag = CommunityTestTags.communityCardAuthor(summary.id),
+                )
+            }
+            // The author's own word for what the list is about, where the section is only the shelf.
+            summary.topicName?.let { topic ->
+                Text(
+                    text = topic,
+                    modifier = Modifier
+                        .padding(start = 8.dp, top = 2.dp)
+                        .testTag(CommunityTestTags.communityCardTopic(summary.id)),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
             Text(
@@ -501,11 +540,22 @@ internal data class FeedControls(
     val onSelectSource: (FeedSource) -> Unit,
     val onSelectSort: (FeedSort) -> Unit,
     val onFollow: (String) -> Unit,
+    val followingFilter: FollowingFilter = FollowingFilter.All,
+    val onSelectFollowingFilter: (FollowingFilter) -> Unit = {},
 )
 
 @Composable
-private fun followingEmptyTitle(category: ListCategory?): String = if (category == null) {
-    stringResource(R.string.home_following_empty_all)
-} else {
-    stringResource(R.string.home_following_empty, stringResource(category.labelRes))
+private fun followingEmptyTitle(category: ListCategory?, filter: FollowingFilter): String = when {
+    filter == FollowingFilter.Topics -> stringResource(R.string.home_following_empty_topics)
+    category == null -> stringResource(R.string.home_following_empty_all)
+    else -> stringResource(R.string.home_following_empty, stringResource(category.labelRes))
+}
+
+/** The strip stays while a narrowed page is empty: Manage lives there, and so do the chips the page is narrowed to. */
+@Composable
+private fun EmptyFollowingStrip(feed: CommunityFeed.Ready, onManage: (() -> Unit)?, onOpenTopic: (Topic) -> Unit) {
+    if (feed.followed.isEmpty() && feed.followedTopics.isEmpty()) return
+    Box(Modifier.padding(horizontal = 16.dp)) {
+        FollowedStrip(followed = feed.followed, topics = feed.followedTopics, onManage = onManage, onOpenTopic = onOpenTopic)
+    }
 }

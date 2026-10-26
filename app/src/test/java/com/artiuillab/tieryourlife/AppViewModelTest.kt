@@ -124,6 +124,10 @@ private class FakeAppPreferences(
 
     override fun setLastKnownTrashCount(count: Int) = Unit
 
+    override fun lastKnownStoredBytes(): Long = 0L
+
+    override fun setLastKnownStoredBytes(bytes: Long) = Unit
+
     val storedThemeChoices = mutableListOf<ThemeChoice>()
     val storedLanguageTags = mutableListOf<String?>()
 

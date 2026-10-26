@@ -120,4 +120,15 @@ class PublishRequestTest {
 
         assertEquals(ListCategory.Other, dto.toDomain().summary.category)
     }
+
+    @Test
+    fun `a known topic travels by id, a new one by name, never both`() {
+        val known = board.copy(topicId = "t1", topicName = "Oscars", newTopicName = "stale draft").toRequest(Pictures, uploaded = emptySet())
+        assertEquals("t1", known.topicId)
+        assertNull(known.newTopic)
+
+        val fresh = board.copy(newTopicName = "Oscars 2025").toRequest(Pictures, uploaded = emptySet())
+        assertNull(fresh.topicId)
+        assertEquals("Oscars 2025", fresh.newTopic)
+    }
 }

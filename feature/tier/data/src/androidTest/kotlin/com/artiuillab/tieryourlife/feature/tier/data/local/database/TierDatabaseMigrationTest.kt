@@ -328,6 +328,29 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    // Nothing had a topic before there were topics; every board comes through with none.
+    @Test
+    fun migration11To12_leavesEveryBoardWithoutATopic() {
+        helper.createDatabase(TEST_DB, 11).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, publishedFingerprint, " +
+                    "authorName, category, coverImageUrl, coverImageUrls, uid, arrivedFrom, editedAt, favouritedAt) " +
+                    "VALUES (1, 'Films', NULL, 'WRAP', 'pub-1', NULL, NULL, 'film_tv', NULL, NULL, 'board-1', NULL, 1, NULL)",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 12, true, MIGRATION_11_12)
+
+        migratedDb.query("SELECT topicId, topicName, newTopicName, publishedId FROM tier_lists WHERE id = 1").use {
+            check(it.moveToFirst())
+            assertTrue("no topic yet", it.isNull(0))
+            assertTrue(it.isNull(1))
+            assertTrue(it.isNull(2))
+            assertEquals("pub-1", it.getString(3))
+        }
+    }
+
     private fun editedAt(db: androidx.sqlite.db.SupportSQLiteDatabase): Long =
         db.query("SELECT editedAt FROM tier_lists WHERE id = 1").use {
             check(it.moveToFirst())

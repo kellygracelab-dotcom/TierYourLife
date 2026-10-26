@@ -70,8 +70,11 @@ fun AuthorScreen(
     viewModel: AuthorViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val moderatorAction by viewModel.moderatorAction.collectAsStateWithLifecycle()
     AuthorScreenContent(
         state = state,
+        moderatorAction = moderatorAction,
+        onToggleModerator = viewModel::toggleModerator,
         onBack = onBack,
         onOpenList = onOpenList,
         onRetry = viewModel::load,
@@ -97,6 +100,8 @@ fun AuthorScreenContent(
     onHideAuthor: () -> Unit = {},
     onReport: (id: String, title: String, ReportReason, String?) -> Unit = { _, _, _, _ -> },
     onToggleFollow: () -> Unit = {},
+    moderatorAction: ModeratorAction? = null,
+    onToggleModerator: () -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     var authorActionsVisible by remember { mutableStateOf(false) }
@@ -171,6 +176,11 @@ fun AuthorScreenContent(
                 onHideAuthor = {
                     authorActionsVisible = false
                     onHideAuthor()
+                },
+                moderatorAction = moderatorAction,
+                onModeratorAction = {
+                    authorActionsVisible = false
+                    onToggleModerator()
                 },
             )
         }

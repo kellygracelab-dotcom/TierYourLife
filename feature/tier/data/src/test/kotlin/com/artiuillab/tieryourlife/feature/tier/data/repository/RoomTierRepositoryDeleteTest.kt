@@ -62,6 +62,8 @@ private class RecordingTierDao : TierDao {
 
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) = Unit
 
+    override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) = Unit
+
     val markedListDeletes = mutableListOf<Pair<List<Long>, Long>>()
     val markedItemDeletes = mutableListOf<Pair<Long, Long>>()
     val permanentlyDeletedListIds = mutableListOf<Long>()

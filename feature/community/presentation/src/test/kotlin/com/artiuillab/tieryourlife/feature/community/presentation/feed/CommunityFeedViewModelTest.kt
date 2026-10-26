@@ -9,8 +9,11 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
+import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -229,7 +232,7 @@ class CommunityFeedViewModelTest {
     @Test
     fun aFollowingFeed_bringsThePeopleItIsMadeOf() = runBlocking {
         val community = object : FakeFeedRepository(feed = listOf(published("a", "One"))) {
-            override suspend fun following() = Result.success(listOf(FollowedAuthor("u1", "Ann", null)))
+            override suspend fun following() = Result.success(Following(listOf(FollowedAuthor("u1", "Ann", null)), emptyList()))
         }
         val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
         viewModel.selectSource(FeedSource.Following)
@@ -239,12 +242,76 @@ class CommunityFeedViewModelTest {
         assertEquals(listOf("u1"), readyFeed(state)!!.followed.map { it.uid })
     }
 
+    // Proposed and followed arrive as two answers; a topic in both is one chip, a turned-down one is none.
+    @Test
+    fun yourTopics_areWhatYouProposedAndFollow_withoutTwinsOrRefusals() = runBlocking {
+        val community = object : FakeFeedRepository() {
+            override suspend fun myTopics(): Result<List<Topic>> =
+                Result.success(listOf(knownTopic("a"), knownTopic("b", TopicStatus.Rejected)))
+            override suspend fun following() = Result.success(Following(emptyList(), listOf(knownTopic("a"), knownTopic("c"))))
+        }
+        val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
+        viewModel.load()
+
+        val state = viewModel.state.firstWithin { it.yourTopics.isNotEmpty() }
+
+        assertEquals(listOf("a", "c"), state.yourTopics.map { it.id })
+    }
+
+    // The server hands the following feed over as one page of people and topics; the chips narrow it here.
+    @Test
+    fun aFollowingFeed_narrowsToPeopleOrTopics_withoutAskingAgain() = runBlocking {
+        val community = object : FakeFeedRepository(
+            feed = listOf(published("a"), published("b").copy(authorUid = "someone", topicId = "t1", topicName = "Pokémon")),
+        ) {
+            override suspend fun following() =
+                Result.success(Following(listOf(FollowedAuthor("author-a", "Ann", null)), listOf(knownTopic("t1"))))
+        }
+        val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
+        viewModel.selectSource(FeedSource.Following)
+        viewModel.state.firstWithin { readyFeed(it)?.followedTopics?.isNotEmpty() == true }
+        val asked = community.cursorsAsked.size
+
+        viewModel.selectFollowingFilter(FollowingFilter.People)
+        assertEquals(listOf("a"), shownIds(viewModel))
+        viewModel.selectFollowingFilter(FollowingFilter.Topics)
+        assertEquals(listOf("b"), shownIds(viewModel))
+        viewModel.selectFollowingFilter(FollowingFilter.All)
+        assertEquals(listOf("a", "b"), shownIds(viewModel))
+
+        assertEquals(asked, community.cursorsAsked.size)
+    }
+
+    // A page narrowed to topics may hold none while the next page does: the feed asks on by itself.
+    @Test
+    fun narrowingToTopics_asksForTheNextPage_whenThisOneHasNone() = runBlocking {
+        val community = object : FakeFeedRepository(
+            feed = listOf(published("a")),
+            nextPages = listOf(listOf(published("b").copy(authorUid = "someone", topicId = "t1", topicName = "Pokémon"))),
+        ) {
+            override suspend fun following() =
+                Result.success(Following(listOf(FollowedAuthor("author-a", "Ann", null)), listOf(knownTopic("t1"))))
+        }
+        val viewModel = CommunityFeedViewModel(community, FakeAppPreferences())
+        viewModel.selectSource(FeedSource.Following)
+        viewModel.state.firstWithin { readyFeed(it)?.followedTopics?.isNotEmpty() == true }
+
+        viewModel.selectFollowingFilter(FollowingFilter.Topics)
+        viewModel.state.firstWithin { readyFeed(it)?.lists?.isNotEmpty() == true }
+
+        assertEquals(listOf("b"), shownIds(viewModel))
+        assertEquals(listOf(null, "0"), community.cursorsAsked)
+    }
+
+    private fun knownTopic(id: String, status: TopicStatus = TopicStatus.Approved) =
+        Topic(id = id, name = "Topic $id", section = ListCategory.Games, status = status)
+
     private fun shownIds(viewModel: CommunityFeedViewModel): List<String> =
         readyFeed(viewModel.state.value)!!.lists.map { it.id }
 
     private fun readyFeed(state: CommunityFeedUiState): CommunityFeed.Ready? = state.feed as? CommunityFeed.Ready
 
-    private fun published(id: String, title: String) = PublishedListSummary(
+    private fun published(id: String, title: String = "List $id") = PublishedListSummary(
         id = id,
         title = title,
         authorUid = "author-$id",
@@ -273,6 +340,7 @@ private open class FakeFeedRepository(
         after: String?,
         sort: FeedSort,
         following: Boolean,
+        topic: String?,
     ): Result<CommunityPage> {
         cursorsAsked += after
         queriesAsked += query

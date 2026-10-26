@@ -16,6 +16,10 @@
     <string name="list_settings_cover">الغلاف</string>
     <string name="list_settings_cover_none_set">لا يوجد</string>
     <string name="list_settings_cover_set">مُختار</string>
+    <string name="list_settings_topic">الموضوع</string>
+    <string name="list_settings_topic_none">لا شيء</string>
+    <string name="list_settings_topic_waiting">%1$s · بانتظار الموافقة</string>
+    <string name="list_settings_public_too_many_topics">ثلاثة من مواضيعك تنتظر مشرفاً بالفعل. انشر دون موضوع جديد أو انتظر.</string>
     <string name="list_settings_public">عامة</string>
     <string name="list_settings_public_banned_forever">أزال أحد المشرفين إحدى قوائمك، ولم يعد بإمكانك النشر.</string>
     <string name="list_settings_public_banned_until">أزال أحد المشرفين إحدى قوائمك. يمكنك النشر مجددًا في %1$s.</string>
@@ -171,4 +175,5 @@
         <item quantity="many">%d في المجمّع</item>
         <item quantity="other">%d في المجمّع</item>
     </plurals>
+    <string name="list_settings_public_topic_unavailable">هذا الموضوع لم يعد متاحًا: دُمج أو رُفض أو يخص شخصًا آخر. لم يعد للقائمة موضوع؛ اختر موضوعًا آخر أو انشر بدونه.</string>
 </resources>
