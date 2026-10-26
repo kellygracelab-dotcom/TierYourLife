@@ -157,4 +157,10 @@
     </plurals>
     <string name="list_settings_public_topic_unavailable">Эта тема больше недоступна: её объединили, отклонили или она чужая. Тема у списка снята; выберите другую или публикуйте без неё.</string>
     <string name="list_settings_public_ranking_body">Опубликована как ваше ранжирование списка %1$s; второго списка в ленте нет.</string>
+    <string name="tier_detail_add_card">Добавить карточку</string>
+    <string name="tier_detail_pool_count">Пул · %1$d</string>
+    <string name="tier_detail_drop_items_here">Перетащите сюда</string>
+    <string name="tier_detail_drop_to_delete">Отпустите, чтобы удалить</string>
+    <string name="tier_detail_drop_unrank_column">Отпустите на карточки ниже, чтобы убрать из рейтинга</string>
+    <string name="tier_detail_drop_unrank_dock">Отпустите на пул, чтобы убрать из рейтинга</string>
 </resources>

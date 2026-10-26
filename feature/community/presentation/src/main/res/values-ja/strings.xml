@@ -170,4 +170,5 @@
     <plurals name="community_rankings_count">
         <item quantity="other">ランキング%d件</item>
     </plurals>
+    <string name="community_save_short">保存</string>
 </resources>

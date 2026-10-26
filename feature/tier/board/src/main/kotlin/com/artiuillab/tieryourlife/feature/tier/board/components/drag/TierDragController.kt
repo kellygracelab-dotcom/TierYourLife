@@ -28,6 +28,9 @@ sealed interface DragTarget {
     data object Trash : DragTarget
 }
 
+/** A card let go over nothing, on its way back to where it was lifted from. */
+data class ReturnTrip(val payload: DragPayload, val from: Offset, val to: Offset)
+
 sealed interface DropOutcome {
     data class MoveTo(val itemId: Long, val toTierId: Long, val toPosition: Int) : DropOutcome
     data class Delete(val itemId: Long) : DropOutcome
@@ -76,6 +79,17 @@ class TierDragController {
     val isDraggingTier: Boolean get() = draggedTierId != null
     val isSettlingTier: Boolean get() = settlingTierId != null
     val hoveredTierId: Long? get() = (hoveredTarget as? DragTarget.Tier)?.tierId
+
+    /** Where in the hovered row the card would land: the place its slot is drawn. */
+    var hoverIndex by mutableStateOf<Int?>(null)
+        private set
+
+    /** Set while a card dropped over nothing springs back to its place. */
+    var returning by mutableStateOf<ReturnTrip?>(null)
+        private set
+
+    /** The centre of the card where it was lifted, in the window. */
+    private var home: Offset? = null
     val isHoveringTrash: Boolean get() = hoveredTarget is DragTarget.Trash
 
     private val rowBounds = mutableStateMapOf<DragTarget, Rect>()
@@ -136,9 +150,11 @@ class TierDragController {
         this.rightToLeft = rightToLeft
     }
 
-    fun beginDrag(payload: DragPayload, rootPosition: Offset) {
+    fun beginDrag(payload: DragPayload, rootPosition: Offset, homeCentre: Offset? = null) {
+        returning = null
         draggedPayload = payload
         pointerPositionInRoot = rootPosition
+        home = homeCentre
         recomputeHover()
     }
 
@@ -150,17 +166,31 @@ class TierDragController {
 
     fun endDrag(): DropOutcome? {
         val drop = computeDrop()
+        if (drop == null) startReturn()
         clear()
         return drop
     }
 
     fun cancelDrag() {
+        startReturn()
         clear()
+    }
+
+    fun finishReturn() {
+        returning = null
+    }
+
+    private fun startReturn() {
+        val payload = draggedPayload ?: return
+        val to = home ?: return
+        returning = ReturnTrip(payload, pointerPositionInRoot, to)
     }
 
     private fun clear() {
         draggedPayload = null
         hoveredTarget = null
+        hoverIndex = null
+        home = null
     }
 
     private fun recomputeHover() {
@@ -172,6 +202,9 @@ class TierDragController {
                 target is DragTarget.Tier && target.tierId in validTierIds && rect.contains(position)
             }?.key
         }
+        val payload = draggedPayload
+        val tierId = hoveredTierId
+        hoverIndex = if (payload != null && tierId != null) computeMove(payload, tierId)?.toPosition else null
     }
 
     fun beginTierDrag(tierId: Long, rankedTierIds: List<Long>, rootPosition: Offset, bandWidthPx: Float, slotHeightPx: Float) {

@@ -184,4 +184,5 @@
         <item quantity="many">%d classements</item>
         <item quantity="other">%d classements</item>
     </plurals>
+    <string name="community_save_short">Enregistrer</string>
 </resources>

@@ -205,4 +205,5 @@
         <item quantity="many">%d ترتيبًا</item>
         <item quantity="other">%d ترتيب</item>
     </plurals>
+    <string name="community_save_short">حفظ</string>
 </resources>
