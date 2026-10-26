@@ -38,4 +38,13 @@ class RouteFromHandleTest {
         assertEquals(entry.toRoute<Route.TierDetail>(), entry.savedStateHandle.tierDetailRoute())
         assertEquals(route, entry.savedStateHandle.tierDetailRoute())
     }
+
+    @Test
+    fun theTopicPickerRoute_readsTheSameWithoutBundle() {
+        val route = Route.TopicPicker(tierListId = 7L)
+        val entry = entryFor(route)
+
+        assertEquals(entry.toRoute<Route.TopicPicker>(), entry.savedStateHandle.topicPickerRoute())
+        assertEquals(route, entry.savedStateHandle.topicPickerRoute())
+    }
 }

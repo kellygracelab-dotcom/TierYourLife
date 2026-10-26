@@ -19,6 +19,7 @@ data class TierDetailActions(
     val onSetCategory: (ListCategory) -> Unit = {},
     val onCategoryNotChosen: () -> Unit = {},
     val onChooseCover: () -> Unit = {},
+    val onChooseTopic: () -> Unit = {},
     val onAddClick: () -> Unit = {},
     val onManualAddClick: () -> Unit = {},
     val onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },

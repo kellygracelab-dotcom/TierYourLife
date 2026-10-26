@@ -141,6 +141,26 @@
     <string name="cover_picker_reset">リセット</string>
     <string name="cover_picker_tab_cards">あなたのカード · %1$d</string>
     <string name="cover_picker_tab_search">画像を検索</string>
+    <string name="topic_picker_title">トピック</string>
+    <string name="topic_picker_done">完了</string>
+    <string name="topic_picker_hint">トピックを検索または入力</string>
+    <string name="topic_picker_none">トピックなし</string>
+    <string name="topic_picker_none_sub">リストはセクションの中にそのまま置かれます。</string>
+    <string name="topic_picker_create">トピック「%1$s」を作成</string>
+    <string name="topic_picker_create_note">モデレーターの承認を待ちます。それまでリストは「その他」にこのラベル付きで置かれます。</string>
+    <plurals name="topic_picker_pending_count">
+        <item quantity="other">%2$d件中%1$d件が承認待ち。</item>
+    </plurals>
+    <string name="topic_picker_limit">すでに3件のトピックが承認待ちです。先にいずれかが決まる必要があります。</string>
+    <string name="topic_picker_yours">あなたのトピック</string>
+    <string name="topic_picker_waiting">承認待ち</string>
+    <string name="topic_picker_rejected">却下</string>
+    <string name="topic_picker_merged">別のトピックに統合</string>
+    <string name="topic_picker_suggestion">「%1$s」に似ています</string>
+    <string name="topic_picker_new_waits">%1$s · 承認待ちになります</string>
+    <plurals name="topic_picker_lists">
+        <item quantity="other">%d件のリスト</item>
+    </plurals>
     <string name="cover_picker_status_automatic">未選択: リスト自身の画像を最大6枚</string>
     <string name="cover_picker_status_one">1枚の画像がカバー全体になります</string>
     <plurals name="cover_picker_status_collage">

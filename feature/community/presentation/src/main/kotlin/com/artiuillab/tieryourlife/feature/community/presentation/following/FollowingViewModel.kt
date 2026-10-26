@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +20,8 @@ import javax.inject.Inject
 sealed interface FollowingUiState {
     data object Loading : FollowingUiState
 
-    data class Ready(val authors: List<FollowedAuthor>) : FollowingUiState
+    /** The people and the topics, each with its own way to stop. */
+    data class Ready(val authors: List<FollowedAuthor>, val topics: List<Topic> = emptyList()) : FollowingUiState
 
     data object Failed : FollowingUiState
 }
@@ -43,7 +45,7 @@ class FollowingViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = FollowingUiState.Loading
             _state.value = community.following().fold(
-                onSuccess = { FollowingUiState.Ready(it) },
+                onSuccess = { following -> FollowingUiState.Ready(following.authors, following.topics) },
                 onFailure = { error ->
                     Timber.w(error, "Reading who is followed failed")
                     FollowingUiState.Failed
@@ -66,6 +68,25 @@ class FollowingViewModel @Inject constructor(
                 _state.update { state ->
                     if (state !is FollowingUiState.Ready) return@update state
                     state.copy(authors = state.authors.toMutableList().apply { add(index.coerceAtMost(size), person) })
+                }
+                messages.send(UserMessage.ActionFailed)
+            }
+        }
+    }
+
+    fun unfollowTopic(id: String) {
+        val current = _state.value as? FollowingUiState.Ready ?: return
+        val index = current.topics.indexOfFirst { it.id == id }
+        if (index < 0) return
+        val topic = current.topics[index]
+        _state.value = current.copy(topics = current.topics - topic)
+
+        viewModelScope.launch {
+            community.unfollowTopic(id).onFailure { error ->
+                Timber.w(error, "Unfollowing a topic failed")
+                _state.update { state ->
+                    if (state !is FollowingUiState.Ready) return@update state
+                    state.copy(topics = state.topics.toMutableList().apply { add(index.coerceAtMost(size), topic) })
                 }
                 messages.send(UserMessage.ActionFailed)
             }

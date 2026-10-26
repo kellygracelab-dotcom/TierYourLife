@@ -31,11 +31,39 @@ as typed.
 topics. Moderators: the configured owner alone appoints and removes
 (`lists/moderators`). Deployed only when Danylo deploys.
 
-**App**: not yet built. Screens on the canvas: Community home (your topics as
-chips, the nine sections as a grid with counts, the feed), the topic page
-(follow, "new list here", popular / recent), the publish sheet (section chips
-required, topic field with typeahead and "create a topic", the 1-of-3 note),
-the moderation queue with a Topics tab and a Moderators tab (owner only).
+**App** (`topics-in-the-app`, one PR): a board's settings carry a **Topic**
+row that opens a picker: search the server's topics, take the one the title
+names (suggested, never forced), or propose a new one; the picker says how
+many of the three are waiting and refuses the fourth. Publishing sends the
+topic by id or the new name and keeps the id the server answers with; Room is
+at schema 12 for it. The community home shows **Your topics** as chips above
+the sections (a waiting one says so); a card names its topic. A topic page
+has the section as its small word, the name, the counts, Follow / Unfollow,
+Popular / Newest, and a long press offers **Not this topic**, which files a
+`wrong_category` report and hides nothing. Moderation has three chips:
+Reports, Topics (approve into a section, rename, merge into a found topic,
+reject) and, for the owner alone, Moderators (appoint by account id, remove);
+an author's page offers the owner "make / remove moderator" once that list
+has answered.
+
+**After review** (same PR): Follow exists only on an approved topic, since
+the server refuses the rest. A board whose new name the server took keeps the
+name beside the id while a moderator has yet to decide, so the settings row
+keeps saying *waiting*; the picker settles it from the server's later word
+(approved clears the mark, merged points the board at the surviving topic,
+rejected takes the topic off). A topic the server will not take at publish
+(`TOPIC_UNAVAILABLE`, tieryourlife-proxy#32) is dropped from the board with
+its own message instead of a retry that can never succeed. A `wrong_category`
+report has a **Move…** action in the Reports chip: pick the section, the topic
+is dropped, the complaints close. The People / Topics chips over a following
+page ask for the next pages on their own when the one on screen holds nothing
+of what they narrow to, four pages at most, and the strip stays meanwhile.
+`GET lists/following` is read once per load.
+
+Left out of this pass, for later: the "new list here" button on a topic page,
+the 3×3 section grid with counts on the home screen (the section row stays),
+and a board learning that its topic was renamed or placed after the fact
+anywhere but in the picker (which settles it when it opens).
 
 ## 2. Following
 
@@ -46,7 +74,10 @@ once and a refusal puts the person back where they were. A filter
 All / People / Topics arrives with topics.
 
 Built for people in #166 on `GET lists/following` (tieryourlife-proxy#29).
-Topics in the strip and the filter come with section 1's app work.
+Topics arrived with section 1's app work: chips in the strip (a tap opens the
+topic), a Topics section in Manage with Unfollow, and the All / People /
+Topics filter, which narrows the page the server already sent rather than
+asking again, since the proxy hands the following feed over as one.
 
 ## 3. Opening a list: no blank frame
 

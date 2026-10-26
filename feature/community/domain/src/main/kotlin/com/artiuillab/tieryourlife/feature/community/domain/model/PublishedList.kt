@@ -22,6 +22,9 @@ data class PublishedListSummary(
     val takeCount: Int = 0,
     /** Set by the server once it marks lists that stand without an author; absent before. */
     val anonymous: Boolean = false,
+    /** The topic the author filed it under, if any; the name travels too, so a card needs no second read. */
+    val topicId: String? = null,
+    val topicName: String? = null,
 ) {
     /** Shown without its author, and leading to no profile. */
     val editorial: Boolean get() = EditorialAuthors.isEditorial(authorUid, anonymous)

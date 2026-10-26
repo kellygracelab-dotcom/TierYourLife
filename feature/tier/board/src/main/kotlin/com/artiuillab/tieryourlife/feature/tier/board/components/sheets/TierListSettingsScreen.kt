@@ -92,6 +92,7 @@ fun TierListSettingsScreenContent(
     onSetCategory: (ListCategory) -> Unit = {},
     onCategoryNotChosen: () -> Unit = {},
     onChooseCover: () -> Unit = {},
+    onChooseTopic: () -> Unit = {},
     onAddCards: () -> Unit = {},
     onShare: () -> Unit = {},
 ) {
@@ -120,6 +121,7 @@ fun TierListSettingsScreenContent(
             // A category exists only for the feed; a cover is also the card's
             // own art, so it stays available to a guest.
             CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
+            TopicRow(topicName = list.topicName, newTopicName = list.newTopicName, onClick = onChooseTopic)
             CoverRow(chosen = list.coverImageUrl != null || list.coverImageUrls.isNotEmpty(), onClick = onChooseCover)
             // Beside the cover: sharing is not publishing and needs no account.
             ShareRow(onClick = onShare)
@@ -341,6 +343,22 @@ private fun CategoryRow(category: ListCategory?, onClick: () -> Unit) {
     )
 }
 
+/** The word inside the section; a name still waiting for a moderator says so beside it. */
+@Composable
+private fun TopicRow(topicName: String?, newTopicName: String?, onClick: () -> Unit) {
+    SettingsActionRow(
+        icon = { CategoryIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = stringResource(R.string.list_settings_topic),
+        subtitle = when {
+            newTopicName != null -> stringResource(R.string.list_settings_topic_waiting, newTopicName)
+            topicName != null -> topicName
+            else -> stringResource(R.string.list_settings_topic_none)
+        },
+        onClick = onClick,
+        testTag = TierDetailTestTags.TOPIC_ROW,
+    )
+}
+
 @Composable
 private fun CoverRow(chosen: Boolean, onClick: () -> Unit) {
     SettingsActionRow(
@@ -513,6 +531,8 @@ private fun PublishError.messageRes(): Int = when (this) {
     PublishError.NotSignedIn -> R.string.list_settings_public_needs_account
     PublishError.NothingToPublish -> R.string.list_settings_public_needs_items
     PublishError.TooManyLists -> R.string.list_settings_public_too_many
+    PublishError.TooManyPendingTopics -> R.string.list_settings_public_too_many_topics
+    PublishError.TopicUnavailable -> R.string.list_settings_public_topic_unavailable
     PublishError.TooLarge -> R.string.list_settings_public_too_large
     PublishError.PictureRefused -> R.string.list_settings_public_picture_refused
     is PublishError.Banned -> R.string.list_settings_public_banned_forever

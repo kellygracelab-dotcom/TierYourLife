@@ -171,6 +171,32 @@
     <string name="cover_picker_reset">Сбросить</string>
     <string name="cover_picker_tab_cards">Ваши карточки · %1$d</string>
     <string name="cover_picker_tab_search">Поиск картинок</string>
+    <string name="topic_picker_title">Тема</string>
+    <string name="topic_picker_done">Готово</string>
+    <string name="topic_picker_hint">Найти или назвать тему</string>
+    <string name="topic_picker_none">Без темы</string>
+    <string name="topic_picker_none_sub">Список лежит в своём разделе сам по себе.</string>
+    <string name="topic_picker_create">Создать тему «%1$s»</string>
+    <string name="topic_picker_create_note">Будет ждать модератора. До тех пор список лежит в разделе «Другое» с этим ярлыком.</string>
+    <plurals name="topic_picker_pending_count">
+        <item quantity="one">Ждёт %1$d из %2$d.</item>
+        <item quantity="few">Ждут %1$d из %2$d.</item>
+        <item quantity="many">Ждут %1$d из %2$d.</item>
+        <item quantity="other">Ждут %1$d из %2$d.</item>
+    </plurals>
+    <string name="topic_picker_limit">Три ваших темы уже ждут. Сначала должна решиться одна из них.</string>
+    <string name="topic_picker_yours">Ваши темы</string>
+    <string name="topic_picker_waiting">Ждёт одобрения</string>
+    <string name="topic_picker_rejected">Отклонена</string>
+    <string name="topic_picker_merged">Слита с другой темой</string>
+    <string name="topic_picker_suggestion">Похоже на «%1$s»</string>
+    <string name="topic_picker_new_waits">%1$s · будет ждать одобрения</string>
+    <plurals name="topic_picker_lists">
+        <item quantity="one">%d список</item>
+        <item quantity="few">%d списка</item>
+        <item quantity="many">%d списков</item>
+        <item quantity="other">%d списка</item>
+    </plurals>
     <string name="cover_picker_status_automatic">Ничего не выбрано: до шести картинок самого списка</string>
     <string name="cover_picker_status_one">Одна картинка, вся обложка</string>
     <plurals name="cover_picker_status_collage">

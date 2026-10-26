@@ -171,6 +171,32 @@
     <string name="cover_picker_reset">Resetuj</string>
     <string name="cover_picker_tab_cards">Twoje karty · %1$d</string>
     <string name="cover_picker_tab_search">Szukaj obrazów</string>
+    <string name="topic_picker_title">Temat</string>
+    <string name="topic_picker_done">Gotowe</string>
+    <string name="topic_picker_hint">Znajdź lub nazwij temat</string>
+    <string name="topic_picker_none">Bez tematu</string>
+    <string name="topic_picker_none_sub">Lista leży w swoim dziale sama.</string>
+    <string name="topic_picker_create">Utwórz temat „%1$s”</string>
+    <string name="topic_picker_create_note">Poczeka na moderatora. Do tego czasu lista leży w dziale Inne z tą etykietą.</string>
+    <plurals name="topic_picker_pending_count">
+        <item quantity="one">Czeka %1$d z %2$d.</item>
+        <item quantity="few">Czekają %1$d z %2$d.</item>
+        <item quantity="many">Czeka %1$d z %2$d.</item>
+        <item quantity="other">Czeka %1$d z %2$d.</item>
+    </plurals>
+    <string name="topic_picker_limit">Trzy twoje tematy już czekają. Najpierw jeden z nich musi zostać rozstrzygnięty.</string>
+    <string name="topic_picker_yours">Twoje tematy</string>
+    <string name="topic_picker_waiting">Czeka na zatwierdzenie</string>
+    <string name="topic_picker_rejected">Odrzucony</string>
+    <string name="topic_picker_merged">Scalony z innym tematem</string>
+    <string name="topic_picker_suggestion">Wygląda jak „%1$s”</string>
+    <string name="topic_picker_new_waits">%1$s · poczeka na zatwierdzenie</string>
+    <plurals name="topic_picker_lists">
+        <item quantity="one">%d lista</item>
+        <item quantity="few">%d listy</item>
+        <item quantity="many">%d list</item>
+        <item quantity="other">%d listy</item>
+    </plurals>
     <string name="cover_picker_status_automatic">Nic nie wybrano: do sześciu obrazów z samej listy</string>
     <string name="cover_picker_status_one">Jeden obraz, cała okładka</string>
     <plurals name="cover_picker_status_collage">

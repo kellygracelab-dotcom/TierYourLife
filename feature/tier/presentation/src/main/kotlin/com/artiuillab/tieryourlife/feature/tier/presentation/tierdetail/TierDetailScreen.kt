@@ -23,6 +23,9 @@ fun TierDetailScreen(
     onChooseCover: () -> Unit = {},
     coverChanged: Boolean = false,
     onCoverChangeConsumed: () -> Unit = {},
+    onChooseTopic: () -> Unit = {},
+    topicChanged: Boolean = false,
+    onTopicChangeConsumed: () -> Unit = {},
     addedItemIds: List<Long> = emptyList(),
     onAddedItemConsumed: () -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
@@ -38,6 +41,12 @@ fun TierDetailScreen(
         if (coverChanged) {
             viewModel.loadTierList()
             onCoverChangeConsumed()
+        }
+    }
+    LaunchedEffect(topicChanged) {
+        if (topicChanged) {
+            viewModel.loadTierList()
+            onTopicChangeConsumed()
         }
     }
 
@@ -60,6 +69,7 @@ fun TierDetailScreen(
             onSetCategory = viewModel::setCategory,
             onCategoryNotChosen = viewModel::categoryNotChosen,
             onChooseCover = onChooseCover,
+            onChooseTopic = onChooseTopic,
             onAddClick = { addSheetVisible = true },
             onManualAddClick = { manualEntryVisible = true },
             onMoveItem = viewModel::moveItem,

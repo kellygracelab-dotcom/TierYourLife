@@ -16,6 +16,9 @@ sealed interface Route {
     data class CoverPicker(val tierListId: Long) : Route
 
     @Serializable
+    data class TopicPicker(val tierListId: Long) : Route
+
+    @Serializable
     data object Trash : Route
 }
 
@@ -27,6 +30,8 @@ sealed interface Route {
 internal fun SavedStateHandle.tierDetailRoute() = Route.TierDetail(tierListId = required(Route.TierDetail::tierListId.name))
 
 internal fun SavedStateHandle.coverPickerRoute() = Route.CoverPicker(tierListId = required(Route.CoverPicker::tierListId.name))
+
+internal fun SavedStateHandle.topicPickerRoute() = Route.TopicPicker(tierListId = required(Route.TopicPicker::tierListId.name))
 
 private fun <T : Any> SavedStateHandle.required(key: String): T =
     checkNotNull(get<T>(key)) { "Route argument $key is missing" }

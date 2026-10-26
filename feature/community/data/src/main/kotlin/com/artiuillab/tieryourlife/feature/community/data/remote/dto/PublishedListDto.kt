@@ -17,6 +17,8 @@ data class PublishedListSummaryDto(
     val updatedAt: Long = 0,
     val takeCount: Int = 0,
     val anonymous: Boolean = false,
+    val topicId: String? = null,
+    val topicName: String? = null,
 )
 
 @Serializable
@@ -55,6 +57,7 @@ data class FollowedAuthorDto(
 @Serializable
 data class FollowedAuthorsDto(
     val authors: List<FollowedAuthorDto> = emptyList(),
+    val topics: List<TopicDto> = emptyList(),
 )
 
 @Serializable
@@ -99,6 +102,8 @@ data class PublishedListDto(
     val tiers: List<PublishedTierDto> = emptyList(),
     val items: List<PublishedItemDto> = emptyList(),
     val anonymous: Boolean = false,
+    val topicId: String? = null,
+    val topicName: String? = null,
 )
 
 @Serializable
@@ -111,11 +116,16 @@ data class PublishListRequestDto(
     val coverImageUrls: List<String> = emptyList(),
     val tiers: List<PublishedTierDto>,
     val items: List<PublishedItemDto>,
+    /** One or the other: a topic the server knows, or a name it has not seen. */
+    val topicId: String? = null,
+    val newTopic: String? = null,
 )
 
 @Serializable
 data class PublishedIdDto(
     val id: String,
+    /** The topic the list was filed under, named by the server once a new one exists. */
+    val topicId: String? = null,
 )
 
 @Serializable

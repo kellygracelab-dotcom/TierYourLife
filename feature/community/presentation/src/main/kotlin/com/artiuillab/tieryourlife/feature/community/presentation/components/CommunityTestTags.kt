@@ -15,11 +15,13 @@ object CommunityTestTags {
     const val ACTION_VIEW_AUTHOR = "community_action_view_author"
     const val ACTION_HIDE = "community_action_hide"
     const val ACTION_REPORT = "community_action_report"
+    const val ACTION_WRONG_TOPIC = "community_action_wrong_topic"
     const val REPORT_DIALOG = "community_report_dialog"
     const val REPORT_NOTE = "community_report_note"
     const val REPORT_SEND = "community_report_send"
     fun communityCard(id: String): String = "community_card_$id"
     fun communityCardAuthor(id: String): String = "community_card_author_$id"
+    fun communityCardTopic(id: String): String = "community_card_topic_$id"
     fun categoryFilter(category: ListCategory?): String = "home_category_${category?.id ?: "all"}"
     fun reportReason(reason: ReportReason): String = "community_report_reason_${reason.id}"
 }

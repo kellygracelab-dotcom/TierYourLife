@@ -11,4 +11,13 @@ enum class ReportReason(val id: String) {
     Hate("hate"),
     Spam("spam"),
     Other("other"),
+
+    /** Filed under the wrong section or topic. Never hides a list; a moderator moves it. Offered from a topic page, not in the report dialog. */
+    WrongCategory("wrong_category"),
+    ;
+
+    companion object {
+        /** The five a person reads before choosing at random; the sixth has its own button. */
+        val offered: List<ReportReason> get() = entries.filterNot { it == WrongCategory }
+    }
 }

@@ -9,14 +9,18 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
-import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
+import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.model.opensOn
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +31,9 @@ import timber.log.Timber
 import javax.inject.Inject
 
 private const val SEARCH_DELAY_MILLIS = 300L
+
+/** How far a narrowed following page looks ahead on its own before saying there is nothing. */
+private const val PAGES_FETCHED_FOR_A_FILTER = 4
 
 @HiltViewModel
 class CommunityFeedViewModel @Inject constructor(
@@ -51,6 +58,15 @@ class CommunityFeedViewModel @Inject constructor(
     )
     private var query: String? = null
     private var searchJob: Job? = null
+    private var yourTopics: List<Topic> = emptyList()
+    private var topicsJob: Job? = null
+    private var followingFilter: FollowingFilter = FollowingFilter.All
+
+    /** Pages asked for by [fetchUntilSomethingShows] since the filter last changed. */
+    private var pagesFetchedForFilter = 0
+
+    /** One answer per load for the strip and the chips, whichever asks first. */
+    private var followingAnswer: Deferred<Result<Following>>? = null
 
     /** What the feed on screen was already filtered against. */
     private var appliedHidden: Set<String> = emptySet()
@@ -61,11 +77,25 @@ class CommunityFeedViewModel @Inject constructor(
 
     private fun emit() {
         _state.value = CommunityFeedUiState(
-            feed = feed,
+            feed = feed.narrowedTo(followingFilter),
             category = category,
             source = source,
             sort = sortNow(),
             query = query,
+            yourTopics = yourTopics,
+            followingFilter = followingFilter,
+        )
+    }
+
+    /** A following feed arrives as one page of people and topics together; the filter narrows what is shown, and [fetchUntilSomethingShows] asks on when that leaves nothing. */
+    private fun CommunityFeed.narrowedTo(filter: FollowingFilter): CommunityFeed {
+        if (this !is CommunityFeed.Ready || source != FeedSource.Following || filter == FollowingFilter.All) return this
+        val people = followed.mapTo(mutableSetOf()) { it.uid }
+        val topics = followedTopics.mapTo(mutableSetOf()) { it.id }
+        return copy(
+            lists = lists.filter {
+                if (filter == FollowingFilter.People) it.authorUid in people else it.topicId in topics
+            },
         )
     }
 
@@ -73,7 +103,26 @@ class CommunityFeedViewModel @Inject constructor(
 
     fun load() {
         searchJob?.cancel()
+        followingAnswer = null
+        refreshYourTopics()
         viewModelScope.launch { loadNow() }
+    }
+
+    /** The chips above the sections. Quiet: the feed stands without them, and a guest has none. */
+    private fun refreshYourTopics() {
+        topicsJob?.cancel()
+        topicsJob = viewModelScope.launch {
+            val mine = community.myTopics()
+                .onFailure { Timber.i(it, "Reading this person's topics failed") }
+                .getOrDefault(emptyList())
+            val followed = followingNow()
+                .onFailure { Timber.i(it, "Reading the followed topics failed") }
+                .map { it.topics }
+                .getOrDefault(emptyList())
+            // A turned-down proposal has nothing to open; a waiting one still has its label.
+            yourTopics = (mine + followed).distinctBy { it.id }.filterNot { it.status == TopicStatus.Rejected }
+            emit()
+        }
     }
 
     private suspend fun loadNow() {
@@ -97,10 +146,12 @@ class CommunityFeedViewModel @Inject constructor(
                         .getOrElse { shown?.authors.orEmpty() }
                     CommunityFeed.FollowingNobody(authors = authors, loading = false, followed = shown?.followed.orEmpty())
                 } else {
+                    val followed = if (source == FeedSource.Following) whoIsFollowed() else null
                     CommunityFeed.Ready(
                         lists = page.lists.filterNot(::isHidden),
                         canLoadMore = page.nextCursor != null,
-                        followed = if (source == FeedSource.Following) whoIsFollowed() else emptyList(),
+                        followed = followed?.authors.orEmpty(),
+                        followedTopics = followed?.topics.orEmpty(),
                     )
                 }
             },
@@ -111,17 +162,40 @@ class CommunityFeedViewModel @Inject constructor(
             },
         )
         emit()
+        fetchUntilSomethingShows()
     }
 
     /** The strip above a following feed. Without it the feed still stands, so a failure here is a note, not a state. */
-    private suspend fun whoIsFollowed(): List<FollowedAuthor> = community.following()
+    private suspend fun whoIsFollowed(): Following? = followingNow()
         .onFailure { Timber.w(it, "Reading who is followed failed") }
-        .getOrDefault(emptyList())
+        .getOrNull()
 
+    private suspend fun followingNow(): Result<Following> {
+        val answer = followingAnswer ?: viewModelScope.async { community.following() }.also { followingAnswer = it }
+        return answer.await()
+    }
+
+    /**
+     * The server hands a following feed over whole, so a page narrowed to
+     * people or topics may hold nothing while the next does: ask on, a few
+     * pages at most.
+     */
+    private fun fetchUntilSomethingShows() {
+        val shown = feed as? CommunityFeed.Ready ?: return
+        if (source != FeedSource.Following || followingFilter == FollowingFilter.All) return
+        val narrowed = shown.narrowedTo(followingFilter) as? CommunityFeed.Ready ?: return
+        if (narrowed.lists.isNotEmpty() || cursor == null || pagesFetchedForFilter >= PAGES_FETCHED_FOR_A_FILTER) return
+        pagesFetchedForFilter++
+        loadMore()
+    }
+
+    /** The feed again under new terms; the chips above it are not in question. */
     private fun reload() {
+        followingAnswer = null
         feed = CommunityFeed.Loading
         emit()
-        load()
+        searchJob?.cancel()
+        viewModelScope.launch { loadNow() }
     }
 
     fun selectCategory(selected: ListCategory?) {
@@ -134,6 +208,15 @@ class CommunityFeedViewModel @Inject constructor(
         if (source == selected) return
         source = selected
         reload()
+    }
+
+    /** Narrows what is already on screen: no request, nothing to wait for. */
+    fun selectFollowingFilter(selected: FollowingFilter) {
+        if (followingFilter == selected) return
+        followingFilter = selected
+        pagesFetchedForFilter = 0
+        emit()
+        fetchUntilSomethingShows()
     }
 
     fun selectSort(selected: FeedSort) {
@@ -215,6 +298,7 @@ class CommunityFeedViewModel @Inject constructor(
             loadingMore = false,
         )
         emit()
+        fetchUntilSomethingShows()
     }
 
     private fun stopWaitingForMore() {

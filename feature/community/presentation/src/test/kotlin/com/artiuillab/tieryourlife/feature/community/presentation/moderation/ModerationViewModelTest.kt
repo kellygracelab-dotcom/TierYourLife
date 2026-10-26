@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityReposit
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -99,6 +100,20 @@ class ModerationViewModelTest {
         assertTrue(repository.takenDown.isEmpty())
     }
 
+    // Moving answers the complaint that a list sits in the wrong place; the complaints close with it.
+    @Test
+    fun movingAList_sendsTheSectionAndClosesItsComplaints() = runBlocking {
+        val repository = FakeModerationRepository(twoAboutOneList())
+        val viewModel = ModerationViewModel(repository)
+        viewModel.state.firstWithin { it is ModerationUiState.Ready }
+
+        viewModel.move("a", ListCategory.Games)
+        viewModel.state.firstWithin { (it as? ModerationUiState.Ready)?.reports?.isEmpty() == true }
+
+        assertEquals(listOf("a" to ListCategory.Games), repository.moved)
+        assertEquals(listOf("a"), repository.dismissed)
+    }
+
     // A queue that quietly loses entries is worse than one that will not budge.
     @Test
     fun anActionThatFails_leavesTheQueueWhereItWas() = runBlocking {
@@ -138,6 +153,13 @@ private class FakeModerationRepository(
 ) : FakeCommunityRepository() {
     val takenDown = mutableListOf<String>()
     val dismissed = mutableListOf<String>()
+    val moved = mutableListOf<Pair<String, ListCategory>>()
+
+    override suspend fun moveList(publishedId: String, category: ListCategory, topicId: String?): Result<Unit> {
+        if (actionsFail) return Result.failure(IllegalStateException("offline"))
+        moved += publishedId to category
+        return Result.success(Unit)
+    }
 
     override suspend fun reports(): Result<List<ModerationReport>> =
         if (readable) Result.success(queue) else Result.failure(IllegalStateException("not yours"))

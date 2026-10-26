@@ -31,6 +31,11 @@ data class TierListEntity(
     val coverImageUrl: String? = null,
     /** The chosen collage, one web address per line; null while the cover is one picture or left to the cards. */
     val coverImageUrls: String? = null,
+    /** The community topic once the server named it, and the name beside it so no screen needs a second read. */
+    val topicId: String? = null,
+    val topicName: String? = null,
+    /** A topic the author named that has not been published yet. */
+    val newTopicName: String? = null,
     /** Stable across devices, unlike [id], this database's own counter. */
     @ColumnInfo(defaultValue = "''")
     val uid: String = UUID.randomUUID().toString(),

@@ -8,6 +8,12 @@ sealed interface PublishError {
 
     data object TooManyLists : PublishError
 
+    /** Three of this account's topics already wait for a moderator; a fourth must wait for one of them. */
+    data object TooManyPendingTopics : PublishError
+
+    /** The topic the board remembers is not open any more: merged, turned down, or somebody else's waiting word. */
+    data object TopicUnavailable : PublishError
+
     data object TooLarge : PublishError
 
     /** One of the photographs on the board may not go into a public feed. */

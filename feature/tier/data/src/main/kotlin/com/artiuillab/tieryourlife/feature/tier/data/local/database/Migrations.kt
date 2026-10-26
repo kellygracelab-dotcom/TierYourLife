@@ -3,6 +3,15 @@ package com.artiuillab.tieryourlife.feature.tier.data.local.database
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
+/** The topic a list is filed under in the community, and a name waiting to become one. */
+val MIGRATION_11_12 = object : Migration(11, 12) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN topicId TEXT")
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN topicName TEXT")
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN newTopicName TEXT")
+    }
+}
+
 /** The author's collage, beside the single cover rather than inside it: a list in that column would make every reader of one address a parser. */
 val MIGRATION_10_11 = object : Migration(10, 11) {
     override fun migrate(db: SupportSQLiteDatabase) {

@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.opensOn
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
@@ -16,6 +17,10 @@ data class CommunityFeedUiState(
     val sort: FeedSort = FeedSource.Everyone.opensOn,
     /** Non-null while the search bar is up; the feed is then the server's answer to it. */
     val query: String? = null,
+    /** What this person proposed or follows, one tap from the home screen. Empty for a guest. */
+    val yourTopics: List<Topic> = emptyList(),
+    /** Which part of a following feed is on screen. */
+    val followingFilter: FollowingFilter = FollowingFilter.All,
 )
 
 sealed interface CommunityFeed {
@@ -28,6 +33,8 @@ sealed interface CommunityFeed {
         val justHidden: Map<String, Boolean> = emptyMap(),
         /** Who a following feed is made of; empty for everybody's feed. */
         val followed: List<FollowedAuthor> = emptyList(),
+        /** And which topics; the strip shows both. */
+        val followedTopics: List<Topic> = emptyList(),
     ) : CommunityFeed
 
     /** Its own state, not an empty [Ready]: an empty feed says there is nothing, this one has to say who there is. */

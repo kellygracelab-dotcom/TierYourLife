@@ -16,6 +16,10 @@
     <string name="list_settings_cover">Обкладинка</string>
     <string name="list_settings_cover_none_set">Немає</string>
     <string name="list_settings_cover_set">Вибрана</string>
+    <string name="list_settings_topic">Тема</string>
+    <string name="list_settings_topic_none">Немає</string>
+    <string name="list_settings_topic_waiting">%1$s · чекає на схвалення</string>
+    <string name="list_settings_public_too_many_topics">Три ваші теми вже чекають на модератора. Опублікуйте без нової теми або дочекайтеся рішення.</string>
     <string name="list_settings_public">Публічний</string>
     <string name="list_settings_public_banned_forever">Модератор зняв один із ваших списків, і публікувати більше не можна.</string>
     <string name="list_settings_public_banned_until">Модератор зняв один із ваших списків. Публікувати знову можна з %1$s.</string>
@@ -151,4 +155,5 @@
         <item quantity="many">%d у пулі</item>
         <item quantity="other">%d у пулі</item>
     </plurals>
+    <string name="list_settings_public_topic_unavailable">Ця тема більше недоступна: її об’єднали, відхилили або вона чужа. Тему зі списку знято; оберіть іншу або публікуйте без неї.</string>
 </resources>
