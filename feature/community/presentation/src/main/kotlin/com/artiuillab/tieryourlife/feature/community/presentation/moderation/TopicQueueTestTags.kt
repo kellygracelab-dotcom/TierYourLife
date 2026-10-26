@@ -8,6 +8,7 @@ internal object TopicQueueTestTags {
     const val MERGE_DIALOG = "moderation_merge_dialog"
     const val MERGE_FIELD = "moderation_merge_field"
     const val MODERATORS_EMPTY = "moderation_moderators_empty"
+    const val MODERATORS_RETRY = "moderation_moderators_retry"
     const val APPOINT = "moderation_appoint"
     const val APPOINT_DIALOG = "moderation_appoint_dialog"
     const val APPOINT_UID = "moderation_appoint_uid"

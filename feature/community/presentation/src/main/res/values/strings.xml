@@ -163,4 +163,7 @@
         <item quantity="one">%d follower</item>
         <item quantity="other">%d followers</item>
     </plurals>
+    <string name="home_following_empty_topics">Nothing from the topics you follow yet.</string>
+    <string name="moderation_action_move">Move…</string>
+    <string name="moderation_moderators_unavailable">Could not read who moderates.</string>
 </resources>

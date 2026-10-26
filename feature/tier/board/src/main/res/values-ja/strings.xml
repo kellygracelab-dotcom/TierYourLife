@@ -125,4 +125,5 @@
     <plurals name="tier_lists_in_pool_count">
         <item quantity="other">プールに%d件</item>
     </plurals>
+    <string name="list_settings_public_topic_unavailable">このトピックは使えなくなりました（統合、却下、または他の人のものです）。リストのトピックは外れました。別のトピックを選ぶか、トピックなしで公開してください。</string>
 </resources>

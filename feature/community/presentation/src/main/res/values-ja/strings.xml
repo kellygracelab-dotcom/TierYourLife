@@ -157,4 +157,7 @@
     <plurals name="topic_followers">
         <item quantity="other">フォロワー%d人</item>
     </plurals>
+    <string name="home_following_empty_topics">フォロー中のトピックからの投稿はまだありません。</string>
+    <string name="moderation_action_move">移動…</string>
+    <string name="moderation_moderators_unavailable">モデレーターの一覧を読み込めませんでした。</string>
 </resources>

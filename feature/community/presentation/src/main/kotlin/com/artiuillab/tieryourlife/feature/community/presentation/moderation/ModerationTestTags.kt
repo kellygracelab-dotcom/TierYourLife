@@ -23,6 +23,7 @@ internal object ModerationTestTags {
     fun reportCard(listId: String): String = "moderation_report_$listId"
 
     fun takeDown(listId: String): String = "moderation_take_down_$listId"
+    fun move(listId: String): String = "moderation_move_$listId"
 
     fun dismiss(listId: String): String = "moderation_dismiss_$listId"
 }

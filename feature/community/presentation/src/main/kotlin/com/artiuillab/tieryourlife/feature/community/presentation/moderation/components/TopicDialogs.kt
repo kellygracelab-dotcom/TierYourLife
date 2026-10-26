@@ -15,7 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -27,13 +27,15 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.TopicQueueTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import kotlinx.coroutines.delay
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private const val TOPIC_NAME_MAX_LENGTH = 40
+private const val SEARCH_DELAY_MILLIS = 300L
 
 @Composable
 internal fun RenameTopicDialog(name: String, onDismiss: () -> Unit, onRename: (String) -> Unit) {
-    var typed by remember { mutableStateOf(name) }
+    var typed by rememberSaveable { mutableStateOf(name) }
     val clean = typed.trim()
 
     AlertDialog(
@@ -76,8 +78,11 @@ internal fun MergeTopicDialog(
     onDismiss: () -> Unit,
     onMerge: (Topic) -> Unit,
 ) {
-    var query by remember { mutableStateOf("") }
-    LaunchedEffect(query) { onSearch(query) }
+    var query by rememberSaveable { mutableStateOf("") }
+    LaunchedEffect(query) {
+        if (query.isNotEmpty()) delay(SEARCH_DELAY_MILLIS)
+        onSearch(query)
+    }
     // What the queue offered, then what the search found, without the same topic twice.
     val offered = (pending.similar + candidates).distinctBy { it.id }.filterNot { it.id == pending.topic.id }
 

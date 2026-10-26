@@ -136,6 +136,29 @@ class TopicPickerViewModelTest {
         assertEquals(listOf(listOf(1L, null, null, "Oscars 2025")), repository.topics)
     }
 
+    // The board keeps the name beside the id while its topic waits; the server's later word settles it.
+    @Test
+    fun aWaitingTopic_opensAsWaiting_untilTheServerSaysItIsApproved() = runBlocking {
+        val repository = RecordingTierRepository(boards = listOf(board(topicId = "p1", topicName = "Waiting 1", newTopicName = "Waiting 1")))
+        val approved = pending(1).copy(status = TopicStatus.Approved, section = ListCategory.Games)
+        val picker = pickerFor(repository, TopicsFake(mine = listOf(approved)))
+
+        val chosen = picker.state.firstWithin { (it.chosen as? TopicChoice.Known)?.topic?.status == TopicStatus.Approved }.chosen
+
+        assertEquals(TopicChoice.Known(approved), chosen)
+        assertEquals(listOf(listOf(1L, "p1", "Waiting 1", null)), repository.topics)
+    }
+
+    @Test
+    fun aTopicTurnedDown_leavesTheBoard() = runBlocking {
+        val repository = RecordingTierRepository(boards = listOf(board(topicId = "p1", topicName = "Waiting 1", newTopicName = "Waiting 1")))
+        val picker = pickerFor(repository, TopicsFake(mine = listOf(pending(1).copy(status = TopicStatus.Rejected))))
+
+        picker.state.firstWithin { it.chosen == TopicChoice.None }
+
+        assertEquals(listOf(listOf(1L, null, null, null)), repository.topics)
+    }
+
     private fun board(
         title: String = "Films",
         topicId: String? = null,

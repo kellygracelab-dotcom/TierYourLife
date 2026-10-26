@@ -155,4 +155,5 @@
         <item quantity="many">%d w puli</item>
         <item quantity="other">%d w puli</item>
     </plurals>
+    <string name="list_settings_public_topic_unavailable">Ten temat nie jest już dostępny: scalono go, odrzucono albo należy do kogoś innego. Lista nie ma teraz tematu; wybierz inny albo opublikuj bez tematu.</string>
 </resources>

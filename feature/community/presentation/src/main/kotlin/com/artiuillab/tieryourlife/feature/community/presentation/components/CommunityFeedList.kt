@@ -177,22 +177,26 @@ internal fun CommunityFeedList(
             )
 
             is CommunityFeed.Ready -> if (feed.lists.isEmpty()) {
-                CommunityMessage(
-                    // Following says who is missing, everybody says what is.
-                    title = if (controls?.source == FeedSource.Following) {
-                        followingEmptyTitle(category)
-                    } else {
-                        stringResource(R.string.home_community_empty)
-                    },
-                    body = if (controls?.source == FeedSource.Following) {
-                        ""
-                    } else {
-                        stringResource(R.string.home_community_empty_body)
-                    },
-                    action = null,
-                    onAction = {},
-                    testTag = CommunityTestTags.COMMUNITY_EMPTY,
-                )
+                val following = controls?.source == FeedSource.Following
+                if (following) EmptyFollowingStrip(feed, onManageFollowing, onOpenTopic)
+                if (feed.loadingMore) {
+                    Box(Modifier.fillMaxWidth().padding(top = 32.dp), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(Modifier.testTag(CommunityTestTags.COMMUNITY_LOADING))
+                    }
+                } else {
+                    CommunityMessage(
+                        // Following says who is missing, everybody says what is.
+                        title = if (following) {
+                            followingEmptyTitle(category, controls.followingFilter)
+                        } else {
+                            stringResource(R.string.home_community_empty)
+                        },
+                        body = if (following) "" else stringResource(R.string.home_community_empty_body),
+                        action = null,
+                        onAction = {},
+                        testTag = CommunityTestTags.COMMUNITY_EMPTY,
+                    )
+                }
             } else {
                 LazyVerticalGrid(
                     columns = if (wideEnoughForMoreColumns) {
@@ -541,8 +545,17 @@ internal data class FeedControls(
 )
 
 @Composable
-private fun followingEmptyTitle(category: ListCategory?): String = if (category == null) {
-    stringResource(R.string.home_following_empty_all)
-} else {
-    stringResource(R.string.home_following_empty, stringResource(category.labelRes))
+private fun followingEmptyTitle(category: ListCategory?, filter: FollowingFilter): String = when {
+    filter == FollowingFilter.Topics -> stringResource(R.string.home_following_empty_topics)
+    category == null -> stringResource(R.string.home_following_empty_all)
+    else -> stringResource(R.string.home_following_empty, stringResource(category.labelRes))
+}
+
+/** The strip stays while a narrowed page is empty: Manage lives there, and so do the chips the page is narrowed to. */
+@Composable
+private fun EmptyFollowingStrip(feed: CommunityFeed.Ready, onManage: (() -> Unit)?, onOpenTopic: (Topic) -> Unit) {
+    if (feed.followed.isEmpty() && feed.followedTopics.isEmpty()) return
+    Box(Modifier.padding(horizontal = 16.dp)) {
+        FollowedStrip(followed = feed.followed, topics = feed.followedTopics, onManage = onManage, onOpenTopic = onOpenTopic)
+    }
 }

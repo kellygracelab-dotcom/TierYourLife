@@ -163,4 +163,7 @@
         <item quantity="one">%d Follower</item>
         <item quantity="other">%d Follower</item>
     </plurals>
+    <string name="home_following_empty_topics">Aus den Themen, denen du folgst, gibt es noch nichts.</string>
+    <string name="moderation_action_move">Verschieben…</string>
+    <string name="moderation_moderators_unavailable">Die Moderatorenliste konnte nicht gelesen werden.</string>
 </resources>

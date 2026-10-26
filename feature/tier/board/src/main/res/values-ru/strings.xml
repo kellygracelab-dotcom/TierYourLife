@@ -155,4 +155,5 @@
         <item quantity="many">%d в пуле</item>
         <item quantity="other">%d в пуле</item>
     </plurals>
+    <string name="list_settings_public_topic_unavailable">Эта тема больше недоступна: её объединили, отклонили или она чужая. Тема у списка снята; выберите другую или публикуйте без неё.</string>
 </resources>

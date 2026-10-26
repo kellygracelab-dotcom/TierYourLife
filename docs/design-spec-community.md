@@ -46,10 +46,24 @@ reject) and, for the owner alone, Moderators (appoint by account id, remove);
 an author's page offers the owner "make / remove moderator" once that list
 has answered.
 
+**After review** (same PR): Follow exists only on an approved topic, since
+the server refuses the rest. A board whose new name the server took keeps the
+name beside the id while a moderator has yet to decide, so the settings row
+keeps saying *waiting*; the picker settles it from the server's later word
+(approved clears the mark, merged points the board at the surviving topic,
+rejected takes the topic off). A topic the server will not take at publish
+(`TOPIC_UNAVAILABLE`, tieryourlife-proxy#32) is dropped from the board with
+its own message instead of a retry that can never succeed. A `wrong_category`
+report has a **Move…** action in the Reports chip: pick the section, the topic
+is dropped, the complaints close. The People / Topics chips over a following
+page ask for the next pages on their own when the one on screen holds nothing
+of what they narrow to, four pages at most, and the strip stays meanwhile.
+`GET lists/following` is read once per load.
+
 Left out of this pass, for later: the "new list here" button on a topic page,
 the 3×3 section grid with counts on the home screen (the section row stays),
-and a board learning that its topic was renamed, merged or placed after the
-fact (the picker shows what the server knows the next time it opens).
+and a board learning that its topic was renamed or placed after the fact
+anywhere but in the picker (which settles it when it opens).
 
 ## 2. Following
 

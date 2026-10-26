@@ -4,7 +4,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
-import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
@@ -43,9 +43,7 @@ open class FakeCommunityRepository : CommunityRepository {
     override suspend fun followState(authorUid: String): Result<FollowState> =
         Result.success(FollowState(following = false, followers = 0))
 
-    override suspend fun following(): Result<List<FollowedAuthor>> = Result.success(emptyList())
-
-    override suspend fun followedTopics(): Result<List<Topic>> = Result.success(emptyList())
+    override suspend fun following(): Result<Following> = Result.success(Following(emptyList(), emptyList()))
 
     override suspend fun topics(query: String?, section: ListCategory?): Result<List<Topic>> = Result.success(emptyList())
 

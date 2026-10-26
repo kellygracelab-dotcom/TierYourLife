@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.topicRoute
@@ -38,11 +39,12 @@ class TopicViewModel @Inject constructor(
     val userMessages: Flow<UserMessage> = messages.flow
 
     private val _state = MutableStateFlow(
-        TopicUiState(id = route.topicId, name = route.name.orEmpty(), section = ListCategory.fromId(route.section)),
+        TopicUiState(name = route.name.orEmpty(), section = ListCategory.fromId(route.section)),
     )
     val state: StateFlow<TopicUiState> = _state.asStateFlow()
 
     private var cursor: String? = null
+    private var loadJob: Job? = null
     private var moreJob: Job? = null
 
     init {
@@ -65,8 +67,9 @@ class TopicViewModel @Inject constructor(
     }
 
     fun load() {
+        loadJob?.cancel()
         moreJob?.cancel()
-        viewModelScope.launch {
+        loadJob = viewModelScope.launch {
             _state.update { it.copy(feed = CommunityFeed.Loading) }
             val hidden = preferences.hiddenListIds() + preferences.hiddenAuthorUids()
             val feed = community.feed(topic = route.topicId, sort = _state.value.sort).fold(
@@ -128,6 +131,7 @@ class TopicViewModel @Inject constructor(
     /** Answers before the server does; the count moves with the button, and both go back if the request fails. */
     fun toggleFollow() {
         val was = _state.value.topic ?: return
+        if (was.status != TopicStatus.Approved) return
         val now = was.copy(
             following = !was.following,
             followerCount = (was.followerCount + if (was.following) -1 else 1).coerceAtLeast(0),

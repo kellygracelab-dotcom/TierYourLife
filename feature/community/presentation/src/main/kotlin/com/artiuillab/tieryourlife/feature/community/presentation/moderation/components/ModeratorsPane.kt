@@ -22,7 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,12 +48,22 @@ internal fun ModeratorsPane(
     state: ModeratorsUiState,
     onAppoint: (uid: String, name: String) -> Unit,
     onRemove: (uid: String) -> Unit,
+    onRetry: () -> Unit,
 ) {
-    var appointing by remember { mutableStateOf(false) }
+    var appointing by rememberSaveable { mutableStateOf(false) }
 
     when (state) {
-        ModeratorsUiState.Loading, ModeratorsUiState.Unavailable -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        ModeratorsUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
+        }
+
+        ModeratorsUiState.Unavailable -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(stringResource(R.string.moderation_moderators_unavailable), style = MaterialTheme.typography.bodyMedium)
+                TextButton(onClick = onRetry, modifier = Modifier.testTag(TopicQueueTestTags.MODERATORS_RETRY)) {
+                    Text(stringResource(ThemeR.string.action_try_again))
+                }
+            }
         }
 
         is ModeratorsUiState.Ready -> Column(Modifier.fillMaxSize()) {
@@ -142,8 +152,8 @@ private fun ModeratorRow(moderator: Moderator, busy: Boolean, onRemove: () -> Un
 
 @Composable
 private fun AppointModeratorDialog(onDismiss: () -> Unit, onAppoint: (uid: String, name: String) -> Unit) {
-    var uid by remember { mutableStateOf("") }
-    var name by remember { mutableStateOf("") }
+    var uid by rememberSaveable { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismiss,

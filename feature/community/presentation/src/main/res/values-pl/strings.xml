@@ -175,4 +175,7 @@
         <item quantity="many">%d obserwujących</item>
         <item quantity="other">%d obserwujących</item>
     </plurals>
+    <string name="home_following_empty_topics">Z obserwowanych tematów nie ma jeszcze nic.</string>
+    <string name="moderation_action_move">Przenieś…</string>
+    <string name="moderation_moderators_unavailable">Nie udało się odczytać listy moderatorów.</string>
 </resources>

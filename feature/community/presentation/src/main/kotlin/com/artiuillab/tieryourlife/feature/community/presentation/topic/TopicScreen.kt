@@ -231,13 +231,16 @@ private fun Header(state: TopicUiState, onToggleFollow: () -> Unit) {
                     color = MaterialTheme.colorScheme.tertiary,
                 )
             }
-            if (topic.following) {
-                OutlinedButton(onClick = onToggleFollow, modifier = Modifier.testTag(TopicTestTags.FOLLOW)) {
-                    Text(stringResource(R.string.action_unfollow))
-                }
-            } else {
-                Button(onClick = onToggleFollow, modifier = Modifier.testTag(TopicTestTags.FOLLOW)) {
-                    Text(stringResource(R.string.action_follow))
+            // Only an approved word can be followed; the server refuses the rest.
+            if (topic.status == TopicStatus.Approved) {
+                if (topic.following) {
+                    OutlinedButton(onClick = onToggleFollow, modifier = Modifier.testTag(TopicTestTags.FOLLOW)) {
+                        Text(stringResource(R.string.action_unfollow))
+                    }
+                } else {
+                    Button(onClick = onToggleFollow, modifier = Modifier.testTag(TopicTestTags.FOLLOW)) {
+                        Text(stringResource(R.string.action_follow))
+                    }
                 }
             }
         } else if (state.headerFailed) {
@@ -304,7 +307,6 @@ private fun TopBar(onBack: () -> Unit, section: ListCategory?) {
 private fun TopicPreview() = TierYourLifeTheme {
     TopicScreenContent(
         state = TopicUiState(
-            id = "t1",
             name = "Pokémon",
             section = ListCategory.Games,
             topic = Topic(id = "t1", name = "Pokémon", section = ListCategory.Games, status = TopicStatus.Approved, listCount = 212, followerCount = 1340),

@@ -45,13 +45,7 @@ class FollowingViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = FollowingUiState.Loading
             _state.value = community.following().fold(
-                onSuccess = { authors ->
-                    // The other half of the same answer; the people stand without it.
-                    val topics = community.followedTopics()
-                        .onFailure { Timber.w(it, "Reading which topics are followed failed") }
-                        .getOrDefault(emptyList())
-                    FollowingUiState.Ready(authors, topics)
-                },
+                onSuccess = { following -> FollowingUiState.Ready(following.authors, following.topics) },
                 onFailure = { error ->
                     Timber.w(error, "Reading who is followed failed")
                     FollowingUiState.Failed

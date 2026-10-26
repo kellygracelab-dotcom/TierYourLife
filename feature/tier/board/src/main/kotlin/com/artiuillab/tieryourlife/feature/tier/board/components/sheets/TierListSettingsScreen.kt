@@ -343,15 +343,15 @@ private fun CategoryRow(category: ListCategory?, onClick: () -> Unit) {
     )
 }
 
-/** The word inside the section; a name not yet seen by the server says so beside it. */
+/** The word inside the section; a name still waiting for a moderator says so beside it. */
 @Composable
 private fun TopicRow(topicName: String?, newTopicName: String?, onClick: () -> Unit) {
     SettingsActionRow(
         icon = { CategoryIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
         title = stringResource(R.string.list_settings_topic),
         subtitle = when {
-            topicName != null -> topicName
             newTopicName != null -> stringResource(R.string.list_settings_topic_waiting, newTopicName)
+            topicName != null -> topicName
             else -> stringResource(R.string.list_settings_topic_none)
         },
         onClick = onClick,
@@ -532,6 +532,7 @@ private fun PublishError.messageRes(): Int = when (this) {
     PublishError.NothingToPublish -> R.string.list_settings_public_needs_items
     PublishError.TooManyLists -> R.string.list_settings_public_too_many
     PublishError.TooManyPendingTopics -> R.string.list_settings_public_too_many_topics
+    PublishError.TopicUnavailable -> R.string.list_settings_public_topic_unavailable
     PublishError.TooLarge -> R.string.list_settings_public_too_large
     PublishError.PictureRefused -> R.string.list_settings_public_picture_refused
     is PublishError.Banned -> R.string.list_settings_public_banned_forever

@@ -169,4 +169,7 @@
         <item quantity="many">%d abonnés</item>
         <item quantity="other">%d abonnés</item>
     </plurals>
+    <string name="home_following_empty_topics">Rien encore des thèmes que vous suivez.</string>
+    <string name="moderation_action_move">Déplacer…</string>
+    <string name="moderation_moderators_unavailable">Impossible de lire la liste des modérateurs.</string>
 </resources>

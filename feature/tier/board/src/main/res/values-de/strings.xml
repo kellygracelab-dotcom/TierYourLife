@@ -135,4 +135,5 @@
         <item quantity="one">%d im Pool</item>
         <item quantity="other">%d im Pool</item>
     </plurals>
+    <string name="list_settings_public_topic_unavailable">Dieses Thema ist nicht mehr offen: zusammengelegt, abgelehnt oder nicht deins. Die Liste hat jetzt kein Thema; wähle ein anderes oder veröffentliche ohne.</string>
 </resources>

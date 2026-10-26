@@ -175,4 +175,7 @@
         <item quantity="many">%d підписників</item>
         <item quantity="other">%d підписника</item>
     </plurals>
+    <string name="home_following_empty_topics">З тем, на які ви підписані, поки нічого немає.</string>
+    <string name="moderation_action_move">Перемістити…</string>
+    <string name="moderation_moderators_unavailable">Не вдалося прочитати список модераторів.</string>
 </resources>

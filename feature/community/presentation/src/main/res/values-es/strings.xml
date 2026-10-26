@@ -169,4 +169,7 @@
         <item quantity="many">%d seguidores</item>
         <item quantity="other">%d seguidores</item>
     </plurals>
+    <string name="home_following_empty_topics">Todavía no hay nada de los temas que sigues.</string>
+    <string name="moderation_action_move">Mover…</string>
+    <string name="moderation_moderators_unavailable">No se pudo leer la lista de moderadores.</string>
 </resources>

@@ -135,4 +135,5 @@
         <item quantity="one">%d in pool</item>
         <item quantity="other">%d in pool</item>
     </plurals>
+    <string name="list_settings_public_topic_unavailable">That topic is no longer open: merged, turned down or somebody else’s. The list has no topic now; pick another or publish without one.</string>
 </resources>

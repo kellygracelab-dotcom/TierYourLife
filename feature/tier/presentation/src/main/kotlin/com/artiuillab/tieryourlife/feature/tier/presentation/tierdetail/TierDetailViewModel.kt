@@ -11,6 +11,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
+import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
@@ -120,27 +121,32 @@ class TierDetailViewModel @Inject constructor(
                 list.publishedId?.let { community.unpublish(it).map { _ -> null } } ?: Result.success(null)
             }
             result.fold(
-                onSuccess = { published ->
-                    val recorded = messages.guard("Recording the published list") {
-                        repository.setPublished(tierListId, published?.id, published?.fingerprint)
-                        // The server named the topic: a name that waited is a topic now.
-                        published?.topicId?.let { topicId ->
-                            repository.setTopic(tierListId, topicId, list.topicName ?: list.newTopicName, null)
-                        }
-                    }
-                    // Reading the list back would land after publicPending clears
-                    // and spring the switch back for a frame. The id and the topic are all that changed.
-                    if (recorded) showPublished(published?.id, published?.topicId)
-                    // Just sent, so nothing is behind any more.
-                    publishedIsBehind = false
-                },
+                onSuccess = { published -> recordPublished(list, published) },
                 onFailure = { failure ->
                     publishError = (failure as? PublishRefused)?.error ?: PublishError.Unknown
+                    if (publishError == PublishError.TopicUnavailable) forgetTopic()
                 },
             )
             publishing = false
             publicPending = null
         }
+    }
+
+    private suspend fun recordPublished(list: TierList, published: Published?) {
+        var waiting: String? = null
+        val recorded = messages.guard("Recording the published list") {
+            repository.setPublished(tierListId, published?.id, published?.fingerprint)
+            // The server named the topic: a name that waited is a topic now, though maybe one still waiting.
+            published?.topicId?.let { topicId ->
+                waiting = waitingName(list, topicId)
+                repository.setTopic(tierListId, topicId, list.topicName ?: list.newTopicName, waiting)
+            }
+        }
+        // Reading the list back would land after publicPending clears
+        // and spring the switch back for a frame. The id and the topic are all that changed.
+        if (recorded) showPublished(published?.id, published?.topicId, waiting)
+        // Just sent, so nothing is behind any more.
+        publishedIsBehind = false
     }
 
     /** Finishes the publish that asked for it: a tap becoming two is smaller than a tap that only refuses. */
@@ -281,7 +287,7 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    private fun showPublished(publishedId: String?, topicId: String?) {
+    private fun showPublished(publishedId: String?, topicId: String?, waiting: String?) {
         val current = board
         if (current is TierDetailUiState.Success) {
             val list = current.list
@@ -289,9 +295,27 @@ class TierDetailViewModel @Inject constructor(
                 if (topicId == null) {
                     list.copy(publishedId = publishedId)
                 } else {
-                    list.copy(publishedId = publishedId, topicId = topicId, topicName = list.topicName ?: list.newTopicName, newTopicName = null)
+                    list.copy(publishedId = publishedId, topicId = topicId, topicName = list.topicName ?: list.newTopicName, newTopicName = waiting)
                 },
             )
+        }
+    }
+
+    /** A name the server had not seen is a topic now; whether it still waits for a moderator decides what the row says. */
+    private suspend fun waitingName(list: TierList, topicId: String): String? {
+        val proposed = list.newTopicName?.takeIf { list.topicId == null } ?: return null
+        val settled = community.topic(topicId).map { it.status != TopicStatus.Pending }.getOrDefault(false)
+        return proposed.takeUnless { settled }
+    }
+
+    /** A topic the server will not take any more is no topic: the next attempt goes without it. */
+    private fun forgetTopic() {
+        viewModelScope.launch {
+            val recorded = messages.guard("Forgetting a refused topic") { repository.setTopic(tierListId, null, null, null) }
+            val current = board
+            if (recorded && current is TierDetailUiState.Success) {
+                board = TierDetailUiState.Success(current.list.copy(topicId = null, topicName = null, newTopicName = null))
+            }
         }
     }
 

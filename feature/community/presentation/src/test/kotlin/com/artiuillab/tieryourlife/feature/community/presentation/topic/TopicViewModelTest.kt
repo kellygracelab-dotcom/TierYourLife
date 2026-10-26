@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
@@ -56,6 +57,23 @@ class TopicViewModelTest {
 
         assertEquals(pokemon, state.topic)
         assertFalse(state.headerFailed)
+    }
+
+    // Newest asked, then Popular before it answered: the first answer must not land on top of the second.
+    @Test
+    fun aSortChosenWhileTheLastOneLoads_isTheOneThatShows() = runBlocking {
+        val gate = CompletableDeferred<Unit>()
+        val community = TopicFake(lists = listOf(published("a")), recentGate = gate)
+        val viewModel = topicFor(community)
+        viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }
+
+        viewModel.selectSort(FeedSort.Recent)
+        viewModel.selectSort(FeedSort.Popular)
+        viewModel.state.firstWithin { it.sort == FeedSort.Popular && it.feed is CommunityFeed.Ready }
+        gate.complete(Unit)
+        delay(SETTLE_MILLIS)
+
+        assertEquals(listOf("a"), (viewModel.state.value.feed as CommunityFeed.Ready).lists.map { it.id })
     }
 
     @Test
@@ -153,6 +171,8 @@ private class TopicFake(
     private val answers: Boolean = true,
     private val lists: List<PublishedListSummary> = emptyList(),
     private val refuses: Boolean = false,
+    /** Held while a request for the newest lists is in flight; the rest answer at once. */
+    private val recentGate: CompletableDeferred<Unit>? = null,
 ) : FakeCommunityRepository() {
     val topicsAsked = mutableListOf<String?>()
     val sortsAsked = mutableListOf<FeedSort>()
@@ -173,6 +193,10 @@ private class TopicFake(
     ): Result<CommunityPage> {
         topicsAsked += topic
         sortsAsked += sort
+        if (sort == FeedSort.Recent && recentGate != null) {
+            recentGate.await()
+            return Result.success(CommunityPage(emptyList()))
+        }
         return Result.success(CommunityPage(lists))
     }
 
@@ -188,3 +212,4 @@ private class TopicFake(
 }
 
 private const val WAIT_MILLIS = 5_000L
+private const val SETTLE_MILLIS = 200L

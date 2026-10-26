@@ -135,4 +135,5 @@
         <item quantity="one">%d havuzda</item>
         <item quantity="other">%d havuzda</item>
     </plurals>
+    <string name="list_settings_public_topic_unavailable">Bu konu artık açık değil: birleştirildi, reddedildi ya da başkasına ait. Listenin konusu kaldırıldı; başka bir konu seçin ya da konusuz yayınlayın.</string>
 </resources>

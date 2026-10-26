@@ -145,4 +145,5 @@
         <item quantity="many">%d en el montón</item>
         <item quantity="other">%d en el montón</item>
     </plurals>
+    <string name="list_settings_public_topic_unavailable">Ese tema ya no está disponible: se fusionó, se rechazó o es de otra persona. La lista ya no tiene tema; elige otro o publica sin tema.</string>
 </resources>

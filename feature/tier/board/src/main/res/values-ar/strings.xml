@@ -175,4 +175,5 @@
         <item quantity="many">%d في المجمّع</item>
         <item quantity="other">%d في المجمّع</item>
     </plurals>
+    <string name="list_settings_public_topic_unavailable">هذا الموضوع لم يعد متاحًا: دُمج أو رُفض أو يخص شخصًا آخر. لم يعد للقائمة موضوع؛ اختر موضوعًا آخر أو انشر بدونه.</string>
 </resources>

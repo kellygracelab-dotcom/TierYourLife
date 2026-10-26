@@ -20,8 +20,6 @@ class OwnerMemory @Inject constructor() {
     /** The moderators' uids once the owner has read them; null while nobody has, or the reader is not the owner. */
     val moderators: StateFlow<Set<String>?> = _moderators.asStateFlow()
 
-    val isOwner: Boolean get() = _moderators.value != null
-
     fun learned(moderatorUids: Set<String>) {
         _moderators.value = moderatorUids
     }

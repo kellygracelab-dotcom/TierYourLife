@@ -74,6 +74,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.list.Community
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.components.ModeratorsPane
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.components.TakeDownSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.components.TopicQueue
+import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.CategorySheet
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -98,6 +99,7 @@ fun ModerationScreen(
         onUndoTakeDown = viewModel::undoTakeDown,
         onConfirmTakeDown = viewModel::confirmTakeDown,
         onDismiss = viewModel::dismiss,
+        onMove = viewModel::move,
         onRetry = viewModel::load,
         onOpenList = onOpenList,
         onLook = viewModel::look,
@@ -108,6 +110,7 @@ fun ModerationScreen(
         onRejectTopic = queues::rejectTopic,
         onFindMergeTargets = queues::findMergeTargets,
         onRetryTopics = queues::loadTopics,
+        onRetryModerators = queues::loadModerators,
         moderators = moderators,
         onAppointModerator = queues::appointModerator,
         onRemoveModerator = queues::removeModerator,
@@ -124,6 +127,7 @@ fun ModerationScreenContent(
     onUndoTakeDown: () -> Unit = {},
     onConfirmTakeDown: () -> Unit = {},
     onDismiss: (String) -> Unit = {},
+    onMove: (String, ListCategory) -> Unit = { _, _ -> },
     onRetry: () -> Unit = {},
     onOpenList: (String) -> Unit = {},
     onLook: (String) -> Unit = {},
@@ -134,6 +138,7 @@ fun ModerationScreenContent(
     onRejectTopic: (String) -> Unit = {},
     onFindMergeTargets: (String) -> Unit = {},
     onRetryTopics: () -> Unit = {},
+    onRetryModerators: () -> Unit = {},
     moderators: ModeratorsUiState = ModeratorsUiState.Unavailable,
     onAppointModerator: (String, String) -> Unit = { _, _ -> },
     onRemoveModerator: (String) -> Unit = {},
@@ -168,6 +173,7 @@ fun ModerationScreenContent(
     val reportActions = ReportActions(
         onTakeDown = { takingDown = it },
         onDismiss = onDismiss,
+        onMove = onMove,
         onRetry = onRetry,
     )
     val topicActions = TopicActions(
@@ -179,6 +185,7 @@ fun ModerationScreenContent(
         onRetry = onRetryTopics,
         onAppointModerator = onAppointModerator,
         onRemoveModerator = onRemoveModerator,
+        onRetryModerators = onRetryModerators,
     )
 
     // Beside the queue once there is room: a reported list is out of the
@@ -248,6 +255,7 @@ private data class Queues(
 private data class ReportActions(
     val onTakeDown: (ModerationReport) -> Unit,
     val onDismiss: (String) -> Unit,
+    val onMove: (String, ListCategory) -> Unit,
     val onRetry: () -> Unit,
 )
 
@@ -260,6 +268,7 @@ private data class TopicActions(
     val onRetry: () -> Unit,
     val onAppointModerator: (String, String) -> Unit,
     val onRemoveModerator: (String) -> Unit,
+    val onRetryModerators: () -> Unit,
 )
 
 @Composable
@@ -272,7 +281,11 @@ private fun ColumnScope.Queue(
     besideIt: Boolean,
 ) {
     TopBar(onBack, queues.coversShown, queues.onToggleCovers, coversMatter = queues.tab == ModerationTab.Reports)
-    Tabs(selected = queues.tab, onSelect = queues.onTab, ownerToo = queues.moderators is ModeratorsUiState.Ready)
+    Tabs(
+        selected = queues.tab,
+        onSelect = queues.onTab,
+        ownerToo = queues.moderators is ModeratorsUiState.Ready || queues.tab == ModerationTab.Moderators,
+    )
 
     when (queues.tab) {
         ModerationTab.Reports -> Reports(queues.reports, reports, onChoose, besideIt, queues.coversShown)
@@ -289,6 +302,7 @@ private fun ColumnScope.Queue(
             state = queues.moderators,
             onAppoint = topics.onAppointModerator,
             onRemove = topics.onRemoveModerator,
+            onRetry = topics.onRetryModerators,
         )
     }
 }
@@ -368,6 +382,7 @@ private fun ColumnScope.Reports(
                         coversShown = coversShown,
                         onTakeDown = { actions.onTakeDown(report) },
                         onDismiss = { actions.onDismiss(report.listId) },
+                        onMove = { actions.onMove(report.listId, it) },
                     )
                 }
             }
@@ -427,7 +442,9 @@ private fun ReportCard(
     onOpen: () -> Unit,
     onTakeDown: () -> Unit,
     onDismiss: () -> Unit,
+    onMove: (ListCategory) -> Unit,
 ) {
+    var moving by rememberSaveable { mutableStateOf(false) }
     Column(
         Modifier
             .fillMaxWidth()
@@ -521,6 +538,11 @@ private fun ReportCard(
         Spacer(Modifier.height(4.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             TextButton(
+                onClick = { moving = true },
+                enabled = !busy,
+                modifier = Modifier.testTag(ModerationTestTags.move(report.listId)),
+            ) { Text(stringResource(R.string.moderation_action_move)) }
+            TextButton(
                 onClick = onDismiss,
                 enabled = !busy,
                 modifier = Modifier.testTag(ModerationTestTags.dismiss(report.listId)),
@@ -543,6 +565,16 @@ private fun ReportCard(
             }
         }
         }
+    }
+    if (moving) {
+        CategorySheet(
+            selected = null,
+            onDismiss = { moving = false },
+            onSelect = { section ->
+                moving = false
+                onMove(section)
+            },
+        )
     }
 }
 

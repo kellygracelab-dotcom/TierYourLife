@@ -4,7 +4,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
-import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
@@ -42,11 +42,8 @@ interface CommunityRepository {
     /** Whether this person follows that author, and how many people do. */
     suspend fun followState(authorUid: String): Result<FollowState>
 
-    /** Whom this person follows, with names and faces, for the strip above the feed and the list that unfollows. */
-    suspend fun following(): Result<List<FollowedAuthor>>
-
-    /** The topics this person follows, from the same answer as [following]. */
-    suspend fun followedTopics(): Result<List<Topic>>
+    /** Whom and what this person follows, with names and faces, for the strip above the feed and the list that unfollows. */
+    suspend fun following(): Result<Following>
 
     /** Approved topics: those starting with [query], or the biggest, within [section] if given. */
     suspend fun topics(query: String? = null, section: ListCategory? = null): Result<List<Topic>>

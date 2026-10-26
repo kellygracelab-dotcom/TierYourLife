@@ -163,4 +163,7 @@
         <item quantity="one">%d takipçi</item>
         <item quantity="other">%d takipçi</item>
     </plurals>
+    <string name="home_following_empty_topics">Takip ettiğiniz konulardan henüz bir şey yok.</string>
+    <string name="moderation_action_move">Taşı…</string>
+    <string name="moderation_moderators_unavailable">Moderatör listesi okunamadı.</string>
 </resources>

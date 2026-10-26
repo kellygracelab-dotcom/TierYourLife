@@ -155,4 +155,5 @@
         <item quantity="many">%d у пулі</item>
         <item quantity="other">%d у пулі</item>
     </plurals>
+    <string name="list_settings_public_topic_unavailable">Ця тема більше недоступна: її об’єднали, відхилили або вона чужа. Тему зі списку знято; оберіть іншу або публікуйте без неї.</string>
 </resources>

@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -106,15 +107,13 @@ private class FollowingFake(
     val unfollowAsked = CompletableDeferred<String>()
     val unfollowTopicAsked = CompletableDeferred<String>()
 
-    override suspend fun followedTopics(): Result<List<Topic>> = Result.success(topics)
-
     override suspend fun unfollowTopic(id: String): Result<Unit> {
         unfollowTopicAsked.complete(id)
         return if (refuses) Result.failure(IllegalStateException("offline")) else Result.success(Unit)
     }
 
-    override suspend fun following(): Result<List<FollowedAuthor>> =
-        if (fails) Result.failure(IllegalStateException("offline")) else Result.success(people)
+    override suspend fun following(): Result<Following> =
+        if (fails) Result.failure(IllegalStateException("offline")) else Result.success(Following(people, topics))
 
     override suspend fun unfollow(authorUid: String): Result<Unit> {
         unfollowAsked.complete(authorUid)

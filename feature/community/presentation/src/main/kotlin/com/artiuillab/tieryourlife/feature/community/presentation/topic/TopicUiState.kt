@@ -10,7 +10,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
  * the header is right before the server answers; [topic] fills the counts in.
  */
 data class TopicUiState(
-    val id: String,
     val name: String,
     val section: ListCategory?,
     val topic: Topic? = null,

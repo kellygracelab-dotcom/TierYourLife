@@ -27,6 +27,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.EditorialAutho
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
@@ -100,13 +101,14 @@ class RetrofitCommunityRepository @Inject constructor(
             FollowState(following = state.following, followers = state.followers)
         }
 
-    override suspend fun following(): Result<List<FollowedAuthor>> =
-        attempt("Reading who is followed") {
-            api.following().authors.map { FollowedAuthor(uid = it.uid, name = it.name, photoUrl = it.photoUrl) }
+    override suspend fun following(): Result<Following> =
+        attempt("Reading who and what is followed") {
+            val answer = api.following()
+            Following(
+                authors = answer.authors.map { FollowedAuthor(uid = it.uid, name = it.name, photoUrl = it.photoUrl) },
+                topics = answer.topics.map { it.toDomain() },
+            )
         }
-
-    override suspend fun followedTopics(): Result<List<Topic>> =
-        attempt("Reading which topics are followed") { api.following().topics.map { it.toDomain() } }
 
     override suspend fun topics(query: String?, section: ListCategory?): Result<List<Topic>> =
         attempt("Searching topics") {
@@ -257,10 +259,11 @@ private inline fun <T> attempt(what: String, block: () -> T): Result<T> =
 private fun Throwable.asPublishError(): PublishError = when {
     isAppUnverified() -> PublishError.NotVerified
     this is HttpException -> when (code()) {
-        403 -> banNotice()?.let { PublishError.Banned(it.untilMillis) } ?: PublishError.NotSignedIn
-        409 -> if (proxyCode() == TOO_MANY_PENDING_TOPICS) PublishError.TooManyPendingTopics else PublishError.TooManyLists
-        413 -> PublishError.TooLarge
-        422 -> PublishError.PictureRefused
+        HTTP_FORBIDDEN -> banNotice()?.let { PublishError.Banned(it.untilMillis) } ?: PublishError.NotSignedIn
+        HTTP_CONFLICT -> if (proxyCode() == TOO_MANY_PENDING_TOPICS) PublishError.TooManyPendingTopics else PublishError.TooManyLists
+        HTTP_BAD_REQUEST -> if (proxyCode() == TOPIC_UNAVAILABLE) PublishError.TopicUnavailable else PublishError.Unknown
+        HTTP_TOO_LARGE -> PublishError.TooLarge
+        HTTP_UNPROCESSABLE -> PublishError.PictureRefused
         else -> PublishError.Unknown
     }
 
@@ -269,6 +272,12 @@ private fun Throwable.asPublishError(): PublishError = when {
 }
 
 private const val TOO_MANY_PENDING_TOPICS = "TOO_MANY_PENDING_TOPICS"
+private const val TOPIC_UNAVAILABLE = "TOPIC_UNAVAILABLE"
+private const val HTTP_BAD_REQUEST = 400
+private const val HTTP_FORBIDDEN = 403
+private const val HTTP_CONFLICT = 409
+private const val HTTP_TOO_LARGE = 413
+private const val HTTP_UNPROCESSABLE = 422
 
 private fun TopicDto.toDomain() = Topic(
     id = id,
