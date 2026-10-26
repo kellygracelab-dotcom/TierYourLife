@@ -40,11 +40,22 @@ private const val STROKE = 1.8f
 
 private fun line(scale: Float) = Stroke(width = STROKE * scale, cap = StrokeCap.Round, join = StrokeJoin.Round)
 
+/** A ball in motion with two fading trails behind it, as Material's "animation" symbol: two rings read as a chain link. */
 @Composable
 private fun AnimeIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { s ->
-    drawCircle(color, 4.5f * s, Offset(8.5f * s, 15.5f * s), style = line(s))
-    drawCircle(color, 4.5f * s, Offset(15.5f * s, 8.5f * s), style = line(s))
-    drawCircle(color, 2f * s, Offset(12f * s, 12f * s))
+    val radius = 5f * s
+    drawCircle(color, radius, Offset(15f * s, 15f * s), style = line(s))
+    listOf(10.5f, 6.5f).forEach { at ->
+        drawArc(
+            color = color,
+            startAngle = 135f,
+            sweepAngle = 180f,
+            useCenter = false,
+            topLeft = Offset(at * s - radius, at * s - radius),
+            size = Size(radius * 2, radius * 2),
+            style = line(s),
+        )
+    }
 }
 
 @Composable
