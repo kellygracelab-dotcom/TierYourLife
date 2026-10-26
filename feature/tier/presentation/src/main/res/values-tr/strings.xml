@@ -182,4 +182,6 @@
     <string name="cover_picker_no_cards">Bu listenin hiçbir kartında henüz görsel yok.</string>
     <string name="cover_picker_gallery">Galeriden seç</string>
     <string name="cover_picker_gallery_note">Galeriden bir görsel kapağın tamamı olur ve listeyi yayımladığınızda onunla birlikte gider.</string>
+    <string name="tier_detail_ranking_of">%1$s adlı kişinin listesinin sizin sıralamanız</string>
+    <string name="tier_detail_open_original">Aç</string>
 </resources>

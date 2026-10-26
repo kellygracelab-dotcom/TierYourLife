@@ -127,3 +127,39 @@ collage follows.
 - The system back leaves at once, like the in-app arrow (#149).
 - "Unfollow" is written on the button that does it (#153).
 - A face fills its circle, and can be a photo from the phone (#155, #160).
+
+## 7. Rankings: one list, many placings
+
+Decided with Danylo on 26.10, after looking at how TierMaker lives with
+duplicates (templates are shared, a tier list is one person's placing of a
+template; twins are only reported and removed by hand). Here it is settled by
+the server rather than by a complaint:
+
+| Rule | Why |
+|---|---|
+| A copy taken from somebody's list and published with the **same cards** (a picture is the same picture, a card without one is its words) becomes this person's **ranking** of that list, not a second list; the original counts it | The feed does not fill with the same twelve posters placed twelve ways |
+| Cards added, dropped or swapped make it a **list of its own**, with "based on" naming the source | A changed set is new work; the credit is the only debt |
+| The author cannot rank their own list; a list under review takes no rankings; a list taken down takes its rankings with it | Nothing to count, nothing to show without the list |
+| Publishing the same copy again replaces the ranking; the switch that published it takes it down | One person, one placing per list |
+
+**Proxy** (tieryourlife-proxy#31): publish carries `takenFrom`; the same
+multiset of cards writes `rankings/{listId}_{uid}` (arrangement over the
+source's cards, the tier words, who and when) and answers
+`{id: <source>, ranking: true}`; otherwise a new list with `basedOn`.
+`GET lists/{id}/rankings?after=` pages newest first with the reader's own
+ahead of the first page; `DELETE lists/{id}/rankings/mine`. Summaries carry
+`rankingCount` and `basedOn`.
+
+**App** (`rankings-of-a-list`): a copy remembers `takenFrom` (Room 13, with
+`rankingOf`); the board's publish sends it and, answered as a ranking, keeps
+`rankingOf` instead of a `publishedId`, says so in a snackbar and in the
+Public row, and shows a credit under the title with a way to the original.
+Turning the switch off takes the ranking down; deleting the board does too.
+On somebody's list a chip under the author says "N rankings" and opens a
+sheet: the author first, then this reader, then the rest by freshness; the
+chosen one fills the left half of the Their / Mine switch under their name,
+and Save keeps whichever placing is on screen. "Based on" under the author
+opens the source. The site is to follow.
+
+Not in this pass: the board learning that the list it ranks has gone (the
+next publish simply makes it a list of its own), the count on feed cards.

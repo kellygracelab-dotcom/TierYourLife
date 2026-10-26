@@ -209,6 +209,7 @@ private fun NavContent(
             onOpenAiStudio = { tierListId, listTitle -> navController.navigateToAiStudio(tierListId, listTitle) },
             onChooseCover = { id -> navController.navigateToCoverPicker(id) },
             onChooseTopic = { id -> navController.navigateToTopicPicker(id) },
+            onOpenPublishedList = { id -> navController.navigateToCommunityList(id) },
         )
         coverPickerScreen(
             onBack = { navController.popBackStack() },
@@ -267,6 +268,7 @@ private fun NavContent(
         )
         communityListScreen(
             onBack = { navController.popBackStack() },
+            onOpenList = { id -> navController.navigateToCommunityList(id) },
             // The copy takes the published list's place: one move, and back
             // leads to where the list was found.
             onOpenSaved = { id ->

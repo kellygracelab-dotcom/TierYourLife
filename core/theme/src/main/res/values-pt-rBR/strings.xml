@@ -33,4 +33,5 @@
         <item quantity="other">%d classificados</item>
     </plurals>
     <string name="tier_lists_title">Suas listas</string>
+    <string name="snack_published_as_ranking">Publicada como seu ranking daquela lista. O feed não mostra uma segunda lista.</string>
 </resources>

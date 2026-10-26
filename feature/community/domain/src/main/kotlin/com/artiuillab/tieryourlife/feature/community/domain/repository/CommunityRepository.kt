@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
@@ -88,6 +89,12 @@ interface CommunityRepository {
     /** What the popular ordering counts. Once per person; saying it twice changes nothing. */
     suspend fun noteTaken(publishedId: String): Result<Unit>
 
+    /** Readers' own placings of this list's cards, newest first, this reader's ahead of the first page. */
+    suspend fun rankings(listId: String, after: String? = null): Result<RankingsPage>
+
+    /** Takes this person's ranking of that list down. */
+    suspend fun withdrawRanking(listId: String): Result<Unit>
+
     /** As the server has it, not as this phone remembers: a list survives the phone that published it. */
     suspend fun myPublished(): Result<List<PublishedListSummary>>
 
@@ -124,4 +131,10 @@ interface CommunityRepository {
 }
 
 /** What came back from publishing: where it lives, what went, and the topic it was filed under once the server named it. */
-data class Published(val id: String, val fingerprint: String, val topicId: String? = null)
+data class Published(
+    val id: String,
+    val fingerprint: String,
+    val topicId: String? = null,
+    /** True when the server kept it as this person's ranking of [id] rather than as a list of its own. */
+    val ranking: Boolean = false,
+)

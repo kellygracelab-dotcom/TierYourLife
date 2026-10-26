@@ -208,4 +208,6 @@
     <string name="cover_picker_no_cards">Żadna karta tej listy nie ma jeszcze obrazu.</string>
     <string name="cover_picker_gallery">Wybierz z galerii</string>
     <string name="cover_picker_gallery_note">Obraz z galerii jest całą okładką i podróżuje z listą, gdy ją publikujesz.</string>
+    <string name="tier_detail_ranking_of">Twój ranking listy od %1$s</string>
+    <string name="tier_detail_open_original">Otwórz</string>
 </resources>

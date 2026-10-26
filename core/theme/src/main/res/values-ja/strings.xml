@@ -25,4 +25,5 @@
         <item quantity="other">%d件評価済み</item>
     </plurals>
     <string name="tier_lists_title">あなたのリスト</string>
+    <string name="snack_published_as_ranking">そのリストのあなたのランキングとして公開しました。フィードに2つ目のリストは出ません。</string>
 </resources>

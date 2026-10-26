@@ -76,12 +76,14 @@ internal fun TrashScreenContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
     val stillPublicMessage = stringResource(R.string.snack_published_list_still_public)
+    val publishedAsRankingMessage = stringResource(ThemeR.string.snack_published_as_ranking)
 
     LaunchedEffect(Unit) {
         userMessages.collect { message ->
             snackbarHostState.showSnackbar(
                 when (message) {
                     UserMessage.PublishedListStillPublic -> stillPublicMessage
+                    UserMessage.PublishedAsRanking -> publishedAsRankingMessage
                     else -> actionFailedMessage
                 },
             )

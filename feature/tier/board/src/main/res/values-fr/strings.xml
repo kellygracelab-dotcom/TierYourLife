@@ -146,4 +146,5 @@
         <item quantity="other">%d dans le réservoir</item>
     </plurals>
     <string name="list_settings_public_topic_unavailable">Ce thème n’est plus ouvert : fusionné, refusé ou à quelqu’un d’autre. La liste n’a plus de thème ; choisissez-en un autre ou publiez sans.</string>
+    <string name="list_settings_public_ranking_body">Publiée comme votre classement de la liste de %1$s ; aucune seconde liste n’apparaît dans le fil.</string>
 </resources>

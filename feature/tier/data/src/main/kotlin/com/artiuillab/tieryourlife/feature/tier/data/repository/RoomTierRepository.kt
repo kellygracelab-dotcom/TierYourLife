@@ -45,9 +45,11 @@ class RoomTierRepository internal constructor(
         authorName: String,
         tiers: List<Tier>,
         items: List<TierItem>,
+        takenFrom: String?,
     ): Long = dao.createTierListFromTemplate(
         title = title,
         authorName = authorName,
+        takenFrom = takenFrom,
         tiers = tiers.map { tier ->
             NewTemplateTier(
                 label = tier.label,
@@ -62,6 +64,10 @@ class RoomTierRepository internal constructor(
 
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) {
         dao.setPublished(id, publishedId, fingerprint)
+    }
+
+    override suspend fun setRankingOf(id: Long, listId: String?) {
+        dao.setRankingOf(id, listId)
     }
 
     override suspend fun publishedStanding(): PublishedStanding {

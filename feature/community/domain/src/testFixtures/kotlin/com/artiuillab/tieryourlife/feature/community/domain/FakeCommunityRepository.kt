@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
@@ -65,6 +66,11 @@ open class FakeCommunityRepository : CommunityRepository {
     override suspend fun mergeTopic(id: String, into: String): Result<Topic> = notSetUp("mergeTopic")
 
     override suspend fun rejectTopic(id: String): Result<Topic> = notSetUp("rejectTopic")
+
+    override suspend fun rankings(listId: String, after: String?): Result<RankingsPage> =
+        Result.success(RankingsPage(emptyList(), null))
+
+    override suspend fun withdrawRanking(listId: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun moveList(publishedId: String, category: ListCategory, topicId: String?): Result<Unit> =
         Result.success(Unit)

@@ -178,4 +178,17 @@
     <string name="home_following_empty_topics">Из тем, на которые вы подписаны, пока ничего нет.</string>
     <string name="moderation_action_move">Переместить…</string>
     <string name="moderation_moderators_unavailable">Не удалось прочитать список модераторов.</string>
+    <string name="community_rankings_title">Ранжирования · %1$d</string>
+    <string name="community_rankings_body">Те же карточки, расставленные по-своему. Выберите, чьи ряды показать.</string>
+    <string name="community_ranking_author">Автор списка</string>
+    <string name="community_ranking_you">Вы</string>
+    <string name="community_ranking_withdraw">Снять</string>
+    <string name="community_based_on">По мотивам «%1$s» от %2$s</string>
+    <string name="community_showing_ranking_of">Смотрим: %1$s</string>
+    <plurals name="community_rankings_count">
+        <item quantity="one">%d ранжирование</item>
+        <item quantity="few">%d ранжирования</item>
+        <item quantity="many">%d ранжирований</item>
+        <item quantity="other">%d ранжирования</item>
+    </plurals>
 </resources>

@@ -172,4 +172,16 @@
     <string name="home_following_empty_topics">Rien encore des thèmes que vous suivez.</string>
     <string name="moderation_action_move">Déplacer…</string>
     <string name="moderation_moderators_unavailable">Impossible de lire la liste des modérateurs.</string>
+    <string name="community_rankings_title">Classements · %1$d</string>
+    <string name="community_rankings_body">Les mêmes cartes, placées à la manière de quelqu’un. Choisissez les rangées à afficher.</string>
+    <string name="community_ranking_author">Auteur de la liste</string>
+    <string name="community_ranking_you">Vous</string>
+    <string name="community_ranking_withdraw">Retirer</string>
+    <string name="community_based_on">D’après « %1$s » de %2$s</string>
+    <string name="community_showing_ranking_of">Affiché : %1$s</string>
+    <plurals name="community_rankings_count">
+        <item quantity="one">%d classement</item>
+        <item quantity="many">%d classements</item>
+        <item quantity="other">%d classements</item>
+    </plurals>
 </resources>

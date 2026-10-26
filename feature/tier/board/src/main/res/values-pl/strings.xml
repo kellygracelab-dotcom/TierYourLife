@@ -156,4 +156,5 @@
         <item quantity="other">%d w puli</item>
     </plurals>
     <string name="list_settings_public_topic_unavailable">Ten temat nie jest już dostępny: scalono go, odrzucono albo należy do kogoś innego. Lista nie ma teraz tematu; wybierz inny albo opublikuj bez tematu.</string>
+    <string name="list_settings_public_ranking_body">Opublikowana jako twój ranking listy od %1$s; w kanale nie pojawia się druga lista.</string>
 </resources>

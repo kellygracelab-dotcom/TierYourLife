@@ -195,4 +195,6 @@
     <string name="cover_picker_no_cards">Aucune carte de cette liste n\'a encore d\'image.</string>
     <string name="cover_picker_gallery">Choisir dans la galerie</string>
     <string name="cover_picker_gallery_note">Une image de la galerie devient toute la couverture et voyage avec la liste quand vous la publiez.</string>
+    <string name="tier_detail_ranking_of">Votre classement d’une liste de %1$s</string>
+    <string name="tier_detail_open_original">Ouvrir</string>
 </resources>

@@ -30,4 +30,5 @@
         <item quantity="other">%d ranked</item>
     </plurals>
     <string name="tier_lists_title">Your lists</string>
+    <string name="snack_published_as_ranking">Out as your ranking of that list. The feed shows no second list.</string>
 </resources>

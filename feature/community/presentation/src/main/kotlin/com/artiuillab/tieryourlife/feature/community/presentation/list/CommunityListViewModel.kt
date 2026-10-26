@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Community
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,6 +47,9 @@ class CommunityListViewModel @Inject constructor(
 
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
+
+    /** The readers' placings of this list: read on demand, chosen into the left half, this reader's own taken down. */
+    internal val rankings = ListRankings(publishedId, community, _state, viewModelScope, messages)
 
     init {
         load()
@@ -92,17 +96,20 @@ class CommunityListViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = CommunityListUiState.Loading
             _state.value = community.open(publishedId).fold(
-                onSuccess = { published ->
+                onSuccess = { answer ->
+                    rankings.opened(answer)
                     CommunityListUiState.Success(
-                        list = asTheAuthorLeftIt(published),
-                        mine = emptied(published),
+                        list = asTheAuthorLeftIt(answer),
+                        mine = emptied(answer),
                         // What somebody came for: the list as its author ranked it.
-                        showing = if (published.arrangement.isEmpty()) Showing.Mine else Showing.Theirs,
-                        knowsTheirs = published.arrangement.isNotEmpty(),
-                        authorName = published.summary.authorName,
-                        authorUid = published.summary.authorUid,
-                        authorPhotoUrl = published.summary.authorPhotoUrl,
-                        editorial = published.summary.editorial,
+                        showing = if (answer.arrangement.isEmpty()) Showing.Mine else Showing.Theirs,
+                        knowsTheirs = answer.arrangement.isNotEmpty(),
+                        authorName = answer.summary.authorName,
+                        authorUid = answer.summary.authorUid,
+                        authorPhotoUrl = answer.summary.authorPhotoUrl,
+                        editorial = answer.summary.editorial,
+                        rankingCount = answer.summary.rankingCount,
+                        basedOn = answer.summary.basedOn,
                     )
                 },
                 onFailure = { CommunityListUiState.Error },
@@ -145,12 +152,13 @@ class CommunityListViewModel @Inject constructor(
             val saved = messages.guard("Saving a community list") {
                 // The reader's choice, asked for at the moment of saving: keeping
                 // the author's ranking is a reason to save, not a mistake to correct.
-                val keeping = if (which == Showing.Theirs) current.list else current.mine
+                val keeping = if (which == Showing.Theirs) current.theirs else current.mine
                 newId = tiers.createFromTemplate(
                     title = keeping.title,
                     authorName = current.authorName,
                     tiers = keeping.tiers.filterNot { it.isPool },
                     items = keeping.tiers.filter { it.isPool }.flatMap { it.items },
+                    takenFrom = publishedId,
                 )
             }
             _state.update { (it as CommunityListUiState.Success).copy(saving = false, savedId = newId.takeIf { saved }) }
@@ -207,13 +215,14 @@ class CommunityListViewModel @Inject constructor(
         tiers = published.tiers.map { it.copy(items = emptyList()) } + pool(published.items),
         authorName = published.summary.authorName,
     )
-
-    private fun pool(items: List<com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem>) = Tier(
-        id = POOL_TIER_ID,
-        label = "Unranked",
-        colorLight = "#DAD7E0",
-        colorDark = "#46464F",
-        items = items,
-        isPool = true,
-    )
 }
+
+/** The one tier a published list does not carry: where its unplaced cards wait. */
+internal fun pool(items: List<TierItem>) = Tier(
+    id = POOL_TIER_ID,
+    label = "Unranked",
+    colorLight = "#DAD7E0",
+    colorDark = "#46464F",
+    items = items,
+    isPool = true,
+)

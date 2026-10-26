@@ -295,9 +295,14 @@ private fun TierScreenBody(
     val deletedMessageTemplate = stringResource(R.string.tier_detail_item_moved_to_trash)
     val undoLabel = stringResource(R.string.tier_detail_snackbar_undo)
     val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
+    val publishedAsRankingMessage = stringResource(ThemeR.string.snack_published_as_ranking)
 
     LaunchedEffect(Unit) {
-        userMessages.collect { snackbarHostState.showSnackbar(actionFailedMessage) }
+        userMessages.collect { message ->
+            snackbarHostState.showSnackbar(
+                if (message == UserMessage.PublishedAsRanking) publishedAsRankingMessage else actionFailedMessage,
+            )
+        }
     }
     val onConsumeAddedItem = actions.onConsumeAddedItem
     val onUndoAddedItem = actions.onUndoAddedItem
