@@ -258,4 +258,10 @@
         <item quantity="other">%1$s listes</item>
     </plurals>
     <string name="community_save_short">Enregistrer</string>
+    <plurals name="moderation_open_count">
+        <item quantity="one">%1$d ouvert</item>
+        <item quantity="many">%1$d ouverts</item>
+        <item quantity="other">%1$d ouverts</item>
+    </plurals>
+    <string name="moderation_refresh">Actualiser</string>
 </resources>

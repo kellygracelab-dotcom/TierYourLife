@@ -55,33 +55,38 @@ internal fun TopicQueue(
     onReject: (id: String) -> Unit,
     onFindMergeTargets: (String) -> Unit,
     onRetry: () -> Unit,
+    chips: (@Composable () -> Unit)? = null,
 ) {
     var approving by remember { mutableStateOf<PendingTopic?>(null) }
     var renaming by remember { mutableStateOf<PendingTopic?>(null) }
     var merging by remember { mutableStateOf<PendingTopic?>(null) }
 
-    when (state) {
-        TopicQueueUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        chipsItem(chips)
+        when (state) {
+            TopicQueueUiState.Loading -> stateItem { CircularProgressIndicator() }
 
-        TopicQueueUiState.Failed -> QueueMessage(
-            title = stringResource(R.string.moderation_topics_failed),
-            body = stringResource(R.string.home_community_failed_body),
-            action = stringResource(ThemeR.string.action_try_again),
-            onAction = onRetry,
-        )
+            TopicQueueUiState.Failed -> stateItem {
+                QueueMessage(
+                    title = stringResource(R.string.moderation_topics_failed),
+                    body = stringResource(R.string.home_community_failed_body),
+                    action = stringResource(ThemeR.string.action_try_again),
+                    onAction = onRetry,
+                )
+            }
 
-        is TopicQueueUiState.Ready -> if (state.pending.isEmpty()) {
-            QueueMessage(
-                title = stringResource(R.string.moderation_topics_empty_title),
-                body = stringResource(R.string.moderation_topics_empty_body),
-            )
-        } else {
-            LazyColumn(
-                contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = 32.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
+            is TopicQueueUiState.Ready -> if (state.pending.isEmpty()) {
+                stateItem {
+                    QueueMessage(
+                        title = stringResource(R.string.moderation_topics_empty_title),
+                        body = stringResource(R.string.moderation_topics_empty_body),
+                    )
+                }
+            } else {
                 items(state.pending, key = { it.topic.id }) { pending ->
                     PendingTopicCard(
                         pending = pending,

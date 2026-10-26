@@ -1,35 +1,51 @@
 package com.artiuillab.tieryourlife.core.theme.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.R
 import com.artiuillab.tieryourlife.core.theme.layout.ColumnAlignedTopBar
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.TopBarDefaults
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.layout.isShortWindow
+import com.artiuillab.tieryourlife.core.theme.layout.overhang
 
 /**
  * The bar over a home half. It stands on the column of what is under it
@@ -70,6 +86,11 @@ fun HomeTopBar(
     }
 }
 
+/**
+ * The bar while searching: back, then the field, on the same column as the
+ * results (§2.3). Slim in a short window like every other bar there; the
+ * field itself is the same either way.
+ */
 @Composable
 fun SearchTopBar(
     query: String,
@@ -77,62 +98,104 @@ fun SearchTopBar(
     onClose: () -> Unit,
     contentMax: Dp = ContentWidth.Reading,
     statusBarPadding: Boolean = true,
+    compact: Boolean = isShortWindow,
 ) {
-    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     val closeDescription = stringResource(R.string.cd_close_search)
-    val clearDescription = stringResource(R.string.cd_clear_query)
     val focusRequester = remember { FocusRequester() }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
             .let { if (statusBarPadding) it.statusBarsPadding() else it },
         contentAlignment = Alignment.TopCenter,
     ) {
-        TextField(
-            value = query,
-            onValueChange = onQueryChange,
-            placeholder = { Text(stringResource(R.string.home_search_hint)) },
-            singleLine = true,
-            shape = RoundedCornerShape(28.dp),
-            leadingIcon = {
+        Row(
+            modifier = Modifier
+                .atMost(contentMax)
+                .padding(horizontal = TopBarDefaults.ContentPadding)
+                .height(if (compact) TopBarDefaults.CompactHeight else TopBarDefaults.Height),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(Modifier.overhang(start = true)) {
                 IconButton(
                     onClick = onClose,
                     modifier = Modifier
+                        .size(48.dp)
                         .semantics { contentDescription = closeDescription }
                         .testTag(HomeBarTestTags.SEARCH_CLOSE),
                 ) { BackIcon() }
-            },
-            trailingIcon = {
-                if (query.isNotEmpty()) {
-                    IconButton(
-                        onClick = { onQueryChange("") },
-                        modifier = Modifier
-                            .semantics { contentDescription = clearDescription }
-                            .testTag(HomeBarTestTags.SEARCH_CLEAR),
-                    ) { ClearIcon(20.dp, onSurfaceVariant) }
-                }
-            },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-                cursorColor = MaterialTheme.colorScheme.primary,
-            ),
-            modifier = Modifier
-                .atMost(contentMax)
-                .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 4.dp)
-                .height(56.dp)
-                .focusRequester(focusRequester)
-                .testTag(HomeBarTestTags.SEARCH_FIELD),
-        )
+            }
+            Spacer(Modifier.width(4.dp))
+            SearchField(
+                query = query,
+                onQueryChange = onQueryChange,
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester)
+                    .testTag(HomeBarTestTags.SEARCH_FIELD),
+            )
+        }
     }
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 }
+
+/** 40 high and fully rounded, a shade off the bar so it reads as a field without a border. */
+@Composable
+private fun SearchField(query: String, onQueryChange: (String) -> Unit, modifier: Modifier) {
+    val colors = MaterialTheme.colorScheme
+    val clearDescription = stringResource(R.string.cd_clear_query)
+    val keyboard = LocalSoftwareKeyboardController.current
+    BasicTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = modifier,
+        singleLine = true,
+        textStyle = SearchQueryStyle.copy(color = colors.onSurface),
+        cursorBrush = SolidColor(colors.primary),
+        // Done typing is not done searching: the results stay, the keyboard goes.
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { keyboard?.hide() }),
+        decorationBox = { field ->
+            Row(
+                modifier = Modifier
+                    .height(40.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(colors.surfaceContainerHighest)
+                    .padding(start = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+                    if (query.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.home_search_hint),
+                            style = SearchQueryStyle,
+                            color = colors.onSurfaceVariant,
+                            maxLines = 1,
+                        )
+                    }
+                    field()
+                }
+                if (query.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .clickable(role = Role.Button) { onQueryChange("") }
+                            .semantics { contentDescription = clearDescription }
+                            .testTag(HomeBarTestTags.SEARCH_CLEAR),
+                        contentAlignment = Alignment.Center,
+                    ) { ClearIcon(20.dp, colors.onSurfaceVariant) }
+                } else {
+                    Spacer(Modifier.width(16.dp))
+                }
+            }
+        },
+    )
+}
+
+private val SearchQueryStyle = TextStyle(fontSize = 16.sp, lineHeight = 24.sp)
 
 @Composable
 fun HomeIconButton(

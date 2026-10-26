@@ -145,6 +145,9 @@ Every screen keeps clear of the system bars itself, by one rule (written in
   lies under them, since the pool already clears the bar.
 - **The sides are the root's.** `AppRoot` pads the cutout and a sideways
   navigation bar once; nothing below adds them again.
+- **The keyboard is the results' to clear.** A list read while still typing
+  ends above it (`systemBarsContentPadding(aboveKeyboard = true)`): the window
+  drawn behind the bars is not made shorter for the keyboard either.
 - **No bar, no gap.** Every inset reads zero where its bar is absent (gesture
   navigation leaves a slim one), and the keyboard is never counted twice.
 
@@ -153,8 +156,12 @@ inside the screen's `CenteredContent`): the title starts and the last button
 ends where the content does. Below 480dp of height every bar is 48dp and
 leaves with the content (`BarredScreen`), counts move into it (Your lists),
 filter chips are the first scrolling item and never pinned; elsewhere bars
-stay 56dp and pinned. Screenshots with faked bars (`SystemBarsScreenshotTest`
-in board, Your lists and Community) prove nothing sits under either bar.
+stay 56dp and pinned. A short window's bar is held in place, never swapped
+for another layout, while what it holds is in use (`BarredScreen(pinned)`:
+a selection's count, a search field with the keyboard up), so the list
+under it keeps its scroll. Screenshots with faked bars (`SystemBarsScreenshotTest`
+in board, Your lists and Community, `SearchScreenshotTest`, `ModerationScreenshotTest`)
+prove nothing sits under a bar or the keyboard.
 
 ## Navigation
 

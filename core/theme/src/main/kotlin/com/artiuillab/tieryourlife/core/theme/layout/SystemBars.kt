@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.union
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -24,6 +25,10 @@ import androidx.compose.ui.unit.dp
  * - The sides are the app root's: it pads for the cutout and a sideways
  *   navigation bar once, so nothing below adds them again.
  *
+ * - The keyboard belongs to what is typed for: a list of results ends above
+ *   it ([systemBarsContentPadding] with aboveKeyboard), since the window
+ *   drawn behind the bars is not made shorter for it either.
+ *
  * Where a bar is absent the inset is zero, so none of this leaves a gap.
  */
 
@@ -31,6 +36,8 @@ import androidx.compose.ui.unit.dp
  * The padding a scrolling list needs at its end: [bottom] for whatever floats
  * over it (a button, a strip), plus the navigation bar under it. The keyboard
  * already covers the bar when it is up, so the bar is not added twice then.
+ * [aboveKeyboard] ends the list above the keyboard instead, for results
+ * that are read while still typing.
  */
 @Composable
 fun systemBarsContentPadding(
@@ -38,8 +45,19 @@ fun systemBarsContentPadding(
     top: Dp = 0.dp,
     end: Dp = 0.dp,
     bottom: Dp = 0.dp,
-): PaddingValues = PaddingValues(start = start, top = top, end = end, bottom = bottom + navigationBarBottom())
+    aboveKeyboard: Boolean = false,
+): PaddingValues = PaddingValues(
+    start = start,
+    top = top,
+    end = end,
+    bottom = bottom + if (aboveKeyboard) keyboardOrNavigationBarBottom() else navigationBarBottom(),
+)
 
 /** How tall the navigation bar is at the bottom of the window, or zero: gesture navigation, a sideways phone, a cover screen. */
 @Composable
 fun navigationBarBottom(): Dp = WindowInsets.navigationBars.exclude(WindowInsets.ime).asPaddingValues().calculateBottomPadding()
+
+/** The keyboard while it is up, the navigation bar otherwise: whichever covers the bottom of the window. */
+@Composable
+private fun keyboardOrNavigationBarBottom(): Dp =
+    WindowInsets.navigationBars.union(WindowInsets.ime).asPaddingValues().calculateBottomPadding()

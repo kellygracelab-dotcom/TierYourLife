@@ -29,20 +29,26 @@ internal const val GESTURE_BAR_DP = 16
  * draws no system bars, so a screenshot would otherwise never show what
  * sits under them.
  */
-internal fun ComponentActivity.fakeSystemBars(statusDp: Int, navigationDp: Int) {
+internal fun ComponentActivity.fakeSystemBars(statusDp: Int, navigationDp: Int, keyboardDp: Int = 0) {
     val content = findViewById<ViewGroup>(android.R.id.content)
     val density = content.resources.displayMetrics.density
     val insets = WindowInsetsCompat.Builder()
         .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.of(0, (statusDp * density).roundToInt(), 0, 0))
         .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, (navigationDp * density).roundToInt()))
+        // A keyboard's inset runs from the bottom of the window, over the navigation bar.
+        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, (keyboardDp * density).roundToInt()))
+        .setVisible(WindowInsetsCompat.Type.ime(), keyboardDp > 0)
         .build()
     ViewCompat.dispatchApplyWindowInsets(content, insets)
 }
 
 /** The two bars drawn over the screen as tinted bands: anything under a band is under the bar. */
 @Composable
-internal fun SystemBarBands(statusDp: Int, navigationDp: Int) {
+internal fun SystemBarBands(statusDp: Int, navigationDp: Int, keyboardDp: Int = 0) {
     Box(Modifier.fillMaxSize()) {
+        if (keyboardDp > 0) {
+            Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(keyboardDp.dp).background(KEYBOARD_TINT))
+        }
         Box(Modifier.align(Alignment.TopCenter).fillMaxWidth().height(statusDp.dp).background(STATUS_TINT))
         Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(navigationDp.dp).background(NAVIGATION_TINT))
     }
@@ -50,3 +56,4 @@ internal fun SystemBarBands(statusDp: Int, navigationDp: Int) {
 
 private val STATUS_TINT = Color(0x66B03A32)
 private val NAVIGATION_TINT = Color(0x663C6E99)
+private val KEYBOARD_TINT = Color(0xCC5C5F66)

@@ -8,8 +8,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,8 +20,10 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -40,6 +45,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
@@ -81,6 +87,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlyFooter
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlySignInCard
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.RestoringPictures
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchResultRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SelectionTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.TILE_MIN_WIDTH
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.TierListCard
@@ -194,6 +201,8 @@ fun TierListsScreenContent(
     val grouped = success?.grouped ?: false
     var filtersOpen by rememberSaveable { mutableStateOf(false) }
     val hasRail = currentWindowShape.hasRail
+    // Out here, so closing a search finds the boards where they were left.
+    val boardsScroll = rememberLazyGridState()
 
     BackHandler(enabled = mode !is HomeMode.Browsing) {
         when (mode) {
@@ -244,6 +253,7 @@ fun TierListsScreenContent(
         totalListCount == 0
 
     val short = isShortWindow
+    val keyboardUp = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     // The first thing that scrolls, never pinned: the counts where the bar
     // has no room for them, then what orders and narrows the boards. Nothing
     // to order or narrow until there is more than one board.
@@ -269,8 +279,11 @@ fun TierListsScreenContent(
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         Box(modifier = Modifier.fillMaxSize()) {
             BarredScreen(
-                // Searching and choosing keep their bar: it holds the field and the count being acted on.
-                compact = short && mode == HomeMode.Browsing,
+                // Held while it is in use: the count being acted on, or the field
+                // while the keyboard is up. Typed and put away, the field leaves
+                // with the results like any bar in a short window.
+                compact = short,
+                pinned = mode is HomeMode.Selecting || (mode is HomeMode.Searching && keyboardUp),
                 bar = {
                     Column {
                         when (mode) {
@@ -280,6 +293,7 @@ fun TierListsScreenContent(
                                 onClose = onCloseSearch,
                                 contentMax = ContentWidth.Board,
                                 statusBarPadding = false,
+                                compact = short,
                             )
 
                             is HomeMode.Selecting -> SelectionTopBar(
@@ -337,6 +351,7 @@ fun TierListsScreenContent(
 
                         else -> HomeContent(
                             top = top,
+                            scroll = boardsScroll,
                             lists = lists,
                             asPictures = asPictures,
                             favourites = favourites,
@@ -413,6 +428,7 @@ fun TierListsScreenContent(
 @Composable
 private fun HomeContent(
     top: @Composable () -> Unit,
+    scroll: LazyGridState,
     lists: List<TierList>,
     asPictures: Boolean,
     favourites: List<TierList>,
@@ -435,6 +451,7 @@ private fun HomeContent(
     if (asPictures) {
         BoardTiles(
             top = top,
+            scroll = scroll,
             lists = lists,
             favourites = favourites,
             grouped = grouped,
@@ -453,7 +470,7 @@ private fun HomeContent(
         return
     }
 
-    BoardsGrid(columns = GridCells.Adaptive(ROW_MIN_WIDTH)) {
+    BoardsGrid(columns = GridCells.Adaptive(ROW_MIN_WIDTH), scroll = scroll) {
         wide("top") { top() }
         // Above the boards and above the sign-in offer: two copies of one
         // board is news. Hidden while selecting: two sets of buttons is one too many.
@@ -527,13 +544,25 @@ private val ROW_MIN_WIDTH = 320.dp
  * finger in the margin of a tablet still scrolls the boards.
  */
 @Composable
-private fun BoardsGrid(columns: GridCells, content: LazyGridScope.() -> Unit) {
+private fun BoardsGrid(
+    columns: GridCells,
+    scroll: LazyGridState = rememberLazyGridState(),
+    aboveKeyboard: Boolean = false,
+    content: LazyGridScope.() -> Unit,
+) {
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val side = max(SIDE_MARGIN, (maxWidth - ContentWidth.Board) / 2 + SIDE_MARGIN)
         LazyVerticalGrid(
             columns = columns,
             modifier = Modifier.fillMaxSize().testTag(TierListsTestTags.LISTS),
-            contentPadding = systemBarsContentPadding(start = side, end = side, bottom = 96.dp),
+            state = scroll,
+            // Room for the new-list button while browsing; a search has none to clear.
+            contentPadding = systemBarsContentPadding(
+                start = side,
+                end = side,
+                bottom = if (aboveKeyboard) SIDE_MARGIN else 96.dp,
+                aboveKeyboard = aboveKeyboard,
+            ),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             content = content,
@@ -552,6 +581,8 @@ private fun LazyGridScope.wide(key: String, content: @Composable () -> Unit) {
 @Composable
 private fun BoardTiles(
     top: @Composable () -> Unit,
+    scroll: LazyGridState = rememberLazyGridState(),
+    aboveKeyboard: Boolean = false,
     lists: List<TierList>,
     favourites: List<TierList>,
     grouped: Boolean,
@@ -567,7 +598,7 @@ private fun BoardTiles(
     onDismissSignInOffer: () -> Unit,
     onDismissConflictNotice: (String) -> Unit,
 ) {
-    BoardsGrid(columns = GridCells.Adaptive(minSize = TILE_MIN_WIDTH)) {
+    BoardsGrid(columns = GridCells.Adaptive(minSize = TILE_MIN_WIDTH), scroll = scroll, aboveKeyboard = aboveKeyboard) {
         wide("top") { top() }
         if (conflict != null) {
             item(key = "conflict-banner", span = { GridItemSpan(maxLineSpan) }) {
@@ -640,10 +671,12 @@ private fun SearchResults(
         return
     }
 
-    // The first line of the results' own column, so it stands over what it counts.
+    // The first line of the results' own column, so it stands over what it
+    // counts, and says what was searched: a list's name, not what is in it.
     val count: @Composable () -> Unit = {
         Text(
-            text = pluralStringResource(R.plurals.search_results_count, lists.size, lists.size),
+            text = pluralStringResource(R.plurals.search_results_count, lists.size, lists.size) +
+                " · " + stringResource(R.string.search_names_only),
             modifier = Modifier
                 .padding(start = 4.dp, end = 4.dp, top = 8.dp, bottom = 6.dp)
                 .testTag(TierListsTestTags.SEARCH_RESULTS_COUNT),
@@ -652,11 +685,12 @@ private fun SearchResults(
         )
     }
     run {
-        // The same shape the boards had a moment ago: searching narrows, it
-        // does not change what a board looks like.
+        // Pictures stay pictures: searching narrows, it does not change what
+        // a board looks like. Rows tighten to two lines (§2.3), the name first.
         if (asPictures) {
             BoardTiles(
                 top = count,
+                aboveKeyboard = true,
                 lists = lists,
                 favourites = emptyList(),
                 grouped = false,
@@ -675,10 +709,10 @@ private fun SearchResults(
             return
         }
 
-        BoardsGrid(columns = GridCells.Adaptive(ROW_MIN_WIDTH)) {
+        BoardsGrid(columns = GridCells.Adaptive(ROW_MIN_WIDTH), aboveKeyboard = true) {
             wide("count") { count() }
             items(lists, key = { it.id }) { list ->
-                TierListCard(list = list, onClick = { onTierListClick(list.id) })
+                SearchResultRow(list = list, onClick = { onTierListClick(list.id) })
             }
         }
     }
@@ -695,6 +729,7 @@ private fun HomeEmptyStateLayout(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .imePadding()
             .testTag(testTag),
         contentAlignment = Alignment.Center,
     ) {

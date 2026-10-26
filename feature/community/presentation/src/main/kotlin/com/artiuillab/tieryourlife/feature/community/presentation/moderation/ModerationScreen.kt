@@ -5,15 +5,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +21,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,20 +52,27 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
+import com.artiuillab.tieryourlife.core.theme.layout.ColumnAlignedTopBar
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
+import com.artiuillab.tieryourlife.core.theme.layout.isShortWindow
 import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FlagIcon
+import com.artiuillab.tieryourlife.core.theme.ui.MoreIcon
+import com.artiuillab.tieryourlife.core.theme.ui.VisibilityIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
@@ -74,6 +83,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.list.Community
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.components.ModeratorsPane
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.components.TakeDownSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.components.TopicQueue
+import com.artiuillab.tieryourlife.feature.community.presentation.moderation.components.chipsItem
+import com.artiuillab.tieryourlife.feature.community.presentation.moderation.components.stateItem
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.CategorySheet
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
@@ -188,19 +199,28 @@ fun ModerationScreenContent(
         onRetryModerators = onRetryModerators,
     )
 
+    val shape = currentWindowShape
     // Beside the queue once there is room: a reported list is out of the
     // feed, so this is where it can be looked at.
-    val besideIt = currentWindowShape.holdsTwoPanes
+    val besideIt = shape.holdsTwoPanes
+    // A short window's bar has the width for the chips, as Community's has for
+    // its tabs; a queue pane beside a list does not, and keeps them in its list.
+    val chipsInBar = isShortWindow && !besideIt && shape == WindowShape.Medium
+    val onRefresh = when (tab) {
+        ModerationTab.Reports -> onRetry
+        ModerationTab.Topics -> onRetryTopics
+        ModerationTab.Moderators -> onRetryModerators
+    }
     Box(Modifier.fillMaxSize()) {
-        ActionFailedSnackbar(userMessages)
         if (besideIt) {
             Row(Modifier.fillMaxSize().testTag(ModerationTestTags.SCREEN)) {
+                // Its own bar on its own pane: the list beside it has another.
                 Surface(
-                    modifier = Modifier.width(QUEUE_WIDTH).fillMaxSize(),
+                    modifier = Modifier.width(QUEUE_WIDTH).fillMaxHeight(),
                     color = MaterialTheme.colorScheme.surface,
                 ) {
-                    Column {
-                        Queue(queue, onBack, reportActions, topicActions, onChoose = onLook, besideIt = true)
+                    BarredScreen(bar = { QueueBar(queue, onBack, onRefresh, chipsInBar = false) }) {
+                        QueueBody(queue, reportActions, topicActions, onChoose = onLook, besideIt = true, chipsInList = true)
                     }
                 }
                 CommunityListScreenContent(
@@ -214,15 +234,26 @@ fun ModerationScreenContent(
             }
         } else {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-                CenteredContent(
-                    max = ContentWidth.Reading,
-                    modifier = Modifier.fillMaxSize().testTag(ModerationTestTags.SCREEN),
+                BarredScreen(
+                    bar = { QueueBar(queue, onBack, onRefresh, chipsInBar = chipsInBar, contentMax = ContentWidth.Reading) },
+                    modifier = Modifier.testTag(ModerationTestTags.SCREEN),
                 ) {
-                    Queue(queue, onBack, reportActions, topicActions, onChoose = onOpenList, besideIt = false)
+                    CenteredContent(max = ContentWidth.Reading, modifier = Modifier.fillMaxSize()) {
+                        QueueBody(
+                            queue,
+                            reportActions,
+                            topicActions,
+                            onChoose = onOpenList,
+                            besideIt = false,
+                            chipsInList = !chipsInBar,
+                        )
+                    }
                 }
             }
         }
-        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
+        // Over the queue, not under it, and clear of the navigation bar.
+        ActionFailedSnackbar(userMessages, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
+        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
     }
 
     takingDown?.let { report ->
@@ -271,24 +302,23 @@ private data class TopicActions(
     val onRetryModerators: () -> Unit,
 )
 
+/** The open queue, its chips first in its own list unless the bar carries them. */
 @Composable
-private fun ColumnScope.Queue(
+private fun QueueBody(
     queues: Queues,
-    onBack: () -> Unit,
     reports: ReportActions,
     topics: TopicActions,
     onChoose: (String) -> Unit,
     besideIt: Boolean,
+    chipsInList: Boolean,
 ) {
-    TopBar(onBack, queues.coversShown, queues.onToggleCovers, coversMatter = queues.tab == ModerationTab.Reports)
-    Tabs(
-        selected = queues.tab,
-        onSelect = queues.onTab,
-        ownerToo = queues.moderators is ModeratorsUiState.Ready || queues.tab == ModerationTab.Moderators,
-    )
-
+    val chips: (@Composable () -> Unit)? = if (chipsInList) {
+        { Chips(queues, Modifier.padding(top = 4.dp)) }
+    } else {
+        null
+    }
     when (queues.tab) {
-        ModerationTab.Reports -> Reports(queues.reports, reports, onChoose, besideIt, queues.coversShown)
+        ModerationTab.Reports -> Reports(queues.reports, reports, onChoose, besideIt, queues.coversShown, chips)
         ModerationTab.Topics -> TopicQueue(
             state = queues.topics,
             onApprove = topics.onApprove,
@@ -297,33 +327,34 @@ private fun ColumnScope.Queue(
             onReject = topics.onReject,
             onFindMergeTargets = topics.onFindMergeTargets,
             onRetry = topics.onRetry,
+            chips = chips,
         )
         ModerationTab.Moderators -> ModeratorsPane(
             state = queues.moderators,
             onAppoint = topics.onAppointModerator,
             onRemove = topics.onRemoveModerator,
             onRetry = topics.onRetryModerators,
+            chips = chips,
         )
     }
 }
 
-/** Chips, like the feed's source: the moderators' tab appears only once the server has said this is the owner. */
+/** Chips, like the feed's source: the moderators' one appears only once the server has said this is the owner. */
 @Composable
-private fun Tabs(selected: ModerationTab, onSelect: (ModerationTab) -> Unit, ownerToo: Boolean) {
+private fun Chips(queues: Queues, modifier: Modifier = Modifier) {
+    val ownerToo = queues.moderators is ModeratorsUiState.Ready || queues.tab == ModerationTab.Moderators
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 8.dp),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         ModerationTab.entries
             .filter { it != ModerationTab.Moderators || ownerToo }
             .forEach { tab ->
                 FilterChip(
-                    selected = tab == selected,
-                    onClick = { onSelect(tab) },
-                    label = { Text(stringResource(tab.labelRes)) },
+                    selected = tab == queues.tab,
+                    onClick = { queues.onTab(tab) },
+                    label = { Text(stringResource(tab.labelRes), maxLines = 1) },
                     modifier = Modifier.testTag(ModerationTestTags.tab(tab)),
                 )
             }
@@ -338,41 +369,47 @@ private val ModerationTab.labelRes: Int
     }
 
 @Composable
-private fun ColumnScope.Reports(
+private fun Reports(
     state: ModerationUiState,
     actions: ReportActions,
     onChoose: (String) -> Unit,
     besideIt: Boolean,
     coversShown: Boolean,
+    chips: (@Composable () -> Unit)?,
 ) {
-    when (state) {
-        ModerationUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
+    val first = (state as? ModerationUiState.Ready)?.reports?.firstOrNull()?.listId
+    LaunchedEffect(besideIt, first) {
+        // Something in the pane the moment the queue arrives.
+        if (besideIt && first != null) onChoose(first)
+    }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        chipsItem(chips)
+        when (state) {
+            ModerationUiState.Loading -> stateItem { CircularProgressIndicator() }
 
-        ModerationUiState.Failed -> Message(
-            title = stringResource(R.string.moderation_failed),
-            body = stringResource(R.string.home_community_failed_body),
-            action = stringResource(ThemeR.string.action_try_again),
-            onAction = actions.onRetry,
-        )
-
-        is ModerationUiState.Ready -> if (state.reports.isEmpty()) {
-            Message(
-                title = stringResource(R.string.moderation_empty_title),
-                body = stringResource(R.string.moderation_empty_body),
-                action = null,
-                onAction = {},
-            )
-        } else {
-            LaunchedEffect(besideIt, state.reports.firstOrNull()?.listId) {
-                // Something in the pane the moment the queue arrives.
-                if (besideIt) state.reports.firstOrNull()?.let { onChoose(it.listId) }
+            ModerationUiState.Failed -> stateItem {
+                Message(
+                    title = stringResource(R.string.moderation_failed),
+                    body = stringResource(R.string.home_community_failed_body),
+                    action = stringResource(ThemeR.string.action_try_again),
+                    onAction = actions.onRetry,
+                )
             }
-            LazyColumn(
-                contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = 32.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
+
+            is ModerationUiState.Ready -> if (state.reports.isEmpty()) {
+                stateItem {
+                    Message(
+                        title = stringResource(R.string.moderation_empty_title),
+                        body = stringResource(R.string.moderation_empty_body),
+                        action = null,
+                        onAction = {},
+                    )
+                }
+            } else {
                 items(state.reports, key = { it.listId }) { report ->
                     ReportCard(
                         report = report,
@@ -390,45 +427,83 @@ private fun ColumnScope.Reports(
     }
 }
 
+/**
+ * The pane's bar on the pane's column: what it is, how many wait, and the two
+ * things that apply to the whole queue. The covers only matter on reports.
+ */
 @Composable
-private fun TopBar(onBack: () -> Unit, coversShown: Boolean, onToggleCovers: () -> Unit, coversMatter: Boolean) {
+private fun QueueBar(
+    queues: Queues,
+    onBack: () -> Unit,
+    onRefresh: () -> Unit,
+    chipsInBar: Boolean,
+    contentMax: Dp = Dp.Infinity,
+) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp)
-            .padding(horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    val open = (queues.reports as? ModerationUiState.Ready)?.reports?.size
+    ColumnAlignedTopBar(
+        title = stringResource(R.string.moderation_title),
+        contentMax = contentMax,
+        navigation = {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .size(48.dp)
+                    .semantics { contentDescription = backDescription }
+                    .testTag(ModerationTestTags.BACK),
+            ) { BackIcon() }
+        },
+        count = open?.let { pluralStringResource(R.plurals.moderation_open_count, it, it) },
+        inline = if (chipsInBar) {
+            { Chips(queues) }
+        } else {
+            null
+        },
     ) {
-        IconButton(
-            onClick = onBack,
-            modifier = Modifier
-                .size(48.dp)
-                .semantics { contentDescription = backDescription }
-                .testTag(ModerationTestTags.BACK),
-        ) { BackIcon() }
-        Text(
-            text = stringResource(R.string.moderation_title),
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 4.dp),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
         // For the whole session, not per card, and not tied to the reason:
         // covering exactly what was reported would hide what has to be looked at.
-        if (coversMatter) {
-            TextButton(
-                onClick = onToggleCovers,
-                modifier = Modifier.testTag(ModerationTestTags.COVERS_TOGGLE),
-            ) {
-                Text(
-                    stringResource(
-                        if (coversShown) R.string.moderation_blur else R.string.moderation_unblur,
-                    ),
-                )
-            }
+        if (queues.tab == ModerationTab.Reports) {
+            CoversToggle(queues.coversShown, queues.onToggleCovers)
+        }
+        QueueOverflow(onRefresh)
+    }
+}
+
+/** Says what a tap does: struck through while the covers show, since tapping puts them away. */
+@Composable
+private fun CoversToggle(coversShown: Boolean, onToggle: () -> Unit) {
+    val description = stringResource(if (coversShown) R.string.moderation_blur else R.string.moderation_unblur)
+    IconButton(
+        onClick = onToggle,
+        modifier = Modifier
+            .size(48.dp)
+            .semantics { contentDescription = description }
+            .testTag(ModerationTestTags.COVERS_TOGGLE),
+    ) { VisibilityIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant, off = coversShown) }
+}
+
+/** Asking the server again: the queue does not watch for new reports while it is open. */
+@Composable
+private fun QueueOverflow(onRefresh: () -> Unit) {
+    var open by remember { mutableStateOf(false) }
+    val moreDescription = stringResource(ThemeR.string.tier_detail_content_description_more)
+    Box {
+        IconButton(
+            onClick = { open = true },
+            modifier = Modifier
+                .size(48.dp)
+                .semantics { contentDescription = moreDescription }
+                .testTag(ModerationTestTags.MORE),
+        ) { MoreIcon() }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.moderation_refresh)) },
+                onClick = {
+                    open = false
+                    onRefresh()
+                },
+                modifier = Modifier.testTag(ModerationTestTags.REFRESH),
+            )
         }
     }
 }

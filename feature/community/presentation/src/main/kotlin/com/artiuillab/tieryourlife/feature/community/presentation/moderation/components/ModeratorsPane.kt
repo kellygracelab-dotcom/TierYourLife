@@ -49,52 +49,52 @@ internal fun ModeratorsPane(
     onAppoint: (uid: String, name: String) -> Unit,
     onRemove: (uid: String) -> Unit,
     onRetry: () -> Unit,
+    chips: (@Composable () -> Unit)? = null,
 ) {
     var appointing by rememberSaveable { mutableStateOf(false) }
 
-    when (state) {
-        ModeratorsUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
+    LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = systemBarsContentPadding(bottom = 32.dp)) {
+        // These rows run edge to edge; the chips keep the column's margin.
+        chipsItem(chips?.let { row -> { Box(Modifier.padding(horizontal = 16.dp)) { row() } } })
+        when (state) {
+            ModeratorsUiState.Loading -> stateItem { CircularProgressIndicator() }
 
-        ModeratorsUiState.Unavailable -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(stringResource(R.string.moderation_moderators_unavailable), style = MaterialTheme.typography.bodyMedium)
-                TextButton(onClick = onRetry, modifier = Modifier.testTag(TopicQueueTestTags.MODERATORS_RETRY)) {
-                    Text(stringResource(ThemeR.string.action_try_again))
+            ModeratorsUiState.Unavailable -> stateItem {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(stringResource(R.string.moderation_moderators_unavailable), style = MaterialTheme.typography.bodyMedium)
+                    TextButton(onClick = onRetry, modifier = Modifier.testTag(TopicQueueTestTags.MODERATORS_RETRY)) {
+                        Text(stringResource(ThemeR.string.action_try_again))
+                    }
                 }
             }
-        }
 
-        is ModeratorsUiState.Ready -> Column(Modifier.fillMaxSize()) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = { appointing = true },
-                    enabled = !state.busy,
-                    modifier = Modifier.testTag(TopicQueueTestTags.APPOINT),
-                ) { Text(stringResource(R.string.moderation_appoint)) }
-            }
-            if (state.moderators.isEmpty()) {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 40.dp)
-                        .testTag(TopicQueueTestTags.MODERATORS_EMPTY),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = stringResource(R.string.moderation_moderators_empty),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+            is ModeratorsUiState.Ready -> {
+                item(key = "appoint") {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.End,
+                    ) {
+                        TextButton(
+                            onClick = { appointing = true },
+                            enabled = !state.busy,
+                            modifier = Modifier.testTag(TopicQueueTestTags.APPOINT),
+                        ) { Text(stringResource(R.string.moderation_appoint)) }
+                    }
                 }
-            } else {
-                LazyColumn(contentPadding = systemBarsContentPadding(bottom = 32.dp)) {
+                if (state.moderators.isEmpty()) {
+                    stateItem {
+                        Text(
+                            text = stringResource(R.string.moderation_moderators_empty),
+                            modifier = Modifier
+                                .padding(horizontal = 40.dp)
+                                .testTag(TopicQueueTestTags.MODERATORS_EMPTY),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                } else {
                     items(state.moderators, key = { it.uid }) { moderator ->
                         ModeratorRow(moderator = moderator, busy = state.busy, onRemove = { onRemove(moderator.uid) })
                     }

@@ -56,6 +56,8 @@ object TopBarDefaults {
  *
  * [count] follows the title on the same line in a short window, where there
  * is no room for a line of its own; it gives way before the title does.
+ * [inline] follows them both: what a taller window would put on a row of
+ * its own under the bar, such as a screen's chips.
  */
 @Composable
 fun ColumnAlignedTopBar(
@@ -68,6 +70,7 @@ fun ColumnAlignedTopBar(
     count: String? = null,
     titleTestTag: String? = null,
     divider: Boolean = false,
+    inline: (@Composable RowScope.() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     Column(modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
@@ -85,26 +88,34 @@ fun ColumnAlignedTopBar(
                     Spacer(Modifier.width(4.dp))
                 }
                 Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = title,
-                        modifier = Modifier
-                            .alignByBaseline()
-                            .let { if (titleTestTag != null) it.testTag(titleTestTag) else it },
-                        style = if (compact) CompactTitleStyle else MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    if (count != null) {
-                        Spacer(Modifier.width(10.dp))
+                    // Title and count share a baseline in a row of their own, centred
+                    // like everything else: taller neighbours must not lift them.
+                    Row(Modifier.weight(1f, fill = false), verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = count,
-                            modifier = Modifier.weight(1f, fill = false).alignByBaseline(),
-                            style = CountStyle,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            text = title,
+                            modifier = Modifier
+                                .alignByBaseline()
+                                .let { if (titleTestTag != null) it.testTag(titleTestTag) else it },
+                            style = if (compact) CompactTitleStyle else MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
+                        if (count != null) {
+                            Spacer(Modifier.width(10.dp))
+                            Text(
+                                text = count,
+                                modifier = Modifier.weight(1f, fill = false).alignByBaseline(),
+                                style = CountStyle,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                    if (inline != null) {
+                        Spacer(Modifier.width(12.dp))
+                        inline()
                     }
                 }
                 Row(Modifier.overhang(start = false), verticalAlignment = Alignment.CenterVertically, content = actions)
@@ -119,17 +130,20 @@ fun ColumnAlignedTopBar(
  * leaves with the content and comes back on the first scroll the other way,
  * so the content gets the height; anywhere else it stays. The status bar's
  * strip stays put either way, so nothing scrolls under the clock.
+ * [pinned] holds the short window's bar in place without changing the
+ * layout, so whatever scrolls under it keeps its place.
  */
 @Composable
 fun BarredScreen(
     bar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     compact: Boolean = isShortWindow,
+    pinned: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val outer = modifier.fillMaxSize().statusBarsPadding()
     if (compact) {
-        ScrollAwayHeader(header = bar, modifier = outer, content = content)
+        ScrollAwayHeader(header = bar, modifier = outer, pinned = pinned, content = content)
     } else {
         Column(outer) {
             bar()
@@ -154,7 +168,7 @@ private val CountStyle = TextStyle(fontSize = 13.sp, lineHeight = 18.sp)
  * lets it reach past the column by that much, so its glyph, not its touch
  * target, lines up with the content edge.
  */
-private fun Modifier.overhang(start: Boolean): Modifier = layout { measurable, constraints ->
+internal fun Modifier.overhang(start: Boolean): Modifier = layout { measurable, constraints ->
     val placeable = measurable.measure(constraints.copy(minWidth = 0))
     val reach = TopBarDefaults.Overhang.roundToPx()
     if (placeable.width == 0) {
