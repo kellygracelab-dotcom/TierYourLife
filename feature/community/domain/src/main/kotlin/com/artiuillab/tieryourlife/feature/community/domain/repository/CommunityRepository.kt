@@ -12,6 +12,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -53,6 +54,16 @@ interface CommunityRepository {
     suspend fun myTopics(): Result<List<Topic>>
 
     suspend fun topic(id: String): Result<Topic>
+
+    /** The nine sections with their counts, in the one order every screen lists them. */
+    suspend fun sections(): Result<List<SectionStats>>
+
+    suspend fun followSection(section: ListCategory): Result<Unit>
+
+    suspend fun unfollowSection(section: ListCategory): Result<Unit>
+
+    /** One cheap request at start: the token is fetched and the function woken before anybody opens Community. */
+    suspend fun warmUp(): Result<Unit>
 
     /** Fails for a guest, like following an author. */
     suspend fun followTopic(id: String): Result<Unit>

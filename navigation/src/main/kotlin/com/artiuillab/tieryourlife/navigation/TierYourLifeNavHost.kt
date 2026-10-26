@@ -30,7 +30,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.navigation.accou
 import com.artiuillab.tieryourlife.feature.account.presentation.navigation.navigateToAccount
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.aiStudioScreen
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.navigateToAiStudio
-import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityHomeScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.authorScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListScreen
@@ -42,7 +42,9 @@ import com.artiuillab.tieryourlife.feature.community.presentation.navigation.nav
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToFollowing
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToModeration
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToMyPublished
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToSection
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToTopic
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.sectionScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.topicScreen
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.hiddenScreen
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.navigateToHidden
@@ -138,12 +140,12 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
                 )
             },
             community = { tabs ->
-                CommunityFeedScreen(
+                CommunityHomeScreen(
                     onOpenList = { id -> navController.navigateToCommunityList(id) },
                     onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
                     onSettingsClick = { navController.navigateToSettings() },
                     onManageFollowing = { navController.navigateToFollowing() },
-                    onOpenTopic = { route -> navController.navigateToTopic(route) },
+                    onOpenSection = { route -> navController.navigateToSection(route) },
                     tabs = tabs,
                 )
             },
@@ -258,10 +260,16 @@ private fun NavContent(
             onBack = { navController.popBackStack() },
             onOpenList = { route -> navController.navigateToCommunityList(route) },
         )
+        sectionScreen(
+            onBack = { navController.popBackStack() },
+            onOpenList = { route -> navController.navigateToCommunityList(route) },
+            onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
+        )
         followingScreen(
             onBack = { navController.popBackStack() },
             onOpenAuthor = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
             onOpenTopic = { route -> navController.navigateToTopic(route) },
+            onOpenSection = { route -> navController.navigateToSection(route) },
         )
         topicScreen(
             onBack = { navController.popBackStack() },
