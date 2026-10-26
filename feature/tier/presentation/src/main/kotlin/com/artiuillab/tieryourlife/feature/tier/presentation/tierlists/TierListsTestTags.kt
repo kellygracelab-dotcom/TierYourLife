@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.lists.PublishedFilter
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
 internal object TierListsTestTags {
+    const val SUMMARY = "tier_lists_summary"
     const val LOADING = "tier_lists_loading"
     const val LISTS = "tier_lists"
     const val VIEW_TOGGLE = "tier_lists_view_toggle"

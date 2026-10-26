@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.trash
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
@@ -92,38 +94,44 @@ internal fun TrashScreenContent(
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         CenteredContent(max = ContentWidth.Reading, modifier = Modifier.fillMaxSize()) {
-            TrashTopBar(
-                isEmpty = entries.isEmpty(),
-                menuExpanded = menuExpanded,
-                onBack = onBack,
-                onMoreClick = { menuExpanded = true },
-                onDismissMenu = { menuExpanded = false },
-                onEmptyTrashClick = {
-                    menuExpanded = false
-                    emptyDialogVisible = true
-                },
-            )
-
-            when (state) {
-                TrashUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-
-                TrashUiState.Error -> Text(
-                    text = stringResource(R.string.trash_load_error),
-                    modifier = Modifier.padding(16.dp),
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-
-                is TrashUiState.Success -> if (entries.isEmpty()) {
-                    TrashEmptyState()
-                } else {
-                    TrashList(
-                        entries = entries,
-                        onRestoreList = onRestoreList,
-                        onRestoreItem = onRestoreItem,
-                        onRemoveRequested = { removeTarget = it },
+            BarredScreen(
+                bar = {
+                    TrashTopBar(
+                        isEmpty = entries.isEmpty(),
+                        menuExpanded = menuExpanded,
+                        onBack = onBack,
+                        onMoreClick = { menuExpanded = true },
+                        onDismissMenu = { menuExpanded = false },
+                        onEmptyTrashClick = {
+                            menuExpanded = false
+                            emptyDialogVisible = true
+                        },
                     )
+                },
+            ) {
+                Column(Modifier.fillMaxSize()) {
+                    when (state) {
+                        TrashUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+
+                        TrashUiState.Error -> Text(
+                            text = stringResource(R.string.trash_load_error),
+                            modifier = Modifier.padding(16.dp),
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+
+                        is TrashUiState.Success -> if (entries.isEmpty()) {
+                            TrashEmptyState()
+                        } else {
+                            TrashList(
+                                entries = entries,
+                                onRestoreList = onRestoreList,
+                                onRestoreItem = onRestoreItem,
+                                onRemoveRequested = { removeTarget = it },
+                            )
+                        }
+                    }
                 }
             }
         }

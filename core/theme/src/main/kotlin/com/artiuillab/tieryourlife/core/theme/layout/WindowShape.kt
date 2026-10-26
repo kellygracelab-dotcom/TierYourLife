@@ -92,3 +92,13 @@ val LocalWindowShape = staticCompositionLocalOf { WindowShape.Narrow }
 
 val currentWindowShape: WindowShape
     @Composable get() = LocalWindowShape.current
+
+/**
+ * Whether the window is under [WindowShape.ShortBelow] tall: a phone held
+ * sideways, a cover screen, half a phone in split view. Kept apart from the
+ * shape, which is about width: a phone sideways is wide and short at once.
+ */
+val LocalShortWindow = staticCompositionLocalOf { false }
+
+val isShortWindow: Boolean
+    @Composable get() = LocalShortWindow.current

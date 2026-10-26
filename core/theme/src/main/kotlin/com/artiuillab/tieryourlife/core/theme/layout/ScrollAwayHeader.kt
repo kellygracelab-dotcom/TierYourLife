@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.core.theme.layout
 
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -13,6 +15,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Velocity
 import kotlin.math.roundToInt
 
 /**
@@ -40,6 +43,16 @@ fun ScrollAwayHeader(
                 val before = offset
                 offset = (offset + available.y).coerceIn(-height.toFloat(), 0f)
                 return Offset(0f, offset - before)
+            }
+
+            // A bar left half out once the finger lifts reads as a glitch;
+            // it settles to whichever side it is nearer.
+            override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+                val height = headerHeight[0].toFloat()
+                if (height == 0f || offset == 0f || offset == -height) return Velocity.Zero
+                val target = if (offset < -height / 2) -height else 0f
+                animate(initialValue = offset, targetValue = target, animationSpec = spring()) { value, _ -> offset = value }
+                return Velocity.Zero
             }
         }
     }

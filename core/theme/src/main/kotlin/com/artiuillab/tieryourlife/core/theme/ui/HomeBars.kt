@@ -25,59 +25,60 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.R
+import com.artiuillab.tieryourlife.core.theme.layout.ColumnAlignedTopBar
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 
+/**
+ * The bar over a home half. It stands on the column of what is under it
+ * ([contentMax]), so the title and its buttons stay together on a wide window.
+ * [statusBarPadding] is false where the screen around it keeps the status bar
+ * clear itself, as a [com.artiuillab.tieryourlife.core.theme.layout.BarredScreen] does.
+ */
 @Composable
 fun HomeTopBar(
     onSearchClick: () -> Unit,
     onSettingsClick: (() -> Unit)?,
+    title: String = stringResource(R.string.app_name_display),
+    count: String? = null,
+    contentMax: Dp = ContentWidth.Reading,
+    statusBarPadding: Boolean = true,
 ) {
-    // The bar spans the window; the title and the buttons it belongs with do
-    // not, or the two end up a window apart.
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding(),
-        contentAlignment = Alignment.TopCenter,
+    ColumnAlignedTopBar(
+        title = title,
+        modifier = if (statusBarPadding) Modifier.statusBarsPadding() else Modifier,
+        contentMax = contentMax,
+        count = count,
+        titleTestTag = HomeBarTestTags.TITLE,
     ) {
-        Row(
-            modifier = Modifier
-                .atMost(ContentWidth.Reading)
-                .height(56.dp)
-                .padding(horizontal = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(R.string.app_name_display),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 12.dp),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            HomeIconButton(stringResource(R.string.tier_lists_content_description_search), onSearchClick) {
-                SearchIcon()
-            }
-            // Null once the rail is carrying it. Two ways to the same screen,
-            // one of them left over from a narrower window, is how a tablet
-            // layout starts looking unconsidered.
-            if (onSettingsClick != null) {
-                HomeIconButton(
-                    stringResource(R.string.tier_lists_content_description_settings),
-                    onSettingsClick,
-                ) {
-                    SettingsIcon()
-                }
+        HomeIconButton(stringResource(R.string.tier_lists_content_description_search), onSearchClick) {
+            SearchIcon()
+        }
+        // Null once the rail is carrying it. Two ways to the same screen,
+        // one of them left over from a narrower window, is how a tablet
+        // layout starts looking unconsidered.
+        if (onSettingsClick != null) {
+            HomeIconButton(
+                stringResource(R.string.tier_lists_content_description_settings),
+                onSettingsClick,
+            ) {
+                SettingsIcon()
             }
         }
     }
 }
 
 @Composable
-fun SearchTopBar(query: String, onQueryChange: (String) -> Unit, onClose: () -> Unit) {
+fun SearchTopBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onClose: () -> Unit,
+    contentMax: Dp = ContentWidth.Reading,
+    statusBarPadding: Boolean = true,
+) {
     val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     val closeDescription = stringResource(R.string.cd_close_search)
     val clearDescription = stringResource(R.string.cd_clear_query)
@@ -86,7 +87,7 @@ fun SearchTopBar(query: String, onQueryChange: (String) -> Unit, onClose: () -> 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding(),
+            .let { if (statusBarPadding) it.statusBarsPadding() else it },
         contentAlignment = Alignment.TopCenter,
     ) {
         TextField(
@@ -123,7 +124,7 @@ fun SearchTopBar(query: String, onQueryChange: (String) -> Unit, onClose: () -> 
                 cursorColor = MaterialTheme.colorScheme.primary,
             ),
             modifier = Modifier
-                .atMost(ContentWidth.Reading)
+                .atMost(contentMax)
                 .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 4.dp)
                 .height(56.dp)
                 .focusRequester(focusRequester)

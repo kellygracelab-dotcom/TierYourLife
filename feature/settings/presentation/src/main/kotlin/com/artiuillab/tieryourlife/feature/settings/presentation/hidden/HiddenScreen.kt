@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -36,8 +35,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
+import com.artiuillab.tieryourlife.core.theme.layout.topBarTitleStyle
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.HideIcon
@@ -74,38 +76,44 @@ fun HiddenScreenContent(
             max = ContentWidth.Reading,
             modifier = Modifier.fillMaxSize().testTag(HiddenTestTags.SCREEN),
         ) {
-            TopBar(onBack = onBack)
-
-            if (state.isEmpty) {
-                EmptyState()
-                return@CenteredContent
-            }
-
-            Text(
-                text = stringResource(R.string.hidden_subtitle),
-                modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 8.dp),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-
-            Column(
-                Modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(bottom = 32.dp),
+            BarredScreen(
+                bar = {
+                    TopBar(onBack = onBack)
+                },
             ) {
-                if (state.lists.isNotEmpty()) {
-                    SectionLabel(stringResource(R.string.hidden_lists), SectionLabelPadding)
-                    state.lists.forEach { entry ->
-                        HiddenRow(entry, R.string.hidden_unnamed_list, HiddenTestTags.listRow(entry.id)) {
-                            onShowListAgain(entry.id)
-                        }
+                Column(Modifier.fillMaxSize()) {
+                    if (state.isEmpty) {
+                        EmptyState()
+                        return@Column
                     }
-                }
-                if (state.people.isNotEmpty()) {
-                    SectionLabel(stringResource(R.string.hidden_people), SectionLabelPadding)
-                    state.people.forEach { entry ->
-                        HiddenRow(entry, R.string.hidden_unnamed_person, HiddenTestTags.personRow(entry.id)) {
-                            onShowAuthorAgain(entry.id)
+
+                    Text(
+                        text = stringResource(R.string.hidden_subtitle),
+                        modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 8.dp),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+
+                    Column(
+                        Modifier
+                            .verticalScroll(rememberScrollState())
+                            .padding(bottom = 32.dp),
+                    ) {
+                        if (state.lists.isNotEmpty()) {
+                            SectionLabel(stringResource(R.string.hidden_lists), SectionLabelPadding)
+                            state.lists.forEach { entry ->
+                                HiddenRow(entry, R.string.hidden_unnamed_list, HiddenTestTags.listRow(entry.id)) {
+                                    onShowListAgain(entry.id)
+                                }
+                            }
+                        }
+                        if (state.people.isNotEmpty()) {
+                            SectionLabel(stringResource(R.string.hidden_people), SectionLabelPadding)
+                            state.people.forEach { entry ->
+                                HiddenRow(entry, R.string.hidden_unnamed_person, HiddenTestTags.personRow(entry.id)) {
+                                    onShowAuthorAgain(entry.id)
+                                }
+                            }
                         }
                     }
                 }
@@ -120,8 +128,7 @@ private fun TopBar(onBack: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp)
+            .height(topBarHeight())
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -135,7 +142,7 @@ private fun TopBar(onBack: () -> Unit) {
         Text(
             text = stringResource(R.string.hidden_title),
             modifier = Modifier.padding(horizontal = 4.dp),
-            style = MaterialTheme.typography.titleLarge,
+            style = topBarTitleStyle(),
             color = MaterialTheme.colorScheme.onSurface,
         )
     }

@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
@@ -54,8 +53,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
+import com.artiuillab.tieryourlife.core.theme.layout.topBarTitleStyle
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
@@ -287,51 +289,58 @@ fun SettingsScreenContent(
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         Box(Modifier.fillMaxSize()) {
             CenteredContent(max = ContentWidth.Reading, modifier = Modifier.fillMaxSize()) {
-                SettingsTopBar(onBack = onBack)
-                Column(
-                    Modifier
-                        .verticalScroll(rememberScrollState())
-                        // The bar at the top already keeps clear of the status
-                        // bar; the bottom of a scrolling column has to keep
-                        // clear of the navigation bar the same way, or the last
-                        // row ends underneath it.
-                        .navigationBarsPadding()
-                        .padding(bottom = 32.dp),
+                BarredScreen(
+                    bar = {
+                        SettingsTopBar(onBack = onBack)
+                    },
                 ) {
-                    SettingsGroup(
-                        title = stringResource(R.string.settings_account),
-                        outlined = account is Account.Guest,
-                    ) {
-                        AccountRow(account = account, credits = credits, onClick = onAccountClick)
-                        // Under the account because that is what it is about:
-                        // no account, no copy, nothing to switch.
-                        if (backupSettings != null) {
-                            SettingsGroupDivider()
-                            BackupSection(
-                                settings = backupSettings,
-                                stuckSince = stuckSince(backupSettings),
-                                onBackUpChange = onBackUpChange,
-                                onPicturesOnWifiOnlyChange = onPicturesOnWifiOnlyChange,
-                            )
+                    Column(Modifier.fillMaxSize()) {
+                        Column(
+                            Modifier
+                                .verticalScroll(rememberScrollState())
+                                // The bar at the top already keeps clear of the status
+                                // bar; the bottom of a scrolling column has to keep
+                                // clear of the navigation bar the same way, or the last
+                                // row ends underneath it.
+                                .navigationBarsPadding()
+                                .padding(bottom = 32.dp),
+                        ) {
+                            SettingsGroup(
+                                title = stringResource(R.string.settings_account),
+                                outlined = account is Account.Guest,
+                            ) {
+                                AccountRow(account = account, credits = credits, onClick = onAccountClick)
+                                // Under the account because that is what it is about:
+                                // no account, no copy, nothing to switch.
+                                if (backupSettings != null) {
+                                    SettingsGroupDivider()
+                                    BackupSection(
+                                        settings = backupSettings,
+                                        stuckSince = stuckSince(backupSettings),
+                                        onBackUpChange = onBackUpChange,
+                                        onPicturesOnWifiOnlyChange = onPicturesOnWifiOnlyChange,
+                                    )
+                                }
+                            }
+                            SettingsGroup(title = stringResource(R.string.settings_group_appearance)) {
+                                ThemeSection(themeChoice = themeChoice, onThemeChoiceChange = onThemeChoiceChange)
+                                SettingsGroupDivider()
+                                LanguageRow(languageTag = languageTag, onLanguageTagChange = onLanguageTagChange)
+                            }
+                            SettingsGroup(title = stringResource(R.string.settings_group_data)) {
+                                TrashRow(trashCount = trashCount, onClick = onTrashClick)
+                                SettingsGroupDivider()
+                                HiddenRow(onClick = onHiddenClick)
+                                SettingsGroupDivider()
+                                ExportRow(onClick = onExportClick)
+                                if (pendingReports != null) {
+                                    SettingsGroupDivider()
+                                    ModerationRow(waiting = pendingReports, onClick = onModerationClick)
+                                }
+                            }
+                            VersionLine(versionName)
                         }
                     }
-                    SettingsGroup(title = stringResource(R.string.settings_group_appearance)) {
-                        ThemeSection(themeChoice = themeChoice, onThemeChoiceChange = onThemeChoiceChange)
-                        SettingsGroupDivider()
-                        LanguageRow(languageTag = languageTag, onLanguageTagChange = onLanguageTagChange)
-                    }
-                    SettingsGroup(title = stringResource(R.string.settings_group_data)) {
-                        TrashRow(trashCount = trashCount, onClick = onTrashClick)
-                        SettingsGroupDivider()
-                        HiddenRow(onClick = onHiddenClick)
-                        SettingsGroupDivider()
-                        ExportRow(onClick = onExportClick)
-                        if (pendingReports != null) {
-                            SettingsGroupDivider()
-                            ModerationRow(waiting = pendingReports, onClick = onModerationClick)
-                        }
-                    }
-                    VersionLine(versionName)
                 }
             }
 
@@ -351,8 +360,7 @@ private fun SettingsTopBar(onBack: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp)
+            .height(topBarHeight())
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -366,7 +374,7 @@ private fun SettingsTopBar(onBack: () -> Unit) {
         Text(
             text = stringResource(R.string.settings_title),
             modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
-            style = MaterialTheme.typography.titleLarge,
+            style = topBarTitleStyle(),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurface,
