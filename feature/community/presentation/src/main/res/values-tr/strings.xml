@@ -177,4 +177,5 @@
         <item quantity="one">%d sıralama</item>
         <item quantity="other">%d sıralama</item>
     </plurals>
+    <string name="community_save_short">Kaydet</string>
 </resources>

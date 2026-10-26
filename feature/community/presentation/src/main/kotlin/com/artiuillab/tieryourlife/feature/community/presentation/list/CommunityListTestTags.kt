@@ -14,6 +14,7 @@ internal object CommunityListTestTags {
     const val ERROR = "community_list_error"
     const val MORE = "community_list_more"
     const val BAR_AUTHOR = "community_list_bar_author"
+    const val AUTHOR_AND_SECTION = "community_list_author_and_section"
     const val BASED_ON = "community_list_based_on"
     const val RANKINGS = "community_list_rankings"
     const val RANKINGS_SHEET = "community_list_rankings_sheet"

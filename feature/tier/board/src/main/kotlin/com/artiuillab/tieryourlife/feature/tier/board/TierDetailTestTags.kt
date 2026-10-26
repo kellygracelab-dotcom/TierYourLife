@@ -11,6 +11,8 @@ object TierDetailTestTags {
     const val POOL_ITEMS = "tier_detail_pool_items"
     const val POOL_PANEL = "tier_detail_pool_panel"
     const val POOL_COLUMN = "tier_detail_pool_column"
+    const val DROP_SLOT = "tier_detail_drop_slot"
+    const val POOL_DOCK_HANDLE = "tier_detail_pool_dock_handle"
     const val POOL_TOGGLE = "tier_detail_pool_toggle"
     const val MOVE_SHEET = "tier_detail_move_sheet"
     const val MOVE_SHEET_REMOVE = "tier_detail_move_sheet_remove"

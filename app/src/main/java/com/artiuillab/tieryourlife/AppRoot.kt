@@ -10,9 +10,13 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.BoardLayoutMemory
+import com.artiuillab.tieryourlife.core.theme.layout.InMemoryBoardLayoutMemory
+import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.navigation.TierYourLifeContent
@@ -22,6 +26,7 @@ fun AppRoot(
     state: AppUiState,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
     onLanguageTagChange: (String?) -> Unit,
+    boardLayoutMemory: BoardLayoutMemory = remember { InMemoryBoardLayoutMemory() },
 ) {
     val darkTheme = when (state.themeChoice) {
         ThemeChoice.LIGHT -> false
@@ -46,7 +51,7 @@ fun AppRoot(
                 height = maxHeight,
                 shareable = activity?.isInMultiWindowMode == true,
             )
-            CompositionLocalProvider(LocalWindowShape provides shape) {
+            CompositionLocalProvider(LocalWindowShape provides shape, LocalBoardLayoutMemory provides boardLayoutMemory) {
                 TierYourLifeContent(
                     themeChoice = state.themeChoice,
                     onThemeChoiceChange = onThemeChoiceChange,

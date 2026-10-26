@@ -177,4 +177,5 @@
         <item quantity="one">%d Reihung</item>
         <item quantity="other">%d Reihungen</item>
     </plurals>
+    <string name="community_save_short">Speichern</string>
 </resources>

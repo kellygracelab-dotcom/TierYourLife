@@ -191,4 +191,5 @@
         <item quantity="many">%d rankingów</item>
         <item quantity="other">%d rankingu</item>
     </plurals>
+    <string name="community_save_short">Zapisz</string>
 </resources>

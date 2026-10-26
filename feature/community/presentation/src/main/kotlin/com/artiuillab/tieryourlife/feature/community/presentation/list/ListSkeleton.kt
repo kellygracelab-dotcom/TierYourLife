@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,13 +55,31 @@ internal fun ListSkeleton(preview: ListPreview, onBack: () -> Unit, modifier: Mo
         val short = WindowShape.isShort(maxHeight)
         val poolBeside = short || (maxWidth >= WindowShape.WideFrom && maxWidth > maxHeight)
         val rows = TierRowDensity.of(short, poolBeside, maxWidth)
+        val docked = !short && !poolBeside && maxWidth >= WindowShape.MediumFrom
         Column(
             Modifier
                 .fillMaxSize()
                 .testTag(CommunityListTestTags.SKELETON),
         ) {
-            TierScreenTopBar(title = preview.title, onBack = onBack, onManualAdd = {}, readOnly = true, compact = short)
-            if (!short) {
+            TierScreenTopBar(
+                title = preview.title,
+                onBack = onBack,
+                onManualAdd = {},
+                readOnly = true,
+                compact = short,
+                barHeight = if (docked) 72.dp else null,
+                subline = preview.authorName?.takeIf { docked }?.let { name ->
+                    {
+                        Text(
+                            text = name,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                        )
+                    }
+                },
+            )
+            if (!short && !docked) {
                 preview.authorName?.let { name ->
                     AuthorLine(name = name, photoUrl = null, follow = null, onOpenAuthor = {}, onToggleFollow = {})
                 }

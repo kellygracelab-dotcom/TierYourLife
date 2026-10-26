@@ -191,4 +191,5 @@
         <item quantity="many">%d ранжирований</item>
         <item quantity="other">%d ранжирования</item>
     </plurals>
+    <string name="community_save_short">Сохранить</string>
 </resources>

@@ -113,7 +113,11 @@ sideways; the board spec's section 7), the switch and Save move into the bar
 (the switch at 32dp, Save at 36dp) and the sentence goes under the side pool's
 title. A short window's single bar also carries the author as a chip, and the
 rankings chip when there are any, since the author line has no row of its own
-there. The skeleton follows the same rules, so nothing moves when the list lands.
+there. On a tablet held upright the bar is 72dp: the title over "author ·
+Section ›" (a tap opens the profile), the switch at 40dp and a tonal Save with
+the bookmark icon, its label shortened to "Save" while its description stays
+"Save to my lists"; the sentence goes under the docked pool's head. The
+skeleton follows the same rules, so nothing moves when the list lands.
 
 ## 5. The cover
 

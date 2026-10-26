@@ -54,7 +54,8 @@ class TierDetailShapesScreenshotTest {
                         state = TierDetailUiState.Success(previewTierList),
                         readOnly = readOnly,
                         onReaderMoreClick = if (readOnly) ({}) else null,
-                        barExtras = if (readOnly) ({ compact -> ReaderStandIn(compact) }) else null,
+                        barExtras = if (readOnly) ({ mode -> ReaderStandIn(mode) }) else null,
+                        titleSubline = if (readOnly) ({ Text("Artiman · Film & TV ›", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary) }) else null,
                         poolNote = if (readOnly) ({ Text("Someone else's list. Rank it however you like.", style = MaterialTheme.typography.bodySmall) }) else null,
                     )
                 }
@@ -88,6 +89,10 @@ class TierDetailShapesScreenshotTest {
     fun ownBoard_tabletPortrait() = capture("board_tablet_portrait", WindowShape.of(800.dp, 1280.dp))
 
     @Test
+    @Config(qualifiers = TABLET_PORTRAIT)
+    fun readersBoard_tabletPortrait() = capture("board_reader_tablet_portrait", WindowShape.of(800.dp, 1280.dp), readOnly = true)
+
+    @Test
     @Config(qualifiers = FLIP_COVER)
     fun readersBoard_flipCover() = capture("board_reader_flip_cover", WindowShape.of(360.dp, 380.dp), readOnly = true)
 
@@ -107,11 +112,11 @@ class TierDetailShapesScreenshotTest {
 
 /** What a community list puts in the bar, drawn with plain parts: the board's layout is under test, not the reader's screen. */
 @Composable
-private fun RowScope.ReaderStandIn(compact: Boolean) {
-    if (compact) {
+private fun RowScope.ReaderStandIn(mode: BoardBar) {
+    if (mode == BoardBar.Compact) {
         AssistChip(onClick = {}, label = { Text("Artiman") })
     }
-    SingleChoiceSegmentedButtonRow(Modifier.height(32.dp)) {
+    SingleChoiceSegmentedButtonRow(Modifier.height(if (mode == BoardBar.Docked) 40.dp else 32.dp)) {
         SegmentedButton(selected = true, onClick = {}, shape = SegmentedButtonDefaults.itemShape(0, 2), icon = {}) { Text("Theirs") }
         SegmentedButton(selected = false, onClick = {}, shape = SegmentedButtonDefaults.itemShape(1, 2), icon = {}) { Text("Mine") }
     }

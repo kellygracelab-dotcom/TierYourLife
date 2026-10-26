@@ -148,4 +148,9 @@
     <string name="list_settings_public_topic_unavailable">Ese tema ya no está disponible: se fusionó, se rechazó o es de otra persona. La lista ya no tiene tema; elige otro o publica sin tema.</string>
     <string name="list_settings_public_ranking_body">Publicada como tu ranking de la lista de %1$s; en el feed no aparece una segunda lista.</string>
     <string name="tier_detail_add_card">Añadir una carta</string>
+    <string name="tier_detail_pool_count">Reserva · %1$d</string>
+    <string name="tier_detail_drop_items_here">Suelta elementos aquí</string>
+    <string name="tier_detail_drop_to_delete">Suelta para eliminar</string>
+    <string name="tier_detail_drop_unrank_column">Suelta en las cartas de abajo para quitar el rango</string>
+    <string name="tier_detail_drop_unrank_dock">Suelta en la reserva para quitar el rango</string>
 </resources>

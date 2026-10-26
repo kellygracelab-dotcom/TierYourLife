@@ -148,4 +148,9 @@
     <string name="list_settings_public_topic_unavailable">Ce thème n’est plus ouvert : fusionné, refusé ou à quelqu’un d’autre. La liste n’a plus de thème ; choisissez-en un autre ou publiez sans.</string>
     <string name="list_settings_public_ranking_body">Publiée comme votre classement de la liste de %1$s ; aucune seconde liste n’apparaît dans le fil.</string>
     <string name="tier_detail_add_card">Ajouter une carte</string>
+    <string name="tier_detail_pool_count">Réserve · %1$d</string>
+    <string name="tier_detail_drop_items_here">Déposez des éléments ici</string>
+    <string name="tier_detail_drop_to_delete">Déposer pour supprimer</string>
+    <string name="tier_detail_drop_unrank_column">Déposez sur les cartes ci-dessous pour retirer du classement</string>
+    <string name="tier_detail_drop_unrank_dock">Déposez sur la réserve pour retirer du classement</string>
 </resources>

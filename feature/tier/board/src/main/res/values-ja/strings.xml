@@ -128,4 +128,9 @@
     <string name="list_settings_public_topic_unavailable">このトピックは使えなくなりました（統合、却下、または他の人のものです）。リストのトピックは外れました。別のトピックを選ぶか、トピックなしで公開してください。</string>
     <string name="list_settings_public_ranking_body">%1$sのリストのあなたのランキングとして公開中です。フィードに2つ目のリストは出ません。</string>
     <string name="tier_detail_add_card">カードを追加</string>
+    <string name="tier_detail_pool_count">プール · %1$d</string>
+    <string name="tier_detail_drop_items_here">ここにドロップ</string>
+    <string name="tier_detail_drop_to_delete">ドロップして削除</string>
+    <string name="tier_detail_drop_unrank_column">下のカードにドロップするとランク外に戻ります</string>
+    <string name="tier_detail_drop_unrank_dock">プールにドロップするとランク外に戻ります</string>
 </resources>

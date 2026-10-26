@@ -38,7 +38,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
@@ -71,6 +73,10 @@ fun TierScreenTopBar(
     insetStatusBar: Boolean = true,
     /** True when the pool stands beside the rows: the board then spans the window, and its bar with it. */
     spanWindow: Boolean = false,
+    /** A height other than the usual 56 (48 when compact): a tablet's taller bar. */
+    barHeight: Dp? = null,
+    /** A line under the title in place of [subtitle]: a tablet's author and section, which can be tapped. */
+    subline: (@Composable () -> Unit)? = null,
 ) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
@@ -83,7 +89,7 @@ fun TierScreenTopBar(
             .fillMaxWidth()
             .then(if (insetStatusBar) Modifier.statusBarsPadding() else Modifier)
             .background(MaterialTheme.colorScheme.surface)
-            .height(if (compact) 48.dp else 56.dp)
+            .height(barHeight ?: if (compact) 48.dp else 56.dp)
             .padding(horizontal = 4.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
@@ -98,7 +104,11 @@ fun TierScreenTopBar(
                     .size(48.dp)
                     .semantics { contentDescription = backDescription },
             ) { BackIcon() }
-            val titleStyle = if (compact) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleLarge
+            val titleStyle = when {
+                compact -> MaterialTheme.typography.titleMedium
+                subline != null -> MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp, lineHeight = 26.sp)
+                else -> MaterialTheme.typography.titleLarge
+            }
             if (titleEditable) {
                 EditableListTitle(
                     title = title,
@@ -115,7 +125,8 @@ fun TierScreenTopBar(
                         overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
-                    if (subtitle != null && !compact) {
+                    subline?.invoke()
+                    if (subtitle != null && !compact && subline == null) {
                         Text(
                             text = subtitle,
                             style = MaterialTheme.typography.bodySmall,

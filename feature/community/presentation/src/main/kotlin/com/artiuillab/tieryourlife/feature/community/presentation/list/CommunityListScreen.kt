@@ -205,10 +205,10 @@ fun CommunityListScreenContent(
                             // The strip's sentence, under the side pool's title.
                             poolNote = { ReaderStatusLine(loaded) },
                             // The same, in the bar, when the pool sits beside the rows.
-                            barExtras = { compact ->
+                            barExtras = { mode ->
                                 ReaderBarControls(
                                     state = loaded,
-                                    compact = compact,
+                                    mode = mode,
                                     onShow = onShow,
                                     onSaveClick = { if (loaded.knowsTheirs) saveChoiceVisible = true else onSave(Showing.Mine) },
                                     onOpenSaved = onOpenSaved,
@@ -217,6 +217,13 @@ fun CommunityListScreenContent(
                                         onOpenRankings()
                                         rankingsVisible = true
                                     },
+                                )
+                            },
+                            // On a tablet held upright the bar grows and says who and where under the title.
+                            titleSubline = {
+                                AuthorAndSection(
+                                    state = loaded,
+                                    onOpenAuthor = { onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl) },
                                 )
                             },
                         )

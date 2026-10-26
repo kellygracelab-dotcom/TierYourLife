@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -46,6 +48,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,7 +65,6 @@ import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.DRAG_LONG_PRESS_TIMEOUT_MILLIS
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.DraggableTile
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.ShortLongPressViewConfiguration
-import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TIER_LIST_ITEM_SPACING
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDropOutcome
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
@@ -87,6 +90,8 @@ fun TierRow(
     modifier: Modifier = Modifier,
     onDoubleTap: (itemId: Long) -> Unit = {},
     onEditTier: (tierId: Long) -> Unit = {},
+    /** Whether the pool has anything to drop here; an empty row says where it would go only then. */
+    poolHasCards: Boolean = false,
 ) {
     val colors = tierRowColors(tier.colorLight, tier.colorDark)
     val rowDensity = LocalTierRowDensity.current
@@ -125,7 +130,7 @@ fun TierRow(
         ShortLongPressViewConfiguration(baseViewConfiguration, DRAG_LONG_PRESS_TIMEOUT_MILLIS)
     }
     val density = LocalDensity.current
-    val slotHeightPx = with(density) { (rowDensity.occupiedHeight + TIER_LIST_ITEM_SPACING).toPx() }
+    val slotHeightPx = with(density) { (rowDensity.occupiedHeight + rowDensity.rowGap).toPx() }
 
     Box(modifier.fillMaxWidth()) {
         val bandWidth = rowDensity.bandWidth
@@ -139,10 +144,8 @@ fun TierRow(
                 .testTag(TierDetailTestTags.tierRow(tier.id))
                 .background(rowBackground)
                 .then(
-                    if (isHovered && rowDensity.ringOnHover) {
+                    if (isHovered) {
                         Modifier.border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
-                    } else if (isHovered) {
-                        Modifier.dashedBorder(width = 2.dp, color = colors.band, cornerRadius = 12.dp)
                     } else {
                         Modifier
                     },
@@ -200,17 +203,22 @@ fun TierRow(
             ) {
                 Text(
                     text = tier.label,
-                    style = TierYourLifeType.current.tierBandLetter,
+                    style = TierYourLifeType.current.tierBandLetter.merge(
+                        TextStyle(fontSize = rowDensity.letterSize, lineHeight = rowDensity.letterLineHeight),
+                    ),
                     color = colors.onBand,
                 )
-                tier.caption?.let { caption ->
+                val captionShown = rowDensity.captionOnEmptyRows || tier.items.isNotEmpty()
+                tier.caption?.takeIf { captionShown }?.let { caption ->
                     if (LocalDensity.current.fontScale < CAPTION_HIDDEN_FONT_SCALE) {
                         Text(
                             text = caption,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             textAlign = TextAlign.Center,
-                            style = TierYourLifeType.current.tierBandCaption,
+                            style = TierYourLifeType.current.tierBandCaption.merge(
+                                TextStyle(fontSize = rowDensity.captionSize, lineHeight = rowDensity.captionLineHeight),
+                            ),
                             color = colors.onBand.copy(alpha = 0.7f),
                         )
                     }
@@ -255,6 +263,11 @@ fun TierRow(
                 }
             }
         } else {
+            // Where the lifted card would land, drawn while it hovers: the
+            // row's own cards make room for it, and its old place takes none.
+            val slot = if (isHovered) dragController.hoverIndex else null
+            val liftedId = dragController.draggedPayload?.itemId
+            val showHint = tier.items.isEmpty() && slot == null && rowDensity.emptyHint && poolHasCards
             FlowRow(
                 modifier = Modifier
                     .weight(1f)
@@ -263,8 +276,22 @@ fun TierRow(
                     .testTag(TierDetailTestTags.tierItems(tier.id)),
                 horizontalArrangement = Arrangement.spacedBy(rowDensity.gap),
                 verticalArrangement = Arrangement.spacedBy(rowDensity.gap),
+                itemVerticalAlignment = Alignment.CenterVertically,
             ) {
+                if (showHint) {
+                    Text(
+                        text = stringResource(R.string.tier_detail_drop_items_here),
+                        modifier = Modifier
+                            .heightIn(min = rowDensity.emptyHeight - rowDensity.padding * 2)
+                            .padding(start = 9.dp)
+                            .wrapContentHeight(Alignment.CenterVertically),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    )
+                }
+                var placed = 0
                 tier.items.forEachIndexed { index, item ->
+                    if (item.id != liftedId && slot == placed) DropSlot(rowDensity)
                     DraggableTile(
                         item = item,
                         sourceTierId = tier.id,
@@ -275,8 +302,11 @@ fun TierRow(
                         onDeleteItem = onDeleteItem,
                         onPositioned = { bounds -> dragController.registerTileBounds(tier.id, item.id, index, bounds) },
                         onDoubleTap = onDoubleTap,
+                        collapseWhileLifted = slot != null,
                     )
+                    if (item.id != liftedId) placed++
                 }
+                if (slot != null && slot >= placed) DropSlot(rowDensity)
             }
         }
         }
@@ -321,5 +351,16 @@ private fun TierRowDarkPreview() = TierYourLifeTheme(true) {
         onDeleteItem = {},
         onReorderTiers = {},
         onDeleteTier = {},
+    )
+}
+
+/** The place a lifted card would land: its own size, dashed. */
+@Composable
+private fun DropSlot(rowDensity: TierRowDensity) {
+    Box(
+        Modifier
+            .size(rowDensity.tileWidth, rowDensity.tileHeight)
+            .dashedBorder(width = 2.dp, color = MaterialTheme.colorScheme.primary, cornerRadius = 6.dp)
+            .testTag(TierDetailTestTags.DROP_SLOT),
     )
 }

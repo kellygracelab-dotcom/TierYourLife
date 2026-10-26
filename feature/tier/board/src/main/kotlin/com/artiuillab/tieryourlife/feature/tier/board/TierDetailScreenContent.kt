@@ -43,11 +43,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
@@ -69,13 +70,11 @@ import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.ui.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.board.components.BoardIndex
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.FloatingDragTile
-import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TIER_LIST_ITEM_SPACING
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TrashTarget
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalTierRowDensity
-import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_COLUMN_WIDE_WIDTH
-import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_COLUMN_WIDTH
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_COLUMN_MARGIN
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolColumn
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedList
@@ -98,10 +97,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
-private val TIER_LIST_AUTOSCROLL_EDGE = 72.dp
-
-/** Lower rows, a lower edge: 72 of a short window's 300 was a quarter of the board scrolling under the finger. */
-private val SHORT_AUTOSCROLL_EDGE = 48.dp
+/** 72 of a short window's 300 was a quarter of the board scrolling under the finger; 48 everywhere, speed rising toward the edge. */
+private val TIER_LIST_AUTOSCROLL_EDGE = 48.dp
 private const val TIER_LIST_AUTOSCROLL_MAX_SPEED_DP_PER_SEC = 600
 
 private const val LOADING_SPINNER_DELAY_MILLIS = 150L
@@ -131,12 +128,15 @@ fun TierDetailScreenContent(
     poolAccessories: (@Composable (folded: Boolean) -> Unit)? = null,
     /**
      * The same controls as [poolAccessories], for the bar when the pool sits
-     * beside the rows; `compact` is a short window's single bar, which then
-     * also has to say what [belowTopBar] would have said.
+     * beside the rows or docks under them on a tablet; [BoardBar.Compact] is a
+     * short window's single bar, which then also has to say what [belowTopBar]
+     * would have said.
      */
-    barExtras: (@Composable RowScope.(compact: Boolean) -> Unit)? = null,
-    /** A line under the side pool's title, where [poolAccessories]' sentence goes when the pool is beside the rows. */
+    barExtras: (@Composable RowScope.(BoardBar) -> Unit)? = null,
+    /** A line under the side or docked pool's title, where [poolAccessories]' sentence goes then. */
     poolNote: (@Composable () -> Unit)? = null,
+    /** On a tablet held upright, the line under the title that takes [belowTopBar]'s place: who made it, in which section. */
+    titleSubline: (@Composable () -> Unit)? = null,
 ) {
     // Beside the board once there is room. Held back on a short window too: a
     // phone in landscape is wide enough for the column and too short for the board.
@@ -166,6 +166,8 @@ fun TierDetailScreenContent(
                 poolAccessories = poolAccessories,
                 barExtras = barExtras,
                 poolNote = poolNote,
+                titleSubline = titleSubline,
+                indexBeside = showsIndex,
             )
         }
     }
@@ -185,8 +187,10 @@ private fun TierDetailPane(
     onReaderMoreClick: (() -> Unit)?,
     belowTopBar: (@Composable () -> Unit)?,
     poolAccessories: (@Composable (folded: Boolean) -> Unit)?,
-    barExtras: (@Composable RowScope.(compact: Boolean) -> Unit)?,
+    barExtras: (@Composable RowScope.(BoardBar) -> Unit)?,
     poolNote: (@Composable () -> Unit)?,
+    titleSubline: (@Composable () -> Unit)?,
+    indexBeside: Boolean,
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         when (state) {
@@ -224,6 +228,8 @@ private fun TierDetailPane(
                     poolAccessories = poolAccessories,
                     barExtras = barExtras,
                     poolNote = poolNote,
+                    titleSubline = titleSubline,
+                    indexBeside = indexBeside,
                 )
             }
 
@@ -252,8 +258,10 @@ private fun TierScreenBody(
     onReaderMoreClick: (() -> Unit)? = null,
     belowTopBar: (@Composable () -> Unit)? = null,
     poolAccessories: (@Composable (folded: Boolean) -> Unit)? = null,
-    barExtras: (@Composable RowScope.(compact: Boolean) -> Unit)? = null,
+    barExtras: (@Composable RowScope.(BoardBar) -> Unit)? = null,
     poolNote: (@Composable () -> Unit)? = null,
+    titleSubline: (@Composable () -> Unit)? = null,
+    indexBeside: Boolean = false,
 ) {
     val onBack = actions.onBack
     val onAddClick = actions.onAddClick
@@ -415,8 +423,7 @@ private fun TierScreenBody(
     val tierListState = rememberLazyListState()
     var tierListBounds by remember { mutableStateOf(Rect.Zero) }
 
-    var autoscrollEdge by remember { mutableStateOf(TIER_LIST_AUTOSCROLL_EDGE) }
-    val autoscrollEdgePx = with(density) { autoscrollEdge.toPx() }
+    val autoscrollEdgePx = with(density) { TIER_LIST_AUTOSCROLL_EDGE.toPx() }
     val autoscrollMaxSpeedPx = with(density) { TIER_LIST_AUTOSCROLL_MAX_SPEED_DP_PER_SEC.dp.toPx() }
 
     fun autoscrollSpeedNow(): Float {
@@ -460,9 +467,16 @@ private fun TierScreenBody(
         val glanceable = currentWindowShape.isGlanceable
         val short = WindowShape.isShort(maxHeight)
         val poolBeside = !glanceable && (short || (maxWidth >= WindowShape.WideFrom && maxWidth > maxHeight))
-        var poolColumnWidth by remember { mutableStateOf(0.dp) }
-        val poolRowsTwo = maxWidth >= WindowShape.MediumFrom
-        SideEffect { autoscrollEdge = if (short) SHORT_AUTOSCROLL_EDGE else TIER_LIST_AUTOSCROLL_EDGE }
+        // A tablet held upright: the pool docks under the rows, the bar grows and takes the author line in.
+        val docked = !glanceable && !short && !poolBeside && maxWidth >= WindowShape.MediumFrom
+        val readerSubline = titleSubline?.takeIf { docked }
+        val barMode = when {
+            short -> BoardBar.Compact
+            poolBeside -> BoardBar.Beside
+            docked -> BoardBar.Docked
+            else -> null
+        }
+        val rowDensity = TierRowDensity.of(short, poolBeside, maxWidth, indexBeside)
 
         val bar: @Composable () -> Unit = {
             TierScreenTopBar(
@@ -476,9 +490,15 @@ private fun TierScreenBody(
                 subtitle = subtitle,
                 onReaderMoreClick = onReaderMoreClick.takeUnless { glanceable },
                 compact = short,
-                trailing = barExtras?.takeIf { poolBeside }?.let { extras -> { extras(short) } },
+                trailing = barMode?.let { mode -> barExtras?.let { extras -> { extras(mode) } } },
                 insetStatusBar = !short,
                 spanWindow = poolBeside,
+                barHeight = when {
+                    !docked -> null
+                    readerSubline != null -> DOCKED_READER_BAR_HEIGHT
+                    else -> DOCKED_BAR_HEIGHT
+                },
+                subline = readerSubline,
             )
         }
         val board: @Composable (Modifier) -> Unit = { boardModifier ->
@@ -525,7 +545,7 @@ private fun TierScreenBody(
                             .testTag(TierDetailTestTags.TIER_LIST)
                             .onGloballyPositioned { coordinates -> tierListBounds = coordinates.boundsInRoot() },
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                        verticalArrangement = Arrangement.spacedBy(TIER_LIST_ITEM_SPACING),
+                        verticalArrangement = Arrangement.spacedBy(LocalTierRowDensity.current.rowGap),
                     ) {
 
                         items(displayedTiers, key = { it.id }) { tier ->
@@ -582,6 +602,7 @@ private fun TierScreenBody(
                                 onDeleteTier = deleteTierAndAnnounce,
                                 onDoubleTap = { itemId -> chooserItemId = itemId },
                                 onEditTier = { tierId -> editingTierId = tierId },
+                                poolHasCards = pool?.items?.isNotEmpty() == true,
                             )
                         }
                     }
@@ -597,9 +618,9 @@ private fun TierScreenBody(
                             onDeleteItem = deleteAndAnnounce,
                             onDoubleTap = { itemId -> chooserItemId = itemId },
                             readOnly = readOnly,
-                            accessories = poolAccessories,
-                            // A tablet held upright has the width for two lines of cards and not the height to waste on one.
-                            twoRows = poolRowsTwo,
+                            accessories = poolAccessories.takeUnless { docked },
+                            docked = docked,
+                            note = poolNote.takeIf { docked },
                         )
                     }
                 }
@@ -615,18 +636,18 @@ private fun TierScreenBody(
                         onDeleteItem = deleteAndAnnounce,
                         onDoubleTap = { itemId -> chooserItemId = itemId },
                         readOnly = readOnly,
-                        openWidth = if (short) POOL_COLUMN_WIDTH else POOL_COLUMN_WIDE_WIDTH,
+                        roomy = !short,
+                        indexBeside = indexBeside,
                         note = poolNote,
                         modifier = Modifier
-                            .onSizeChanged { size -> poolColumnWidth = with(density) { size.width.toDp() } }
                             .navigationBarsPadding()
-                            .padding(start = 4.dp, end = 8.dp, top = 4.dp, bottom = 8.dp),
+                            .padding(POOL_COLUMN_MARGIN),
                     )
                 }
             }
         }
 
-        CompositionLocalProvider(LocalTierRowDensity provides TierRowDensity.of(short, poolBeside, maxWidth)) {
+        CompositionLocalProvider(LocalTierRowDensity provides rowDensity) {
             if (short) {
                 // The inset stays with the screen; the bar slides under it and back.
                 ScrollAwayHeader(header = bar, modifier = Modifier.fillMaxSize().statusBarsPadding()) {
@@ -637,28 +658,18 @@ private fun TierScreenBody(
                     bar()
                     // Under the bar, never over it: the bar carries the status-bar
                     // inset, so anything placed above it sits beneath the clock.
-                    belowTopBar?.invoke()
+                    // A tablet's taller bar has already said it.
+                    if (readerSubline == null) belowTopBar?.invoke()
                     board(Modifier.weight(1f))
                 }
             }
         }
 
-        if (dragController.isDragging) {
-            if (!readOnly && poolBeside) {
-                // Beside the pool, low on the rows' side: the pool's own top is
-                // the window's, so the place above it is off screen.
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(end = poolColumnWidth, bottom = 16.dp),
-                ) {
-                    TrashTarget(
-                        dragController = dragController,
-                        poolTierId = null,
-                        modifier = Modifier.align(Alignment.BottomEnd),
-                    )
-                }
-            } else if (!readOnly) {
+        // A pool beside the rows or docked under them carries the trash in its
+        // head while a card is lifted; only the phone's strip needs it floating.
+        val trashInPool = pool != null && (poolBeside || docked) && list.displayMode != TierListDisplayMode.FLAT_RANKED
+        if (dragController.isDragging || dragController.returning != null) {
+            if (!readOnly && !trashInPool && dragController.isDragging) {
                 // The trash sits at the edge of the board a finger is dragging
                 // over, not at the edge of the window it is floating in.
                 Box(
@@ -678,6 +689,8 @@ private fun TierScreenBody(
         }
 
         val poolTop = pool?.id?.takeUnless { poolBeside }?.let { dragController.tierBounds(it)?.top }
+
+        RowChangeTick(dragController)
         val bottomGap = if (poolTop != null) {
             (maxHeight - with(density) { poolTop.toDp() }) + 16.dp
         } else {
@@ -753,5 +766,25 @@ fun TierScreenErrorPreview() {
         TierDetailScreenContent(
             state = TierDetailUiState.Error,
         )
+    }
+}
+
+private val DOCKED_BAR_HEIGHT = 64.dp
+private val DOCKED_READER_BAR_HEIGHT = 72.dp
+
+/** A tick under the finger each time a lifted card crosses into another row; the lift itself already had one. */
+@Composable
+private fun RowChangeTick(dragController: TierDragController) {
+    val haptic = LocalHapticFeedback.current
+    val last = remember { arrayOfNulls<Long>(1) }
+    val hovered = dragController.hoveredTierId
+    val lifted = dragController.draggedPayload != null
+    LaunchedEffect(hovered, lifted) {
+        val before = last[0]
+        val crossed = before != null && before != hovered
+        if (lifted && hovered != null && crossed) {
+            haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
+        }
+        last[0] = if (lifted) hovered else null
     }
 }

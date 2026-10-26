@@ -177,4 +177,5 @@
         <item quantity="one">%d ranking</item>
         <item quantity="other">%d rankings</item>
     </plurals>
+    <string name="community_save_short">Save</string>
 </resources>

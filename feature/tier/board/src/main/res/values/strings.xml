@@ -138,4 +138,9 @@
     <string name="list_settings_public_topic_unavailable">That topic is no longer open: merged, turned down or somebody else’s. The list has no topic now; pick another or publish without one.</string>
     <string name="list_settings_public_ranking_body">Out as your ranking of %1$s’s list; the feed shows no second list.</string>
     <string name="tier_detail_add_card">Add a card</string>
+    <string name="tier_detail_pool_count">Pool · %1$d</string>
+    <string name="tier_detail_drop_items_here">Drop items here</string>
+    <string name="tier_detail_drop_to_delete">Drop to delete</string>
+    <string name="tier_detail_drop_unrank_column">Drop on the cards below to unrank</string>
+    <string name="tier_detail_drop_unrank_dock">Drop on the pool to unrank</string>
 </resources>

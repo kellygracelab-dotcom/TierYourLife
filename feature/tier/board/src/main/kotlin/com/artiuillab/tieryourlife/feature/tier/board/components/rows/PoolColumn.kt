@@ -1,6 +1,9 @@
 package com.artiuillab.tieryourlife.feature.tier.board.components.rows
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,7 +13,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,16 +26,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
@@ -47,8 +50,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
-import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
-import com.artiuillab.tieryourlife.core.theme.ui.ChevronDownIcon
+import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
+import com.artiuillab.tieryourlife.core.theme.ui.AutoAwesomeIcon
+import com.artiuillab.tieryourlife.core.theme.ui.CheckCircleIcon
+import com.artiuillab.tieryourlife.core.theme.ui.PanelCloseIcon
+import com.artiuillab.tieryourlife.core.theme.ui.PanelOpenIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
@@ -61,24 +68,34 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 /** Open in a short window: three cards abreast, readable and draggable. Nothing narrower is either. */
 val POOL_COLUMN_WIDTH: Dp = 216.dp
 
-/** Open on a tablet held sideways, where the cards are the roomy size. */
-val POOL_COLUMN_WIDE_WIDTH: Dp = 284.dp
+/** Open beside a board held sideways on a tablet; a little narrower when the pane of boards stands beside it too. */
+val POOL_COLUMN_WIDE_WIDTH: Dp = 300.dp
+val POOL_COLUMN_WIDE_WIDTH_BESIDE_INDEX: Dp = 268.dp
 
 /** Folded: a strip with the way back, the count and Add. */
 val POOL_STRIP_WIDTH: Dp = 56.dp
 
-private const val POOL_COLUMNS = 3
+/** Around the column, so it reads as a card beside the rows rather than a wall. */
+val POOL_COLUMN_MARGIN: Dp = 8.dp
+
 private val POOL_TILE_WIDTH = 52.dp
 private val POOL_TILE_HEIGHT = 76.dp
 private val POOL_CORNER = 16.dp
+private const val WIDTH_MILLIS = 200
+
+/** Everything placed: the success green of the design, light and dark. */
+private val PlacedLight = Color(0xFF3F7F55)
+private val PlacedDark = Color(0xFF7BD394)
 
 /**
  * The pool beside the rows instead of under them, for a window whose height
  * is better spent on rows: a phone held sideways, a tablet held as one. Open
  * while anything is left to rank, a card as tall as what it holds; folded to
- * a strip when it is empty or the person folds it. Cards are dragged out of
- * it and back exactly as from the strip under the rows; a drop lands where
- * the finger points, by the same rule the rows use for their grids.
+ * a strip when it is empty or the person folds it. The person's choice is kept
+ * on this device and wins until the pool's count changes. Cards are dragged
+ * out of it and back exactly as from the strip under the rows; a drop lands
+ * where the finger points, by the rule the rows use for their grids. While a
+ * card is lifted the head becomes the trash.
  */
 @Composable
 fun PoolColumn(
@@ -91,15 +108,28 @@ fun PoolColumn(
     modifier: Modifier = Modifier,
     onDoubleTap: (itemId: Long) -> Unit = {},
     readOnly: Boolean = false,
-    openWidth: Dp = POOL_COLUMN_WIDTH,
+    /** A tablet's column: wider, four cards abreast, a larger head. */
+    roomy: Boolean = false,
+    indexBeside: Boolean = false,
     /** A line under the pool's title from the screen around the board: a reader's word on what their copy is. */
     note: (@Composable () -> Unit)? = null,
 ) {
-    // Null until the person chooses; till then the pool is open exactly when it has work in it.
-    var choice by rememberSaveable(pool.id) { mutableStateOf<Boolean?>(null) }
-    val open = choice ?: pool.items.isNotEmpty()
-    val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
+    val memory = LocalBoardLayoutMemory.current
     val count = pool.items.size
+    // The count the person's choice was made against; a different count hands
+    // the decision back to the board.
+    var seenCount by rememberSaveable(pool.id) { mutableIntStateOf(count) }
+    LaunchedEffect(count) {
+        if (count != seenCount) {
+            memory.poolColumnCollapsed = null
+            seenCount = count
+        }
+    }
+    val collapsed = memory.poolColumnCollapsed ?: (count == 0)
+    val openWidth = openColumnWidth(roomy, indexBeside)
+    val width by animateDpAsState(if (collapsed) POOL_STRIP_WIDTH else openWidth, tween(WIDTH_MILLIS), label = "pool column width")
+    val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
+    val lifting = dragController.draggedPayload != null && !readOnly
 
     // The strip under the rows registered its row of cards for drops along
     // it; a column has none, so a drop here goes by the cards' own places.
@@ -108,11 +138,10 @@ fun PoolColumn(
         onDispose { dragController.unregisterRowBounds(pool.id) }
     }
 
-    val shape = RoundedCornerShape(POOL_CORNER)
     Column(
         modifier = modifier
-            .width(if (open) openWidth else POOL_STRIP_WIDTH)
-            .clip(shape)
+            .width(width)
+            .clip(RoundedCornerShape(POOL_CORNER))
             .onGloballyPositioned { coordinates -> dragController.registerRowBounds(pool.id, coordinates.boundsInRoot()) }
             .testTag(TierDetailTestTags.POOL_COLUMN)
             .background(MaterialTheme.colorScheme.surfaceContainer)
@@ -125,59 +154,97 @@ fun PoolColumn(
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        if (open) {
-            OpenHead(count = count, onFold = { choice = false })
-            note?.let { line ->
-                Box(Modifier.fillMaxWidth().padding(horizontal = 12.dp)) { line() }
-            }
-            if (!readOnly) {
-                AddField(onAddClick = onAddClick, onGenerateClick = onGenerateClick)
-            }
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(POOL_COLUMNS),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f, fill = false)
-                    .testTag(TierDetailTestTags.POOL_ITEMS),
-                contentPadding = PaddingValues(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                itemsIndexed(pool.items, key = { _, item -> item.id }) { index, item ->
-                    Box(contentAlignment = Alignment.Center) {
-                        DraggableTile(
-                            item = item,
-                            sourceTierId = pool.id,
-                            width = POOL_TILE_WIDTH,
-                            height = POOL_TILE_HEIGHT,
-                            dragController = dragController,
-                            onMoveItem = onMoveItem,
-                            onDeleteItem = onDeleteItem,
-                            onPositioned = { bounds -> dragController.registerTileBounds(pool.id, item.id, index, bounds) },
-                            onDoubleTap = onDoubleTap,
-                        )
-                    }
+        if (collapsed) {
+            FoldedStrip(
+                count = count,
+                readOnly = readOnly,
+                lifting = lifting,
+                dragController = dragController,
+                onOpen = { memory.poolColumnCollapsed = false },
+                onAddClick = onAddClick,
+            )
+            return@Column
+        }
+        OpenColumnHead(
+            count = count,
+            roomy = roomy,
+            readOnly = readOnly,
+            lifting = lifting,
+            dragController = dragController,
+            note = note,
+            onFold = { memory.poolColumnCollapsed = true },
+            onAddClick = onAddClick,
+            onGenerateClick = onGenerateClick,
+        )
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(if (roomy) 4 else 3),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f, fill = false)
+                .testTag(TierDetailTestTags.POOL_ITEMS),
+            contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(if (roomy) 10.dp else 8.dp, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(if (roomy) 10.dp else 8.dp),
+        ) {
+            itemsIndexed(pool.items, key = { _, item -> item.id }) { index, item ->
+                Box(contentAlignment = Alignment.Center) {
+                    DraggableTile(
+                        item = item,
+                        sourceTierId = pool.id,
+                        width = POOL_TILE_WIDTH,
+                        height = POOL_TILE_HEIGHT,
+                        dragController = dragController,
+                        onMoveItem = onMoveItem,
+                        onDeleteItem = onDeleteItem,
+                        onPositioned = { bounds -> dragController.registerTileBounds(pool.id, item.id, index, bounds) },
+                        onDoubleTap = onDoubleTap,
+                    )
                 }
             }
-        } else {
-            FoldedStrip(count = count, readOnly = readOnly, onOpen = { choice = true }, onAddClick = onAddClick)
+        }
+    }
+}
+
+/** The open column's head: the count and the way to fold it, the reader's line, the add field; or, while a card is lifted, the trash. */
+private fun openColumnWidth(roomy: Boolean, indexBeside: Boolean): Dp = when {
+    !roomy -> POOL_COLUMN_WIDTH
+    indexBeside -> POOL_COLUMN_WIDE_WIDTH_BESIDE_INDEX
+    else -> POOL_COLUMN_WIDE_WIDTH
+}
+
+@Composable
+private fun OpenColumnHead(
+    count: Int,
+    roomy: Boolean,
+    readOnly: Boolean,
+    lifting: Boolean,
+    dragController: TierDragController,
+    note: (@Composable () -> Unit)?,
+    onFold: () -> Unit,
+    onAddClick: () -> Unit,
+    onGenerateClick: () -> Unit,
+) {
+    Column(Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
+        if (lifting) {
+            PoolHeadTrash(dragController = dragController, caption = stringResource(R.string.tier_detail_drop_unrank_column))
+            return@Column
+        }
+        OpenHead(count = count, roomy = roomy, onFold = onFold)
+        note?.let { line -> Box(Modifier.fillMaxWidth().padding(bottom = 6.dp)) { line() } }
+        if (!readOnly) {
+            AddCardField(onAddClick = onAddClick, onGenerateClick = onGenerateClick, modifier = Modifier.fillMaxWidth())
         }
     }
 }
 
 @Composable
-private fun OpenHead(count: Int, onFold: () -> Unit) {
+private fun OpenHead(count: Int, roomy: Boolean, onFold: () -> Unit) {
     val foldDescription = pluralStringResource(R.plurals.tier_detail_ranked_pool_expanded_description, count, count)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 14.dp, end = 4.dp, top = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = pluralStringResource(R.plurals.tier_detail_pool_unranked_count, count, count),
+            text = stringResource(R.string.tier_detail_pool_count, count),
             modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.labelLarge,
+            style = if (roomy) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -185,54 +252,63 @@ private fun OpenHead(count: Int, onFold: () -> Unit) {
         IconButton(
             onClick = onFold,
             modifier = Modifier
+                .size(40.dp)
                 .semantics { contentDescription = foldDescription }
                 .testTag(TierDetailTestTags.POOL_TOGGLE),
-        ) {
-            // Towards the edge it folds into.
-            Box(Modifier.rotate(-90f)) { ChevronDownIcon(20.dp, MaterialTheme.colorScheme.onSurfaceVariant) }
-        }
+        ) { PanelCloseIcon(22.dp, MaterialTheme.colorScheme.onSurfaceVariant) }
     }
 }
 
-/** Where a card is added, at the head of the pool it goes into; the AI studio beside it where it is offered. */
+/**
+ * Where a card is added, at the head of the pool it goes into: a field that
+ * opens the add flow, and the AI studio at its end where it is offered.
+ */
 @Composable
-private fun AddField(onAddClick: () -> Unit, onGenerateClick: () -> Unit) {
+internal fun AddCardField(onAddClick: () -> Unit, onGenerateClick: () -> Unit, modifier: Modifier = Modifier) {
+    val shape = RoundedCornerShape(20.dp)
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp, vertical = 4.dp),
+        modifier = modifier
+            .height(40.dp)
+            .clip(shape)
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outline, shape)
+            .clickable(onClick = onAddClick)
+            .testTag(TierDetailTestTags.ADD_CHIP)
+            .padding(start = 12.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .heightIn(min = 40.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                .clickable(onClick = onAddClick)
-                .testTag(TierDetailTestTags.ADD_CHIP)
-                .padding(horizontal = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            PlusIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(Modifier.width(6.dp))
-            Text(
-                text = stringResource(R.string.tier_detail_add_card),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+        PlusIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.width(8.dp))
+        Text(
+            text = stringResource(R.string.tier_detail_add_card),
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
         if (Features.GENERATION_OFFERED) {
-            GenerateChip(onClick = onGenerateClick, compact = true)
+            val description = stringResource(R.string.cd_ai_chip)
+            IconButton(
+                onClick = onGenerateClick,
+                modifier = Modifier
+                    .size(36.dp)
+                    .semantics { contentDescription = description }
+                    .testTag(TierDetailTestTags.GENERATE_CHIP),
+            ) { AutoAwesomeIcon(18.dp, MaterialTheme.colorScheme.primary) }
         }
     }
 }
 
 @Composable
-private fun FoldedStrip(count: Int, readOnly: Boolean, onOpen: () -> Unit, onAddClick: () -> Unit) {
+private fun FoldedStrip(
+    count: Int,
+    readOnly: Boolean,
+    lifting: Boolean,
+    dragController: TierDragController,
+    onOpen: () -> Unit,
+    onAddClick: () -> Unit,
+) {
     val openDescription = pluralStringResource(R.plurals.tier_detail_ranked_pool_collapsed_description, count, count)
     Column(
         modifier = Modifier
@@ -241,16 +317,18 @@ private fun FoldedStrip(count: Int, readOnly: Boolean, onOpen: () -> Unit, onAdd
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
+        if (lifting) {
+            PoolStripTrash(dragController = dragController)
+        }
         IconButton(
             onClick = onOpen,
             modifier = Modifier
                 .semantics { contentDescription = openDescription }
                 .testTag(TierDetailTestTags.POOL_TOGGLE),
-        ) {
-            Box(Modifier.rotate(90f)) { ChevronDownIcon(20.dp, MaterialTheme.colorScheme.onSurfaceVariant) }
-        }
+        ) { PanelOpenIcon(22.dp, MaterialTheme.colorScheme.onSurfaceVariant) }
         if (count == 0) {
-            CheckIcon(20.dp, MaterialTheme.colorScheme.primary)
+            val placed = if (TierYourLifeMedia.current.isDark) PlacedDark else PlacedLight
+            CheckCircleIcon(22.dp, placed, MaterialTheme.colorScheme.surfaceContainer)
         }
         Text(
             text = count.toString(),
@@ -266,7 +344,6 @@ private fun FoldedStrip(count: Int, readOnly: Boolean, onOpen: () -> Unit, onAdd
                     .semantics { contentDescription = addDescription },
             ) { PlusIcon(20.dp, MaterialTheme.colorScheme.onSecondaryContainer) }
         }
-        Spacer(Modifier.height(2.dp))
     }
 }
 
