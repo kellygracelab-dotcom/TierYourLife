@@ -154,12 +154,14 @@ class SectionViewModelTest {
         viewModel.state.firstWithin { it.stats != null }
 
         viewModel.toggleSectionFollow()
-        assertTrue(viewModel.state.value.stats?.following == true)
-        assertEquals(3411, viewModel.state.value.stats?.followerCount)
+        // The screen state is combined from several flows, so it is awaited rather than read at once.
+        val shown = viewModel.state.firstWithin { it.stats?.following == true }
+        assertEquals(3411, shown.stats?.followerCount)
 
         community.refusal.complete(Unit)
         assertEquals(CommunityNotice.FollowFailed, withTimeout(5_000) { viewModel.notices.first() })
-        assertFalse(viewModel.state.value.stats?.following == true)
+        viewModel.state.firstWithin { it.stats?.following == false }
+        Unit
     }
 
     @Test
