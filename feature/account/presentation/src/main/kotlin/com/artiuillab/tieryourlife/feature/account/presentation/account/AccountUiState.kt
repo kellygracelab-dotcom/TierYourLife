@@ -17,6 +17,10 @@ data class AccountUiState(
     val faceChoices: List<String> = emptyList(),
     /** True while a picture of their own is being made into a face. */
     val makingFace: Boolean = false,
+    /** The face just chosen, shown before the account wears it. */
+    val pendingFace: PendingFace? = null,
+    /** A picture being placed in the circle, before it is chosen. */
+    val positioning: FaceToPosition? = null,
     val notice: AccountNotice? = null,
     /** True while the account is being removed; nothing else can be pressed. */
     val deleting: Boolean = false,
@@ -26,7 +30,20 @@ data class AccountUiState(
      */
     val merge: MergeChoice? = null,
     val mergeKeep: MergeKeep = MergeKeep.Everything,
-)
+) {
+    /**
+     * The face to draw: the one just chosen, from the moment it is chosen and
+     * on after the account wears it (the same face, already on this phone),
+     * otherwise the account's own.
+     */
+    val shownFace: String?
+        get() = pendingFace.let { pending -> if (pending != null) pending.shown else (account as? Account.SignedIn)?.photoUrl }
+}
+
+/** What is on screen at once: the picture cut on this phone, a card's own address, or null for the letter. */
+data class PendingFace(val shown: String?)
+
+data class FaceToPosition(val sourceUri: String, val fromGallery: Boolean)
 
 /** Which set of boards is in use afterwards. Neither answer deletes anything. */
 enum class MergeKeep { Everything, AccountOnly }

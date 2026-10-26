@@ -42,6 +42,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
 import com.artiuillab.tieryourlife.feature.account.presentation.R
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.CloseIcon
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.FaceSheet
@@ -52,6 +53,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.account.componen
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.previewAccountGuestState
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.previewAccountSignedInState
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.previewAccountSigningInState
+import com.artiuillab.tieryourlife.feature.account.presentation.account.face.FacePositioner
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.rememberGoogleCredential
 
 @Composable
@@ -65,7 +67,7 @@ fun AccountScreen(
     val googleCredential = rememberGoogleCredential()
     val fromThisPhone = stringResource(R.string.merge_name_suffix)
     val pickPhoto = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) viewModel.setPhotoFromGallery(uri.toString())
+        if (uri != null) viewModel.face.position(uri.toString(), fromGallery = true)
     }
 
     AccountScreenContent(
@@ -76,7 +78,9 @@ fun AccountScreen(
         onSignOut = viewModel::signOut,
         onDeleteAccount = viewModel::deleteAccount,
         onSetName = viewModel::setDisplayName,
-        onSetPhoto = viewModel::setPhoto,
+        onChooseFace = { url -> if (url == null) viewModel.face.wearLetter() else viewModel.face.position(url, fromGallery = false) },
+        onCancelPositioning = viewModel.face::cancelPositioning,
+        onConfirmPosition = viewModel.face::confirmPosition,
         onPickPhoto = { pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
         onNoticeShown = viewModel::dismissNotice,
         onBackUpBoardsChange = viewModel::setBackUpBoards,
@@ -95,8 +99,10 @@ internal fun AccountScreenContent(
     modifier: Modifier = Modifier,
     onDeleteAccount: () -> Unit = {},
     onSetName: (String) -> Unit = {},
-    onSetPhoto: (String?) -> Unit = {},
+    onChooseFace: (String?) -> Unit = {},
     onPickPhoto: () -> Unit = {},
+    onCancelPositioning: () -> Unit = {},
+    onConfirmPosition: (FaceCrop?) -> Unit = {},
     onNoticeShown: () -> Unit = {},
     onOpenPublished: () -> Unit = {},
     onBackUpBoardsChange: (Boolean) -> Unit = {},
@@ -158,7 +164,7 @@ internal fun AccountScreenContent(
 
                     is Account.SignedIn -> SignedInPanel(
                         email = account.email,
-                        photoUrl = account.photoUrl,
+                        photoUrl = state.shownFace,
                         displayName = account.displayName,
                         publicListCount = state.publicListCount,
                         credits = state.credits,
@@ -190,12 +196,12 @@ internal fun AccountScreenContent(
 
         if (faceSheetVisible && signedIn != null) {
             FaceSheet(
-                current = signedIn.photoUrl,
+                current = state.shownFace,
                 cardImages = state.faceChoices,
                 name = signedIn.displayName,
                 onDismiss = { faceSheetVisible = false },
                 onChoose = {
-                    onSetPhoto(it)
+                    onChooseFace(it)
                     faceSheetVisible = false
                 },
                 onPickPhoto = {
@@ -203,6 +209,11 @@ internal fun AccountScreenContent(
                     faceSheetVisible = false
                 },
             )
+        }
+
+        val positioning = state.positioning
+        if (positioning != null && signedIn != null) {
+            FacePositioner(source = positioning.sourceUri, onCancel = onCancelPositioning, onConfirm = onConfirmPosition)
         }
 
         SnackbarHost(

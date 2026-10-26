@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.FakeFacePhotos
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
@@ -26,6 +27,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeFalse
 import org.junit.Assume.assumeTrue
 import org.junit.Rule
@@ -242,46 +244,140 @@ class AccountViewModelTest {
         assertEquals(false, state.deleting)
     }
 
-    // The photo goes up into the person's own folder, the server looks at it
-    // and answers with a public address, and that address is the face.
+    // The photo is cut on the phone, goes up into the person's own folder, the
+    // server looks at it and answers with a public address, and that is the face.
     @Test
-    fun aPhotoFromTheGallery_goesUpAndBecomesTheFace() = runBlocking {
+    fun aPhotoFromTheGallery_isCutSentUpAndBecomesTheFace() = runBlocking {
         val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn)
         val photos = FakeFacePhotos()
         val viewModel = viewModel(repository, facePhotos = photos)
 
-        viewModel.setPhotoFromGallery("content://photos/1")
+        viewModel.face.position("content://photos/1", fromGallery = true)
+        viewModel.face.confirmPosition(null)
         val state = viewModel.state.firstWithin { !it.makingFace && repository.photoUrls.isNotEmpty() }
 
-        assertEquals(listOf("content://photos/1"), photos.uploaded)
+        assertEquals(listOf<Pair<String, FaceCrop?>>("content://photos/1" to null), photos.prepared)
+        assertEquals(listOf(FakeFacePhotos.PREPARED_URI), photos.uploaded)
         assertEquals(listOf<String?>(FakeCommunityRepository.FACE_URL), repository.photoUrls)
         assertNull(state.notice)
     }
 
+    // What was slow was waiting for the upload and the server's look before
+    // anything changed on screen. The cut picture shows as soon as it is cut.
     @Test
-    fun aPhotoThatWillNotGoUp_leavesTheOldFaceAndSaysSo() = runBlocking {
+    fun aChosenPhoto_showsAtOnce_whileItIsStillGoingUp() = runBlocking {
         val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn)
-        val viewModel = viewModel(repository, facePhotos = FakeFacePhotos(Result.failure(IOException("unreadable"))))
+        val photos = FakeFacePhotos(holdUploads = true)
+        val viewModel = viewModel(repository, facePhotos = photos)
 
-        viewModel.setPhotoFromGallery("content://photos/1")
+        viewModel.face.position("content://photos/1", fromGallery = true)
+        viewModel.face.confirmPosition(FaceCrop(0.1f, 0.2f, 0.5f, 0.5f))
+        val onItsWay = viewModel.state.firstWithin { it.pendingFace != null }
+
+        assertEquals(FakeFacePhotos.PREPARED_URI, onItsWay.shownFace)
+        assertTrue(onItsWay.makingFace)
+        assertEquals(emptyList<String?>(), repository.photoUrls)
+
+        photos.releaseUploads()
+        val worn = viewModel.state.firstWithin { !it.makingFace }
+        // Still the picture cut here: the same face, and nothing to download again.
+        assertEquals(FakeFacePhotos.PREPARED_URI, worn.shownFace)
+        assertEquals(listOf<String?>(FakeCommunityRepository.FACE_URL), repository.photoUrls)
+    }
+
+    @Test
+    fun aPhotoThatWillNotGoUp_putsTheOldFaceBackAndSaysSo() = runBlocking {
+        val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn.withFace(OLD_FACE))
+        val photos = FakeFacePhotos(Result.failure(IOException("unreadable")))
+        val viewModel = viewModel(repository, facePhotos = photos)
+        viewModel.state.firstWithin { it.shownFace == OLD_FACE }
+
+        viewModel.face.position("content://photos/1", fromGallery = true)
+        viewModel.face.confirmPosition(null)
         val state = viewModel.state.firstWithin { it.notice != null }
 
         assertEquals(AccountNotice.FaceNotMade, state.notice)
+        assertEquals(OLD_FACE, state.shownFace)
         assertEquals(emptyList<String?>(), repository.photoUrls)
         assertEquals(false, state.makingFace)
     }
 
     // Refused by the server after the upload: the person hears about it the
-    // same way, and nothing is written to the account.
+    // same way, the old face comes back, and nothing is written to the account.
     @Test
-    fun aPhotoTheServerRefuses_leavesTheOldFaceAndSaysSo() = runBlocking {
-        val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn)
+    fun aPhotoTheServerRefuses_putsTheOldFaceBackAndSaysSo() = runBlocking {
+        val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn.withFace(OLD_FACE))
         val viewModel = viewModel(repository, community = RefusingFaces())
+        viewModel.state.firstWithin { it.shownFace == OLD_FACE }
 
-        viewModel.setPhotoFromGallery("content://photos/1")
+        viewModel.face.position("content://photos/1", fromGallery = true)
+        viewModel.face.confirmPosition(null)
         val state = viewModel.state.firstWithin { it.notice != null }
 
         assertEquals(AccountNotice.FaceNotMade, state.notice)
+        assertEquals(OLD_FACE, state.shownFace)
+        assertEquals(emptyList<String?>(), repository.photoUrls)
+    }
+
+    // A poster left where it was needs no copy: its address is the face at once.
+    @Test
+    fun aPosterLeftInTheMiddle_isWornByItsAddress_withoutGoingUp() = runBlocking {
+        val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn)
+        val photos = FakeFacePhotos()
+        val viewModel = viewModel(repository, facePhotos = photos)
+
+        viewModel.face.position(POSTER, fromGallery = false)
+        viewModel.face.confirmPosition(null)
+        assertEquals(POSTER, viewModel.state.value.shownFace)
+        viewModel.state.firstWithin { !it.makingFace && repository.photoUrls.isNotEmpty() }
+
+        assertEquals(listOf<String?>(POSTER), repository.photoUrls)
+        assertTrue(photos.prepared.isEmpty())
+    }
+
+    // Moved inside the circle, the poster is a new picture: cut here and sent up like a photo.
+    @Test
+    fun aPosterMovedInTheCircle_isCutAndSentUp() = runBlocking {
+        val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn)
+        val photos = FakeFacePhotos()
+        val viewModel = viewModel(repository, facePhotos = photos)
+        val crop = FaceCrop(0f, 0.1f, 1f, 0.66f)
+
+        viewModel.face.position(POSTER, fromGallery = false)
+        viewModel.face.confirmPosition(crop)
+        viewModel.state.firstWithin { !it.makingFace && repository.photoUrls.isNotEmpty() }
+
+        assertEquals(listOf<Pair<String, FaceCrop?>>(POSTER to crop), photos.prepared)
+        assertEquals(listOf<String?>(FakeCommunityRepository.FACE_URL), repository.photoUrls)
+    }
+
+    // The letter needs nothing from anywhere: it is on screen before the account has saved it.
+    @Test
+    fun theLetter_replacesAPhotoAtOnce() = runBlocking {
+        val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn.withFace(OLD_FACE))
+        val viewModel = viewModel(repository)
+        viewModel.state.firstWithin { it.shownFace == OLD_FACE }
+
+        viewModel.face.wearLetter()
+        assertNull(viewModel.state.value.shownFace)
+        viewModel.state.firstWithin { !it.makingFace && repository.photoUrls.isNotEmpty() }
+
+        assertEquals(listOf<String?>(null), repository.photoUrls)
+        assertNull(viewModel.state.value.shownFace)
+    }
+
+    @Test
+    fun cancellingThePlacing_changesNothing() = runBlocking {
+        val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn)
+        val photos = FakeFacePhotos()
+        val viewModel = viewModel(repository, facePhotos = photos)
+
+        viewModel.face.position(POSTER, fromGallery = false)
+        assertEquals(FaceToPosition(POSTER, fromGallery = false), viewModel.state.value.positioning)
+        viewModel.face.cancelPositioning()
+
+        assertNull(viewModel.state.value.positioning)
+        assertTrue(photos.prepared.isEmpty())
         assertEquals(emptyList<String?>(), repository.photoUrls)
     }
 
@@ -310,6 +406,11 @@ private class RecordingErasure(private val onErase: () -> Unit) : AccountErasure
 private object RefusingErasure : AccountErasure {
     override suspend fun erase(): Result<Unit> = Result.failure(IllegalStateException("offline"))
 }
+
+private const val OLD_FACE = "https://example.test/old-face.jpg"
+private const val POSTER = "https://image.tmdb.org/t/p/w500/poster.jpg"
+
+private fun Account.withFace(photoUrl: String): Account = (this as Account.SignedIn).copy(photoUrl = photoUrl)
 
 private class FakeCommunityForAccount : FakeCommunityRepository()
 

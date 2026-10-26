@@ -33,6 +33,8 @@ open class FakeAccountRepository(
 
     override suspend fun setPhotoUrl(photoUrl: String?): Boolean {
         photoUrls += photoUrl
+        // As the real one: the account it hands out wears the new face from then on.
+        (accounts.value as? Account.SignedIn)?.let { accounts.value = it.copy(photoUrl = photoUrl) }
         return true
     }
 

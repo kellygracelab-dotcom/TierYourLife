@@ -73,4 +73,9 @@
     <string name="account_delete_keeps_local">Доски на этом телефоне остаются на месте.</string>
     <string name="account_delete_confirm">Удалить навсегда</string>
     <string name="account_error_not_deleted">Аккаунт не удалён. Попробуйте ещё раз.</string>
+    <string name="account_face_position_title">Расположите фото</string>
+    <string name="account_face_position_body">Двигайте картинку и сводите пальцы, чтобы приблизить. Круг — то, что увидят другие.</string>
+    <string name="account_face_position_use">Готово</string>
+    <string name="account_face_position_failed">Картинку не удалось показать здесь. Её всё равно можно поставить как есть.</string>
+    <string name="account_face_position_frame">Картинка, которую нужно расположить в круге</string>
 </resources>
