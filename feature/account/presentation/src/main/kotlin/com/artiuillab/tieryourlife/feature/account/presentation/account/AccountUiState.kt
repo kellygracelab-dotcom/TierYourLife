@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account
 
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.MergeChoice
 
 data class AccountUiState(
@@ -38,10 +39,14 @@ data class AccountUiState(
      */
     val shownFace: String?
         get() = pendingFace.let { pending -> if (pending != null) pending.shown else (account as? Account.SignedIn)?.photoUrl }
+
+    /** The square to show of [shownFace] while the picture is still the whole photo, before it is cut. */
+    val shownFaceCrop: FaceCrop?
+        get() = pendingFace?.crop
 }
 
 /** What is on screen at once: the picture cut on this phone, a card's own address, or null for the letter. */
-data class PendingFace(val shown: String?)
+data class PendingFace(val shown: String?, val crop: FaceCrop? = null)
 
 data class FaceToPosition(val sourceUri: String, val fromGallery: Boolean)
 

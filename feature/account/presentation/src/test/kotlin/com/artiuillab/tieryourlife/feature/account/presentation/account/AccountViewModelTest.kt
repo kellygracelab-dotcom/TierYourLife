@@ -271,10 +271,15 @@ class AccountViewModelTest {
         val viewModel = viewModel(repository, facePhotos = photos)
 
         viewModel.face.position("content://photos/1", fromGallery = true)
-        viewModel.face.confirmPosition(FaceCrop(0.1f, 0.2f, 0.5f, 0.5f))
-        val onItsWay = viewModel.state.firstWithin { it.pendingFace != null }
+        val crop = FaceCrop(0.1f, 0.2f, 0.5f, 0.5f)
+        viewModel.face.confirmPosition(crop)
+        // Done shows the chosen square of the photo itself, before anything is cut.
+        val chosen = viewModel.state.value
+        assertEquals("content://photos/1", chosen.shownFace)
+        assertEquals(crop, chosen.shownFaceCrop)
+        val onItsWay = viewModel.state.firstWithin { it.shownFace == FakeFacePhotos.PREPARED_URI }
 
-        assertEquals(FakeFacePhotos.PREPARED_URI, onItsWay.shownFace)
+        assertEquals(null, onItsWay.shownFaceCrop)
         assertTrue(onItsWay.makingFace)
         assertEquals(emptyList<String?>(), repository.photoUrls)
 
