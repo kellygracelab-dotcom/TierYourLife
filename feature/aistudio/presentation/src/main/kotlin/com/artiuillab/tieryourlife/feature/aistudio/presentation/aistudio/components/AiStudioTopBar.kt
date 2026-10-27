@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
+import com.artiuillab.tieryourlife.core.theme.layout.topBarTitleStyle
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.AiStudioTestTags
 
@@ -34,14 +35,13 @@ internal fun AiStudioTopBar(onBack: () -> Unit, credits: Int? = null) {
     val backDescription = stringResource(R.string.cd_back)
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding(),
+            .fillMaxWidth(),
         contentAlignment = Alignment.TopCenter,
     ) {
         Row(
             modifier = Modifier
                 .atMost(ContentWidth.Conversation)
-                .height(56.dp)
+                .height(topBarHeight())
                 .padding(horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -58,7 +58,7 @@ internal fun AiStudioTopBar(onBack: () -> Unit, credits: Int? = null) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 4.dp),
-                style = MaterialTheme.typography.titleLarge,
+                style = topBarTitleStyle(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurface,

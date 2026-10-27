@@ -19,6 +19,8 @@ data class PublishedListSummaryDto(
     val anonymous: Boolean = false,
     val topicId: String? = null,
     val topicName: String? = null,
+    val rankingCount: Int = 0,
+    val basedOn: BasedOnDto? = null,
 )
 
 @Serializable
@@ -58,6 +60,7 @@ data class FollowedAuthorDto(
 data class FollowedAuthorsDto(
     val authors: List<FollowedAuthorDto> = emptyList(),
     val topics: List<TopicDto> = emptyList(),
+    val sections: List<FollowedSectionDto> = emptyList(),
 )
 
 @Serializable
@@ -104,6 +107,8 @@ data class PublishedListDto(
     val anonymous: Boolean = false,
     val topicId: String? = null,
     val topicName: String? = null,
+    val rankingCount: Int = 0,
+    val basedOn: BasedOnDto? = null,
 )
 
 @Serializable
@@ -119,6 +124,8 @@ data class PublishListRequestDto(
     /** One or the other: a topic the server knows, or a name it has not seen. */
     val topicId: String? = null,
     val newTopic: String? = null,
+    /** The published list the cards were taken from; the server decides whether this is a ranking of it. */
+    val takenFrom: String? = null,
 )
 
 @Serializable
@@ -126,10 +133,32 @@ data class PublishedIdDto(
     val id: String,
     /** The topic the list was filed under, named by the server once a new one exists. */
     val topicId: String? = null,
+    /** True when the server kept it as a ranking of [id] rather than as a list. */
+    val ranking: Boolean = false,
 )
 
 @Serializable
 data class ReportRequestDto(
     val reason: String,
     val note: String? = null,
+)
+
+@Serializable
+data class BasedOnDto(val id: String, val title: String = "", val authorName: String = "")
+
+@Serializable
+data class RankingDto(
+    val uid: String,
+    val authorName: String = "",
+    val authorPhotoUrl: String? = null,
+    val arrangement: List<Int?> = emptyList(),
+    val tierLabels: List<String> = emptyList(),
+    val updatedAtMs: Long = 0,
+    val mine: Boolean = false,
+)
+
+@Serializable
+data class RankingsPageDto(
+    val rankings: List<RankingDto> = emptyList(),
+    val nextCursor: String? = null,
 )

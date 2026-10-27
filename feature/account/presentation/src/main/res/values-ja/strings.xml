@@ -64,4 +64,9 @@
     <string name="account_delete_keeps_local">この端末のボードはそのまま残ります。</string>
     <string name="account_delete_confirm">完全に削除</string>
     <string name="account_error_not_deleted">アカウントを削除できませんでした。もう一度お試しください。</string>
+    <string name="account_face_position_title">顔の位置を決める</string>
+    <string name="account_face_position_body">画像をドラッグし、ピンチで拡大します。円の中がほかの人に見える部分です。</string>
+    <string name="account_face_position_use">これを使う</string>
+    <string name="account_face_position_failed">ここでは画像を表示できません。このままでも使えます。</string>
+    <string name="account_face_position_frame">円に収める画像</string>
 </resources>

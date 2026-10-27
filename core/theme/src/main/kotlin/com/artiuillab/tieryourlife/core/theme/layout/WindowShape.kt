@@ -55,6 +55,16 @@ enum class WindowShape {
          * cover is 352 x 339dp; a phone in landscape is nearer 0.45.
          */
         val CoverMaxHeight: Dp = 480.dp
+
+        /**
+         * Below this height a window cannot afford a header, a sub-header and
+         * a docked panel around the thing it shows: a phone held sideways, a
+         * Flip's cover, half a phone in split view. Such a window keeps one
+         * compact bar and moves panels to the side.
+         */
+        val ShortBelow: Dp = 480.dp
+
+        fun isShort(height: Dp): Boolean = height != Dp.Unspecified && height < ShortBelow
         const val COVER_MIN_RATIO = 0.8f
         const val COVER_MAX_RATIO = 1.5f
 
@@ -82,3 +92,13 @@ val LocalWindowShape = staticCompositionLocalOf { WindowShape.Narrow }
 
 val currentWindowShape: WindowShape
     @Composable get() = LocalWindowShape.current
+
+/**
+ * Whether the window is under [WindowShape.ShortBelow] tall: a phone held
+ * sideways, a cover screen, half a phone in split view. Kept apart from the
+ * shape, which is about width: a phone sideways is wide and short at once.
+ */
+val LocalShortWindow = staticCompositionLocalOf { false }
+
+val isShortWindow: Boolean
+    @Composable get() = LocalShortWindow.current

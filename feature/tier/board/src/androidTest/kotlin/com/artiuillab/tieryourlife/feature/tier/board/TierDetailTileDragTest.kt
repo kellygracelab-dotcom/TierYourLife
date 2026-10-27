@@ -162,7 +162,11 @@ class TierDetailTileDragTest : TierDetailScreenTestBase() {
         val draggedItemId = items.first().id
         val secondLineAnchor = secondLineFirstItemId(items)
         val anchorIndex = items.indexOfFirst { it.id == secondLineAnchor }
-        val expectedIndex = anchorIndex - 1
+        // The lifted card's own place takes no room while it hovers, so the
+        // second line's first card moves up a line and the slot opens under the
+        // finger, at the start of the second line. The card lands there, as
+        // shown; it used to land at the end of the first line, behind its own gap.
+        val expectedIndex = anchorIndex
 
         dragTile(sourceTag = TierDetailTestTags.tile(draggedItemId), targetTag = TierDetailTestTags.tile(secondLineAnchor), horizontalBias = 0.1f)
 

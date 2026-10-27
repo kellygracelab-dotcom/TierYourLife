@@ -50,6 +50,7 @@ class TierDaoTest {
         val id = dao.createTierListFromTemplate(
             title = "Films I make people watch",
             authorName = "Olena M.",
+            takenFrom = "pub-1",
             tiers = listOf(
                 NewTemplateTier("S", "Masterpiece", "#B03A32", "#F1948C", items = listOf(NewPoolItem("The Godfather", null))),
                 NewTemplateTier("A", "Great", "#C06A25", "#E9A867", items = listOf(NewPoolItem("Inception", null), NewPoolItem("Interstellar", null))),

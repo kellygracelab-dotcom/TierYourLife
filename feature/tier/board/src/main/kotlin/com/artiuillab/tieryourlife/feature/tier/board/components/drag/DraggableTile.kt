@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.board.components.drag
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.absoluteOffset
@@ -8,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.lerp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -50,9 +54,13 @@ fun DraggableTile(
     modifier: Modifier = Modifier,
     onPositioned: (Rect) -> Unit = {},
     onDoubleTap: (itemId: Long) -> Unit = {},
+    /** True while the row draws the card's slot elsewhere: the lifted card's own place then takes no room. */
+    collapseWhileLifted: Boolean = false,
 ) {
     var rootPosition by remember { mutableStateOf(Offset.Zero) }
-    val isDragging = dragController.draggedPayload?.itemId == item.id
+    var sizePx by remember { mutableStateOf(Offset.Zero) }
+    val isDragging = dragController.draggedPayload?.itemId == item.id ||
+        dragController.returning?.payload?.itemId == item.id
     val haptic = LocalHapticFeedback.current
     val baseViewConfiguration = LocalViewConfiguration.current
     val dragViewConfiguration = remember(baseViewConfiguration) {
@@ -69,6 +77,7 @@ fun DraggableTile(
                 .testTag(TierDetailTestTags.tile(item.id))
                 .onGloballyPositioned { coordinates ->
                     rootPosition = coordinates.positionInRoot()
+                    sizePx = Offset(coordinates.size.width.toFloat(), coordinates.size.height.toFloat())
                     onPositioned(coordinates.boundsInRoot())
                 }
                 .pointerInput(item.id, sourceTierId) {
@@ -85,6 +94,7 @@ fun DraggableTile(
                                     height = height,
                                 ),
                                 rootPosition = rootPosition + offsetInTile,
+                                homeCentre = rootPosition + sizePx / 2f,
                             )
                         },
                         onDrag = { change, dragAmount ->
@@ -106,7 +116,7 @@ fun DraggableTile(
                 },
         ) {
             if (isDragging) {
-                Box(Modifier.size(width, height))
+                Box(if (collapseWhileLifted && dragController.returning == null) Modifier.size(0.dp) else Modifier.size(width, height))
             } else {
                 ItemTile(item = item, width = width, height = height)
             }
@@ -125,9 +135,22 @@ fun FloatingDragTile(dragController: TierDragController) {
     // The overlay stands whether or not anything is being dragged. It learns
     // where it begins by being laid out, and that answer has to be in hand
     // before the first frame of a drag rather than one frame after it.
+    // A card let go over nothing flies back to its place rather than vanishing.
+    val trip = dragController.returning
+    val back = remember(trip) { Animatable(0f) }
+    LaunchedEffect(trip) {
+        if (trip == null) return@LaunchedEffect
+        back.animateTo(1f, tween(RETURN_MILLIS))
+        dragController.finishReturn()
+    }
+
     ForcedLeftToRightOverlay { origin ->
-        val payload = dragController.draggedPayload ?: return@ForcedLeftToRightOverlay
-        val position = dragController.pointerPositionInRoot
+        val payload = dragController.draggedPayload ?: trip?.payload ?: return@ForcedLeftToRightOverlay
+        val position = if (dragController.draggedPayload == null && trip != null) {
+            lerp(trip.from, trip.to, back.value)
+        } else {
+            dragController.pointerPositionInRoot
+        }
         val halfWidthPx = with(density) { (payload.width / 2).toPx() }
         val halfHeightPx = with(density) { (payload.height / 2).toPx() }
 
@@ -146,10 +169,10 @@ fun FloatingDragTile(dragController: TierDragController) {
                 .testTag(TierDetailTestTags.FLOATING_DRAG_TILE)
                 .graphicsLayer {
                     rotationZ = -4f
-                    scaleX = 1.06f
-                    scaleY = 1.06f
+                    scaleX = 1.08f
+                    scaleY = 1.08f
                 }
-                .shadow(elevation = 12.dp, shape = shape)
+                .shadow(elevation = 8.dp, shape = shape)
                 .clip(shape)
                 .border(1.dp, Color.White.copy(alpha = borderAlpha), shape),
         ) {
@@ -163,3 +186,6 @@ fun FloatingDragTile(dragController: TierDragController) {
         }
     }
 }
+
+/** How long a card let go over nothing takes to settle back. */
+private const val RETURN_MILLIS = 160

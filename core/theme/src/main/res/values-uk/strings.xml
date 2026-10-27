@@ -37,4 +37,5 @@
         <item quantity="other">%d оцінено</item>
     </plurals>
     <string name="tier_lists_title">Ваші списки</string>
+    <string name="snack_published_as_ranking">Опублікована як ваше ранжування того списку. Другого списку в стрічці не з’явиться.</string>
 </resources>

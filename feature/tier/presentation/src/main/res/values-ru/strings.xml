@@ -10,7 +10,7 @@
         <item quantity="many">%1$d списков</item>
         <item quantity="other">%1$d списка</item>
     </plurals>
-    <string name="search_no_results_title">Нет списков по запросу «%1$s»</string>
+    <string name="search_no_results_title">Нет списков с названием «%1$s»</string>
     <string name="search_no_results_body">Попробуйте более короткое слово или проверьте орфографию.</string>
 
     <plurals name="selection_count">
@@ -208,4 +208,7 @@
     <string name="cover_picker_no_cards">Ни у одной карточки списка пока нет картинки.</string>
     <string name="cover_picker_gallery">Выбрать из галереи</string>
     <string name="cover_picker_gallery_note">Картинка из галереи становится всей обложкой и едет вместе со списком, когда вы его публикуете.</string>
+    <string name="tier_detail_ranking_of">Ваше ранжирование списка от %1$s</string>
+    <string name="tier_detail_open_original">Открыть</string>
+    <string name="search_names_only">только названия</string>
 </resources>

@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 import androidx.lifecycle.SavedStateHandle
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
@@ -21,6 +22,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStand
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -153,6 +156,42 @@ class TierDetailViewModelTest {
 
         assertEquals(PublishError.TopicUnavailable, viewModel.screen.value.publish.error)
         assertEquals(listOf(listOf(1L, null, null, null)), repository.topicsSet)
+    }
+
+    // The same cards as the list they came from: the server keeps the copy as a ranking of it, and the board remembers that.
+    @Test
+    fun setPublic_answeredAsARanking_marksTheBoardAsOne_andSaysSo() = runBlocking {
+        val repository = FakeTierRepository(listWithOneCard().copy(takenFrom = "src-1"))
+        val community = FakeCommunityRepositoryForDetail(publishResult = Result.success(Published("src-1", "sent", ranking = true)))
+        val viewModel = TierDetailViewModel(repository, community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+        val said = async { viewModel.userMessages.first() }
+
+        viewModel.setPublic(true)
+        viewModel.screen.firstWithin { !it.publish.publishing }
+
+        assertEquals(listOf(1L to "src-1"), repository.rankingsSet)
+        assertEquals(1L to null, repository.publishedIds.last())
+        val shown = (viewModel.screen.value.board as TierDetailUiState.Success).list
+        assertEquals("src-1", shown.rankingOf)
+        assertNull(shown.publishedId)
+        assertEquals(UserMessage.PublishedAsRanking, said.await())
+    }
+
+    @Test
+    fun setPublic_off_takesARankingDownFromTheListItAnswers() = runBlocking {
+        val repository = FakeTierRepository(listWithOneCard().copy(takenFrom = "src-1", rankingOf = "src-1"))
+        val community = FakeCommunityRepositoryForDetail()
+        val viewModel = TierDetailViewModel(repository, community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+
+        viewModel.setPublic(false)
+        viewModel.screen.firstWithin { !it.publish.publishing }
+
+        assertEquals(listOf("src-1"), community.withdrawn)
+        assertTrue(community.unpublished.isEmpty())
+        assertEquals(listOf(1L to null), repository.rankingsSet)
+        assertNull((viewModel.screen.value.board as TierDetailUiState.Success).list.rankingOf)
     }
 
     /** A board whose new topic name the server took, answering with an id and, when asked about it, with [status]. */
@@ -455,6 +494,13 @@ private class FakeTierRepository(
         list = list.copy(publishedId = publishedId)
     }
 
+    val rankingsSet = mutableListOf<Pair<Long, String?>>()
+
+    override suspend fun setRankingOf(id: Long, listId: String?) {
+        rankingsSet += id to listId
+        list = list.copy(rankingOf = listId)
+    }
+
     override suspend fun publishedStanding(): PublishedStanding = PublishedStanding()
 
     override suspend fun boardPublishedAs(publishedId: String): TierList? = null
@@ -481,6 +527,7 @@ private class FakeTierRepository(
         authorName: String,
         tiers: List<Tier>,
         items: List<TierItem>,
+        takenFrom: String?,
     ): Long = 0
 
     private var nextItemId = 1L

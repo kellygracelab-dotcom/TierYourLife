@@ -66,8 +66,8 @@ data class BoardFilters(
         if (category != null && list.category != category) return false
         return when (published) {
             null -> true
-            PublishedFilter.Public -> list.publishedId != null
-            PublishedFilter.Private -> list.publishedId == null
+            PublishedFilter.Public -> list.isPublic
+            PublishedFilter.Private -> !list.isPublic
         }
     }
 }

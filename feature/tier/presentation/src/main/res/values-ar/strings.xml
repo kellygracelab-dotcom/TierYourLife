@@ -12,7 +12,7 @@
         <item quantity="many">%1$d قائمة</item>
         <item quantity="other">%1$d قائمة</item>
     </plurals>
-    <string name="search_no_results_title">لا توجد قوائم مطابقة لـ «%1$s»</string>
+    <string name="search_no_results_title">لا توجد قوائم باسم «%1$s»</string>
     <string name="search_no_results_body">جرّب كلمة أقصر أو تحقق من الإملاء.</string>
 
     <plurals name="selection_count">
@@ -234,4 +234,7 @@
     <string name="cover_picker_no_cards">لا تحمل أي بطاقة في هذه القائمة صورة بعد.</string>
     <string name="cover_picker_gallery">الاختيار من المعرض</string>
     <string name="cover_picker_gallery_note">صورة من المعرض تكون الغلاف كله وتسافر مع القائمة عند نشرها.</string>
+    <string name="tier_detail_ranking_of">ترتيبك لقائمة من %1$s</string>
+    <string name="tier_detail_open_original">فتح</string>
+    <string name="search_names_only">الأسماء فقط</string>
 </resources>

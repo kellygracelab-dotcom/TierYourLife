@@ -118,7 +118,7 @@ class TierDetailViewModel @Inject constructor(
             val result: Result<Published?> = if (public) {
                 community.publish(list)
             } else {
-                list.publishedId?.let { community.unpublish(it).map { _ -> null } } ?: Result.success(null)
+                takeDown(list)
             }
             result.fold(
                 onSuccess = { published -> recordPublished(list, published) },
@@ -132,10 +132,23 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
+    /** A ranking comes down from the list it sits beside; a list of its own comes down by its id. */
+    private suspend fun takeDown(list: TierList): Result<Published?> {
+        val rankingOf = list.rankingOf
+        val publishedId = list.publishedId
+        return when {
+            rankingOf != null -> community.withdrawRanking(rankingOf).map { null }
+            publishedId != null -> community.unpublish(publishedId).map { null }
+            else -> Result.success(null)
+        }
+    }
+
     private suspend fun recordPublished(list: TierList, published: Published?) {
         var waiting: String? = null
         val recorded = messages.guard("Recording the published list") {
-            repository.setPublished(tierListId, published?.id, published?.fingerprint)
+            // A ranking has no id of its own: it is out as part of the list it answers.
+            repository.setPublished(tierListId, published?.takeUnless { it.ranking }?.id, published?.fingerprint)
+            repository.setRankingOf(tierListId, published?.takeIf { it.ranking }?.id)
             // The server named the topic: a name that waited is a topic now, though maybe one still waiting.
             published?.topicId?.let { topicId ->
                 waiting = waitingName(list, topicId)
@@ -144,9 +157,10 @@ class TierDetailViewModel @Inject constructor(
         }
         // Reading the list back would land after publicPending clears
         // and spring the switch back for a frame. The id and the topic are all that changed.
-        if (recorded) showPublished(published?.id, published?.topicId, waiting)
+        if (recorded) showPublished(published, waiting)
         // Just sent, so nothing is behind any more.
         publishedIsBehind = false
+        if (recorded && published?.ranking == true) messages.send(UserMessage.PublishedAsRanking)
     }
 
     /** Finishes the publish that asked for it: a tap becoming two is smaller than a tap that only refuses. */
@@ -287,15 +301,20 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    private fun showPublished(publishedId: String?, topicId: String?, waiting: String?) {
+    private fun showPublished(published: Published?, waiting: String?) {
         val current = board
         if (current is TierDetailUiState.Success) {
             val list = current.list
+            val out = list.copy(
+                publishedId = published?.takeUnless { it.ranking }?.id,
+                rankingOf = published?.takeIf { it.ranking }?.id,
+            )
+            val topicId = published?.topicId
             board = TierDetailUiState.Success(
                 if (topicId == null) {
-                    list.copy(publishedId = publishedId)
+                    out
                 } else {
-                    list.copy(publishedId = publishedId, topicId = topicId, topicName = list.topicName ?: list.newTopicName, newTopicName = waiting)
+                    out.copy(topicId = topicId, topicName = list.topicName ?: list.newTopicName, newTopicName = waiting)
                 },
             )
         }

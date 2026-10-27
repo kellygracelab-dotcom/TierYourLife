@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
+import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
@@ -125,23 +126,30 @@ fun TopicScreenContent(
                 .fillMaxSize()
                 .testTag(TopicTestTags.SCREEN),
         ) {
-            TopBar(onBack = onBack, section = state.section)
-            Header(state = state, onToggleFollow = onToggleFollow)
-            SortRow(sort = state.sort, onSelectSort = onSelectSort)
-            CommunityFeedList(
-                feed = state.feed,
-                category = null,
-                onSelectCategory = {},
-                onOpen = { onOpenList(CommunityRoute.CommunityList.of(it)) },
-                onRetry = onRetry,
-                onOpenAuthor = { uid ->
-                    val summary = (state.feed as? CommunityFeed.Ready)?.lists?.firstOrNull { it.authorUid == uid }
-                    if (summary != null) onAuthorClick(uid, summary.authorName, summary.authorPhotoUrl)
+            BarredScreen(
+                bar = {
+                    TopBar(onBack = onBack, section = state.section)
+                    Header(state = state, onToggleFollow = onToggleFollow)
+                    SortRow(sort = state.sort, onSelectSort = onSelectSort)
                 },
-                onLongPress = { actionsFor = it },
-                onNearEnd = onLoadMore,
-                showCategories = false,
-            )
+            ) {
+                Column(Modifier.fillMaxSize()) {
+                    CommunityFeedList(
+                        feed = state.feed,
+                        category = null,
+                        onSelectCategory = {},
+                        onOpen = { onOpenList(CommunityRoute.CommunityList.of(it)) },
+                        onRetry = onRetry,
+                        onOpenAuthor = { uid ->
+                            val summary = (state.feed as? CommunityFeed.Ready)?.lists?.firstOrNull { it.authorUid == uid }
+                            if (summary != null) onAuthorClick(uid, summary.authorName, summary.authorPhotoUrl)
+                        },
+                        onLongPress = { actionsFor = it },
+                        onNearEnd = onLoadMore,
+                        showCategories = false,
+                    )
+                }
+            }
         }
 
         actionsFor?.let { summary ->
@@ -280,8 +288,7 @@ private fun TopBar(onBack: () -> Unit, section: ListCategory?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp)
+            .height(topBarHeight())
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

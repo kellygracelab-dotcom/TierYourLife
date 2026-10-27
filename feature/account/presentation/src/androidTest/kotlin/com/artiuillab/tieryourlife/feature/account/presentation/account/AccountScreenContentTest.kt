@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -14,11 +15,14 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
 import com.artiuillab.tieryourlife.feature.account.presentation.R
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+
+private const val WAIT_MILLIS = 5_000L
 
 @RunWith(AndroidJUnit4::class)
 class AccountScreenContentTest {
@@ -32,6 +36,8 @@ class AccountScreenContentTest {
     private val names = mutableListOf<String>()
 
     private val backUpChanges = mutableListOf<Boolean>()
+    private var positioningCancelled = 0
+    private val confirmedCrops = mutableListOf<FaceCrop?>()
 
     @Test
     fun theOfferSaysWhatItWouldBeKeeping() {
@@ -77,6 +83,8 @@ class AccountScreenContentTest {
         signOuts = 0
         backUpChanges.clear()
         names.clear()
+        positioningCancelled = 0
+        confirmedCrops.clear()
         composeRule.setContent {
             TierYourLifeTheme {
                 AccountScreenContent(
@@ -86,6 +94,8 @@ class AccountScreenContentTest {
                     onSignOut = { signOuts++ },
                     onSetName = { names += it },
                     onBackUpBoardsChange = { backUpChanges += it },
+                    onCancelPositioning = { positioningCancelled++ },
+                    onConfirmPosition = { confirmedCrops += it },
                 )
             }
         }
@@ -259,6 +269,24 @@ class AccountScreenContentTest {
         composeRule.onNodeWithTag(AccountTestTags.SIGN_IN).assertDoesNotExist()
         composeRule.onNodeWithTag(AccountTestTags.EMAIL).assertDoesNotExist()
         composeRule.onNodeWithTag(AccountTestTags.CLOSE).assertIsDisplayed()
+    }
+
+    // A picture that will not open here can still be used as it is: nothing was moved, so no crop.
+    @Test
+    fun aPictureBeingPlaced_canBeUsedOrLeft() {
+        setContent(signedIn().copy(positioning = FaceToPosition("content://nowhere/1", fromGallery = true)))
+
+        composeRule.onNodeWithTag(AccountTestTags.FACE_POSITIONER).assertIsDisplayed()
+        composeRule.waitUntil(WAIT_MILLIS) {
+            composeRule.onAllNodesWithText(string(R.string.account_face_position_failed)).fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag(AccountTestTags.FACE_POSITION_CONFIRM).performClick()
+        composeRule.onNodeWithTag(AccountTestTags.FACE_POSITION_CANCEL).performClick()
+
+        composeRule.runOnIdle {
+            assertEquals(listOf<FaceCrop?>(null), confirmedCrops)
+            assertEquals(1, positioningCancelled)
+        }
     }
 
     @Test

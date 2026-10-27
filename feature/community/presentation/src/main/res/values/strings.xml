@@ -56,7 +56,7 @@
     <string name="community_saved_to_your_lists">Saved to your lists.</string>
     <string name="community_action_open">Open</string>
     <string name="community_showing_mine">Mine</string>
-    <string name="community_showing_theirs">Their ranking</string>
+    <string name="community_showing_theirs">Theirs</string>
     <string name="community_someone_elses">Someone else\'s list. Rank it however you like.</string>
     <string name="community_tile_hidden">Hidden for you</string>
     <string name="community_tile_reported">Reported. A person will look at it.</string>
@@ -166,4 +166,89 @@
     <string name="home_following_empty_topics">Nothing from the topics you follow yet.</string>
     <string name="moderation_action_move">Move…</string>
     <string name="moderation_moderators_unavailable">Could not read who moderates.</string>
+    <string name="community_rankings_title">Rankings · %1$d</string>
+    <string name="community_rankings_body">The same cards, placed somebody’s way. Choose whose rows to show.</string>
+    <string name="community_ranking_author">Author of the list</string>
+    <string name="community_ranking_you">You</string>
+    <string name="community_ranking_withdraw">Withdraw</string>
+    <string name="community_based_on">Based on “%1$s” by %2$s</string>
+    <string name="community_showing_ranking_of">Showing: %1$s</string>
+    <plurals name="community_rankings_count">
+        <item quantity="one">%d ranking</item>
+        <item quantity="other">%d rankings</item>
+    </plurals>
+    <string name="explore_tab_explore">Explore</string>
+    <string name="explore_tab_following">Following</string>
+    <string name="explore_title_community">Community</string>
+    <string name="explore_popular_this_week">Popular this week</string>
+    <string name="explore_follow_section">Follow %1$s</string>
+    <string name="explore_unfollow_section">Unfollow %1$s</string>
+    <string name="explore_open_section">Open %1$s</string>
+    <string name="explore_now_following">Following %1$s</string>
+    <string name="explore_unfollowed">Unfollowed %1$s</string>
+    <string name="explore_undo">Undo</string>
+    <string name="explore_follow_failed">Couldn\'t follow. Try again.</string>
+    <string name="explore_new_lists">New lists</string>
+    <string name="explore_offline">Offline · showing lists from %1$s</string>
+    <string name="explore_retry">Retry</string>
+    <string name="explore_refresh_failed">Couldn\'t refresh. Showing lists from %1$s.</string>
+    <string name="explore_failed_title">Couldn\'t load community lists</string>
+    <string name="explore_failed_body">Check your connection. Your own lists are on this device.</string>
+    <string name="explore_try_again">Try again</string>
+    <string name="explore_follow">Follow</string>
+    <string name="explore_following">Following</string>
+    <string name="explore_tile_description">%1$s, %2$s</string>
+    <string name="explore_search_nothing">Nothing matches that.</string>
+    <string name="section_all">All</string>
+    <string name="section_suggest_topic">Suggest a topic</string>
+    <string name="section_sort_popular">Popular</string>
+    <string name="section_sort_newest">Newest</string>
+    <string name="section_share">Share section</string>
+    <string name="section_topic_waiting_chip">%1$s · waiting</string>
+    <string name="section_waiting_status">Waiting for a moderator</string>
+    <string name="section_waiting_body">A moderator will look at it. Your lists show here once it\'s approved; until then they\'re in %1$s.</string>
+    <string name="section_waiting_only_you">Only you see this topic until then.</string>
+    <string name="section_ok">OK</string>
+    <string name="section_counts">%1$s · %2$s</string>
+    <string name="section_share_text">%1$s on TierYourLife</string>
+    <string name="following_strip_manage">Manage</string>
+    <string name="following_reason_section">In %1$s</string>
+    <string name="following_empty_title">You aren\'t following anything yet</string>
+    <string name="following_empty_body">Follow a section, a topic or a person and their new lists arrive here first.</string>
+    <string name="following_empty_helper">Tap + to follow a section. Topics are inside each section; people, on their profile.</string>
+    <string name="following_nothing_published">Nobody you follow has published anything yet.</string>
+    <string name="following_go_explore">Go to Explore</string>
+    <string name="manage_sections">Sections · %1$d</string>
+    <string name="manage_topics">Topics · %1$d</string>
+    <string name="manage_people">People · %1$d</string>
+    <string name="manage_topic_supporting">In %1$s · %2$s</string>
+    <string name="manage_waiting_supporting">In %1$s · waiting for a moderator</string>
+    <string name="cover_open_main">Open on the main screen</string>
+    <string name="cover_open_phone">Open the phone to continue</string>
+    <plurals name="explore_new_this_week">
+        <item quantity="one">%1$s new this week</item>
+        <item quantity="other">%1$s new this week</item>
+    </plurals>
+    <plurals name="explore_cards">
+        <item quantity="one">%1$s card</item>
+        <item quantity="other">%1$s cards</item>
+    </plurals>
+    <plurals name="explore_rankings">
+        <item quantity="one">%1$s ranking</item>
+        <item quantity="other">%1$s rankings</item>
+    </plurals>
+    <plurals name="explore_followers">
+        <item quantity="one">%1$s follower</item>
+        <item quantity="other">%1$s followers</item>
+    </plurals>
+    <plurals name="explore_lists">
+        <item quantity="one">%1$s list</item>
+        <item quantity="other">%1$s lists</item>
+    </plurals>
+    <string name="community_save_short">Save</string>
+    <plurals name="moderation_open_count">
+        <item quantity="one">%1$d open</item>
+        <item quantity="other">%1$d open</item>
+    </plurals>
+    <string name="moderation_refresh">Refresh</string>
 </resources>

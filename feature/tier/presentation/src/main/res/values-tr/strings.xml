@@ -8,7 +8,7 @@
         <item quantity="one">%1$d liste</item>
         <item quantity="other">%1$d liste</item>
     </plurals>
-    <string name="search_no_results_title">“%1$s” ile eşleşen liste yok</string>
+    <string name="search_no_results_title">“%1$s” adında liste yok</string>
     <string name="search_no_results_body">Daha kısa bir kelime dene veya yazımı kontrol et.</string>
 
     <plurals name="selection_count">
@@ -182,4 +182,7 @@
     <string name="cover_picker_no_cards">Bu listenin hiçbir kartında henüz görsel yok.</string>
     <string name="cover_picker_gallery">Galeriden seç</string>
     <string name="cover_picker_gallery_note">Galeriden bir görsel kapağın tamamı olur ve listeyi yayımladığınızda onunla birlikte gider.</string>
+    <string name="tier_detail_ranking_of">%1$s adlı kişinin listesinin sizin sıralamanız</string>
+    <string name="tier_detail_open_original">Aç</string>
+    <string name="search_names_only">yalnızca adlar</string>
 </resources>

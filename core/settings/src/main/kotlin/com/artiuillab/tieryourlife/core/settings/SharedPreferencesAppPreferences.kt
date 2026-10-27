@@ -21,6 +21,8 @@ private const val KEY_CONFLICTS_SEEN = "conflicts_seen"
 private const val KEY_LAST_KNOWN_REPORTS = "last_known_reports"
 private const val KEY_LAST_KNOWN_TRASH = "last_known_trash"
 private const val KEY_LAST_KNOWN_STORED_BYTES = "last_known_stored_bytes"
+private const val KEY_POOL_COLUMN_COLLAPSED = "poolColumnCollapsed"
+private const val KEY_POOL_DOCK_ROWS = "poolDockRows"
 
 @Singleton
 class SharedPreferencesAppPreferences @Inject constructor(
@@ -72,6 +74,19 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun setLastKnownStoredBytes(bytes: Long) {
         prefs.edit { putLong(KEY_LAST_KNOWN_STORED_BYTES, bytes) }
+    }
+
+    override fun poolColumnCollapsed(): Boolean? =
+        if (prefs.contains(KEY_POOL_COLUMN_COLLAPSED)) prefs.getBoolean(KEY_POOL_COLUMN_COLLAPSED, false) else null
+
+    override fun setPoolColumnCollapsed(collapsed: Boolean?) {
+        prefs.edit { if (collapsed == null) remove(KEY_POOL_COLUMN_COLLAPSED) else putBoolean(KEY_POOL_COLUMN_COLLAPSED, collapsed) }
+    }
+
+    override fun poolDockRows(): Int = prefs.getInt(KEY_POOL_DOCK_ROWS, DEFAULT_POOL_DOCK_ROWS)
+
+    override fun setPoolDockRows(rows: Int) {
+        prefs.edit { putInt(KEY_POOL_DOCK_ROWS, rows) }
     }
 
     // Rows by default: they say how many cards are ranked and how many wait,

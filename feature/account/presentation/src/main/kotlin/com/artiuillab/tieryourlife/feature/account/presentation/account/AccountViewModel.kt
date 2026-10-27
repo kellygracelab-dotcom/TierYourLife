@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.repository.FacePhotos
+import com.artiuillab.tieryourlife.feature.account.presentation.account.face.AccountFace
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
@@ -43,10 +44,14 @@ class AccountViewModel @Inject constructor(
     )
     val state: StateFlow<AccountUiState> = _state.asStateFlow()
 
+    /** Choosing, placing and wearing a face. */
+    internal val face = AccountFace(_state, viewModelScope, repository, community, facePhotos, ::refreshPublishedAuthor)
+
     init {
         viewModelScope.launch {
             repository.account.collect { account ->
-                _state.update { it.copy(account = account) }
+                // A face chosen here belongs to the account it was chosen on.
+                _state.update { it.copy(account = account, pendingFace = it.pendingFace.takeIf { account is Account.SignedIn }) }
                 refreshCredits()
                 refreshOwnLists()
                 _state.update { it.copy(boardCount = ownLists.boardCount()) }
@@ -201,49 +206,6 @@ class AccountViewModel @Inject constructor(
                 faceChoices = faces,
             )
         }
-    }
-
-    /**
-     * Catalogue art has an address already. A generated picture lives in a
-     * folder only its owner may read, so the server copies it somewhere the
-     * community can see -- after looking at it, as with a published board.
-     */
-    fun setPhoto(photoUrl: String?) {
-        viewModelScope.launch {
-            _state.update { it.copy(makingFace = photoUrl != null && !photoUrl.startsWith("https://")) }
-            val address = when {
-                photoUrl == null || photoUrl.startsWith("https://") -> photoUrl
-                else -> community.makeFace(photoUrl.substringAfterLast('/')).getOrNull()
-            }
-            wear(address, chosen = photoUrl != null)
-        }
-    }
-
-    /**
-     * A photo from the phone goes up first, into the folder only its owner and
-     * the server read; from there it is the generated picture's path.
-     */
-    fun setPhotoFromGallery(sourceUri: String) {
-        if (_state.value.makingFace) return
-        _state.update { it.copy(makingFace = true) }
-        viewModelScope.launch {
-            val address = facePhotos.upload(sourceUri)
-                .onFailure { Timber.w(it, "The chosen photo did not go up") }
-                .getOrNull()
-                ?.let { pictureId -> community.makeFace(pictureId).getOrNull() }
-            wear(address, chosen = true)
-        }
-    }
-
-    /** [chosen] and no [address]: the picture was refused or lost on the way, and the old face stays. */
-    private suspend fun wear(address: String?, chosen: Boolean) {
-        if (chosen && address == null) {
-            _state.update { it.copy(makingFace = false, notice = AccountNotice.FaceNotMade) }
-            return
-        }
-        val saved = repository.setPhotoUrl(address)
-        _state.update { it.copy(makingFace = false) }
-        if (saved) refreshPublishedAuthor() else _state.update { it.copy(notice = AccountNotice.NameNotSaved) }
     }
 
     private suspend fun refreshCredits() {

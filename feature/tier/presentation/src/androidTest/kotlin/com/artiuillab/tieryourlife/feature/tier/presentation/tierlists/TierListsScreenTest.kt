@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -16,6 +17,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.lifecycle.Lifecycle
@@ -122,7 +124,9 @@ class TierListsScreenTest {
 
         composeRule.onNodeWithText("Pizza in Lisbon").assertIsDisplayed()
         composeRule.onNodeWithText("Sushi tour").assertDoesNotExist()
-        composeRule.onNodeWithText(plural(R.plurals.search_results_count, 1)).assertIsDisplayed()
+        composeRule.onNodeWithText(
+            plural(R.plurals.search_results_count, 1) + " · " + string(R.string.search_names_only),
+        ).assertIsDisplayed()
     }
 
     @Test
@@ -151,6 +155,25 @@ class TierListsScreenTest {
 
         composeRule.onNodeWithTag(TierListsTestTags.FAB).assertIsDisplayed()
         composeRule.onNodeWithText(string(ThemeR.string.tier_lists_title)).assertIsDisplayed()
+    }
+
+    // Searching is a detour: back from it, the boards are where they were left.
+    @Test
+    fun closingASearch_findsTheBoardsWhereTheyWereLeft() {
+        val lists = (1..30).map { n -> tierList(n.toLong(), "Board number $n", intArrayOf(1, 0, 0, 0, 0, 1)) }
+        setLiveScreen(lists)
+        composeRule.onNodeWithTag(TierListsTestTags.LISTS).performScrollToNode(hasText("Board number 25"))
+        composeRule.onNodeWithText("Board number 1").assertDoesNotExist()
+
+        composeRule.onNodeWithContentDescription(
+            string(ThemeR.string.tier_lists_content_description_search),
+        ).performClick()
+        composeRule.onNodeWithTag(HomeBarTestTags.SEARCH_FIELD).performTextInput("number 3")
+        composeRule.onNodeWithText("Board number 30").assertIsDisplayed()
+        composeRule.onNodeWithTag(HomeBarTestTags.SEARCH_CLOSE).performClick()
+
+        composeRule.onNodeWithText("Board number 25").assertIsDisplayed()
+        composeRule.onNodeWithText("Board number 1").assertDoesNotExist()
     }
 
     @Test

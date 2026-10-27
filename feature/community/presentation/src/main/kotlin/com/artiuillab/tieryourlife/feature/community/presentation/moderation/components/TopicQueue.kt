@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.TopicQueueTestTags
@@ -55,33 +55,38 @@ internal fun TopicQueue(
     onReject: (id: String) -> Unit,
     onFindMergeTargets: (String) -> Unit,
     onRetry: () -> Unit,
+    chips: (@Composable () -> Unit)? = null,
 ) {
     var approving by remember { mutableStateOf<PendingTopic?>(null) }
     var renaming by remember { mutableStateOf<PendingTopic?>(null) }
     var merging by remember { mutableStateOf<PendingTopic?>(null) }
 
-    when (state) {
-        TopicQueueUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        chipsItem(chips)
+        when (state) {
+            TopicQueueUiState.Loading -> stateItem { CircularProgressIndicator() }
 
-        TopicQueueUiState.Failed -> QueueMessage(
-            title = stringResource(R.string.moderation_topics_failed),
-            body = stringResource(R.string.home_community_failed_body),
-            action = stringResource(ThemeR.string.action_try_again),
-            onAction = onRetry,
-        )
+            TopicQueueUiState.Failed -> stateItem {
+                QueueMessage(
+                    title = stringResource(R.string.moderation_topics_failed),
+                    body = stringResource(R.string.home_community_failed_body),
+                    action = stringResource(ThemeR.string.action_try_again),
+                    onAction = onRetry,
+                )
+            }
 
-        is TopicQueueUiState.Ready -> if (state.pending.isEmpty()) {
-            QueueMessage(
-                title = stringResource(R.string.moderation_topics_empty_title),
-                body = stringResource(R.string.moderation_topics_empty_body),
-            )
-        } else {
-            LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 32.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
+            is TopicQueueUiState.Ready -> if (state.pending.isEmpty()) {
+                stateItem {
+                    QueueMessage(
+                        title = stringResource(R.string.moderation_topics_empty_title),
+                        body = stringResource(R.string.moderation_topics_empty_body),
+                    )
+                }
+            } else {
                 items(state.pending, key = { it.topic.id }) { pending ->
                     PendingTopicCard(
                         pending = pending,

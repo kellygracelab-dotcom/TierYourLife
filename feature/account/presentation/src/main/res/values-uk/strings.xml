@@ -73,4 +73,9 @@
     <string name="account_delete_keeps_local">Дошки на цьому телефоні залишаються на місці.</string>
     <string name="account_delete_confirm">Видалити назавжди</string>
     <string name="account_error_not_deleted">Акаунт не видалено. Спробуйте ще раз.</string>
+    <string name="account_face_position_title">Розташуйте фото</string>
+    <string name="account_face_position_body">Рухайте картинку й розводьте пальці, щоб наблизити. Коло — те, що побачать інші.</string>
+    <string name="account_face_position_use">Готово</string>
+    <string name="account_face_position_failed">Картинку не вдалося показати тут. Її все одно можна поставити як є.</string>
+    <string name="account_face_position_frame">Картинка, яку треба розташувати в колі</string>
 </resources>

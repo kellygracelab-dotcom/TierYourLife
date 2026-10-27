@@ -73,4 +73,9 @@
     <string name="account_delete_keeps_local">Listy na tym telefonie zostają na miejscu.</string>
     <string name="account_delete_confirm">Usuń na zawsze</string>
     <string name="account_error_not_deleted">Konto nie zostało usunięte. Spróbuj ponownie.</string>
+    <string name="account_face_position_title">Ustaw zdjęcie</string>
+    <string name="account_face_position_body">Przeciągnij obraz i przybliż dwoma palcami. Okrąg to to, co zobaczą inni.</string>
+    <string name="account_face_position_use">Użyj</string>
+    <string name="account_face_position_failed">Nie da się tu pokazać obrazu. Nadal można go użyć bez zmian.</string>
+    <string name="account_face_position_frame">Obraz do umieszczenia w okręgu</string>
 </resources>

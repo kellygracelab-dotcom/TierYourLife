@@ -48,7 +48,10 @@ private class FakeTierRepository : TierRepository {
         authorName: String,
         tiers: List<Tier>,
         items: List<TierItem>,
+        takenFrom: String?,
     ): Long = 0
+
+    override suspend fun setRankingOf(id: Long, listId: String?) = Unit
 
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) = Unit
 

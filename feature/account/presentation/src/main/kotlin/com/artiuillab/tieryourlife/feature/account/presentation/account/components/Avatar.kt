@@ -20,6 +20,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
+import coil3.request.transformations
+import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
 import com.artiuillab.tieryourlife.feature.account.presentation.R
 import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountTestTags
 
@@ -29,7 +33,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountT
  * the letter always matches the word sitting next to it.
  */
 @Composable
-internal fun Avatar(photoUrl: String?, name: String?, size: Dp, modifier: Modifier = Modifier) {
+internal fun Avatar(photoUrl: String?, name: String?, size: Dp, modifier: Modifier = Modifier, crop: FaceCrop? = null) {
     Box(
         modifier = modifier
             .size(size)
@@ -42,7 +46,14 @@ internal fun Avatar(photoUrl: String?, name: String?, size: Dp, modifier: Modifi
             // Cropped: a poster chosen as a face is taller than it is wide, and
             // fitted it left the circle empty at the sides.
             !photoUrl.isNullOrBlank() -> AsyncImage(
-                model = photoUrl,
+                model = if (crop == null) {
+                    photoUrl
+                } else {
+                    ImageRequest.Builder(LocalPlatformContext.current)
+                        .data(photoUrl)
+                        .transformations(FaceCropTransformation(crop))
+                        .build()
+                },
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(size).clip(CircleShape),
@@ -74,10 +85,11 @@ internal fun ProfileAvatar(
     onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     busy: Boolean = false,
+    crop: FaceCrop? = null,
 ) {
     val description = stringResource(R.string.account_cd_change_face)
     Box(modifier.size(AVATAR_LARGE)) {
-        Avatar(photoUrl, name, AVATAR_LARGE)
+        Avatar(photoUrl, name, AVATAR_LARGE, crop = crop)
         Box(
             Modifier
                 .align(Alignment.BottomEnd)

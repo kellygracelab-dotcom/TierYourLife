@@ -43,4 +43,8 @@ data class SuggestedAuthor(
 )
 
 /** Whom and what this account follows, as the one answer the server keeps them in. */
-data class Following(val authors: List<FollowedAuthor>, val topics: List<Topic>)
+data class Following(
+    val authors: List<FollowedAuthor>,
+    val topics: List<Topic>,
+    val sections: List<FollowedSection> = emptyList(),
+)

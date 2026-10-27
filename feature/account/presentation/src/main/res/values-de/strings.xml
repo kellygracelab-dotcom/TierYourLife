@@ -67,4 +67,9 @@
     <string name="account_delete_keeps_local">Die Boards auf diesem Telefon bleiben, wo sie sind.</string>
     <string name="account_delete_confirm">Endgültig löschen</string>
     <string name="account_error_not_deleted">Das Konto wurde nicht gelöscht. Versuche es erneut.</string>
+    <string name="account_face_position_title">Bild ausrichten</string>
+    <string name="account_face_position_body">Zieh das Bild und zoome mit zwei Fingern. Der Kreis ist das, was andere sehen.</string>
+    <string name="account_face_position_use">Verwenden</string>
+    <string name="account_face_position_failed">Das Bild kann hier nicht angezeigt werden. Es lässt sich trotzdem so verwenden, wie es ist.</string>
+    <string name="account_face_position_frame">Das Bild, das in den Kreis kommt</string>
 </resources>

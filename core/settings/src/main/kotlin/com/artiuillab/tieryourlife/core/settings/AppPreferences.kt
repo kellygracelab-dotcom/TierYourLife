@@ -80,4 +80,20 @@ interface AppPreferences {
     fun conflictsSeen(): Set<String>
 
     fun markConflictSeen(listUid: String)
+
+    /**
+     * Whether the person folded the pool's side column (true), opened it
+     * (false), or left it to the board (null). Kept on this device only: it is
+     * about this screen's room, not about the boards.
+     */
+    fun poolColumnCollapsed(): Boolean? = null
+
+    fun setPoolColumnCollapsed(collapsed: Boolean?) = Unit
+
+    /** Lines of cards the pool docked under the rows shows on a tablet held upright. */
+    fun poolDockRows(): Int = DEFAULT_POOL_DOCK_ROWS
+
+    fun setPoolDockRows(rows: Int) = Unit
 }
+
+const val DEFAULT_POOL_DOCK_ROWS = 2

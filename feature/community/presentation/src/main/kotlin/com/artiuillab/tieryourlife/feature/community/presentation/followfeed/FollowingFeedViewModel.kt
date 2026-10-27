@@ -1,0 +1,153 @@
+package com.artiuillab.tieryourlife.feature.community.presentation.followfeed
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.feature.community.domain.model.FeedKeys
+import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSection
+import com.artiuillab.tieryourlife.feature.community.domain.model.Following
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
+import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
+import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
+import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
+import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityNetwork
+import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedLoader
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPane
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.ListMenuActions
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.toCommunityNotice
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.inject.Inject
+
+/** Why a card is on the Following feed, when the card does not already say so (§4.1). */
+sealed interface FeedReason {
+    data class InTopic(val name: String) : FeedReason
+    data class InSection(val section: ListCategory) : FeedReason
+}
+
+/** A followed person needs no line, the author is on the card; then a topic; then a section. */
+fun reasonFor(summary: PublishedListSummary, following: Following): FeedReason? {
+    if (following.authors.any { it.uid == summary.authorUid }) return null
+    val topicId = summary.topicId
+    val topic = topicId?.let { id -> following.topics.firstOrNull { it.id == id } }
+    if (topic != null) return FeedReason.InTopic(summary.topicName ?: topic.name)
+    if (following.sections.any { it.section == summary.category }) return FeedReason.InSection(summary.category)
+    return null
+}
+
+data class FollowingFeedUiState(
+    /** Null until the server has said who and what is followed. */
+    val following: Following? = null,
+    /** This person's own topics still waiting for a moderator: seen only by them. */
+    val waiting: List<Topic> = emptyList(),
+    val feed: FeedPane = FeedPane(),
+    /** Sections followed from the empty tab's mini tiles in this sitting: their + is a check. */
+    val quickFollowed: Set<ListCategory> = emptySet(),
+    val nowMillis: Long = 0L,
+) {
+    /** Nothing followed at all: the tab offers the sections instead of a feed. */
+    val followsNothing: Boolean
+        get() = following?.let { it.authors.isEmpty() && it.topics.isEmpty() && it.sections.isEmpty() && waiting.isEmpty() }
+            ?: feed.followingNobody
+}
+
+@HiltViewModel
+class FollowingFeedViewModel @Inject constructor(
+    private val community: CommunityRepository,
+    cache: CommunityFeedCache,
+    network: CommunityNetwork,
+    preferences: AppPreferences,
+    private val clock: CommunityClock,
+) : ViewModel() {
+
+    private val notes = Channel<CommunityNotice>(Channel.BUFFERED)
+    private val menu = ListMenuActions(preferences, community, viewModelScope) { notes.send(CommunityNotice.ActionFailed) }
+
+    internal val feed = FeedLoader(FeedKeys.FOLLOWING, viewModelScope, cache, clock, menu::isVisible) { after ->
+        community.feed(sort = FeedSort.Recent, following = true, after = after)
+    }
+
+    private val following = MutableStateFlow<Following?>(null)
+    private val waiting = MutableStateFlow<List<Topic>>(emptyList())
+    private val quickFollowed = MutableStateFlow<Set<ListCategory>>(emptySet())
+
+    val state: StateFlow<FollowingFeedUiState> = combine(following, waiting, feed.pane, quickFollowed) { f, w, pane, quick ->
+        FollowingFeedUiState(following = f, waiting = w, feed = pane, quickFollowed = quick, nowMillis = clock.nowMillis())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, FollowingFeedUiState())
+
+    val notices: Flow<CommunityNotice> = merge(notes.receiveAsFlow(), feed.notices.map { it.toCommunityNotice() })
+
+    init {
+        viewModelScope.launch {
+            network.available.collect {
+                feed.onNetworkBack()
+                if (following.value == null) loadFollowing()
+            }
+        }
+    }
+
+    fun open() {
+        loadFollowing()
+        feed.open()
+    }
+
+    private fun loadFollowing() {
+        viewModelScope.launch {
+            community.following()
+                .onSuccess { following.value = it }
+                .onFailure { Timber.i(it, "Reading who and what is followed failed") }
+        }
+        viewModelScope.launch {
+            community.myTopics()
+                .onSuccess { mine -> waiting.value = mine.filter { it.status == TopicStatus.Pending } }
+                .onFailure { Timber.i(it, "Reading this person's topics failed") }
+        }
+    }
+
+    /** One tap on a mini tile: the + turns into a check at once, and the tab becomes the feed it now has. */
+    fun quickFollow(section: ListCategory) {
+        if (section in quickFollowed.value) return
+        quickFollowed.update { it + section }
+        viewModelScope.launch {
+            community.followSection(section).fold(
+                onSuccess = {
+                    following.update { now ->
+                        val base = now ?: Following(emptyList(), emptyList())
+                        base.copy(sections = base.sections + FollowedSection(section))
+                    }
+                    feed.reload()
+                },
+                onFailure = {
+                    quickFollowed.update { it - section }
+                    notes.send(CommunityNotice.FollowFailed)
+                },
+            )
+        }
+    }
+
+    fun hideList(summary: PublishedListSummary) = menu.hideList(feed, summary)
+
+    fun hideAuthor(authorUid: String, name: String) = menu.hideAuthor(listOf(feed), authorUid, name)
+
+    fun report(summary: PublishedListSummary, reason: ReportReason, note: String?) = menu.report(feed, summary, reason, note)
+
+    fun refreshHidden() = feed.refilter()
+}
