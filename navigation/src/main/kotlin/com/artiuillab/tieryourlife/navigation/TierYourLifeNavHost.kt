@@ -13,10 +13,12 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -71,6 +73,9 @@ fun TierYourLifeNavHost(
     languageTag: String?,
     onLanguageTagChange: (String?) -> Unit,
     navController: NavHostController = rememberNavController(),
+    handOff: HandOff? = null,
+    onHandOffDone: () -> Unit = {},
+    onBoardShown: (Long?) -> Unit = {},
 ) {
     // The rail replaces the tabs once there is room beside the content.
     // Outside the NavHost so it stays put while destinations change under it.
@@ -92,6 +97,34 @@ fun TierYourLifeNavHost(
             languageTag = languageTag,
             onLanguageTagChange = onLanguageTagChange,
         )
+    }
+    HandOffDelivery(navController, handOff, onHandOffDone)
+    BoardReporter(navController, onBoardShown)
+}
+
+/** What the cover handed over, opened once the phone is open: after the graph is set, so there is somewhere to go. */
+@Composable
+private fun HandOffDelivery(navController: NavHostController, handOff: HandOff?, onDone: () -> Unit) {
+    LaunchedEffect(handOff) {
+        val subject = handOff?.subject ?: return@LaunchedEffect
+        when (val destination = HandOffRules.destinationOf(subject)) {
+            is HandOffDestination.Board -> navController.navigateToTierDetail(destination.listId, destination.focusTierId)
+            is HandOffDestination.CommunityList -> navController.navigateToCommunityList(
+                CommunityRoute.CommunityList(publishedId = destination.publishedId, title = destination.title.ifEmpty { null }),
+            )
+            HandOffDestination.Home -> Unit
+        }
+        onDone()
+    }
+}
+
+/** Tells the cover which board is open, so a phone shut on one opens the cover on that list. */
+@Composable
+private fun BoardReporter(navController: NavHostController, onBoardShown: (Long?) -> Unit) {
+    val entry by navController.currentBackStackEntryAsState()
+    LaunchedEffect(entry) {
+        val board = entry?.takeIf { it.destination.hasRoute<Route.TierDetail>() }?.toRoute<Route.TierDetail>()
+        onBoardShown(board?.tierListId)
     }
 }
 

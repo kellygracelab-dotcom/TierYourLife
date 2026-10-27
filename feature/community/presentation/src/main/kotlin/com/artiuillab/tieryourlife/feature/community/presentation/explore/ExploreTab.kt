@@ -100,7 +100,7 @@ internal fun TilesBlock(
         }
 
         HomeLayout.Medium, HomeLayout.Cover -> {
-            val height = if (layout == HomeLayout.Cover) 84.dp else 120.dp
+            val height = if (layout == HomeLayout.Cover) 70.dp else 120.dp
             val gap = if (layout == HomeLayout.Cover) 6.dp else 10.dp
             Column(modifier.padding(top = if (layout == HomeLayout.Cover) 0.dp else 16.dp), verticalArrangement = Arrangement.spacedBy(gap)) {
                 all.chunked(3).forEach { row ->

@@ -143,8 +143,6 @@
     <string name="conflict_tag_unknown">von einem anderen Telefon</string>
     <string name="conflict_edited_there">Geändert auf %1$s %2$s</string>
     <string name="conflict_edited_here">Hier geändert %1$s</string>
-    <string name="cover_unfold_title">Zum Sortieren aufklappen</string>
-    <string name="cover_unfold_body">Karten verschieben geht nur auf dem inneren Display.</string>
 
     <string name="cover_picker_title">Cover</string>
     <string name="cover_picker_done">Fertig</string>
@@ -185,4 +183,25 @@
     <string name="tier_detail_ranking_of">Deine Reihung einer Liste von %1$s</string>
     <string name="tier_detail_open_original">Öffnen</string>
     <string name="search_names_only">nur Namen</string>
+    <string name="cover_saved">gespeichert</string>
+    <string name="cover_empty_title">Noch keine Listen</string>
+    <string name="cover_empty_body">Leg die erste auf dem Hauptbildschirm an.</string>
+    <string name="cover_open_main">Auf dem Hauptbildschirm öffnen</string>
+    <string name="cover_community">Community</string>
+    <string name="cover_rank_on_main">Auf dem Hauptbildschirm sortieren</string>
+    <string name="cover_next_list">Nächste Liste</string>
+    <string name="cover_tier_empty">leer</string>
+    <string name="cover_card_position">%1$s · %2$d von %3$d</string>
+    <string name="cover_card_position_plain">%1$d von %2$d</string>
+    <string name="cover_tap_show_all">Tippen, um alle zu zeigen</string>
+    <string name="cover_tap_fold">Tippen zum Einklappen</string>
+    <string name="cover_hand_off_title">Klapp das Telefon auf, um weiterzumachen</string>
+    <string name="cover_hand_off_list">„%1$s“ öffnet sich auf dem Hauptbildschirm.</string>
+    <string name="cover_hand_off_card">„%1$s“ öffnet sich auf seinem Board.</string>
+    <string name="cover_hand_off_community">„%1$s“ aus der Community öffnet sich auf dem Hauptbildschirm.</string>
+    <string name="cover_hand_off_app">Die App öffnet sich auf dem Hauptbildschirm.</string>
+    <plurals name="cover_cards_count">
+        <item quantity="one">%1$d Karte</item>
+        <item quantity="other">%1$d Karten</item>
+    </plurals>
 </resources>

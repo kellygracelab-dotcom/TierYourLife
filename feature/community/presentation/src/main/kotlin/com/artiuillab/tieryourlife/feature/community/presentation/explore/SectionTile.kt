@@ -52,12 +52,13 @@ internal data class TileStyle(
     val label: TextStyle = TileNameStyle,
     val icon: Dp = 18.dp,
     val start: Dp = 12.dp,
+    val end: Dp = 10.dp,
     val bottom: Dp = 10.dp,
     val showsNew: Boolean = true,
     val corner: Dp = 16.dp,
 ) {
     companion object {
-        val Cover = TileStyle(label = TextStyle(fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium), icon = 16.dp, start = 9.dp, bottom = 9.dp, showsNew = false, corner = 14.dp)
+        val Cover = TileStyle(label = TextStyle(fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium), icon = 15.dp, start = 9.dp, end = 6.dp, bottom = 8.dp, showsNew = false, corner = 12.dp)
         val Mini = TileStyle(label = TextStyle(fontSize = 13.sp, lineHeight = 18.sp, fontWeight = FontWeight.Medium), icon = 16.dp, start = 10.dp, bottom = 10.dp, showsNew = false, corner = 14.dp)
     }
 }
@@ -122,7 +123,7 @@ internal fun SectionTile(
             Column(
                 Modifier
                     .align(if (centredLabel) Alignment.CenterStart else Alignment.BottomStart)
-                    .padding(start = style.start, end = 10.dp, bottom = if (centredLabel) 0.dp else style.bottom),
+                    .padding(start = style.start, end = style.end, bottom = if (centredLabel) 0.dp else style.bottom),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(7.dp)) {

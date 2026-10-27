@@ -82,9 +82,11 @@ internal object SectionTestTags {
     const val SORT = "section_sort"
     const val WAITING_SHEET = "section_waiting_sheet"
     const val COVER = "section_cover"
-    const val OPEN_MAIN = "section_open_main"
+    const val COVER_RETRY = "section_cover_retry"
 
     fun chip(id: String) = "section_chip_$id"
+
+    fun coverRow(id: String) = "section_cover_row_$id"
 }
 
 internal val SectionTitleStyle = TextStyle(fontSize = 28.sp, lineHeight = 36.sp)

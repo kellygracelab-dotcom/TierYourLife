@@ -163,8 +163,6 @@
     <string name="conflict_tag_unknown">с другого телефона</string>
     <string name="conflict_edited_there">Правлена на %1$s %2$s</string>
     <string name="conflict_edited_here">Правлена здесь %1$s</string>
-    <string name="cover_unfold_title">Разложите, чтобы расставить</string>
-    <string name="cover_unfold_body">Перетаскивать карточки можно только на внутреннем экране.</string>
 
     <string name="cover_picker_title">Обложка</string>
     <string name="cover_picker_done">Готово</string>
@@ -211,4 +209,27 @@
     <string name="tier_detail_ranking_of">Ваше ранжирование списка от %1$s</string>
     <string name="tier_detail_open_original">Открыть</string>
     <string name="search_names_only">только названия</string>
+    <string name="cover_saved">сохранено</string>
+    <string name="cover_empty_title">Списков пока нет</string>
+    <string name="cover_empty_body">Создайте первый на основном экране.</string>
+    <string name="cover_open_main">Открыть на основном экране</string>
+    <string name="cover_community">Сообщество</string>
+    <string name="cover_rank_on_main">Расставить на основном экране</string>
+    <string name="cover_next_list">Следующий список</string>
+    <string name="cover_tier_empty">пусто</string>
+    <string name="cover_card_position">%1$s · %2$d из %3$d</string>
+    <string name="cover_card_position_plain">%1$d из %2$d</string>
+    <string name="cover_tap_show_all">Нажмите, чтобы показать все</string>
+    <string name="cover_tap_fold">Нажмите, чтобы свернуть</string>
+    <string name="cover_hand_off_title">Раскройте телефон, чтобы продолжить</string>
+    <string name="cover_hand_off_list">«%1$s» откроется на основном экране.</string>
+    <string name="cover_hand_off_card">«%1$s» откроется на своей доске.</string>
+    <string name="cover_hand_off_community">«%1$s» из Сообщества откроется на основном экране.</string>
+    <string name="cover_hand_off_app">Приложение откроется на основном экране.</string>
+    <plurals name="cover_cards_count">
+        <item quantity="one">%1$d карточка</item>
+        <item quantity="few">%1$d карточки</item>
+        <item quantity="many">%1$d карточек</item>
+        <item quantity="other">%1$d карточки</item>
+    </plurals>
 </resources>

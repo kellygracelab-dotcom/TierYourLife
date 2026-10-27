@@ -237,8 +237,6 @@
     <string name="manage_people">Люди · %1$d</string>
     <string name="manage_topic_supporting">У розділі «%1$s» · %2$s</string>
     <string name="manage_waiting_supporting">У розділі «%1$s» · чекає на модератора</string>
-    <string name="cover_open_main">Відкрити на основному екрані</string>
-    <string name="cover_open_phone">Розкрийте телефон, щоб продовжити</string>
     <plurals name="explore_new_this_week">
         <item quantity="one">%1$s новий за тиждень</item>
         <item quantity="few">%1$s нові за тиждень</item>

@@ -223,8 +223,6 @@
     <string name="manage_people">Personen · %1$d</string>
     <string name="manage_topic_supporting">In %1$s · %2$s</string>
     <string name="manage_waiting_supporting">In %1$s · wartet auf Moderation</string>
-    <string name="cover_open_main">Auf dem Hauptbildschirm öffnen</string>
-    <string name="cover_open_phone">Klapp das Telefon auf, um weiterzumachen</string>
     <plurals name="explore_new_this_week">
         <item quantity="one">%1$s neu diese Woche</item>
         <item quantity="other">%1$s neu diese Woche</item>

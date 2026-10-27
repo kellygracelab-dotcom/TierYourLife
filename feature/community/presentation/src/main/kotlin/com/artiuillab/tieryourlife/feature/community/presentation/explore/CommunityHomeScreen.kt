@@ -201,7 +201,7 @@ fun CommunityHomeContent(
         BoxWithConstraints(Modifier.fillMaxSize()) {
             val layout = homeLayoutFor(currentWindowShape, maxHeight)
             if (layout == HomeLayout.Cover) {
-                CoverHome(explore, onOpenSection = { destinations.onOpenSection(it, null) })
+                CoverCommunityGrid(onBack = null, onOpenSection = { destinations.onOpenSection(it, null) })
             } else {
                 HomeBody(explore, following, layout, exploreFeed, followingFeed, exploreCalls, destinations, tabs, startOnFollowing)
             }
@@ -519,33 +519,6 @@ private fun SearchResultsGrid(results: SearchResults, layout: HomeLayout, cards:
                 )
             }
         }
-    }
-}
-
-/** The Flip's cover (§8.1): the nine sections and nothing else; a list waits for the phone to open. */
-@Composable
-private fun CoverHome(explore: ExploreUiState, onOpenSection: (ListCategory) -> Unit) {
-    Column(
-        Modifier
-            .fillMaxSize()
-            .testTag(ExploreTestTags.COVER_HOME),
-    ) {
-        Text(
-            stringResource(R.string.explore_title_community),
-            modifier = Modifier
-                .height(36.dp)
-                .padding(horizontal = 16.dp)
-                .padding(top = 8.dp),
-            style = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Medium),
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        TilesBlock(
-            layout = HomeLayout.Cover,
-            sections = explore.sections,
-            countsKnown = false,
-            actions = TileActions(onOpen = onOpenSection),
-            modifier = Modifier.padding(horizontal = 12.dp),
-        )
     }
 }
 

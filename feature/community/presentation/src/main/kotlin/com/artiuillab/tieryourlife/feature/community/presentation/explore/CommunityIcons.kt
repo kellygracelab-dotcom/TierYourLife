@@ -82,23 +82,6 @@ internal fun GroupIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { s ->
 }
 
 @Composable
-internal fun OpenInFullIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { s ->
-    drawLine(color, Offset(5f * s, 19f * s), Offset(19f * s, 5f * s), STROKE * s, StrokeCap.Round)
-    val top = Path().apply {
-        moveTo(13f * s, 5f * s)
-        lineTo(19f * s, 5f * s)
-        lineTo(19f * s, 11f * s)
-    }
-    val bottom = Path().apply {
-        moveTo(11f * s, 19f * s)
-        lineTo(5f * s, 19f * s)
-        lineTo(5f * s, 13f * s)
-    }
-    drawPath(top, color, style = line(s))
-    drawPath(bottom, color, style = line(s))
-}
-
-@Composable
 internal fun RemoveIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { s ->
     drawLine(color, Offset(6f * s, 12f * s), Offset(18f * s, 12f * s), STROKE * s, StrokeCap.Round)
 }

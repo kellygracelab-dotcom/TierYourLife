@@ -183,8 +183,6 @@
     <string name="conflict_tag_unknown">من هاتف آخر</string>
     <string name="conflict_edited_there">حُرّرت على %1$s %2$s</string>
     <string name="conflict_edited_here">حُرّرت هنا %1$s</string>
-    <string name="cover_unfold_title">افتح الهاتف للترتيب</string>
-    <string name="cover_unfold_body">تحريك البطاقات يحتاج إلى الشاشة الداخلية.</string>
 
     <string name="cover_picker_title">الغلاف</string>
     <string name="cover_picker_done">تم</string>
@@ -237,4 +235,29 @@
     <string name="tier_detail_ranking_of">ترتيبك لقائمة من %1$s</string>
     <string name="tier_detail_open_original">فتح</string>
     <string name="search_names_only">الأسماء فقط</string>
+    <string name="cover_saved">محفوظة</string>
+    <string name="cover_empty_title">لا قوائم بعد</string>
+    <string name="cover_empty_body">أنشئ أول قائمة على الشاشة الرئيسية.</string>
+    <string name="cover_open_main">فتح على الشاشة الرئيسية</string>
+    <string name="cover_community">المجتمع</string>
+    <string name="cover_rank_on_main">رتّب على الشاشة الرئيسية</string>
+    <string name="cover_next_list">القائمة التالية</string>
+    <string name="cover_tier_empty">فارغ</string>
+    <string name="cover_card_position">%1$s · %2$d من %3$d</string>
+    <string name="cover_card_position_plain">%1$d من %2$d</string>
+    <string name="cover_tap_show_all">انقر لعرض الكل</string>
+    <string name="cover_tap_fold">انقر للطي</string>
+    <string name="cover_hand_off_title">افتح الهاتف للمتابعة</string>
+    <string name="cover_hand_off_list">ستُفتح «%1$s» على الشاشة الرئيسية.</string>
+    <string name="cover_hand_off_card">ستُفتح «%1$s» على لوحتها.</string>
+    <string name="cover_hand_off_community">ستُفتح «%1$s» من المجتمع على الشاشة الرئيسية.</string>
+    <string name="cover_hand_off_app">سيُفتح التطبيق على الشاشة الرئيسية.</string>
+    <plurals name="cover_cards_count">
+        <item quantity="zero">لا بطاقات</item>
+        <item quantity="one">بطاقة واحدة</item>
+        <item quantity="two">بطاقتان</item>
+        <item quantity="few">%1$d بطاقات</item>
+        <item quantity="many">%1$d بطاقة</item>
+        <item quantity="other">%1$d بطاقة</item>
+    </plurals>
 </resources>

@@ -133,8 +133,6 @@
     <string name="conflict_tag_unknown">別の端末から</string>
     <string name="conflict_edited_there">%1$sで編集 %2$s</string>
     <string name="conflict_edited_here">ここで編集 %1$s</string>
-    <string name="cover_unfold_title">開いて並べ替え</string>
-    <string name="cover_unfold_body">カードの移動には内側の画面が必要です。</string>
 
     <string name="cover_picker_title">カバー</string>
     <string name="cover_picker_done">完了</string>
@@ -172,4 +170,24 @@
     <string name="tier_detail_ranking_of">%1$sのリストのあなたのランキング</string>
     <string name="tier_detail_open_original">開く</string>
     <string name="search_names_only">名前のみ</string>
+    <string name="cover_saved">保存済み</string>
+    <string name="cover_empty_title">リストはまだありません</string>
+    <string name="cover_empty_body">メイン画面で最初のリストを作りましょう。</string>
+    <string name="cover_open_main">メイン画面で開く</string>
+    <string name="cover_community">コミュニティ</string>
+    <string name="cover_rank_on_main">メイン画面で並べ替え</string>
+    <string name="cover_next_list">次のリスト</string>
+    <string name="cover_tier_empty">空</string>
+    <string name="cover_card_position">%1$s · %3$d中%2$d番目</string>
+    <string name="cover_card_position_plain">%2$d中%1$d番目</string>
+    <string name="cover_tap_show_all">タップしてすべて表示</string>
+    <string name="cover_tap_fold">タップして折りたたむ</string>
+    <string name="cover_hand_off_title">続けるには端末を開いてください</string>
+    <string name="cover_hand_off_list">「%1$s」がメイン画面で開きます。</string>
+    <string name="cover_hand_off_card">「%1$s」がボードで開きます。</string>
+    <string name="cover_hand_off_community">コミュニティの「%1$s」がメイン画面で開きます。</string>
+    <string name="cover_hand_off_app">アプリがメイン画面で開きます。</string>
+    <plurals name="cover_cards_count">
+        <item quantity="other">%1$d枚のカード</item>
+    </plurals>
 </resources>
