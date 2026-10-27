@@ -45,11 +45,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.artiuillab.tieryourlife.core.theme.ui.CardLabel
 import com.artiuillab.tieryourlife.core.theme.ui.CoverHeader
 import com.artiuillab.tieryourlife.core.theme.ui.CoverIconButton
 import com.artiuillab.tieryourlife.core.theme.ui.CoverOpenIcon
@@ -238,14 +239,13 @@ internal fun CoverCard(
         if (item.imageUrl != null) {
             AsyncImage(model = item.imageUrl, contentDescription = item.title, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         } else {
-            Text(
-                item.title,
-                modifier = Modifier.padding(3.dp),
+            CardLabel(
+                text = item.title,
                 style = textStyle,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
                 maxLines = 4,
-                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(2.dp),
+                smallest = 5.5.sp,
             )
         }
     }
