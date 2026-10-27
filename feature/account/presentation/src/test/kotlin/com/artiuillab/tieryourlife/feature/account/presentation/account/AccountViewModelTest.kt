@@ -267,16 +267,17 @@ class AccountViewModelTest {
     @Test
     fun aChosenPhoto_showsAtOnce_whileItIsStillGoingUp() = runBlocking {
         val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn)
-        val photos = FakeFacePhotos(holdUploads = true)
+        val photos = FakeFacePhotos(holdUploads = true, holdPrepares = true)
         val viewModel = viewModel(repository, facePhotos = photos)
 
         viewModel.face.position("content://photos/1", fromGallery = true)
         val crop = FaceCrop(0.1f, 0.2f, 0.5f, 0.5f)
         viewModel.face.confirmPosition(crop)
         // Done shows the chosen square of the photo itself, before anything is cut.
-        val chosen = viewModel.state.value
+        val chosen = viewModel.state.firstWithin { it.pendingFace != null }
         assertEquals("content://photos/1", chosen.shownFace)
         assertEquals(crop, chosen.shownFaceCrop)
+        photos.releasePrepares()
         val onItsWay = viewModel.state.firstWithin { it.shownFace == FakeFacePhotos.PREPARED_URI }
 
         assertEquals(null, onItsWay.shownFaceCrop)
