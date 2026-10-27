@@ -13,18 +13,25 @@ class FakeFacePhotos(
     private val answer: Result<String> = Result.success(PICTURE_ID),
     private val prepareAnswer: Result<String> = Result.success(PREPARED_URI),
     holdUploads: Boolean = false,
+    holdPrepares: Boolean = false,
 ) : FacePhotos {
 
     val prepared = mutableListOf<Pair<String, FaceCrop?>>()
     val uploaded = mutableListOf<String>()
     private val gate = CompletableDeferred<Unit>().apply { if (!holdUploads) complete(Unit) }
+    private val prepareGate = CompletableDeferred<Unit>().apply { if (!holdPrepares) complete(Unit) }
 
     fun releaseUploads() {
         gate.complete(Unit)
     }
 
+    fun releasePrepares() {
+        prepareGate.complete(Unit)
+    }
+
     override suspend fun prepare(sourceUri: String, crop: FaceCrop?): Result<String> {
         prepared += sourceUri to crop
+        prepareGate.await()
         return prepareAnswer
     }
 
