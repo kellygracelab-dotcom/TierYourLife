@@ -184,6 +184,7 @@ internal fun AccountScreenContent(
                                 onDeleteAccount = onDeleteAccount,
                                 deleting = state.deleting,
                                 makingFace = state.makingFace,
+                                photoCrop = state.shownFaceCrop,
                             )
                             }
                         }

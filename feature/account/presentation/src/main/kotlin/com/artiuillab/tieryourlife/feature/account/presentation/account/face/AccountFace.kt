@@ -73,9 +73,13 @@ internal class AccountFace(
         }
     }
 
-    /** Cut on the phone, shown as soon as it is cut, then up to the person's own folder and through the server's look. */
+    /**
+     * Shown the moment Done is pressed, as the chosen square of the photo
+     * itself; then cut on the phone, up to the person's own folder and
+     * through the server's look, all behind it.
+     */
     private fun cutAndSend(sourceUri: String, crop: FaceCrop?) {
-        state.update { it.copy(makingFace = true) }
+        state.update { it.copy(makingFace = true, pendingFace = PendingFace(shown = sourceUri, crop = crop)) }
         scope.launch {
             val prepared = facePhotos.prepare(sourceUri, crop)
                 .onFailure { Timber.w(it, "The chosen picture could not be cut") }
