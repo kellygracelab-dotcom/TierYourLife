@@ -7,8 +7,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
@@ -26,6 +29,8 @@ fun TierDetailScreen(
     onChooseTopic: () -> Unit = {},
     topicChanged: Boolean = false,
     onTopicChangeConsumed: () -> Unit = {},
+    /** The published list this board is out as a ranking of, from the credit under the title. */
+    onOpenPublishedList: (String) -> Unit = {},
     addedItemIds: List<Long> = emptyList(),
     onAddedItemConsumed: () -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
@@ -50,12 +55,20 @@ fun TierDetailScreen(
         }
     }
 
+    val credit: (@Composable () -> Unit)? = when (val loaded = state) {
+        is TierDetailUiState.Success -> loaded.list.rankingOf?.let { rankingOf ->
+            { RankingCredit(authorName = loaded.list.authorName.orEmpty(), onOpen = { onOpenPublishedList(rankingOf) }) }
+        }
+        else -> null
+    }
+
     TierDetailScreenContent(
         state = state,
         allLists = screen.allLists,
         onOpenList = onOpenList,
         addedItemIds = addedItemIds,
         userMessages = viewModel.userMessages,
+        belowTopBar = credit,
         actions = TierDetailActions(
             onBack = onBack,
             signedIn = screen.signedIn,
@@ -91,8 +104,14 @@ fun TierDetailScreen(
         ),
     )
 
+    // A board in columns (a short window, or one wide enough for the pool beside it) adds from the side, in view of the pool.
+    val windowSize = LocalWindowInfo.current.containerSize
+    val columnLayout = with(LocalDensity.current) {
+        WindowShape.isShort(windowSize.height.toDp()) || windowSize.width.toDp() >= WindowShape.WideFrom
+    }
     if (addSheetVisible) {
         AddItemsSheet(
+            side = columnLayout,
             listTitle = (state as? TierDetailUiState.Success)?.list?.title.orEmpty(),
             onDismiss = { addSheetVisible = false },
             onItemsConfirmed = { items ->

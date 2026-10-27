@@ -6,6 +6,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.os.LocaleListCompat
@@ -39,8 +40,11 @@ class MainActivity : AppCompatActivity() {
             val viewModel: AppViewModel = viewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
 
+            val boardLayoutMemory = remember { PreferencesBoardLayoutMemory(appPreferences) }
+
             AppRoot(
                 state = state,
+                boardLayoutMemory = boardLayoutMemory,
                 onThemeChoiceChange = viewModel::setThemeChoice,
                 onLanguageTagChange = { tag ->
                     viewModel.setLanguageTag(tag)

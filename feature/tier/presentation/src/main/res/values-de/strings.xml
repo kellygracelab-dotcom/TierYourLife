@@ -8,7 +8,7 @@
         <item quantity="one">%1$d Liste</item>
         <item quantity="other">%1$d Listen</item>
     </plurals>
-    <string name="search_no_results_title">Keine Liste passt zu „%1$s“</string>
+    <string name="search_no_results_title">Keine Listen namens „%1$s“</string>
     <string name="search_no_results_body">Versuche ein kürzeres Wort oder überprüfe die Schreibweise.</string>
 
     <plurals name="selection_count">
@@ -182,4 +182,7 @@
     <string name="cover_picker_no_cards">Noch keine Karte dieser Liste hat ein Bild.</string>
     <string name="cover_picker_gallery">Aus der Galerie wählen</string>
     <string name="cover_picker_gallery_note">Ein Galeriebild ist das ganze Cover und reist mit der Liste, wenn du sie veröffentlichst.</string>
+    <string name="tier_detail_ranking_of">Deine Reihung einer Liste von %1$s</string>
+    <string name="tier_detail_open_original">Öffnen</string>
+    <string name="search_names_only">nur Namen</string>
 </resources>

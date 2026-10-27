@@ -7,6 +7,8 @@ internal object ModerationTestTags {
     const val BACK = "moderation_back"
     const val MESSAGE = "moderation_message"
     const val COVERS_TOGGLE = "moderation_covers_toggle"
+    const val MORE = "moderation_more"
+    const val REFRESH = "moderation_refresh"
     const val TAKE_DOWN_SHEET = "moderation_take_down_sheet"
     const val TAKE_DOWN_CONFIRM = "moderation_take_down_confirm"
     const val BAN_NONE = "moderation_ban_none"

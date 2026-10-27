@@ -26,6 +26,10 @@ data class TierList(
     val topicName: String? = null,
     /** A topic the author named that the server has not seen yet; sent with the next publish and replaced by what comes back. */
     val newTopicName: String? = null,
+    /** The published list this board was taken from: publishing the same cards answers that list rather than making a second. */
+    val takenFrom: String? = null,
+    /** Set while this board is out as this person's ranking of [takenFrom]; [publishedId] stays null then. */
+    val rankingOf: String? = null,
     /** On the copy kept after the same board changed on two phones: the other phone's name. */
     val arrivedFrom: String? = null,
     /** When anything about this board last changed. */
@@ -34,4 +38,7 @@ data class TierList(
     val favouritedAt: Long? = null,
     /** True while this board and one beside it are two versions of the same thing. */
     val hasTwin: Boolean = false,
-)
+) {
+    /** Out in the community one way or the other: as a list of its own, or as a ranking of somebody's. */
+    val isPublic: Boolean get() = publishedId != null || rankingOf != null
+}

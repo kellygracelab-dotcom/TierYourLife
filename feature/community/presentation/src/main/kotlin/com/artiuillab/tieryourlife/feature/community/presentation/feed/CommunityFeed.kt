@@ -1,27 +1,9 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.feed
 
-import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
-import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSource
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
-import com.artiuillab.tieryourlife.feature.community.domain.model.opensOn
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-
-data class CommunityFeedUiState(
-    val feed: CommunityFeed = CommunityFeed.Loading,
-    val category: ListCategory? = null,
-    /** Whose lists, and in what order. */
-    val source: FeedSource = FeedSource.Everyone,
-    val sort: FeedSort = FeedSource.Everyone.opensOn,
-    /** Non-null while the search bar is up; the feed is then the server's answer to it. */
-    val query: String? = null,
-    /** What this person proposed or follows, one tap from the home screen. Empty for a guest. */
-    val yourTopics: List<Topic> = emptyList(),
-    /** Which part of a following feed is on screen. */
-    val followingFilter: FollowingFilter = FollowingFilter.All,
-)
 
 sealed interface CommunityFeed {
     data object Loading : CommunityFeed

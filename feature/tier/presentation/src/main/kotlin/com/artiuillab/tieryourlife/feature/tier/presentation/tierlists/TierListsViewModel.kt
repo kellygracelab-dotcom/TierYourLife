@@ -267,12 +267,19 @@ class TierListsViewModel @Inject constructor(
 
     /** Answers with the ids that could not be taken out of the community. */
     private suspend fun takeDownPublished(ids: List<Long>): Set<Long> {
-        val published = lastLoadedLists.filter { it.id in ids && it.publishedId != null }
+        val published = lastLoadedLists.filter { it.id in ids && it.isPublic }
         return published.mapNotNull { list ->
-            val publishedId = list.publishedId ?: return@mapNotNull null
-            community.unpublish(publishedId).fold(
+            val rankingOf = list.rankingOf
+            val publishedId = list.publishedId
+            val takenDown = when {
+                rankingOf != null -> community.withdrawRanking(rankingOf)
+                publishedId != null -> community.unpublish(publishedId)
+                else -> return@mapNotNull null
+            }
+            takenDown.fold(
                 onSuccess = {
                     repository.setPublished(list.id, null, null)
+                    repository.setRankingOf(list.id, null)
                     null
                 },
                 onFailure = { error ->

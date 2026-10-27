@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
 import com.artiuillab.tieryourlife.feature.account.presentation.R
 import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountTestTags
 
@@ -52,6 +53,7 @@ internal fun SignedInPanel(
     onDeleteAccount: () -> Unit = {},
     deleting: Boolean = false,
     makingFace: Boolean = false,
+    photoCrop: FaceCrop? = null,
 ) {
     val name = displayName?.takeIf { it.isNotBlank() } ?: stringResource(R.string.account_signed_in)
 
@@ -62,7 +64,7 @@ internal fun SignedInPanel(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        ProfileAvatar(photoUrl = photoUrl, name = displayName, onEdit = onEditFace, busy = makingFace)
+        ProfileAvatar(photoUrl = photoUrl, name = displayName, onEdit = onEditFace, busy = makingFace, crop = photoCrop)
         Spacer(Modifier.height(16.dp))
 
         Row(

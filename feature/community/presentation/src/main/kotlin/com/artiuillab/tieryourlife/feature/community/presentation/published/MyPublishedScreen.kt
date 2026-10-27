@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -40,8 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
+import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
+import com.artiuillab.tieryourlife.core.theme.layout.topBarTitleStyle
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
@@ -87,49 +89,55 @@ fun MyPublishedScreenContent(
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         ActionFailedSnackbar(userMessages)
         Column(Modifier.fillMaxSize().testTag(MyPublishedTestTags.SCREEN)) {
-            TopBar(onBack)
+            BarredScreen(
+                bar = {
+                    TopBar(onBack)
+                },
+            ) {
+                Column(Modifier.fillMaxSize()) {
+                    when (state) {
+                        MyPublishedUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
 
-            when (state) {
-                MyPublishedUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-
-                MyPublishedUiState.Failed -> Message(
-                    title = stringResource(R.string.my_published_failed),
-                    body = stringResource(R.string.home_community_failed_body),
-                    action = stringResource(ThemeR.string.action_try_again),
-                    onAction = onRetry,
-                )
-
-                is MyPublishedUiState.Ready -> if (state.lists.isEmpty()) {
-                    Message(
-                        title = stringResource(R.string.my_published_empty_title),
-                        body = stringResource(R.string.my_published_empty_body),
-                        action = null,
-                        onAction = {},
-                    )
-                } else {
-                    CenteredContent(ContentWidth.Reading) {
-                        Text(
-                            text = stringResource(R.string.my_published_subtitle),
-                            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 8.dp),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        MyPublishedUiState.Failed -> Message(
+                            title = stringResource(R.string.my_published_failed),
+                            body = stringResource(R.string.home_community_failed_body),
+                            action = stringResource(ThemeR.string.action_try_again),
+                            onAction = onRetry,
                         )
-                        LazyColumn(
-                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 32.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                        ) {
-                            items(state.lists, key = { it.id }) { summary ->
-                                PublishedRow(
-                                    summary = summary,
-                                    busy = state.removing != null || state.updating != null,
-                                    canUpdate = summary.id in state.canUpdate,
-                                    behind = summary.id in state.behind,
-                                    onOpen = { onOpen(CommunityRoute.CommunityList.of(summary)) },
-                                    onUpdate = { onUpdate(summary.id) },
-                                    onTakeDown = { onTakeDown(summary.id) },
+
+                        is MyPublishedUiState.Ready -> if (state.lists.isEmpty()) {
+                            Message(
+                                title = stringResource(R.string.my_published_empty_title),
+                                body = stringResource(R.string.my_published_empty_body),
+                                action = null,
+                                onAction = {},
+                            )
+                        } else {
+                            CenteredContent(ContentWidth.Reading) {
+                                Text(
+                                    text = stringResource(R.string.my_published_subtitle),
+                                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 8.dp),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
+                                LazyColumn(
+                                    contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = 32.dp),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                                ) {
+                                    items(state.lists, key = { it.id }) { summary ->
+                                        PublishedRow(
+                                            summary = summary,
+                                            busy = state.removing != null || state.updating != null,
+                                            canUpdate = summary.id in state.canUpdate,
+                                            behind = summary.id in state.behind,
+                                            onOpen = { onOpen(CommunityRoute.CommunityList.of(summary)) },
+                                            onUpdate = { onUpdate(summary.id) },
+                                            onTakeDown = { onTakeDown(summary.id) },
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -145,8 +153,7 @@ private fun TopBar(onBack: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp)
+            .height(topBarHeight())
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -160,7 +167,7 @@ private fun TopBar(onBack: () -> Unit) {
         Text(
             text = stringResource(R.string.my_published_title),
             modifier = Modifier.padding(horizontal = 4.dp),
-            style = MaterialTheme.typography.titleLarge,
+            style = topBarTitleStyle(),
             color = MaterialTheme.colorScheme.onSurface,
         )
     }

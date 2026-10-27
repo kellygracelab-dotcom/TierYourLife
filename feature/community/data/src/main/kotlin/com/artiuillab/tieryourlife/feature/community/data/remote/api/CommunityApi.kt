@@ -12,7 +12,10 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishList
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedFeedDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIdDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.RankingsPageDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ReportRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionFollowDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionsDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SuggestedAuthorsDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TakeDownRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicDto
@@ -55,6 +58,15 @@ interface CommunityApi {
 
     @GET("lists/following")
     suspend fun following(): FollowedAuthorsDto
+
+    @GET("lists/sections")
+    suspend fun sections(): SectionsDto
+
+    @POST("lists/sections/{id}/follow")
+    suspend fun followSection(@Path("id") id: String): SectionFollowDto
+
+    @DELETE("lists/sections/{id}/follow")
+    suspend fun unfollowSection(@Path("id") id: String): SectionFollowDto
 
     @GET("lists/topics")
     suspend fun topics(
@@ -104,6 +116,12 @@ interface CommunityApi {
 
     @POST("lists/{id}/taken")
     suspend fun noteTaken(@Path("id") id: String)
+
+    @GET("lists/{id}/rankings")
+    suspend fun rankings(@Path("id") id: String, @Query("after") after: String? = null): RankingsPageDto
+
+    @DELETE("lists/{id}/rankings/mine")
+    suspend fun deleteMyRanking(@Path("id") id: String)
 
     @GET("lists/mine")
     suspend fun myPublished(): PublishedFeedDto

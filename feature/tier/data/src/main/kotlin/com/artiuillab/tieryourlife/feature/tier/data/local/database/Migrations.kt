@@ -3,6 +3,14 @@ package com.artiuillab.tieryourlife.feature.tier.data.local.database
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
+/** Where a copy came from, and the list it is out as a ranking of. */
+val MIGRATION_12_13 = object : Migration(12, 13) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN takenFrom TEXT")
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN rankingOf TEXT")
+    }
+}
+
 /** The topic a list is filed under in the community, and a name waiting to become one. */
 val MIGRATION_11_12 = object : Migration(11, 12) {
     override fun migrate(db: SupportSQLiteDatabase) {

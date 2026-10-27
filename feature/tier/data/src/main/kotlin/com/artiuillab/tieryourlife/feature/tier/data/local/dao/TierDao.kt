@@ -61,8 +61,9 @@ interface TierDao {
         authorName: String,
         tiers: List<NewTemplateTier>,
         items: List<NewPoolItem>,
+        takenFrom: String?,
     ): Long {
-        val tierListId = insertTierList(TierListEntity(title = title, authorName = authorName))
+        val tierListId = insertTierList(TierListEntity(title = title, authorName = authorName, takenFrom = takenFrom))
 
         tiers.forEachIndexed { index, tier ->
             val tierId = insertTier(
@@ -131,6 +132,9 @@ interface TierDao {
     // would claim the published copy is behind the moment anybody looked.
     @Query("UPDATE tier_lists SET publishedId = :publishedId, publishedFingerprint = :fingerprint WHERE id = :id")
     suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?)
+
+    @Query("UPDATE tier_lists SET rankingOf = :listId WHERE id = :id")
+    suspend fun setRankingOf(id: Long, listId: String?)
 
     @Query("UPDATE tier_lists SET category = :category WHERE id = :id")
     suspend fun setCategory(id: Long, category: String?)
@@ -224,7 +228,7 @@ interface TierDao {
 
     @Query(
         """
-        SELECT l.id AS id, l.title AS title, l.deletedAt AS deletedAt, l.publishedId AS publishedId,
+        SELECT l.id AS id, l.title AS title, l.deletedAt AS deletedAt, l.publishedId AS publishedId, l.rankingOf AS rankingOf,
             (SELECT COUNT(*) FROM tier_items i
                 JOIN tiers t ON i.tierId = t.id
                 WHERE t.tierListId = l.id AND i.deletedAt IS NULL) AS itemCount

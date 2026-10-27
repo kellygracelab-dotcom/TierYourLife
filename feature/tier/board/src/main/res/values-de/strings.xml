@@ -136,4 +136,11 @@
         <item quantity="other">%d im Pool</item>
     </plurals>
     <string name="list_settings_public_topic_unavailable">Dieses Thema ist nicht mehr offen: zusammengelegt, abgelehnt oder nicht deins. Die Liste hat jetzt kein Thema; wähle ein anderes oder veröffentliche ohne.</string>
+    <string name="list_settings_public_ranking_body">Draußen als deine Reihung der Liste von %1$s; im Feed erscheint keine zweite Liste.</string>
+    <string name="tier_detail_add_card">Karte hinzufügen</string>
+    <string name="tier_detail_pool_count">Pool · %1$d</string>
+    <string name="tier_detail_drop_items_here">Karten hier ablegen</string>
+    <string name="tier_detail_drop_to_delete">Zum Löschen ablegen</string>
+    <string name="tier_detail_drop_unrank_column">Auf die Karten unten ablegen, um die Einstufung aufzuheben</string>
+    <string name="tier_detail_drop_unrank_dock">Auf den Pool ablegen, um die Einstufung aufzuheben</string>
 </resources>
