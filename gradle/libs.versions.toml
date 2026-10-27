@@ -24,7 +24,7 @@ kover = "0.9.11"
 robolectric = "4.17"
 roborazzi = "1.77.0"
 detekt = "2.0.0-alpha.6"
-firebaseBom = "34.1.0"
+firebaseBom = "35.0.2"
 credentials = "1.6.0"
 googleid = "1.2.1"
 # Only for the sign-in mark: Google ships their own G in this library.
@@ -32,7 +32,7 @@ playServicesBase = "18.11.1"
 javaxInject = "1"
 googleServices = "4.5.0"
 timber = "5.0.1"
-firebaseCrashlyticsGradle = "3.0.6"
+firebaseCrashlyticsGradle = "3.0.8"
 
 [libraries]
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
