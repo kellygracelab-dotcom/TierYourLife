@@ -1,9 +1,11 @@
 package com.artiuillab.tieryourlife.feature.tier.board.components.rows
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,10 +34,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
@@ -60,6 +65,18 @@ fun TierScreenTopBar(
     /** A reader's overflow: who wrote this, and how to stop seeing it. */
     onReaderMoreClick: (() -> Unit)? = null,
     subtitle: String? = null,
+    /** A short window's one bar: lower, a smaller title, and no second line. */
+    compact: Boolean = false,
+    /** What the screen around the board puts in the bar, between the title and the overflow: a reader's switch and save. */
+    trailing: (@Composable RowScope.() -> Unit)? = null,
+    /** False where the bar scrolls away: the inset then stays with the screen, or the content would slide under the clock. */
+    insetStatusBar: Boolean = true,
+    /** True when the pool stands beside the rows: the board then spans the window, and its bar with it. */
+    spanWindow: Boolean = false,
+    /** A height other than the usual 56 (48 when compact): a tablet's taller bar. */
+    barHeight: Dp? = null,
+    /** A line under the title in place of [subtitle]: a tablet's author and section, which can be tapped. */
+    subline: (@Composable () -> Unit)? = null,
 ) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
@@ -70,14 +87,15 @@ fun TierScreenTopBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .height(56.dp)
+            .then(if (insetStatusBar) Modifier.statusBarsPadding() else Modifier)
+            .background(MaterialTheme.colorScheme.surface)
+            .height(barHeight ?: if (compact) 48.dp else 56.dp)
             .padding(horizontal = 4.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
-            modifier = Modifier.atMost(ContentWidth.Board),
+            modifier = if (spanWindow) Modifier.fillMaxWidth() else Modifier.atMost(ContentWidth.Board),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(
@@ -86,22 +104,29 @@ fun TierScreenTopBar(
                     .size(48.dp)
                     .semantics { contentDescription = backDescription },
             ) { BackIcon() }
+            val titleStyle = when {
+                compact -> MaterialTheme.typography.titleMedium
+                subline != null -> MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp, lineHeight = 26.sp)
+                else -> MaterialTheme.typography.titleLarge
+            }
             if (titleEditable) {
                 EditableListTitle(
                     title = title,
                     onRename = onRenameList,
+                    style = titleStyle,
                     modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
                 )
             } else {
                 Column(Modifier.weight(1f).padding(horizontal = 4.dp)) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = titleStyle,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
-                    if (subtitle != null) {
+                    subline?.invoke()
+                    if (subtitle != null && !compact && subline == null) {
                         Text(
                             text = subtitle,
                             style = MaterialTheme.typography.bodySmall,
@@ -112,6 +137,7 @@ fun TierScreenTopBar(
                     }
                 }
             }
+            trailing?.invoke(this)
             if (!readOnly) {
                 IconButton(
                     onClick = onManualAdd,
@@ -143,6 +169,7 @@ fun TierScreenTopBar(
 private fun EditableListTitle(
     title: String,
     onRename: (String) -> Unit,
+    style: TextStyle,
     modifier: Modifier = Modifier,
 ) {
     var isEditing by remember { mutableStateOf(false) }
@@ -172,7 +199,7 @@ private fun EditableListTitle(
                     if (focusState.isFocused) hasFocused = true else if (hasFocused) commit()
                 }
                 .testTag(TierDetailTestTags.HEADER_TITLE),
-            textStyle = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+            textStyle = style.copy(color = MaterialTheme.colorScheme.onSurface),
             singleLine = true,
             cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -188,7 +215,7 @@ private fun EditableListTitle(
                 .clickable { isEditing = true }
                 .semantics { contentDescription = editDescription }
                 .testTag(TierDetailTestTags.HEADER_TITLE),
-            style = MaterialTheme.typography.titleLarge,
+            style = style,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurface,

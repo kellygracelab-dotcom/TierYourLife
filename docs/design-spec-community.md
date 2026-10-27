@@ -6,6 +6,10 @@ evening. The board spec (`design-spec-board.md`) covers the board itself; this
 one covers everything around a published list. Each section names what is
 built and where the rest stands.
 
+> **26.10.2026:** the Community home is redesigned by Claude Design (Explore with nine section tiles, section pages,
+> following a section, cache-first loading, landscape, tablets and the Flip cover). The full implementation spec is
+> [design-spec-community-explore.md](design-spec-community-explore.md); where it and this file disagree, it wins.
+
 ## 1. Sections and topics
 
 Two levels. The nine fixed, localised **sections** (`ListCategory`) stay. Inside
@@ -45,6 +49,15 @@ Reports, Topics (approve into a section, rename, merge into a found topic,
 reject) and, for the owner alone, Moderators (appoint by account id, remove);
 an author's page offers the owner "make / remove moderator" once that list
 has answered.
+
+The queue's bar stands on its column: **Reports**, how many are open, the
+covers' eye (struck through while they show, since a tap puts them away)
+and an overflow that asks the server again. The chips are the first thing
+the queue scrolls, never a pinned row; in a short window one pane wide they
+ride in the slim bar instead, as Community's tabs do. Wide enough for two
+panes, the queue keeps its own bar beside the reported list's. Loading,
+failure and an empty queue sit under the chips, so switching back is never
+lost with them.
 
 **After review** (same PR): Follow exists only on an approved topic, since
 the server refuses the rest. A board whose new name the server took keeps the
@@ -89,7 +102,7 @@ tier colour with grey cards spread by the count. The board replaces it with a
 
 Transitions are one set of rules in the host: the next screen slides in
 whole over the one beneath, which stays as it is (260 ms); back slides it out
-the same way (220 ms); top-level siblings only fade. Nothing else fades, since
+the same way, slower and eased at both ends (340 ms; 220 ms read as yanked); top-level siblings only fade. Nothing else fades, since
 two translucent screens over a dark window read as a flash. The skeleton's
 rows use the board's own tile size and leave room for the folded pool strip,
 so nothing moves when the board lands. "Save to my lists" stays
@@ -107,6 +120,17 @@ empty one start folded. A tap or a pull switches. Built in #164. On a community 
 also holds the reader's Theirs / Mine switch and the Save button, with the
 sentence that explains it, so both are in reach whether the pool is folded or
 open.
+
+Where the pool stands beside the rows (a short window, a wide one held
+sideways; the board spec's section 7), the switch and Save move into the bar
+(the switch at 32dp, Save at 36dp) and the sentence goes under the side pool's
+title. A short window's single bar also carries the author as a chip, and the
+rankings chip when there are any, since the author line has no row of its own
+there. On a tablet held upright the bar is 72dp: the title over "author ·
+Section ›" (a tap opens the profile), the switch at 40dp and a tonal Save with
+the bookmark icon, its label shortened to "Save" while its description stays
+"Save to my lists"; the sentence goes under the docked pool's head. The
+skeleton follows the same rules, so nothing moves when the list lands.
 
 ## 5. The cover
 
@@ -127,3 +151,39 @@ collage follows.
 - The system back leaves at once, like the in-app arrow (#149).
 - "Unfollow" is written on the button that does it (#153).
 - A face fills its circle, and can be a photo from the phone (#155, #160).
+
+## 7. Rankings: one list, many placings
+
+Decided with Danylo on 26.10, after looking at how TierMaker lives with
+duplicates (templates are shared, a tier list is one person's placing of a
+template; twins are only reported and removed by hand). Here it is settled by
+the server rather than by a complaint:
+
+| Rule | Why |
+|---|---|
+| A copy taken from somebody's list and published with the **same cards** (a picture is the same picture, a card without one is its words) becomes this person's **ranking** of that list, not a second list; the original counts it | The feed does not fill with the same twelve posters placed twelve ways |
+| Cards added, dropped or swapped make it a **list of its own**, with "based on" naming the source | A changed set is new work; the credit is the only debt |
+| The author cannot rank their own list; a list under review takes no rankings; a list taken down takes its rankings with it | Nothing to count, nothing to show without the list |
+| Publishing the same copy again replaces the ranking; the switch that published it takes it down | One person, one placing per list |
+
+**Proxy** (tieryourlife-proxy#31): publish carries `takenFrom`; the same
+multiset of cards writes `rankings/{listId}_{uid}` (arrangement over the
+source's cards, the tier words, who and when) and answers
+`{id: <source>, ranking: true}`; otherwise a new list with `basedOn`.
+`GET lists/{id}/rankings?after=` pages newest first with the reader's own
+ahead of the first page; `DELETE lists/{id}/rankings/mine`. Summaries carry
+`rankingCount` and `basedOn`.
+
+**App** (`rankings-of-a-list`): a copy remembers `takenFrom` (Room 13, with
+`rankingOf`); the board's publish sends it and, answered as a ranking, keeps
+`rankingOf` instead of a `publishedId`, says so in a snackbar and in the
+Public row, and shows a credit under the title with a way to the original.
+Turning the switch off takes the ranking down; deleting the board does too.
+On somebody's list a chip under the author says "N rankings" and opens a
+sheet: the author first, then this reader, then the rest by freshness; the
+chosen one fills the left half of the Their / Mine switch under their name,
+and Save keeps whichever placing is on screen. "Based on" under the author
+opens the source. The site is to follow.
+
+Not in this pass: the board learning that the list it ranks has gone (the
+next publish simply makes it a list of its own), the count on feed cards.

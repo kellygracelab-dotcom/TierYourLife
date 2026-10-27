@@ -25,6 +25,7 @@ fun NavGraphBuilder.tierDetailScreen(
     onOpenAiStudio: (tierListId: Long, listTitle: String) -> Unit,
     onChooseCover: (tierListId: Long) -> Unit = {},
     onChooseTopic: (tierListId: Long) -> Unit = {},
+    onOpenPublishedList: (String) -> Unit = {},
 ) {
     composable<Route.TierDetail> { backStackEntry ->
         val route = backStackEntry.toRoute<Route.TierDetail>()
@@ -49,6 +50,7 @@ fun NavGraphBuilder.tierDetailScreen(
             onChooseTopic = { onChooseTopic(route.tierListId) },
             topicChanged = topicChanged,
             onTopicChangeConsumed = { backStackEntry.savedStateHandle[TOPIC_CHANGED_RESULT_KEY] = false },
+            onOpenPublishedList = onOpenPublishedList,
         )
     }
 }

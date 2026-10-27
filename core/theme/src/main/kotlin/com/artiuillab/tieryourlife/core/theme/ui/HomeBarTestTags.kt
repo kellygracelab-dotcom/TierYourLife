@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.core.theme.ui
 
 object HomeBarTestTags {
+    const val TITLE = "home_bar_title"
     const val DELETED_ITEM_SNACKBAR = "tier_detail_deleted_item_snackbar"
     const val SEARCH_CLEAR = "home_search_clear"
     const val SEARCH_CLOSE = "home_search_close"

@@ -7,6 +7,8 @@ import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
+import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
@@ -14,6 +16,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -183,6 +186,52 @@ class CommunityListViewModelTest {
         assertEquals(null, viewModel().preview)
     }
 
+    // A reader's placing is the same cards under their own words; saving it keeps it, and the copy knows where it came from.
+    @Test
+    fun choosingAReadersRanking_showsTheirPlacing_andSavingTheirsKeepsIt() = runBlocking {
+        val olena = Ranking("r1", "Kyle H.", null, arrangement = listOf(1, 0), tierLabels = listOf("Top", "Next"), updatedAtMillis = 0)
+        val tiers = RecordingTierRepository()
+        val viewModel = viewModel(community = TestCommunity(rankings = listOf(olena)), tiers = tiers)
+        viewModel.state.firstWithin { it is CommunityListUiState.Success }
+
+        viewModel.rankings.load()
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.rankings?.isNotEmpty() == true }
+        viewModel.rankings.choose(olena)
+        val shown = (viewModel.state.value as CommunityListUiState.Success).shown
+
+        assertEquals(listOf("Top", "Next"), shown.tiers.filterNot { it.isPool }.map { it.label })
+        assertEquals(listOf("Moonlight"), shown.tiers[0].items.map { it.title })
+        assertEquals(listOf("Hereditary"), shown.tiers[1].items.map { it.title })
+
+        viewModel.saveToMyLists(Showing.Theirs)
+        viewModel.state.firstWithin { it.saved() }
+        val kept = tiers.templates.single()
+        assertEquals("abc", kept.takenFrom)
+        assertEquals(listOf("Top", "Next"), kept.tiers.map { it.label })
+    }
+
+    @Test
+    fun withdrawingMyRanking_takesItOutAtOnce_andPutsItBackIfRefused() = runBlocking {
+        val mine = Ranking("me", "Me", null, arrangement = listOf(0, 0), tierLabels = emptyList(), updatedAtMillis = 0, mine = true)
+        val community = TestCommunity(rankings = listOf(mine), refusesWithdrawal = true)
+        val viewModel = viewModel(community = community)
+        viewModel.state.firstWithin { it is CommunityListUiState.Success }
+        viewModel.rankings.load()
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.rankings?.isNotEmpty() == true }
+        viewModel.rankings.choose(mine)
+
+        viewModel.rankings.withdrawMine()
+        val gone = viewModel.state.value as CommunityListUiState.Success
+        assertEquals(0, gone.rankingCount)
+        assertEquals(null, gone.chosenRanking)
+        assertEquals(gone.list, gone.theirs)
+
+        // Only now does the server refuse: the optimistic state above must not depend on who is faster.
+        community.refusal.complete(Unit)
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.rankingCount == 1 }
+        assertEquals(listOf("abc"), community.withdrawn)
+    }
+
     private fun CommunityListUiState.saved() = (this as? CommunityListUiState.Success)?.savedId != null
 
     private fun viewModel(
@@ -197,10 +246,29 @@ class CommunityListViewModelTest {
     )
 }
 
-private class TestCommunity : FakeCommunityRepository() {
-    override suspend fun open(id: String): Result<PublishedList> = Result.success(published)
+private class TestCommunity(
+    private val rankings: List<Ranking> = emptyList(),
+    private val refusesWithdrawal: Boolean = false,
+) : FakeCommunityRepository() {
+    val withdrawn = mutableListOf<String>()
+
+    /** Held until the test lets the refusal through. */
+    val refusal = CompletableDeferred<Unit>()
+
+    override suspend fun open(id: String): Result<PublishedList> =
+        Result.success(published.copy(summary = published.summary.copy(rankingCount = rankings.size)))
+
     override suspend fun publish(list: TierList): Result<Published> =
         Result.success(Published(id = "abc", fingerprint = "sent"))
+
+    override suspend fun rankings(listId: String, after: String?): Result<RankingsPage> = Result.success(RankingsPage(rankings, null))
+
+    override suspend fun withdrawRanking(listId: String): Result<Unit> {
+        withdrawn += listId
+        if (!refusesWithdrawal) return Result.success(Unit)
+        refusal.await()
+        return Result.failure(IllegalStateException("offline"))
+    }
 }
 
 private class FailingCommunityRepository : FakeCommunityRepository() {

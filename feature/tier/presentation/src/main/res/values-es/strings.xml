@@ -9,7 +9,7 @@
         <item quantity="many">%1$d listas</item>
         <item quantity="other">%1$d listas</item>
     </plurals>
-    <string name="search_no_results_title">Ninguna lista coincide con «%1$s»</string>
+    <string name="search_no_results_title">No hay listas llamadas «%1$s»</string>
     <string name="search_no_results_body">Prueba con una palabra más corta o revisa la ortografía.</string>
 
     <plurals name="selection_count">
@@ -195,4 +195,7 @@
     <string name="cover_picker_no_cards">Ninguna tarjeta de esta lista tiene imagen todavía.</string>
     <string name="cover_picker_gallery">Elegir de la galería</string>
     <string name="cover_picker_gallery_note">Una imagen de la galería es toda la portada y viaja con la lista cuando la publicas.</string>
+    <string name="tier_detail_ranking_of">Tu ranking de una lista de %1$s</string>
+    <string name="tier_detail_open_original">Abrir</string>
+    <string name="search_names_only">solo nombres</string>
 </resources>

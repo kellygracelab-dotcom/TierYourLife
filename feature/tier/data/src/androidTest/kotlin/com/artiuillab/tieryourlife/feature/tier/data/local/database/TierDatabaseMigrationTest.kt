@@ -351,6 +351,30 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    // Nothing was taken from anywhere before copies remembered it; every board comes through as its own.
+    @Test
+    fun migration12To13_leavesEveryBoardAsItsOwn() {
+        helper.createDatabase(TEST_DB, 12).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, publishedFingerprint, " +
+                    "authorName, category, coverImageUrl, coverImageUrls, topicId, topicName, newTopicName, " +
+                    "uid, arrivedFrom, editedAt, favouritedAt) " +
+                    "VALUES (1, 'Films', NULL, 'WRAP', 'pub-1', NULL, 'Olena', 'film_tv', NULL, NULL, NULL, NULL, NULL, " +
+                    "'board-1', NULL, 1, NULL)",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 13, true, MIGRATION_12_13)
+
+        migratedDb.query("SELECT takenFrom, rankingOf, publishedId FROM tier_lists WHERE id = 1").use {
+            check(it.moveToFirst())
+            assertTrue("taken from nowhere", it.isNull(0))
+            assertTrue(it.isNull(1))
+            assertEquals("pub-1", it.getString(2))
+        }
+    }
+
     private fun editedAt(db: androidx.sqlite.db.SupportSQLiteDatabase): Long =
         db.query("SELECT editedAt FROM tier_lists WHERE id = 1").use {
             check(it.moveToFirst())

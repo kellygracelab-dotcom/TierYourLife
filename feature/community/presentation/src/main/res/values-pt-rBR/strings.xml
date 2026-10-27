@@ -58,8 +58,8 @@
     <string name="community_save_mine_empty">Sem ordem, eu faço</string>
     <string name="community_saved_to_your_lists">Salvo nas suas listas.</string>
     <string name="community_action_open">Abrir</string>
-    <string name="community_showing_mine">A minha</string>
-    <string name="community_showing_theirs">A ordem dele</string>
+    <string name="community_showing_mine">Meu</string>
+    <string name="community_showing_theirs">Dele</string>
     <string name="community_someone_elses">Lista de outra pessoa. Organize do seu jeito.</string>
     <string name="community_tile_hidden">Oculto para você</string>
     <string name="community_tile_reported">Denunciado. Uma pessoa vai analisar.</string>
@@ -172,4 +172,96 @@
     <string name="home_following_empty_topics">Ainda não há nada dos temas que você segue.</string>
     <string name="moderation_action_move">Mover…</string>
     <string name="moderation_moderators_unavailable">Não foi possível ler a lista de moderadores.</string>
+    <string name="community_rankings_title">Rankings · %1$d</string>
+    <string name="community_rankings_body">As mesmas cartas, colocadas do jeito de alguém. Escolha de quem mostrar as fileiras.</string>
+    <string name="community_ranking_author">Autor da lista</string>
+    <string name="community_ranking_you">Você</string>
+    <string name="community_ranking_withdraw">Retirar</string>
+    <string name="community_based_on">Baseada em “%1$s” de %2$s</string>
+    <string name="community_showing_ranking_of">Mostrando: %1$s</string>
+    <plurals name="community_rankings_count">
+        <item quantity="one">%d ranking</item>
+        <item quantity="many">%d rankings</item>
+        <item quantity="other">%d rankings</item>
+    </plurals>
+    <string name="explore_tab_explore">Explorar</string>
+    <string name="explore_tab_following">Seguindo</string>
+    <string name="explore_title_community">Comunidade</string>
+    <string name="explore_popular_this_week">Populares da semana</string>
+    <string name="explore_follow_section">Seguir %1$s</string>
+    <string name="explore_unfollow_section">Deixar de seguir %1$s</string>
+    <string name="explore_open_section">Abrir %1$s</string>
+    <string name="explore_now_following">Você segue %1$s</string>
+    <string name="explore_unfollowed">Você deixou de seguir %1$s</string>
+    <string name="explore_undo">Desfazer</string>
+    <string name="explore_follow_failed">Não foi possível seguir. Tente de novo.</string>
+    <string name="explore_new_lists">Listas novas</string>
+    <string name="explore_offline">Offline · listas de %1$s</string>
+    <string name="explore_retry">Tentar de novo</string>
+    <string name="explore_refresh_failed">Não foi possível atualizar. Listas de %1$s.</string>
+    <string name="explore_failed_title">Não foi possível carregar as listas da comunidade</string>
+    <string name="explore_failed_body">Verifique sua conexão. Suas próprias listas estão neste aparelho.</string>
+    <string name="explore_try_again">Tentar de novo</string>
+    <string name="explore_follow">Seguir</string>
+    <string name="explore_following">Seguindo</string>
+    <string name="explore_tile_description">%1$s, %2$s</string>
+    <string name="explore_search_nothing">Nada encontrado.</string>
+    <string name="section_all">Tudo</string>
+    <string name="section_suggest_topic">Sugerir um tema</string>
+    <string name="section_sort_popular">Populares</string>
+    <string name="section_sort_newest">Recentes</string>
+    <string name="section_share">Compartilhar seção</string>
+    <string name="section_topic_waiting_chip">%1$s · aguardando</string>
+    <string name="section_waiting_status">Aguardando moderação</string>
+    <string name="section_waiting_body">Um moderador vai analisar. Suas listas aparecem aqui depois da aprovação; até lá, ficam em %1$s.</string>
+    <string name="section_waiting_only_you">Até lá, só você vê este tema.</string>
+    <string name="section_ok">OK</string>
+    <string name="section_counts">%1$s · %2$s</string>
+    <string name="section_share_text">%1$s no TierYourLife</string>
+    <string name="following_strip_manage">Gerenciar</string>
+    <string name="following_reason_section">Em %1$s</string>
+    <string name="following_empty_title">Você ainda não segue nada</string>
+    <string name="following_empty_body">Siga uma seção, um tema ou uma pessoa e as listas novas chegam aqui primeiro.</string>
+    <string name="following_empty_helper">Toque em + para seguir uma seção. Os temas ficam em cada seção; as pessoas, no perfil delas.</string>
+    <string name="following_nothing_published">Ninguém que você segue publicou nada ainda.</string>
+    <string name="following_go_explore">Ir para Explorar</string>
+    <string name="manage_sections">Seções · %1$d</string>
+    <string name="manage_topics">Temas · %1$d</string>
+    <string name="manage_people">Pessoas · %1$d</string>
+    <string name="manage_topic_supporting">Em %1$s · %2$s</string>
+    <string name="manage_waiting_supporting">Em %1$s · aguardando moderação</string>
+    <string name="cover_open_main">Abrir na tela principal</string>
+    <string name="cover_open_phone">Abra o celular para continuar</string>
+    <plurals name="explore_new_this_week">
+        <item quantity="one">%1$s nova nesta semana</item>
+        <item quantity="many">%1$s novas nesta semana</item>
+        <item quantity="other">%1$s novas nesta semana</item>
+    </plurals>
+    <plurals name="explore_cards">
+        <item quantity="one">%1$s carta</item>
+        <item quantity="many">%1$s cartas</item>
+        <item quantity="other">%1$s cartas</item>
+    </plurals>
+    <plurals name="explore_rankings">
+        <item quantity="one">%1$s ranking</item>
+        <item quantity="many">%1$s rankings</item>
+        <item quantity="other">%1$s rankings</item>
+    </plurals>
+    <plurals name="explore_followers">
+        <item quantity="one">%1$s seguidor</item>
+        <item quantity="many">%1$s seguidores</item>
+        <item quantity="other">%1$s seguidores</item>
+    </plurals>
+    <plurals name="explore_lists">
+        <item quantity="one">%1$s lista</item>
+        <item quantity="many">%1$s listas</item>
+        <item quantity="other">%1$s listas</item>
+    </plurals>
+    <string name="community_save_short">Salvar</string>
+    <plurals name="moderation_open_count">
+        <item quantity="one">%1$d aberta</item>
+        <item quantity="many">%1$d abertas</item>
+        <item quantity="other">%1$d abertas</item>
+    </plurals>
+    <string name="moderation_refresh">Atualizar</string>
 </resources>

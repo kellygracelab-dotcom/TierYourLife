@@ -1,16 +1,21 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.following
 
+import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSection
 import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -25,74 +30,84 @@ class FollowingViewModelTest {
     @get:Rule
     val main = MainDispatcherRule()
 
+    private val made = mutableListOf<FollowingViewModel>()
+
+    @After
+    fun clear() {
+        made.forEach { it.viewModelScope.cancel() }
+    }
+
+    private fun viewModel(fake: FollowingFake) = FollowingViewModel(fake).also { made += it }
+
     @Test
-    fun thePeopleFollowed_areListed() = runBlocking {
-        val viewModel = FollowingViewModel(FollowingFake(listOf(ann, bea)))
+    fun sectionsTopicsAndPeople_areListed_withTheWaitingTopicsBeside() = runBlocking {
+        val viewModel = viewModel(
+            FollowingFake(people = listOf(ann, bea), topics = listOf(pokemon), sections = listOf(FollowedSection(ListCategory.Food, 4120)), mine = listOf(cafes)),
+        )
 
         val ready = viewModel.state.firstWithin { it is FollowingUiState.Ready } as FollowingUiState.Ready
 
-        assertEquals(listOf(ann, bea), ready.authors)
+        assertEquals(listOf("a", "b"), ready.authors.map { it.uid })
+        assertEquals(listOf("t1"), ready.topics.map { it.id })
+        assertEquals(listOf(ListCategory.Food), ready.sections.map { it.section })
+        assertEquals(listOf("t2"), ready.waiting.map { it.id })
     }
 
     @Test
-    fun unfollowing_removesThePersonAtOnce_andTellsTheServer() = runBlocking {
-        val community = FollowingFake(listOf(ann, bea))
-        val viewModel = FollowingViewModel(community)
+    fun stoppingAPerson_keepsTheRow_turnsItsButton_andSaysSoWithUndo() = runBlocking {
+        val fake = FollowingFake(people = listOf(ann, bea))
+        val viewModel = viewModel(fake)
         viewModel.state.firstWithin { it is FollowingUiState.Ready }
 
-        viewModel.unfollow("a")
+        viewModel.toggle(FollowKeys.person("a"))
 
-        assertEquals(listOf(bea), (viewModel.state.value as FollowingUiState.Ready).authors)
-        assertEquals("a", withTimeout(WAIT_MILLIS) { community.unfollowAsked.await() })
+        val after = viewModel.state.firstWithin { (it as? FollowingUiState.Ready)?.stopped?.isNotEmpty() == true } as FollowingUiState.Ready
+        assertEquals(listOf("a", "b"), after.authors.map { it.uid })
+        assertEquals("a", withTimeout(5_000) { fake.unfollowAsked.await() })
+        assertEquals(ManageNotice.Stopped("Ann", FollowKeys.person("a")), withTimeout(5_000) { viewModel.notices.first() })
     }
 
-    // The button answers before the server does; a refusal has to undo that, and in the same place.
     @Test
-    fun aRefusedUnfollow_putsThePersonBackWhereTheyWere() = runBlocking {
-        val viewModel = FollowingViewModel(FollowingFake(listOf(ann, bea), refuses = true))
+    fun undo_followsAgain() = runBlocking {
+        val fake = FollowingFake(people = listOf(ann))
+        val viewModel = viewModel(fake)
+        viewModel.state.firstWithin { it is FollowingUiState.Ready }
+        viewModel.toggle(FollowKeys.person("a"))
+        withTimeout(5_000) { viewModel.notices.first() }
+
+        viewModel.toggle(FollowKeys.person("a"))
+
+        assertEquals("a", withTimeout(5_000) { fake.followAsked.await() })
+        viewModel.state.firstWithin { (it as? FollowingUiState.Ready)?.stopped?.isEmpty() == true }
+        Unit
+    }
+
+    @Test
+    fun aRefusal_turnsTheButtonBack_andSaysSo() = runBlocking {
+        val viewModel = viewModel(FollowingFake(topics = listOf(pokemon), refuses = true))
         viewModel.state.firstWithin { it is FollowingUiState.Ready }
 
-        viewModel.unfollow("a")
+        viewModel.toggle(FollowKeys.topic("t1"))
 
-        val back = viewModel.state.firstWithin { (it as? FollowingUiState.Ready)?.authors?.size == 2 } as FollowingUiState.Ready
-        assertEquals(listOf(ann, bea), back.authors)
+        assertEquals(ManageNotice.Failed, withTimeout(5_000) { viewModel.notices.first() })
+        viewModel.state.firstWithin { (it as? FollowingUiState.Ready)?.stopped?.isEmpty() == true }
+        Unit
     }
 
     @Test
-    fun theTopicsFollowed_areListedBesideThePeople() = runBlocking {
-        val viewModel = FollowingViewModel(FollowingFake(listOf(ann), topics = listOf(pokemon, cafes)))
-
-        val ready = viewModel.state.firstWithin { it is FollowingUiState.Ready } as FollowingUiState.Ready
-
-        assertEquals(listOf(pokemon, cafes), ready.topics)
-    }
-
-    @Test
-    fun unfollowingATopic_removesItAtOnce_andTellsTheServer() = runBlocking {
-        val community = FollowingFake(listOf(ann), topics = listOf(pokemon, cafes))
-        val viewModel = FollowingViewModel(community)
+    fun stoppingASection_tellsTheServer() = runBlocking {
+        val fake = FollowingFake(sections = listOf(FollowedSection(ListCategory.Food)))
+        val viewModel = viewModel(fake)
         viewModel.state.firstWithin { it is FollowingUiState.Ready }
 
-        viewModel.unfollowTopic("t1")
+        viewModel.toggle(FollowKeys.section(ListCategory.Food))
 
-        assertEquals(listOf(cafes), (viewModel.state.value as FollowingUiState.Ready).topics)
-        assertEquals("t1", withTimeout(WAIT_MILLIS) { community.unfollowTopicAsked.await() })
-    }
-
-    @Test
-    fun aRefusedTopicUnfollow_putsTheTopicBackWhereItWas() = runBlocking {
-        val viewModel = FollowingViewModel(FollowingFake(listOf(ann), topics = listOf(pokemon, cafes), refuses = true))
-        viewModel.state.firstWithin { it is FollowingUiState.Ready }
-
-        viewModel.unfollowTopic("t1")
-
-        val back = viewModel.state.firstWithin { (it as? FollowingUiState.Ready)?.topics?.size == 2 } as FollowingUiState.Ready
-        assertEquals(listOf(pokemon, cafes), back.topics)
+        assertEquals(ListCategory.Food, withTimeout(5_000) { fake.sectionUnfollowed.await() })
     }
 
     @Test
     fun whenTheListDoesNotArrive_theScreenSaysSo() = runBlocking {
-        val viewModel = FollowingViewModel(FollowingFake(fails = true))
+        val viewModel = viewModel(FollowingFake(fails = true))
 
         assertEquals(FollowingUiState.Failed, viewModel.state.firstWithin { it is FollowingUiState.Failed })
     }
@@ -100,25 +115,37 @@ class FollowingViewModelTest {
 
 private class FollowingFake(
     private val people: List<FollowedAuthor> = emptyList(),
+    private val topics: List<Topic> = emptyList(),
+    private val sections: List<FollowedSection> = emptyList(),
+    private val mine: List<Topic> = emptyList(),
     private val refuses: Boolean = false,
     private val fails: Boolean = false,
-    private val topics: List<Topic> = emptyList(),
 ) : FakeCommunityRepository() {
     val unfollowAsked = CompletableDeferred<String>()
-    val unfollowTopicAsked = CompletableDeferred<String>()
-
-    override suspend fun unfollowTopic(id: String): Result<Unit> {
-        unfollowTopicAsked.complete(id)
-        return if (refuses) Result.failure(IllegalStateException("offline")) else Result.success(Unit)
-    }
+    val followAsked = CompletableDeferred<String>()
+    val sectionUnfollowed = CompletableDeferred<ListCategory>()
 
     override suspend fun following(): Result<Following> =
-        if (fails) Result.failure(IllegalStateException("offline")) else Result.success(Following(people, topics))
+        if (fails) Result.failure(IllegalStateException("offline")) else Result.success(Following(people, topics, sections))
+
+    override suspend fun myTopics(): Result<List<Topic>> = Result.success(mine)
 
     override suspend fun unfollow(authorUid: String): Result<Unit> {
         unfollowAsked.complete(authorUid)
-        return if (refuses) Result.failure(IllegalStateException("offline")) else Result.success(Unit)
+        return answer()
     }
-}
 
-private const val WAIT_MILLIS = 5_000L
+    override suspend fun follow(authorUid: String): Result<Unit> {
+        followAsked.complete(authorUid)
+        return answer()
+    }
+
+    override suspend fun unfollowTopic(id: String): Result<Unit> = answer()
+
+    override suspend fun unfollowSection(section: ListCategory): Result<Unit> {
+        sectionUnfollowed.complete(section)
+        return answer()
+    }
+
+    private fun answer(): Result<Unit> = if (refuses) Result.failure(IllegalStateException("offline")) else Result.success(Unit)
+}

@@ -16,6 +16,7 @@ data class SavedTemplate(
     val authorName: String,
     val tiers: List<Tier>,
     val items: List<TierItem>,
+    val takenFrom: String? = null,
 )
 
 class RecordingTierRepository(
@@ -33,13 +34,21 @@ class RecordingTierRepository(
         authorName: String,
         tiers: List<Tier>,
         items: List<TierItem>,
+        takenFrom: String?,
     ): Long {
-        templates += SavedTemplate(title, authorName, tiers, items)
+        templates += SavedTemplate(title, authorName, tiers, items, takenFrom)
         return 7L
     }
 
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) {
         if (publishedId == null) clearedPublishedId = id
+    }
+
+    /** Every ranking mark set, as (id, listId). */
+    val rankings = mutableListOf<Pair<Long, String?>>()
+
+    override suspend fun setRankingOf(id: Long, listId: String?) {
+        rankings += id to listId
     }
 
     override suspend fun publishedStanding(): PublishedStanding = PublishedStanding()

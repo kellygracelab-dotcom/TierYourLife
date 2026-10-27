@@ -32,9 +32,11 @@ import com.artiuillab.tieryourlife.feature.community.presentation.author.AuthorS
 import com.artiuillab.tieryourlife.feature.community.presentation.author.AuthorUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
-import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
-import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedScreenContent
-import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedUiState
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityHomeContent
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.ExploreUiState
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPane
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
+import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.ModerationScreenContent
@@ -153,9 +155,12 @@ class ReadmeScreenshotTest {
             onExportClick = {},
         )
 
-        "community" -> CommunityFeedScreenContent(
-            state = CommunityFeedUiState(
-                feed = CommunityFeed.Ready(
+        "community" -> CommunityHomeContent(
+            explore = ExploreUiState(
+                countsKnown = true,
+                feed = FeedPane(
+                    phase = FeedPhase.Ready,
+                    lists =
                     listOf(
                         summary(
                             "1", "Films I make people watch", "Olena M.", ListCategory.FilmTv, 34,
@@ -170,6 +175,7 @@ class ReadmeScreenshotTest {
                     ),
                 ),
             ),
+            following = FollowingFeedUiState(),
             tabs = { HomeTabs(selected = HomeTab.Community, onSelect = {}) },
         )
 

@@ -3,10 +3,17 @@ plugins {
     alias(libs.plugins.tieryourlife.android.library.compose)
     alias(libs.plugins.tieryourlife.hilt)
     alias(libs.plugins.tieryourlife.navigation)
+    alias(libs.plugins.roborazzi)
 }
 
 android {
     namespace = "com.artiuillab.tieryourlife.feature.community.presentation"
+
+    // Community drawn on the JVM by Robolectric and compared with the pictures in
+    // src/test/screenshots; resources must be real for it to look like itself.
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
@@ -22,6 +29,11 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.coil.compose)
     // The same fakes serve the JVM tests and the emulator ones.
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
     listOf(projects.core.settings, projects.feature.tier.domain, projects.feature.community.domain).forEach { owner ->
         testImplementation(testFixtures(owner))
         androidTestImplementation(testFixtures(owner))

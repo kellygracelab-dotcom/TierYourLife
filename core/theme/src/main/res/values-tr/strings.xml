@@ -29,4 +29,5 @@
         <item quantity="other">%d sıralandı</item>
     </plurals>
     <string name="tier_lists_title">Listelerin</string>
+    <string name="snack_published_as_ranking">O listenin sizin sıralamanız olarak yayınlandı. Akışta ikinci bir liste görünmez.</string>
 </resources>

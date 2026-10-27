@@ -67,4 +67,9 @@
     <string name="merge_recommended">Recommended</string>
     <string name="merge_action_continue">Continue</string>
     <string name="merge_name_suffix">(from this phone)</string>
+    <string name="account_face_position_title">Place your face</string>
+    <string name="account_face_position_body">Drag the picture and pinch to zoom. The circle is what people see.</string>
+    <string name="account_face_position_use">Use this</string>
+    <string name="account_face_position_failed">The picture could not be shown here. It can still be used as it is.</string>
+    <string name="account_face_position_frame">The picture to place in the circle</string>
 </resources>

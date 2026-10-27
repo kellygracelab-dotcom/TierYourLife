@@ -8,12 +8,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -45,9 +51,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
+import com.artiuillab.tieryourlife.core.theme.layout.topBarTitleStyle
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
@@ -101,42 +110,57 @@ fun TierListSettingsScreenContent(
     val rankedTierCount = list.tiers.count { !it.isPool }
 
     Column(Modifier.fillMaxSize().testTag(TierDetailTestTags.LIST_SETTINGS_SCREEN)) {
-        ListSettingsTopBar(onBack = onBack)
+        BarredScreen(
+            bar = {
+                ListSettingsTopBar(onBack = onBack)
+            },
+        ) {
+            Column(Modifier.fillMaxSize()) {
+                // One scrolling column, kept clear of the navigation bar at the
+                // bottom and of the system bars at the sides when sideways, so
+                // the last row is never under them.
+                CenteredContent(
+                    ContentWidth.Reading,
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)))
+                        .padding(bottom = 16.dp),
+                ) {
+                    // First, so it is there the moment the page opens: adding a
+                    // tier is what people come here for most.
+                    NewTierRow(
+                        tierCount = rankedTierCount,
+                        onClick = { tierEditorVisible = true },
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                    )
 
-        // One scrolling column: without it, one more row above Publish pushed
-        // New tier off the bottom of an ordinary phone.
-        CenteredContent(ContentWidth.Reading, modifier = Modifier.verticalScroll(rememberScrollState())) {
-            PublishSection(
-                published = publicPending ?: (list.publishedId != null),
-                signedIn = signedIn,
-                hasItems = list.tiers.any { it.items.isNotEmpty() },
-                busy = publishing,
-                error = publishError,
-                onSetPublic = onSetPublic,
-                behind = publishedIsBehind,
-                onUpdatePublished = onUpdatePublished,
-                onAddCards = onAddCards,
-            )
+                    PublishSection(
+                        published = publicPending ?: list.isPublic,
+                        asRankingOf = if (list.rankingOf != null) list.authorName.orEmpty() else null,
+                        signedIn = signedIn,
+                        hasItems = list.tiers.any { it.items.isNotEmpty() },
+                        busy = publishing,
+                        error = publishError,
+                        onSetPublic = onSetPublic,
+                        behind = publishedIsBehind,
+                        onUpdatePublished = onUpdatePublished,
+                        onAddCards = onAddCards,
+                    )
 
-            // A category exists only for the feed; a cover is also the card's
-            // own art, so it stays available to a guest.
-            CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
-            TopicRow(topicName = list.topicName, newTopicName = list.newTopicName, onClick = onChooseTopic)
-            CoverRow(chosen = list.coverImageUrl != null || list.coverImageUrls.isNotEmpty(), onClick = onChooseCover)
-            // Beside the cover: sharing is not publishing and needs no account.
-            ShareRow(onClick = onShare)
+                    // A category exists only for the feed; a cover is also the card's
+                    // own art, so it stays available to a guest.
+                    CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
+                    TopicRow(topicName = list.topicName, newTopicName = list.newTopicName, onClick = onChooseTopic)
+                    CoverRow(chosen = list.coverImageUrl != null || list.coverImageUrls.isNotEmpty(), onClick = onChooseCover)
+                    // Beside the cover: sharing is not publishing and needs no account.
+                    ShareRow(onClick = onShare)
 
-            DisplayModeSection(selected = list.displayMode, onSelect = onSetDisplayMode)
-
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                color = MaterialTheme.colorScheme.outlineVariant,
-            )
-
-            NewTierRow(
-                tierCount = rankedTierCount,
-                onClick = { tierEditorVisible = true },
-            )
+                    DisplayModeSection(selected = list.displayMode, onSelect = onSetDisplayMode)
+                }
+            }
         }
     }
 
@@ -170,14 +194,13 @@ private fun ListSettingsTopBar(onBack: () -> Unit) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding(),
+            .fillMaxWidth(),
         contentAlignment = Alignment.TopCenter,
     ) {
         Row(
             modifier = Modifier
                 .atMost(ContentWidth.Reading)
-                .height(56.dp)
+                .height(topBarHeight())
                 .padding(horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -192,7 +215,7 @@ private fun ListSettingsTopBar(onBack: () -> Unit) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 4.dp),
-                style = MaterialTheme.typography.titleLarge,
+                style = topBarTitleStyle(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -419,6 +442,8 @@ private fun TierListSettingsScreenDarkPreview() = TierYourLifeTheme(true) {
 @Composable
 private fun PublishSection(
     published: Boolean,
+    /** The author of the list this board is out as a ranking of, when it is. */
+    asRankingOf: String?,
     signedIn: Boolean,
     hasItems: Boolean,
     busy: Boolean,
@@ -449,7 +474,11 @@ private fun PublishSection(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = stringResource(caption),
+                    text = if (published && asRankingOf != null) {
+                        stringResource(R.string.list_settings_public_ranking_body, asRankingOf)
+                    } else {
+                        stringResource(caption)
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

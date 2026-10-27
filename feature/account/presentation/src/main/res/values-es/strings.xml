@@ -70,4 +70,9 @@
     <string name="account_delete_keeps_local">Los tableros de este teléfono se quedan donde están.</string>
     <string name="account_delete_confirm">Eliminar para siempre</string>
     <string name="account_error_not_deleted">La cuenta no se eliminó. Inténtalo de nuevo.</string>
+    <string name="account_face_position_title">Coloca tu foto</string>
+    <string name="account_face_position_body">Arrastra la imagen y pellizca para acercar. El círculo es lo que verán los demás.</string>
+    <string name="account_face_position_use">Usar esta</string>
+    <string name="account_face_position_failed">La imagen no se puede mostrar aquí. Aun así se puede usar tal cual.</string>
+    <string name="account_face_position_frame">La imagen que va en el círculo</string>
 </resources>

@@ -28,9 +28,11 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListS
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.presentation.author.AuthorScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.author.AuthorUiState
-import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
-import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedScreenContent
-import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedUiState
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityHomeContent
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.ExploreUiState
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPane
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
+import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.ModerationScreenContent
@@ -109,8 +111,9 @@ class EveryScreenInEveryLanguageTest {
             tabs = { HomeTabs(selected = HomeTab.Mine, onSelect = {}) },
         )
 
-        "home-community" -> CommunityFeedScreenContent(
-            state = CommunityFeedUiState(feed = CommunityFeed.Ready(listOf(summary("1"), summary("2")))),
+        "home-community" -> CommunityHomeContent(
+            explore = ExploreUiState(feed = FeedPane(phase = FeedPhase.Ready, lists = listOf(summary("1"), summary("2")))),
+            following = FollowingFeedUiState(),
             tabs = { HomeTabs(selected = HomeTab.Community, onSelect = {}) },
         )
 

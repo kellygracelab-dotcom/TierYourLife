@@ -116,7 +116,68 @@ queuing — a queue means the Undo you are reaching for belongs to a removal two
 | Dismissing | Close, scrim, drag down or back all discard the selection. There is no draft |
 | Words | "Films" became "items" everywhere but the source's own name — this is not a films app, and TMDB is one source of several |
 
-## 7. Left open
+## 7. Short windows, tablets and the cover
+
+Settled with Claude Design on 26.10 after Danylo's walkthrough of the Flip held
+sideways ("all the working content sits in thin strips"). The rule of thumb:
+**height decides what stays pinned; width decides where the pool goes.** A
+short window is one under 480dp of height (`WindowShape.isShort`): a phone held
+sideways, a Flip's cover, half a phone in split view.
+
+| Window | Bar | Pool |
+|---|---|---|
+| Short (< 480dp tall) | One 48dp bar that leaves with the rows and comes back on the first scroll up (`ScrollAwayHeader`); the status-bar inset stays put | A 216dp card at the end edge, margin 8, padding 10/12, head "Pool · N" (titleSmall) and the fold icon, three cards abreast with 8dp gaps |
+| Wide and held sideways (≥ 840dp wide, wider than tall), e.g. 1280×800 | The usual 56dp bar, spanning the window since the board does | A 300dp card (268 beside the pane of boards), as tall as its content, four cards abreast with 10dp gaps, head titleMedium |
+| A tablet upright (≥ 600 wide, ≥ 480 tall, pool not beside), e.g. 800×1280 | 64dp; a community list's is 72 with the title (20/26) over "author · Section ›" | Docked under the rows: head "Pool · N" and the Add-a-card field at 300dp; cards 52×76 wrap across the width with 10dp gaps in one, two or four lines that the handle chooses (kept on the device), two by default |
+| Everything else | As before | The strip under the rows, as before |
+| A cover | Back and title only | None: a cover shows a board, it does not build one |
+
+**Row metrics** (`TierRowDensity`):
+
+| | Band | Occupied / empty row | Card | Gap / padding | Row gap | Letter | Caption |
+|---|---|---|---|---|---|---|---|
+| Short | 64 | 72 / 56 | 40×58 | 6 / 7 | 6 | 20/24 500 | 9/11, hidden on empty rows |
+| ≥ 600 wide, ≥ 480 tall | 80 (72 beside the pane of boards) | 96 / 72 | 52×76 | 8 / 10 | 8 | 26/30 500 | 10/13 |
+| Phone upright | 64 | 84 | 44×64 | 8 / 10 | 8 | theme | theme |
+
+A card without a picture at 40 or 52dp is its words on surfaceContainerHighest
+inside a 1dp outlineVariant border, 8/10 or 10/12 medium, centred, at most three
+lines, broken only between words (or hyphenated), never mid-word. An empty row
+says "Drop items here" while the pool has cards, at the short and tablet sizes.
+
+**The side pool** is open while anything is left to rank and folds to a 56dp
+strip (open icon, a green check when empty, the count, Add) when it is empty or
+the person folds it. The person's choice is kept on the device
+(`poolColumnCollapsed`) and wins until the pool's count changes; the width
+moves in 200ms. Its Add-a-card field is 40dp, round, outlined, with the AI
+studio at its end; in a column layout (short, or ≥ 840 wide) it opens the add
+flow as a 360dp side sheet with the board in view.
+
+**Dragging, every size.** The lifted card is scaled 1.08, tilted −4°, elevation
+8. The row under it gets a 2dp primary ring and a dashed slot, the card's size,
+where it would land, moving with the finger. Where the pool stands beside the
+rows or docks under them, its head becomes the trash while a card is lifted
+(48dp, errorContainer, "Drop to delete", and under it "Drop on the cards below
+to unrank" / "Drop on the pool to unrank"); a drop there deletes with the same
+Undo as before. A card let go over nothing springs back in 160ms. Autoscroll
+zones are 48dp with speed rising toward the edge. A haptic tick marks the lift
+and each change of row.
+
+### Settings of a list
+
+**New tier** is the first row, under the bar, so it is there the moment the
+page opens; the column ends clear of the navigation bar (and of the sides when
+sideways), so the last row never sits under it.
+
+### System bars
+
+The status bar's strip stays with the screen while the compact bar leaves;
+the last tier clears the navigation bar whenever nothing lies under the rows
+(pool beside them, a reader's board, the cover), and the pool clears it when
+it lies under them. Rule and screenshots: `architecture-presentation.md`,
+*Bars and system insets*.
+
+## 8. Left open
 
 - **A cap on row height.** None today. The design said outright "say the word if you want a
   cap", and nobody has.

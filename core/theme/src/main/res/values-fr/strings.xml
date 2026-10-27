@@ -33,4 +33,5 @@
         <item quantity="other">%d classés</item>
     </plurals>
     <string name="tier_lists_title">Vos listes</string>
+    <string name="snack_published_as_ranking">Publiée comme votre classement de cette liste. Aucune seconde liste n’apparaît dans le fil.</string>
 </resources>

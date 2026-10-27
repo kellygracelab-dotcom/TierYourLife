@@ -36,6 +36,10 @@ data class TierListEntity(
     val topicName: String? = null,
     /** A topic the author named that has not been published yet. */
     val newTopicName: String? = null,
+    /** The published list this copy was taken from. */
+    val takenFrom: String? = null,
+    /** The list this board is out as a ranking of; null while it is a list of its own, or private. */
+    val rankingOf: String? = null,
     /** Stable across devices, unlike [id], this database's own counter. */
     @ColumnInfo(defaultValue = "''")
     val uid: String = UUID.randomUUID().toString(),

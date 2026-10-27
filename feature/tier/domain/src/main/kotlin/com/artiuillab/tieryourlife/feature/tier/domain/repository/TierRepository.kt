@@ -28,9 +28,14 @@ interface TierRepository {
         authorName: String,
         tiers: List<Tier>,
         items: List<TierItem>,
+        /** The published list the cards came from, when they did. */
+        takenFrom: String? = null,
     ): Long
 
     suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?)
+
+    /** The published list this board is out as a ranking of, or null once it is not. */
+    suspend fun setRankingOf(id: Long, listId: String?)
 
     /**
      * Two questions, because a board published before this was recorded can

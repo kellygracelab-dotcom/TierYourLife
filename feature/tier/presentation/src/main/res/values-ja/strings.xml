@@ -7,7 +7,7 @@
     <plurals name="search_results_count">
         <item quantity="other">%1$d件のリスト</item>
     </plurals>
-    <string name="search_no_results_title">「%1$s」に一致するリストはありません</string>
+    <string name="search_no_results_title">「%1$s」という名前のリストはありません</string>
     <string name="search_no_results_body">もっと短い単語を試すか、つづりを確認してください。</string>
 
     <plurals name="selection_count">
@@ -169,4 +169,7 @@
     <string name="cover_picker_no_cards">このリストのカードにはまだ画像がありません。</string>
     <string name="cover_picker_gallery">ギャラリーから選ぶ</string>
     <string name="cover_picker_gallery_note">ギャラリーの画像はカバー全体になり、公開時にリストと一緒に送られます。</string>
+    <string name="tier_detail_ranking_of">%1$sのリストのあなたのランキング</string>
+    <string name="tier_detail_open_original">開く</string>
+    <string name="search_names_only">名前のみ</string>
 </resources>

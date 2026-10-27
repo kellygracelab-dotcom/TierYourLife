@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -339,4 +340,55 @@ class TierDragControllerTest {
         width = 44.dp,
         height = 64.dp,
     )
+
+    // The row draws a slot where the card would land; it has to be the same place the drop then uses.
+    @Test
+    fun theHoverIndex_isWhereTheDropWouldLand() {
+        val controller = TierDragController()
+        controller.registerRowBounds(tierId = 2L, bounds = Rect(0f, 0f, 1000f, 200f))
+        controller.setValidTargets(tierIds = listOf(2L), itemIds = listOf(10L, 11L, 12L))
+        listOf(10L, 11L, 12L).forEachIndexed { index, id ->
+            controller.registerTileBounds(tierId = 2L, itemId = id, index = index, bounds = Rect(index * 100f, 0f, index * 100f + 80f, 120f))
+        }
+
+        controller.beginDrag(payload(itemId = 1L, sourceTierId = 3L), rootPosition = Offset(150f, 60f))
+
+        assertEquals(2, controller.hoverIndex)
+        val drop = controller.endDrag() as DropOutcome.MoveTo
+        assertEquals(2, drop.toPosition)
+    }
+
+    // A card let go over nothing flies back to where it was lifted rather than vanishing.
+    @Test
+    fun aDropOverNothing_startsTheTripHome_andAFinishedTripClears() {
+        val controller = TierDragController()
+        controller.setValidTargets(tierIds = listOf(2L), itemIds = listOf(1L))
+        val home = Offset(40f, 50f)
+
+        controller.beginDrag(payload(itemId = 1L, sourceTierId = 2L), rootPosition = Offset(40f, 50f), homeCentre = home)
+        controller.updateDrag(Offset(300f, 400f))
+        assertNull(controller.endDrag())
+
+        val trip = controller.returning
+        assertEquals(home, trip?.to)
+        assertEquals(Offset(340f, 450f), trip?.from)
+        assertNull(controller.hoverIndex)
+        controller.finishReturn()
+        assertNull(controller.returning)
+    }
+
+    @Test
+    fun aDropOnARow_hasNoTripHome() {
+        val controller = TierDragController()
+        controller.registerRowBounds(tierId = 2L, bounds = Rect(0f, 0f, 1000f, 200f))
+        controller.setValidTargets(tierIds = listOf(2L), itemIds = listOf(1L))
+
+        controller.beginDrag(payload(itemId = 1L, sourceTierId = 3L), rootPosition = Offset(500f, 100f), homeCentre = Offset(10f, 10f))
+
+        assertTrue(controller.endDrag() is DropOutcome.MoveTo)
+        assertNull(controller.returning)
+    }
+
+    private fun payload(itemId: Long, sourceTierId: Long) =
+        DragPayload(itemId = itemId, title = "x", imageUrl = null, sourceTierId = sourceTierId, width = 40.dp, height = 58.dp)
 }

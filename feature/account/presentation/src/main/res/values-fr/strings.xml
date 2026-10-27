@@ -70,4 +70,9 @@
     <string name="account_delete_keeps_local">Les tableaux de ce téléphone restent où ils sont.</string>
     <string name="account_delete_confirm">Supprimer définitivement</string>
     <string name="account_error_not_deleted">Le compte n’a pas été supprimé. Réessayez.</string>
+    <string name="account_face_position_title">Placez votre photo</string>
+    <string name="account_face_position_body">Faites glisser l’image et pincez pour zoomer. Le cercle est ce que les autres verront.</string>
+    <string name="account_face_position_use">Utiliser</string>
+    <string name="account_face_position_failed">L’image ne peut pas s’afficher ici. Elle peut quand même être utilisée telle quelle.</string>
+    <string name="account_face_position_frame">L’image à placer dans le cercle</string>
 </resources>

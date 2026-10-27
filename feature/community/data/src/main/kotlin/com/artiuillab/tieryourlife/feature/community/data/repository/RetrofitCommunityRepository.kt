@@ -4,6 +4,8 @@ import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.feature.community.data.remote.api.CommunityApi
 import com.artiuillab.tieryourlife.feature.community.data.remote.banNotice
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.AppointModeratorRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.BasedOnDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.FollowedSectionDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModerationReportDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.MoveListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PendingTopicDto
@@ -12,7 +14,9 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIt
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListSummaryDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTierDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.RankingDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ReportRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TakeDownRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicMergeRequestDto
@@ -22,11 +26,13 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.isAppUnverified
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
+import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.EditorialAuthors
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSection
 import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
@@ -35,7 +41,10 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
+import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
@@ -107,8 +116,29 @@ class RetrofitCommunityRepository @Inject constructor(
             Following(
                 authors = answer.authors.map { FollowedAuthor(uid = it.uid, name = it.name, photoUrl = it.photoUrl) },
                 topics = answer.topics.map { it.toDomain() },
+                sections = answer.sections.mapNotNull { it.toDomain() },
             )
         }
+
+    /** The last answer, so the warm-up at start is what Explore opens with. */
+    @Volatile
+    private var lastSections: List<SectionStats>? = null
+
+    override suspend fun sections(): Result<List<SectionStats>> = attempt("Reading the sections") {
+        sectionsInOrder(api.sections().sections).also { lastSections = it }
+    }.recoverCatching { error -> lastSections ?: throw error }
+
+    override suspend fun followSection(section: ListCategory): Result<Unit> = attempt("Following a section") {
+        api.followSection(section.id)
+        lastSections = lastSections?.map { if (it.section == section) it.followedBy(true) else it }
+    }
+
+    override suspend fun unfollowSection(section: ListCategory): Result<Unit> = attempt("Unfollowing a section") {
+        api.unfollowSection(section.id)
+        lastSections = lastSections?.map { if (it.section == section) it.followedBy(false) else it }
+    }
+
+    override suspend fun warmUp(): Result<Unit> = sections().map { }
 
     override suspend fun topics(query: String?, section: ListCategory?): Result<List<Topic>> =
         attempt("Searching topics") {
@@ -165,6 +195,15 @@ class RetrofitCommunityRepository @Inject constructor(
         api.noteTaken(publishedId)
     }
 
+    override suspend fun rankings(listId: String, after: String?): Result<RankingsPage> = attempt("Reading a list's rankings") {
+        val page = api.rankings(listId, after)
+        RankingsPage(rankings = page.rankings.map { it.toDomain() }, nextCursor = page.nextCursor)
+    }
+
+    override suspend fun withdrawRanking(listId: String): Result<Unit> = attempt("Taking a ranking down") {
+        api.deleteMyRanking(listId)
+    }
+
     override suspend fun myPublished(): Result<List<PublishedListSummary>> = attempt("Reading what this account has published") {
         api.myPublished().lists.map { it.toSummary() }
     }
@@ -181,7 +220,14 @@ class RetrofitCommunityRepository @Inject constructor(
         val request = list.toRequest(pictures, up)
         val existing = list.publishedId
         val answer = if (existing == null) api.publish(request) else api.republish(existing, request)
-        Result.success(Published(id = answer.id, fingerprint = PublishFingerprint.of(list, pictures::pictureIdOf), topicId = answer.topicId))
+        Result.success(
+            Published(
+                id = answer.id,
+                fingerprint = PublishFingerprint.of(list, pictures::pictureIdOf),
+                topicId = answer.topicId,
+                ranking = answer.ranking,
+            ),
+        )
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
@@ -308,7 +354,7 @@ private fun PendingTopicDto.toDomain() = PendingTopic(
     similar = similar.map { it.toDomain() },
 )
 
-private fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
+internal fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     id = id,
     title = title,
     authorUid = authorUid,
@@ -324,6 +370,8 @@ private fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     anonymous = anonymous,
     topicId = topicId,
     topicName = topicName,
+    rankingCount = rankingCount,
+    basedOn = basedOn?.toDomain(),
 )
 
 internal fun PublishedListDto.toDomain() = PublishedList(
@@ -342,6 +390,8 @@ internal fun PublishedListDto.toDomain() = PublishedList(
         anonymous = anonymous,
         topicId = topicId,
         topicName = topicName,
+        rankingCount = rankingCount,
+        basedOn = basedOn?.toDomain(),
     ),
     tiers = tiers.mapIndexed { index, tier ->
         Tier(
@@ -379,6 +429,7 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
     topicId = topicId,
     // A name the server has not seen yet; once it has, the id above is what travels.
     newTopic = newTopicName?.takeIf { topicId == null },
+    takenFrom = takenFrom,
     tiers = tiers.filterNot { it.isPool }.map {
         PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark)
     },
@@ -399,4 +450,64 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
             }
         }
     },
+)
+
+private fun BasedOnDto.toDomain() = BasedOn(id = id, title = title, authorName = authorName)
+
+private fun RankingDto.toDomain() = Ranking(
+    uid = uid,
+    authorName = authorName,
+    authorPhotoUrl = authorPhotoUrl,
+    arrangement = arrangement,
+    tierLabels = tierLabels,
+    updatedAtMillis = updatedAtMs,
+    mine = mine,
+)
+
+/**
+ * All nine, in the app's order, whatever the server sent: an id it does not
+ * know is dropped, and a section it left out stands with nothing counted.
+ */
+internal fun sectionsInOrder(answer: List<SectionDto>): List<SectionStats> {
+    val byId = answer.associateBy { it.id }
+    return ListCategory.entries.map { section ->
+        val stats = byId[section.id]
+        SectionStats(
+            section = section,
+            listCount = stats?.listCount ?: 0,
+            followerCount = stats?.followerCount ?: 0,
+            newThisWeek = stats?.newThisWeek ?: 0,
+            following = stats?.following ?: false,
+            collage = stats?.collage.orEmpty().filter { it.startsWith("https://") }.take(COLLAGE_SIZE),
+        )
+    }
+}
+
+private const val COLLAGE_SIZE = 4
+
+private fun SectionStats.followedBy(now: Boolean): SectionStats =
+    if (following == now) this else copy(following = now, followerCount = (followerCount + if (now) 1 else -1).coerceAtLeast(0))
+
+private fun FollowedSectionDto.toDomain(): FollowedSection? =
+    ListCategory.fromId(id)?.let { FollowedSection(section = it, followerCount = followerCount) }
+
+/** The way back from a kept summary to what the server would have sent, so one codec reads both. */
+internal fun PublishedListSummary.toDto() = PublishedListSummaryDto(
+    id = id,
+    title = title,
+    authorUid = authorUid,
+    authorName = authorName,
+    authorPhotoUrl = authorPhotoUrl,
+    category = category.id,
+    itemCount = itemCount,
+    coverImageUrl = coverImageUrl,
+    previewImages = previewImages,
+    tierColors = tierColors,
+    updatedAt = updatedAtMillis,
+    takeCount = takeCount,
+    anonymous = anonymous,
+    topicId = topicId,
+    topicName = topicName,
+    rankingCount = rankingCount,
+    basedOn = basedOn?.let { BasedOnDto(id = it.id, title = it.title, authorName = it.authorName) },
 )

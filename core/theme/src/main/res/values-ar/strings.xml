@@ -45,4 +45,5 @@
         <item quantity="other">%d مصنَّف</item>
     </plurals>
     <string name="tier_lists_title">قوائمك</string>
+    <string name="snack_published_as_ranking">منشورة كترتيبك لتلك القائمة. لا تظهر قائمة ثانية في الخلاصة.</string>
 </resources>

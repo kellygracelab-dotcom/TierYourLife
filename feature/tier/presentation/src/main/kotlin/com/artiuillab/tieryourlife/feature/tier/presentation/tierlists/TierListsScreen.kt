@@ -5,21 +5,25 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,6 +45,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
@@ -50,12 +55,15 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
-import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
+import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
+import com.artiuillab.tieryourlife.core.theme.layout.isShortWindow
+import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.ui.DeletedItemSnackbarHost
@@ -79,9 +87,11 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlyFooter
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlySignInCard
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.RestoringPictures
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchResultRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SelectionTopBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.TILE_MIN_WIDTH
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.TierListCard
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.homeSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.previewTierLists
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -191,6 +201,8 @@ fun TierListsScreenContent(
     val grouped = success?.grouped ?: false
     var filtersOpen by rememberSaveable { mutableStateOf(false) }
     val hasRail = currentWindowShape.hasRail
+    // Out here, so closing a search finds the boards where they were left.
+    val boardsScroll = rememberLazyGridState()
 
     BackHandler(enabled = mode !is HomeMode.Browsing) {
         when (mode) {
@@ -206,6 +218,7 @@ fun TierListsScreenContent(
     val undoLabel = stringResource(R.string.action_undo)
     val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
     val stillPublicMessage = stringResource(R.string.snack_published_list_still_public)
+    val publishedAsRankingMessage = stringResource(ThemeR.string.snack_published_as_ranking)
 
     LaunchedEffect(Unit) {
         userMessages.collect { message ->
@@ -213,6 +226,7 @@ fun TierListsScreenContent(
                 when (message) {
                     UserMessage.ActionFailed -> actionFailedMessage
                     UserMessage.PublishedListStillPublic -> stillPublicMessage
+                    UserMessage.PublishedAsRanking -> publishedAsRankingMessage
                 },
             )
         }
@@ -238,51 +252,79 @@ fun TierListsScreenContent(
         mode !is HomeMode.Searching &&
         totalListCount == 0
 
+    val short = isShortWindow
+    val keyboardUp = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    // The first thing that scrolls, never pinned: the counts where the bar
+    // has no room for them, then what orders and narrows the boards. Nothing
+    // to order or narrow until there is more than one board.
+    val top: @Composable () -> Unit = {
+        Column {
+            if (!short) HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
+            if (totalListCount > 1) {
+                BoardControlsRow(
+                    sort = boardSort,
+                    filters = boardFilters,
+                    asPictures = asPictures,
+                    onSelectSort = onSelectBoardSort,
+                    onOpenFilters = { filtersOpen = true },
+                    onClearCategory = { onApplyBoardFilters(boardFilters.copy(category = null)) },
+                    onClearPublished = { onApplyBoardFilters(boardFilters.copy(published = null)) },
+                    onToggleView = onToggleView,
+                    horizontalPadding = 0.dp,
+                )
+            }
+        }
+    }
+
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         Box(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                when (mode) {
-                    is HomeMode.Searching -> SearchTopBar(
-                        query = mode.query,
-                        onQueryChange = onSearchQueryChange,
-                        onClose = onCloseSearch,
-                    )
+            BarredScreen(
+                // Held while it is in use: the count being acted on, or the field
+                // while the keyboard is up. Typed and put away, the field leaves
+                // with the results like any bar in a short window.
+                compact = short,
+                pinned = mode is HomeMode.Selecting || (mode is HomeMode.Searching && keyboardUp),
+                bar = {
+                    Column {
+                        when (mode) {
+                            is HomeMode.Searching -> SearchTopBar(
+                                query = mode.query,
+                                onQueryChange = onSearchQueryChange,
+                                onClose = onCloseSearch,
+                                contentMax = ContentWidth.Board,
+                                statusBarPadding = false,
+                                compact = short,
+                            )
 
-                    is HomeMode.Selecting -> SelectionTopBar(
-                        count = mode.selectedIds.size,
-                        onClose = onCloseSelection,
-                        onDelete = { deleteAndAnnounce(mode.selectedIds.toList()) },
-                    )
+                            is HomeMode.Selecting -> SelectionTopBar(
+                                count = mode.selectedIds.size,
+                                onClose = onCloseSelection,
+                                onDelete = { deleteAndAnnounce(mode.selectedIds.toList()) },
+                            )
 
-                    HomeMode.Browsing -> HomeTopBar(
-                        onSearchClick = onSearchClick,
-                        // Promoted into the rail where there is one.
-                        onSettingsClick = onSettingsClick.takeUnless { hasRail },
-                    )
-                }
+                            HomeMode.Browsing -> HomeTopBar(
+                                onSearchClick = onSearchClick,
+                                // Promoted into the rail where there is one.
+                                onSettingsClick = onSettingsClick.takeUnless { hasRail },
+                                // The rail names the app already; the bar names the half.
+                                title = if (hasRail) {
+                                    stringResource(ThemeR.string.tier_lists_title)
+                                } else {
+                                    stringResource(ThemeR.string.app_name_display)
+                                },
+                                count = homeSummary(totalListCount, rankedCount).takeIf { short && totalListCount > 0 },
+                                contentMax = ContentWidth.Board,
+                                statusBarPadding = false,
+                            )
+                        }
 
-                // Under the bar, above the tabs: it is about everything below it.
-                RestoringPictures(restoringPictures)
+                        // Under the bar, above the tabs: it is about everything below it.
+                        RestoringPictures(restoringPictures)
 
-                if (mode !is HomeMode.Searching) {
-                    tabs()
-                    HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
-                }
-
-                // Nothing to order or narrow until there is more than one board.
-                if (mode !is HomeMode.Searching && totalListCount > 1) {
-                    BoardControlsRow(
-                        sort = boardSort,
-                        filters = boardFilters,
-                        asPictures = asPictures,
-                        onSelectSort = onSelectBoardSort,
-                        onOpenFilters = { filtersOpen = true },
-                        onClearCategory = { onApplyBoardFilters(boardFilters.copy(category = null)) },
-                        onClearPublished = { onApplyBoardFilters(boardFilters.copy(published = null)) },
-                        onToggleView = onToggleView,
-                    )
-                }
-
+                        if (mode !is HomeMode.Searching) tabs()
+                    }
+                },
+            ) {
                 when (state) {
                     TierListsUiState.Loading -> Box(
                         Modifier.fillMaxSize(),
@@ -308,6 +350,8 @@ fun TierListsScreenContent(
                         totalListCount == 0 -> HomeEmptyState(onCreateNamedList = onCreateNamedList)
 
                         else -> HomeContent(
+                            top = top,
+                            scroll = boardsScroll,
                             lists = lists,
                             asPictures = asPictures,
                             favourites = favourites,
@@ -383,6 +427,8 @@ fun TierListsScreenContent(
 
 @Composable
 private fun HomeContent(
+    top: @Composable () -> Unit,
+    scroll: LazyGridState,
     lists: List<TierList>,
     asPictures: Boolean,
     favourites: List<TierList>,
@@ -404,6 +450,8 @@ private fun HomeContent(
 
     if (asPictures) {
         BoardTiles(
+            top = top,
+            scroll = scroll,
             lists = lists,
             favourites = favourites,
             grouped = grouped,
@@ -422,18 +470,13 @@ private fun HomeContent(
         return
     }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .testTag(TierListsTestTags.LISTS),
-        contentPadding = PaddingValues(bottom = 96.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
+    BoardsGrid(columns = GridCells.Adaptive(ROW_MIN_WIDTH), scroll = scroll) {
+        wide("top") { top() }
         // Above the boards and above the sign-in offer: two copies of one
         // board is news. Hidden while selecting: two sets of buttons is one too many.
         if (conflict != null && !isSelecting) {
-            item(key = "conflict-banner") {
-                CenteredContent(ContentWidth.Reading, Modifier.padding(horizontal = 16.dp)) {
+            wide("conflict-banner") {
+                Box(Modifier.widthIn(max = ContentWidth.Reading)) {
                     ConflictBanner(
                         title = conflict.title,
                         onGotIt = { onDismissConflictNotice(conflict.title) },
@@ -442,8 +485,8 @@ private fun HomeContent(
             }
         }
         if (here?.offerSignIn == true && !isSelecting) {
-            item(key = "local-only-card") {
-                CenteredContent(ContentWidth.Reading, Modifier.padding(horizontal = 16.dp)) {
+            wide("local-only-card") {
+                Box(Modifier.widthIn(max = ContentWidth.Reading)) {
                     LocalOnlySignInCard(
                         boardCount = lists.size,
                         onSignIn = onSignInClick,
@@ -453,7 +496,7 @@ private fun HomeContent(
             }
         }
         if (grouped) {
-            item(key = "favourites-heading") {
+            wide("favourites-heading") {
                 GroupHeading(R.string.lists_group_favourites, TierListsTestTags.FAVOURITES_HEADING)
             }
             items(favourites, key = { starredKey(it.id) }) { list ->
@@ -467,7 +510,7 @@ private fun HomeContent(
                     onToggleFavourite = onToggleFavourite,
                 )
             }
-            item(key = "others-heading") {
+            wide("others-heading") {
                 GroupHeading(R.string.lists_group_others, TierListsTestTags.OTHERS_HEADING)
             }
         }
@@ -483,8 +526,8 @@ private fun HomeContent(
             )
         }
         if (here != null) {
-            item(key = "local-only-footer") {
-                CenteredContent(ContentWidth.Reading, Modifier.padding(horizontal = 16.dp)) {
+            wide("local-only-footer") {
+                Box(Modifier.widthIn(max = ContentWidth.Reading)) {
                     LocalOnlyFooter(boardCount = lists.size)
                 }
             }
@@ -492,9 +535,54 @@ private fun HomeContent(
     }
 }
 
+/** A row of boards needs this much to keep its title and counts readable; wider windows fit two or three side by side. */
+private val ROW_MIN_WIDTH = 320.dp
+
+/**
+ * The boards' column: at most [ContentWidth.Board] with its 16dp margins,
+ * centred, the bar standing on the same one. Padded rather than capped, so a
+ * finger in the margin of a tablet still scrolls the boards.
+ */
+@Composable
+private fun BoardsGrid(
+    columns: GridCells,
+    scroll: LazyGridState = rememberLazyGridState(),
+    aboveKeyboard: Boolean = false,
+    content: LazyGridScope.() -> Unit,
+) {
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val side = max(SIDE_MARGIN, (maxWidth - ContentWidth.Board) / 2 + SIDE_MARGIN)
+        LazyVerticalGrid(
+            columns = columns,
+            modifier = Modifier.fillMaxSize().testTag(TierListsTestTags.LISTS),
+            state = scroll,
+            // Room for the new-list button while browsing; a search has none to clear.
+            contentPadding = systemBarsContentPadding(
+                start = side,
+                end = side,
+                bottom = if (aboveKeyboard) SIDE_MARGIN else 96.dp,
+                aboveKeyboard = aboveKeyboard,
+            ),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            content = content,
+        )
+    }
+}
+
+private val SIDE_MARGIN = 16.dp
+
+/** One item across the whole column: headings, notices, the controls. */
+private fun LazyGridScope.wide(key: String, content: @Composable () -> Unit) {
+    item(key = key, span = { GridItemSpan(maxLineSpan) }) { content() }
+}
+
 /** The same boards as pictures. Notices span the grid: one the width of a tile reads as being about that tile. */
 @Composable
 private fun BoardTiles(
+    top: @Composable () -> Unit,
+    scroll: LazyGridState = rememberLazyGridState(),
+    aboveKeyboard: Boolean = false,
     lists: List<TierList>,
     favourites: List<TierList>,
     grouped: Boolean,
@@ -510,13 +598,8 @@ private fun BoardTiles(
     onDismissSignInOffer: () -> Unit,
     onDismissConflictNotice: (String) -> Unit,
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = TILE_MIN_WIDTH),
-        modifier = Modifier.fillMaxSize().testTag(TierListsTestTags.LISTS),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
+    BoardsGrid(columns = GridCells.Adaptive(minSize = TILE_MIN_WIDTH), scroll = scroll, aboveKeyboard = aboveKeyboard) {
+        wide("top") { top() }
         if (conflict != null) {
             item(key = "conflict-banner", span = { GridItemSpan(maxLineSpan) }) {
                 ConflictBanner(
@@ -588,23 +671,26 @@ private fun SearchResults(
         return
     }
 
-    Column {
-        // The same measure as the results, or the count stops standing over
-        // what it counts.
-        CenteredContent(ContentWidth.Reading) {
-            Text(
-                text = pluralStringResource(R.plurals.search_results_count, lists.size, lists.size),
-                modifier = Modifier
-                    .padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 6.dp)
-                    .testTag(TierListsTestTags.SEARCH_RESULTS_COUNT),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        // The same shape the boards had a moment ago: searching narrows, it
-        // does not change what a board looks like.
+    // The first line of the results' own column, so it stands over what it
+    // counts, and says what was searched: a list's name, not what is in it.
+    val count: @Composable () -> Unit = {
+        Text(
+            text = pluralStringResource(R.plurals.search_results_count, lists.size, lists.size) +
+                " · " + stringResource(R.string.search_names_only),
+            modifier = Modifier
+                .padding(start = 4.dp, end = 4.dp, top = 8.dp, bottom = 6.dp)
+                .testTag(TierListsTestTags.SEARCH_RESULTS_COUNT),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    run {
+        // Pictures stay pictures: searching narrows, it does not change what
+        // a board looks like. Rows tighten to two lines (§2.3), the name first.
         if (asPictures) {
             BoardTiles(
+                top = count,
+                aboveKeyboard = true,
                 lists = lists,
                 favourites = emptyList(),
                 grouped = false,
@@ -623,15 +709,10 @@ private fun SearchResults(
             return
         }
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
+        BoardsGrid(columns = GridCells.Adaptive(ROW_MIN_WIDTH), aboveKeyboard = true) {
+            wide("count") { count() }
             items(lists, key = { it.id }) { list ->
-                CenteredContent(ContentWidth.Reading) {
-                    TierListCard(list = list, onClick = { onTierListClick(list.id) })
-                }
+                SearchResultRow(list = list, onClick = { onTierListClick(list.id) })
             }
         }
     }
@@ -648,6 +729,7 @@ private fun HomeEmptyStateLayout(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .imePadding()
             .testTag(testTag),
         contentAlignment = Alignment.Center,
     ) {
@@ -718,16 +800,14 @@ private fun starredKey(id: Long): String = "starred-$id"
  */
 @Composable
 private fun GroupHeading(@StringRes labelRes: Int, testTag: String) {
-    CenteredContent(ContentWidth.Reading, Modifier.padding(horizontal = 16.dp)) {
-        Text(
-            text = stringResource(labelRes),
-            modifier = Modifier
-                .padding(top = 6.dp, bottom = 2.dp)
-                .testTag(testTag),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
+    Text(
+        text = stringResource(labelRes),
+        modifier = Modifier
+            .padding(top = 6.dp, bottom = 2.dp)
+            .testTag(testTag),
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 @Composable
@@ -740,14 +820,12 @@ private fun BoardRow(
     onToggleSelected: (Long) -> Unit,
     onToggleFavourite: (Long) -> Unit,
 ) {
-    CenteredContent(ContentWidth.Reading, Modifier.padding(horizontal = 16.dp)) {
-        TierListCard(
-            list = list,
-            onClick = { if (isSelecting) onToggleSelected(list.id) else onTierListClick(list.id) },
-            onLongClick = { if (!isSelecting) onLongPressCard(list.id) },
-            selectionMode = isSelecting,
-            selected = isSelected,
-            onToggleFavourite = { onToggleFavourite(list.id) },
-        )
-    }
+    TierListCard(
+        list = list,
+        onClick = { if (isSelecting) onToggleSelected(list.id) else onTierListClick(list.id) },
+        onLongClick = { if (!isSelecting) onLongPressCard(list.id) },
+        selectionMode = isSelecting,
+        selected = isSelected,
+        onToggleFavourite = { onToggleFavourite(list.id) },
+    )
 }

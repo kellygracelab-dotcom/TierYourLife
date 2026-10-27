@@ -8,7 +8,7 @@
         <item quantity="one">%1$d list</item>
         <item quantity="other">%1$d lists</item>
     </plurals>
-    <string name="search_no_results_title">No lists match “%1$s”</string>
+    <string name="search_no_results_title">No lists called “%1$s”</string>
     <string name="search_no_results_body">Try a shorter word, or check the spelling.</string>
 
     <plurals name="selection_count">
@@ -182,4 +182,7 @@
     <string name="cover_picker_no_cards">None of this list\'s cards have a picture yet.</string>
     <string name="cover_picker_gallery">Choose from gallery</string>
     <string name="cover_picker_gallery_note">A gallery picture is the whole cover and travels with the list when you publish it.</string>
+    <string name="tier_detail_ranking_of">Your ranking of a list by %1$s</string>
+    <string name="tier_detail_open_original">Open</string>
+    <string name="search_names_only">names only</string>
 </resources>

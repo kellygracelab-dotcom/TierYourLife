@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components
 
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
+import com.artiuillab.tieryourlife.core.theme.layout.EndSideSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
@@ -23,6 +25,8 @@ internal fun AddItemsSheet(
     listTitle: String,
     onDismiss: () -> Unit,
     onItemsConfirmed: (List<PoolItemDraft>) -> Unit,
+    /** From the end edge, the board left in view: for a board laid out in columns. */
+    side: Boolean = false,
     searchViewModel: CatalogueSearchViewModel = hiltViewModel(),
 ) {
     val searchState by searchViewModel.state.collectAsStateWithLifecycle()
@@ -30,11 +34,7 @@ internal fun AddItemsSheet(
 
     var selectedItems by remember { mutableStateOf<Map<String, CatalogueItem>>(emptyMap()) }
 
-    AdaptiveSheet(
-        onDismiss = onDismiss,
-        width = SheetWidth.Working,
-        maxHeight = 640.dp,
-    ) {
+    val content: @Composable ColumnScope.() -> Unit = {
         CatalogueSearchScreenContent(
             state = searchState,
             query = query,
@@ -57,6 +57,16 @@ internal fun AddItemsSheet(
                 onItemsConfirmed(selectedItems.values.map { PoolItemDraft(title = it.title, imageUrl = it.imageUrl) })
             },
             onLoadMore = searchViewModel::loadMore,
+        )
+    }
+    if (side) {
+        EndSideSheet(onDismiss = onDismiss, content = content)
+    } else {
+        AdaptiveSheet(
+            onDismiss = onDismiss,
+            width = SheetWidth.Working,
+            maxHeight = 640.dp,
+            content = content,
         )
     }
 }
