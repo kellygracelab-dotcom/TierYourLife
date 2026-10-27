@@ -17,8 +17,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.Hyphens
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -26,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.core.theme.ui.CardLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 
 @Composable
@@ -83,13 +82,11 @@ private fun TextOnlyCard(title: String, small: Boolean) {
             .padding(4.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
+        CardLabel(
             text = title,
-            style = (if (small) SMALL_LABEL else LARGE_LABEL).copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center,
+            style = if (small) SMALL_LABEL else LARGE_LABEL,
             color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 3,
         )
     }
 }
