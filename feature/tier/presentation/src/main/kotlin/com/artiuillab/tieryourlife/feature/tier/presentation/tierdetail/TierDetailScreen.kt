@@ -33,6 +33,7 @@ fun TierDetailScreen(
     onOpenPublishedList: (String) -> Unit = {},
     addedItemIds: List<Long> = emptyList(),
     onAddedItemConsumed: () -> Unit = {},
+    focusTierId: Long? = null,
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
     val screen by viewModel.screen.collectAsStateWithLifecycle()
@@ -101,6 +102,7 @@ fun TierDetailScreen(
                 viewModel.loadTierList()
             },
             onUndoAddedItem = viewModel::removeAddedItems,
+            focusTierId = focusTierId,
         ),
     )
 

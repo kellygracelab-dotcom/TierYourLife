@@ -143,8 +143,6 @@
     <string name="conflict_tag_unknown">from another phone</string>
     <string name="conflict_edited_there">Edited on %1$s %2$s</string>
     <string name="conflict_edited_here">Edited here %1$s</string>
-    <string name="cover_unfold_title">Unfold to rank</string>
-    <string name="cover_unfold_body">Moving cards needs the inner screen.</string>
 
     <string name="cover_picker_title">Cover</string>
     <string name="cover_picker_done">Done</string>
@@ -185,4 +183,26 @@
     <string name="tier_detail_ranking_of">Your ranking of a list by %1$s</string>
     <string name="tier_detail_open_original">Open</string>
     <string name="search_names_only">names only</string>
+    <string name="cover_saved">saved</string>
+    <string name="cover_empty_title">No lists yet</string>
+    <string name="cover_empty_body">Make your first one on the main screen.</string>
+    <string name="cover_open_main">Open on the main screen</string>
+    <string name="cover_community">Community</string>
+    <string name="cover_rank_on_main">Rank on the main screen</string>
+    <string name="cover_next_list">Next list</string>
+    <string name="cover_tier_empty">empty</string>
+    <string name="cover_card_position">%1$s · %2$d of %3$d</string>
+    <string name="cover_card_position_plain">%1$d of %2$d</string>
+    <string name="cover_tap_show_all">Tap to show all</string>
+    <string name="cover_tap_fold">Tap to fold</string>
+    <string name="cover_hand_off_title">Open the phone to continue</string>
+    <string name="cover_hand_off_list">“%1$s” will open on the main screen.</string>
+    <string name="cover_hand_off_card">“%1$s” will open on its board.</string>
+    <string name="cover_hand_off_community">“%1$s” from Community will open on the main screen.</string>
+    <string name="cover_hand_off_app">The app will open on the main screen.</string>
+    <string name="cover_more" translatable="false">+%1$d</string>
+    <plurals name="cover_cards_count">
+        <item quantity="one">%1$d card</item>
+        <item quantity="other">%1$d cards</item>
+    </plurals>
 </resources>

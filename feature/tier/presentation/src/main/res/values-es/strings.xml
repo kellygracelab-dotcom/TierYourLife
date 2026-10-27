@@ -153,8 +153,6 @@
     <string name="conflict_tag_unknown">de otro teléfono</string>
     <string name="conflict_edited_there">Editado en %1$s %2$s</string>
     <string name="conflict_edited_here">Editado aquí %1$s</string>
-    <string name="cover_unfold_title">Despliega para ordenar</string>
-    <string name="cover_unfold_body">Mover tarjetas necesita la pantalla interior.</string>
 
     <string name="cover_picker_title">Portada</string>
     <string name="cover_picker_done">Listo</string>
@@ -198,4 +196,26 @@
     <string name="tier_detail_ranking_of">Tu ranking de una lista de %1$s</string>
     <string name="tier_detail_open_original">Abrir</string>
     <string name="search_names_only">solo nombres</string>
+    <string name="cover_saved">guardada</string>
+    <string name="cover_empty_title">Aún no hay listas</string>
+    <string name="cover_empty_body">Crea la primera en la pantalla principal.</string>
+    <string name="cover_open_main">Abrir en la pantalla principal</string>
+    <string name="cover_community">Comunidad</string>
+    <string name="cover_rank_on_main">Ordenar en la pantalla principal</string>
+    <string name="cover_next_list">Siguiente lista</string>
+    <string name="cover_tier_empty">vacío</string>
+    <string name="cover_card_position">%1$s · %2$d de %3$d</string>
+    <string name="cover_card_position_plain">%1$d de %2$d</string>
+    <string name="cover_tap_show_all">Toca para ver todas</string>
+    <string name="cover_tap_fold">Toca para plegar</string>
+    <string name="cover_hand_off_title">Abre el teléfono para continuar</string>
+    <string name="cover_hand_off_list">«%1$s» se abrirá en la pantalla principal.</string>
+    <string name="cover_hand_off_card">«%1$s» se abrirá en su tablero.</string>
+    <string name="cover_hand_off_community">«%1$s» de la Comunidad se abrirá en la pantalla principal.</string>
+    <string name="cover_hand_off_app">La app se abrirá en la pantalla principal.</string>
+    <plurals name="cover_cards_count">
+        <item quantity="one">%1$d tarjeta</item>
+        <item quantity="many">%1$d tarjetas</item>
+        <item quantity="other">%1$d tarjetas</item>
+    </plurals>
 </resources>

@@ -43,4 +43,6 @@ data class TierDetailActions(
     val onOpenAiStudio: (listTitle: String) -> Unit = {},
     val onConsumeAddedItem: () -> Unit = {},
     val onUndoAddedItem: (itemIds: List<Long>) -> Unit = {},
+    /** The tier the board opens on, once: the one the cover was showing when the phone was opened. */
+    val focusTierId: Long? = null,
 )

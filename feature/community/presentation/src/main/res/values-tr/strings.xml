@@ -223,8 +223,6 @@
     <string name="manage_people">Kişiler · %1$d</string>
     <string name="manage_topic_supporting">%1$s bölümünde · %2$s</string>
     <string name="manage_waiting_supporting">%1$s bölümünde · moderatör bekliyor</string>
-    <string name="cover_open_main">Ana ekranda aç</string>
-    <string name="cover_open_phone">Devam etmek için telefonu açın</string>
     <plurals name="explore_new_this_week">
         <item quantity="one">bu hafta %1$s yeni</item>
         <item quantity="other">bu hafta %1$s yeni</item>

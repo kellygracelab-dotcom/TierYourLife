@@ -216,8 +216,6 @@
     <string name="manage_people">人 · %1$d</string>
     <string name="manage_topic_supporting">%1$s内 · %2$s</string>
     <string name="manage_waiting_supporting">%1$s内 · モデレーターの確認待ち</string>
-    <string name="cover_open_main">メイン画面で開く</string>
-    <string name="cover_open_phone">続けるには端末を開いてください</string>
     <plurals name="explore_new_this_week">
         <item quantity="other">今週の新着%1$s件</item>
     </plurals>

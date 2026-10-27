@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
@@ -89,6 +91,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierList
 import com.artiuillab.tieryourlife.feature.tier.board.share.BoardPalette
 import com.artiuillab.tieryourlife.feature.tier.board.share.SHARE_LINK
 import com.artiuillab.tieryourlife.feature.tier.board.share.shareBoard
+import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import kotlinx.coroutines.delay
@@ -422,6 +425,7 @@ private fun TierScreenBody(
     val density = LocalDensity.current
 
     val tierListState = rememberLazyListState()
+    ScrollToTierOnce(tierListState, rankedTiers, actions.focusTierId)
     var tierListBounds by remember { mutableStateOf(Rect.Zero) }
 
     val autoscrollEdgePx = with(density) { TIER_LIST_AUTOSCROLL_EDGE.toPx() }
@@ -777,6 +781,19 @@ fun TierScreenErrorPreview() {
 
 private val DOCKED_BAR_HEIGHT = 64.dp
 private val DOCKED_READER_BAR_HEIGHT = 72.dp
+
+/** Brings [focusTierId]'s row into view the first time the board has it, and never again: after that the person scrolls. */
+@Composable
+private fun ScrollToTierOnce(state: LazyListState, tiers: List<Tier>, focusTierId: Long?) {
+    var done by rememberSaveable(focusTierId) { mutableStateOf(focusTierId == null) }
+    val index = tiers.indexOfFirst { it.id == focusTierId }
+    LaunchedEffect(index, done) {
+        if (!done && index >= 0) {
+            state.scrollToItem(index)
+            done = true
+        }
+    }
+}
 
 /** A tick under the finger each time a lifted card crosses into another row; the lift itself already had one. */
 @Composable

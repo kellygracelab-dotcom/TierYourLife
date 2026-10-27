@@ -143,8 +143,6 @@
     <string name="conflict_tag_unknown">başka bir telefondan</string>
     <string name="conflict_edited_there">%1$s üzerinde düzenlendi %2$s</string>
     <string name="conflict_edited_here">Burada düzenlendi %1$s</string>
-    <string name="cover_unfold_title">Sıralamak için aç</string>
-    <string name="cover_unfold_body">Kartları taşımak iç ekranı gerektirir.</string>
 
     <string name="cover_picker_title">Kapak</string>
     <string name="cover_picker_done">Bitti</string>
@@ -185,4 +183,25 @@
     <string name="tier_detail_ranking_of">%1$s adlı kişinin listesinin sizin sıralamanız</string>
     <string name="tier_detail_open_original">Aç</string>
     <string name="search_names_only">yalnızca adlar</string>
+    <string name="cover_saved">kaydedildi</string>
+    <string name="cover_empty_title">Henüz liste yok</string>
+    <string name="cover_empty_body">İlkini ana ekranda oluşturun.</string>
+    <string name="cover_open_main">Ana ekranda aç</string>
+    <string name="cover_community">Topluluk</string>
+    <string name="cover_rank_on_main">Ana ekranda sırala</string>
+    <string name="cover_next_list">Sonraki liste</string>
+    <string name="cover_tier_empty">boş</string>
+    <string name="cover_card_position">%1$s · %3$d içinde %2$d</string>
+    <string name="cover_card_position_plain">%2$d içinde %1$d</string>
+    <string name="cover_tap_show_all">Tümünü göstermek için dokunun</string>
+    <string name="cover_tap_fold">Daraltmak için dokunun</string>
+    <string name="cover_hand_off_title">Devam etmek için telefonu açın</string>
+    <string name="cover_hand_off_list">“%1$s” ana ekranda açılacak.</string>
+    <string name="cover_hand_off_card">“%1$s” kendi panosunda açılacak.</string>
+    <string name="cover_hand_off_community">Topluluktan “%1$s” ana ekranda açılacak.</string>
+    <string name="cover_hand_off_app">Uygulama ana ekranda açılacak.</string>
+    <plurals name="cover_cards_count">
+        <item quantity="one">%1$d kart</item>
+        <item quantity="other">%1$d kart</item>
+    </plurals>
 </resources>

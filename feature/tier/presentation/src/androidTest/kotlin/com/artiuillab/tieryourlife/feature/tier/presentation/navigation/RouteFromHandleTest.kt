@@ -40,6 +40,15 @@ class RouteFromHandleTest {
     }
 
     @Test
+    fun theBoardRouteFromTheCover_keepsItsTier() {
+        val route = Route.TierDetail(tierListId = 42L, focusTierId = 9L)
+        val entry = entryFor(route)
+
+        assertEquals(entry.toRoute<Route.TierDetail>(), entry.savedStateHandle.tierDetailRoute())
+        assertEquals(route, entry.savedStateHandle.tierDetailRoute())
+    }
+
+    @Test
     fun theTopicPickerRoute_readsTheSameWithoutBundle() {
         val route = Route.TopicPicker(tierListId = 7L)
         val entry = entryFor(route)

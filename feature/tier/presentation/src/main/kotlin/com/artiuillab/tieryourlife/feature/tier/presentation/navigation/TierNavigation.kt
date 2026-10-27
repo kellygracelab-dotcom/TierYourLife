@@ -51,6 +51,7 @@ fun NavGraphBuilder.tierDetailScreen(
             topicChanged = topicChanged,
             onTopicChangeConsumed = { backStackEntry.savedStateHandle[TOPIC_CHANGED_RESULT_KEY] = false },
             onOpenPublishedList = onOpenPublishedList,
+            focusTierId = route.focusTierId,
         )
     }
 }
@@ -73,8 +74,8 @@ fun NavGraphBuilder.trashScreen(onBack: () -> Unit) {
     }
 }
 
-fun NavController.navigateToTierDetail(id: Long) {
-    navigate(Route.TierDetail(id))
+fun NavController.navigateToTierDetail(id: Long, focusTierId: Long? = null) {
+    navigate(Route.TierDetail(id, focusTierId))
 }
 
 fun NavController.navigateToCoverPicker(tierListId: Long) {

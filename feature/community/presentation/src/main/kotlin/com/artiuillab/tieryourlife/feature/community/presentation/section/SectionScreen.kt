@@ -2,7 +2,6 @@ package com.artiuillab.tieryourlife.feature.community.presentation.section
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -15,17 +14,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +41,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -68,31 +62,26 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.BackArrowIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CardActions
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.EnterAlwaysColumn
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedCallbacks
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedListMenus
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowSize
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowToggle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.HomeLayout
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.NearEndWatcher
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.NewListsPill
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.OfflineStrip
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.OpenInFullIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScrolledDownWatcher
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.WideContentMax
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.countText
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.edgeToEdge
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.feedItems
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.homeLayoutFor
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.rememberSkeletonAlpha
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
-import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -162,7 +151,7 @@ fun SectionScreenContent(
             val layout = homeLayoutFor(currentWindowShape, maxHeight)
             val cards = CardActions(onOpenList) { menuFor = it }
             when (layout) {
-                HomeLayout.Cover -> CoverSection(state, onBack, onOpenList, snackbar)
+                HomeLayout.Cover -> CoverSection(state, onBack, onOpenList, feed.onRetry, feed.onLoadMore)
                 HomeLayout.CompactHeight -> EnterAlwaysColumn(
                     // The inset stays with the screen while the bar leaves.
                     modifier = Modifier.statusBarsPadding(),
@@ -377,79 +366,5 @@ private fun CompactSectionBar(state: SectionUiState, onBack: () -> Unit, onToggl
             FollowToggle(following = state.stats?.following == true, onClick = onToggleFollow, size = FollowSize.Compact)
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-    }
-}
-
-/** A section on the Flip's cover (§8.2): compact rows, and a way to the phone for anything more. */
-@Composable
-private fun CoverSection(
-    state: SectionUiState,
-    onBack: () -> Unit,
-    onOpenList: (PublishedListSummary) -> Unit,
-    snackbar: SnackbarHostState,
-) {
-    val scope = rememberCoroutineScope()
-    val hint = stringResource(R.string.cover_open_phone)
-    Column(Modifier.fillMaxSize().testTag(SectionTestTags.COVER)) {
-        Row(Modifier.height(44.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onBack) { BackIcon() }
-            Text(
-                stringResource(state.section.labelRes),
-                style = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium),
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-        LazyColumn(Modifier.fillMaxSize()) {
-            val rows = if (state.feed.phase == FeedPhase.Ready) state.feed.lists else emptyList()
-            items(rows.take(COVER_ROWS_BEFORE_BUTTON), key = { it.id }) { summary -> CoverRow(summary) { onOpenList(summary) } }
-            item(key = "open-main") {
-                FilledTonalButton(
-                    onClick = { scope.launch { snackbar.showSnackbar(hint) } },
-                    modifier = Modifier
-                        .padding(start = 14.dp, end = 14.dp, top = 6.dp)
-                        .height(40.dp)
-                        .testTag(SectionTestTags.OPEN_MAIN),
-                ) {
-                    OpenInFullIcon(18.dp, MaterialTheme.colorScheme.onSecondaryContainer)
-                    Text(stringResource(R.string.cover_open_main), modifier = Modifier.padding(start = 8.dp), style = TextStyle(fontSize = 13.sp, lineHeight = 18.sp))
-                }
-            }
-            items(rows.drop(COVER_ROWS_BEFORE_BUTTON), key = { it.id }) { summary -> CoverRow(summary) { onOpenList(summary) } }
-        }
-    }
-}
-
-private const val COVER_ROWS_BEFORE_BUTTON = 3
-
-@Composable
-private fun CoverRow(summary: PublishedListSummary, onClick: () -> Unit) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .height(72.dp)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        ListArt(
-            coverImageUrl = summary.coverImageUrl,
-            previewImages = summary.previewImages,
-            tierColors = summary.tierColors,
-            modifier = Modifier
-                .height(64.dp)
-                .widthIn(min = 48.dp, max = 48.dp)
-                .clip(RoundedCornerShape(8.dp)),
-        )
-        Column(Modifier.weight(1f)) {
-            Text(summary.title, style = TextStyle(fontSize = 13.sp, lineHeight = 18.sp, fontWeight = FontWeight.Medium), color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            if (!summary.editorial) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    AuthorFace(photoUrl = summary.authorPhotoUrl, name = summary.authorName, size = 14.dp)
-                    Text(summary.authorName, style = TextStyle(fontSize = 11.sp, lineHeight = 15.sp), color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
-                }
-            }
-            Text(countText(R.plurals.explore_cards, summary.itemCount), style = TextStyle(fontSize = 11.sp, lineHeight = 15.sp), color = MaterialTheme.colorScheme.outline, maxLines = 1)
-        }
     }
 }
