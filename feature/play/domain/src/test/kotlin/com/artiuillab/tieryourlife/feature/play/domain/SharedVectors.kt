@@ -117,7 +117,14 @@ private fun standingVectors() = buildJsonArray {
                 put("name", case.name)
                 put("count", case.count)
                 put("tierCount", case.tierCount)
-                putJsonArray("duels") { case.duels.forEach { addJsonArray { add(it.winner); add(it.loser) } } }
+                putJsonArray("duels") {
+                    case.duels.forEach { duel ->
+                        addJsonArray {
+                            add(duel.winner)
+                            add(duel.loser)
+                        }
+                    }
+                }
                 putJsonObject("expect") {
                     putJsonArray("order") { standing.order.forEach { add(it) } }
                     putJsonArray("logStrength") { standing.logStrength.forEach { add(it) } }
