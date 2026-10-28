@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="play_title">Играть</string>
+    <plurals name="play_cards_from">
+        <item quantity="one">%1$d карточка из списка «%2$s»</item>
+        <item quantity="few">%1$d карточки из списка «%2$s»</item>
+        <item quantity="many">%1$d карточек из списка «%2$s»</item>
+        <item quantity="other">%1$d карточки из списка «%2$s»</item>
+    </plurals>
+    <string name="play_choose_cards">Выбрать карточки</string>
+    <string name="play_game_swiss">Проигравшие остаются</string>
+    <string name="play_game_hill">Царь горы</string>
+    <string name="play_game_bracket">Сетка</string>
+    <string name="play_game_swiss_line">Каждый играет в каждом раунде. Дольше, зато лучше всего заполняет тиры.</string>
+    <string name="play_game_hill_line">Победитель остаётся и встречает следующую карточку. Быстро; тиры получаются примерными.</string>
+    <string name="play_game_bracket_line">Играют пары, победители идут дальше, пока не останется один. Быстро; тиры получаются примерными.</string>
+    <plurals name="play_estimate_duels">
+        <item quantity="one">%1$d дуэль</item>
+        <item quantity="few">%1$d дуэли</item>
+        <item quantity="many">%1$d дуэлей</item>
+        <item quantity="other">%1$d дуэли</item>
+    </plurals>
+    <plurals name="play_estimate_minutes">
+        <item quantity="one">около %1$d мин</item>
+        <item quantity="few">около %1$d мин</item>
+        <item quantity="many">около %1$d мин</item>
+        <item quantity="other">около %1$d мин</item>
+    </plurals>
+    <string name="play_resume">Продолжить</string>
+    <string name="play_resume_progress">%1$s · %2$d из %3$d</string>
+    <string name="play_started_today">Начата сегодня</string>
+    <string name="play_started_yesterday">Начата вчера</string>
+    <plurals name="play_started_days_ago">
+        <item quantity="one">Начата %1$d день назад</item>
+        <item quantity="few">Начата %1$d дня назад</item>
+        <item quantity="many">Начата %1$d дней назад</item>
+        <item quantity="other">Начата %1$d дня назад</item>
+    </plurals>
+    <plurals name="play_new_cards_join">
+        <item quantity="one">%1$d новая карточка присоединится со следующего раунда</item>
+        <item quantity="few">%1$d новые карточки присоединятся со следующего раунда</item>
+        <item quantity="many">%1$d новых карточек присоединятся со следующего раунда</item>
+        <item quantity="other">%1$d новой карточки присоединятся со следующего раунда</item>
+    </plurals>
+    <string name="play_board_changed">Карточки изменились с начала этой игры.</string>
+    <string name="play_start_again">Начать заново</string>
+    <string name="play_into_mine_note">Результат попадёт в «Моя». «Его» не изменится.</string>
+    <string name="play_cancel">Отмена</string>
+    <string name="play_start">Начать</string>
+    <string name="play_continue">Далее</string>
+    <string name="play_pool">Пул</string>
+    <string name="play_everything">Всё</string>
+    <plurals name="play_cards">
+        <item quantity="one">%1$d карточка</item>
+        <item quantity="few">%1$d карточки</item>
+        <item quantity="many">%1$d карточек</item>
+        <item quantity="other">%1$d карточки</item>
+    </plurals>
+    <string name="play_too_many_in_tier">Слишком много для одной игры.</string>
+    <plurals name="play_selected">
+        <item quantity="one">Выбрано %1$d из %2$d</item>
+        <item quantity="few">Выбрано %1$d из %2$d</item>
+        <item quantity="many">Выбрано %1$d из %2$d</item>
+        <item quantity="other">Выбрано %1$d из %2$d</item>
+    </plurals>
+    <plurals name="play_selected_too_many">
+        <item quantity="one">Выбрано %1$d, можно не больше 64</item>
+        <item quantity="few">Выбрано %1$d, можно не больше 64</item>
+        <item quantity="many">Выбрано %1$d, можно не больше 64</item>
+        <item quantity="other">Выбрано %1$d, можно не больше 64</item>
+    </plurals>
+    <string name="play_keep_in_tier">Оставить их в %1$s, только упорядочить</string>
+    <string name="play_quit">Выйти</string>
+    <string name="play_duel_of">Дуэль %1$d из %2$d</string>
+    <string name="play_round_of">Раунд %1$d из %2$d</string>
+    <string name="play_refine_of">Уточнение · %1$d из %2$d</string>
+    <string name="play_undo_pick">Отменить последний выбор</string>
+    <string name="play_skip">Пропустить</string>
+    <string name="play_skip_hint">Пропустите, если не можете выбрать. Ничего не засчитается.</string>
+    <string name="play_pick">Выбрать %1$s</string>
+    <string name="play_your_result">Ваш результат</string>
+    <plurals name="play_from_duels">
+        <item quantity="one">По итогам %1$d дуэли</item>
+        <item quantity="few">По итогам %1$d дуэлей</item>
+        <item quantity="many">По итогам %1$d дуэлей</item>
+        <item quantity="other">По итогам %1$d дуэли</item>
+    </plurals>
+    <string name="play_dashed_legend">Пунктир: сыграли меньше 2 дуэлей.</string>
+    <string name="play_empty_tier">Пусто</string>
+    <plurals name="play_thin">
+        <item quantity="one">%1$d карточка сыграла меньше 2 дуэлей, так что её место — догадка. Уточнение добавит до %2$d дуэлей для неё, или примените сейчас и поправьте вручную.</item>
+        <item quantity="few">%1$d карточки сыграли меньше 2 дуэлей, так что их места — догадка. Уточнение добавит до %2$d дуэлей для них, или примените сейчас и поправьте вручную.</item>
+        <item quantity="many">%1$d карточек сыграли меньше 2 дуэлей, так что их места — догадка. Уточнение добавит до %2$d дуэлей для них, или примените сейчас и поправьте вручную.</item>
+        <item quantity="other">%1$d карточки сыграли меньше 2 дуэлей, так что их места — догадка. Уточнение добавит до %2$d дуэлей для них, или примените сейчас и поправьте вручную.</item>
+    </plurals>
+    <plurals name="play_thin_refined">
+        <item quantity="one">%1$d карточка сыграла меньше 2 дуэлей, так что её место — догадка. Примените сейчас и поправьте вручную.</item>
+        <item quantity="few">%1$d карточки сыграли меньше 2 дуэлей, так что их места — догадка. Примените сейчас и поправьте вручную.</item>
+        <item quantity="many">%1$d карточек сыграли меньше 2 дуэлей, так что их места — догадка. Примените сейчас и поправьте вручную.</item>
+        <item quantity="other">%1$d карточки сыграли меньше 2 дуэлей, так что их места — догадка. Примените сейчас и поправьте вручную.</item>
+    </plurals>
+    <string name="play_apply">Применить</string>
+    <string name="play_put_in_mine">Положить в «Моя»</string>
+    <string name="play_refine">Уточнить</string>
+    <plurals name="play_refine_adds">
+        <item quantity="one">+ до %1$d дуэли</item>
+        <item quantity="few">+ до %1$d дуэлей</item>
+        <item quantity="many">+ до %1$d дуэлей</item>
+        <item quantity="other">+ до %1$d дуэли</item>
+    </plurals>
+    <string name="play_again">Сыграть ещё</string>
+    <string name="play_snack_game_saved">Игра сохранена · %1$d из %2$d</string>
+    <string name="play_snack_discard">Удалить</string>
+    <plurals name="play_snack_arranged">
+        <item quantity="one">Список расставлен по итогам %1$d дуэли</item>
+        <item quantity="few">Список расставлен по итогам %1$d дуэлей</item>
+        <item quantity="many">Список расставлен по итогам %1$d дуэлей</item>
+        <item quantity="other">Список расставлен по итогам %1$d дуэли</item>
+    </plurals>
+    <string name="play_snack_saved_discarded">Сохранённая игра удалена</string>
+    <string name="play_snack_result_discarded">Результат отброшен</string>
+    <string name="play_snack_undo">Отменить</string>
+</resources>

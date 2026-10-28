@@ -14,10 +14,13 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,8 +49,10 @@ import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.MoreIcon
 import com.artiuillab.tieryourlife.core.theme.ui.NoteAddIcon
+import com.artiuillab.tieryourlife.core.theme.ui.PlayArrowIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
+import com.artiuillab.tieryourlife.feature.tier.board.play.PLAY_MIN_CARDS
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private const val TITLE_MAX_LENGTH = 60
@@ -77,6 +82,8 @@ fun TierScreenTopBar(
     barHeight: Dp? = null,
     /** A line under the title in place of [subtitle]: a tablet's author and section, which can be tapped. */
     subline: (@Composable () -> Unit)? = null,
+    /** Play, first of the bar's actions; null leaves it out. */
+    play: PlayButton? = null,
 ) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
@@ -138,6 +145,7 @@ fun TierScreenTopBar(
                 }
             }
             trailing?.invoke(this)
+            play?.let { PlayAction(it) }
             if (!readOnly) {
                 IconButton(
                     onClick = onManualAdd,
@@ -164,6 +172,36 @@ fun TierScreenTopBar(
         }
     }
 }
+
+/** The bar's Play: how many cards there are decides whether it can start, a saved game puts a dot on it. */
+@Immutable
+data class PlayButton(val cards: Int, val saved: Boolean, val onClick: () -> Unit) {
+    val enabled: Boolean get() = cards >= PLAY_MIN_CARDS
+}
+
+@Composable
+private fun PlayAction(play: PlayButton) {
+    val description = stringResource(if (play.enabled) R.string.tier_detail_content_description_play else R.string.tier_detail_play_needs_cards)
+    val color = if (play.enabled) {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    } else {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_ALPHA)
+    }
+    IconButton(
+        onClick = play.onClick,
+        enabled = play.enabled,
+        modifier = Modifier
+            .size(48.dp)
+            .semantics { contentDescription = description }
+            .testTag(TierDetailTestTags.PLAY),
+    ) {
+        BadgedBox(badge = { if (play.saved && play.enabled) Badge(containerColor = MaterialTheme.colorScheme.primary) }) {
+            PlayArrowIcon(24.dp, color)
+        }
+    }
+}
+
+private const val DISABLED_ALPHA = 0.38f
 
 @Composable
 private fun EditableListTitle(

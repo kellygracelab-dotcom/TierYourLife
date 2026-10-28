@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
@@ -16,6 +17,9 @@ import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.ManualEntryDialog
+import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
+import com.artiuillab.tieryourlife.feature.tier.board.play.NoPlay
+import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddItemsSheet
 
 @Composable
@@ -34,6 +38,8 @@ fun TierDetailScreen(
     addedItemIds: List<Long> = emptyList(),
     onAddedItemConsumed: () -> Unit = {},
     focusTierId: Long? = null,
+    /** Play over this board; navigation hands in the real one. */
+    play: BoardPlay = NoPlay,
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
     val screen by viewModel.screen.collectAsStateWithLifecycle()
@@ -41,6 +47,8 @@ fun TierDetailScreen(
     val publish = screen.publish
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
     var manualEntryVisible by rememberSaveable { mutableStateOf(false) }
+    var playOpen by rememberSaveable { mutableStateOf(false) }
+    val playRequest = (state as? TierDetailUiState.Success)?.list?.let { remember(it) { PlayRequest.ownBoard(it) } }
 
     // The picker is a screen of its own; the board reads its row again when it comes back changed.
     LaunchedEffect(coverChanged) {
@@ -103,8 +111,20 @@ fun TierDetailScreen(
             },
             onUndoAddedItem = viewModel::removeAddedItems,
             focusTierId = focusTierId,
+            onPlay = { playOpen = true },
+            playSaved = playRequest?.let { play.isSaved(it.key) } == true,
         ),
     )
+
+    if (playRequest != null) {
+        play.Layer(
+            request = playRequest,
+            open = playOpen,
+            // The moves went through the board's own repository; it only has to read itself again.
+            onArranged = { viewModel.loadTierList() },
+            onClose = { playOpen = false },
+        )
+    }
 
     // A board in columns (a short window, or one wide enough for the pool beside it) adds from the side, in view of the pool.
     val windowSize = LocalWindowInfo.current.containerSize

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="play_title">プレイ</string>
+    <plurals name="play_cards_from">
+        <item quantity="other">「%2$s」のカード %1$d 枚</item>
+    </plurals>
+    <string name="play_choose_cards">カードを選ぶ</string>
+    <string name="play_game_swiss">敗者も残る</string>
+    <string name="play_game_hill">勝ち抜き</string>
+    <string name="play_game_bracket">トーナメント</string>
+    <string name="play_game_swiss_line">全員が毎ラウンド対戦します。時間はかかりますが、ティアを埋めるには最適です。</string>
+    <string name="play_game_hill_line">勝者が残り、次のカードと対戦します。速いですが、ティアはおおまかになります。</string>
+    <string name="play_game_bracket_line">ペアで対戦し、最後のひとつになるまで勝者が進みます。速いですが、ティアはおおまかになります。</string>
+    <plurals name="play_estimate_duels">
+        <item quantity="other">%1$d 回の対戦</item>
+    </plurals>
+    <plurals name="play_estimate_minutes">
+        <item quantity="other">約 %1$d 分</item>
+    </plurals>
+    <string name="play_resume">再開</string>
+    <string name="play_resume_progress">%1$s · %2$d / %3$d</string>
+    <string name="play_started_today">今日開始</string>
+    <string name="play_started_yesterday">昨日開始</string>
+    <plurals name="play_started_days_ago">
+        <item quantity="other">%1$d 日前に開始</item>
+    </plurals>
+    <plurals name="play_new_cards_join">
+        <item quantity="other">新しいカード %1$d 枚が次のラウンドから参加します</item>
+    </plurals>
+    <string name="play_board_changed">このゲームの開始後にカードが変わりました。</string>
+    <string name="play_start_again">最初から</string>
+    <string name="play_into_mine_note">結果は「自分」に入ります。「作者」は変わりません。</string>
+    <string name="play_cancel">キャンセル</string>
+    <string name="play_start">開始</string>
+    <string name="play_continue">次へ</string>
+    <string name="play_pool">プール</string>
+    <string name="play_everything">すべて</string>
+    <plurals name="play_cards">
+        <item quantity="other">%1$d 枚</item>
+    </plurals>
+    <string name="play_too_many_in_tier">1 回のゲームには多すぎます。</string>
+    <plurals name="play_selected">
+        <item quantity="other">%2$d 枚中 %1$d 枚を選択</item>
+    </plurals>
+    <plurals name="play_selected_too_many">
+        <item quantity="other">%1$d 枚を選択中。64 枚までにしてください</item>
+    </plurals>
+    <string name="play_keep_in_tier">%1$s のまま、順番だけ決める</string>
+    <string name="play_quit">終了</string>
+    <string name="play_duel_of">対戦 %1$d / %2$d</string>
+    <string name="play_round_of">ラウンド %1$d / %2$d</string>
+    <string name="play_refine_of">仕上げ · %1$d / %2$d</string>
+    <string name="play_undo_pick">最後の選択を取り消す</string>
+    <string name="play_skip">スキップ</string>
+    <string name="play_skip_hint">選べないときはスキップ。何も記録されません。</string>
+    <string name="play_pick">%1$s を選ぶ</string>
+    <string name="play_your_result">結果</string>
+    <plurals name="play_from_duels">
+        <item quantity="other">%1$d 回の対戦から</item>
+    </plurals>
+    <string name="play_dashed_legend">点線：対戦が 2 回未満のカード。</string>
+    <string name="play_empty_tier">空</string>
+    <plurals name="play_thin">
+        <item quantity="other">%1$d 枚のカードは対戦が 2 回未満のため、位置は推測です。仕上げでこれらのカードに最大 %2$d 回の対戦を追加するか、今すぐ適用して手で調整してください。</item>
+    </plurals>
+    <plurals name="play_thin_refined">
+        <item quantity="other">%1$d 枚のカードは対戦が 2 回未満のため、位置は推測です。今すぐ適用して手で調整してください。</item>
+    </plurals>
+    <string name="play_apply">適用</string>
+    <string name="play_put_in_mine">「自分」に入れる</string>
+    <string name="play_refine">仕上げ</string>
+    <plurals name="play_refine_adds">
+        <item quantity="other">+ 最大 %1$d 回の対戦</item>
+    </plurals>
+    <string name="play_again">もう一度</string>
+    <string name="play_snack_game_saved">ゲームを保存しました · %1$d / %2$d</string>
+    <string name="play_snack_discard">破棄</string>
+    <plurals name="play_snack_arranged">
+        <item quantity="other">%1$d 回の対戦からリストを並べました</item>
+    </plurals>
+    <string name="play_snack_saved_discarded">保存したゲームを破棄しました</string>
+    <string name="play_snack_result_discarded">結果を破棄しました</string>
+    <string name="play_snack_undo">元に戻す</string>
+</resources>

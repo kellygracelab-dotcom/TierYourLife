@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="play_title">Graj</string>
+    <plurals name="play_cards_from">
+        <item quantity="one">%1$d karta z listy %2$s</item>
+        <item quantity="few">%1$d karty z listy %2$s</item>
+        <item quantity="many">%1$d kart z listy %2$s</item>
+        <item quantity="other">%1$d karty z listy %2$s</item>
+    </plurals>
+    <string name="play_choose_cards">Wybierz karty</string>
+    <string name="play_game_swiss">Przegrani zostają</string>
+    <string name="play_game_hill">Król wzgórza</string>
+    <string name="play_game_bracket">Drabinka</string>
+    <string name="play_game_swiss_line">Każdy gra w każdej rundzie. Wolniej, ale najlepiej wypełnia poziomy.</string>
+    <string name="play_game_hill_line">Zwycięzca zostaje i spotyka następną kartę. Szybko; poziomy wychodzą przybliżone.</string>
+    <string name="play_game_bracket_line">Grają pary, zwycięzcy idą dalej, aż zostanie jedna. Szybko; poziomy wychodzą przybliżone.</string>
+    <plurals name="play_estimate_duels">
+        <item quantity="one">%1$d pojedynek</item>
+        <item quantity="few">%1$d pojedynki</item>
+        <item quantity="many">%1$d pojedynków</item>
+        <item quantity="other">%1$d pojedynku</item>
+    </plurals>
+    <plurals name="play_estimate_minutes">
+        <item quantity="one">około %1$d min</item>
+        <item quantity="few">około %1$d min</item>
+        <item quantity="many">około %1$d min</item>
+        <item quantity="other">około %1$d min</item>
+    </plurals>
+    <string name="play_resume">Wznów</string>
+    <string name="play_resume_progress">%1$s · %2$d z %3$d</string>
+    <string name="play_started_today">Rozpoczęta dziś</string>
+    <string name="play_started_yesterday">Rozpoczęta wczoraj</string>
+    <plurals name="play_started_days_ago">
+        <item quantity="one">Rozpoczęta %1$d dzień temu</item>
+        <item quantity="few">Rozpoczęta %1$d dni temu</item>
+        <item quantity="many">Rozpoczęta %1$d dni temu</item>
+        <item quantity="other">Rozpoczęta %1$d dnia temu</item>
+    </plurals>
+    <plurals name="play_new_cards_join">
+        <item quantity="one">%1$d nowa karta dołączy od następnej rundy</item>
+        <item quantity="few">%1$d nowe karty dołączą od następnej rundy</item>
+        <item quantity="many">%1$d nowych kart dołączy od następnej rundy</item>
+        <item quantity="other">%1$d nowej karty dołączy od następnej rundy</item>
+    </plurals>
+    <string name="play_board_changed">Karty zmieniły się od początku tej gry.</string>
+    <string name="play_start_again">Zacznij od nowa</string>
+    <string name="play_into_mine_note">Wynik trafi do „Mój”. „Jego” się nie zmieni.</string>
+    <string name="play_cancel">Anuluj</string>
+    <string name="play_start">Zacznij</string>
+    <string name="play_continue">Dalej</string>
+    <string name="play_pool">Pula</string>
+    <string name="play_everything">Wszystko</string>
+    <plurals name="play_cards">
+        <item quantity="one">%1$d karta</item>
+        <item quantity="few">%1$d karty</item>
+        <item quantity="many">%1$d kart</item>
+        <item quantity="other">%1$d karty</item>
+    </plurals>
+    <string name="play_too_many_in_tier">Za dużo na jedną grę.</string>
+    <plurals name="play_selected">
+        <item quantity="one">Wybrano %1$d z %2$d</item>
+        <item quantity="few">Wybrano %1$d z %2$d</item>
+        <item quantity="many">Wybrano %1$d z %2$d</item>
+        <item quantity="other">Wybrano %1$d z %2$d</item>
+    </plurals>
+    <plurals name="play_selected_too_many">
+        <item quantity="one">Wybrano %1$d, wybierz najwyżej 64</item>
+        <item quantity="few">Wybrano %1$d, wybierz najwyżej 64</item>
+        <item quantity="many">Wybrano %1$d, wybierz najwyżej 64</item>
+        <item quantity="other">Wybrano %1$d, wybierz najwyżej 64</item>
+    </plurals>
+    <string name="play_keep_in_tier">Zostaw je w %1$s, tylko uporządkuj</string>
+    <string name="play_quit">Zakończ</string>
+    <string name="play_duel_of">Pojedynek %1$d z %2$d</string>
+    <string name="play_round_of">Runda %1$d z %2$d</string>
+    <string name="play_refine_of">Doprecyzowanie · %1$d z %2$d</string>
+    <string name="play_undo_pick">Cofnij ostatni wybór</string>
+    <string name="play_skip">Pomiń</string>
+    <string name="play_skip_hint">Pomiń, jeśli nie możesz wybrać. Nic nie zostanie zapisane.</string>
+    <string name="play_pick">Wybierz: %1$s</string>
+    <string name="play_your_result">Twój wynik</string>
+    <plurals name="play_from_duels">
+        <item quantity="one">Na podstawie %1$d pojedynku</item>
+        <item quantity="few">Na podstawie %1$d pojedynków</item>
+        <item quantity="many">Na podstawie %1$d pojedynków</item>
+        <item quantity="other">Na podstawie %1$d pojedynku</item>
+    </plurals>
+    <string name="play_dashed_legend">Linia przerywana: mniej niż 2 pojedynki.</string>
+    <string name="play_empty_tier">Pusto</string>
+    <plurals name="play_thin">
+        <item quantity="one">%1$d karta rozegrała mniej niż 2 pojedynki, więc jej miejsce to zgadywanie. Doprecyzowanie doda do %2$d pojedynków dla niej albo zastosuj teraz i popraw ręcznie.</item>
+        <item quantity="few">%1$d karty rozegrały mniej niż 2 pojedynki, więc ich miejsca to zgadywanie. Doprecyzowanie doda do %2$d pojedynków dla nich albo zastosuj teraz i popraw ręcznie.</item>
+        <item quantity="many">%1$d kart rozegrało mniej niż 2 pojedynki, więc ich miejsca to zgadywanie. Doprecyzowanie doda do %2$d pojedynków dla nich albo zastosuj teraz i popraw ręcznie.</item>
+        <item quantity="other">%1$d karty rozegrało mniej niż 2 pojedynki, więc ich miejsca to zgadywanie. Doprecyzowanie doda do %2$d pojedynków dla nich albo zastosuj teraz i popraw ręcznie.</item>
+    </plurals>
+    <plurals name="play_thin_refined">
+        <item quantity="one">%1$d karta rozegrała mniej niż 2 pojedynki, więc jej miejsce to zgadywanie. Zastosuj teraz i popraw ręcznie.</item>
+        <item quantity="few">%1$d karty rozegrały mniej niż 2 pojedynki, więc ich miejsca to zgadywanie. Zastosuj teraz i popraw ręcznie.</item>
+        <item quantity="many">%1$d kart rozegrało mniej niż 2 pojedynki, więc ich miejsca to zgadywanie. Zastosuj teraz i popraw ręcznie.</item>
+        <item quantity="other">%1$d karty rozegrało mniej niż 2 pojedynki, więc ich miejsca to zgadywanie. Zastosuj teraz i popraw ręcznie.</item>
+    </plurals>
+    <string name="play_apply">Zastosuj</string>
+    <string name="play_put_in_mine">Wstaw do „Mój”</string>
+    <string name="play_refine">Doprecyzuj</string>
+    <plurals name="play_refine_adds">
+        <item quantity="one">+ do %1$d pojedynku</item>
+        <item quantity="few">+ do %1$d pojedynków</item>
+        <item quantity="many">+ do %1$d pojedynków</item>
+        <item quantity="other">+ do %1$d pojedynku</item>
+    </plurals>
+    <string name="play_again">Zagraj ponownie</string>
+    <string name="play_snack_game_saved">Gra zapisana · %1$d z %2$d</string>
+    <string name="play_snack_discard">Odrzuć</string>
+    <plurals name="play_snack_arranged">
+        <item quantity="one">Lista ułożona na podstawie %1$d pojedynku</item>
+        <item quantity="few">Lista ułożona na podstawie %1$d pojedynków</item>
+        <item quantity="many">Lista ułożona na podstawie %1$d pojedynków</item>
+        <item quantity="other">Lista ułożona na podstawie %1$d pojedynku</item>
+    </plurals>
+    <string name="play_snack_saved_discarded">Zapisana gra odrzucona</string>
+    <string name="play_snack_result_discarded">Wynik odrzucony</string>
+    <string name="play_snack_undo">Cofnij</string>
+</resources>

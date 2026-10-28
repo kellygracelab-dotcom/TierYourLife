@@ -112,6 +112,30 @@ class CommunityListViewModelTest {
         assertEquals(loaded.list.tiers.map { tier -> tier.items.size }, after.list.tiers.map { it.items.size })
     }
 
+    @Test
+    fun aGamesResult_becomesMine_onScreen_andStillUnsaved() = runBlocking {
+        val viewModel = viewModel()
+        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        val played = loaded.mine.copy(
+            tiers = loaded.mine.tiers.map { tier ->
+                when {
+                    tier.isPool -> tier.copy(items = emptyList())
+                    tier.id == 0L -> tier.copy(items = published.items)
+                    else -> tier
+                }
+            },
+        )
+
+        viewModel.putInMine(played)
+
+        val after = viewModel.state.value as CommunityListUiState.Success
+        assertEquals(played, after.mine)
+        assertEquals(Showing.Mine, after.showing)
+        assertTrue(after.arranged)
+        assertEquals(loaded.list, after.list)
+        assertEquals(null, after.savedId)
+    }
+
     // Keeping a list the way its author ranked it is a reason to save it, not
     // a mistake to correct.
     @Test

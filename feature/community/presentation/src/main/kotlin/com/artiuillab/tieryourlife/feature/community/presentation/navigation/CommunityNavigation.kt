@@ -8,6 +8,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.following.Foll
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.ModerationScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.published.MyPublishedScreen
+import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
+import com.artiuillab.tieryourlife.feature.tier.board.play.NoPlay
 
 fun NavGraphBuilder.communityListScreen(
     onBack: () -> Unit,
@@ -15,9 +17,11 @@ fun NavGraphBuilder.communityListScreen(
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     /** Another published list named on this one: the one it was based on. */
     onOpenList: (String) -> Unit = {},
+    /** Play over the list; its result fills Mine. */
+    play: BoardPlay = NoPlay,
 ) {
     composable<CommunityRoute.CommunityList> {
-        CommunityListScreen(onBack = onBack, onOpenSaved = onOpenSaved, onAuthorClick = onAuthorClick, onOpenList = onOpenList)
+        CommunityListScreen(onBack = onBack, onOpenSaved = onOpenSaved, onAuthorClick = onAuthorClick, onOpenList = onOpenList, play = play)
     }
 }
 

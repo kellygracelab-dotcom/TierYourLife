@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="play_title">Грати</string>
+    <plurals name="play_cards_from">
+        <item quantity="one">%1$d картка зі списку «%2$s»</item>
+        <item quantity="few">%1$d картки зі списку «%2$s»</item>
+        <item quantity="many">%1$d карток зі списку «%2$s»</item>
+        <item quantity="other">%1$d картки зі списку «%2$s»</item>
+    </plurals>
+    <string name="play_choose_cards">Вибрати картки</string>
+    <string name="play_game_swiss">Програвші лишаються</string>
+    <string name="play_game_hill">Цар гори</string>
+    <string name="play_game_bracket">Сітка</string>
+    <string name="play_game_swiss_line">Кожен грає в кожному раунді. Довше, зате найкраще заповнює тири.</string>
+    <string name="play_game_hill_line">Переможець лишається й зустрічає наступну картку. Швидко; тири виходять приблизні.</string>
+    <string name="play_game_bracket_line">Грають пари, переможці йдуть далі, доки не лишиться один. Швидко; тири виходять приблизні.</string>
+    <plurals name="play_estimate_duels">
+        <item quantity="one">%1$d дуель</item>
+        <item quantity="few">%1$d дуелі</item>
+        <item quantity="many">%1$d дуелей</item>
+        <item quantity="other">%1$d дуелі</item>
+    </plurals>
+    <plurals name="play_estimate_minutes">
+        <item quantity="one">близько %1$d хв</item>
+        <item quantity="few">близько %1$d хв</item>
+        <item quantity="many">близько %1$d хв</item>
+        <item quantity="other">близько %1$d хв</item>
+    </plurals>
+    <string name="play_resume">Продовжити</string>
+    <string name="play_resume_progress">%1$s · %2$d з %3$d</string>
+    <string name="play_started_today">Почато сьогодні</string>
+    <string name="play_started_yesterday">Почато вчора</string>
+    <plurals name="play_started_days_ago">
+        <item quantity="one">Почато %1$d день тому</item>
+        <item quantity="few">Почато %1$d дні тому</item>
+        <item quantity="many">Почато %1$d днів тому</item>
+        <item quantity="other">Почато %1$d дня тому</item>
+    </plurals>
+    <plurals name="play_new_cards_join">
+        <item quantity="one">%1$d нова картка приєднається з наступного раунду</item>
+        <item quantity="few">%1$d нові картки приєднаються з наступного раунду</item>
+        <item quantity="many">%1$d нових карток приєднаються з наступного раунду</item>
+        <item quantity="other">%1$d нової картки приєднаються з наступного раунду</item>
+    </plurals>
+    <string name="play_board_changed">Картки змінилися відтоді, як почалася ця гра.</string>
+    <string name="play_start_again">Почати знову</string>
+    <string name="play_into_mine_note">Результат потрапить у «Моє». «Його» не зміниться.</string>
+    <string name="play_cancel">Скасувати</string>
+    <string name="play_start">Почати</string>
+    <string name="play_continue">Далі</string>
+    <string name="play_pool">Пул</string>
+    <string name="play_everything">Усе</string>
+    <plurals name="play_cards">
+        <item quantity="one">%1$d картка</item>
+        <item quantity="few">%1$d картки</item>
+        <item quantity="many">%1$d карток</item>
+        <item quantity="other">%1$d картки</item>
+    </plurals>
+    <string name="play_too_many_in_tier">Забагато для однієї гри.</string>
+    <plurals name="play_selected">
+        <item quantity="one">Вибрано %1$d з %2$d</item>
+        <item quantity="few">Вибрано %1$d з %2$d</item>
+        <item quantity="many">Вибрано %1$d з %2$d</item>
+        <item quantity="other">Вибрано %1$d з %2$d</item>
+    </plurals>
+    <plurals name="play_selected_too_many">
+        <item quantity="one">Вибрано %1$d, можна не більше 64</item>
+        <item quantity="few">Вибрано %1$d, можна не більше 64</item>
+        <item quantity="many">Вибрано %1$d, можна не більше 64</item>
+        <item quantity="other">Вибрано %1$d, можна не більше 64</item>
+    </plurals>
+    <string name="play_keep_in_tier">Залишити їх у %1$s, лише впорядкувати</string>
+    <string name="play_quit">Вийти</string>
+    <string name="play_duel_of">Дуель %1$d з %2$d</string>
+    <string name="play_round_of">Раунд %1$d з %2$d</string>
+    <string name="play_refine_of">Уточнення · %1$d з %2$d</string>
+    <string name="play_undo_pick">Скасувати останній вибір</string>
+    <string name="play_skip">Пропустити</string>
+    <string name="play_skip_hint">Пропустіть, якщо не можете вибрати. Нічого не зарахується.</string>
+    <string name="play_pick">Вибрати %1$s</string>
+    <string name="play_your_result">Ваш результат</string>
+    <plurals name="play_from_duels">
+        <item quantity="one">За підсумками %1$d дуелі</item>
+        <item quantity="few">За підсумками %1$d дуелей</item>
+        <item quantity="many">За підсумками %1$d дуелей</item>
+        <item quantity="other">За підсумками %1$d дуелі</item>
+    </plurals>
+    <string name="play_dashed_legend">Пунктир: зіграли менше 2 дуелей.</string>
+    <string name="play_empty_tier">Порожньо</string>
+    <plurals name="play_thin">
+        <item quantity="one">%1$d картка зіграла менше 2 дуелей, тож її місце — здогадка. Уточнення додасть до %2$d дуелей для неї, або застосуйте зараз і підправте вручну.</item>
+        <item quantity="few">%1$d картки зіграли менше 2 дуелей, тож їхні місця — здогадка. Уточнення додасть до %2$d дуелей для них, або застосуйте зараз і підправте вручну.</item>
+        <item quantity="many">%1$d карток зіграли менше 2 дуелей, тож їхні місця — здогадка. Уточнення додасть до %2$d дуелей для них, або застосуйте зараз і підправте вручну.</item>
+        <item quantity="other">%1$d картки зіграли менше 2 дуелей, тож їхні місця — здогадка. Уточнення додасть до %2$d дуелей для них, або застосуйте зараз і підправте вручну.</item>
+    </plurals>
+    <plurals name="play_thin_refined">
+        <item quantity="one">%1$d картка зіграла менше 2 дуелей, тож її місце — здогадка. Застосуйте зараз і підправте вручну.</item>
+        <item quantity="few">%1$d картки зіграли менше 2 дуелей, тож їхні місця — здогадка. Застосуйте зараз і підправте вручну.</item>
+        <item quantity="many">%1$d карток зіграли менше 2 дуелей, тож їхні місця — здогадка. Застосуйте зараз і підправте вручну.</item>
+        <item quantity="other">%1$d картки зіграли менше 2 дуелей, тож їхні місця — здогадка. Застосуйте зараз і підправте вручну.</item>
+    </plurals>
+    <string name="play_apply">Застосувати</string>
+    <string name="play_put_in_mine">Покласти в «Моє»</string>
+    <string name="play_refine">Уточнити</string>
+    <plurals name="play_refine_adds">
+        <item quantity="one">+ до %1$d дуелі</item>
+        <item quantity="few">+ до %1$d дуелей</item>
+        <item quantity="many">+ до %1$d дуелей</item>
+        <item quantity="other">+ до %1$d дуелі</item>
+    </plurals>
+    <string name="play_again">Зіграти ще</string>
+    <string name="play_snack_game_saved">Гру збережено · %1$d з %2$d</string>
+    <string name="play_snack_discard">Видалити</string>
+    <plurals name="play_snack_arranged">
+        <item quantity="one">Список розставлено за підсумками %1$d дуелі</item>
+        <item quantity="few">Список розставлено за підсумками %1$d дуелей</item>
+        <item quantity="many">Список розставлено за підсумками %1$d дуелей</item>
+        <item quantity="other">Список розставлено за підсумками %1$d дуелі</item>
+    </plurals>
+    <string name="play_snack_saved_discarded">Збережену гру видалено</string>
+    <string name="play_snack_result_discarded">Результат відкинуто</string>
+    <string name="play_snack_undo">Скасувати</string>
+</resources>

@@ -163,4 +163,6 @@
     <string name="tier_detail_drop_to_delete">Upuść, aby usunąć</string>
     <string name="tier_detail_drop_unrank_column">Upuść na karty poniżej, aby usunąć z rankingu</string>
     <string name="tier_detail_drop_unrank_dock">Upuść na pulę, aby usunąć z rankingu</string>
+    <string name="tier_detail_content_description_play">Graj</string>
+    <string name="tier_detail_play_needs_cards">Do gry potrzebne są co najmniej 3 karty</string>
 </resources>

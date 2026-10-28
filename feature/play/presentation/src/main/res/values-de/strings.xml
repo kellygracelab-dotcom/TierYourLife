@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="play_title">Spielen</string>
+    <plurals name="play_cards_from">
+        <item quantity="one">%1$d Karte aus %2$s</item>
+        <item quantity="other">%1$d Karten aus %2$s</item>
+    </plurals>
+    <string name="play_choose_cards">Karten wählen</string>
+    <string name="play_game_swiss">Verlierer bleiben</string>
+    <string name="play_game_hill">König des Hügels</string>
+    <string name="play_game_bracket">Turnierbaum</string>
+    <string name="play_game_swiss_line">Alle spielen jede Runde. Langsamer, am besten zum Füllen der Stufen.</string>
+    <string name="play_game_hill_line">Der Sieger bleibt und trifft auf die nächste Karte. Schnell; die Stufen werden grob.</string>
+    <string name="play_game_bracket_line">Paare spielen, Sieger kommen weiter, bis einer übrig ist. Schnell; die Stufen werden grob.</string>
+    <plurals name="play_estimate_duels">
+        <item quantity="one">%1$d Duell</item>
+        <item quantity="other">%1$d Duelle</item>
+    </plurals>
+    <plurals name="play_estimate_minutes">
+        <item quantity="one">etwa %1$d Min.</item>
+        <item quantity="other">etwa %1$d Min.</item>
+    </plurals>
+    <string name="play_resume">Fortsetzen</string>
+    <string name="play_resume_progress">%1$s · %2$d von %3$d</string>
+    <string name="play_started_today">Heute begonnen</string>
+    <string name="play_started_yesterday">Gestern begonnen</string>
+    <plurals name="play_started_days_ago">
+        <item quantity="one">Vor %1$d Tag begonnen</item>
+        <item quantity="other">Vor %1$d Tagen begonnen</item>
+    </plurals>
+    <plurals name="play_new_cards_join">
+        <item quantity="one">%1$d neue Karte steigt ab der nächsten Runde ein</item>
+        <item quantity="other">%1$d neue Karten steigen ab der nächsten Runde ein</item>
+    </plurals>
+    <string name="play_board_changed">Die Karten haben sich seit Beginn dieses Spiels geändert.</string>
+    <string name="play_start_again">Neu beginnen</string>
+    <string name="play_into_mine_note">Das Ergebnis landet in „Meine“. „Ihre“ bleibt, wie sie ist.</string>
+    <string name="play_cancel">Abbrechen</string>
+    <string name="play_start">Starten</string>
+    <string name="play_continue">Weiter</string>
+    <string name="play_pool">Der Pool</string>
+    <string name="play_everything">Alles</string>
+    <plurals name="play_cards">
+        <item quantity="one">%1$d Karte</item>
+        <item quantity="other">%1$d Karten</item>
+    </plurals>
+    <string name="play_too_many_in_tier">Zu viele für ein Spiel.</string>
+    <plurals name="play_selected">
+        <item quantity="one">%1$d von %2$d ausgewählt</item>
+        <item quantity="other">%1$d von %2$d ausgewählt</item>
+    </plurals>
+    <plurals name="play_selected_too_many">
+        <item quantity="one">%1$d ausgewählt, höchstens 64 wählen</item>
+        <item quantity="other">%1$d ausgewählt, höchstens 64 wählen</item>
+    </plurals>
+    <string name="play_keep_in_tier">In %1$s lassen, nur ordnen</string>
+    <string name="play_quit">Beenden</string>
+    <string name="play_duel_of">Duell %1$d von %2$d</string>
+    <string name="play_round_of">Runde %1$d von %2$d</string>
+    <string name="play_refine_of">Verfeinern · %1$d von %2$d</string>
+    <string name="play_undo_pick">Letzte Wahl rückgängig machen</string>
+    <string name="play_skip">Überspringen</string>
+    <string name="play_skip_hint">Überspringe, wenn du dich nicht entscheiden kannst. Es wird nichts gewertet.</string>
+    <string name="play_pick">%1$s wählen</string>
+    <string name="play_your_result">Dein Ergebnis</string>
+    <plurals name="play_from_duels">
+        <item quantity="one">Aus %1$d Duell</item>
+        <item quantity="other">Aus %1$d Duellen</item>
+    </plurals>
+    <string name="play_dashed_legend">Gestrichelt: weniger als 2 Duelle gespielt.</string>
+    <string name="play_empty_tier">Leer</string>
+    <plurals name="play_thin">
+        <item quantity="one">%1$d Karte hat weniger als 2 Duelle gespielt, ihr Platz ist also geraten. Verfeinern fügt bis zu %2$d Duelle für sie hinzu – oder jetzt übernehmen und von Hand anpassen.</item>
+        <item quantity="other">%1$d Karten haben weniger als 2 Duelle gespielt, ihre Plätze sind also geraten. Verfeinern fügt bis zu %2$d Duelle für sie hinzu – oder jetzt übernehmen und von Hand anpassen.</item>
+    </plurals>
+    <plurals name="play_thin_refined">
+        <item quantity="one">%1$d Karte hat weniger als 2 Duelle gespielt, ihr Platz ist also geraten. Jetzt übernehmen und von Hand anpassen.</item>
+        <item quantity="other">%1$d Karten haben weniger als 2 Duelle gespielt, ihre Plätze sind also geraten. Jetzt übernehmen und von Hand anpassen.</item>
+    </plurals>
+    <string name="play_apply">Übernehmen</string>
+    <string name="play_put_in_mine">In „Meine“ legen</string>
+    <string name="play_refine">Verfeinern</string>
+    <plurals name="play_refine_adds">
+        <item quantity="one">+ %1$d Duell</item>
+        <item quantity="other">+ bis zu %1$d Duelle</item>
+    </plurals>
+    <string name="play_again">Noch mal spielen</string>
+    <string name="play_snack_game_saved">Spiel gespeichert · %1$d von %2$d</string>
+    <string name="play_snack_discard">Verwerfen</string>
+    <plurals name="play_snack_arranged">
+        <item quantity="one">Liste aus %1$d Duell geordnet</item>
+        <item quantity="other">Liste aus %1$d Duellen geordnet</item>
+    </plurals>
+    <string name="play_snack_saved_discarded">Gespeichertes Spiel verworfen</string>
+    <string name="play_snack_result_discarded">Ergebnis verworfen</string>
+    <string name="play_snack_undo">Rückgängig</string>
+</resources>

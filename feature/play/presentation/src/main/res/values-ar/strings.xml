@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="play_title">العب</string>
+    <plurals name="play_cards_from">
+        <item quantity="zero">%1$d بطاقة من %2$s</item>
+        <item quantity="one">%1$d بطاقة من %2$s</item>
+        <item quantity="two">%1$d بطاقتان من %2$s</item>
+        <item quantity="few">%1$d بطاقات من %2$s</item>
+        <item quantity="many">%1$d بطاقة من %2$s</item>
+        <item quantity="other">%1$d بطاقة من %2$s</item>
+    </plurals>
+    <string name="play_choose_cards">اختيار البطاقات</string>
+    <string name="play_game_swiss">الخاسرون يبقون</string>
+    <string name="play_game_hill">ملك التل</string>
+    <string name="play_game_bracket">جدول الإقصاء</string>
+    <string name="play_game_swiss_line">الجميع يلعب في كل جولة. أبطأ، والأفضل لملء المستويات.</string>
+    <string name="play_game_hill_line">يبقى الفائز ويواجه البطاقة التالية. سريع؛ والمستويات تخرج تقريبية.</string>
+    <string name="play_game_bracket_line">تتواجه الأزواج ويتقدم الفائزون حتى تبقى بطاقة واحدة. سريع؛ والمستويات تخرج تقريبية.</string>
+    <plurals name="play_estimate_duels">
+        <item quantity="zero">لا مواجهات</item>
+        <item quantity="one">مواجهة واحدة</item>
+        <item quantity="two">مواجهتان</item>
+        <item quantity="few">%1$d مواجهات</item>
+        <item quantity="many">%1$d مواجهة</item>
+        <item quantity="other">%1$d مواجهة</item>
+    </plurals>
+    <plurals name="play_estimate_minutes">
+        <item quantity="zero">أقل من دقيقة</item>
+        <item quantity="one">نحو دقيقة</item>
+        <item quantity="two">نحو دقيقتين</item>
+        <item quantity="few">نحو %1$d دقائق</item>
+        <item quantity="many">نحو %1$d دقيقة</item>
+        <item quantity="other">نحو %1$d دقيقة</item>
+    </plurals>
+    <string name="play_resume">متابعة</string>
+    <string name="play_resume_progress">%1$s · %2$d من %3$d</string>
+    <string name="play_started_today">بدأت اليوم</string>
+    <string name="play_started_yesterday">بدأت أمس</string>
+    <plurals name="play_started_days_ago">
+        <item quantity="zero">بدأت اليوم</item>
+        <item quantity="one">بدأت قبل يوم</item>
+        <item quantity="two">بدأت قبل يومين</item>
+        <item quantity="few">بدأت قبل %1$d أيام</item>
+        <item quantity="many">بدأت قبل %1$d يومًا</item>
+        <item quantity="other">بدأت قبل %1$d يوم</item>
+    </plurals>
+    <plurals name="play_new_cards_join">
+        <item quantity="zero">لا بطاقات جديدة تنضم</item>
+        <item quantity="one">بطاقة جديدة واحدة تنضم من الجولة التالية</item>
+        <item quantity="two">بطاقتان جديدتان تنضمان من الجولة التالية</item>
+        <item quantity="few">%1$d بطاقات جديدة تنضم من الجولة التالية</item>
+        <item quantity="many">%1$d بطاقة جديدة تنضم من الجولة التالية</item>
+        <item quantity="other">%1$d بطاقة جديدة تنضم من الجولة التالية</item>
+    </plurals>
+    <string name="play_board_changed">تغيّرت البطاقات منذ بدء هذه اللعبة.</string>
+    <string name="play_start_again">البدء من جديد</string>
+    <string name="play_into_mine_note">تذهب النتيجة إلى «ترتيبي». «ترتيبه» لا يتغيّر.</string>
+    <string name="play_cancel">إلغاء</string>
+    <string name="play_start">ابدأ</string>
+    <string name="play_continue">التالي</string>
+    <string name="play_pool">المجمّع</string>
+    <string name="play_everything">الكل</string>
+    <plurals name="play_cards">
+        <item quantity="zero">لا بطاقات</item>
+        <item quantity="one">بطاقة واحدة</item>
+        <item quantity="two">بطاقتان</item>
+        <item quantity="few">%1$d بطاقات</item>
+        <item quantity="many">%1$d بطاقة</item>
+        <item quantity="other">%1$d بطاقة</item>
+    </plurals>
+    <string name="play_too_many_in_tier">أكثر من اللازم للعبة واحدة.</string>
+    <plurals name="play_selected">
+        <item quantity="zero">تم اختيار %1$d من %2$d</item>
+        <item quantity="one">تم اختيار %1$d من %2$d</item>
+        <item quantity="two">تم اختيار %1$d من %2$d</item>
+        <item quantity="few">تم اختيار %1$d من %2$d</item>
+        <item quantity="many">تم اختيار %1$d من %2$d</item>
+        <item quantity="other">تم اختيار %1$d من %2$d</item>
+    </plurals>
+    <plurals name="play_selected_too_many">
+        <item quantity="zero">تم اختيار %1$d، اختر 64 كحد أقصى</item>
+        <item quantity="one">تم اختيار %1$d، اختر 64 كحد أقصى</item>
+        <item quantity="two">تم اختيار %1$d، اختر 64 كحد أقصى</item>
+        <item quantity="few">تم اختيار %1$d، اختر 64 كحد أقصى</item>
+        <item quantity="many">تم اختيار %1$d، اختر 64 كحد أقصى</item>
+        <item quantity="other">تم اختيار %1$d، اختر 64 كحد أقصى</item>
+    </plurals>
+    <string name="play_keep_in_tier">إبقاؤها في %1$s وترتيبها فقط</string>
+    <string name="play_quit">خروج</string>
+    <string name="play_duel_of">المواجهة %1$d من %2$d</string>
+    <string name="play_round_of">الجولة %1$d من %2$d</string>
+    <string name="play_refine_of">تحسين · %1$d من %2$d</string>
+    <string name="play_undo_pick">التراجع عن آخر اختيار</string>
+    <string name="play_skip">تخطي</string>
+    <string name="play_skip_hint">تخطَّ إن لم تستطع الاختيار. لا يُسجَّل شيء.</string>
+    <string name="play_pick">اختيار %1$s</string>
+    <string name="play_your_result">نتيجتك</string>
+    <plurals name="play_from_duels">
+        <item quantity="zero">من دون مواجهات</item>
+        <item quantity="one">من مواجهة واحدة</item>
+        <item quantity="two">من مواجهتين</item>
+        <item quantity="few">من %1$d مواجهات</item>
+        <item quantity="many">من %1$d مواجهة</item>
+        <item quantity="other">من %1$d مواجهة</item>
+    </plurals>
+    <string name="play_dashed_legend">الإطار المتقطّع: لعبت أقل من مواجهتين.</string>
+    <string name="play_empty_tier">فارغ</string>
+    <plurals name="play_thin">
+        <item quantity="zero">%1$d بطاقة لعبت أقل من مواجهتين، لذا أماكنها تخمين. يضيف التحسين حتى %2$d مواجهة لها، أو طبّق الآن وعدّل يدويًا.</item>
+        <item quantity="one">%1$d بطاقة لعبت أقل من مواجهتين، لذا مكانها تخمين. يضيف التحسين حتى %2$d مواجهة لها، أو طبّق الآن وعدّل يدويًا.</item>
+        <item quantity="two">%1$d بطاقتان لعبتا أقل من مواجهتين، لذا مكانهما تخمين. يضيف التحسين حتى %2$d مواجهة لهما، أو طبّق الآن وعدّل يدويًا.</item>
+        <item quantity="few">%1$d بطاقات لعبت أقل من مواجهتين، لذا أماكنها تخمين. يضيف التحسين حتى %2$d مواجهة لها، أو طبّق الآن وعدّل يدويًا.</item>
+        <item quantity="many">%1$d بطاقة لعبت أقل من مواجهتين، لذا أماكنها تخمين. يضيف التحسين حتى %2$d مواجهة لها، أو طبّق الآن وعدّل يدويًا.</item>
+        <item quantity="other">%1$d بطاقة لعبت أقل من مواجهتين، لذا أماكنها تخمين. يضيف التحسين حتى %2$d مواجهة لها، أو طبّق الآن وعدّل يدويًا.</item>
+    </plurals>
+    <plurals name="play_thin_refined">
+        <item quantity="zero">%1$d بطاقة لعبت أقل من مواجهتين، لذا أماكنها تخمين. طبّق الآن وعدّل يدويًا.</item>
+        <item quantity="one">%1$d بطاقة لعبت أقل من مواجهتين، لذا مكانها تخمين. طبّق الآن وعدّل يدويًا.</item>
+        <item quantity="two">%1$d بطاقتان لعبتا أقل من مواجهتين، لذا مكانهما تخمين. طبّق الآن وعدّل يدويًا.</item>
+        <item quantity="few">%1$d بطاقات لعبت أقل من مواجهتين، لذا أماكنها تخمين. طبّق الآن وعدّل يدويًا.</item>
+        <item quantity="many">%1$d بطاقة لعبت أقل من مواجهتين، لذا أماكنها تخمين. طبّق الآن وعدّل يدويًا.</item>
+        <item quantity="other">%1$d بطاقة لعبت أقل من مواجهتين، لذا أماكنها تخمين. طبّق الآن وعدّل يدويًا.</item>
+    </plurals>
+    <string name="play_apply">تطبيق</string>
+    <string name="play_put_in_mine">ضعها في «ترتيبي»</string>
+    <string name="play_refine">تحسين</string>
+    <plurals name="play_refine_adds">
+        <item quantity="zero">+ لا مواجهات</item>
+        <item quantity="one">+ مواجهة واحدة</item>
+        <item quantity="two">+ حتى مواجهتين</item>
+        <item quantity="few">+ حتى %1$d مواجهات</item>
+        <item quantity="many">+ حتى %1$d مواجهة</item>
+        <item quantity="other">+ حتى %1$d مواجهة</item>
+    </plurals>
+    <string name="play_again">العب مجددًا</string>
+    <string name="play_snack_game_saved">حُفظت اللعبة · %1$d من %2$d</string>
+    <string name="play_snack_discard">تجاهل</string>
+    <plurals name="play_snack_arranged">
+        <item quantity="zero">رُتّبت القائمة</item>
+        <item quantity="one">رُتّبت القائمة من مواجهة واحدة</item>
+        <item quantity="two">رُتّبت القائمة من مواجهتين</item>
+        <item quantity="few">رُتّبت القائمة من %1$d مواجهات</item>
+        <item quantity="many">رُتّبت القائمة من %1$d مواجهة</item>
+        <item quantity="other">رُتّبت القائمة من %1$d مواجهة</item>
+    </plurals>
+    <string name="play_snack_saved_discarded">تم تجاهل اللعبة المحفوظة</string>
+    <string name="play_snack_result_discarded">تم تجاهل النتيجة</string>
+    <string name="play_snack_undo">تراجع</string>
+</resources>

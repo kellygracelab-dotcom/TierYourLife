@@ -48,6 +48,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.navigation.nav
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToTopic
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.sectionScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.topicScreen
+import com.artiuillab.tieryourlife.feature.play.presentation.PlayOverBoards
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.hiddenScreen
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.navigateToHidden
 import com.artiuillab.tieryourlife.feature.settings.presentation.navigation.navigateToSettings
@@ -247,6 +248,7 @@ private fun NavContent(
             onChooseCover = { id -> navController.navigateToCoverPicker(id) },
             onChooseTopic = { id -> navController.navigateToTopicPicker(id) },
             onOpenPublishedList = { id -> navController.navigateToCommunityList(id) },
+            play = PlayOverBoards,
         )
         coverPickerScreen(
             onBack = { navController.popBackStack() },
@@ -320,6 +322,7 @@ private fun NavContent(
                 }
             },
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
+            play = PlayOverBoards,
         )
         aiStudioScreen(
             onBack = { ids ->

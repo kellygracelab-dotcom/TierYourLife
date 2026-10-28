@@ -143,4 +143,6 @@
     <string name="tier_detail_drop_to_delete">Drop to delete</string>
     <string name="tier_detail_drop_unrank_column">Drop on the cards below to unrank</string>
     <string name="tier_detail_drop_unrank_dock">Drop on the pool to unrank</string>
+    <string name="tier_detail_content_description_play">Play</string>
+    <string name="tier_detail_play_needs_cards">Play needs at least 3 cards</string>
 </resources>

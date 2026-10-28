@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="play_title">Jouer</string>
+    <plurals name="play_cards_from">
+        <item quantity="one">%1$d carte de %2$s</item>
+        <item quantity="many">%1$d cartes de %2$s</item>
+        <item quantity="other">%1$d cartes de %2$s</item>
+    </plurals>
+    <string name="play_choose_cards">Choisir les cartes</string>
+    <string name="play_game_swiss">Les perdants restent</string>
+    <string name="play_game_hill">Roi de la colline</string>
+    <string name="play_game_bracket">Tableau</string>
+    <string name="play_game_swiss_line">Tout le monde joue à chaque manche. Plus lent, idéal pour remplir les rangs.</string>
+    <string name="play_game_hill_line">Le gagnant reste et affronte la carte suivante. Rapide ; les rangs restent approximatifs.</string>
+    <string name="play_game_bracket_line">Les paires s’affrontent, les gagnants avancent jusqu’à ce qu’il en reste une. Rapide ; les rangs restent approximatifs.</string>
+    <plurals name="play_estimate_duels">
+        <item quantity="one">%1$d duel</item>
+        <item quantity="many">%1$d duels</item>
+        <item quantity="other">%1$d duels</item>
+    </plurals>
+    <plurals name="play_estimate_minutes">
+        <item quantity="one">environ %1$d min</item>
+        <item quantity="many">environ %1$d min</item>
+        <item quantity="other">environ %1$d min</item>
+    </plurals>
+    <string name="play_resume">Reprendre</string>
+    <string name="play_resume_progress">%1$s · %2$d sur %3$d</string>
+    <string name="play_started_today">Commencée aujourd’hui</string>
+    <string name="play_started_yesterday">Commencée hier</string>
+    <plurals name="play_started_days_ago">
+        <item quantity="one">Commencée il y a %1$d jour</item>
+        <item quantity="many">Commencée il y a %1$d jours</item>
+        <item quantity="other">Commencée il y a %1$d jours</item>
+    </plurals>
+    <plurals name="play_new_cards_join">
+        <item quantity="one">%1$d nouvelle carte rejoint la partie à la prochaine manche</item>
+        <item quantity="many">%1$d nouvelles cartes rejoignent la partie à la prochaine manche</item>
+        <item quantity="other">%1$d nouvelles cartes rejoignent la partie à la prochaine manche</item>
+    </plurals>
+    <string name="play_board_changed">Les cartes ont changé depuis le début de cette partie.</string>
+    <string name="play_start_again">Recommencer</string>
+    <string name="play_into_mine_note">Le résultat va dans « Le mien ». « Le sien » ne change pas.</string>
+    <string name="play_cancel">Annuler</string>
+    <string name="play_start">Commencer</string>
+    <string name="play_continue">Continuer</string>
+    <string name="play_pool">Le réservoir</string>
+    <string name="play_everything">Tout</string>
+    <plurals name="play_cards">
+        <item quantity="one">%1$d carte</item>
+        <item quantity="many">%1$d cartes</item>
+        <item quantity="other">%1$d cartes</item>
+    </plurals>
+    <string name="play_too_many_in_tier">Trop pour une seule partie.</string>
+    <plurals name="play_selected">
+        <item quantity="one">%1$d sur %2$d sélectionnée</item>
+        <item quantity="many">%1$d sur %2$d sélectionnées</item>
+        <item quantity="other">%1$d sur %2$d sélectionnées</item>
+    </plurals>
+    <plurals name="play_selected_too_many">
+        <item quantity="one">%1$d sélectionnée, 64 au maximum</item>
+        <item quantity="many">%1$d sélectionnées, 64 au maximum</item>
+        <item quantity="other">%1$d sélectionnées, 64 au maximum</item>
+    </plurals>
+    <string name="play_keep_in_tier">Les garder dans %1$s, juste les ordonner</string>
+    <string name="play_quit">Quitter</string>
+    <string name="play_duel_of">Duel %1$d sur %2$d</string>
+    <string name="play_round_of">Manche %1$d sur %2$d</string>
+    <string name="play_refine_of">Affiner · %1$d sur %2$d</string>
+    <string name="play_undo_pick">Annuler le dernier choix</string>
+    <string name="play_skip">Passer</string>
+    <string name="play_skip_hint">Passez si vous ne pouvez pas choisir. Rien n’est enregistré.</string>
+    <string name="play_pick">Choisir %1$s</string>
+    <string name="play_your_result">Votre résultat</string>
+    <plurals name="play_from_duels">
+        <item quantity="one">D’après %1$d duel</item>
+        <item quantity="many">D’après %1$d duels</item>
+        <item quantity="other">D’après %1$d duels</item>
+    </plurals>
+    <string name="play_dashed_legend">En pointillés : moins de 2 duels joués.</string>
+    <string name="play_empty_tier">Vide</string>
+    <plurals name="play_thin">
+        <item quantity="one">%1$d carte a joué moins de 2 duels, sa place est donc une supposition. Affiner ajoute jusqu’à %2$d duels pour elle, ou appliquez maintenant et ajustez à la main.</item>
+        <item quantity="many">%1$d cartes ont joué moins de 2 duels, leurs places sont donc une supposition. Affiner ajoute jusqu’à %2$d duels pour elles, ou appliquez maintenant et ajustez à la main.</item>
+        <item quantity="other">%1$d cartes ont joué moins de 2 duels, leurs places sont donc une supposition. Affiner ajoute jusqu’à %2$d duels pour elles, ou appliquez maintenant et ajustez à la main.</item>
+    </plurals>
+    <plurals name="play_thin_refined">
+        <item quantity="one">%1$d carte a joué moins de 2 duels, sa place est donc une supposition. Appliquez maintenant et ajustez à la main.</item>
+        <item quantity="many">%1$d cartes ont joué moins de 2 duels, leurs places sont donc une supposition. Appliquez maintenant et ajustez à la main.</item>
+        <item quantity="other">%1$d cartes ont joué moins de 2 duels, leurs places sont donc une supposition. Appliquez maintenant et ajustez à la main.</item>
+    </plurals>
+    <string name="play_apply">Appliquer</string>
+    <string name="play_put_in_mine">Mettre dans « Le mien »</string>
+    <string name="play_refine">Affiner</string>
+    <plurals name="play_refine_adds">
+        <item quantity="one">+ %1$d duel</item>
+        <item quantity="many">+ jusqu’à %1$d duels</item>
+        <item quantity="other">+ jusqu’à %1$d duels</item>
+    </plurals>
+    <string name="play_again">Rejouer</string>
+    <string name="play_snack_game_saved">Partie enregistrée · %1$d sur %2$d</string>
+    <string name="play_snack_discard">Supprimer</string>
+    <plurals name="play_snack_arranged">
+        <item quantity="one">Liste classée d’après %1$d duel</item>
+        <item quantity="many">Liste classée d’après %1$d duels</item>
+        <item quantity="other">Liste classée d’après %1$d duels</item>
+    </plurals>
+    <string name="play_snack_saved_discarded">Partie enregistrée supprimée</string>
+    <string name="play_snack_result_discarded">Résultat abandonné</string>
+    <string name="play_snack_undo">Annuler</string>
+</resources>

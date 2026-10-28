@@ -143,4 +143,6 @@
     <string name="tier_detail_drop_to_delete">Zum Löschen ablegen</string>
     <string name="tier_detail_drop_unrank_column">Auf die Karten unten ablegen, um die Einstufung aufzuheben</string>
     <string name="tier_detail_drop_unrank_dock">Auf den Pool ablegen, um die Einstufung aufzuheben</string>
+    <string name="tier_detail_content_description_play">Spielen</string>
+    <string name="tier_detail_play_needs_cards">Zum Spielen braucht es mindestens 3 Karten</string>
 </resources>

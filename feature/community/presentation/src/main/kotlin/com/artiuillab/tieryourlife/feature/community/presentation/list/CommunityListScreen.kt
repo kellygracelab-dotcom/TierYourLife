@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +51,9 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Rep
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
+import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
+import com.artiuillab.tieryourlife.feature.tier.board.play.NoPlay
+import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -65,9 +69,14 @@ fun CommunityListScreen(
     onOpenSaved: (Long) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onOpenList: (String) -> Unit = {},
+    play: BoardPlay = NoPlay,
     viewModel: CommunityListViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var playOpen by rememberSaveable { mutableStateOf(false) }
+    val playRequest = (state as? CommunityListUiState.Success)?.let { loaded ->
+        remember(loaded.shown, loaded.mine) { PlayRequest.someoneElses(viewModel.publishedId, shown = loaded.shown, mine = loaded.mine) }
+    }
 
     CommunityListScreenContent(
         state = state,
@@ -94,7 +103,12 @@ fun CommunityListScreen(
         onChooseRanking = viewModel.rankings::choose,
         onLoadMoreRankings = viewModel.rankings::loadMore,
         onWithdrawRanking = viewModel.rankings::withdrawMine,
+        onPlay = { playOpen = true },
+        playSaved = playRequest?.let { play.isSaved(it.key) } == true,
     )
+    if (playRequest != null) {
+        play.Layer(request = playRequest, open = playOpen, onArranged = viewModel::putInMine, onClose = { playOpen = false })
+    }
 }
 
 @Composable
@@ -119,6 +133,9 @@ fun CommunityListScreenContent(
     onChooseRanking: (Ranking?) -> Unit = {},
     onLoadMoreRankings: () -> Unit = {},
     onWithdrawRanking: () -> Unit = {},
+    /** Play from either half; its result fills Mine. */
+    onPlay: (() -> Unit)? = null,
+    playSaved: Boolean = false,
 ) {
     var actionsVisible by remember { mutableStateOf(false) }
     var reportVisible by remember { mutableStateOf(false) }
@@ -175,7 +192,7 @@ fun CommunityListScreenContent(
                         TierDetailScreenContent(
                             // Read-only while their arrangement is on screen.
                             state = TierDetailUiState.Success(loaded.shown),
-                            actions = TierDetailActions(onBack = onBack, onMoveItem = onMoveItem),
+                            actions = TierDetailActions(onBack = onBack, onMoveItem = onMoveItem, onPlay = onPlay, playSaved = playSaved),
                             // Theirs is theirs; yours is yours to arrange, and what
                             // you save is whichever is on screen.
                             readOnly = loaded.showing == Showing.Theirs,

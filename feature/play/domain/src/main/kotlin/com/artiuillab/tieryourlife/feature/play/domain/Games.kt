@@ -38,18 +38,49 @@ fun List<Outcome>.duels(): List<Duel> = mapNotNull { it.duel }
  */
 fun nextPair(spec: GameSpec, history: List<Outcome>): Pair<Int, Int>? {
     if (spec.count < 2) return null
-    val main = when (spec.kind) {
-        GameKind.Hill -> hillPairs(spec, history)
-        GameKind.Bracket -> bracketPairs(spec, history)
-        GameKind.Swiss -> swissPairs(spec, history)
-    }
+    val main = mainProgress(spec, history)
     if (main.next != null || !spec.refine) return main.next
     val refining = history.drop(main.used)
     return refinePairs(spec.count, history.take(main.used)).getOrNull(refining.size)
 }
 
-/** How many duels the main game took, and the next one if it is not over. */
-private data class Progress(val used: Int, val next: Pair<Int, Int>?)
+/** Where a game stands, for the screen that asks it. Read from the spec and history, as everything else is. */
+data class GameProgress(
+    /** Duels the main game has asked, skips included. */
+    val played: Int,
+    /** The Swiss round the next pair belongs to, from 1; 0 in the other games and once the main game is over. */
+    val round: Int,
+    val mainOver: Boolean,
+    /** Close calls fixed for refining, and how many of them have been asked; both 0 until refining starts. */
+    val refineTotal: Int = 0,
+    val refineAsked: Int = 0,
+)
+
+fun progress(spec: GameSpec, history: List<Outcome>): GameProgress {
+    if (spec.count < 2) return GameProgress(played = 0, round = 0, mainOver = true)
+    val main = mainProgress(spec, history)
+    val over = main.next == null
+    val refineTotal = if (over && spec.refine) refinePairs(spec.count, history.take(main.used)).size else 0
+    return GameProgress(
+        played = main.used,
+        round = if (over) 0 else main.round,
+        mainOver = over,
+        refineTotal = refineTotal,
+        refineAsked = minOf(history.size - main.used, refineTotal),
+    )
+}
+
+/** How many close calls Refine would ask after this history: what the result offers before it is chosen. */
+fun refineDuels(count: Int, history: List<Outcome>): Int = if (count < 2) 0 else refinePairs(count, history).size
+
+private fun mainProgress(spec: GameSpec, history: List<Outcome>): Progress = when (spec.kind) {
+    GameKind.Hill -> hillPairs(spec, history)
+    GameKind.Bracket -> bracketPairs(spec, history)
+    GameKind.Swiss -> swissPairs(spec, history)
+}
+
+/** How many duels the main game took, the next one if it is not over, and in Swiss the round that one is in. */
+private data class Progress(val used: Int, val next: Pair<Int, Int>?, val round: Int = 0)
 
 private fun hillPairs(spec: GameSpec, history: List<Outcome>): Progress {
     val order = shuffled(spec.count, spec.seed)
@@ -97,7 +128,7 @@ private fun swissPairs(spec: GameSpec, history: List<Outcome>): Progress {
         next = pairs.getOrNull(answered)
         round++
     }
-    return Progress(used, next)
+    return Progress(used, next, round)
 }
 
 /**

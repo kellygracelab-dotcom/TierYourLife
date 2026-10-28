@@ -6,6 +6,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
+import com.artiuillab.tieryourlife.feature.tier.board.play.NoPlay
 import com.artiuillab.tieryourlife.feature.tier.presentation.coverpicker.CoverPickerScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.topicpicker.TopicPickerScreen
@@ -26,6 +28,7 @@ fun NavGraphBuilder.tierDetailScreen(
     onChooseCover: (tierListId: Long) -> Unit = {},
     onChooseTopic: (tierListId: Long) -> Unit = {},
     onOpenPublishedList: (String) -> Unit = {},
+    play: BoardPlay = NoPlay,
 ) {
     composable<Route.TierDetail> { backStackEntry ->
         val route = backStackEntry.toRoute<Route.TierDetail>()
@@ -52,6 +55,7 @@ fun NavGraphBuilder.tierDetailScreen(
             onTopicChangeConsumed = { backStackEntry.savedStateHandle[TOPIC_CHANGED_RESULT_KEY] = false },
             onOpenPublishedList = onOpenPublishedList,
             focusTierId = route.focusTierId,
+            play = play,
         )
     }
 }

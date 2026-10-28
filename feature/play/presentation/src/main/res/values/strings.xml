@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="play_title">Play</string>
+    <plurals name="play_cards_from">
+        <item quantity="one">%1$d card from %2$s</item>
+        <item quantity="other">%1$d cards from %2$s</item>
+    </plurals>
+    <string name="play_choose_cards">Choose cards</string>
+    <string name="play_game_swiss">Losers stay</string>
+    <string name="play_game_hill">King of the hill</string>
+    <string name="play_game_bracket">Bracket</string>
+    <string name="play_game_swiss_line">Everyone plays every round. Slower, best for filling tiers.</string>
+    <string name="play_game_hill_line">The winner stays and meets the next card. Quick; tiers come out rough.</string>
+    <string name="play_game_bracket_line">Pairs play, winners go on until one is left. Quick; tiers come out rough.</string>
+    <plurals name="play_estimate_duels">
+        <item quantity="one">%1$d duel</item>
+        <item quantity="other">%1$d duels</item>
+    </plurals>
+    <plurals name="play_estimate_minutes">
+        <item quantity="one">about %1$d min</item>
+        <item quantity="other">about %1$d min</item>
+    </plurals>
+    <string name="play_resume">Resume</string>
+    <string name="play_resume_progress">%1$s · %2$d of %3$d</string>
+    <string name="play_started_today">Started today</string>
+    <string name="play_started_yesterday">Started yesterday</string>
+    <plurals name="play_started_days_ago">
+        <item quantity="one">Started %1$d day ago</item>
+        <item quantity="other">Started %1$d days ago</item>
+    </plurals>
+    <plurals name="play_new_cards_join">
+        <item quantity="one">%1$d new card joins from the next round</item>
+        <item quantity="other">%1$d new cards join from the next round</item>
+    </plurals>
+    <string name="play_board_changed">The cards changed since this game started.</string>
+    <string name="play_start_again">Start again</string>
+    <string name="play_into_mine_note">The result goes into Mine. Theirs doesn\'t change.</string>
+    <string name="play_cancel">Cancel</string>
+    <string name="play_start">Start</string>
+    <string name="play_continue">Continue</string>
+    <string name="play_pool">The pool</string>
+    <string name="play_everything">Everything</string>
+    <plurals name="play_cards">
+        <item quantity="one">%1$d card</item>
+        <item quantity="other">%1$d cards</item>
+    </plurals>
+    <string name="play_too_many_in_tier">Too many for one game.</string>
+    <plurals name="play_selected">
+        <item quantity="one">%1$d of %2$d selected</item>
+        <item quantity="other">%1$d of %2$d selected</item>
+    </plurals>
+    <plurals name="play_selected_too_many">
+        <item quantity="one">%1$d selected, pick up to 64</item>
+        <item quantity="other">%1$d selected, pick up to 64</item>
+    </plurals>
+    <string name="play_keep_in_tier">Keep them in %1$s, just order them</string>
+    <string name="play_quit">Quit</string>
+    <string name="play_duel_of">Duel %1$d of %2$d</string>
+    <string name="play_round_of">Round %1$d of %2$d</string>
+    <string name="play_refine_of">Refine · %1$d of %2$d</string>
+    <string name="play_undo_pick">Undo last pick</string>
+    <string name="play_skip">Skip</string>
+    <string name="play_skip_hint">Skip if you can\'t choose. Nothing is recorded.</string>
+    <string name="play_pick">Pick %1$s</string>
+    <string name="play_your_result">Your result</string>
+    <plurals name="play_from_duels">
+        <item quantity="one">From %1$d duel</item>
+        <item quantity="other">From %1$d duels</item>
+    </plurals>
+    <string name="play_dashed_legend">Dashed: played fewer than 2 duels.</string>
+    <string name="play_empty_tier">Empty</string>
+    <plurals name="play_thin">
+        <item quantity="one">%1$d card played fewer than 2 duels, so its place is a guess. Refine adds up to %2$d duels for it, or apply now and adjust by hand.</item>
+        <item quantity="other">%1$d cards played fewer than 2 duels, so their places are a guess. Refine adds up to %2$d duels for them, or apply now and adjust by hand.</item>
+    </plurals>
+    <plurals name="play_thin_refined">
+        <item quantity="one">%1$d card played fewer than 2 duels, so its place is a guess. Apply now and adjust by hand.</item>
+        <item quantity="other">%1$d cards played fewer than 2 duels, so their places are a guess. Apply now and adjust by hand.</item>
+    </plurals>
+    <string name="play_apply">Apply</string>
+    <string name="play_put_in_mine">Put in Mine</string>
+    <string name="play_refine">Refine</string>
+    <plurals name="play_refine_adds">
+        <item quantity="one">+ %1$d duel</item>
+        <item quantity="other">+ up to %1$d duels</item>
+    </plurals>
+    <string name="play_again">Play again</string>
+    <string name="play_snack_game_saved">Game saved · %1$d of %2$d</string>
+    <string name="play_snack_discard">Discard</string>
+    <plurals name="play_snack_arranged">
+        <item quantity="one">Board arranged from %1$d duel</item>
+        <item quantity="other">Board arranged from %1$d duels</item>
+    </plurals>
+    <string name="play_snack_saved_discarded">Saved game discarded</string>
+    <string name="play_snack_result_discarded">Result discarded</string>
+    <string name="play_snack_undo">Undo</string>
+</resources>
