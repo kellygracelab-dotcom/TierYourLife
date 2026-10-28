@@ -16,15 +16,12 @@ const val THIN_GROUPS = 3
 fun Standing.isDashed(card: Int): Boolean = played[card] < SOLID_DUELS
 
 /**
- * The result says it rests on little: a tier left empty between filled ones,
- * or more than a quarter of the cards dashed.
+ * The result says it rests on little: more than a quarter of the cards dashed.
+ * An empty tier between filled ones is not thin; it is the tiering showing a
+ * real gap.
  */
-fun isThin(standing: Standing, tiers: List<List<Int>>): Boolean {
-    val filled = tiers.indices.filter { tiers[it].isNotEmpty() }
-    val gap = filled.size > 1 && (filled.first()..filled.last()).any { tiers[it].isEmpty() }
-    val dashed = standing.played.indices.count { standing.isDashed(it) }
-    return gap || dashed * QUARTERS > standing.played.size
-}
+fun isThin(standing: Standing): Boolean =
+    standing.played.indices.count { standing.isDashed(it) } * QUARTERS > standing.played.size
 
 private const val QUARTERS = 4
 

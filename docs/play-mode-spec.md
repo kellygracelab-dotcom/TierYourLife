@@ -69,13 +69,14 @@ A round's pairs are fixed from the history before the round starts, and they are
 
 ### Refine (`refine: true`)
 
-Refine runs after the main game ends:
+Refine runs after the main game ends, with at most `ceil(n / 2)` pairs and each card in at most one:
 1. Score the main game's history (next section).
-2. Take neighbouring pairs in the resulting order that haven't met.
-3. Sort them by the gap in log-strength (ascending), then by position.
-4. Pick pairs greedily so that each card appears at most once, up to `ceil(n / 2)` pairs.
+2. **Dashed cards first** (`played < 2`, see below), in standing order, best first. Each takes its nearest free neighbour that it hasn't met:
+   - look upwards for the closest card above it, and downwards for the closest card below it;
+   - the smaller gap in log-strength wins, and on a tie the card above wins.
+3. Then fill the rest with neighbouring pairs in the order that haven't met and are both free, smallest log-strength gap first, then by position.
 
-These pairs are fixed when refining starts and asked in that order.
+Every pair is written better-placed card first. The pairs are fixed when refining starts and asked in that order.
 
 ## Scoring: Bradley–Terry
 
@@ -124,9 +125,8 @@ The result: only the first tier is sure to be filled. A real gap leaves the tier
 
 - `played[i]` counts the real duels card `i` took part in; skips don't count.
 - A card with `played < 2` is **dashed** in the result preview.
-- The result is **thin**, and shows a banner, when:
-  - an empty tier sits between the first and last filled tiers, or
-  - more than a quarter of the cards are dashed (`dashed × 4 > n`).
+- The result is **thin**, and shows a banner, when more than a quarter of the cards are dashed (`dashed × 4 > n`).
+- An empty tier between filled ones is not thin: it is the tiering showing a real gap.
 
 The vectors carry `played` for every standing, and `thin` for every standing and game.
 

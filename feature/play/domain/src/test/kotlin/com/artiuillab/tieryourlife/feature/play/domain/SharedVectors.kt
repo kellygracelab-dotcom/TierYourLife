@@ -125,7 +125,7 @@ private fun standingVectors() = buildJsonArray {
                     putJsonArray("played") { standing.played.forEach { add(it) } }
                     val placed = tiers(standing, case.tierCount)
                     put("tiers", tiersJson(placed))
-                    put("thin", isThin(standing, placed))
+                    put("thin", isThin(standing))
                 }
             },
         )
@@ -149,7 +149,7 @@ private fun gameVectors() = buildJsonArray {
                     put("history", historyJson(history))
                     val placed = result(case.spec, history, case.tierCount)
                     put("tiers", tiersJson(placed))
-                    put("thin", isThin(standing(case.spec.count, history.duels()), placed))
+                    put("thin", isThin(standing(case.spec.count, history.duels())))
                 }
             },
         )

@@ -112,15 +112,22 @@ class PlayEngineTest {
     fun aCardThatMetFewerThanTwo_isDashed_andAQuarterDashedIsThin() {
         val standing = standing(4, listOf(Duel(0, 1), Duel(0, 2), Duel(1, 2), Duel(0, 1)))
         assertEquals(listOf(false, false, false, true), (0..3).map { standing.isDashed(it) })
-        assertEquals(false, isThin(standing, listOf(listOf(0), listOf(1), listOf(2, 3))))
-        assertEquals(true, isThin(standing(4, listOf(Duel(0, 1))), listOf(listOf(0, 1, 2, 3))))
+        assertEquals(false, isThin(standing))
+        assertEquals(true, isThin(standing(4, listOf(Duel(0, 1)))))
     }
 
     @Test
-    fun anEmptyTierBetweenFilledOnes_isThin() {
-        val solid = standing(2, List(4) { Duel(0, 1) })
-        assertEquals(true, isThin(solid, listOf(listOf(0), emptyList(), listOf(1))))
-        assertEquals(false, isThin(solid, listOf(listOf(0), listOf(1), emptyList())))
+    fun twoClearGroups_areNotThin_thoughTheMiddleIsEmpty() {
+        val duels = (0..2).flatMap { top -> (3..5).map { bottom -> Duel(top, bottom) } }
+        assertEquals(false, isThin(standing(6, duels)))
+    }
+
+    @Test
+    fun refining_meetsDashedCardsFirst() {
+        // 0 and 1 met three times; 2 and 3 never played. Both dashed cards get a duel before any close call.
+        val history = List(3) { Outcome(0, 1, winner = 0) }
+        val pairs = refinePairs(4, history)
+        assertTrue(pairs.flatMap { listOf(it.first, it.second) }.containsAll(listOf(2, 3)))
     }
 
     @Test

@@ -127,32 +127,69 @@ internal fun swissRound(count: Int, history: List<Outcome>): List<Pair<Int, Int>
 }
 
 /**
- * Close calls after the game: neighbours in the standing whose order is least
- * sure and who have not met, closest first, each card at most once, at most
- * half the cards' worth.
+ * Close calls after the game, at most half the cards' worth, each card at most
+ * once. First every dashed card, best first, meets its nearest free neighbour
+ * it has not met, the smaller gap in strength winning and the better-placed on
+ * a tie; then neighbours in the standing whose order is least sure, closest
+ * first. Pairs are always better-placed first.
  */
 internal fun refinePairs(count: Int, history: List<Outcome>): List<Pair<Int, Int>> {
     val standing = standing(count, history.duels())
     val met = history.flatMap { listOf(it.first to it.second, it.second to it.first) }.toSet()
-    val candidates = standing.order.zipWithNext().withIndex()
+    val picker = PairPicker(count)
+    for ((at, card) in standing.order.withIndex()) {
+        if (standing.isDashed(card) && picker.isFree(card)) {
+            nearestPartner(standing, at, met, picker)?.let(picker::take)
+        }
+    }
+    closeCalls(standing, met).forEach(picker::take)
+    return picker.picked
+}
+
+/** Each card at most once, at most half the cards' worth of pairs. */
+private class PairPicker(count: Int) {
+    private val used = BooleanArray(count)
+    private val limit = (count + 1) / 2
+    val picked = mutableListOf<Pair<Int, Int>>()
+
+    fun isFree(card: Int) = !used[card]
+
+    fun take(pair: Pair<Int, Int>) {
+        if (picked.size < limit && isFree(pair.first) && isFree(pair.second)) {
+            used[pair.first] = true
+            used[pair.second] = true
+            picked += pair
+        }
+    }
+}
+
+/** The free card next to the one at [at] that it has not met, above or below, whichever is closer in strength. */
+private fun nearestPartner(standing: Standing, at: Int, met: Set<Pair<Int, Int>>, picker: PairPicker): Pair<Int, Int>? {
+    val order = standing.order
+    val card = order[at]
+    val strength = standing.logStrength
+    fun open(other: Int) = picker.isFree(other) && (card to other) !in met
+    val above = order.subList(0, at).lastOrNull(::open)
+    val below = order.subList(at + 1, order.size).firstOrNull(::open)
+    val upGap = above?.let { strength[it] - strength[card] } ?: Double.POSITIVE_INFINITY
+    val downGap = below?.let { strength[card] - strength[it] } ?: Double.POSITIVE_INFINITY
+    return when {
+        above != null && upGap <= downGap -> above to card
+        below != null -> card to below
+        else -> null
+    }
+}
+
+/** Neighbours in the standing who have not met, the least sure order first. */
+private fun closeCalls(standing: Standing, met: Set<Pair<Int, Int>>): List<Pair<Int, Int>> =
+    standing.order.zipWithNext().withIndex()
         .filter { (_, pair) -> pair !in met }
         .sortedWith(
             compareBy<IndexedValue<Pair<Int, Int>>> { (_, pair) ->
                 standing.logStrength[pair.first] - standing.logStrength[pair.second]
             }.thenBy { it.index },
         )
-    val used = BooleanArray(count)
-    val picked = mutableListOf<Pair<Int, Int>>()
-    val limit = (count + 1) / 2
-    for ((_, pair) in candidates) {
-        if (picked.size < limit && !used[pair.first] && !used[pair.second]) {
-            used[pair.first] = true
-            used[pair.second] = true
-            picked += pair
-        }
-    }
-    return picked
-}
+        .map { it.value }
 
 /** Where a game leaves its cards: tiers best first, each best on the left. */
 fun result(spec: GameSpec, history: List<Outcome>, tierCount: Int): List<List<Int>> =
