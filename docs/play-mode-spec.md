@@ -128,7 +128,7 @@ The result: only the first tier is sure to be filled. A real gap leaves the tier
 - The result is **thin**, and shows a banner, when more than a quarter of the cards are dashed (`dashed × 4 > n`).
 - An empty tier between filled ones is not thin: it is the tiering showing a real gap.
 
-The vectors carry `played` for every standing, and `thin` for every standing and game.
+The vectors carry `played` for every standing, and `thin` for every standing and game. A `refine` section pins the pairs Refine picks, including the tie rule.
 
 ## Saving
 

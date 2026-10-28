@@ -54,6 +54,17 @@ internal val gameCases = listOf(
     GameCase("swiss of five, earlier card wins", GameSpec(GameKind.Swiss, 5, seed = 1), 5, "lowerWins"),
     GameCase("swiss of nine, later card wins, then close calls", GameSpec(GameKind.Swiss, 9, seed = 99, refine = true), 5, "higherWins"),
     GameCase("swiss of two runs out of new pairs", GameSpec(GameKind.Swiss, 2, seed = 5), 3, "lowerWins"),
+    GameCase("bracket of sixteen is held to three groups by thin evidence", GameSpec(GameKind.Bracket, 16, seed = 1), 8, "lowerWins"),
+)
+
+internal data class RefineCase(val name: String, val count: Int, val history: List<Outcome>)
+
+internal val refineCases = listOf(
+    RefineCase(
+        "on equal gaps the card above wins",
+        5,
+        listOf(Outcome(0, 1, winner = 0), Outcome(1, 2, winner = 1), Outcome(2, 0, winner = 2)),
+    ),
 )
 
 /** Plays a case to the end with its answer rule. */
@@ -83,6 +94,29 @@ internal fun buildVectors(): JsonObject = buildJsonObject {
     put("shuffle", shuffleVectors())
     put("standings", standingVectors())
     put("games", gameVectors())
+    put("refine", refineVectors())
+}
+
+private fun refineVectors() = buildJsonArray {
+    refineCases.forEach { case ->
+        add(
+            buildJsonObject {
+                put("name", case.name)
+                put("count", case.count)
+                put("history", historyJson(case.history))
+                putJsonObject("expect") {
+                    putJsonArray("pairs") {
+                        refinePairs(case.count, case.history).forEach { (upper, lower) ->
+                            addJsonArray {
+                                add(upper)
+                                add(lower)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+    }
 }
 
 private fun randomVectors() = buildJsonArray {
