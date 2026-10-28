@@ -153,4 +153,6 @@
     <string name="tier_detail_drop_to_delete">Suelta para eliminar</string>
     <string name="tier_detail_drop_unrank_column">Suelta en las cartas de abajo para quitar el rango</string>
     <string name="tier_detail_drop_unrank_dock">Suelta en la reserva para quitar el rango</string>
+    <string name="tier_detail_content_description_play">Jugar</string>
+    <string name="tier_detail_play_needs_cards">Para jugar hacen falta al menos 3 cartas</string>
 </resources>

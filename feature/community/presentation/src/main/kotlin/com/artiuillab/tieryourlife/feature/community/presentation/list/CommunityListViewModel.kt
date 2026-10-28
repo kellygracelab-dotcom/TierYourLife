@@ -37,7 +37,7 @@ class CommunityListViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val route = savedStateHandle.communityListRoute()
-    private val publishedId = route.publishedId
+    val publishedId = route.publishedId
 
     /** What the card showed, for the screen to draw while the list is on its way. */
     val preview: ListPreview? = route.preview()
@@ -140,6 +140,13 @@ class CommunityListViewModel @Inject constructor(
                 mine = current.mine.withItemMoved(itemId, toTierId, toPosition),
                 arranged = true,
             )
+        }
+    }
+
+    /** A game's result on someone else's list: it becomes the reader's own arrangement, on screen, still unsaved. */
+    fun putInMine(board: TierList) {
+        _state.update { current ->
+            if (current !is CommunityListUiState.Success) current else current.copy(mine = board, showing = Showing.Mine, arranged = true)
         }
     }
 

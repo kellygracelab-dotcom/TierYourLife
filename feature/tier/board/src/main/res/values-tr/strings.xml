@@ -143,4 +143,6 @@
     <string name="tier_detail_drop_to_delete">Silmek için bırakın</string>
     <string name="tier_detail_drop_unrank_column">Sıralamadan çıkarmak için aşağıdaki kartlara bırakın</string>
     <string name="tier_detail_drop_unrank_dock">Sıralamadan çıkarmak için havuza bırakın</string>
+    <string name="tier_detail_content_description_play">Oyna</string>
+    <string name="tier_detail_play_needs_cards">Oynamak için en az 3 kart gerekir</string>
 </resources>

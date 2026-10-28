@@ -133,4 +133,6 @@
     <string name="tier_detail_drop_to_delete">ドロップして削除</string>
     <string name="tier_detail_drop_unrank_column">下のカードにドロップするとランク外に戻ります</string>
     <string name="tier_detail_drop_unrank_dock">プールにドロップするとランク外に戻ります</string>
+    <string name="tier_detail_content_description_play">プレイ</string>
+    <string name="tier_detail_play_needs_cards">プレイするにはカードが3枚以上必要です</string>
 </resources>

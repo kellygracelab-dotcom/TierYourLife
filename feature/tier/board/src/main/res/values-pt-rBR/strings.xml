@@ -153,4 +153,6 @@
     <string name="tier_detail_drop_to_delete">Solte para excluir</string>
     <string name="tier_detail_drop_unrank_column">Solte nos cards abaixo para tirar do ranking</string>
     <string name="tier_detail_drop_unrank_dock">Solte na reserva para tirar do ranking</string>
+    <string name="tier_detail_content_description_play">Jogar</string>
+    <string name="tier_detail_play_needs_cards">Para jogar, são necessários pelo menos 3 cards</string>
 </resources>

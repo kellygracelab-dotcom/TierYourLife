@@ -78,6 +78,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TrashTarge
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalTierRowDensity
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_COLUMN_MARGIN
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PlayButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolColumn
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedList
@@ -504,6 +505,9 @@ private fun TierScreenBody(
                     else -> DOCKED_BAR_HEIGHT
                 },
                 subline = readerSubline,
+                play = actions.onPlay?.takeUnless { glanceable }?.let { onPlay ->
+                    PlayButton(cards = list.tiers.sumOf { it.items.size }, saved = actions.playSaved, onClick = onPlay)
+                },
             )
         }
         val board: @Composable (Modifier) -> Unit = { boardModifier ->

@@ -153,4 +153,6 @@
     <string name="tier_detail_drop_to_delete">Déposer pour supprimer</string>
     <string name="tier_detail_drop_unrank_column">Déposez sur les cartes ci-dessous pour retirer du classement</string>
     <string name="tier_detail_drop_unrank_dock">Déposez sur la réserve pour retirer du classement</string>
+    <string name="tier_detail_content_description_play">Jouer</string>
+    <string name="tier_detail_play_needs_cards">Il faut au moins 3 cartes pour jouer</string>
 </resources>

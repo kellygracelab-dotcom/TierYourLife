@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.board
 
 object TierDetailTestTags {
     const val MORE = "community_list_more"
+    const val PLAY = "tier_detail_play"
     const val LOADING = "tier_detail_loading"
     const val HEADER_TITLE = "tier_detail_header_title"
     const val ADD_CHIP = "tier_detail_add_chip"

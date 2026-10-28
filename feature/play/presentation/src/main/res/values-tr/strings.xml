@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="play_title">Oyna</string>
+    <plurals name="play_cards_from">
+        <item quantity="one">%2$s listesinden %1$d kart</item>
+        <item quantity="other">%2$s listesinden %1$d kart</item>
+    </plurals>
+    <string name="play_choose_cards">Kart seç</string>
+    <string name="play_game_swiss">Kaybeden kalır</string>
+    <string name="play_game_hill">Tepenin kralı</string>
+    <string name="play_game_bracket">Eleme tablosu</string>
+    <string name="play_game_swiss_line">Herkes her turda oynar. Daha yavaş, seviyeleri doldurmak için en iyisi.</string>
+    <string name="play_game_hill_line">Kazanan kalır ve sıradaki kartla karşılaşır. Hızlı; seviyeler kabaca çıkar.</string>
+    <string name="play_game_bracket_line">Çiftler oynar, kazananlar tek kart kalana dek ilerler. Hızlı; seviyeler kabaca çıkar.</string>
+    <plurals name="play_estimate_duels">
+        <item quantity="one">%1$d düello</item>
+        <item quantity="other">%1$d düello</item>
+    </plurals>
+    <plurals name="play_estimate_minutes">
+        <item quantity="one">yaklaşık %1$d dk</item>
+        <item quantity="other">yaklaşık %1$d dk</item>
+    </plurals>
+    <string name="play_resume">Devam et</string>
+    <string name="play_resume_progress">%1$s · %2$d/%3$d</string>
+    <string name="play_started_today">Bugün başladı</string>
+    <string name="play_started_yesterday">Dün başladı</string>
+    <plurals name="play_started_days_ago">
+        <item quantity="one">%1$d gün önce başladı</item>
+        <item quantity="other">%1$d gün önce başladı</item>
+    </plurals>
+    <plurals name="play_new_cards_join">
+        <item quantity="one">%1$d yeni kart bir sonraki turdan itibaren katılır</item>
+        <item quantity="other">%1$d yeni kart bir sonraki turdan itibaren katılır</item>
+    </plurals>
+    <string name="play_board_changed">Bu oyun başladığından beri kartlar değişti.</string>
+    <string name="play_start_again">Yeniden başlat</string>
+    <string name="play_into_mine_note">Sonuç “Benimki”ne gider. “Onunki” değişmez.</string>
+    <string name="play_cancel">İptal</string>
+    <string name="play_start">Başlat</string>
+    <string name="play_continue">Devam</string>
+    <string name="play_pool">Havuz</string>
+    <string name="play_everything">Tümü</string>
+    <plurals name="play_cards">
+        <item quantity="one">%1$d kart</item>
+        <item quantity="other">%1$d kart</item>
+    </plurals>
+    <string name="play_too_many_in_tier">Tek bir oyun için çok fazla.</string>
+    <plurals name="play_selected">
+        <item quantity="one">%1$d/%2$d seçildi</item>
+        <item quantity="other">%1$d/%2$d seçildi</item>
+    </plurals>
+    <plurals name="play_selected_too_many">
+        <item quantity="one">%1$d seçildi, en fazla 64 seçin</item>
+        <item quantity="other">%1$d seçildi, en fazla 64 seçin</item>
+    </plurals>
+    <string name="play_keep_in_tier">%1$s içinde tut, yalnızca sırala</string>
+    <string name="play_quit">Çık</string>
+    <string name="play_duel_of">Düello %1$d/%2$d</string>
+    <string name="play_round_of">Tur %1$d/%2$d</string>
+    <string name="play_refine_of">İyileştir · %1$d/%2$d</string>
+    <string name="play_undo_pick">Son seçimi geri al</string>
+    <string name="play_skip">Geç</string>
+    <string name="play_skip_hint">Seçemiyorsanız geçin. Hiçbir şey kaydedilmez.</string>
+    <string name="play_pick">%1$s seç</string>
+    <string name="play_your_result">Sonucunuz</string>
+    <plurals name="play_from_duels">
+        <item quantity="one">%1$d düellodan</item>
+        <item quantity="other">%1$d düellodan</item>
+    </plurals>
+    <string name="play_dashed_legend">Kesikli: 2 düellodan az oynadı.</string>
+    <string name="play_empty_tier">Boş</string>
+    <plurals name="play_thin">
+        <item quantity="one">%1$d kart 2 düellodan az oynadı, bu yüzden yeri bir tahmin. İyileştir onun için en fazla %2$d düello ekler; ya da şimdi uygulayıp elle düzeltin.</item>
+        <item quantity="other">%1$d kart 2 düellodan az oynadı, bu yüzden yerleri bir tahmin. İyileştir onlar için en fazla %2$d düello ekler; ya da şimdi uygulayıp elle düzeltin.</item>
+    </plurals>
+    <plurals name="play_thin_refined">
+        <item quantity="one">%1$d kart 2 düellodan az oynadı, bu yüzden yeri bir tahmin. Şimdi uygulayıp elle düzeltin.</item>
+        <item quantity="other">%1$d kart 2 düellodan az oynadı, bu yüzden yerleri bir tahmin. Şimdi uygulayıp elle düzeltin.</item>
+    </plurals>
+    <string name="play_apply">Uygula</string>
+    <string name="play_put_in_mine">“Benimki”ne koy</string>
+    <string name="play_refine">İyileştir</string>
+    <plurals name="play_refine_adds">
+        <item quantity="one">+ %1$d düello</item>
+        <item quantity="other">+ en fazla %1$d düello</item>
+    </plurals>
+    <string name="play_again">Yeniden oyna</string>
+    <string name="play_snack_game_saved">Oyun kaydedildi · %1$d/%2$d</string>
+    <string name="play_snack_discard">Sil</string>
+    <plurals name="play_snack_arranged">
+        <item quantity="one">Liste %1$d düellodan düzenlendi</item>
+        <item quantity="other">Liste %1$d düellodan düzenlendi</item>
+    </plurals>
+    <string name="play_snack_saved_discarded">Kayıtlı oyun silindi</string>
+    <string name="play_snack_result_discarded">Sonuç silindi</string>
+    <string name="play_snack_undo">Geri al</string>
+</resources>

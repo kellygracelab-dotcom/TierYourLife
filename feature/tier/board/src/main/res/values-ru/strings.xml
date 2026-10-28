@@ -163,4 +163,6 @@
     <string name="tier_detail_drop_to_delete">Отпустите, чтобы удалить</string>
     <string name="tier_detail_drop_unrank_column">Отпустите на карточки ниже, чтобы убрать из рейтинга</string>
     <string name="tier_detail_drop_unrank_dock">Отпустите на пул, чтобы убрать из рейтинга</string>
+    <string name="tier_detail_content_description_play">Играть</string>
+    <string name="tier_detail_play_needs_cards">Для игры нужно минимум 3 карточки</string>
 </resources>

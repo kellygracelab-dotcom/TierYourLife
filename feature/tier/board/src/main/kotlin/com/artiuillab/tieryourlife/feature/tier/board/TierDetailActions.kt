@@ -45,4 +45,8 @@ data class TierDetailActions(
     val onUndoAddedItem: (itemIds: List<Long>) -> Unit = {},
     /** The tier the board opens on, once: the one the cover was showing when the phone was opened. */
     val focusTierId: Long? = null,
+    /** Null where there is no Play: the button is left out of the bar then. */
+    val onPlay: (() -> Unit)? = null,
+    /** A game of this board is put down: the button carries a dot. */
+    val playSaved: Boolean = false,
 )
