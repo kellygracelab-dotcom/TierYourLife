@@ -169,6 +169,42 @@ class ExploreViewModelTest {
     }
 
     @Test
+    fun aFailedSearch_asksAgain_onRetry() = runBlocking {
+        val community = object : Community() {
+            var refuse = true
+
+            override suspend fun feed(
+                category: ListCategory?,
+                query: String?,
+                author: String?,
+                after: String?,
+                sort: FeedSort,
+                following: Boolean,
+                topic: String?,
+            ): Result<CommunityPage> {
+                if (query != null && refuse) {
+                    refuse = false
+                    queries += query
+                    return Result.failure(IOException("offline"))
+                }
+                return super.feed(category, query, author, after, sort, following, topic)
+            }
+        }
+        val viewModel = viewModel(community)
+        viewModel.open()
+        viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready }
+        viewModel.enterSearch()
+        viewModel.updateQuery("ramen")
+        viewModel.state.firstWithin { it.results.failed }
+
+        viewModel.retrySearch()
+
+        val found = viewModel.state.firstWithin { it.results.lists.isNotEmpty() }
+        assertEquals(listOf("a"), found.results.lists.map { it.id })
+        assertEquals(2, community.queries.count { it == "ramen" })
+    }
+
+    @Test
     fun hidingAList_leavesANoteWhereItWas() = runBlocking {
         val viewModel = viewModel(Community())
         viewModel.open()

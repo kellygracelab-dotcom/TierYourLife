@@ -232,6 +232,19 @@ class CommunityListViewModelTest {
         assertEquals(listOf("abc"), community.withdrawn)
     }
 
+    // The chip says how many copies were saved, the number every feed card shows.
+    @Test
+    fun theChipCountsSaves_andSavingOneMoreCountsAtOnce() = runBlocking {
+        val viewModel = viewModel(community = TestCommunity(takeCount = 9))
+        val opened = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        assertEquals(9, opened.takeCount)
+
+        viewModel.saveToMyLists(Showing.Mine)
+
+        val saved = viewModel.state.firstWithin { it.saved() } as CommunityListUiState.Success
+        assertEquals(10, saved.takeCount)
+    }
+
     private fun CommunityListUiState.saved() = (this as? CommunityListUiState.Success)?.savedId != null
 
     private fun viewModel(
@@ -249,6 +262,7 @@ class CommunityListViewModelTest {
 private class TestCommunity(
     private val rankings: List<Ranking> = emptyList(),
     private val refusesWithdrawal: Boolean = false,
+    private val takeCount: Int = 0,
 ) : FakeCommunityRepository() {
     val withdrawn = mutableListOf<String>()
 
@@ -256,7 +270,7 @@ private class TestCommunity(
     val refusal = CompletableDeferred<Unit>()
 
     override suspend fun open(id: String): Result<PublishedList> =
-        Result.success(published.copy(summary = published.summary.copy(rankingCount = rankings.size)))
+        Result.success(published.copy(summary = published.summary.copy(rankingCount = rankings.size, takeCount = takeCount)))
 
     override suspend fun publish(list: TierList): Result<Published> =
         Result.success(Published(id = "abc", fingerprint = "sent"))

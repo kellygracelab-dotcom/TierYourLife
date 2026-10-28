@@ -166,7 +166,7 @@
     <string name="home_following_empty_topics">Aus den Themen, denen du folgst, gibt es noch nichts.</string>
     <string name="moderation_action_move">Verschieben…</string>
     <string name="moderation_moderators_unavailable">Die Moderatorenliste konnte nicht gelesen werden.</string>
-    <string name="community_rankings_title">Reihungen · %1$d</string>
+    <string name="community_rankings_title">Reihungen</string>
     <string name="community_rankings_body">Dieselben Karten, von jemandem anders gesetzt. Wähle, wessen Reihen gezeigt werden.</string>
     <string name="community_ranking_author">Autor der Liste</string>
     <string name="community_ranking_you">Du</string>
@@ -198,6 +198,7 @@
     <string name="explore_follow">Folgen</string>
     <string name="explore_following">Gefolgt</string>
     <string name="explore_tile_description">%1$s, %2$s</string>
+    <string name="explore_search_hint">In der Community suchen</string>
     <string name="explore_search_nothing">Nichts gefunden.</string>
     <string name="section_all">Alle</string>
     <string name="section_suggest_topic">Thema vorschlagen</string>

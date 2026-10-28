@@ -50,6 +50,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -97,6 +98,7 @@ class ExploreCallbacks(
     val onEnterSearch: () -> Unit = {},
     val onQueryChange: (String) -> Unit = {},
     val onExitSearch: () -> Unit = {},
+    val onRetrySearch: () -> Unit = {},
     val onQuickFollow: (ListCategory) -> Unit = {},
 )
 
@@ -165,6 +167,7 @@ fun CommunityHomeScreen(
             onEnterSearch = explore::enterSearch,
             onQueryChange = explore::updateQuery,
             onExitSearch = explore::exitSearch,
+            onRetrySearch = explore::retrySearch,
             onQuickFollow = following::quickFollow,
         ),
         destinations = CommunityDestinations(
@@ -286,9 +289,16 @@ private fun HomeBody(
                 query = explore.query.orEmpty(),
                 onQueryChange = exploreCalls.onQueryChange,
                 onClose = exploreCalls.onExitSearch,
+                hint = stringResource(R.string.explore_search_hint),
                 statusBarPadding = false,
             )
-            SearchResultsGrid(explore.results, layout, CardActions(destinations.onOpenList) { exploreMenu = it })
+            SearchResultsGrid(
+                results = explore.results,
+                query = explore.query.orEmpty(),
+                layout = layout,
+                cards = CardActions(destinations.onOpenList) { exploreMenu = it },
+                onRetry = exploreCalls.onRetrySearch,
+            )
         }
     } else {
         // The status bar's strip stays put; the header slides under it and back,
@@ -493,7 +503,7 @@ private fun SearchButton(onSearch: () -> Unit) {
 
 /** What was typed, answered by the server: cards, or a line saying there is nothing. */
 @Composable
-private fun SearchResultsGrid(results: SearchResults, layout: HomeLayout, cards: CardActions) {
+private fun SearchResultsGrid(results: SearchResults, query: String, layout: HomeLayout, cards: CardActions, onRetry: () -> Unit) {
     val alpha = rememberSkeletonAlpha()
     LazyVerticalGrid(
         columns = GridCells.Fixed(layout.feedColumns.coerceAtLeast(2)),
@@ -507,8 +517,11 @@ private fun SearchResultsGrid(results: SearchResults, layout: HomeLayout, cards:
         when {
             results.loading -> items(4) { SkeletonCard(alpha, coverHeight = layout.coverHeight) }
             results.failed -> item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }) {
-                FeedFailedBlock(retrying = false, onRetry = {})
+                FeedFailedBlock(retrying = false, onRetry = onRetry)
             }
+
+            query.isNotBlank() && results.lists.isEmpty() ->
+                item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }) { SearchNothing() }
 
             else -> items(results.lists, key = { it.id }) { summary ->
                 FeedCard(
@@ -520,6 +533,20 @@ private fun SearchResultsGrid(results: SearchResults, layout: HomeLayout, cards:
             }
         }
     }
+}
+
+@Composable
+private fun SearchNothing() {
+    Text(
+        text = stringResource(R.string.explore_search_nothing),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 32.dp)
+            .testTag(ExploreTestTags.SEARCH_NOTHING),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+    )
 }
 
 /** A waiting topic survives rotation by what the sheet shows: its id and name. */

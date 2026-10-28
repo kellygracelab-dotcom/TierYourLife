@@ -178,7 +178,7 @@
     <string name="home_following_empty_topics">Z obserwowanych tematów nie ma jeszcze nic.</string>
     <string name="moderation_action_move">Przenieś…</string>
     <string name="moderation_moderators_unavailable">Nie udało się odczytać listy moderatorów.</string>
-    <string name="community_rankings_title">Rankingi · %1$d</string>
+    <string name="community_rankings_title">Rankingi</string>
     <string name="community_rankings_body">Te same karty ułożone po czyjemuś. Wybierz, czyje rzędy pokazać.</string>
     <string name="community_ranking_author">Autor listy</string>
     <string name="community_ranking_you">Ty</string>
@@ -212,6 +212,7 @@
     <string name="explore_follow">Obserwuj</string>
     <string name="explore_following">Obserwujesz</string>
     <string name="explore_tile_description">%1$s, %2$s</string>
+    <string name="explore_search_hint">Szukaj w społeczności</string>
     <string name="explore_search_nothing">Nic nie pasuje.</string>
     <string name="section_all">Wszystkie</string>
     <string name="section_suggest_topic">Zaproponuj temat</string>

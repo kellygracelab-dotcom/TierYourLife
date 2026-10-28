@@ -172,7 +172,7 @@
     <string name="home_following_empty_topics">Ainda não há nada dos temas que você segue.</string>
     <string name="moderation_action_move">Mover…</string>
     <string name="moderation_moderators_unavailable">Não foi possível ler a lista de moderadores.</string>
-    <string name="community_rankings_title">Rankings · %1$d</string>
+    <string name="community_rankings_title">Rankings</string>
     <string name="community_rankings_body">As mesmas cartas, colocadas do jeito de alguém. Escolha de quem mostrar as fileiras.</string>
     <string name="community_ranking_author">Autor da lista</string>
     <string name="community_ranking_you">Você</string>
@@ -205,6 +205,7 @@
     <string name="explore_follow">Seguir</string>
     <string name="explore_following">Seguindo</string>
     <string name="explore_tile_description">%1$s, %2$s</string>
+    <string name="explore_search_hint">Buscar na comunidade</string>
     <string name="explore_search_nothing">Nada encontrado.</string>
     <string name="section_all">Tudo</string>
     <string name="section_suggest_topic">Sugerir um tema</string>

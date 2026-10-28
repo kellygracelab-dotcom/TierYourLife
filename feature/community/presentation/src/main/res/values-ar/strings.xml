@@ -190,7 +190,7 @@
     <string name="home_following_empty_topics">لا شيء بعد من المواضيع التي تتابعها.</string>
     <string name="moderation_action_move">نقل…</string>
     <string name="moderation_moderators_unavailable">تعذّرت قراءة قائمة المشرفين.</string>
-    <string name="community_rankings_title">الترتيبات · %1$d</string>
+    <string name="community_rankings_title">الترتيبات</string>
     <string name="community_rankings_body">البطاقات نفسها مرتبة على طريقة شخص آخر. اختر صفوف من تريد عرضها.</string>
     <string name="community_ranking_author">صاحب القائمة</string>
     <string name="community_ranking_you">أنت</string>
@@ -226,6 +226,7 @@
     <string name="explore_follow">متابعة</string>
     <string name="explore_following">تتابعه</string>
     <string name="explore_tile_description">%1$s، %2$s</string>
+    <string name="explore_search_hint">البحث في المجتمع</string>
     <string name="explore_search_nothing">لا شيء يطابق ذلك.</string>
     <string name="section_all">الكل</string>
     <string name="section_suggest_topic">اقتراح موضوع</string>

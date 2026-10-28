@@ -178,7 +178,7 @@
     <string name="home_following_empty_topics">З тем, на які ви підписані, поки нічого немає.</string>
     <string name="moderation_action_move">Перемістити…</string>
     <string name="moderation_moderators_unavailable">Не вдалося прочитати список модераторів.</string>
-    <string name="community_rankings_title">Ранжування · %1$d</string>
+    <string name="community_rankings_title">Ранжування</string>
     <string name="community_rankings_body">Ті самі картки, розставлені по-своєму. Оберіть, чиї ряди показати.</string>
     <string name="community_ranking_author">Автор списку</string>
     <string name="community_ranking_you">Ви</string>
@@ -212,6 +212,7 @@
     <string name="explore_follow">Підписатися</string>
     <string name="explore_following">Ви підписані</string>
     <string name="explore_tile_description">%1$s, %2$s</string>
+    <string name="explore_search_hint">Пошук у спільноті</string>
     <string name="explore_search_nothing">Нічого не знайдено.</string>
     <string name="section_all">Усі</string>
     <string name="section_suggest_topic">Запропонувати тему</string>

@@ -38,6 +38,8 @@ sealed interface CommunityListUiState {
         val savedId: Long? = null,
         /** How many readers have placed these cards their own way. */
         val rankingCount: Int = 0,
+        /** How many readers saved a copy: the number on the chip, as on every feed card. */
+        val takeCount: Int = 0,
         /** The list this one was changed from, when the author took it from somebody. */
         val basedOn: BasedOn? = null,
         /** The section it is filed under, said beside the author where the bar has room. */

@@ -172,7 +172,7 @@
     <string name="home_following_empty_topics">Rien encore des thèmes que vous suivez.</string>
     <string name="moderation_action_move">Déplacer…</string>
     <string name="moderation_moderators_unavailable">Impossible de lire la liste des modérateurs.</string>
-    <string name="community_rankings_title">Classements · %1$d</string>
+    <string name="community_rankings_title">Classements</string>
     <string name="community_rankings_body">Les mêmes cartes, placées à la manière de quelqu’un. Choisissez les rangées à afficher.</string>
     <string name="community_ranking_author">Auteur de la liste</string>
     <string name="community_ranking_you">Vous</string>
@@ -205,6 +205,7 @@
     <string name="explore_follow">Suivre</string>
     <string name="explore_following">Abonné</string>
     <string name="explore_tile_description">%1$s, %2$s</string>
+    <string name="explore_search_hint">Rechercher dans la communauté</string>
     <string name="explore_search_nothing">Aucun résultat.</string>
     <string name="section_all">Tout</string>
     <string name="section_suggest_topic">Proposer un thème</string>

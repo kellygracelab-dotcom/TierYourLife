@@ -166,7 +166,7 @@
     <string name="home_following_empty_topics">Nothing from the topics you follow yet.</string>
     <string name="moderation_action_move">Move…</string>
     <string name="moderation_moderators_unavailable">Could not read who moderates.</string>
-    <string name="community_rankings_title">Rankings · %1$d</string>
+    <string name="community_rankings_title">Rankings</string>
     <string name="community_rankings_body">The same cards, placed somebody’s way. Choose whose rows to show.</string>
     <string name="community_ranking_author">Author of the list</string>
     <string name="community_ranking_you">You</string>
@@ -198,6 +198,7 @@
     <string name="explore_follow">Follow</string>
     <string name="explore_following">Following</string>
     <string name="explore_tile_description">%1$s, %2$s</string>
+    <string name="explore_search_hint">Search community lists</string>
     <string name="explore_search_nothing">Nothing matches that.</string>
     <string name="section_all">All</string>
     <string name="section_suggest_topic">Suggest a topic</string>

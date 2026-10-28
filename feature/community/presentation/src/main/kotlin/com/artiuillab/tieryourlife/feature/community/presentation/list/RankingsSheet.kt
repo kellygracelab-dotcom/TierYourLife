@@ -52,7 +52,7 @@ internal fun RankingsSheet(
 ) {
     AdaptiveSheet(onDismiss = onDismiss, modifier = Modifier.testTag(CommunityListTestTags.RANKINGS_SHEET)) {
         Text(
-            text = stringResource(R.string.community_rankings_title, state.rankingCount),
+            text = stringResource(R.string.community_rankings_title),
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
             style = MaterialTheme.typography.titleMedium,
         )

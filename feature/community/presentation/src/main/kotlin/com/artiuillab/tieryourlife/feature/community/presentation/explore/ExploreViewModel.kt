@@ -149,6 +149,10 @@ class ExploreViewModel @Inject constructor(
         }
     }
 
+    fun retrySearch() {
+        query.value?.let(::updateQuery)
+    }
+
     fun exitSearch() {
         searchJob?.cancel()
         query.value = null
