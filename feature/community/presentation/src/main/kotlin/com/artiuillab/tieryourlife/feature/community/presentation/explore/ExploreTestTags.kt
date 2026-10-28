@@ -16,6 +16,7 @@ internal object ExploreTestTags {
     const val HEADING = "explore_heading"
     const val SEARCH = "explore_search"
     const val SEARCH_RESULTS = "explore_search_results"
+    const val SEARCH_NOTHING = "explore_search_nothing"
     const val STRIP = "following_strip"
     const val STRIP_MANAGE = "following_strip_manage"
     const val FOLLOWING_EMPTY = "following_empty"

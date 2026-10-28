@@ -160,7 +160,7 @@
     <string name="home_following_empty_topics">フォロー中のトピックからの投稿はまだありません。</string>
     <string name="moderation_action_move">移動…</string>
     <string name="moderation_moderators_unavailable">モデレーターの一覧を読み込めませんでした。</string>
-    <string name="community_rankings_title">ランキング · %1$d</string>
+    <string name="community_rankings_title">ランキング</string>
     <string name="community_rankings_body">同じカードを誰かが自分流に並べたものです。誰の並びを表示するか選んでください。</string>
     <string name="community_ranking_author">リストの作者</string>
     <string name="community_ranking_you">あなた</string>
@@ -191,6 +191,7 @@
     <string name="explore_follow">フォロー</string>
     <string name="explore_following">フォロー中</string>
     <string name="explore_tile_description">%1$s、%2$s</string>
+    <string name="explore_search_hint">コミュニティを検索</string>
     <string name="explore_search_nothing">一致するものがありません。</string>
     <string name="section_all">すべて</string>
     <string name="section_suggest_topic">トピックを提案</string>

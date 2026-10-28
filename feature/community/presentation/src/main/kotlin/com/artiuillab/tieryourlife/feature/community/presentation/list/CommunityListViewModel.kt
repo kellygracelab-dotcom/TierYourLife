@@ -109,6 +109,7 @@ class CommunityListViewModel @Inject constructor(
                         authorPhotoUrl = answer.summary.authorPhotoUrl,
                         editorial = answer.summary.editorial,
                         rankingCount = answer.summary.rankingCount,
+                        takeCount = answer.summary.takeCount,
                         basedOn = answer.summary.basedOn,
                         section = answer.summary.category,
                     )
@@ -162,7 +163,14 @@ class CommunityListViewModel @Inject constructor(
                     takenFrom = publishedId,
                 )
             }
-            _state.update { (it as CommunityListUiState.Success).copy(saving = false, savedId = newId.takeIf { saved }) }
+            _state.update { current ->
+                current as CommunityListUiState.Success
+                current.copy(
+                    saving = false,
+                    savedId = newId.takeIf { saved },
+                    takeCount = if (saved) current.takeCount + 1 else current.takeCount,
+                )
+            }
             if (saved) {
                 // What the popular ordering counts. Its failure is not this
                 // person's problem: they have their copy either way.

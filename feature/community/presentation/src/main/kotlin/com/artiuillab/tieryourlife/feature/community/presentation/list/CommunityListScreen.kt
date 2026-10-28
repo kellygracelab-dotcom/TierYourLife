@@ -336,8 +336,8 @@ private fun UnderTheTitle(
     if (basedOn != null) {
         BasedOnLine(basedOn = basedOn, onOpen = { onOpenList(basedOn.id) })
     }
-    if (loaded.rankingCount > 0) {
-        RankingsLine(count = loaded.rankingCount, chosen = loaded.chosenRanking, onOpen = onOpenRankings)
+    if (loaded.takeCount > 0) {
+        RankingsLine(count = loaded.takeCount, chosen = loaded.chosenRanking, onOpen = onOpenRankings)
     }
 }
 

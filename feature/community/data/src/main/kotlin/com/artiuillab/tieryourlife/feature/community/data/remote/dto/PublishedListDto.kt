@@ -107,6 +107,7 @@ data class PublishedListDto(
     val anonymous: Boolean = false,
     val topicId: String? = null,
     val topicName: String? = null,
+    val takeCount: Int = 0,
     val rankingCount: Int = 0,
     val basedOn: BasedOnDto? = null,
 )

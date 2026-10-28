@@ -166,7 +166,7 @@
     <string name="home_following_empty_topics">Takip ettiğiniz konulardan henüz bir şey yok.</string>
     <string name="moderation_action_move">Taşı…</string>
     <string name="moderation_moderators_unavailable">Moderatör listesi okunamadı.</string>
-    <string name="community_rankings_title">Sıralamalar · %1$d</string>
+    <string name="community_rankings_title">Sıralamalar</string>
     <string name="community_rankings_body">Aynı kartlar, birinin kendi usulünce dizilmiş. Kimin sıralarının gösterileceğini seçin.</string>
     <string name="community_ranking_author">Listenin yazarı</string>
     <string name="community_ranking_you">Siz</string>
@@ -198,6 +198,7 @@
     <string name="explore_follow">Takip et</string>
     <string name="explore_following">Takip ediliyor</string>
     <string name="explore_tile_description">%1$s, %2$s</string>
+    <string name="explore_search_hint">Toplulukta ara</string>
     <string name="explore_search_nothing">Eşleşen bir şey yok.</string>
     <string name="section_all">Tümü</string>
     <string name="section_suggest_topic">Konu öner</string>

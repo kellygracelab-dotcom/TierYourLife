@@ -96,6 +96,7 @@ fun SearchTopBar(
     query: String,
     onQueryChange: (String) -> Unit,
     onClose: () -> Unit,
+    hint: String? = null,
     contentMax: Dp = ContentWidth.Reading,
     statusBarPadding: Boolean = true,
     compact: Boolean = isShortWindow,
@@ -130,6 +131,7 @@ fun SearchTopBar(
             SearchField(
                 query = query,
                 onQueryChange = onQueryChange,
+                hint = hint ?: stringResource(R.string.home_search_hint),
                 modifier = Modifier
                     .weight(1f)
                     .focusRequester(focusRequester)
@@ -143,7 +145,7 @@ fun SearchTopBar(
 
 /** 40 high and fully rounded, a shade off the bar so it reads as a field without a border. */
 @Composable
-private fun SearchField(query: String, onQueryChange: (String) -> Unit, modifier: Modifier) {
+private fun SearchField(query: String, onQueryChange: (String) -> Unit, hint: String, modifier: Modifier) {
     val colors = MaterialTheme.colorScheme
     val clearDescription = stringResource(R.string.cd_clear_query)
     val keyboard = LocalSoftwareKeyboardController.current
@@ -169,7 +171,7 @@ private fun SearchField(query: String, onQueryChange: (String) -> Unit, modifier
                 Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
                     if (query.isEmpty()) {
                         Text(
-                            text = stringResource(R.string.home_search_hint),
+                            text = hint,
                             style = SearchQueryStyle,
                             color = colors.onSurfaceVariant,
                             maxLines = 1,

@@ -362,8 +362,8 @@ internal fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     authorPhotoUrl = authorPhotoUrl,
     category = ListCategory.fromId(category) ?: ListCategory.Other,
     itemCount = itemCount,
-    coverImageUrl = coverImageUrl,
-    previewImages = previewImages,
+    coverImageUrl = coverImageUrl.webPictureOrNull(),
+    previewImages = previewImages.mapNotNull { it.webPictureOrNull() },
     tierColors = tierColors,
     updatedAtMillis = updatedAt,
     takeCount = takeCount,
@@ -374,6 +374,9 @@ internal fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     basedOn = basedOn?.toDomain(),
 )
 
+/** Old lists stored the word "null" as a cover; only a web address is a picture. */
+internal fun String?.webPictureOrNull(): String? = this?.trim()?.takeIf { it.startsWith("https://", ignoreCase = true) }
+
 internal fun PublishedListDto.toDomain() = PublishedList(
     summary = PublishedListSummary(
         id = id,
@@ -383,10 +386,11 @@ internal fun PublishedListDto.toDomain() = PublishedList(
         authorPhotoUrl = authorPhotoUrl,
         category = ListCategory.fromId(category) ?: ListCategory.Other,
         itemCount = itemCount,
-        coverImageUrl = coverImageUrl,
-        previewImages = previewImages,
+        coverImageUrl = coverImageUrl.webPictureOrNull(),
+        previewImages = previewImages.mapNotNull { it.webPictureOrNull() },
         tierColors = tierColors,
         updatedAtMillis = updatedAt,
+        takeCount = takeCount,
         anonymous = anonymous,
         topicId = topicId,
         topicName = topicName,
