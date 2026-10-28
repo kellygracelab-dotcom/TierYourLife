@@ -29,6 +29,9 @@ data class PublishedListSummary(
     val rankingCount: Int = 0,
     /** The list this one was made from, when a reader changed the cards rather than only placing them. */
     val basedOn: BasedOn? = null,
+    /** On the author's own list: the waiting proposal it moves to once approved, and its name. */
+    val proposedSection: String? = null,
+    val proposedSectionName: String? = null,
 ) {
     /** Shown without its author, and leading to no profile. */
     val editorial: Boolean get() = EditorialAuthors.isEditorial(authorUid, anonymous)

@@ -72,6 +72,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.ViewCarouselIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
+import com.artiuillab.tieryourlife.feature.tier.board.common.LocalSections
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -100,6 +101,8 @@ fun TierListSettingsScreenContent(
     onUpdatePublished: () -> Unit = {},
     onSetCategory: (String) -> Unit = {},
     onCategoryNotChosen: () -> Unit = {},
+    /** Opens the proposal form, filing lists under the board's own section meanwhile; null where there is none. */
+    onProposeSection: ((String?) -> Unit)? = null,
     onChooseCover: () -> Unit = {},
     onChooseTopic: () -> Unit = {},
     onAddCards: () -> Unit = {},
@@ -176,6 +179,14 @@ fun TierListSettingsScreenContent(
             onSelect = {
                 onSetCategory(it)
                 categorySheetVisible = false
+            },
+            withWaiting = true,
+            onPropose = onProposeSection?.let { propose ->
+                {
+                    categorySheetVisible = false
+                    onCategoryNotChosen()
+                    propose(list.category)
+                }
             },
         )
     }
@@ -361,8 +372,14 @@ private fun CategoryRow(category: String?, onClick: () -> Unit) {
     SettingsActionRow(
         icon = { CategoryIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
         title = stringResource(R.string.list_settings_category),
-        subtitle = category?.let { sectionLabel(it) }
-            ?: stringResource(R.string.list_settings_category_none),
+        subtitle = category?.let { id ->
+            // Their own waiting proposal: the list waits elsewhere and says where it is going.
+            if (LocalSections.current.directory.waiting.any { it.id == id }) {
+                stringResource(R.string.list_settings_moves_to, sectionLabel(id))
+            } else {
+                sectionLabel(id)
+            }
+        } ?: stringResource(R.string.list_settings_category_none),
         onClick = onClick,
         testTag = TierDetailTestTags.CATEGORY_ROW,
     )

@@ -318,6 +318,7 @@ private fun TierScreenBody(
             onUpdatePublished = actions.onUpdatePublished,
             onSetCategory = actions.onSetCategory,
             onCategoryNotChosen = actions.onCategoryNotChosen,
+            onProposeSection = actions.onProposeSection,
             onChooseCover = actions.onChooseCover,
             onChooseTopic = actions.onChooseTopic,
             onAddCards = {

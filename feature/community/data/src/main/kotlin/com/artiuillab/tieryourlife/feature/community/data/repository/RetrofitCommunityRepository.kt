@@ -15,12 +15,14 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedLi
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTierDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.RankingDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ReportRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionProposalDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TakeDownRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicMergeRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicNameRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicSectionRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.isAppUnverified
+import com.artiuillab.tieryourlife.feature.community.data.remote.proposalError
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
@@ -35,6 +37,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
+import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
@@ -44,6 +47,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionNameCheck
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposal
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
@@ -55,6 +60,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.OwnPictures
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PublishFingerprint
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CancellationException
 import retrofit2.HttpException
 import timber.log.Timber
@@ -66,7 +72,11 @@ import javax.inject.Singleton
 class RetrofitCommunityRepository @Inject constructor(
     private val api: CommunityApi,
     private val pictures: OwnPictures,
+    private val auth: FirebaseAuth,
 ) : CommunityRepository {
+
+    /** Whose proposals are whose: the server names the proposer, never "yours". */
+    private val me: String? get() = auth.currentUser?.uid
 
     override suspend fun feed(
         category: String?,
@@ -120,7 +130,7 @@ class RetrofitCommunityRepository @Inject constructor(
         }
 
     override suspend fun sections(): Result<List<Section>> = attempt("Reading the sections") {
-        sectionsFrom(api.sections().sections)
+        sectionsFrom(api.sections().sections, me)
     }
 
     override suspend fun section(id: String): Result<SectionLookup> {
@@ -128,7 +138,7 @@ class RetrofitCommunityRepository @Inject constructor(
         if (!SECTION_ID.matches(id)) return Result.success(SectionLookup.Unknown)
         return attempt("Reading one section") {
             try {
-                SectionLookup.Found(sectionFrom(api.section(id)))
+                SectionLookup.Found(sectionFrom(api.section(id), me))
             } catch (refused: HttpException) {
                 refused.sectionRefusal() ?: throw refused
             }
@@ -141,6 +151,29 @@ class RetrofitCommunityRepository @Inject constructor(
 
     override suspend fun unfollowSection(id: String): Result<Unit> = attempt("Unfollowing a section") {
         api.unfollowSection(id)
+    }
+
+    override suspend fun checkSectionName(name: String): Result<SectionNameCheck> = attempt("Checking a section name") {
+        val answer = api.checkSectionName(name.trim())
+        when {
+            answer.free -> SectionNameCheck.Free
+            answer.code == BAD_NAME -> SectionNameCheck.Bad
+            else -> SectionNameCheck.Taken(answer.id)
+        }
+    }
+
+    override suspend fun proposeSection(proposal: SectionProposal): Result<Section> = try {
+        val request = SectionProposalDto(name = proposal.name.trim(), icon = proposal.icon, pictureId = proposal.pictureId, fileUnder = proposal.fileUnder)
+        Result.success(sectionFrom(api.proposeSection(request), me).copy(mine = true))
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Timber.w(e, "Proposing a section failed")
+        Result.failure(ProposalRefused(e.proposalError()))
+    }
+
+    override suspend fun withdrawProposal(id: String): Result<Unit> = attempt("Withdrawing a proposal") {
+        api.withdrawProposal(id)
     }
 
     override suspend fun topics(query: String?, section: String?): Result<List<Topic>> =
@@ -322,6 +355,7 @@ private fun Throwable.asPublishError(): PublishError = when {
 
 private const val TOO_MANY_PENDING_TOPICS = "TOO_MANY_PENDING_TOPICS"
 private const val TOPIC_UNAVAILABLE = "TOPIC_UNAVAILABLE"
+private const val BAD_NAME = "BAD_NAME"
 private const val HTTP_BAD_REQUEST = 400
 private const val HTTP_FORBIDDEN = 403
 private const val HTTP_CONFLICT = 409
@@ -378,6 +412,8 @@ internal fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     topicName = topicName,
     rankingCount = rankingCount,
     basedOn = basedOn?.toDomain(),
+    proposedSection = proposedSection,
+    proposedSectionName = proposedSectionName,
 )
 
 /** Old lists stored the word "null" as a cover; only a web address is a picture. */
@@ -497,4 +533,6 @@ internal fun PublishedListSummary.toDto() = PublishedListSummaryDto(
     topicName = topicName,
     rankingCount = rankingCount,
     basedOn = basedOn?.let { BasedOnDto(id = it.id, title = it.title, authorUid = it.authorUid, authorName = it.authorName) },
+    proposedSection = proposedSection,
+    proposedSectionName = proposedSectionName,
 )

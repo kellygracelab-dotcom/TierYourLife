@@ -15,6 +15,8 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedLi
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.RankingsPageDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ReportRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionFollowDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionNameCheckDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionProposalDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionsDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SuggestedAuthorsDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TakeDownRequestDto
@@ -63,8 +65,17 @@ interface CommunityApi {
     @GET("lists/sections")
     suspend fun sections(): SectionsDto
 
+    @GET("lists/sections/name-check")
+    suspend fun checkSectionName(@Query("name") name: String): SectionNameCheckDto
+
     @GET("lists/sections/{id}")
     suspend fun section(@Path("id") id: String): JsonObject
+
+    @POST("lists/sections/proposals")
+    suspend fun proposeSection(@Body request: SectionProposalDto): JsonObject
+
+    @DELETE("lists/sections/proposals/{id}")
+    suspend fun withdrawProposal(@Path("id") id: String)
 
     @POST("lists/sections/{id}/follow")
     suspend fun followSection(@Path("id") id: String): SectionFollowDto

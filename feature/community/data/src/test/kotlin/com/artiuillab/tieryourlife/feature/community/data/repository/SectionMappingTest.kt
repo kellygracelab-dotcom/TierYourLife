@@ -106,6 +106,24 @@ class SectionMappingTest {
     }
 
     @Test
+    fun `a proposal is this person's own only when they sent it, and an approved section is nobody's`() {
+        val answer = listOf(
+            SectionDto(id = "kites", status = "pending", proposerUid = "me", fileUnder = "sport", waitingLists = 2),
+            SectionDto(id = "boats", status = "pending", proposerUid = "somebody"),
+            SectionDto(id = "noodles", status = "declined", proposerUid = "me", declineNote = "Too close to Food"),
+            SectionDto(id = "cars", status = "approved", proposerUid = "me"),
+        )
+
+        val sections = sectionsFrom(answer, me = "me")
+
+        assertEquals(listOf(true, false, true, false), sections.map { it.mine })
+        assertEquals(listOf("kites"), sections.filter { it.waiting }.map { it.id })
+        assertEquals("Too close to Food", sections[2].declineNote)
+        assertEquals(2, sections[0].waitingLists)
+        assertFalse(sectionsFrom(answer, me = null).any { it.mine })
+    }
+
+    @Test
     fun `the collage keeps four web pictures at most`() {
         val pictures = listOf("https://a", "http://b", "https://c", "https://d", "https://e", "https://f")
 

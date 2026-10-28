@@ -167,4 +167,7 @@
     <string name="tier_detail_play_needs_cards">Для гри потрібно щонайменше 3 картки</string>
     <string name="list_settings_anonymous">Публікувати анонімно</string>
     <string name="list_settings_anonymous_body">Ваше ім’я та фото не показуються біля списку. Він і далі ваш: лише ви можете його змінити чи видалити.</string>
+    <string name="list_settings_propose_section">Запропонувати розділ</string>
+    <string name="list_settings_category_waiting">Очікує на модератора</string>
+    <string name="list_settings_moves_to">Перейде в «%1$s», щойно його схвалять</string>
 </resources>

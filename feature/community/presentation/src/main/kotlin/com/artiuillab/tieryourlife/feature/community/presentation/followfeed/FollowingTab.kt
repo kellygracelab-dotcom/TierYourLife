@@ -67,8 +67,10 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.TileSt
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.WideContentMax
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.feedItems
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.rememberSkeletonAlpha
+import com.artiuillab.tieryourlife.feature.community.presentation.section.ProposalNotices
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionArt
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionIcon
+import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingSectionSquare
 import com.artiuillab.tieryourlife.feature.community.presentation.section.lookOf
 import com.artiuillab.tieryourlife.feature.community.presentation.section.topicBgNow
 import com.artiuillab.tieryourlife.feature.community.presentation.section.topicIconNow
@@ -88,6 +90,8 @@ internal class FollowingActions(
     val onQuickFollow: (String) -> Unit = {},
     val onGoToExplore: () -> Unit = {},
     val onOpenAllSections: () -> Unit = {},
+    val onOpenWaitingSection: (Section) -> Unit = {},
+    val onDismissNotice: (String) -> Unit = {},
 )
 
 /** The Following tab (§4): what is followed, then everything new from it, newest first, each card saying why. */
@@ -126,9 +130,14 @@ internal fun FollowingTab(
                     return@LazyVerticalGrid
                 }
                 val following = state.following
+                if (state.proposalNotices.isNotEmpty()) {
+                    item(key = "notices", span = { GridItemSpan(maxLineSpan) }) {
+                        ProposalNotices(state.proposalNotices, onDismiss = actions.onDismissNotice, modifier = Modifier.padding(top = 12.dp))
+                    }
+                }
                 if (following != null) {
                     item(key = "strip", span = { GridItemSpan(maxLineSpan) }) {
-                        FollowedStrip(following, state.waiting, actions)
+                        FollowedStrip(following, state.waiting, actions, state.waitingSections)
                     }
                 }
                 if (state.feed.phase == FeedPhase.Ready && state.feed.lists.isEmpty()) {
@@ -156,7 +165,7 @@ private val StripVisual = 56.dp
 
 /** Sections, topics (waiting ones last), people, then Manage (§4.1). */
 @Composable
-internal fun FollowedStrip(following: Following, waiting: List<Topic>, actions: FollowingActions) {
+internal fun FollowedStrip(following: Following, waiting: List<Topic>, actions: FollowingActions, waitingSections: List<Section> = emptyList()) {
     Column(Modifier.fillMaxWidth().testTag(ExploreTestTags.STRIP)) {
         LazyRow(
             contentPadding = PaddingValues(top = 14.dp, bottom = 12.dp),
@@ -164,6 +173,11 @@ internal fun FollowedStrip(following: Following, waiting: List<Topic>, actions: 
         ) {
             following.sections.forEach { followed ->
                 item(key = "s-${followed.id}") { FollowedSectionItem(followed, actions) }
+            }
+            waitingSections.forEach { section ->
+                item(key = "ws-${section.id}") {
+                    StripItem(section.label(), "ws-${section.id}", { actions.onOpenWaitingSection(section) }) { WaitingSectionSquare(section, StripVisual) }
+                }
             }
             following.topics.forEach { topic ->
                 item(key = "t-${topic.id}") {

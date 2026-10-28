@@ -187,4 +187,7 @@
     <string name="tier_detail_play_needs_cards">يتطلب اللعب 3 بطاقات على الأقل</string>
     <string name="list_settings_anonymous">النشر دون اسم</string>
     <string name="list_settings_anonymous_body">لا يظهر اسمك ولا صورتك مع القائمة. تبقى القائمة لك: أنت وحدك من يمكنه تعديلها أو حذفها.</string>
+    <string name="list_settings_propose_section">اقتراح قسم</string>
+    <string name="list_settings_category_waiting">بانتظار مشرف</string>
+    <string name="list_settings_moves_to">سينتقل إلى %1$s بعد الموافقة عليه</string>
 </resources>

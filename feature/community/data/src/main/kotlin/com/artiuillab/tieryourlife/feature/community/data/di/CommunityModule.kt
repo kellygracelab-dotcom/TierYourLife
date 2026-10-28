@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.community.data.cache.FeedCacheDatabas
 import com.artiuillab.tieryourlife.feature.community.data.cache.RoomCommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.data.cache.RoomSectionStore
 import com.artiuillab.tieryourlife.feature.community.data.cache.SystemCommunityNetwork
+import com.artiuillab.tieryourlife.feature.community.data.picture.StorageSectionPictures
 import com.artiuillab.tieryourlife.feature.community.data.remote.api.CommunityApi
 import com.artiuillab.tieryourlife.feature.community.data.repository.RetrofitCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
@@ -16,6 +17,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Community
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.KeptSectionCatalog
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
+import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionPictures
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionStore
 import dagger.Binds
 import dagger.Module
@@ -50,6 +52,10 @@ abstract class CommunityModule {
     @Binds
     @Singleton
     abstract fun bindSectionStore(implementation: RoomSectionStore): SectionStore
+
+    @Binds
+    @Singleton
+    abstract fun bindSectionPictures(implementation: StorageSectionPictures): SectionPictures
 
     companion object {
         @Provides

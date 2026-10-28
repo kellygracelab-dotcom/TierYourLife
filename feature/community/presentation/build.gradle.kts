@@ -22,6 +22,8 @@ dependencies {
     implementation(projects.core.theme)
     implementation(projects.feature.community.domain)
     implementation(projects.feature.tier.domain)
+    // Proposing a section asks a guest to sign in first.
+    implementation(projects.feature.account.domain)
     // A stranger's list is drawn by the board renderer.
     implementation(projects.feature.tier.board)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -34,7 +36,7 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.roborazzi)
     testImplementation(libs.roborazzi.compose)
-    listOf(projects.core.settings, projects.feature.tier.domain, projects.feature.community.domain).forEach { owner ->
+    listOf(projects.core.settings, projects.feature.tier.domain, projects.feature.community.domain, projects.feature.account.domain).forEach { owner ->
         testImplementation(testFixtures(owner))
         androidTestImplementation(testFixtures(owner))
     }

@@ -8,11 +8,15 @@ import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityNetwork
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.FakeSectionStore
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSection
 import com.artiuillab.tieryourlife.feature.community.domain.model.Following
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
@@ -93,8 +97,27 @@ class FollowingFeedViewModelTest {
         made.forEach { it.viewModelScope.cancel() }
     }
 
-    private fun viewModel(community: FakeCommunityRepository) =
-        FollowingFeedViewModel(community, FakeCommunityFeedCache(), FakeCommunityNetwork(), FakeAppPreferences(), FakeCommunityClock(), sectionCatalogFor(community)).also { made += it }
+    private fun viewModel(community: FakeCommunityRepository, store: FakeSectionStore = FakeSectionStore()) =
+        FollowingFeedViewModel(community, FakeCommunityFeedCache(), FakeCommunityNetwork(), FakeAppPreferences(), FakeCommunityClock(), sectionCatalogFor(community, store))
+            .also { made += it }
+
+    @Test
+    fun ownWaitingSections_joinTheStrip_soFollowingNothingElseIsStillAFeed() = runBlocking {
+        val waiting = Section(id = "street-food", name = "Street food", status = SectionStatus.Pending, mine = true)
+        val merged = Section(id = "kites", name = "Kites", status = SectionStatus.Merged, mergedInto = "sport", mine = true)
+        val store = FakeSectionStore(SectionDirectory(sections = Section.BUILT_IN + waiting + merged, fetchedAtMillis = 1L))
+        val viewModel = viewModel(Community(), store)
+        viewModel.open()
+
+        val state = viewModel.state.firstWithin { it.following != null && it.waitingSections.isNotEmpty() }
+
+        assertEquals(listOf("street-food"), state.waitingSections.map { it.id })
+        assertEquals(listOf("kites"), state.proposalNotices.map { it.id })
+        assertFalse(state.followsNothing)
+
+        viewModel.withdrawProposal("kites")
+        assertTrue(viewModel.state.firstWithin { it.proposalNotices.isEmpty() }.proposalNotices.isEmpty())
+    }
 
     @Test
     fun followingNothing_offersTheSections_andOneTapMakesItAFeed() = runBlocking {

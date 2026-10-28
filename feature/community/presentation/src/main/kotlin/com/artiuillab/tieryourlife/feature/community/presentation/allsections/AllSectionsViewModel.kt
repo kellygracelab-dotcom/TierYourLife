@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -26,6 +28,10 @@ data class AllSectionsUiState(
     val countsKnown: Boolean = false,
     val sort: SectionSort = SectionSort.MostLists,
     val query: String = "",
+    /** This person's own proposals still waiting: first, and seen by nobody else. */
+    val waiting: List<Section> = emptyList(),
+    /** Their proposals declined or merged, until dismissed. */
+    val notices: List<Section> = emptyList(),
 ) {
     /** Past twenty, scrolling for a name stops being quicker than typing it. */
     val searchable: Boolean get() = sections.size > SEARCHABLE_FROM
@@ -43,10 +49,39 @@ class AllSectionsViewModel @Inject constructor(
     private val notes = Channel<CommunityNotice>(Channel.BUFFERED)
 
     val state: StateFlow<AllSectionsUiState> = combine(catalog.directory, sort, query) { directory, order, typed ->
-        AllSectionsUiState(sections = directory.shown, countsKnown = directory.counted, sort = order, query = typed)
+        AllSectionsUiState(
+            sections = directory.shown,
+            countsKnown = directory.counted,
+            sort = order,
+            query = typed,
+            waiting = directory.waiting,
+            notices = directory.settledAgainst,
+        )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, AllSectionsUiState())
 
     val notices: Flow<CommunityNotice> = notes.receiveAsFlow()
+
+    private val sent = Channel<Unit>(Channel.CONFLATED)
+
+    /** A proposal that arrived while this screen was open: the form just sent it. */
+    val proposed: Flow<Unit> = sent.receiveAsFlow()
+
+    init {
+        viewModelScope.launch {
+            var seen: Set<String>? = null
+            catalog.directory.map { directory -> directory.waiting.map { it.id }.toSet() }.distinctUntilChanged().collect { waiting ->
+                if (seen?.let { (waiting - it).isNotEmpty() } == true) sent.send(Unit)
+                seen = waiting
+            }
+        }
+    }
+
+    /** Withdraws a waiting proposal, or dismisses the notice of a declined or merged one. */
+    fun withdraw(sectionId: String) {
+        viewModelScope.launch {
+            catalog.withdraw(sectionId).onFailure { notes.send(CommunityNotice.ActionFailed) }
+        }
+    }
 
     fun open() {
         viewModelScope.launch { catalog.refresh() }

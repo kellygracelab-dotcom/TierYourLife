@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSectio
 import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
@@ -62,11 +63,16 @@ data class FollowingFeedUiState(
     /** Section ids followed from the empty tab's mini tiles in this sitting: their + is a check. */
     val quickFollowed: Set<String> = emptySet(),
     val nowMillis: Long = 0L,
+    /** This person's own section proposals still waiting: in their strip, and nobody else's. */
+    val waitingSections: List<Section> = emptyList(),
+    /** Their proposals declined or merged, until dismissed. */
+    val proposalNotices: List<Section> = emptyList(),
 ) {
     /** Nothing followed at all: the tab offers the sections instead of a feed. */
     val followsNothing: Boolean
-        get() = following?.let { it.authors.isEmpty() && it.topics.isEmpty() && it.sections.isEmpty() && waiting.isEmpty() }
-            ?: feed.followingNobody
+        get() = following?.let {
+            it.authors.isEmpty() && it.topics.isEmpty() && it.sections.isEmpty() && waiting.isEmpty() && waitingSections.isEmpty()
+        } ?: feed.followingNobody
 }
 
 @HiltViewModel
@@ -90,8 +96,16 @@ class FollowingFeedViewModel @Inject constructor(
     private val waiting = MutableStateFlow<List<Topic>>(emptyList())
     private val quickFollowed = MutableStateFlow<Set<String>>(emptySet())
 
-    val state: StateFlow<FollowingFeedUiState> = combine(following, waiting, feed.pane, quickFollowed) { f, w, pane, quick ->
-        FollowingFeedUiState(following = f, waiting = w, feed = pane, quickFollowed = quick, nowMillis = clock.nowMillis())
+    val state: StateFlow<FollowingFeedUiState> = combine(following, waiting, feed.pane, quickFollowed, catalog.directory) { f, w, pane, quick, directory ->
+        FollowingFeedUiState(
+            following = f,
+            waiting = w,
+            feed = pane,
+            quickFollowed = quick,
+            nowMillis = clock.nowMillis(),
+            waitingSections = directory.waiting,
+            proposalNotices = directory.settledAgainst,
+        )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, FollowingFeedUiState())
 
     val notices: Flow<CommunityNotice> = merge(notes.receiveAsFlow(), feed.notices.map { it.toCommunityNotice() })
@@ -142,6 +156,11 @@ class FollowingFeedViewModel @Inject constructor(
                 },
             )
         }
+    }
+
+    /** Withdraws a waiting proposal, or dismisses the notice of a declined or merged one. */
+    fun withdrawProposal(sectionId: String) {
+        viewModelScope.launch { catalog.withdraw(sectionId).onFailure { notes.send(CommunityNotice.ActionFailed) } }
     }
 
     fun hideList(summary: PublishedListSummary) = menu.hideList(feed, summary)

@@ -19,6 +19,8 @@ data class TierDetailActions(
     /** A section id. */
     val onSetCategory: (String) -> Unit = {},
     val onCategoryNotChosen: () -> Unit = {},
+    /** The proposal form, with the board's section to file lists under meanwhile; null where it cannot open. */
+    val onProposeSection: ((String?) -> Unit)? = null,
     val onChooseCover: () -> Unit = {},
     val onChooseTopic: () -> Unit = {},
     val onAddClick: () -> Unit = {},

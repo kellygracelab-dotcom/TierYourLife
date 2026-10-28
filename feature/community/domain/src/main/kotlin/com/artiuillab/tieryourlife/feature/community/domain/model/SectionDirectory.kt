@@ -21,6 +21,19 @@ data class SectionDirectory(
     /** What ordinary screens draw, in order. */
     val shown: List<Section> get() = sections.filter { it.shown }
 
+    /** This person's own proposals still waiting, oldest first: only they see them. */
+    val waiting: List<Section> get() = sections.filter { it.waiting }
+
+    /** This person's proposals that were declined or merged, until they dismiss them. */
+    val settledAgainst: List<Section> get() = sections.filter { it.settledAgainst }
+
+    /** A proposal just sent, at the end where the server keeps them. */
+    fun withProposal(section: Section): SectionDirectory =
+        copy(sections = sections.filterNot { it.id == section.id } + section.copy(mine = true))
+
+    /** A proposal withdrawn, or a notice dismissed. */
+    fun withoutProposal(id: String): SectionDirectory = copy(sections = sections.filterNot { it.id == id && it.mine })
+
     /** Whether the counts are the server's rather than the zeros the app starts with. */
     val counted: Boolean get() = fetchedAtMillis != null
 

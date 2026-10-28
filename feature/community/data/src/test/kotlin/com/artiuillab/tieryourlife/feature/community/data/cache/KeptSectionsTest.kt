@@ -32,6 +32,14 @@ class KeptSectionsTest {
     }
 
     @Test
+    fun `this person's own proposals stay their own when read back`() {
+        val waiting = Section(id = "kites", name = "Kites", status = com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus.Pending, mine = true, fileUnder = "sport")
+        val kept = SectionDirectory(sections = listOf(cars, waiting), fetchedAtMillis = 3L)
+
+        assertEquals(listOf("kites"), decodeSections(encodeSections(kept), 3L)?.waiting?.map { it.id })
+    }
+
+    @Test
     fun `a kept list with nothing in it is nothing kept`() {
         assertNull(decodeSections("""{"sections":[]}""", 1L))
     }
