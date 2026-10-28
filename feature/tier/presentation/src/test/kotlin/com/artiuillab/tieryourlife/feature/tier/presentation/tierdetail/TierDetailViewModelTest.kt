@@ -319,6 +319,44 @@ class TierDetailViewModelTest {
     }
 
     @Test
+    fun goingAnonymous_onAListAlreadyOut_sendsItAgainAtOnce_withoutTheName() = runBlocking {
+        val community = FakeCommunityRepositoryForDetail()
+        val viewModel = TierDetailViewModel(
+            FakeTierRepository(listWithOneCard().copy(category = ListCategory.Food.id), publishedId = "published-1"),
+            community,
+            FakeAccountRepository(FakeAccountRepository.signedIn),
+            savedStateHandle(),
+        )
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+
+        viewModel.setAnonymous(true)
+        viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.anonymous == true }
+        viewModel.screen.firstWithin { !it.publish.publishing && community.published.isNotEmpty() }
+
+        assertTrue(community.published.single().anonymous)
+    }
+
+    @Test
+    fun goingAnonymous_beforePublishing_onlyRemembersItForThePublish() = runBlocking {
+        val community = FakeCommunityRepositoryForDetail()
+        val viewModel = TierDetailViewModel(
+            FakeTierRepository(listWithOneCard().copy(category = ListCategory.Food.id)),
+            community,
+            FakeAccountRepository(FakeAccountRepository.signedIn),
+            savedStateHandle(),
+        )
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+
+        viewModel.setAnonymous(true)
+        viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.anonymous == true }
+        assertTrue(community.published.isEmpty())
+
+        viewModel.setPublic(true)
+        viewModel.screen.firstWithin { !it.publish.publishing && community.published.isNotEmpty() }
+        assertTrue(community.published.single().anonymous)
+    }
+
+    @Test
     fun aSectionOfSomebodysOwn_isKeptAndPublishedByItsId() = runBlocking {
         val repository = FakeTierRepository(listWithOneCard().copy(category = null))
         val community = FakeCommunityRepositoryForDetail()
@@ -529,6 +567,10 @@ private class FakeTierRepository(
 
     override suspend fun setCategory(id: Long, category: String?) {
         list = list.copy(category = category)
+    }
+
+    override suspend fun setAnonymous(id: Long, anonymous: Boolean) {
+        list = list.copy(anonymous = anonymous)
     }
 
     override suspend fun setCover(id: Long, pictures: List<String>) {

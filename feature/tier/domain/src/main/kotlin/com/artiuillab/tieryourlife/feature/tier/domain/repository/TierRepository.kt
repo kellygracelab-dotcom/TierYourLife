@@ -48,6 +48,9 @@ interface TierRepository {
 
     suspend fun setCategory(id: Long, category: String?)
 
+    /** Whether the list goes out with no name or face. */
+    suspend fun setAnonymous(id: Long, anonymous: Boolean)
+
     /** Starred at [at], or unstarred when it is null. */
     suspend fun setFavouritedAt(id: Long, at: Long?)
 

@@ -52,4 +52,13 @@ data class TierListEntity(
      * watched by the edited-at trigger: starring is not editing.
      */
     val favouritedAt: Long? = null,
+    /** Published with no name or face. A column of its own, so it syncs and survives a change of phone. */
+    @ColumnInfo(defaultValue = "0")
+    val anonymous: Boolean = false,
+    /**
+     * The saved Play game, as the account sent it: JSON this phone does not
+     * read yet, only keeps and sends back untouched, since the account stores
+     * a board as it is written and would otherwise lose the game.
+     */
+    val play: String? = null,
 )

@@ -273,4 +273,6 @@
     <string name="all_sections_sort_name">A–Z</string>
     <string name="all_sections_find">Encontrar uma seção</string>
     <string name="all_sections_propose">Propor uma seção</string>
+    <string name="community_anonymous">Anônimo</string>
+    <string name="community_based_on_nameless">Baseada em “%1$s”</string>
 </resources>

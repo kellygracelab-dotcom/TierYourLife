@@ -165,4 +165,6 @@
     <string name="tier_detail_drop_unrank_dock">Отпустите на пул, чтобы убрать из рейтинга</string>
     <string name="tier_detail_content_description_play">Играть</string>
     <string name="tier_detail_play_needs_cards">Для игры нужно минимум 3 карточки</string>
+    <string name="list_settings_anonymous">Публиковать анонимно</string>
+    <string name="list_settings_anonymous_body">Ваше имя и фото не показываются рядом со списком. Он по-прежнему ваш: только вы можете его изменить или удалить.</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.local.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
@@ -24,8 +25,11 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.view.ActiveTierListVi
         ActiveTierListView::class,
         ActiveTierItemView::class,
     ],
-    version = 13,
+    version = 14,
     exportSchema = true,
+    // Two new columns with defaults and nothing converted: Room writes the
+    // ALTER TABLEs from the exported schemas, and every board stays as it was.
+    autoMigrations = [AutoMigration(from = 13, to = 14)],
 )
 abstract class TierDatabase : RoomDatabase() {
 

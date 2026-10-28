@@ -32,6 +32,9 @@ data class PublishedListSummary(
 ) {
     /** Shown without its author, and leading to no profile. */
     val editorial: Boolean get() = EditorialAuthors.isEditorial(authorUid, anonymous)
+
+    /** Somebody's list out without their name, rather than one of the app's own: its author reads "Anonymous". */
+    val byNobody: Boolean get() = editorial && !EditorialAuthors.isTheAppsOwn(authorUid)
 }
 
 /** Their cards and tier definitions, with no ranking; where it goes is the reader's business. */
@@ -48,5 +51,5 @@ data class PublishedList(
     val arrangement: List<Int?> = emptyList(),
 )
 
-/** A list a copy was changed from: named on the copy's page, and a tap away. */
-data class BasedOn(val id: String, val title: String, val authorName: String)
+/** A list a copy was changed from: named on the copy's page, and a tap away. Its author is empty when the original is anonymous. */
+data class BasedOn(val id: String, val title: String, val authorName: String, val authorUid: String = "")

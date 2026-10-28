@@ -185,4 +185,6 @@
     <string name="tier_detail_drop_unrank_dock">أفلت على المجموعة لإلغاء الترتيب</string>
     <string name="tier_detail_content_description_play">العب</string>
     <string name="tier_detail_play_needs_cards">يتطلب اللعب 3 بطاقات على الأقل</string>
+    <string name="list_settings_anonymous">النشر دون اسم</string>
+    <string name="list_settings_anonymous_body">لا يظهر اسمك ولا صورتك مع القائمة. تبقى القائمة لك: أنت وحدك من يمكنه تعديلها أو حذفها.</string>
 </resources>

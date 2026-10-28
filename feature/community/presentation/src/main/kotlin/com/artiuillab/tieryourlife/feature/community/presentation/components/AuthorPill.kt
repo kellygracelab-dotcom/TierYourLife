@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronRightIcon
+import com.artiuillab.tieryourlife.core.theme.ui.PersonIcon
 
 private val PILL_HEIGHT = 32.dp
 private val FACE_SIZE = 18.dp
@@ -83,6 +84,22 @@ internal fun AuthorPill(
         }
     }
 }
+
+/** A person, and nobody in particular: the face of a list out without its author's name. */
+@Composable
+internal fun AnonymousFace(size: Dp, modifier: Modifier = Modifier) {
+    Box(
+        modifier
+            .size(size)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+        contentAlignment = Alignment.Center,
+    ) {
+        PersonIcon(size * ANONYMOUS_ICON_SHARE, MaterialTheme.colorScheme.outline)
+    }
+}
+
+private const val ANONYMOUS_ICON_SHARE = 0.6f
 
 /** A photo when there is one, the initial when there is not. */
 @Composable

@@ -440,6 +440,7 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
     // A name the server has not seen yet; once it has, the id above is what travels.
     newTopic = newTopicName?.takeIf { topicId == null },
     takenFrom = takenFrom,
+    anonymous = anonymous,
     tiers = tiers.filterNot { it.isPool }.map {
         PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark)
     },
@@ -462,7 +463,7 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
     },
 )
 
-private fun BasedOnDto.toDomain() = BasedOn(id = id, title = title, authorName = authorName)
+private fun BasedOnDto.toDomain() = BasedOn(id = id, title = title, authorName = authorName.orEmpty(), authorUid = authorUid)
 
 private fun RankingDto.toDomain() = Ranking(
     uid = uid,
@@ -495,5 +496,5 @@ internal fun PublishedListSummary.toDto() = PublishedListSummaryDto(
     topicId = topicId,
     topicName = topicName,
     rankingCount = rankingCount,
-    basedOn = basedOn?.let { BasedOnDto(id = it.id, title = it.title, authorName = it.authorName) },
+    basedOn = basedOn?.let { BasedOnDto(id = it.id, title = it.title, authorUid = it.authorUid, authorName = it.authorName) },
 )

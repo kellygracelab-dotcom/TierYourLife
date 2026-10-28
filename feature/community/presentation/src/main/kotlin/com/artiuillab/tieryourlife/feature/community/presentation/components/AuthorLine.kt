@@ -82,4 +82,27 @@ internal fun AuthorLine(
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 }
 
+/** Where the author would be, for a list out without its author's name: nobody to open, nothing to follow. */
+@Composable
+internal fun AnonymousAuthorLine(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(AUTHOR_LINE_HEIGHT)
+            .padding(horizontal = 16.dp)
+            .testTag(CommunityListTestTags.ANONYMOUS_AUTHOR),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        AnonymousFace(size = 24.dp)
+        Text(
+            text = stringResource(R.string.community_anonymous),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+            maxLines = 1,
+        )
+    }
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+}
+
 private val AUTHOR_LINE_HEIGHT = 56.dp

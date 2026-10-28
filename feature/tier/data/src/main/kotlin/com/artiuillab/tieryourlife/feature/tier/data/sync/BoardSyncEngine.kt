@@ -29,6 +29,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncedBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.planSync
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import retrofit2.HttpException
 import retrofit2.Response
 import timber.log.Timber
@@ -265,6 +266,8 @@ class BoardSyncEngine @Inject constructor(
             authorName = board.authorName,
             publishedId = board.publishedId,
             deletedAt = board.deletedAt,
+            anonymous = true.takeIf { board.anonymous },
+            play = keptPlay(board.play, json),
             tiers = tiers.map { tier ->
                 KeptTierDto(
                     uid = tier.uid,
@@ -297,7 +300,14 @@ class BoardSyncEngine @Inject constructor(
     }
 }
 
-private fun KeptBoardDto.toEntity(id: Long, uid: String) = TierListEntity(
+/** The game as it came down, to go back up as it came; text that no longer reads as JSON is not worth a refused board. */
+internal fun keptPlay(stored: String?, json: Json): JsonElement? = stored?.let {
+    runCatching { json.parseToJsonElement(it) }
+        .onFailure { failure -> Timber.w(failure, "A kept game no longer reads") }
+        .getOrNull()
+}
+
+internal fun KeptBoardDto.toEntity(id: Long, uid: String) = TierListEntity(
     id = id,
     title = title,
     deletedAt = deletedAt,
@@ -308,6 +318,8 @@ private fun KeptBoardDto.toEntity(id: Long, uid: String) = TierListEntity(
     coverImageUrl = coverImageUrl,
     coverImageUrls = coverImageUrls.toStoredCoverImageUrls(),
     uid = uid,
+    anonymous = anonymous,
+    play = play?.toString(),
 )
 
 /** A card naming a tier that is not here is dropped, not guessed at; the account never stores one. */

@@ -26,6 +26,7 @@ object TierDetailTestTags {
     const val RANKED_POOL_ITEMS = "tier_detail_ranked_pool_items"
     const val UPDATE_PUBLISHED = "tier_detail_update_published"
     const val PUBLIC_SWITCH = "tier_detail_public_switch"
+    const val ANONYMOUS_SWITCH = "tier_detail_anonymous_switch"
     const val PUBLISH_ERROR = "tier_detail_publish_error"
     const val CATEGORY_ROW = "tier_detail_category_row"
     const val CATEGORY_SHEET = "tier_detail_category_sheet"

@@ -95,6 +95,7 @@ fun TierListSettingsScreenContent(
     publicPending: Boolean? = null,
     categoryWanted: Boolean = false,
     onSetPublic: (Boolean) -> Unit = {},
+    onSetAnonymous: (Boolean) -> Unit = {},
     publishedIsBehind: Boolean = false,
     onUpdatePublished: () -> Unit = {},
     onSetCategory: (String) -> Unit = {},
@@ -147,6 +148,8 @@ fun TierListSettingsScreenContent(
                         behind = publishedIsBehind,
                         onUpdatePublished = onUpdatePublished,
                         onAddCards = onAddCards,
+                        anonymous = list.anonymous,
+                        onSetAnonymous = onSetAnonymous,
                     )
 
                     // A category exists only for the feed; a cover is also the card's
@@ -451,6 +454,8 @@ private fun PublishSection(
     onAddCards: () -> Unit,
     behind: Boolean,
     onUpdatePublished: () -> Unit,
+    anonymous: Boolean = false,
+    onSetAnonymous: (Boolean) -> Unit = {},
 ) {
     val caption = when {
         !signedIn -> R.string.list_settings_public_needs_account
@@ -490,6 +495,12 @@ private fun PublishSection(
                 enabled = signedIn && hasItems && !busy,
                 modifier = Modifier.testTag(TierDetailTestTags.PUBLIC_SWITCH),
             )
+        }
+        // Chosen before publishing as easily as after; not offered on a
+        // ranking, which goes out beside somebody else's list.
+        if (signedIn && !(published && asRankingOf != null)) {
+            Spacer(Modifier.height(14.dp))
+            AnonymousRow(anonymous = anonymous, enabled = !busy, onSetAnonymous = onSetAnonymous)
         }
         if (error != null) {
             Spacer(Modifier.height(8.dp))
@@ -538,6 +549,30 @@ private fun PublishSection(
                 color = MaterialTheme.colorScheme.outline,
             )
         }
+    }
+}
+
+@Composable
+private fun AnonymousRow(anonymous: Boolean, enabled: Boolean, onSetAnonymous: (Boolean) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = stringResource(R.string.list_settings_anonymous),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = stringResource(R.string.list_settings_anonymous_body),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Switch(
+            checked = anonymous,
+            onCheckedChange = onSetAnonymous,
+            enabled = enabled,
+            modifier = Modifier.testTag(TierDetailTestTags.ANONYMOUS_SWITCH),
+        )
     }
 }
 

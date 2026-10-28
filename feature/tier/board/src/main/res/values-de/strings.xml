@@ -145,4 +145,6 @@
     <string name="tier_detail_drop_unrank_dock">Auf den Pool ablegen, um die Einstufung aufzuheben</string>
     <string name="tier_detail_content_description_play">Spielen</string>
     <string name="tier_detail_play_needs_cards">Zum Spielen braucht es mindestens 3 Karten</string>
+    <string name="list_settings_anonymous">Anonym veröffentlichen</string>
+    <string name="list_settings_anonymous_body">Dein Name und dein Bild werden bei der Liste nicht gezeigt. Sie gehört weiter dir: Nur du kannst sie bearbeiten oder löschen.</string>
 </resources>

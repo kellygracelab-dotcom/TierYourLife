@@ -28,6 +28,8 @@ sealed interface CommunityListUiState {
         val authorPhotoUrl: String? = null,
         /** A list that stands without an author: no byline, no profile, nothing to follow. */
         val editorial: Boolean = false,
+        /** Somebody's list out without their name: the author line says "Anonymous" and leads nowhere. */
+        val byNobody: Boolean = false,
         /** True once the reader has moved something; nothing is stored either way. */
         val arranged: Boolean = false,
         /** Null until the server answers whether this author is followed. */

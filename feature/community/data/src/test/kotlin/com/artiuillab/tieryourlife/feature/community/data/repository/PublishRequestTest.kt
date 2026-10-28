@@ -1,13 +1,17 @@
 package com.artiuillab.tieryourlife.feature.community.data.repository
 
+import com.artiuillab.tieryourlife.core.network.networkJson
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedItemDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTierDto
+import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.OwnPictures
+import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -91,6 +95,38 @@ class PublishRequestTest {
 
         assertEquals("src-1", request.takenFrom)
         assertNull(board.toRequest(Pictures, uploaded = emptySet()).takenFrom)
+    }
+
+    // Missing means "keep what is stored" on a republish, so both answers are always said out loud.
+    @Test
+    fun `whether a list goes out anonymously is always said, true or false`() {
+        val named = networkJson.parseToJsonElement(
+            networkJson.encodeToString(PublishListRequestDto.serializer(), board.toRequest(Pictures, uploaded = emptySet())),
+        ).jsonObject
+        val anonymous = networkJson.parseToJsonElement(
+            networkJson.encodeToString(PublishListRequestDto.serializer(), board.copy(anonymous = true).toRequest(Pictures, uploaded = emptySet())),
+        ).jsonObject
+
+        assertEquals("false", named["anonymous"].toString())
+        assertEquals("true", anonymous["anonymous"].toString())
+    }
+
+    @Test
+    fun `an anonymous original is credited to nobody, and a missing name reads as none`() {
+        val json = """{"id":"p1","title":"T","authorName":"A","basedOn":{"id":"src","title":"Films","authorUid":"","authorName":null}}"""
+
+        val basedOn = networkJson.decodeFromString(PublishedListDto.serializer(), json).toDomain().summary.basedOn
+
+        assertEquals(BasedOn(id = "src", title = "Films", authorName = "", authorUid = ""), basedOn)
+    }
+
+    @Test
+    fun `a named original keeps its author and their uid`() {
+        val json = """{"id":"p1","title":"T","authorName":"A","basedOn":{"id":"src","title":"Films","authorUid":"u-7","authorName":"Olena"}}"""
+
+        val basedOn = networkJson.decodeFromString(PublishedListDto.serializer(), json).toDomain().summary.basedOn
+
+        assertEquals(BasedOn(id = "src", title = "Films", authorName = "Olena", authorUid = "u-7"), basedOn)
     }
 
     @Test

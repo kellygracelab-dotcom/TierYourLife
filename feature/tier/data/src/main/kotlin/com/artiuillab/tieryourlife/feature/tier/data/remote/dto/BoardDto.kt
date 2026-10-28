@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.remote.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 /**
  * A board as the account keeps it, trash and pool and order included -- not
@@ -24,6 +25,10 @@ data class KeptBoardDto(
     val authorName: String? = null,
     val publishedId: String? = null,
     val deletedAt: Long? = null,
+    /** Present only when true. */
+    val anonymous: Boolean = false,
+    /** The saved Play game; absent when there is none. Kept as it came, never read here. */
+    val play: JsonElement? = null,
     val tiers: List<KeptTierDto> = emptyList(),
     val items: List<KeptItemDto> = emptyList(),
 )
@@ -102,6 +107,10 @@ data class KeepBoardRequestDto(
     val authorName: String? = null,
     val publishedId: String? = null,
     val deletedAt: Long? = null,
+    /** True or left out, as the account stores it: a null is not sent at all. */
+    val anonymous: Boolean? = null,
+    /** The game exactly as the account last sent it: the account keeps what is written, so leaving it out would lose it. */
+    val play: JsonElement? = null,
     val tiers: List<KeptTierDto>,
     val items: List<KeptItemDto>,
 )

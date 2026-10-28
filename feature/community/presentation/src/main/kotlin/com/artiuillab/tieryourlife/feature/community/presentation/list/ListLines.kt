@@ -20,11 +20,15 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 
-/** The list this one was changed from, a tap away. */
+/** The list this one was changed from, a tap away; by nobody when the original is anonymous. */
 @Composable
 internal fun BasedOnLine(basedOn: BasedOn, onOpen: () -> Unit, modifier: Modifier = Modifier) {
     Text(
-        text = stringResource(R.string.community_based_on, basedOn.title, basedOn.authorName),
+        text = if (basedOn.authorName.isBlank()) {
+            stringResource(R.string.community_based_on_nameless, basedOn.title)
+        } else {
+            stringResource(R.string.community_based_on, basedOn.title, basedOn.authorName)
+        },
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onOpen)

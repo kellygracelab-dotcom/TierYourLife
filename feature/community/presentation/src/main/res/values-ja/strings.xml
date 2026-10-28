@@ -245,4 +245,6 @@
     <string name="all_sections_sort_name">名前順</string>
     <string name="all_sections_find">セクションを探す</string>
     <string name="all_sections_propose">セクションを提案</string>
+    <string name="community_anonymous">匿名</string>
+    <string name="community_based_on_nameless">「%1$s」をもとに</string>
 </resources>

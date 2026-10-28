@@ -177,6 +177,21 @@ class TierDetailViewModel @Inject constructor(
         categoryWanted = false
     }
 
+    /**
+     * Kept on the board, so it holds on every phone and every publish. A list
+     * already out goes out again at once: whoever hides their name means now,
+     * not at the next update.
+     */
+    fun setAnonymous(anonymous: Boolean) {
+        val list = (board as? TierDetailUiState.Success)?.list ?: return
+        if (list.anonymous == anonymous) return
+        viewModelScope.launch {
+            messages.guard("Setting anonymous") { repository.setAnonymous(tierListId, anonymous) }
+            reloadTierList()
+            if (list.publishedId != null) setPublic(true)
+        }
+    }
+
     fun loadTierList() {
         viewModelScope.launch { reloadTierList() }
         viewModelScope.launch {
