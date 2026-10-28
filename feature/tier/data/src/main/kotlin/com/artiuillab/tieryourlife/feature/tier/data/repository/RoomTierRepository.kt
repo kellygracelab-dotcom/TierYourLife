@@ -6,7 +6,6 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toStoredCoverImageUrls
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -93,8 +92,8 @@ class RoomTierRepository internal constructor(
         dao.setFavouritedAt(id, at)
     }
 
-    override suspend fun setCategory(id: Long, category: ListCategory?) {
-        dao.setCategory(id, category?.id)
+    override suspend fun setCategory(id: Long, category: String?) {
+        dao.setCategory(id, category)
     }
 
     override suspend fun setCover(id: Long, pictures: List<String>) {

@@ -62,7 +62,7 @@ class EditorialCardTest {
         title = "List $id",
         authorUid = authorUid,
         authorName = "Danylo",
-        category = ListCategory.FilmTv,
+        category = ListCategory.FilmTv.id,
         itemCount = 10,
         updatedAtMillis = 0,
         anonymous = anonymous,

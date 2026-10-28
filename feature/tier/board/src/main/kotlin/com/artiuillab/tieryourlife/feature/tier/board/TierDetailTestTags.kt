@@ -1,7 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.board
 
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-
 object TierDetailTestTags {
     const val MORE = "community_list_more"
     const val LOADING = "tier_detail_loading"
@@ -72,7 +70,7 @@ object TierDetailTestTags {
     fun sliderTrack(sliderTag: String): String = "${sliderTag}_track"
     fun sliderThumb(sliderTag: String): String = "${sliderTag}_thumb"
 
-    fun categoryRow(category: ListCategory): String = "tier_detail_category_${category.id}"
+    fun categoryRow(sectionId: String): String = "tier_detail_category_$sectionId"
 
     const val BOARD_INDEX = "board_index"
 

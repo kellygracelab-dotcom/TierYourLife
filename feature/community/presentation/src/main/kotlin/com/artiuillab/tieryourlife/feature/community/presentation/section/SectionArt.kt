@@ -16,30 +16,37 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
 /**
- * A section's picture: the bundled illustration once it exists, and until
- * then its tint with a quiet hatch. The illustrations are generated from the
- * prompts in docs/design-spec-community-explore.md §12.2 and dropped in as
- * res/drawable-nodpi/section_<id>.webp, then listed in [sectionArtRes].
- * Bundled, never fetched: the tiles paint on the first frame.
+ * A section's picture. A built-in's is the bundled illustration once it
+ * exists, and until then its tint with a quiet hatch; the illustrations are
+ * generated from the prompts in docs/design-spec-community-explore.md §12.2
+ * and dropped in as res/drawable-nodpi/section_<id>.webp, then listed in
+ * [sectionArtRes]. Bundled, never fetched: those tiles paint on the first
+ * frame. Anybody else's section is its tint, then its picture, centred, with
+ * the tint showing while it loads; no hatch over a picture.
  */
 @Composable
-internal fun SectionArt(section: ListCategory, modifier: Modifier = Modifier, scrim: Boolean = true) {
+internal fun SectionArt(section: Section, modifier: Modifier = Modifier, scrim: Boolean = true) {
     val look = lookOf(section)
+    val art = section.art
+    val picture = section.pictureUrl
     Box(modifier.background(look.tintNow)) {
-        val art = sectionArtRes(section)
-        if (art != null) {
-            Image(
-                painter = painterResource(art),
+        when {
+            art != null -> BuiltInArt(art)
+            picture != null -> AsyncImage(
+                model = picture,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
-                alignment = Alignment.TopEnd,
+                alignment = Alignment.Center,
             )
-        } else {
-            Hatch(Modifier.fillMaxSize())
+
+            // An id nobody here knows yet wears Other's look, hatch and all.
+            else -> Hatch(Modifier.fillMaxSize())
         }
         if (scrim) {
             Box(
@@ -48,6 +55,22 @@ internal fun SectionArt(section: ListCategory, modifier: Modifier = Modifier, sc
                     .background(Brush.verticalGradient(listOf(TileScrimTop, TileScrimBottom))),
             )
         }
+    }
+}
+
+@Composable
+private fun BuiltInArt(section: ListCategory) {
+    val art = sectionArtRes(section)
+    if (art != null) {
+        Image(
+            painter = painterResource(art),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+            alignment = Alignment.TopEnd,
+        )
+    } else {
+        Hatch(Modifier.fillMaxSize())
     }
 }
 

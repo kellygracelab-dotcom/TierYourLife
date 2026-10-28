@@ -15,17 +15,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.board.common.choosableSections
+import com.artiuillab.tieryourlife.feature.tier.board.common.label
 
-/** Null is All, which is a filter state rather than a ninth category. */
+/** Section ids; null is All, which is a filter state rather than one more section. */
 @Composable
 internal fun CategoryFilterRow(
-    selected: ListCategory?,
-    onSelect: (ListCategory?) -> Unit,
+    selected: String?,
+    onSelect: (String?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val options: List<ListCategory?> = listOf(null) + ListCategory.entries
+    val options = listOf(null) + choosableSections()
 
     LazyRow(
         modifier = modifier
@@ -34,19 +34,19 @@ internal fun CategoryFilterRow(
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        items(options, key = { it?.id ?: "all" }) { category ->
+        items(options, key = { it?.id ?: "all" }) { section ->
             FilterChip(
-                selected = category == selected,
-                onClick = { onSelect(category) },
+                selected = section?.id == selected,
+                onClick = { onSelect(section?.id) },
                 label = {
-                    Text(stringResource(category?.labelRes ?: R.string.category_all))
+                    Text(section?.label() ?: stringResource(R.string.category_all))
                 },
-                leadingIcon = if (category == selected) {
+                leadingIcon = if (section?.id == selected) {
                     { CheckIcon(18.dp, MaterialTheme.colorScheme.onSecondaryContainer) }
                 } else {
                     null
                 },
-                modifier = Modifier.testTag(CommunityTestTags.categoryFilter(category)),
+                modifier = Modifier.testTag(CommunityTestTags.categoryFilter(section?.id)),
             )
         }
     }

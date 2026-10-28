@@ -7,12 +7,12 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedKeys
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
-import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityNetwork
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,9 +36,10 @@ data class SearchResults(
     val failed: Boolean = false,
 )
 
-/** Explore (§2): the nine sections, how many lists each has new, and the popular feed under them. */
+/** Explore (§2): the sections in the server's order, how many lists each has new, and the popular feed under them. */
 data class ExploreUiState(
-    val sections: List<SectionStats> = ListCategory.entries.map { SectionStats(it) },
+    /** What the tiles draw: approved sections only. */
+    val sections: List<Section> = Section.BUILT_IN,
     /** False until the server has counted: the "new this week" lines stay hidden rather than say zero. */
     val countsKnown: Boolean = false,
     val feed: FeedPane = FeedPane(),
@@ -58,6 +58,7 @@ class ExploreViewModel @Inject constructor(
     network: CommunityNetwork,
     preferences: AppPreferences,
     private val clock: CommunityClock,
+    private val catalog: SectionCatalog,
 ) : ViewModel() {
 
     private val notes = Channel<CommunityNotice>(Channel.BUFFERED)
@@ -68,14 +69,19 @@ class ExploreViewModel @Inject constructor(
         community.feed(sort = FeedSort.Popular, after = after)
     }
 
-    private val sections = MutableStateFlow(ListCategory.entries.map { SectionStats(it) })
-    private val countsKnown = MutableStateFlow(false)
     private val query = MutableStateFlow<String?>(null)
     private val results = MutableStateFlow(SearchResults())
     private var searchJob: Job? = null
 
-    val state: StateFlow<ExploreUiState> = combine(sections, countsKnown, feed.pane, query, results) { s, known, pane, q, found ->
-        ExploreUiState(sections = s, countsKnown = known, feed = pane, query = q, results = found, nowMillis = clock.nowMillis())
+    val state: StateFlow<ExploreUiState> = combine(catalog.directory, feed.pane, query, results) { directory, pane, q, found ->
+        ExploreUiState(
+            sections = directory.shown,
+            countsKnown = directory.counted,
+            feed = pane,
+            query = q,
+            results = found,
+            nowMillis = clock.nowMillis(),
+        )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, ExploreUiState())
 
     val notices: Flow<CommunityNotice> = merge(
@@ -87,7 +93,7 @@ class ExploreViewModel @Inject constructor(
         viewModelScope.launch {
             network.available.collect {
                 feed.onNetworkBack()
-                if (!countsKnown.value) loadSections()
+                if (!catalog.directory.value.counted) loadSections()
             }
         }
     }
@@ -98,30 +104,20 @@ class ExploreViewModel @Inject constructor(
         loadSections()
     }
 
+    /** At most every ten minutes: the catalog keeps the rest. */
     private fun loadSections() {
-        viewModelScope.launch {
-            community.sections().onSuccess { counted ->
-                sections.value = counted
-                countsKnown.value = true
-            }
-        }
+        viewModelScope.launch { catalog.refresh() }
     }
 
-    fun follow(section: ListCategory) = setFollowing(section, true)
+    fun follow(sectionId: String) = setFollowing(sectionId, true)
 
-    fun unfollow(section: ListCategory) = setFollowing(section, false)
+    fun unfollow(sectionId: String) = setFollowing(sectionId, false)
 
-    private fun setFollowing(section: ListCategory, now: Boolean) {
-        val before = sections.value
-        sections.update { all -> all.map { if (it.section == section) it.followed(now) else it } }
+    private fun setFollowing(sectionId: String, now: Boolean) {
         viewModelScope.launch {
-            val result = if (now) community.followSection(section) else community.unfollowSection(section)
-            result.fold(
-                onSuccess = { notes.send(if (now) CommunityNotice.NowFollowing(section) else CommunityNotice.Unfollowed(section)) },
-                onFailure = {
-                    sections.value = before
-                    notes.send(CommunityNotice.FollowFailed)
-                },
+            catalog.setFollowing(sectionId, now).fold(
+                onSuccess = { notes.send(if (now) CommunityNotice.NowFollowing(sectionId) else CommunityNotice.Unfollowed(sectionId)) },
+                onFailure = { notes.send(CommunityNotice.FollowFailed) },
             )
         }
     }
@@ -172,7 +168,3 @@ class ExploreViewModel @Inject constructor(
 internal fun FeedNotice.toCommunityNotice(): CommunityNotice = when (this) {
     is FeedNotice.RefreshFailed -> CommunityNotice.RefreshFailed(showingFromMillis)
 }
-
-/** The count moves with the button, in the same frame. */
-internal fun SectionStats.followed(now: Boolean): SectionStats =
-    if (following == now) this else copy(following = now, followerCount = (followerCount + if (now) 1 else -1).coerceAtLeast(0))

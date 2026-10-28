@@ -58,7 +58,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronDownIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
-import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.Body13Style
@@ -68,7 +68,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.Schedu
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.countText
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.edgeToEdge
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.TopicSquare
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.label
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
 internal object SectionTestTags {
@@ -93,7 +94,7 @@ internal val SectionTitleStyle = TextStyle(fontSize = 28.sp, lineHeight = 36.sp)
 
 /** Followers and lists, in one line under the name. */
 @Composable
-internal fun sectionCounts(stats: SectionStats?): String? {
+internal fun sectionCounts(stats: Section?): String? {
     stats ?: return null
     return stringResource(
         R.string.section_counts,
@@ -108,8 +109,8 @@ internal fun sectionCounts(stats: SectionStats?): String? {
  */
 @Composable
 internal fun SectionHeader(
-    section: ListCategory,
-    stats: SectionStats?,
+    section: Section,
+    stats: Section?,
     onToggleFollow: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -148,7 +149,7 @@ internal fun SectionHeader(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Column(Modifier.weight(1f)) {
-                Text(stringResource(section.labelRes), style = SectionTitleStyle, color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(section.label(), style = SectionTitleStyle, color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 sectionCounts(stats)?.let { counts ->
                     Text(counts, style = Body13Style, color = Color.White.copy(alpha = 0.92f), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
@@ -262,7 +263,7 @@ private fun WaitingChip(name: String, modifier: Modifier, onClick: () -> Unit) {
 
 /** Under the chips while a topic is chosen (§3.2): what it is, how many follow it, and its own Follow. */
 @Composable
-internal fun TopicRow(topic: Topic, section: ListCategory, onToggleFollow: () -> Unit) {
+internal fun TopicRow(topic: Topic, sectionId: String, onToggleFollow: () -> Unit) {
     Column(Modifier.testTag(SectionTestTags.TOPIC_ROW)) {
         Row(
             Modifier
@@ -272,7 +273,7 @@ internal fun TopicRow(topic: Topic, section: ListCategory, onToggleFollow: () ->
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            TopicSquare(topic.section ?: section, 36.dp, 18.dp)
+            TopicSquare(topic.section ?: sectionId, 36.dp, 18.dp)
             Column(Modifier.weight(1f)) {
                 Text(topic.name, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(
@@ -338,7 +339,7 @@ private val FeedSort.labelRes: Int
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun WaitingTopicSheet(topic: Topic, onDismiss: () -> Unit) {
-    val placed = topic.section ?: ListCategory.Other
+    val placed = topic.section ?: ListCategory.Other.id
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -369,7 +370,7 @@ internal fun WaitingTopicSheet(topic: Topic, onDismiss: () -> Unit) {
                 )
             }
             Text(
-                stringResource(R.string.section_waiting_body, stringResource(placed.labelRes)),
+                stringResource(R.string.section_waiting_body, sectionLabel(placed)),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

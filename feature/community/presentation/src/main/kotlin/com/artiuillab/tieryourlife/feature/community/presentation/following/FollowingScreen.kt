@@ -68,7 +68,10 @@ import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.Top
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.section.lookOf
 import com.artiuillab.tieryourlife.feature.community.presentation.section.tintNow
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.label
+import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSection
+import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSectionNames
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -80,7 +83,7 @@ fun FollowingScreen(
     onBack: () -> Unit,
     onOpenAuthor: (uid: String, name: String, photoUrl: String?) -> Unit,
     onOpenTopic: (Topic) -> Unit,
-    onOpenSection: (ListCategory) -> Unit = {},
+    onOpenSection: (String) -> Unit = {},
     viewModel: FollowingViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -105,7 +108,7 @@ fun FollowingScreenContent(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     onOpenTopic: (Topic) -> Unit = {},
-    onOpenSection: (ListCategory) -> Unit = {},
+    onOpenSection: (String) -> Unit = {},
     notices: Flow<ManageNotice> = emptyFlow(),
 ) {
     val snackbar = remember { SnackbarHostState() }
@@ -156,12 +159,13 @@ fun FollowingScreenContent(
 @Composable
 private fun ManageSnackbars(notices: Flow<ManageNotice>, snackbar: SnackbarHostState, onToggle: (String) -> Unit) {
     val resources = LocalResources.current
+    val nameOf = rememberSectionNames()
     LaunchedEffect(notices) {
         notices.collect { notice ->
             when (notice) {
                 is ManageNotice.Stopped -> {
                     val shown = if (notice.key.startsWith("s:")) {
-                        ListCategory.fromId(notice.name)?.let { resources.getString(it.labelRes) } ?: notice.name
+                        nameOf(notice.name)
                     } else {
                         notice.name
                     }
@@ -179,17 +183,17 @@ private fun ManageSnackbars(notices: Flow<ManageNotice>, snackbar: SnackbarHostS
     }
 }
 
-private fun LazyListScope.sectionsBlock(state: FollowingUiState.Ready, onToggle: (String) -> Unit, onOpen: (ListCategory) -> Unit) {
+private fun LazyListScope.sectionsBlock(state: FollowingUiState.Ready, onToggle: (String) -> Unit, onOpen: (String) -> Unit) {
     if (state.sections.isEmpty()) return
     item(key = "sections") { Heading(R.string.manage_sections, state.sections.size) }
-    items(state.sections, key = { FollowKeys.section(it.section) }) { followed ->
-        val key = FollowKeys.section(followed.section)
+    items(state.sections, key = { FollowKeys.section(it.id) }) { followed ->
+        val key = FollowKeys.section(followed.id)
         ManageRow(
             key = key,
-            headline = stringResource(followed.section.labelRes),
+            headline = rememberSection(followed.id).label(),
             supporting = countText(R.plurals.explore_followers, followed.followerCount),
             following = key !in state.stopped,
-            onOpen = { onOpen(followed.section) },
+            onOpen = { onOpen(followed.id) },
             onToggle = { onToggle(key) },
         ) { SectionSquare(followed) }
     }
@@ -200,22 +204,22 @@ private fun LazyListScope.topicsBlock(state: FollowingUiState.Ready, onToggle: (
     item(key = "topics") { Heading(R.string.manage_topics, state.topics.size + state.waiting.size) }
     items(state.topics, key = { FollowKeys.topic(it.id) }) { topic ->
         val key = FollowKeys.topic(topic.id)
-        val section = topic.section ?: ListCategory.Other
+        val section = topic.section ?: ListCategory.Other.id
         ManageRow(
             key = key,
             headline = topic.name,
-            supporting = stringResource(R.string.manage_topic_supporting, stringResource(section.labelRes), countText(R.plurals.explore_followers, topic.followerCount)),
+            supporting = stringResource(R.string.manage_topic_supporting, sectionLabel(section), countText(R.plurals.explore_followers, topic.followerCount)),
             following = key !in state.stopped,
             onOpen = { onOpen(topic) },
             onToggle = { onToggle(key) },
         ) { TopicSquare(section, 48.dp, 20.dp) }
     }
     items(state.waiting, key = { "w:" + it.id }) { topic ->
-        val section = topic.section ?: ListCategory.Other
+        val section = topic.section ?: ListCategory.Other.id
         ManageRow(
             key = "w:" + topic.id,
             headline = topic.name,
-            supporting = stringResource(R.string.manage_waiting_supporting, stringResource(section.labelRes)),
+            supporting = stringResource(R.string.manage_waiting_supporting, sectionLabel(section)),
             following = null,
             onOpen = {},
             onToggle = {},
@@ -251,14 +255,15 @@ private fun LazyListScope.peopleBlock(
 
 @Composable
 private fun SectionSquare(followed: FollowedSection) {
+    val section = rememberSection(followed.id)
     Box(
         Modifier
             .size(48.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(lookOf(followed.section).tintNow),
+            .background(lookOf(section).tintNow),
         contentAlignment = Alignment.Center,
     ) {
-        SectionIcon(followed.section, 20.dp, Color.White)
+        SectionIcon(section, 20.dp, Color.White)
     }
 }
 
@@ -371,9 +376,9 @@ private fun FollowingPreview() = TierYourLifeTheme {
     FollowingScreenContent(
         state = FollowingUiState.Ready(
             authors = listOf(FollowedAuthor(uid = "a", name = "Olena M.", photoUrl = null)),
-            topics = listOf(Topic(id = "t1", name = "Pokémon", section = ListCategory.Games, status = TopicStatus.Approved, followerCount = 210)),
-            sections = listOf(FollowedSection(ListCategory.Food, followerCount = 4120)),
-            waiting = listOf(Topic(id = "t2", name = "Shiny hunts", section = ListCategory.Games, status = TopicStatus.Pending)),
+            topics = listOf(Topic(id = "t1", name = "Pokémon", section = ListCategory.Games.id, status = TopicStatus.Approved, followerCount = 210)),
+            sections = listOf(FollowedSection(ListCategory.Food.id, followerCount = 4120)),
+            waiting = listOf(Topic(id = "t2", name = "Shiny hunts", section = ListCategory.Games.id, status = TopicStatus.Pending)),
             stopped = setOf(FollowKeys.person("a")),
         ),
         onBack = {},

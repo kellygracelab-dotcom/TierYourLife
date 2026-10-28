@@ -31,7 +31,7 @@ class FeedLoaderTest {
         title = "List $id",
         authorUid = "u",
         authorName = "Author",
-        category = ListCategory.Food,
+        category = ListCategory.Food.id,
         itemCount = 3,
         updatedAtMillis = 0,
     )

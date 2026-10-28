@@ -15,12 +15,12 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Community
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityNetwork
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedLoader
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPane
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ListMenuActions
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.toCommunityNotice
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -40,7 +40,7 @@ import javax.inject.Inject
 /** Why a card is on the Following feed, when the card does not already say so (§4.1). */
 sealed interface FeedReason {
     data class InTopic(val name: String) : FeedReason
-    data class InSection(val section: ListCategory) : FeedReason
+    data class InSection(val sectionId: String) : FeedReason
 }
 
 /** A followed person needs no line, the author is on the card; then a topic; then a section. */
@@ -49,7 +49,7 @@ fun reasonFor(summary: PublishedListSummary, following: Following): FeedReason? 
     val topicId = summary.topicId
     val topic = topicId?.let { id -> following.topics.firstOrNull { it.id == id } }
     if (topic != null) return FeedReason.InTopic(summary.topicName ?: topic.name)
-    if (following.sections.any { it.section == summary.category }) return FeedReason.InSection(summary.category)
+    if (following.sections.any { it.id == summary.category }) return FeedReason.InSection(summary.category)
     return null
 }
 
@@ -59,8 +59,8 @@ data class FollowingFeedUiState(
     /** This person's own topics still waiting for a moderator: seen only by them. */
     val waiting: List<Topic> = emptyList(),
     val feed: FeedPane = FeedPane(),
-    /** Sections followed from the empty tab's mini tiles in this sitting: their + is a check. */
-    val quickFollowed: Set<ListCategory> = emptySet(),
+    /** Section ids followed from the empty tab's mini tiles in this sitting: their + is a check. */
+    val quickFollowed: Set<String> = emptySet(),
     val nowMillis: Long = 0L,
 ) {
     /** Nothing followed at all: the tab offers the sections instead of a feed. */
@@ -76,6 +76,7 @@ class FollowingFeedViewModel @Inject constructor(
     network: CommunityNetwork,
     preferences: AppPreferences,
     private val clock: CommunityClock,
+    private val catalog: SectionCatalog,
 ) : ViewModel() {
 
     private val notes = Channel<CommunityNotice>(Channel.BUFFERED)
@@ -87,7 +88,7 @@ class FollowingFeedViewModel @Inject constructor(
 
     private val following = MutableStateFlow<Following?>(null)
     private val waiting = MutableStateFlow<List<Topic>>(emptyList())
-    private val quickFollowed = MutableStateFlow<Set<ListCategory>>(emptySet())
+    private val quickFollowed = MutableStateFlow<Set<String>>(emptySet())
 
     val state: StateFlow<FollowingFeedUiState> = combine(following, waiting, feed.pane, quickFollowed) { f, w, pane, quick ->
         FollowingFeedUiState(following = f, waiting = w, feed = pane, quickFollowed = quick, nowMillis = clock.nowMillis())
@@ -123,20 +124,20 @@ class FollowingFeedViewModel @Inject constructor(
     }
 
     /** One tap on a mini tile: the + turns into a check at once, and the tab becomes the feed it now has. */
-    fun quickFollow(section: ListCategory) {
-        if (section in quickFollowed.value) return
-        quickFollowed.update { it + section }
+    fun quickFollow(sectionId: String) {
+        if (sectionId in quickFollowed.value) return
+        quickFollowed.update { it + sectionId }
         viewModelScope.launch {
-            community.followSection(section).fold(
+            catalog.setFollowing(sectionId, now = true).fold(
                 onSuccess = {
                     following.update { now ->
                         val base = now ?: Following(emptyList(), emptyList())
-                        base.copy(sections = base.sections + FollowedSection(section))
+                        base.copy(sections = base.sections + FollowedSection(sectionId))
                     }
                     feed.reload()
                 },
                 onFailure = {
-                    quickFollowed.update { it - section }
+                    quickFollowed.update { it - sectionId }
                     notes.send(CommunityNotice.FollowFailed)
                 },
             )

@@ -14,7 +14,6 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.topicRoute
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -39,7 +38,7 @@ class TopicViewModel @Inject constructor(
     val userMessages: Flow<UserMessage> = messages.flow
 
     private val _state = MutableStateFlow(
-        TopicUiState(name = route.name.orEmpty(), section = ListCategory.fromId(route.section)),
+        TopicUiState(name = route.name.orEmpty(), section = route.section),
     )
     val state: StateFlow<TopicUiState> = _state.asStateFlow()
 

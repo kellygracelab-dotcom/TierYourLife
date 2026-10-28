@@ -1,7 +1,5 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.explore
 
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-
 internal object ExploreTestTags {
     const val SCREEN = "explore_screen"
     const val TAB_EXPLORE = "explore_tab_explore"
@@ -22,9 +20,11 @@ internal object ExploreTestTags {
     const val FOLLOWING_EMPTY = "following_empty"
     const val FOLLOWING_NOTHING_PUBLISHED = "following_nothing_published"
     const val COVER_HOME = "explore_cover_home"
+    const val ALL_SECTIONS_TILE = "explore_all_sections"
+    const val ALL_SECTIONS_MINI_TILE = "following_mini_all_sections"
 
-    fun tile(section: ListCategory) = "explore_tile_${section.id}"
-    fun miniTile(section: ListCategory) = "following_mini_tile_${section.id}"
+    fun tile(sectionId: String) = "explore_tile_$sectionId"
+    fun miniTile(sectionId: String) = "following_mini_tile_$sectionId"
     fun card(id: String) = "explore_card_$id"
     fun reason(id: String) = "explore_reason_$id"
     fun stripItem(key: String) = "following_strip_$key"

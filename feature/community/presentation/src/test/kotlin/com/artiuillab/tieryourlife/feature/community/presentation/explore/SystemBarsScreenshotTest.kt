@@ -16,7 +16,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.LocalShortWindow
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
-import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.github.takahirom.roborazzi.RoborazziOptions
@@ -76,7 +76,7 @@ class SystemBarsScreenshotTest {
             title = "List number $n",
             authorUid = "u$n",
             authorName = "author $n",
-            category = ListCategory.entries[n % ListCategory.entries.size],
+            category = ListCategory.entries[n % ListCategory.entries.size].id,
             itemCount = 10 + n,
             tierColors = listOf("#B03A32", "#C06A25", "#A98B1F", "#3F7F55", "#3C6E99"),
             updatedAtMillis = 0,
@@ -85,7 +85,7 @@ class SystemBarsScreenshotTest {
     }
 
     private val explore = ExploreUiState(
-        sections = ListCategory.entries.map { SectionStats(it, listCount = 120, followerCount = 3000, newThisWeek = 5) },
+        sections = Section.BUILT_IN.map { it.copy(listCount = 120, followerCount = 3000, newThisWeek = 5) },
         countsKnown = true,
         feed = FeedPane(lists = lists, phase = FeedPhase.Ready),
     )

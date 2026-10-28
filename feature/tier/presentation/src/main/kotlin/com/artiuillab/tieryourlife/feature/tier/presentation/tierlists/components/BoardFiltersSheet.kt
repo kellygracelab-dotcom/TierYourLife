@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.PublishedFilter
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -38,6 +38,7 @@ internal fun BoardFiltersSheet(
     filters: BoardFilters,
     onFilters: (BoardFilters) -> Unit,
     onDismiss: () -> Unit,
+    filedUnder: List<String> = emptyList(),
 ) {
     ModalBottomSheet(onDismissRequest = onDismiss, modifier = Modifier.testTag(TierListsTestTags.BOARD_FILTER_SHEET)) {
         Column(
@@ -59,9 +60,10 @@ internal fun BoardFiltersSheet(
                     selected = filters.category == null,
                     testTag = TierListsTestTags.filterCategory(null),
                 ) { onFilters(filters.copy(category = null)) }
-                ListCategory.entries.forEach { category ->
+                // The nine as always, then any other section a board of these is in.
+                (ListCategory.entries.map { it.id } + filedUnder).distinct().forEach { category ->
                     Choice(
-                        label = stringResource(category.labelRes),
+                        label = sectionLabel(category),
                         selected = filters.category == category,
                         testTag = TierListsTestTags.filterCategory(category),
                     ) { onFilters(filters.copy(category = category)) }

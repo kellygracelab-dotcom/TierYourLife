@@ -18,4 +18,5 @@ dependencies {
     // A published list is a picture of a board, so the board's own types are its vocabulary.
     api(projects.feature.tier.domain)
     testImplementation(libs.junit)
+    testImplementation(projects.core.testing)
 }

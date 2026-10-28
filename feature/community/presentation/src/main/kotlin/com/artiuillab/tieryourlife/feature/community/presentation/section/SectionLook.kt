@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
 /**
@@ -20,6 +21,34 @@ internal data class SectionLook(
     val topicIcon: Color,
     val topicIconDark: Color,
 )
+
+/**
+ * A built-in keeps the app's own colours (the server sends the same ones);
+ * anybody else's section wears the server's, computed from its picture at
+ * approval. A section with no colours yet, or an id nobody here knows, wears
+ * Other's.
+ */
+internal fun lookOf(section: Section): SectionLook {
+    val art = section.art
+    val tint = section.tint
+    return when {
+        art != null -> lookOf(art)
+        tint == null -> OtherLook
+        else -> SectionLook(
+            tint = tint.light.toColor(),
+            tintDark = tint.dark.toColor(),
+            topicBg = section.topicBg?.light?.toColor() ?: OtherLook.topicBg,
+            topicBgDark = section.topicBg?.dark?.toColor() ?: OtherLook.topicBgDark,
+            topicIcon = section.topicIcon?.light?.toColor() ?: OtherLook.topicIcon,
+            topicIconDark = section.topicIcon?.dark?.toColor() ?: OtherLook.topicIconDark,
+        )
+    }
+}
+
+/** "#RRGGBB", already checked when it was read. */
+private fun String.toColor(): Color = Color(OPAQUE or removePrefix("#").toLong(radix = 16))
+
+private const val OPAQUE = 0xFF000000L
 
 internal fun lookOf(section: ListCategory): SectionLook = when (section) {
     ListCategory.Anime -> AnimeLook

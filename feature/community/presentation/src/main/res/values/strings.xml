@@ -250,4 +250,13 @@
         <item quantity="other">%1$d open</item>
     </plurals>
     <string name="moderation_refresh">Refresh</string>
+    <string name="all_sections_title">All sections</string>
+    <plurals name="all_sections_count">
+        <item quantity="one">%1$s section</item>
+        <item quantity="other">%1$s sections</item>
+    </plurals>
+    <string name="all_sections_sort_most_lists">Most lists</string>
+    <string name="all_sections_sort_name">A–Z</string>
+    <string name="all_sections_find">Find a section</string>
+    <string name="all_sections_propose">Propose a section</string>
 </resources>

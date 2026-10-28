@@ -70,8 +70,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.Fol
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingTab
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingTopicSheet
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSectionNames
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.merge
@@ -91,15 +90,15 @@ class FeedCallbacks(
     val onReport: (PublishedListSummary, ReportReason, String?) -> Unit = { _, _, _ -> },
 )
 
-/** Explore's own requests beyond its feed. */
+/** Explore's own requests beyond its feed; sections go by id. */
 class ExploreCallbacks(
-    val onFollowSection: (ListCategory) -> Unit = {},
-    val onUnfollowSection: (ListCategory) -> Unit = {},
+    val onFollowSection: (String) -> Unit = {},
+    val onUnfollowSection: (String) -> Unit = {},
     val onEnterSearch: () -> Unit = {},
     val onQueryChange: (String) -> Unit = {},
     val onExitSearch: () -> Unit = {},
     val onRetrySearch: () -> Unit = {},
-    val onQuickFollow: (ListCategory) -> Unit = {},
+    val onQuickFollow: (String) -> Unit = {},
 )
 
 /** Where Community leads. */
@@ -109,12 +108,13 @@ class CommunityDestinations(
     /** Null where the rail carries Settings. */
     val onSettings: (() -> Unit)? = null,
     val onManageFollowing: () -> Unit = {},
-    val onOpenSection: (ListCategory, topicId: String?) -> Unit = { _, _ -> },
+    val onOpenSection: (sectionId: String, topicId: String?) -> Unit = { _, _ -> },
+    val onOpenAllSections: () -> Unit = {},
 )
 
 /**
  * The Community half of the home screen (docs/design-spec-community-explore.md):
- * Explore with the nine sections and the popular feed, Following with what
+ * Explore with the sections and the popular feed, Following with what
  * this person follows. [tabs] is the app's own Your lists / Community row,
  * drawn under the bar on a phone and absent where the rail does that job.
  */
@@ -126,6 +126,7 @@ fun CommunityHomeScreen(
     onManageFollowing: () -> Unit,
     onOpenSection: (CommunityRoute.Section) -> Unit,
     tabs: @Composable () -> Unit = {},
+    onOpenAllSections: () -> Unit = {},
     explore: ExploreViewModel = hiltViewModel(),
     following: FollowingFeedViewModel = hiltViewModel(),
 ) {
@@ -175,7 +176,8 @@ fun CommunityHomeScreen(
             onOpenAuthor = onAuthorClick,
             onSettings = onSettingsClick.takeUnless { hasRail },
             onManageFollowing = onManageFollowing,
-            onOpenSection = { section, topicId -> onOpenSection(CommunityRoute.Section(section.id, topicId)) },
+            onOpenSection = { section, topicId -> onOpenSection(CommunityRoute.Section(section, topicId)) },
+            onOpenAllSections = onOpenAllSections,
         ),
         tabs = tabs,
         notices = remember(explore, following) { merge(explore.notices, following.notices) },
@@ -194,7 +196,7 @@ fun CommunityHomeContent(
     destinations: CommunityDestinations = CommunityDestinations(),
     tabs: @Composable () -> Unit = {},
     notices: Flow<CommunityNotice> = emptyFlow(),
-    onUndoUnfollow: (ListCategory) -> Unit = {},
+    onUndoUnfollow: (String) -> Unit = {},
     startOnFollowing: Boolean = false,
 ) {
     val snackbar = remember { SnackbarHostState() }
@@ -204,7 +206,7 @@ fun CommunityHomeContent(
         BoxWithConstraints(Modifier.fillMaxSize()) {
             val layout = homeLayoutFor(currentWindowShape, maxHeight)
             if (layout == HomeLayout.Cover) {
-                CoverCommunityGrid(onBack = null, onOpenSection = { destinations.onOpenSection(it, null) })
+                CoverCommunityGrid(onBack = null, sections = explore.sections, onOpenSection = { destinations.onOpenSection(it, null) })
             } else {
                 HomeBody(explore, following, layout, exploreFeed, followingFeed, exploreCalls, destinations, tabs, startOnFollowing)
             }
@@ -218,10 +220,11 @@ private fun NoticeSnackbars(
     notices: Flow<CommunityNotice>,
     snackbar: SnackbarHostState,
     exploreFeed: FeedCallbacks,
-    onUndoUnfollow: (ListCategory) -> Unit,
+    onUndoUnfollow: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
+    val nameOf = rememberSectionNames()
     LaunchedEffect(notices) {
         notices.collect { notice ->
             when (notice) {
@@ -236,16 +239,16 @@ private fun NoticeSnackbars(
 
                 CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.getString(R.string.explore_follow_failed))
                 is CommunityNotice.NowFollowing -> snackbar.showSnackbar(
-                    resources.getString(R.string.explore_now_following, resources.getString(notice.section.labelRes)),
+                    resources.getString(R.string.explore_now_following, nameOf(notice.sectionId)),
                 )
 
                 is CommunityNotice.Unfollowed -> {
                     val result = snackbar.showSnackbar(
-                        message = resources.getString(R.string.explore_unfollowed, resources.getString(notice.section.labelRes)),
+                        message = resources.getString(R.string.explore_unfollowed, nameOf(notice.sectionId)),
                         actionLabel = resources.getString(R.string.explore_undo),
                         duration = SnackbarDuration.Long,
                     )
-                    if (result == SnackbarResult.ActionPerformed) onUndoUnfollow(notice.section)
+                    if (result == SnackbarResult.ActionPerformed) onUndoUnfollow(notice.sectionId)
                 }
 
                 CommunityNotice.ActionFailed -> snackbar.showSnackbar(resources.getString(ThemeR.string.snack_action_failed))
@@ -332,6 +335,7 @@ private fun HomeBody(
                                         onOpen = { destinations.onOpenSection(it, null) },
                                         onFollow = exploreCalls.onFollowSection,
                                         onUnfollow = exploreCalls.onUnfollowSection,
+                                        onOpenAll = destinations.onOpenAllSections,
                                     ),
                                     cards = CardActions(destinations.onOpenList) { exploreMenu = it },
                                     onRefresh = exploreFeed.onRefresh,
@@ -351,6 +355,7 @@ private fun HomeBody(
                                         onOpenAuthor = { destinations.onOpenAuthor(it.uid, it.name, it.photoUrl) },
                                         onManage = destinations.onManageFollowing,
                                         onQuickFollow = exploreCalls.onQuickFollow,
+                                        onOpenAllSections = destinations.onOpenAllSections,
                                         onGoToExplore = { selectTab(0) },
                                     ),
                                     cards = CardActions(destinations.onOpenList) { followingMenu = it },

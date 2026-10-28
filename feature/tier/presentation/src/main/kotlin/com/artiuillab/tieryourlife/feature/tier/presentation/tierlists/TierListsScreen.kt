@@ -411,6 +411,7 @@ fun TierListsScreenContent(
                     filters = boardFilters,
                     onFilters = onApplyBoardFilters,
                     onDismiss = { filtersOpen = false },
+                    filedUnder = success?.filedUnder.orEmpty(),
                 )
             }
 

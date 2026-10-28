@@ -30,7 +30,7 @@ class PublishRequestTest {
     private val board = TierList(
         id = 1,
         title = "Films",
-        category = ListCategory.FilmTv,
+        category = ListCategory.FilmTv.id,
         coverImageUrl = "file:///pictures/cover-1",
         tiers = listOf(
             tier(10, "S", TierItem(1, "Alien", poster)),
@@ -120,14 +120,26 @@ class PublishRequestTest {
         assertEquals("Good", published.tiers[1].caption)
         assertEquals(listOf("Alien", "Up"), published.items.map { it.title })
         assertEquals(listOf(1, null), published.arrangement)
-        assertEquals(ListCategory.FilmTv, published.summary.category)
+        assertEquals(ListCategory.FilmTv.id, published.summary.category)
     }
 
     @Test
-    fun `a category this app does not know reads as other`() {
-        val dto = PublishedListDto(id = "p1", title = "T", authorName = "A", category = "from-the-future")
+    fun `a section this app has not heard of keeps its id, for the section list to name later`() {
+        val dto = PublishedListDto(id = "p1", title = "T", authorName = "A", category = "street-food")
 
-        assertEquals(ListCategory.Other, dto.toDomain().summary.category)
+        assertEquals("street-food", dto.toDomain().summary.category)
+    }
+
+    @Test
+    fun `a list filed nowhere reads as other`() {
+        val dto = PublishedListDto(id = "p1", title = "T", authorName = "A", category = " ")
+
+        assertEquals(ListCategory.Other.id, dto.toDomain().summary.category)
+    }
+
+    @Test
+    fun `a board in somebody's section is published under that section`() {
+        assertEquals("street-food", board.copy(category = "street-food").toRequest(Pictures, uploaded = emptySet()).category)
     }
 
     @Test

@@ -4,7 +4,6 @@ import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -13,10 +12,12 @@ import timber.log.Timber
 sealed interface CommunityNotice {
     data class RefreshFailed(val showingFromMillis: Long) : CommunityNotice
     data object FollowFailed : CommunityNotice
-    data class NowFollowing(val section: ListCategory) : CommunityNotice
+
+    /** [sectionId] is named on screen, where the words are. */
+    data class NowFollowing(val sectionId: String) : CommunityNotice
 
     /** With Undo, which follows the section again. */
-    data class Unfollowed(val section: ListCategory) : CommunityNotice
+    data class Unfollowed(val sectionId: String) : CommunityNotice
     data object ActionFailed : CommunityNotice
 }
 

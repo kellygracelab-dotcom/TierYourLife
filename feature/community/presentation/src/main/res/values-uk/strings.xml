@@ -276,4 +276,15 @@
         <item quantity="other">%1$d відкритих</item>
     </plurals>
     <string name="moderation_refresh">Оновити</string>
+    <string name="all_sections_title">Усі розділи</string>
+    <plurals name="all_sections_count">
+        <item quantity="one">%1$s розділ</item>
+        <item quantity="few">%1$s розділи</item>
+        <item quantity="many">%1$s розділів</item>
+        <item quantity="other">%1$s розділу</item>
+    </plurals>
+    <string name="all_sections_sort_most_lists">Найбільше списків</string>
+    <string name="all_sections_sort_name">А–Я</string>
+    <string name="all_sections_find">Знайти розділ</string>
+    <string name="all_sections_propose">Запропонувати розділ</string>
 </resources>

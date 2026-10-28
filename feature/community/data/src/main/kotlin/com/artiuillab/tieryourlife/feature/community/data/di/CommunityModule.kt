@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.core.network.ProxyRetrofit
 import com.artiuillab.tieryourlife.feature.community.data.cache.FeedCacheDao
 import com.artiuillab.tieryourlife.feature.community.data.cache.FeedCacheDatabase
 import com.artiuillab.tieryourlife.feature.community.data.cache.RoomCommunityFeedCache
+import com.artiuillab.tieryourlife.feature.community.data.cache.RoomSectionStore
 import com.artiuillab.tieryourlife.feature.community.data.cache.SystemCommunityNetwork
 import com.artiuillab.tieryourlife.feature.community.data.remote.api.CommunityApi
 import com.artiuillab.tieryourlife.feature.community.data.repository.RetrofitCommunityRepository
@@ -13,12 +14,18 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Community
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityNetwork
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.KeptSectionCatalog
+import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
+import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionStore
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
@@ -40,6 +47,10 @@ abstract class CommunityModule {
     @Singleton
     abstract fun bindCommunityNetwork(implementation: SystemCommunityNetwork): CommunityNetwork
 
+    @Binds
+    @Singleton
+    abstract fun bindSectionStore(implementation: RoomSectionStore): SectionStore
+
     companion object {
         @Provides
         @Singleton
@@ -59,5 +70,11 @@ abstract class CommunityModule {
 
         @Provides
         fun provideCommunityClock(): CommunityClock = CommunityClock { System.currentTimeMillis() }
+
+        /** One for the whole app, with a scope of its own: a lookup started on one screen outlives it. */
+        @Provides
+        @Singleton
+        fun provideSectionCatalog(community: CommunityRepository, store: SectionStore, clock: CommunityClock): SectionCatalog =
+            KeptSectionCatalog(community, store, clock, CoroutineScope(SupervisorJob() + Dispatchers.IO))
     }
 }

@@ -9,7 +9,6 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -84,7 +83,7 @@ class TopicQueueViewModel @Inject constructor(
     }
 
     /** Places the topic and moves every list filed under it; the row is gone once the server agrees. */
-    fun approveTopic(id: String, section: ListCategory) = decide(id) { community.approveTopic(id, section) }
+    fun approveTopic(id: String, section: String) = decide(id) { community.approveTopic(id, section) }
 
     fun mergeTopic(id: String, into: String) = decide(id) { community.mergeTopic(id, into) }
 

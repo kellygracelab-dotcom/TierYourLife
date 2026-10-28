@@ -21,7 +21,7 @@ object PublishFingerprint {
         }
 
         eat(list.title)
-        eat(list.category?.id)
+        eat(list.category)
         eat(picture(list.coverImageUrl, pictureIdOf))
         list.coverImageUrls.forEach { eat(picture(it, pictureIdOf)) }
 

@@ -60,7 +60,7 @@ sealed interface CommunityRoute {
 
     /**
      * One section's page (§3), with a topic chosen when [topicId] is set.
-     * [sectionId] is a [com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory] id.
+     * [sectionId] is any section's id; one the phone does not know yet is asked about.
      */
     @Serializable
     data class Section(val sectionId: String, val topicId: String? = null) : CommunityRoute
@@ -68,6 +68,10 @@ sealed interface CommunityRoute {
     /** Everyone this person follows, with a way to stop. */
     @Serializable
     data object Following : CommunityRoute
+
+    /** Every section, where Home has no room for them all. */
+    @Serializable
+    data object AllSections : CommunityRoute
 
     /**
      * One topic's page. The name and section travel so the header is right
@@ -77,11 +81,11 @@ sealed interface CommunityRoute {
     data class Topic(
         val topicId: String,
         val name: String? = null,
-        /** A [com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory] id; null while the topic waits. */
+        /** A section id; null while the topic waits. */
         val section: String? = null,
     ) : CommunityRoute {
         companion object {
-            fun of(topic: TopicModel) = Topic(topicId = topic.id, name = topic.name, section = topic.section?.id)
+            fun of(topic: TopicModel) = Topic(topicId = topic.id, name = topic.name, section = topic.section)
         }
     }
 }

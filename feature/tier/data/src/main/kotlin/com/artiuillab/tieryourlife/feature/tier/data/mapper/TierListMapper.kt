@@ -4,7 +4,6 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWithTiers
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierWithItems
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
@@ -19,7 +18,7 @@ internal fun TierListEntity.toDomain(): TierList = TierList(
     publishedId = publishedId,
     publishedFingerprint = publishedFingerprint,
     authorName = authorName,
-    category = ListCategory.fromId(category),
+    category = category,
     coverImageUrl = coverImageUrl,
     coverImageUrls = coverImageUrls.toCoverImageUrls(),
     topicId = topicId,
@@ -42,7 +41,7 @@ internal fun TierListWithTiers.toDomain(): TierList = TierList(
     publishedId = tierList.publishedId,
     publishedFingerprint = tierList.publishedFingerprint,
     authorName = tierList.authorName,
-    category = ListCategory.fromId(tierList.category),
+    category = tierList.category,
     coverImageUrl = tierList.coverImageUrl,
     coverImageUrls = tierList.coverImageUrls.toCoverImageUrls(),
     topicId = tierList.topicId,

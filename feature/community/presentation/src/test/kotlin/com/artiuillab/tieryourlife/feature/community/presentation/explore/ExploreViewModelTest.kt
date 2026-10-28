@@ -8,11 +8,15 @@ import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityNetwork
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.FakeSectionStore
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
-import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CachedFeed
+import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
@@ -27,7 +31,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.io.IOException
 
-internal fun summary(id: String, category: ListCategory = ListCategory.Food, author: String = "u-$id", topicId: String? = null) = PublishedListSummary(
+internal fun summary(id: String, category: String = ListCategory.Food.id, author: String = "u-$id", topicId: String? = null) = PublishedListSummary(
     id = id,
     title = "List $id",
     authorUid = author,
@@ -48,15 +52,15 @@ class ExploreViewModelTest {
 
     private open inner class Community(
         val lists: List<PublishedListSummary> = listOf(summary("a"), summary("b")),
-        val sectionsAnswer: Result<List<SectionStats>> = Result.success(ListCategory.entries.map { SectionStats(it, newThisWeek = 3) }),
+        val sectionsAnswer: Result<List<Section>> = Result.success(Section.BUILT_IN.map { it.copy(newThisWeek = 3) }),
         val followFails: Boolean = false,
     ) : FakeCommunityRepository() {
         val sorts = mutableListOf<FeedSort>()
         val queries = mutableListOf<String?>()
-        val followed = CompletableDeferred<ListCategory>()
+        val followed = CompletableDeferred<String>()
 
         override suspend fun feed(
-            category: ListCategory?,
+            category: String?,
             query: String?,
             author: String?,
             after: String?,
@@ -69,9 +73,9 @@ class ExploreViewModelTest {
             return Result.success(CommunityPage(if (query == null) lists else lists.take(1)))
         }
 
-        override suspend fun sections(): Result<List<SectionStats>> = sectionsAnswer
+        override suspend fun sections(): Result<List<Section>> = sectionsAnswer
 
-        override suspend fun followSection(section: ListCategory): Result<Unit> {
+        override suspend fun followSection(section: String): Result<Unit> {
             followed.complete(section)
             return if (followFails) Result.failure(IOException("offline")) else Result.success(Unit)
         }
@@ -84,8 +88,18 @@ class ExploreViewModelTest {
         made.forEach { it.viewModelScope.cancel() }
     }
 
-    private fun viewModel(community: FakeCommunityRepository, cache: FakeCommunityFeedCache = FakeCommunityFeedCache()) =
-        ExploreViewModel(community, cache, FakeCommunityNetwork(), FakeAppPreferences(), clock).also { made += it }
+    private fun viewModel(
+        community: FakeCommunityRepository,
+        cache: FakeCommunityFeedCache = FakeCommunityFeedCache(),
+        kept: SectionDirectory? = null,
+    ) = ExploreViewModel(
+        community,
+        cache,
+        FakeCommunityNetwork(),
+        FakeAppPreferences(),
+        clock,
+        sectionCatalogFor(community, FakeSectionStore(kept), clock),
+    ).also { made += it }
 
     @Test
     fun opening_showsThePopularFeed_andTheNewLinesOnceCounted() = runBlocking {
@@ -97,7 +111,7 @@ class ExploreViewModelTest {
 
         assertEquals(listOf("a", "b"), state.feed.lists.map { it.id })
         assertEquals(FeedSort.Popular, community.sorts.first())
-        assertEquals(3, state.sections.first { it.section == ListCategory.Food }.newThisWeek)
+        assertEquals(3, state.sections.first { it.id == ListCategory.Food.id }.newThisWeek)
     }
 
     @Test
@@ -108,7 +122,7 @@ class ExploreViewModelTest {
         val state = viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready }
 
         assertFalse(state.countsKnown)
-        assertEquals(ListCategory.entries, state.sections.map { it.section })
+        assertEquals(ListCategory.entries.map { it.id }, state.sections.map { it.id })
     }
 
     @Test
@@ -129,11 +143,11 @@ class ExploreViewModelTest {
         viewModel.open()
         viewModel.state.firstWithin { it.countsKnown }
 
-        viewModel.follow(ListCategory.Food)
+        viewModel.follow(ListCategory.Food.id)
         withTimeout(5_000) { community.followed.await() }
 
         assertEquals(CommunityNotice.FollowFailed, withTimeout(5_000) { viewModel.notices.first() })
-        viewModel.state.firstWithin { state -> !state.sections.first { it.section == ListCategory.Food }.following }
+        viewModel.state.firstWithin { state -> !state.sections.first { it.id == ListCategory.Food.id }.following }
         Unit
     }
 
@@ -143,11 +157,39 @@ class ExploreViewModelTest {
         viewModel.open()
         viewModel.state.firstWithin { it.countsKnown }
 
-        viewModel.follow(ListCategory.Games)
+        viewModel.follow(ListCategory.Games.id)
 
-        assertEquals(CommunityNotice.NowFollowing(ListCategory.Games), withTimeout(5_000) { viewModel.notices.first() })
-        val counted = viewModel.state.firstWithin { state -> state.sections.first { it.section == ListCategory.Games }.following }
-        assertEquals(1, counted.sections.first { it.section == ListCategory.Games }.followerCount)
+        assertEquals(CommunityNotice.NowFollowing(ListCategory.Games.id), withTimeout(5_000) { viewModel.notices.first() })
+        val counted = viewModel.state.firstWithin { state -> state.sections.first { it.id == ListCategory.Games.id }.following }
+        assertEquals(1, counted.sections.first { it.id == ListCategory.Games.id }.followerCount)
+        // Followed sections come first, by the server's own rule.
+        assertEquals(ListCategory.Games.id, counted.sections.first().id)
+    }
+
+    @Test
+    fun theTiles_drawOnlyApprovedSectionsTheModeratorsHaveNotHidden_inTheServersOrder() = runBlocking {
+        val answer = listOf(
+            Section(id = "cars", name = "Cars"),
+            Section(id = "boats", name = "Boats", hidden = true),
+            Section(id = "kites", name = "Kites", status = SectionStatus.Pending),
+        ) + Section.BUILT_IN
+        val viewModel = viewModel(Community(sectionsAnswer = Result.success(answer)))
+
+        viewModel.open()
+        val state = viewModel.state.firstWithin { it.countsKnown }
+
+        assertEquals(listOf("cars") + ListCategory.entries.map { it.id }, state.sections.map { it.id })
+    }
+
+    @Test
+    fun keptSections_areWhatOpens_beforeTheServerSaysAnything() = runBlocking {
+        val kept = SectionDirectory(sections = listOf(Section(id = "cars", name = "Cars", newThisWeek = 4)) + Section.BUILT_IN, fetchedAtMillis = clock.now)
+        val viewModel = viewModel(Community(sectionsAnswer = Result.failure(IOException("offline"))), kept = kept)
+
+        val state = viewModel.state.firstWithin { it.countsKnown }
+
+        assertEquals("cars", state.sections.first().id)
+        assertEquals(4, state.sections.first().newThisWeek)
     }
 
     @Test
@@ -174,7 +216,7 @@ class ExploreViewModelTest {
             var refuse = true
 
             override suspend fun feed(
-                category: ListCategory?,
+                category: String?,
                 query: String?,
                 author: String?,
                 after: String?,

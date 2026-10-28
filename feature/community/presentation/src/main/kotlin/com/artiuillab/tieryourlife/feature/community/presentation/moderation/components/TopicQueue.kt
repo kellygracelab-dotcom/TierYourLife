@@ -35,9 +35,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.TopicQueueTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.TopicQueueUiState
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.CategorySheet
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 /**
@@ -49,7 +48,7 @@ import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 @Composable
 internal fun TopicQueue(
     state: TopicQueueUiState,
-    onApprove: (id: String, ListCategory) -> Unit,
+    onApprove: (id: String, sectionId: String) -> Unit,
     onRename: (id: String, name: String) -> Unit,
     onMerge: (id: String, into: String) -> Unit,
     onReject: (id: String) -> Unit,
@@ -170,7 +169,7 @@ private fun PendingTopicCard(
         )
         pending.requestedSection?.let { section ->
             Text(
-                text = stringResource(R.string.moderation_topic_wanted_in, stringResource(section.labelRes)),
+                text = stringResource(R.string.moderation_topic_wanted_in, sectionLabel(section)),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

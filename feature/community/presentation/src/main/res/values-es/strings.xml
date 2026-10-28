@@ -263,4 +263,14 @@
         <item quantity="other">%1$d abiertas</item>
     </plurals>
     <string name="moderation_refresh">Actualizar</string>
+    <string name="all_sections_title">Todas las secciones</string>
+    <plurals name="all_sections_count">
+        <item quantity="one">%1$s sección</item>
+        <item quantity="many">%1$s secciones</item>
+        <item quantity="other">%1$s secciones</item>
+    </plurals>
+    <string name="all_sections_sort_most_lists">Más listas</string>
+    <string name="all_sections_sort_name">A–Z</string>
+    <string name="all_sections_find">Buscar una sección</string>
+    <string name="all_sections_propose">Proponer una sección</string>
 </resources>

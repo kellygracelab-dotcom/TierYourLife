@@ -45,7 +45,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import kotlinx.coroutines.flow.Flow
@@ -195,7 +195,7 @@ private fun TopicChoice.names(topic: Topic): Boolean = this is TopicChoice.Known
 
 @Composable
 private fun Topic.sectionAndCount(): String {
-    val section = section?.let { stringResource(it.labelRes) }
+    val section = section?.let { sectionLabel(it) }
     val lists = pluralStringResource(R.plurals.topic_picker_lists, listCount, listCount)
     return listOfNotNull(section, lists).joinToString(" · ")
 }
@@ -309,11 +309,11 @@ private fun TopicPickerPreview() = TierYourLifeTheme {
             title = "Oscar films 2025",
             query = "Osc",
             results = listOf(
-                Topic(id = "t1", name = "Oscars", section = ListCategory.FilmTv, status = TopicStatus.Approved, listCount = 41),
-                Topic(id = "t2", name = "Oscar snubs", section = ListCategory.FilmTv, status = TopicStatus.Approved, listCount = 6),
+                Topic(id = "t1", name = "Oscars", section = ListCategory.FilmTv.id, status = TopicStatus.Approved, listCount = 41),
+                Topic(id = "t2", name = "Oscar snubs", section = ListCategory.FilmTv.id, status = TopicStatus.Approved, listCount = 6),
             ),
             mine = listOf(Topic(id = "t9", name = "Kharkiv restaurants", section = null, status = TopicStatus.Pending)),
-            chosen = TopicChoice.Known(Topic(id = "t1", name = "Oscars", section = ListCategory.FilmTv, status = TopicStatus.Approved)),
+            chosen = TopicChoice.Known(Topic(id = "t1", name = "Oscars", section = ListCategory.FilmTv.id, status = TopicStatus.Approved)),
         ),
         onBack = {},
         onDone = {},

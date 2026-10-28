@@ -6,7 +6,7 @@ import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -175,6 +175,28 @@ class TierListsViewModelTest {
     }
 
     @Test
+    fun theSectionsTheBoardsAreFiledUnder_areOffered_andOneOfSomebodysOwnFilters() = runBlocking {
+        val repository = FakeTierRepository(
+            initial = listOf(
+                fakeList(id = 1, title = "Ramen").copy(category = "street-food"),
+                fakeList(id = 2, title = "Films").copy(category = "film_tv"),
+                fakeList(id = 3, title = "Loose"),
+                fakeList(id = 4, title = "Tacos").copy(category = "street-food"),
+            ),
+        )
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+
+        viewModel.loadTierLists()
+        val loaded = viewModel.state.firstWithin { it is TierListsUiState.Success } as TierListsUiState.Success
+        assertEquals(listOf("film_tv", "street-food"), loaded.filedUnder)
+
+        viewModel.applyBoardFilters(BoardFilters(category = "street-food"))
+        val filtered = viewModel.state.firstWithin { (it as? TierListsUiState.Success)?.boardFilters?.any == true } as TierListsUiState.Success
+
+        assertEquals(setOf(1L, 4L), filtered.lists.map { it.id }.toSet())
+    }
+
+    @Test
     fun exitSearch_returnsToBrowsingWithEveryListVisibleAgain() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Pizza in Lisbon")))
         val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
@@ -325,7 +347,7 @@ internal class FakeTierRepository(initial: List<TierList>) : TierRepository {
 
     override suspend fun setFavouritedAt(id: Long, at: Long?) = Unit
 
-    override suspend fun setCategory(id: Long, category: ListCategory?) = Unit
+    override suspend fun setCategory(id: Long, category: String?) = Unit
 
     override suspend fun setCover(id: Long, pictures: List<String>) = Unit
     override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) = Unit

@@ -56,7 +56,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Rep
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -283,7 +283,7 @@ private fun SortRow(sort: FeedSort, onSelectSort: (FeedSort) -> Unit) {
 }
 
 @Composable
-private fun TopBar(onBack: () -> Unit, section: ListCategory?) {
+private fun TopBar(onBack: () -> Unit, section: String?) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     Row(
         modifier = Modifier
@@ -301,7 +301,7 @@ private fun TopBar(onBack: () -> Unit, section: ListCategory?) {
         ) { BackIcon() }
         // The section is the small word above the name, as on the canvas.
         Text(
-            text = section?.let { stringResource(it.labelRes) } ?: stringResource(R.string.topic_title),
+            text = section?.let { sectionLabel(it) } ?: stringResource(R.string.topic_title),
             modifier = Modifier.padding(horizontal = 4.dp),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -315,8 +315,8 @@ private fun TopicPreview() = TierYourLifeTheme {
     TopicScreenContent(
         state = TopicUiState(
             name = "Pokémon",
-            section = ListCategory.Games,
-            topic = Topic(id = "t1", name = "Pokémon", section = ListCategory.Games, status = TopicStatus.Approved, listCount = 212, followerCount = 1340),
+            section = ListCategory.Games.id,
+            topic = Topic(id = "t1", name = "Pokémon", section = ListCategory.Games.id, status = TopicStatus.Approved, listCount = 212, followerCount = 1340),
             feed = CommunityFeed.Ready(emptyList()),
         ),
         onBack = {},

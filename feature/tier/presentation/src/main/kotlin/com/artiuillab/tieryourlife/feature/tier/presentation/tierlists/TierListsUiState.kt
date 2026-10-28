@@ -21,6 +21,8 @@ sealed interface TierListsUiState {
         val grouped: Boolean = false,
         val boardSort: BoardSort = BoardSort.Newest,
         val boardFilters: BoardFilters = BoardFilters(),
+        /** Every section these boards are filed under, built-in or not, for the filters to offer. */
+        val filedUnder: List<String> = emptyList(),
         val localOnly: LocalOnly = LocalOnly.Unknown,
         val restoringPictures: PictureRestore.Progress = PictureRestore.Progress.Idle,
         /** The board whose two versions have not been mentioned yet, if there is one. */

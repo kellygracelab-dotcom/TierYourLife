@@ -1,7 +1,5 @@
 package com.artiuillab.tieryourlife.feature.community.domain.model
 
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-
 /** Where a proposed word stands: waiting for a moderator, admitted, turned down, or folded into another. */
 enum class TopicStatus(val id: String) {
     Pending("pending"),
@@ -19,8 +17,8 @@ enum class TopicStatus(val id: String) {
 data class Topic(
     val id: String,
     val name: String,
-    /** Null while the topic waits: its lists sit under Other until a moderator places it. */
-    val section: ListCategory?,
+    /** A section id; null while the topic waits: its lists sit under Other until a moderator places it. */
+    val section: String?,
     val status: TopicStatus,
     val listCount: Int = 0,
     val followerCount: Int = 0,
@@ -35,7 +33,7 @@ data class Topic(
 data class PendingTopic(
     val topic: Topic,
     val proposerName: String,
-    val requestedSection: ListCategory?,
+    val requestedSection: String?,
     val similar: List<Topic> = emptyList(),
 )
 

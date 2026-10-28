@@ -46,7 +46,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -81,7 +80,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.feedIt
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.homeLayoutFor
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.rememberSkeletonAlpha
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.label
+import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSectionNames
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -177,6 +177,7 @@ private fun SectionNotices(
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
+    val nameOf = rememberSectionNames()
     LaunchedEffect(notices) {
         notices.collect { notice ->
             when (notice) {
@@ -188,7 +189,7 @@ private fun SectionNotices(
 
                 is CommunityNotice.Unfollowed -> {
                     val result = snackbar.showSnackbar(
-                        message = resources.getString(R.string.explore_unfollowed, resources.getString(notice.section.labelRes)),
+                        message = resources.getString(R.string.explore_unfollowed, nameOf(notice.sectionId)),
                         actionLabel = resources.getString(R.string.explore_undo),
                         duration = SnackbarDuration.Long,
                     )
@@ -284,7 +285,7 @@ private fun LazyGridScope.sectionControls(state: SectionUiState, calls: SectionC
     val topic = state.selectedTopic
     if (topic != null) {
         item(key = "topic-${topic.id}", span = { GridItemSpan(maxLineSpan) }) {
-            TopicRow(topic, state.section, calls.onToggleTopicFollow)
+            TopicRow(topic, state.sectionId, calls.onToggleTopicFollow)
         }
     }
     item(key = "sort", span = { GridItemSpan(maxLineSpan) }) {
@@ -323,7 +324,7 @@ private fun CollapsingBar(state: SectionUiState, grid: LazyGridState, onBack: ()
         }
         if (!onImage) {
             Text(
-                stringResource(state.section.labelRes),
+                state.section.label(),
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -349,7 +350,7 @@ private fun CompactSectionBar(state: SectionUiState, onBack: () -> Unit, onToggl
         ) {
             IconButton(onClick = onBack) { BackIcon() }
             Text(
-                stringResource(state.section.labelRes),
+                state.section.label(),
                 style = TextStyle(fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.Medium),
                 color = MaterialTheme.colorScheme.onSurface,
             )

@@ -179,6 +179,7 @@ class TierListsViewModel @Inject constructor(
             grouped = grouped,
             boardSort = boardSort,
             boardFilters = boardFilters,
+            filedUnder = lastLoadedLists.mapNotNull { it.category }.distinct().sorted(),
             totalListCount = lastLoadedLists.size,
             rankedCount = rankedCount,
             mode = mode,

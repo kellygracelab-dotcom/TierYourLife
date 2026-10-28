@@ -22,7 +22,7 @@ internal class FakeCommunityRepositoryForDetail(
     }
 
     override suspend fun topic(id: String): Result<Topic> = Result.success(
-        Topic(id = id, name = "Oscars 2025", section = ListCategory.FilmTv.takeIf { topicStatus == TopicStatus.Approved }, status = topicStatus),
+        Topic(id = id, name = "Oscars 2025", section = ListCategory.FilmTv.id.takeIf { topicStatus == TopicStatus.Approved }, status = topicStatus),
     )
 
     override suspend fun publish(list: TierList): Result<Published> {

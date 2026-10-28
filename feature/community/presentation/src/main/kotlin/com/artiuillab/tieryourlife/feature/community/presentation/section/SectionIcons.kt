@@ -12,12 +12,20 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import com.artiuillab.tieryourlife.core.theme.ui.PersonIcon
 import com.artiuillab.tieryourlife.core.theme.ui.VectorIcon
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlin.math.cos
 import kotlin.math.sin
 
+/** A section's sign: a built-in keeps its own whatever the server names; anybody else's is drawn by its icon name. */
+@Composable
+internal fun SectionIcon(section: Section, iconSize: Dp, color: Color) {
+    val art = section.art
+    if (art != null) SectionIcon(art, iconSize, color) else SymbolIcon(section.icon, iconSize, color)
+}
+
 /**
- * Each section's sign, drawn like the app's other icons rather than taken
+ * Each built-in's sign, drawn like the app's other icons rather than taken
  * from an icon font: animation, movie, sports_esports, music_note, menu_book,
  * restaurant, sports_soccer, person, category.
  */

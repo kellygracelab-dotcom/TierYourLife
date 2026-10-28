@@ -66,9 +66,9 @@ fun NavGraphBuilder.followingScreen(
             onOpenAuthor = onOpenAuthor,
             onOpenTopic = { topic ->
                 val section = topic.section
-                if (section != null) onOpenSection(CommunityRoute.Section(section.id, topic.id)) else onOpenTopic(CommunityRoute.Topic.of(topic))
+                if (section != null) onOpenSection(CommunityRoute.Section(section, topic.id)) else onOpenTopic(CommunityRoute.Topic.of(topic))
             },
-            onOpenSection = { onOpenSection(CommunityRoute.Section(it.id)) },
+            onOpenSection = { onOpenSection(CommunityRoute.Section(it)) },
         )
     }
 }
