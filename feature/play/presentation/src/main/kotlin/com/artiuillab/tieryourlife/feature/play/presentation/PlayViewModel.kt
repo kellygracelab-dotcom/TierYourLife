@@ -11,7 +11,6 @@ import com.artiuillab.tieryourlife.feature.play.domain.Outcome
 import com.artiuillab.tieryourlife.feature.play.domain.Resumption
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGames
-import com.artiuillab.tieryourlife.feature.play.domain.isExpired
 import com.artiuillab.tieryourlife.feature.play.domain.nextPair
 import com.artiuillab.tieryourlife.feature.play.domain.progress
 import com.artiuillab.tieryourlife.feature.play.domain.resumeOn
@@ -60,9 +59,11 @@ class PlayViewModel @Inject constructor(
     private var session: Session? = null
 
     /** What the last notice's action would act on. */
-    private var quitKey: String? = null
-    private var discarded: Pair<String, SavedGame>? = null
+    private var quitted: Session? = null
+    private var discarded: Session? = null
     private var arranged: Arrangement? = null
+
+    private val shelf = GameShelf(games, boards) { clock() }
 
     private data class Arrangement(val before: TierList, val own: Boolean)
 
@@ -75,14 +76,20 @@ class PlayViewModel @Inject constructor(
         get() = _state.value.stage
         set(value) = _state.update { it.copy(stage = value) }
 
-    /** The board on screen now; the screen hands it in each time it changes. */
+    /** The board on screen now; the screen hands it in each time it changes, and a game that came with it is read. */
     fun offer(request: PlayRequest) {
+        val before = this.request
         this.request = request
+        val news = before?.key != request.key || before.board.play != request.board.play
+        if (news && session == null) viewModelScope.launch { stored = taken(request) }
     }
 
     /** Reads whether a game of [key] is put down, for the dot on the button. */
     fun watch(key: String) {
-        viewModelScope.launch { refreshSaved(key) }
+        viewModelScope.launch {
+            val current = request
+            if (current?.key == key) taken(current) else markSaved(key, shelf.peek(key) != null)
+        }
     }
 
     fun open() {
@@ -145,7 +152,7 @@ class PlayViewModel @Inject constructor(
             val request = request ?: return
             val saved = stored ?: return
             val ready = saved.resumeOn(request.board.cardsIn(saved.scope).map { it.id }) as? Resumption.Ready ?: return
-            val next = Session(request.key, request.board, ready.game)
+            val next = Session(request.key, request.board, ready.game, own = !request.intoMine)
             if (ready.game == saved) show(next) else record(next)
         }
 
@@ -174,10 +181,9 @@ class PlayViewModel @Inject constructor(
             session = null
             close()
             viewModelScope.launch {
-                persist(current)
-                if (current.game.history.isNotEmpty()) {
+                if (persist(current)) {
                     stored = current.game
-                    quitKey = current.key
+                    quitted = current
                     val played = progress(current.game.spec, current.game.history).played
                     say(PlayNotice.GameSaved(played, totalOf(current.game)))
                 }
@@ -202,7 +208,7 @@ class PlayViewModel @Inject constructor(
             viewModelScope.launch {
                 val into = request.applyTo
                 val after = if (into != null) intoMine(into, placement) else ontoBoard(request.board, placement)
-                forget(current.key)
+                forget(current)
                 if (after != null) {
                     _events.send(PlayEvent.Arranged(after))
                     say(PlayNotice.BoardArranged(shown.duels))
@@ -243,8 +249,8 @@ class PlayViewModel @Inject constructor(
             session = null
             close()
             viewModelScope.launch {
-                forget(current.key)
-                discarded = current.key to current.game
+                forget(current)
+                discarded = current
                 say(PlayNotice.ResultDiscarded)
             }
         }
@@ -253,28 +259,27 @@ class PlayViewModel @Inject constructor(
     inner class NoticeControls {
         /** From "Game saved": the game is not wanted after all. */
         fun discardSaved() {
-            val key = quitKey ?: return
-            quitKey = null
-            viewModelScope.launch { forget(key) }
+            val gone = quitted ?: return
+            quitted = null
+            viewModelScope.launch { forget(gone) }
         }
 
         /** The game that was discarded comes back; one started in its place gives way to it. */
         fun undoDiscard() {
-            val (key, game) = discarded ?: return
+            val back = discarded ?: return
             discarded = null
             val current = session
             val request = request
-            if (current != null && current.key == key && request != null) {
-                val ready = game.resumeOn(request.board.cardsIn(game.scope).map { it.id }) as? Resumption.Ready
+            if (current != null && current.key == back.key && request != null) {
+                val ready = back.game.resumeOn(request.board.cardsIn(back.game.scope).map { it.id }) as? Resumption.Ready
                 if (ready != null) {
-                    record(Session(key, request.board, ready.game))
+                    record(back.copy(board = request.board, game = ready.game))
                     return
                 }
             }
             viewModelScope.launch {
-                games.save(key, game)
-                markSaved(key, true)
-                if (request?.key == key) stored = game
+                persist(back)
+                if (request?.key == back.key) stored = back.game
             }
         }
 
@@ -314,12 +319,13 @@ class PlayViewModel @Inject constructor(
         val replaced = stored
         stored = null
         lastKind = kind
-        show(Session(request.key, request.board, game))
+        show(Session(request.key, request.board, game, own = !request.intoMine))
         viewModelScope.launch {
             games.rememberKind(kind)
             if (replaced != null) {
-                forget(request.key)
-                discarded = request.key to replaced
+                val gone = Session(request.key, request.board, replaced, own = !request.intoMine)
+                forget(gone)
+                discarded = gone
                 say(PlayNotice.SavedGameDiscarded)
             }
         }
@@ -357,27 +363,20 @@ class PlayViewModel @Inject constructor(
         viewModelScope.launch { persist(next) }
     }
 
-    /** A game with nothing answered is not worth keeping. */
-    private suspend fun persist(current: Session) {
-        val game = current.game
-        if (game.history.isEmpty()) {
-            games.discard(current.key)
-        } else {
-            games.save(current.key, game.copy(round = progress(game.spec, game.history).round))
-        }
-        markSaved(current.key, game.history.isNotEmpty())
-    }
+    /** Returns whether a game is kept: one with nothing answered is not. */
+    private suspend fun persist(current: Session): Boolean =
+        shelf.put(current).also { kept -> markSaved(current.key, kept) }
 
-    private suspend fun forget(key: String) {
-        games.discard(key)
-        markSaved(key, false)
-        if (request?.key == key) stored = null
+    private suspend fun forget(gone: Session) {
+        shelf.clear(gone)
+        markSaved(gone.key, false)
+        if (request?.key == gone.key) stored = null
     }
 
     /** The device's last game takes the picker's choice, unless somebody has already chosen while it was read. */
     private suspend fun offerResume(request: PlayRequest, shownKind: GameKind) {
         val remembered = games.lastKind()?.also { lastKind = it }
-        val saved = refreshSaved(request.key)
+        val saved = taken(request)
         stored = saved
         updatePicker { picker ->
             picker.copy(
@@ -387,14 +386,8 @@ class PlayViewModel @Inject constructor(
         }
     }
 
-    /** A month-old game goes without a word. */
-    private suspend fun refreshSaved(key: String): SavedGame? {
-        val loaded = games.load(key)
-        val game = loaded?.takeUnless { it.isExpired(clock()) }
-        if (loaded != null && game == null) games.discard(key)
-        markSaved(key, game != null)
-        return game
-    }
+    private suspend fun taken(request: PlayRequest): SavedGame? =
+        shelf.take(request).also { game -> markSaved(request.key, game != null) }
 
     private fun markSaved(key: String, saved: Boolean) =
         _state.update { it.copy(saved = if (saved) it.saved + key else it.saved - key) }

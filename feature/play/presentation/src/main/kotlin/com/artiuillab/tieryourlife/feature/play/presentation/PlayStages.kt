@@ -18,8 +18,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
-/** A game being played: where it is kept, the board its cards were read from, and the game itself. */
-internal data class Session(val key: String, val board: TierList, val game: SavedGame) {
+/** A game: where it is kept, the board its cards were read from, the game itself, and whether that board is your own. */
+internal data class Session(val key: String, val board: TierList, val game: SavedGame, val own: Boolean) {
     private val cards = board.tiers.flatMap { it.items }.associateBy { it.id }
 
     fun card(index: Int): TierItem {

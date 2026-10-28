@@ -573,6 +573,10 @@ private class FakeTierRepository(
         list = list.copy(anonymous = anonymous)
     }
 
+    override suspend fun setPlay(id: Long, play: String?) {
+        list = list.copy(play = play)
+    }
+
     override suspend fun setCover(id: Long, pictures: List<String>) {
         list = list.copy(coverImageUrl = pictures.singleOrNull(), coverImageUrls = pictures.takeIf { it.size > 1 }.orEmpty())
     }

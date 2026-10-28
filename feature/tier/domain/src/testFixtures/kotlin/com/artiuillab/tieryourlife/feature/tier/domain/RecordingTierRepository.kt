@@ -60,6 +60,13 @@ class RecordingTierRepository(
 
     override suspend fun setAnonymous(id: Long, anonymous: Boolean) = Unit
 
+    /** Every game written to a board, as (id, the shared JSON or null). */
+    val plays = mutableListOf<Pair<Long, String?>>()
+
+    override suspend fun setPlay(id: Long, play: String?) {
+        plays += id to play
+    }
+
     val covers = mutableListOf<Pair<Long, List<String>>>()
 
     /** Every topic set, as (id, topicId, topicName, newTopicName). */

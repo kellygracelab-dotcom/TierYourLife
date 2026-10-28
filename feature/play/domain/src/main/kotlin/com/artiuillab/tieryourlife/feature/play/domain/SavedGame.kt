@@ -17,6 +17,11 @@ data class SavedGame(
     val scope: List<Long>? = null,
     /** One tier's cards, only being ordered inside it. */
     val keepTier: Boolean = false,
+    /**
+     * This copy has been written to the board as well, so the account carries
+     * it. Once it has, a board without the game means the game ended elsewhere.
+     */
+    val onBoard: Boolean = false,
 )
 
 const val SAVED_GAME_DAYS = 30

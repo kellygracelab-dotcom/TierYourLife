@@ -9,7 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 
 internal const val POOL = 99L
 
-/** A board from tier ids to card ids, the pool last; a card's title is its id. */
+/** A board from tier ids to card ids, the pool last; a card's title is its id, its uid "c" and its id, a tier's "t" and its id. */
 internal fun board(vararg tiers: Pair<Long, List<Long>>, id: Long = 1): TierList = TierList(
     id = id,
     title = "Films",
@@ -19,8 +19,9 @@ internal fun board(vararg tiers: Pair<Long, List<Long>>, id: Long = 1): TierList
             label = if (tierId == POOL) "Pool" else "T$tierId",
             colorLight = "#B03A32",
             colorDark = "#F1948C",
-            items = cards.map { TierItem(it, "Card $it", null) },
+            items = cards.map { TierItem(it, "Card $it", null, uid = "c$it") },
             isPool = tierId == POOL,
+            uid = "t$tierId",
         )
     },
 )
@@ -35,10 +36,18 @@ internal class MovingTierRepository(
 
     val moves = mutableListOf<Move>()
 
+    /** Every game written to the board, the last one on it. */
+    val plays = mutableListOf<String?>()
+
     override suspend fun getTierListById(id: Long): TierList? = board.takeIf { it.id == id }
 
     override suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
         moves += Move(itemId, toTierId, toPosition)
         board = board.withItemMoved(itemId, toTierId, toPosition)
+    }
+
+    override suspend fun setPlay(id: Long, play: String?) {
+        plays += play
+        board = board.copy(play = play)
     }
 }

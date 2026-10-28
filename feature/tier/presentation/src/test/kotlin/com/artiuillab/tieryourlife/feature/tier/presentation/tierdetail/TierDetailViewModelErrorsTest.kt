@@ -133,6 +133,7 @@ private class FailingTierRepository(
     override suspend fun setCategory(id: Long, category: String?) = Unit
 
     override suspend fun setAnonymous(id: Long, anonymous: Boolean) = Unit
+    override suspend fun setPlay(id: Long, play: String?) = Unit
 
     override suspend fun setCover(id: Long, pictures: List<String>) = Unit
     override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) = Unit

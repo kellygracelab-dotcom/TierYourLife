@@ -40,6 +40,8 @@ data class TierList(
     val favouritedAt: Long? = null,
     /** True while this board and one beside it are two versions of the same thing. */
     val hasTwin: Boolean = false,
+    /** The saved Play game in the JSON both clients write, kept on the board so the account carries it; read by Play alone. */
+    val play: String? = null,
 ) {
     /** Out in the community one way or the other: as a list of its own, or as a ranking of somebody's. */
     val isPublic: Boolean get() = publishedId != null || rankingOf != null

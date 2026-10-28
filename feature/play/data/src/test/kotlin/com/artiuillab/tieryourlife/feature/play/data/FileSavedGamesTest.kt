@@ -26,6 +26,7 @@ class FileSavedGamesTest {
         startedAt = 1_700_000_000_000,
         scope = listOf(5, -1),
         keepTier = false,
+        onBoard = true,
     )
 
     private fun store(file: File = File(folder.root, "play/saved-games.json")) = FileSavedGames(file, Dispatchers.Unconfined)
@@ -63,6 +64,18 @@ class FileSavedGamesTest {
         assertNull(store(file).load("board:3"))
         store(file).save("board:3", game)
         assertEquals(game, store(file).load("board:3"))
+    }
+
+    @Test
+    fun aFileWrittenBeforeGamesWentOnBoards_readsAsNeverSent() = runBlocking {
+        val file = File(folder.root, "older.json").apply {
+            writeText(
+                """{"games":{"board:3":{"kind":"Hill","count":3,"seed":1,"refine":false,"ids":[1,2,3],""" +
+                    """"history":[[0,1,1]],"round":0,"startedAt":5}}}""",
+            )
+        }
+
+        assertEquals(false, store(file).load("board:3")?.onBoard)
     }
 
     @Test
