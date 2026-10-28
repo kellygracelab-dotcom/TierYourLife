@@ -1,0 +1,1245 @@
+{
+    "version": 1,
+    "mulberry32": [
+        {
+            "seed": 42,
+            "first": [
+                2581720956,
+                1925393290,
+                3661312704,
+                2876485805,
+                750819978
+            ]
+        },
+        {
+            "seed": 0,
+            "first": [
+                1144304738,
+                1416247,
+                958946056,
+                627933444,
+                2007157716
+            ]
+        },
+        {
+            "seed": -1,
+            "first": [
+                3850105811,
+                813802916,
+                3073704848,
+                4054706436,
+                3630262831
+            ]
+        }
+    ],
+    "shuffle": [
+        {
+            "count": 7,
+            "seed": 7,
+            "order": [
+                3,
+                5,
+                1,
+                2,
+                4,
+                6,
+                0
+            ]
+        },
+        {
+            "count": 8,
+            "seed": 3,
+            "order": [
+                7,
+                4,
+                1,
+                3,
+                6,
+                2,
+                0,
+                5
+            ]
+        },
+        {
+            "count": 10,
+            "seed": 123,
+            "order": [
+                0,
+                6,
+                5,
+                9,
+                4,
+                2,
+                8,
+                3,
+                1,
+                7
+            ]
+        }
+    ],
+    "standings": [
+        {
+            "name": "nothing to rank",
+            "count": 0,
+            "tierCount": 5,
+            "duels": [],
+            "expect": {
+                "order": [],
+                "logStrength": [],
+                "wins": [],
+                "played": [],
+                "tiers": [
+                    [],
+                    [],
+                    [],
+                    [],
+                    []
+                ],
+                "thin": false
+            }
+        },
+        {
+            "name": "one card",
+            "count": 1,
+            "tierCount": 5,
+            "duels": [],
+            "expect": {
+                "order": [
+                    0
+                ],
+                "logStrength": [
+                    0.0
+                ],
+                "wins": [
+                    0
+                ],
+                "played": [
+                    0
+                ],
+                "tiers": [
+                    [
+                        0
+                    ],
+                    [],
+                    [],
+                    [],
+                    []
+                ],
+                "thin": true
+            }
+        },
+        {
+            "name": "no duels yet",
+            "count": 4,
+            "tierCount": 5,
+            "duels": [],
+            "expect": {
+                "order": [
+                    0,
+                    1,
+                    2,
+                    3
+                ],
+                "logStrength": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "wins": [
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "played": [
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "tiers": [
+                    [
+                        0,
+                        1,
+                        2,
+                        3
+                    ],
+                    [],
+                    [],
+                    [],
+                    []
+                ],
+                "thin": true
+            }
+        },
+        {
+            "name": "a chain",
+            "count": 5,
+            "tierCount": 5,
+            "duels": [
+                [
+                    0,
+                    1
+                ],
+                [
+                    1,
+                    2
+                ],
+                [
+                    2,
+                    3
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expect": {
+                "order": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                ],
+                "logStrength": [
+                    0.756307613,
+                    0.185727946,
+                    0.0,
+                    -0.185727946,
+                    -0.756307613
+                ],
+                "wins": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    0
+                ],
+                "played": [
+                    1,
+                    2,
+                    2,
+                    2,
+                    1
+                ],
+                "tiers": [
+                    [
+                        0
+                    ],
+                    [],
+                    [
+                        1,
+                        2,
+                        3
+                    ],
+                    [],
+                    [
+                        4
+                    ]
+                ],
+                "thin": true
+            }
+        },
+        {
+            "name": "two clear groups leave the middle empty",
+            "count": 6,
+            "tierCount": 5,
+            "duels": [
+                [
+                    0,
+                    3
+                ],
+                [
+                    0,
+                    4
+                ],
+                [
+                    0,
+                    5
+                ],
+                [
+                    1,
+                    3
+                ],
+                [
+                    1,
+                    4
+                ],
+                [
+                    1,
+                    5
+                ],
+                [
+                    2,
+                    3
+                ],
+                [
+                    2,
+                    4
+                ],
+                [
+                    2,
+                    5
+                ]
+            ],
+            "expect": {
+                "order": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                ],
+                "logStrength": [
+                    0.903207055,
+                    0.903207055,
+                    0.903207055,
+                    -0.903207055,
+                    -0.903207055,
+                    -0.903207055
+                ],
+                "wins": [
+                    3,
+                    3,
+                    3,
+                    0,
+                    0,
+                    0
+                ],
+                "played": [
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    3
+                ],
+                "tiers": [
+                    [
+                        0,
+                        1,
+                        2
+                    ],
+                    [],
+                    [],
+                    [],
+                    [
+                        3,
+                        4,
+                        5
+                    ]
+                ],
+                "thin": false
+            }
+        },
+        {
+            "name": "an unbeaten card stays finite",
+            "count": 3,
+            "tierCount": 3,
+            "duels": [
+                [
+                    0,
+                    1
+                ],
+                [
+                    0,
+                    1
+                ],
+                [
+                    0,
+                    2
+                ],
+                [
+                    0,
+                    2
+                ],
+                [
+                    1,
+                    2
+                ]
+            ],
+            "expect": {
+                "order": [
+                    0,
+                    1,
+                    2
+                ],
+                "logStrength": [
+                    1.27256413,
+                    -0.171697505,
+                    -1.037473042
+                ],
+                "wins": [
+                    4,
+                    1,
+                    0
+                ],
+                "played": [
+                    4,
+                    3,
+                    3
+                ],
+                "tiers": [
+                    [
+                        0
+                    ],
+                    [
+                        1
+                    ],
+                    [
+                        2
+                    ]
+                ],
+                "thin": false
+            }
+        },
+        {
+            "name": "a cycle is a tie, broken by original order",
+            "count": 3,
+            "tierCount": 4,
+            "duels": [
+                [
+                    0,
+                    1
+                ],
+                [
+                    1,
+                    2
+                ],
+                [
+                    2,
+                    0
+                ]
+            ],
+            "expect": {
+                "order": [
+                    0,
+                    1,
+                    2
+                ],
+                "logStrength": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "wins": [
+                    1,
+                    1,
+                    1
+                ],
+                "played": [
+                    2,
+                    2,
+                    2
+                ],
+                "tiers": [
+                    [
+                        0,
+                        1,
+                        2
+                    ],
+                    [],
+                    [],
+                    []
+                ],
+                "thin": false
+            }
+        },
+        {
+            "name": "a single tier holds everything",
+            "count": 4,
+            "tierCount": 1,
+            "duels": [
+                [
+                    3,
+                    2
+                ],
+                [
+                    2,
+                    1
+                ],
+                [
+                    1,
+                    0
+                ]
+            ],
+            "expect": {
+                "order": [
+                    3,
+                    2,
+                    1,
+                    0
+                ],
+                "logStrength": [
+                    -0.742445198,
+                    -0.145577511,
+                    0.145577511,
+                    0.742445198
+                ],
+                "wins": [
+                    0,
+                    1,
+                    1,
+                    1
+                ],
+                "played": [
+                    1,
+                    2,
+                    2,
+                    1
+                ],
+                "tiers": [
+                    [
+                        3,
+                        2,
+                        1,
+                        0
+                    ]
+                ],
+                "thin": true
+            }
+        },
+        {
+            "name": "more tiers than cards",
+            "count": 3,
+            "tierCount": 6,
+            "duels": [
+                [
+                    2,
+                    1
+                ],
+                [
+                    2,
+                    0
+                ],
+                [
+                    1,
+                    0
+                ],
+                [
+                    2,
+                    1
+                ]
+            ],
+            "expect": {
+                "order": [
+                    2,
+                    1,
+                    0
+                ],
+                "logStrength": [
+                    -0.925948503,
+                    -0.18262999,
+                    1.162483119
+                ],
+                "wins": [
+                    0,
+                    1,
+                    3
+                ],
+                "played": [
+                    2,
+                    3,
+                    3
+                ],
+                "tiers": [
+                    [
+                        2
+                    ],
+                    [],
+                    [],
+                    [
+                        1
+                    ],
+                    [],
+                    [
+                        0
+                    ]
+                ],
+                "thin": false
+            }
+        }
+    ],
+    "games": [
+        {
+            "name": "hill, earlier card wins",
+            "kind": "hill",
+            "count": 7,
+            "seed": 7,
+            "refine": false,
+            "tierCount": 5,
+            "answers": "lowerWins",
+            "expect": {
+                "history": [
+                    [
+                        3,
+                        5,
+                        3
+                    ],
+                    [
+                        3,
+                        1,
+                        1
+                    ],
+                    [
+                        1,
+                        2,
+                        1
+                    ],
+                    [
+                        1,
+                        4,
+                        1
+                    ],
+                    [
+                        1,
+                        6,
+                        1
+                    ],
+                    [
+                        1,
+                        0,
+                        0
+                    ]
+                ],
+                "tiers": [
+                    [
+                        0,
+                        1
+                    ],
+                    [],
+                    [],
+                    [
+                        3,
+                        2,
+                        4,
+                        6,
+                        5
+                    ],
+                    []
+                ],
+                "thin": true
+            }
+        },
+        {
+            "name": "hill, later card wins, then close calls",
+            "kind": "hill",
+            "count": 7,
+            "seed": 7,
+            "refine": true,
+            "tierCount": 5,
+            "answers": "higherWins",
+            "expect": {
+                "history": [
+                    [
+                        3,
+                        5,
+                        5
+                    ],
+                    [
+                        5,
+                        1,
+                        5
+                    ],
+                    [
+                        5,
+                        2,
+                        5
+                    ],
+                    [
+                        5,
+                        4,
+                        5
+                    ],
+                    [
+                        5,
+                        6,
+                        6
+                    ],
+                    [
+                        6,
+                        0,
+                        6
+                    ],
+                    [
+                        0,
+                        1,
+                        1
+                    ],
+                    [
+                        2,
+                        3,
+                        3
+                    ],
+                    [
+                        6,
+                        4,
+                        6
+                    ]
+                ],
+                "tiers": [
+                    [
+                        6,
+                        5
+                    ],
+                    [],
+                    [
+                        1,
+                        3
+                    ],
+                    [],
+                    [
+                        4,
+                        0,
+                        2
+                    ]
+                ],
+                "thin": false
+            }
+        },
+        {
+            "name": "bracket of seven, earlier card wins",
+            "kind": "bracket",
+            "count": 7,
+            "seed": 42,
+            "refine": false,
+            "tierCount": 5,
+            "answers": "lowerWins",
+            "expect": {
+                "history": [
+                    [
+                        3,
+                        1,
+                        1
+                    ],
+                    [
+                        0,
+                        5,
+                        0
+                    ],
+                    [
+                        6,
+                        2,
+                        2
+                    ],
+                    [
+                        1,
+                        0,
+                        0
+                    ],
+                    [
+                        2,
+                        4,
+                        2
+                    ],
+                    [
+                        0,
+                        2,
+                        0
+                    ]
+                ],
+                "tiers": [
+                    [
+                        0
+                    ],
+                    [],
+                    [
+                        2,
+                        1
+                    ],
+                    [],
+                    [
+                        5,
+                        4,
+                        6,
+                        3
+                    ]
+                ],
+                "thin": true
+            }
+        },
+        {
+            "name": "bracket of eight with skips",
+            "kind": "bracket",
+            "count": 8,
+            "seed": 3,
+            "refine": false,
+            "tierCount": 4,
+            "answers": "script",
+            "script": [
+                "first",
+                "skip",
+                "second"
+            ],
+            "expect": {
+                "history": [
+                    [
+                        7,
+                        4,
+                        7
+                    ],
+                    [
+                        1,
+                        3,
+                        null
+                    ],
+                    [
+                        6,
+                        2,
+                        2
+                    ],
+                    [
+                        0,
+                        5,
+                        0
+                    ],
+                    [
+                        7,
+                        1,
+                        null
+                    ],
+                    [
+                        2,
+                        0,
+                        0
+                    ],
+                    [
+                        1,
+                        0,
+                        1
+                    ]
+                ],
+                "tiers": [
+                    [
+                        1,
+                        7,
+                        0
+                    ],
+                    [],
+                    [
+                        3,
+                        2
+                    ],
+                    [
+                        4,
+                        5,
+                        6
+                    ]
+                ],
+                "thin": true
+            }
+        },
+        {
+            "name": "swiss of five, earlier card wins",
+            "kind": "swiss",
+            "count": 5,
+            "seed": 1,
+            "refine": false,
+            "tierCount": 5,
+            "answers": "lowerWins",
+            "expect": {
+                "history": [
+                    [
+                        0,
+                        1,
+                        0
+                    ],
+                    [
+                        2,
+                        3,
+                        2
+                    ],
+                    [
+                        0,
+                        2,
+                        0
+                    ],
+                    [
+                        1,
+                        3,
+                        1
+                    ],
+                    [
+                        0,
+                        3,
+                        0
+                    ],
+                    [
+                        1,
+                        2,
+                        1
+                    ],
+                    [
+                        0,
+                        4,
+                        0
+                    ],
+                    [
+                        1,
+                        4,
+                        1
+                    ]
+                ],
+                "tiers": [
+                    [
+                        0
+                    ],
+                    [
+                        1
+                    ],
+                    [],
+                    [
+                        2,
+                        4,
+                        3
+                    ],
+                    []
+                ],
+                "thin": false
+            }
+        },
+        {
+            "name": "swiss of nine, later card wins, then close calls",
+            "kind": "swiss",
+            "count": 9,
+            "seed": 99,
+            "refine": true,
+            "tierCount": 5,
+            "answers": "higherWins",
+            "expect": {
+                "history": [
+                    [
+                        0,
+                        1,
+                        1
+                    ],
+                    [
+                        2,
+                        3,
+                        3
+                    ],
+                    [
+                        4,
+                        5,
+                        5
+                    ],
+                    [
+                        6,
+                        7,
+                        7
+                    ],
+                    [
+                        1,
+                        3,
+                        3
+                    ],
+                    [
+                        5,
+                        7,
+                        7
+                    ],
+                    [
+                        0,
+                        2,
+                        2
+                    ],
+                    [
+                        4,
+                        6,
+                        6
+                    ],
+                    [
+                        3,
+                        7,
+                        7
+                    ],
+                    [
+                        1,
+                        2,
+                        2
+                    ],
+                    [
+                        5,
+                        6,
+                        6
+                    ],
+                    [
+                        0,
+                        4,
+                        4
+                    ],
+                    [
+                        7,
+                        2,
+                        7
+                    ],
+                    [
+                        3,
+                        6,
+                        6
+                    ],
+                    [
+                        1,
+                        4,
+                        4
+                    ],
+                    [
+                        5,
+                        0,
+                        5
+                    ],
+                    [
+                        7,
+                        4,
+                        7
+                    ],
+                    [
+                        6,
+                        2,
+                        6
+                    ],
+                    [
+                        3,
+                        5,
+                        5
+                    ],
+                    [
+                        1,
+                        8,
+                        8
+                    ],
+                    [
+                        7,
+                        1,
+                        7
+                    ],
+                    [
+                        6,
+                        8,
+                        8
+                    ],
+                    [
+                        5,
+                        2,
+                        5
+                    ],
+                    [
+                        3,
+                        4,
+                        4
+                    ],
+                    [
+                        7,
+                        8,
+                        8
+                    ]
+                ],
+                "tiers": [
+                    [
+                        8,
+                        7
+                    ],
+                    [
+                        6,
+                        5
+                    ],
+                    [
+                        4,
+                        3,
+                        2
+                    ],
+                    [],
+                    [
+                        1,
+                        0
+                    ]
+                ],
+                "thin": false
+            }
+        },
+        {
+            "name": "swiss of two runs out of new pairs",
+            "kind": "swiss",
+            "count": 2,
+            "seed": 5,
+            "refine": false,
+            "tierCount": 3,
+            "answers": "lowerWins",
+            "expect": {
+                "history": [
+                    [
+                        0,
+                        1,
+                        0
+                    ]
+                ],
+                "tiers": [
+                    [
+                        0
+                    ],
+                    [],
+                    [
+                        1
+                    ]
+                ],
+                "thin": true
+            }
+        },
+        {
+            "name": "bracket of sixteen is held to three groups by thin evidence",
+            "kind": "bracket",
+            "count": 16,
+            "seed": 1,
+            "refine": false,
+            "tierCount": 8,
+            "answers": "lowerWins",
+            "expect": {
+                "history": [
+                    [
+                        4,
+                        13,
+                        4
+                    ],
+                    [
+                        1,
+                        14,
+                        1
+                    ],
+                    [
+                        5,
+                        2,
+                        2
+                    ],
+                    [
+                        8,
+                        15,
+                        8
+                    ],
+                    [
+                        9,
+                        6,
+                        6
+                    ],
+                    [
+                        3,
+                        11,
+                        3
+                    ],
+                    [
+                        12,
+                        7,
+                        7
+                    ],
+                    [
+                        0,
+                        10,
+                        0
+                    ],
+                    [
+                        4,
+                        1,
+                        1
+                    ],
+                    [
+                        2,
+                        8,
+                        2
+                    ],
+                    [
+                        6,
+                        3,
+                        3
+                    ],
+                    [
+                        7,
+                        0,
+                        0
+                    ],
+                    [
+                        1,
+                        2,
+                        1
+                    ],
+                    [
+                        3,
+                        0,
+                        0
+                    ],
+                    [
+                        1,
+                        0,
+                        0
+                    ]
+                ],
+                "tiers": [
+                    [
+                        0,
+                        1
+                    ],
+                    [],
+                    [],
+                    [],
+                    [
+                        3,
+                        2,
+                        7,
+                        4,
+                        6,
+                        8
+                    ],
+                    [],
+                    [],
+                    [
+                        10,
+                        14,
+                        11,
+                        5,
+                        12,
+                        13,
+                        9,
+                        15
+                    ]
+                ],
+                "thin": true
+            }
+        }
+    ],
+    "refine": [
+        {
+            "name": "on equal gaps the card above wins",
+            "count": 5,
+            "history": [
+                [
+                    0,
+                    1,
+                    0
+                ],
+                [
+                    1,
+                    2,
+                    1
+                ],
+                [
+                    2,
+                    0,
+                    2
+                ]
+            ],
+            "expect": {
+                "pairs": [
+                    [
+                        2,
+                        3
+                    ],
+                    [
+                        1,
+                        4
+                    ]
+                ]
+            }
+        }
+    ]
+}
