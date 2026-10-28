@@ -308,14 +308,34 @@ class TierDetailViewModelTest {
         )
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
 
-        viewModel.setCategory(ListCategory.Food)
+        viewModel.setCategory(ListCategory.Food.id)
         viewModel.board.firstWithin {
-            (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food
+            (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food.id
         }
         viewModel.setPublic(true)
         viewModel.screen.firstWithin { !it.publish.publishing }
 
-        assertEquals(ListCategory.Food, community.published.single().category)
+        assertEquals(ListCategory.Food.id, community.published.single().category)
+    }
+
+    @Test
+    fun aSectionOfSomebodysOwn_isKeptAndPublishedByItsId() = runBlocking {
+        val repository = FakeTierRepository(listWithOneCard().copy(category = null))
+        val community = FakeCommunityRepositoryForDetail()
+        val viewModel = TierDetailViewModel(
+            repository,
+            community,
+            FakeAccountRepository(FakeAccountRepository.signedIn),
+            savedStateHandle(),
+        )
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+
+        viewModel.setCategory("street-food")
+        viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.category == "street-food" }
+        viewModel.setPublic(true)
+        viewModel.screen.firstWithin { !it.publish.publishing }
+
+        assertEquals("street-food", community.published.single().category)
     }
 
     // The whole point of asking: choosing finishes what the switch started, so
@@ -332,12 +352,12 @@ class TierDetailViewModelTest {
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
         viewModel.setPublic(true)
 
-        viewModel.setCategory(ListCategory.Food)
+        viewModel.setCategory(ListCategory.Food.id)
         // Waiting for the published id rather than for the pending flag to
         // clear: the flag has not been raised yet when setCategory returns.
         viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.publishedId != null }
 
-        assertEquals(ListCategory.Food, community.published.single().category)
+        assertEquals(ListCategory.Food.id, community.published.single().category)
         assertFalse(viewModel.screen.value.publish.categoryWanted)
     }
 
@@ -354,8 +374,8 @@ class TierDetailViewModelTest {
         )
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
 
-        viewModel.setCategory(ListCategory.Food)
-        viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food }
+        viewModel.setCategory(ListCategory.Food.id)
+        viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food.id }
 
         assertEquals(0, community.published.size)
     }
@@ -376,8 +396,8 @@ class TierDetailViewModelTest {
         viewModel.setPublic(true)
         viewModel.screen.firstWithin { !it.publish.publishing }
 
-        viewModel.setCategory(ListCategory.Food)
-        viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food }
+        viewModel.setCategory(ListCategory.Food.id)
+        viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food.id }
 
         assertEquals(PublishError.TooManyLists, viewModel.screen.value.publish.error)
     }
@@ -456,7 +476,7 @@ class TierDetailViewModelTest {
     private fun listWithOneCard(): TierList = TierList(
         id = 1,
         title = "Sci-fi films",
-        category = ListCategory.FilmTv,
+        category = ListCategory.FilmTv.id,
         tiers = listOf(
             Tier(
                 id = 10,
@@ -507,7 +527,7 @@ private class FakeTierRepository(
 
     override suspend fun setFavouritedAt(id: Long, at: Long?) = Unit
 
-    override suspend fun setCategory(id: Long, category: ListCategory?) {
+    override suspend fun setCategory(id: Long, category: String?) {
         list = list.copy(category = category)
     }
 

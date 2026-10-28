@@ -46,7 +46,7 @@ class EditorialAuthorsTest {
         title = "A list",
         authorUid = authorUid,
         authorName = "Someone",
-        category = ListCategory.Other,
+        category = ListCategory.Other.id,
         itemCount = 1,
         updatedAtMillis = 0,
         anonymous = anonymous,

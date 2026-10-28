@@ -15,6 +15,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSectio
 import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
+import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.summary
@@ -37,20 +38,20 @@ class FollowingFeedViewModelTest {
     @get:Rule
     val main = MainDispatcherRule()
 
-    private val pokemon = Topic(id = "t1", name = "Pokémon", section = ListCategory.Games, status = TopicStatus.Approved)
+    private val pokemon = Topic(id = "t1", name = "Pokémon", section = ListCategory.Games.id, status = TopicStatus.Approved)
 
     @Test
     fun aFollowedPerson_needsNoLine_thenATopic_thenASection() {
         val following = Following(
             authors = listOf(FollowedAuthor("ann", "Ann", null)),
             topics = listOf(pokemon),
-            sections = listOf(FollowedSection(ListCategory.Food)),
+            sections = listOf(FollowedSection(ListCategory.Food.id)),
         )
 
-        assertNull(reasonFor(summary("1", ListCategory.Food, author = "ann", topicId = "t1"), following))
-        assertEquals(FeedReason.InTopic("Topic t1"), reasonFor(summary("2", ListCategory.Food, topicId = "t1"), following))
-        assertEquals(FeedReason.InSection(ListCategory.Food), reasonFor(summary("3", ListCategory.Food), following))
-        assertNull(reasonFor(summary("4", ListCategory.Games), following))
+        assertNull(reasonFor(summary("1", ListCategory.Food.id, author = "ann", topicId = "t1"), following))
+        assertEquals(FeedReason.InTopic("Topic t1"), reasonFor(summary("2", ListCategory.Food.id, topicId = "t1"), following))
+        assertEquals(FeedReason.InSection(ListCategory.Food.id), reasonFor(summary("3", ListCategory.Food.id), following))
+        assertNull(reasonFor(summary("4", ListCategory.Games.id), following))
     }
 
     private inner class Community(
@@ -65,7 +66,7 @@ class FollowingFeedViewModelTest {
         override suspend fun myTopics(): Result<List<Topic>> = Result.success(mine)
 
         override suspend fun feed(
-            category: ListCategory?,
+            category: String?,
             query: String?,
             author: String?,
             after: String?,
@@ -75,10 +76,10 @@ class FollowingFeedViewModelTest {
         ): Result<CommunityPage> {
             feeds += following to sort
             val nobody = this.following.sections.isEmpty() && this.following.authors.isEmpty()
-            return Result.success(CommunityPage(if (nobody) emptyList() else listOf(summary("x", ListCategory.Food)), followingNobody = nobody))
+            return Result.success(CommunityPage(if (nobody) emptyList() else listOf(summary("x", ListCategory.Food.id)), followingNobody = nobody))
         }
 
-        override suspend fun followSection(section: ListCategory): Result<Unit> {
+        override suspend fun followSection(section: String): Result<Unit> {
             if (followFails) return Result.failure(IOException("offline"))
             following = following.copy(sections = following.sections + FollowedSection(section))
             return Result.success(Unit)
@@ -93,7 +94,7 @@ class FollowingFeedViewModelTest {
     }
 
     private fun viewModel(community: FakeCommunityRepository) =
-        FollowingFeedViewModel(community, FakeCommunityFeedCache(), FakeCommunityNetwork(), FakeAppPreferences(), FakeCommunityClock()).also { made += it }
+        FollowingFeedViewModel(community, FakeCommunityFeedCache(), FakeCommunityNetwork(), FakeAppPreferences(), FakeCommunityClock(), sectionCatalogFor(community)).also { made += it }
 
     @Test
     fun followingNothing_offersTheSections_andOneTapMakesItAFeed() = runBlocking {
@@ -102,8 +103,8 @@ class FollowingFeedViewModelTest {
         viewModel.open()
         assertTrue(viewModel.state.firstWithin { it.following != null && it.feed.phase == FeedPhase.Ready }.followsNothing)
 
-        viewModel.quickFollow(ListCategory.Food)
-        viewModel.state.firstWithin { ListCategory.Food in it.quickFollowed }
+        viewModel.quickFollow(ListCategory.Food.id)
+        viewModel.state.firstWithin { ListCategory.Food.id in it.quickFollowed }
 
         val after = viewModel.state.firstWithin { it.feed.lists.isNotEmpty() }
         assertFalse(after.followsNothing)
@@ -116,10 +117,10 @@ class FollowingFeedViewModelTest {
         viewModel.open()
         viewModel.state.firstWithin { it.following != null }
 
-        viewModel.quickFollow(ListCategory.Sport)
+        viewModel.quickFollow(ListCategory.Sport.id)
 
         assertEquals(CommunityNotice.FollowFailed, withTimeout(5_000) { viewModel.notices.first() })
-        viewModel.state.firstWithin { ListCategory.Sport !in it.quickFollowed }
+        viewModel.state.firstWithin { ListCategory.Sport.id !in it.quickFollowed }
         Unit
     }
 

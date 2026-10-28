@@ -58,7 +58,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.feed.component
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.FollowingNobody
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.YourTopicsRow
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.groupedByDay
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import java.time.LocalDate
@@ -90,8 +90,8 @@ private const val LOAD_MORE_ROWS_AHEAD = 4
 @Composable
 internal fun CommunityFeedList(
     feed: CommunityFeed,
-    category: ListCategory?,
-    onSelectCategory: (ListCategory?) -> Unit,
+    category: String?,
+    onSelectCategory: (String?) -> Unit,
     onOpen: (PublishedListSummary) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
@@ -443,7 +443,7 @@ private val previewFeed = CommunityFeed.Ready(
             title = "Every A24 film",
             authorUid = "u1",
             authorName = "Olena M.",
-            category = ListCategory.FilmTv,
+            category = ListCategory.FilmTv.id,
             itemCount = 34,
             tierColors = listOf("#B03A32", "#C06A25", "#B79A1F", "#5E8C3A", "#2F6E8F"),
             updatedAtMillis = 0,
@@ -453,7 +453,7 @@ private val previewFeed = CommunityFeed.Ready(
             title = "Ramen in Kyiv",
             authorUid = "u2",
             authorName = "Taras",
-            category = ListCategory.Food,
+            category = ListCategory.Food.id,
             itemCount = 12,
             tierColors = listOf("#B03A32", "#C06A25", "#B79A1F"),
             updatedAtMillis = 0,
@@ -478,7 +478,7 @@ private fun CommunityFeedPreview() = TierYourLifeTheme(false) {
 private fun CommunityFeedDarkPreview() = TierYourLifeTheme(true) {
     CommunityFeedList(
         feed = previewFeed,
-        category = ListCategory.Food,
+        category = ListCategory.Food.id,
         onSelectCategory = {},
         onOpen = {},
         onRetry = {},
@@ -545,10 +545,10 @@ internal data class FeedControls(
 )
 
 @Composable
-private fun followingEmptyTitle(category: ListCategory?, filter: FollowingFilter): String = when {
+private fun followingEmptyTitle(category: String?, filter: FollowingFilter): String = when {
     filter == FollowingFilter.Topics -> stringResource(R.string.home_following_empty_topics)
     category == null -> stringResource(R.string.home_following_empty_all)
-    else -> stringResource(R.string.home_following_empty, stringResource(category.labelRes))
+    else -> stringResource(R.string.home_following_empty, sectionLabel(category))
 }
 
 /** The strip stays while a narrowed page is empty: Manage lives there, and so do the chips the page is narrowed to. */

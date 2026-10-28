@@ -302,4 +302,17 @@
         <item quantity="other">%1$d مفتوحة</item>
     </plurals>
     <string name="moderation_refresh">تحديث</string>
+    <string name="all_sections_title">كل الأقسام</string>
+    <plurals name="all_sections_count">
+        <item quantity="zero">لا أقسام</item>
+        <item quantity="one">قسم واحد</item>
+        <item quantity="two">قسمان</item>
+        <item quantity="few">%1$s أقسام</item>
+        <item quantity="many">%1$s قسمًا</item>
+        <item quantity="other">%1$s قسم</item>
+    </plurals>
+    <string name="all_sections_sort_most_lists">الأكثر قوائم</string>
+    <string name="all_sections_sort_name">أ–ي</string>
+    <string name="all_sections_find">ابحث عن قسم</string>
+    <string name="all_sections_propose">اقترح قسمًا</string>
 </resources>

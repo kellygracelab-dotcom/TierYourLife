@@ -13,7 +13,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.core.theme.ui.CoverSurface
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
-import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -38,7 +38,7 @@ private fun game(id: String, title: String, author: String, takes: Int) = Publis
     title = title,
     authorUid = "u-$author",
     authorName = author,
-    category = ListCategory.Games,
+    category = ListCategory.Games.id,
     itemCount = 20,
     tierColors = Bands,
     updatedAtMillis = 0,
@@ -46,8 +46,9 @@ private fun game(id: String, title: String, author: String, takes: Int) = Publis
 )
 
 private val games = SectionUiState(
-    section = ListCategory.Games,
-    stats = SectionStats(ListCategory.Games, listCount = 812, followerCount = 3410),
+    sectionId = ListCategory.Games.id,
+    section = Section.builtIn(ListCategory.Games).copy(listCount = 812, followerCount = 3410),
+    countsKnown = true,
     feed = FeedPane(
         phase = FeedPhase.Ready,
         lists = listOf(

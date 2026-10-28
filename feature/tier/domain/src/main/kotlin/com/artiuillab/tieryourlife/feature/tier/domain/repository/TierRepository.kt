@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.repository
 
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -47,7 +46,7 @@ interface TierRepository {
     /** The board this published copy came from, if this phone still has it. */
     suspend fun boardPublishedAs(publishedId: String): TierList?
 
-    suspend fun setCategory(id: Long, category: ListCategory?)
+    suspend fun setCategory(id: Long, category: String?)
 
     /** Starred at [at], or unstarred when it is null. */
     suspend fun setFavouritedAt(id: Long, at: Long?)

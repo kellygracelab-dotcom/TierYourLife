@@ -16,9 +16,9 @@ import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 
-private val oscars = Topic(id = "t1", name = "Oscars", section = ListCategory.FilmTv, status = TopicStatus.Approved, listCount = 41)
-private val snubs = Topic(id = "t2", name = "Oscar snubs", section = ListCategory.FilmTv, status = TopicStatus.Approved, listCount = 6)
-private val pixar = Topic(id = "t3", name = "Pixar", section = ListCategory.FilmTv, status = TopicStatus.Approved, listCount = 12)
+private val oscars = Topic(id = "t1", name = "Oscars", section = ListCategory.FilmTv.id, status = TopicStatus.Approved, listCount = 41)
+private val snubs = Topic(id = "t2", name = "Oscar snubs", section = ListCategory.FilmTv.id, status = TopicStatus.Approved, listCount = 6)
+private val pixar = Topic(id = "t3", name = "Pixar", section = ListCategory.FilmTv.id, status = TopicStatus.Approved, listCount = 12)
 
 private fun pending(n: Int) = Topic(id = "p$n", name = "Waiting $n", section = null, status = TopicStatus.Pending, createdBy = "me")
 
@@ -140,7 +140,7 @@ class TopicPickerViewModelTest {
     @Test
     fun aWaitingTopic_opensAsWaiting_untilTheServerSaysItIsApproved() = runBlocking {
         val repository = RecordingTierRepository(boards = listOf(board(topicId = "p1", topicName = "Waiting 1", newTopicName = "Waiting 1")))
-        val approved = pending(1).copy(status = TopicStatus.Approved, section = ListCategory.Games)
+        val approved = pending(1).copy(status = TopicStatus.Approved, section = ListCategory.Games.id)
         val picker = pickerFor(repository, TopicsFake(mine = listOf(approved)))
 
         val chosen = picker.state.firstWithin { (it.chosen as? TopicChoice.Known)?.topic?.status == TopicStatus.Approved }.chosen
@@ -169,7 +169,7 @@ class TopicPickerViewModelTest {
         id = 1,
         title = title,
         tiers = emptyList(),
-        category = ListCategory.FilmTv,
+        category = ListCategory.FilmTv.id,
         topicId = topicId,
         topicName = topicName,
         newTopicName = newTopicName,
@@ -191,7 +191,7 @@ private class TopicsFake(
 ) : FakeCommunityRepository() {
     val queries = mutableListOf<String?>()
 
-    override suspend fun topics(query: String?, section: ListCategory?): Result<List<Topic>> {
+    override suspend fun topics(query: String?, section: String?): Result<List<Topic>> {
         queries += query
         val wanted = query?.lowercase()
         return Result.success(if (wanted == null) found else found.filter { it.name.lowercase().startsWith(wanted) })

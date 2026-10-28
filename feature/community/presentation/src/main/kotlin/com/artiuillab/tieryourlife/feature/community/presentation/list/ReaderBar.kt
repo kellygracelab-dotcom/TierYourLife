@@ -26,7 +26,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.BookmarkAddIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorPill
 import com.artiuillab.tieryourlife.feature.tier.board.BoardBar
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 
 private val BAR_BUTTON_HEIGHT = 36.dp
 private val BAR_SWITCH_HEIGHT = 32.dp
@@ -124,7 +124,7 @@ private fun SaveInBar(state: CommunityListUiState.Success, mode: BoardBar, onSav
 /** A tablet's line under the title: who made the list and in which section, a tap away from their profile. */
 @Composable
 internal fun AuthorAndSection(state: CommunityListUiState.Success, onOpenAuthor: () -> Unit) {
-    val section = state.section?.let { stringResource(it.labelRes) }
+    val section = state.section?.let { sectionLabel(it) }
     val text = listOfNotNull(state.authorName.takeUnless { state.editorial }, section).joinToString(" · ") + " ›"
     Text(
         text = text,

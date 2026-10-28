@@ -107,10 +107,10 @@ class ModerationViewModelTest {
         val viewModel = ModerationViewModel(repository)
         viewModel.state.firstWithin { it is ModerationUiState.Ready }
 
-        viewModel.move("a", ListCategory.Games)
+        viewModel.move("a", ListCategory.Games.id)
         viewModel.state.firstWithin { (it as? ModerationUiState.Ready)?.reports?.isEmpty() == true }
 
-        assertEquals(listOf("a" to ListCategory.Games), repository.moved)
+        assertEquals(listOf("a" to ListCategory.Games.id), repository.moved)
         assertEquals(listOf("a"), repository.dismissed)
     }
 
@@ -153,9 +153,9 @@ private class FakeModerationRepository(
 ) : FakeCommunityRepository() {
     val takenDown = mutableListOf<String>()
     val dismissed = mutableListOf<String>()
-    val moved = mutableListOf<Pair<String, ListCategory>>()
+    val moved = mutableListOf<Pair<String, String>>()
 
-    override suspend fun moveList(publishedId: String, category: ListCategory, topicId: String?): Result<Unit> {
+    override suspend fun moveList(publishedId: String, category: String, topicId: String?): Result<Unit> {
         if (actionsFail) return Result.failure(IllegalStateException("offline"))
         moved += publishedId to category
         return Result.success(Unit)

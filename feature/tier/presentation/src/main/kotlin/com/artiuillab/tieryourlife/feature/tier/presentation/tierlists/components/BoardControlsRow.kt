@@ -35,7 +35,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.FilterIcon
 import com.artiuillab.tieryourlife.core.theme.ui.HomeIconButton
 import com.artiuillab.tieryourlife.core.theme.ui.PicturesIcon
 import com.artiuillab.tieryourlife.core.theme.ui.RowsIcon
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.PublishedFilter
@@ -162,7 +162,7 @@ private fun AppliedFilterChip(
     FilterChip(
         selected = true,
         onClick = if (applied.key == CATEGORY_KEY) onClearCategory else onClearPublished,
-        label = { Text(stringResource(applied.labelRes)) },
+        label = { Text(applied.label()) },
         trailingIcon = { ClearIcon(18.dp, MaterialTheme.colorScheme.onSecondaryContainer) },
         modifier = Modifier.testTag(TierListsTestTags.appliedFilter(applied.key)),
     )
@@ -171,16 +171,20 @@ private fun AppliedFilterChip(
 private const val CATEGORY_KEY = "category"
 private const val PUBLISHED_KEY = "published"
 
-private data class AppliedFilter(val key: String, val labelRes: Int)
+/** A chip that undoes one filter: a section by its id, or the visibility by its words. */
+private data class AppliedFilter(val key: String, val sectionId: String? = null, val labelRes: Int = 0) {
+    @Composable
+    fun label(): String = sectionId?.let { sectionLabel(it) } ?: stringResource(labelRes)
+}
 
 /** The filters that are on, as the chips that undo them. */
 private fun BoardFilters.applied(): List<AppliedFilter> = buildList {
-    category?.let { add(AppliedFilter(CATEGORY_KEY, it.labelRes)) }
+    category?.let { add(AppliedFilter(CATEGORY_KEY, sectionId = it)) }
     published?.let {
         add(
             AppliedFilter(
                 PUBLISHED_KEY,
-                if (it == PublishedFilter.Public) R.string.lists_filter_public else R.string.lists_filter_private,
+                labelRes = if (it == PublishedFilter.Public) R.string.lists_filter_public else R.string.lists_filter_private,
             ),
         )
     }

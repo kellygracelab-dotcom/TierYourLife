@@ -21,17 +21,19 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.board.common.choosableSections
+import com.artiuillab.tieryourlife.feature.tier.board.common.label
 
+/** Every section a list may be filed under; [selected] and what [onSelect] gets are section ids. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategorySheet(
-    selected: ListCategory?,
+    selected: String?,
     onDismiss: () -> Unit,
-    onSelect: (ListCategory) -> Unit,
+    onSelect: (String) -> Unit,
 ) {
     AdaptiveSheet(
         onDismiss = onDismiss,
@@ -51,11 +53,11 @@ fun CategorySheet(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            ListCategory.entries.forEach { category ->
+            choosableSections().forEach { section ->
                 CategoryRow(
-                    category = category,
-                    selected = category == selected,
-                    onClick = { onSelect(category) },
+                    section = section,
+                    selected = section.id == selected,
+                    onClick = { onSelect(section.id) },
                 )
             }
         }
@@ -63,18 +65,18 @@ fun CategorySheet(
 }
 
 @Composable
-private fun CategoryRow(category: ListCategory, selected: Boolean, onClick: () -> Unit) {
+private fun CategoryRow(section: Section, selected: Boolean, onClick: () -> Unit) {
     androidx.compose.foundation.layout.Row(
         modifier = Modifier
             .fillMaxWidth()
             .selectable(selected = selected, onClick = onClick, role = Role.RadioButton)
-            .testTag(TierDetailTestTags.categoryRow(category))
+            .testTag(TierDetailTestTags.categoryRow(section.id))
             .padding(horizontal = 24.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioButton(selected = selected, onClick = null)
         Text(
-            text = stringResource(category.labelRes),
+            text = section.label(),
             modifier = Modifier.padding(start = 16.dp),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,

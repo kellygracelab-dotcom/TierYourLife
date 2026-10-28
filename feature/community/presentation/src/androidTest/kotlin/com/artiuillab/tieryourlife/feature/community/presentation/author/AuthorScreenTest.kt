@@ -129,7 +129,7 @@ class AuthorScreenTest {
         title = title,
         authorUid = "author-1",
         authorName = "Olena M.",
-        category = ListCategory.FilmTv,
+        category = ListCategory.FilmTv.id,
         itemCount = 12,
         updatedAtMillis = 0,
     )

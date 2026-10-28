@@ -27,7 +27,7 @@ class PublishFingerprintTest {
 
     @Test
     fun movingToAnotherCategory_showsUp() {
-        assertNotEquals(print(board()), print(board(category = ListCategory.Anime)))
+        assertNotEquals(print(board()), print(board(category = ListCategory.Anime.id)))
     }
 
     @Test
@@ -102,7 +102,7 @@ class PublishFingerprintTest {
 
     private fun board(
         title: String = "Sci-fi films",
-        category: ListCategory? = ListCategory.FilmTv,
+        category: String? = ListCategory.FilmTv.id,
         cover: String? = "https://example.test/cover.jpg",
         collage: List<String> = emptyList(),
         mode: TierListDisplayMode = TierListDisplayMode.WRAP,

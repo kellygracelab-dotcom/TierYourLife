@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.community.domain.model
 
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 
@@ -10,7 +9,8 @@ data class PublishedListSummary(
     val authorUid: String,
     val authorName: String,
     val authorPhotoUrl: String? = null,
-    val category: ListCategory,
+    /** A section id; Other's when the server named none. */
+    val category: String,
     val itemCount: Int,
     val coverImageUrl: String? = null,
     /** Card art the feed draws a mosaic from when there is no cover. */

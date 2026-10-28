@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.domain
 
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -57,7 +56,7 @@ class RecordingTierRepository(
 
     override suspend fun setFavouritedAt(id: Long, at: Long?) = Unit
 
-    override suspend fun setCategory(id: Long, category: ListCategory?) = Unit
+    override suspend fun setCategory(id: Long, category: String?) = Unit
 
     val covers = mutableListOf<Pair<Long, List<String>>>()
 

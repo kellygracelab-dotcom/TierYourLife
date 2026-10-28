@@ -224,7 +224,7 @@ class EveryScreenInEveryLanguageTest {
         title = "Every A24 film, ranked by how much I cried",
         authorUid = "u1",
         authorName = "Olena Marchuk",
-        category = ListCategory.FilmTv,
+        category = ListCategory.FilmTv.id,
         itemCount = 24,
         updatedAtMillis = 0,
     )

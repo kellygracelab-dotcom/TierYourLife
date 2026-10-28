@@ -250,4 +250,13 @@
         <item quantity="other">%1$d açık</item>
     </plurals>
     <string name="moderation_refresh">Yenile</string>
+    <string name="all_sections_title">Tüm bölümler</string>
+    <plurals name="all_sections_count">
+        <item quantity="one">%1$s bölüm</item>
+        <item quantity="other">%1$s bölüm</item>
+    </plurals>
+    <string name="all_sections_sort_most_lists">En çok liste</string>
+    <string name="all_sections_sort_name">A–Z</string>
+    <string name="all_sections_find">Bölüm bul</string>
+    <string name="all_sections_propose">Bölüm öner</string>
 </resources>

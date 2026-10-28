@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.lists
 
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 /** Order and filters for somebody's own boards. Pure, so the rules are argued with in a unit test. */
@@ -57,7 +56,8 @@ enum class BoardSort {
 
 /** No "favourites" value: starred boards are already pinned, and a filter for them would contradict the pinning. */
 data class BoardFilters(
-    val category: ListCategory? = null,
+    /** A section id. */
+    val category: String? = null,
     val published: PublishedFilter? = null,
 ) {
     val any: Boolean get() = category != null || published != null

@@ -6,7 +6,6 @@ import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -131,7 +130,7 @@ private class FailingTierRepository(
 
     override suspend fun setFavouritedAt(id: Long, at: Long?) = Unit
 
-    override suspend fun setCategory(id: Long, category: ListCategory?) = Unit
+    override suspend fun setCategory(id: Long, category: String?) = Unit
 
     override suspend fun setCover(id: Long, pictures: List<String>) = Unit
     override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) = Unit

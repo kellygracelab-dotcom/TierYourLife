@@ -86,7 +86,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.moderation.com
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.components.chipsItem
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.components.stateItem
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.CategorySheet
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
@@ -138,12 +137,12 @@ fun ModerationScreenContent(
     onUndoTakeDown: () -> Unit = {},
     onConfirmTakeDown: () -> Unit = {},
     onDismiss: (String) -> Unit = {},
-    onMove: (String, ListCategory) -> Unit = { _, _ -> },
+    onMove: (String, String) -> Unit = { _, _ -> },
     onRetry: () -> Unit = {},
     onOpenList: (String) -> Unit = {},
     onLook: (String) -> Unit = {},
     topics: TopicQueueUiState = TopicQueueUiState.Loading,
-    onApproveTopic: (String, ListCategory) -> Unit = { _, _ -> },
+    onApproveTopic: (String, String) -> Unit = { _, _ -> },
     onRenameTopic: (String, String) -> Unit = { _, _ -> },
     onMergeTopic: (String, String) -> Unit = { _, _ -> },
     onRejectTopic: (String) -> Unit = {},
@@ -286,12 +285,12 @@ private data class Queues(
 private data class ReportActions(
     val onTakeDown: (ModerationReport) -> Unit,
     val onDismiss: (String) -> Unit,
-    val onMove: (String, ListCategory) -> Unit,
+    val onMove: (String, String) -> Unit,
     val onRetry: () -> Unit,
 )
 
 private data class TopicActions(
-    val onApprove: (String, ListCategory) -> Unit,
+    val onApprove: (String, String) -> Unit,
     val onRename: (String, String) -> Unit,
     val onMerge: (String, String) -> Unit,
     val onReject: (String) -> Unit,
@@ -517,7 +516,7 @@ private fun ReportCard(
     onOpen: () -> Unit,
     onTakeDown: () -> Unit,
     onDismiss: () -> Unit,
-    onMove: (ListCategory) -> Unit,
+    onMove: (String) -> Unit,
 ) {
     var moving by rememberSaveable { mutableStateOf(false) }
     Column(

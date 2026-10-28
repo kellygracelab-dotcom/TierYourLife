@@ -16,7 +16,7 @@ class KeptPageTest {
         title = "List $n",
         authorUid = "u$n",
         authorName = "Author $n",
-        category = ListCategory.Food,
+        category = ListCategory.Food.id,
         itemCount = n,
         previewImages = listOf("https://p/$n"),
         tierColors = listOf("#B03A32"),

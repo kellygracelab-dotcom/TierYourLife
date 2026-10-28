@@ -34,11 +34,11 @@ class TopicQueueViewModelTest {
         val viewModel = TopicQueueViewModel(repository, OwnerMemory())
         viewModel.topics.firstWithin { it is TopicQueueUiState.Ready }
 
-        viewModel.approveTopic("t1", ListCategory.Games)
+        viewModel.approveTopic("t1", ListCategory.Games.id)
         val left = viewModel.topics.firstWithin { it.settled() && (it as TopicQueueUiState.Ready).pending.size == 1 }
 
         assertEquals(listOf("t2"), (left as TopicQueueUiState.Ready).pending.map { it.topic.id })
-        assertEquals(listOf("t1" to ListCategory.Games), repository.approved)
+        assertEquals(listOf("t1" to ListCategory.Games.id), repository.approved)
     }
 
     // Renaming decides nothing: the row stays, under the new name, for the decision still to come.
@@ -114,7 +114,7 @@ class TopicQueueViewModelTest {
     private fun proposed(id: String) = PendingTopic(
         topic = Topic(id = id, name = "Topic $id", section = null, status = TopicStatus.Pending, createdBy = "u1"),
         proposerName = "Ann",
-        requestedSection = ListCategory.Games,
+        requestedSection = ListCategory.Games.id,
     )
 
     private fun moderator(uid: String) = Moderator(uid = uid, name = "Mod $uid", photoUrl = null, appointedAtMillis = 0)
@@ -128,14 +128,14 @@ private class TopicsFake(
     private val moderators: List<Moderator>? = null,
     private val actionsFail: Boolean = false,
 ) : FakeCommunityRepository() {
-    val approved = mutableListOf<Pair<String, ListCategory>>()
+    val approved = mutableListOf<Pair<String, String>>()
     val rejected = mutableListOf<String>()
     val appointed = mutableListOf<Pair<String, String?>>()
     val removed = mutableListOf<String>()
 
     override suspend fun pendingTopics(): Result<List<PendingTopic>> = Result.success(topics)
 
-    override suspend fun approveTopic(id: String, section: ListCategory): Result<Topic> {
+    override suspend fun approveTopic(id: String, section: String): Result<Topic> {
         if (actionsFail) return Result.failure(IllegalStateException("offline"))
         approved += id to section
         return Result.success(topics.first { it.topic.id == id }.topic.copy(section = section, status = TopicStatus.Approved))

@@ -12,10 +12,10 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
-import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 interface CommunityRepository {
@@ -26,7 +26,8 @@ interface CommunityRepository {
      * [after] is the cursor the page before handed back.
      */
     suspend fun feed(
-        category: ListCategory? = null,
+        /** A section id. */
+        category: String? = null,
         query: String? = null,
         author: String? = null,
         after: String? = null,
@@ -48,22 +49,22 @@ interface CommunityRepository {
     suspend fun following(): Result<Following>
 
     /** Approved topics: those starting with [query], or the biggest, within [section] if given. */
-    suspend fun topics(query: String? = null, section: ListCategory? = null): Result<List<Topic>>
+    suspend fun topics(query: String? = null, section: String? = null): Result<List<Topic>>
 
     /** Everything this person proposed, whatever became of it; the waiting ones first. */
     suspend fun myTopics(): Result<List<Topic>>
 
     suspend fun topic(id: String): Result<Topic>
 
-    /** The nine sections with their counts, in the one order every screen lists them. */
-    suspend fun sections(): Result<List<SectionStats>>
+    /** Every section this person may see, with its counts, in the server's order (§4). Screens read them through [SectionCatalog]. */
+    suspend fun sections(): Result<List<Section>>
 
-    suspend fun followSection(section: ListCategory): Result<Unit>
+    /** One section by its id, for a link or a list whose section the kept list does not know. */
+    suspend fun section(id: String): Result<SectionLookup>
 
-    suspend fun unfollowSection(section: ListCategory): Result<Unit>
+    suspend fun followSection(id: String): Result<Unit>
 
-    /** One cheap request at start: the token is fetched and the function woken before anybody opens Community. */
-    suspend fun warmUp(): Result<Unit>
+    suspend fun unfollowSection(id: String): Result<Unit>
 
     /** Fails for a guest, like following an author. */
     suspend fun followTopic(id: String): Result<Unit>
@@ -74,7 +75,7 @@ interface CommunityRepository {
     suspend fun pendingTopics(): Result<List<PendingTopic>>
 
     /** Places the topic in a section and moves its lists there. */
-    suspend fun approveTopic(id: String, section: ListCategory): Result<Topic>
+    suspend fun approveTopic(id: String, section: String): Result<Topic>
 
     suspend fun renameTopic(id: String, name: String): Result<Topic>
 
@@ -85,7 +86,7 @@ interface CommunityRepository {
     suspend fun rejectTopic(id: String): Result<Topic>
 
     /** A moderator moves a list; with a topic, the section is the topic's. */
-    suspend fun moveList(publishedId: String, category: ListCategory, topicId: String?): Result<Unit>
+    suspend fun moveList(publishedId: String, category: String, topicId: String?): Result<Unit>
 
     /** Fails for everyone but the owner, which is also how the app learns who that is. */
     suspend fun moderators(): Result<List<Moderator>>

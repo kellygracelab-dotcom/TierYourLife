@@ -5,7 +5,6 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.api.CommunityAp
 import com.artiuillab.tieryourlife.feature.community.data.remote.banNotice
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.AppointModeratorRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.BasedOnDto
-import com.artiuillab.tieryourlife.feature.community.data.remote.dto.FollowedSectionDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModerationReportDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.MoveListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PendingTopicDto
@@ -16,7 +15,6 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedLi
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTierDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.RankingDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ReportRequestDto
-import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TakeDownRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicMergeRequestDto
@@ -44,7 +42,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListS
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
-import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
@@ -70,7 +69,7 @@ class RetrofitCommunityRepository @Inject constructor(
 ) : CommunityRepository {
 
     override suspend fun feed(
-        category: ListCategory?,
+        category: String?,
         query: String?,
         author: String?,
         after: String?,
@@ -79,7 +78,7 @@ class RetrofitCommunityRepository @Inject constructor(
         topic: String?,
     ): Result<CommunityPage> = attempt("Reading the community feed") {
         val page = api.feed(
-            category = category?.id,
+            category = category,
             query = query?.takeIf { it.isNotBlank() },
             author = author,
             after = after,
@@ -116,33 +115,37 @@ class RetrofitCommunityRepository @Inject constructor(
             Following(
                 authors = answer.authors.map { FollowedAuthor(uid = it.uid, name = it.name, photoUrl = it.photoUrl) },
                 topics = answer.topics.map { it.toDomain() },
-                sections = answer.sections.mapNotNull { it.toDomain() },
+                sections = answer.sections.map { FollowedSection(id = it.id, followerCount = it.followerCount) },
             )
         }
 
-    /** The last answer, so the warm-up at start is what Explore opens with. */
-    @Volatile
-    private var lastSections: List<SectionStats>? = null
-
-    override suspend fun sections(): Result<List<SectionStats>> = attempt("Reading the sections") {
-        sectionsInOrder(api.sections().sections).also { lastSections = it }
-    }.recoverCatching { error -> lastSections ?: throw error }
-
-    override suspend fun followSection(section: ListCategory): Result<Unit> = attempt("Following a section") {
-        api.followSection(section.id)
-        lastSections = lastSections?.map { if (it.section == section) it.followedBy(true) else it }
+    override suspend fun sections(): Result<List<Section>> = attempt("Reading the sections") {
+        sectionsFrom(api.sections().sections)
     }
 
-    override suspend fun unfollowSection(section: ListCategory): Result<Unit> = attempt("Unfollowing a section") {
-        api.unfollowSection(section.id)
-        lastSections = lastSections?.map { if (it.section == section) it.followedBy(false) else it }
+    override suspend fun section(id: String): Result<SectionLookup> {
+        // An id that could not be a section is not worth a request.
+        if (!SECTION_ID.matches(id)) return Result.success(SectionLookup.Unknown)
+        return attempt("Reading one section") {
+            try {
+                SectionLookup.Found(sectionFrom(api.section(id)))
+            } catch (refused: HttpException) {
+                refused.sectionRefusal() ?: throw refused
+            }
+        }
     }
 
-    override suspend fun warmUp(): Result<Unit> = sections().map { }
+    override suspend fun followSection(id: String): Result<Unit> = attempt("Following a section") {
+        api.followSection(id)
+    }
 
-    override suspend fun topics(query: String?, section: ListCategory?): Result<List<Topic>> =
+    override suspend fun unfollowSection(id: String): Result<Unit> = attempt("Unfollowing a section") {
+        api.unfollowSection(id)
+    }
+
+    override suspend fun topics(query: String?, section: String?): Result<List<Topic>> =
         attempt("Searching topics") {
-            api.topics(query = query?.trim()?.takeIf { it.isNotEmpty() }, section = section?.id).topics.map { it.toDomain() }
+            api.topics(query = query?.trim()?.takeIf { it.isNotEmpty() }, section = section).topics.map { it.toDomain() }
         }
 
     override suspend fun myTopics(): Result<List<Topic>> =
@@ -157,8 +160,8 @@ class RetrofitCommunityRepository @Inject constructor(
     override suspend fun pendingTopics(): Result<List<PendingTopic>> =
         attempt("Reading the topic queue") { api.pendingTopics().topics.map { it.toDomain() } }
 
-    override suspend fun approveTopic(id: String, section: ListCategory): Result<Topic> =
-        attempt("Approving a topic") { api.approveTopic(id, TopicSectionRequestDto(section.id)).toDomain() }
+    override suspend fun approveTopic(id: String, section: String): Result<Topic> =
+        attempt("Approving a topic") { api.approveTopic(id, TopicSectionRequestDto(section)).toDomain() }
 
     override suspend fun renameTopic(id: String, name: String): Result<Topic> =
         attempt("Renaming a topic") { api.renameTopic(id, TopicNameRequestDto(name.trim())).toDomain() }
@@ -168,8 +171,8 @@ class RetrofitCommunityRepository @Inject constructor(
 
     override suspend fun rejectTopic(id: String): Result<Topic> = attempt("Rejecting a topic") { api.rejectTopic(id).toDomain() }
 
-    override suspend fun moveList(publishedId: String, category: ListCategory, topicId: String?): Result<Unit> =
-        attempt("Moving a list") { api.moveList(publishedId, MoveListRequestDto(category.id, topicId)) }
+    override suspend fun moveList(publishedId: String, category: String, topicId: String?): Result<Unit> =
+        attempt("Moving a list") { api.moveList(publishedId, MoveListRequestDto(category, topicId)) }
 
     override suspend fun moderators(): Result<List<Moderator>> = attempt("Reading the moderators") {
         api.moderators().moderators.map { Moderator(uid = it.uid, name = it.name, photoUrl = it.photoUrl, appointedAtMillis = it.appointedAt) }
@@ -325,10 +328,13 @@ private const val HTTP_CONFLICT = 409
 private const val HTTP_TOO_LARGE = 413
 private const val HTTP_UNPROCESSABLE = 422
 
+/** The built-ins' ids and the slugs the server makes (`street-food`, `s-k3f9x2ab`). */
+private val SECTION_ID = Regex("^[a-z0-9][a-z0-9_-]{1,39}$")
+
 private fun TopicDto.toDomain() = Topic(
     id = id,
     name = name,
-    section = ListCategory.fromId(section),
+    section = section?.takeIf { it.isNotBlank() },
     status = TopicStatus.fromId(status),
     listCount = listCount,
     followerCount = followerCount,
@@ -341,7 +347,7 @@ private fun PendingTopicDto.toDomain() = PendingTopic(
     topic = Topic(
         id = id,
         name = name,
-        section = ListCategory.fromId(section),
+        section = section?.takeIf { it.isNotBlank() },
         status = TopicStatus.fromId(status),
         listCount = listCount,
         followerCount = followerCount,
@@ -350,7 +356,7 @@ private fun PendingTopicDto.toDomain() = PendingTopic(
         mergedInto = mergedInto,
     ),
     proposerName = proposerName,
-    requestedSection = ListCategory.fromId(requestedSection),
+    requestedSection = requestedSection?.takeIf { it.isNotBlank() },
     similar = similar.map { it.toDomain() },
 )
 
@@ -360,7 +366,7 @@ internal fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     authorUid = authorUid,
     authorName = authorName,
     authorPhotoUrl = authorPhotoUrl,
-    category = ListCategory.fromId(category) ?: ListCategory.Other,
+    category = category.sectionOrOther(),
     itemCount = itemCount,
     coverImageUrl = coverImageUrl.webPictureOrNull(),
     previewImages = previewImages.mapNotNull { it.webPictureOrNull() },
@@ -384,7 +390,7 @@ internal fun PublishedListDto.toDomain() = PublishedList(
         authorUid = authorUid,
         authorName = authorName,
         authorPhotoUrl = authorPhotoUrl,
-        category = ListCategory.fromId(category) ?: ListCategory.Other,
+        category = category.sectionOrOther(),
         itemCount = itemCount,
         coverImageUrl = coverImageUrl.webPictureOrNull(),
         previewImages = previewImages.mapNotNull { it.webPictureOrNull() },
@@ -426,7 +432,7 @@ private fun TierList.ownPictureIds(images: OwnPictures): List<String> =
 
 internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = PublishListRequestDto(
     title = title,
-    category = (category ?: ListCategory.Other).id,
+    category = category ?: ListCategory.Other.id,
     coverImageUrl = coverImageUrl?.takeIf { it.startsWith("https://") },
     coverPictureId = images.pictureIdOf(coverImageUrl)?.takeIf { it in uploaded },
     coverImageUrls = coverImageUrls.filter { it.startsWith("https://") },
@@ -468,32 +474,8 @@ private fun RankingDto.toDomain() = Ranking(
     mine = mine,
 )
 
-/**
- * All nine, in the app's order, whatever the server sent: an id it does not
- * know is dropped, and a section it left out stands with nothing counted.
- */
-internal fun sectionsInOrder(answer: List<SectionDto>): List<SectionStats> {
-    val byId = answer.associateBy { it.id }
-    return ListCategory.entries.map { section ->
-        val stats = byId[section.id]
-        SectionStats(
-            section = section,
-            listCount = stats?.listCount ?: 0,
-            followerCount = stats?.followerCount ?: 0,
-            newThisWeek = stats?.newThisWeek ?: 0,
-            following = stats?.following ?: false,
-            collage = stats?.collage.orEmpty().filter { it.startsWith("https://") }.take(COLLAGE_SIZE),
-        )
-    }
-}
-
-private const val COLLAGE_SIZE = 4
-
-private fun SectionStats.followedBy(now: Boolean): SectionStats =
-    if (following == now) this else copy(following = now, followerCount = (followerCount + if (now) 1 else -1).coerceAtLeast(0))
-
-private fun FollowedSectionDto.toDomain(): FollowedSection? =
-    ListCategory.fromId(id)?.let { FollowedSection(section = it, followerCount = followerCount) }
+/** Any id the server sends is a section now; a list it filed nowhere is Other's. */
+private fun String?.sectionOrOther(): String = this?.takeIf { it.isNotBlank() } ?: ListCategory.Other.id
 
 /** The way back from a kept summary to what the server would have sent, so one codec reads both. */
 internal fun PublishedListSummary.toDto() = PublishedListSummaryDto(
@@ -502,7 +484,7 @@ internal fun PublishedListSummary.toDto() = PublishedListSummaryDto(
     authorUid = authorUid,
     authorName = authorName,
     authorPhotoUrl = authorPhotoUrl,
-    category = category.id,
+    category = category,
     itemCount = itemCount,
     coverImageUrl = coverImageUrl,
     previewImages = previewImages,

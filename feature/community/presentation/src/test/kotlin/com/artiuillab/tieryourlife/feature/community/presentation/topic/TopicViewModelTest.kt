@@ -27,7 +27,7 @@ import org.junit.Test
 private val pokemon = Topic(
     id = "t1",
     name = "Pokémon",
-    section = ListCategory.Games,
+    section = ListCategory.Games.id,
     status = TopicStatus.Approved,
     listCount = 12,
     followerCount = 3,
@@ -45,7 +45,7 @@ class TopicViewModelTest {
         val state = viewModel.state.value
 
         assertEquals("Pokémon", state.name)
-        assertEquals(ListCategory.Games, state.section)
+        assertEquals(ListCategory.Games.id, state.section)
         assertNull(state.topic)
     }
 
@@ -159,7 +159,7 @@ class TopicViewModelTest {
         title = "List $id",
         authorUid = "author-$id",
         authorName = "Olena M.",
-        category = ListCategory.Games,
+        category = ListCategory.Games.id,
         itemCount = 12,
         updatedAtMillis = 0,
         topicId = "t1",
@@ -183,7 +183,7 @@ private class TopicFake(
         if (answers) Result.success(pokemon) else Result.failure(IllegalStateException("offline"))
 
     override suspend fun feed(
-        category: ListCategory?,
+        category: String?,
         query: String?,
         author: String?,
         after: String?,

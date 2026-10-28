@@ -113,7 +113,7 @@ class MyPublishedViewModelTest {
         title = "A list",
         authorUid = "me",
         authorName = "Olena",
-        category = ListCategory.FilmTv,
+        category = ListCategory.FilmTv.id,
         itemCount = 3,
         updatedAtMillis = 0,
     )

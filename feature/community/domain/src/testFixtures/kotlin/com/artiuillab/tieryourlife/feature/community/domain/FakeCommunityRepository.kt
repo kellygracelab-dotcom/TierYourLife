@@ -12,12 +12,12 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
-import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 /**
@@ -29,7 +29,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 open class FakeCommunityRepository : CommunityRepository {
 
     override suspend fun feed(
-        category: ListCategory?,
+        category: String?,
         query: String?,
         author: String?,
         after: String?,
@@ -47,20 +47,19 @@ open class FakeCommunityRepository : CommunityRepository {
 
     override suspend fun following(): Result<Following> = Result.success(Following(emptyList(), emptyList()))
 
-    override suspend fun topics(query: String?, section: ListCategory?): Result<List<Topic>> = Result.success(emptyList())
+    override suspend fun topics(query: String?, section: String?): Result<List<Topic>> = Result.success(emptyList())
 
     override suspend fun myTopics(): Result<List<Topic>> = Result.success(emptyList())
 
     override suspend fun topic(id: String): Result<Topic> = notSetUp("topic")
 
-    override suspend fun sections(): Result<List<SectionStats>> =
-        Result.success(ListCategory.entries.map { SectionStats(it) })
+    override suspend fun sections(): Result<List<Section>> = Result.success(Section.BUILT_IN)
 
-    override suspend fun followSection(section: ListCategory): Result<Unit> = Result.success(Unit)
+    override suspend fun section(id: String): Result<SectionLookup> = Result.success(SectionLookup.Unknown)
 
-    override suspend fun unfollowSection(section: ListCategory): Result<Unit> = Result.success(Unit)
+    override suspend fun followSection(id: String): Result<Unit> = Result.success(Unit)
 
-    override suspend fun warmUp(): Result<Unit> = Result.success(Unit)
+    override suspend fun unfollowSection(id: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun followTopic(id: String): Result<Unit> = Result.success(Unit)
 
@@ -69,7 +68,7 @@ open class FakeCommunityRepository : CommunityRepository {
     override suspend fun pendingTopics(): Result<List<PendingTopic>> =
         Result.failure(IllegalStateException("Only a moderator reads the topic queue"))
 
-    override suspend fun approveTopic(id: String, section: ListCategory): Result<Topic> = notSetUp("approveTopic")
+    override suspend fun approveTopic(id: String, section: String): Result<Topic> = notSetUp("approveTopic")
 
     override suspend fun renameTopic(id: String, name: String): Result<Topic> = notSetUp("renameTopic")
 
@@ -82,7 +81,7 @@ open class FakeCommunityRepository : CommunityRepository {
 
     override suspend fun withdrawRanking(listId: String): Result<Unit> = Result.success(Unit)
 
-    override suspend fun moveList(publishedId: String, category: ListCategory, topicId: String?): Result<Unit> =
+    override suspend fun moveList(publishedId: String, category: String, topicId: String?): Result<Unit> =
         Result.success(Unit)
 
     override suspend fun moderators(): Result<List<Moderator>> =

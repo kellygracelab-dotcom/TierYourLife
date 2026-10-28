@@ -1,7 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.board
 
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 
 /** Public because [TierDetailScreenContent] is, and this is its default. */
@@ -16,7 +15,8 @@ data class TierDetailActions(
     /** True only where the published copy is known to differ from the board. */
     val publishedIsBehind: Boolean = false,
     val onUpdatePublished: () -> Unit = {},
-    val onSetCategory: (ListCategory) -> Unit = {},
+    /** A section id. */
+    val onSetCategory: (String) -> Unit = {},
     val onCategoryNotChosen: () -> Unit = {},
     val onChooseCover: () -> Unit = {},
     val onChooseTopic: () -> Unit = {},

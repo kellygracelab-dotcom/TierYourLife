@@ -6,7 +6,6 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListUiState
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -142,7 +141,7 @@ class ModerationViewModel @Inject constructor(
     }
 
     /** Into another section, with no topic: the word it carried belonged to the place it is leaving. The complaints close with the move. */
-    fun move(listId: String, category: ListCategory) {
+    fun move(listId: String, category: String) {
         val shown = readyToAct() ?: return
         settle(listId, shown) {
             community.moveList(listId, category, topicId = null).mapCatching { community.dismissReports(listId).getOrThrow() }

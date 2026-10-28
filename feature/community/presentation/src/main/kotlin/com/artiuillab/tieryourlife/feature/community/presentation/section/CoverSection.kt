@@ -41,7 +41,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.CloudO
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.countText
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.rememberSkeletonAlpha
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.label
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 
 /**
@@ -69,7 +69,7 @@ internal fun CoverSection(
     ) {
         item(key = "header") {
             CoverHeader(
-                title = stringResource(state.section.labelRes),
+                title = state.section.label(),
                 onBack = onBack,
                 count = state.stats?.let { countText(R.plurals.explore_lists, it.listCount) },
             )

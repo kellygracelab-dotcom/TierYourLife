@@ -16,7 +16,6 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Community
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
@@ -164,7 +163,7 @@ class TierDetailViewModel @Inject constructor(
     }
 
     /** Finishes the publish that asked for it: a tap becoming two is smaller than a tap that only refuses. */
-    fun setCategory(category: ListCategory) {
+    fun setCategory(category: String) {
         val publishNext = categoryWanted
         categoryWanted = false
         viewModelScope.launch {

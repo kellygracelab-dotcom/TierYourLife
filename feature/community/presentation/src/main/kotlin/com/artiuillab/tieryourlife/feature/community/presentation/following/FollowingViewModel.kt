@@ -7,7 +7,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSectio
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -45,7 +45,7 @@ sealed interface FollowingUiState {
 
 /** The names Manage's rows go by, so one call and one Undo serve all three kinds. */
 object FollowKeys {
-    fun section(section: ListCategory) = "s:${section.id}"
+    fun section(id: String) = "s:$id"
     fun topic(id: String) = "t:$id"
     fun person(uid: String) = "p:$uid"
 }
@@ -59,6 +59,7 @@ sealed interface ManageNotice {
 @HiltViewModel
 class FollowingViewModel @Inject constructor(
     private val community: CommunityRepository,
+    private val catalog: SectionCatalog,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<FollowingUiState>(FollowingUiState.Loading)
@@ -124,7 +125,7 @@ class FollowingViewModel @Inject constructor(
     private suspend fun stop(key: String): Result<Unit> {
         val id = key.substringAfter(':')
         return when (key.substringBefore(':')) {
-            "s" -> ListCategory.fromId(id)?.let { community.unfollowSection(it) } ?: Result.success(Unit)
+            "s" -> catalog.setFollowing(id, now = false)
             "t" -> community.unfollowTopic(id)
             else -> community.unfollow(id)
         }
@@ -133,7 +134,7 @@ class FollowingViewModel @Inject constructor(
     private suspend fun resume(key: String): Result<Unit> {
         val id = key.substringAfter(':')
         return when (key.substringBefore(':')) {
-            "s" -> ListCategory.fromId(id)?.let { community.followSection(it) } ?: Result.success(Unit)
+            "s" -> catalog.setFollowing(id, now = true)
             "t" -> community.followTopic(id)
             else -> community.follow(id)
         }
@@ -143,7 +144,7 @@ class FollowingViewModel @Inject constructor(
     private fun nameOf(state: FollowingUiState.Ready, key: String): String? {
         val id = key.substringAfter(':')
         return when (key.substringBefore(':')) {
-            "s" -> state.sections.firstOrNull { it.section.id == id }?.section?.id
+            "s" -> state.sections.firstOrNull { it.id == id }?.id
             "t" -> state.topics.firstOrNull { it.id == id }?.name
             else -> state.authors.firstOrNull { it.uid == id }?.name
         }

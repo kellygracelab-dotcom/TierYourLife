@@ -250,4 +250,13 @@
         <item quantity="other">%1$d offen</item>
     </plurals>
     <string name="moderation_refresh">Aktualisieren</string>
+    <string name="all_sections_title">Alle Bereiche</string>
+    <plurals name="all_sections_count">
+        <item quantity="one">%1$s Bereich</item>
+        <item quantity="other">%1$s Bereiche</item>
+    </plurals>
+    <string name="all_sections_sort_most_lists">Meiste Listen</string>
+    <string name="all_sections_sort_name">A–Z</string>
+    <string name="all_sections_find">Bereich finden</string>
+    <string name="all_sections_propose">Bereich vorschlagen</string>
 </resources>

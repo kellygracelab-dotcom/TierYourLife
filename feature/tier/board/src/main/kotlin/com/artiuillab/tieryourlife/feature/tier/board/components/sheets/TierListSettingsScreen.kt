@@ -72,9 +72,8 @@ import com.artiuillab.tieryourlife.core.theme.ui.ViewCarouselIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import java.text.DateFormat
@@ -98,7 +97,7 @@ fun TierListSettingsScreenContent(
     onSetPublic: (Boolean) -> Unit = {},
     publishedIsBehind: Boolean = false,
     onUpdatePublished: () -> Unit = {},
-    onSetCategory: (ListCategory) -> Unit = {},
+    onSetCategory: (String) -> Unit = {},
     onCategoryNotChosen: () -> Unit = {},
     onChooseCover: () -> Unit = {},
     onChooseTopic: () -> Unit = {},
@@ -355,11 +354,11 @@ private fun SettingsActionRow(
 }
 
 @Composable
-private fun CategoryRow(category: ListCategory?, onClick: () -> Unit) {
+private fun CategoryRow(category: String?, onClick: () -> Unit) {
     SettingsActionRow(
         icon = { CategoryIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
         title = stringResource(R.string.list_settings_category),
-        subtitle = category?.let { stringResource(it.labelRes) }
+        subtitle = category?.let { sectionLabel(it) }
             ?: stringResource(R.string.list_settings_category_none),
         onClick = onClick,
         testTag = TierDetailTestTags.CATEGORY_ROW,

@@ -39,13 +39,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionArt
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionLabel
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionNewLine
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.board.common.label
 
 /** How a tile is drawn at one window size: label and icon sizes, padding, and whether the "new" line fits. */
 internal data class TileStyle(
@@ -70,7 +70,7 @@ internal data class TileStyle(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun SectionTile(
-    section: ListCategory,
+    section: Section,
     newThisWeek: Int?,
     following: Boolean,
     onOpen: () -> Unit,
@@ -81,10 +81,10 @@ internal fun SectionTile(
     centredLabel: Boolean = false,
     longPressMenu: Boolean = true,
 ) {
-    var menuOpen by rememberSaveable(section) { mutableStateOf(false) }
+    var menuOpen by rememberSaveable(section.id) { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
     val pressScale by animateFloatAsState(if (menuOpen) 0.97f else 1f, tween(120), label = "tile press")
-    val name = stringResource(section.labelRes)
+    val name = section.label()
     val newLine = newThisWeek?.takeIf { style.showsNew && it > 0 }?.let { countText(R.plurals.explore_new_this_week, it) }
     val described = if (newLine != null) stringResource(R.string.explore_tile_description, name, newLine) else name
     val shape = RoundedCornerShape(style.corner)
@@ -117,7 +117,7 @@ internal fun SectionTile(
                     },
                 )
                 .semantics { contentDescription = described }
-                .testTag(ExploreTestTags.tile(section)),
+                .testTag(ExploreTestTags.tile(section.id)),
         ) {
             SectionArt(section, Modifier.fillMaxSize())
             Column(

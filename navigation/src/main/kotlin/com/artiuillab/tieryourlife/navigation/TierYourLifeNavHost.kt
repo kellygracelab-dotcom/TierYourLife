@@ -34,11 +34,13 @@ import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.aiSt
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.navigateToAiStudio
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityHomeScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.allSectionsScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.authorScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.followingScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.moderationScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.myPublishedScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToAllSections
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToAuthor
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToCommunityList
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToFollowing
@@ -180,6 +182,7 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
                     onManageFollowing = { navController.navigateToFollowing() },
                     onOpenSection = { route -> navController.navigateToSection(route) },
                     tabs = tabs,
+                    onOpenAllSections = { navController.navigateToAllSections() },
                 )
             },
         )
@@ -297,6 +300,11 @@ private fun NavContent(
             onBack = { navController.popBackStack() },
             onOpenList = { route -> navController.navigateToCommunityList(route) },
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
+        )
+        // No proposing yet: the form comes next, and the button waits for it.
+        allSectionsScreen(
+            onBack = { navController.popBackStack() },
+            onOpenSection = { route -> navController.navigateToSection(route) },
         )
         followingScreen(
             onBack = { navController.popBackStack() },

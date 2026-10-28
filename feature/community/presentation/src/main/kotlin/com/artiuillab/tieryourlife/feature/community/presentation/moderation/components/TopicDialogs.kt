@@ -26,7 +26,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.TopicQueueTestTags
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import kotlinx.coroutines.delay
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
@@ -119,7 +119,7 @@ internal fun MergeTopicDialog(
                         )
                         topic.section?.let { section ->
                             Text(
-                                text = stringResource(section.labelRes),
+                                text = sectionLabel(section),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )

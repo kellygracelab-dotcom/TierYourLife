@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,10 +45,13 @@ import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.core.theme.ui.TuneIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSection
 import com.artiuillab.tieryourlife.feature.community.domain.model.Following
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.AllSectionsTile
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CardActions
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.DashedSquare
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ExploreTestTags
@@ -60,6 +62,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.NearEn
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScheduleIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScrolledDownWatcher
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.SectionTile
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.TileRows
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.TileStyle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.WideContentMax
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.feedItems
@@ -69,18 +72,22 @@ import com.artiuillab.tieryourlife.feature.community.presentation.section.Sectio
 import com.artiuillab.tieryourlife.feature.community.presentation.section.lookOf
 import com.artiuillab.tieryourlife.feature.community.presentation.section.topicBgNow
 import com.artiuillab.tieryourlife.feature.community.presentation.section.topicIconNow
-import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
+import com.artiuillab.tieryourlife.feature.tier.board.common.LocalSections
+import com.artiuillab.tieryourlife.feature.tier.board.common.label
+import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSection
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
-/** Where the strip and the empty tab lead. */
+/** Where the strip and the empty tab lead; sections go by id. */
 internal class FollowingActions(
-    val onOpenSection: (ListCategory) -> Unit = {},
+    val onOpenSection: (String) -> Unit = {},
     val onOpenTopic: (Topic) -> Unit = {},
     val onOpenWaiting: (Topic) -> Unit = {},
     val onOpenAuthor: (FollowedAuthor) -> Unit = {},
     val onManage: () -> Unit = {},
-    val onQuickFollow: (ListCategory) -> Unit = {},
+    val onQuickFollow: (String) -> Unit = {},
     val onGoToExplore: () -> Unit = {},
+    val onOpenAllSections: () -> Unit = {},
 )
 
 /** The Following tab (§4): what is followed, then everything new from it, newest first, each card saying why. */
@@ -141,7 +148,7 @@ internal fun FollowingTab(
 @Composable
 private fun reasonText(reason: FeedReason): String = when (reason) {
     is FeedReason.InTopic -> reason.name
-    is FeedReason.InSection -> stringResource(R.string.following_reason_section, stringResource(reason.section.labelRes))
+    is FeedReason.InSection -> stringResource(R.string.following_reason_section, sectionLabel(reason.sectionId))
 }
 
 private val StripLabel = TextStyle(fontSize = 11.sp, lineHeight = 15.sp)
@@ -156,15 +163,7 @@ internal fun FollowedStrip(following: Following, waiting: List<Topic>, actions: 
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             following.sections.forEach { followed ->
-                item(key = "s-${followed.section.id}") {
-                    StripItem(stringResource(followed.section.labelRes), "s-${followed.section.id}", { actions.onOpenSection(followed.section) }) {
-                        Box(Modifier.size(StripVisual).clip(RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
-                            SectionArt(followed.section, Modifier.fillMaxSize(), scrim = false)
-                            Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)))
-                            SectionIcon(followed.section, 22.dp, Color.White)
-                        }
-                    }
-                }
+                item(key = "s-${followed.id}") { FollowedSectionItem(followed, actions) }
             }
             following.topics.forEach { topic ->
                 item(key = "t-${topic.id}") {
@@ -205,10 +204,22 @@ internal fun FollowedStrip(following: Following, waiting: List<Topic>, actions: 
     }
 }
 
-/** A topic's square: the section's sign on its pale tint, or a quiet square while it has no section. */
 @Composable
-internal fun TopicSquare(section: ListCategory?, size: Dp, icon: Dp) {
-    val placed = section ?: ListCategory.Other
+private fun FollowedSectionItem(followed: FollowedSection, actions: FollowingActions) {
+    val section = rememberSection(followed.id)
+    StripItem(section.label(), "s-${followed.id}", { actions.onOpenSection(followed.id) }) {
+        Box(Modifier.size(StripVisual).clip(RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
+            SectionArt(section, Modifier.fillMaxSize(), scrim = false)
+            Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)))
+            SectionIcon(section, 22.dp, Color.White)
+        }
+    }
+}
+
+/** A topic's square: its section's sign on the section's pale tint, Other's while it has no section. */
+@Composable
+internal fun TopicSquare(sectionId: String?, size: Dp, icon: Dp) {
+    val placed = rememberSection(sectionId ?: ListCategory.Other.id)
     val look = lookOf(placed)
     Box(
         Modifier
@@ -250,9 +261,15 @@ private fun StripItem(
     }
 }
 
-/** Nothing followed at all (§4.2): the nine sections, each one tap from being followed. */
+/**
+ * Nothing followed at all (§4.2): the sections, each one tap from being
+ * followed; nine at most, the last leading to all of them when there are more.
+ */
 @Composable
-private fun FollowsNothing(quickFollowed: Set<ListCategory>, actions: FollowingActions) {
+private fun FollowsNothing(quickFollowed: Set<String>, actions: FollowingActions) {
+    val shown = LocalSections.current.directory.shown
+    val more = shown.size > MINI_SLOTS
+    val slots = if (more) shown.filterNot { it.isOther }.take(MINI_SLOTS - 1) + null else shown
     Column(
         Modifier
             .fillMaxWidth()
@@ -273,38 +290,16 @@ private fun FollowsNothing(quickFollowed: Set<ListCategory>, actions: FollowingA
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Column(Modifier.padding(top = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            ListCategory.entries.chunked(3).forEach { row ->
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    row.forEach { section ->
-                        Box(Modifier.weight(1f).height(84.dp)) {
-                            SectionTile(
-                                section = section,
-                                newThisWeek = null,
-                                following = section in quickFollowed,
-                                onOpen = { actions.onQuickFollow(section) },
-                                onFollow = { actions.onQuickFollow(section) },
-                                onUnfollow = {},
-                                modifier = Modifier.fillMaxSize().testTag(ExploreTestTags.miniTile(section)),
-                                style = TileStyle.Mini,
-                                longPressMenu = false,
-                            )
-                            Box(
-                                Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(8.dp)
-                                    .size(28.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.surface),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                if (section in quickFollowed) {
-                                    CheckIcon(18.dp, MaterialTheme.colorScheme.primary)
-                                } else {
-                                    PlusIcon(18.dp, MaterialTheme.colorScheme.primary)
-                                }
-                            }
-                        }
-                    }
+            TileRows(slots, columns = 3, gap = 8.dp) { section, rowModifier ->
+                if (section == null) {
+                    AllSectionsTile(
+                        count = shown.size,
+                        onClick = actions.onOpenAllSections,
+                        modifier = rowModifier.height(84.dp).testTag(ExploreTestTags.ALL_SECTIONS_MINI_TILE),
+                        style = TileStyle.Mini,
+                    )
+                } else {
+                    MiniTile(section, following = section.id in quickFollowed, onFollow = { actions.onQuickFollow(section.id) }, modifier = rowModifier)
                 }
             }
         }
@@ -314,6 +309,40 @@ private fun FollowsNothing(quickFollowed: Set<ListCategory>, actions: FollowingA
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+}
+
+private const val MINI_SLOTS = 9
+
+@Composable
+private fun MiniTile(section: Section, following: Boolean, onFollow: () -> Unit, modifier: Modifier) {
+    Box(modifier.height(84.dp)) {
+        SectionTile(
+            section = section,
+            newThisWeek = null,
+            following = following,
+            onOpen = onFollow,
+            onFollow = onFollow,
+            onUnfollow = {},
+            modifier = Modifier.fillMaxSize().testTag(ExploreTestTags.miniTile(section.id)),
+            style = TileStyle.Mini,
+            longPressMenu = false,
+        )
+        Box(
+            Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp)
+                .size(28.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surface),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (following) {
+                CheckIcon(18.dp, MaterialTheme.colorScheme.primary)
+            } else {
+                PlusIcon(18.dp, MaterialTheme.colorScheme.primary)
+            }
+        }
     }
 }
 

@@ -2,7 +2,6 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.PublishedFilter
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
 internal object TierListsTestTags {
     const val SUMMARY = "tier_lists_summary"
@@ -38,8 +37,8 @@ internal object TierListsTestTags {
 
     fun appliedFilter(key: String): String = "tier_lists_applied_$key"
 
-    fun filterCategory(category: ListCategory?): String =
-        "tier_lists_filter_category_${category?.id ?: "any"}"
+    fun filterCategory(sectionId: String?): String =
+        "tier_lists_filter_category_${sectionId ?: "any"}"
 
     fun filterPublished(published: PublishedFilter?): String =
         "tier_lists_filter_published_${published?.name?.lowercase() ?: "any"}"

@@ -276,4 +276,15 @@
         <item quantity="other">%1$d otwartego</item>
     </plurals>
     <string name="moderation_refresh">Odśwież</string>
+    <string name="all_sections_title">Wszystkie działy</string>
+    <plurals name="all_sections_count">
+        <item quantity="one">%1$s dział</item>
+        <item quantity="few">%1$s działy</item>
+        <item quantity="many">%1$s działów</item>
+        <item quantity="other">%1$s działu</item>
+    </plurals>
+    <string name="all_sections_sort_most_lists">Najwięcej list</string>
+    <string name="all_sections_sort_name">A–Z</string>
+    <string name="all_sections_find">Znajdź dział</string>
+    <string name="all_sections_propose">Zaproponuj dział</string>
 </resources>

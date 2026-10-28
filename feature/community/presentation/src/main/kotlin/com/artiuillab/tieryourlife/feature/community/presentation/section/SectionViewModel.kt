@@ -8,18 +8,19 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedKeys
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
-import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityNetwork
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedLoader
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPane
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ListMenuActions
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.followed
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.toCommunityNotice
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.sectionRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
@@ -45,20 +47,23 @@ import javax.inject.Singleton
 /** The order each section was last read in, for this run of the app (§3.1). */
 @Singleton
 class SectionSortMemory @Inject constructor() {
-    private val sorts = mutableMapOf<ListCategory, FeedSort>()
+    private val sorts = mutableMapOf<String, FeedSort>()
 
-    fun sortOf(section: ListCategory): FeedSort = sorts[section] ?: FeedSort.Popular
+    fun sortOf(sectionId: String): FeedSort = sorts[sectionId] ?: FeedSort.Popular
 
-    fun remember(section: ListCategory, sort: FeedSort) {
-        sorts[section] = sort
+    fun remember(sectionId: String, sort: FeedSort) {
+        sorts[sectionId] = sort
     }
 }
 
 /** A section's page (§3): its counts and followers, its topics, and its lists in the order chosen. */
 data class SectionUiState(
-    val section: ListCategory,
-    /** Null until the server has counted. */
-    val stats: SectionStats? = null,
+    /** The id this page is about: the route's, or the one it was merged into. */
+    val sectionId: String,
+    /** What to draw and name; Other's look while the id is still being asked about. */
+    val section: Section = Section(id = sectionId),
+    /** False while the counts are still the app's own zeros. */
+    val countsKnown: Boolean = false,
     /** Approved topics, the most followed first. */
     val topics: List<Topic> = emptyList(),
     /** This person's own topics waiting for a moderator here: seen by nobody else. */
@@ -67,7 +72,10 @@ data class SectionUiState(
     val sort: FeedSort = FeedSort.Popular,
     val feed: FeedPane = FeedPane(),
     val nowMillis: Long = 0L,
-)
+) {
+    /** The section with its counts, once they are the server's; null until then. */
+    val stats: Section? get() = section.takeIf { countsKnown }
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -79,15 +87,18 @@ class SectionViewModel @Inject constructor(
     preferences: AppPreferences,
     private val clock: CommunityClock,
     private val sortMemory: SectionSortMemory,
+    private val catalog: SectionCatalog,
 ) : ViewModel() {
 
     private val route = savedStateHandle.sectionRoute()
-    val section: ListCategory = ListCategory.fromId(route.sectionId) ?: ListCategory.Other
+    private val sectionId = MutableStateFlow(catalog.directory.value.resolve(route.sectionId))
+
+    /** The id this page is about now. */
+    val section: String get() = sectionId.value
 
     private val notes = Channel<CommunityNotice>(Channel.BUFFERED)
     private val menu = ListMenuActions(preferences, community, viewModelScope) { notes.send(CommunityNotice.ActionFailed) }
 
-    private val stats = MutableStateFlow<SectionStats?>(null)
     private val topics = MutableStateFlow<List<Topic>>(emptyList())
     private val waiting = MutableStateFlow<List<Topic>>(emptyList())
     private val selectedTopicId = MutableStateFlow(route.topicId)
@@ -101,12 +112,24 @@ class SectionViewModel @Inject constructor(
     internal val feed: FeedLoader get() = current.value
 
     val state: StateFlow<SectionUiState> = combine(
-        combine(stats, topics, waiting) { s, t, w -> Triple(s, t, w) },
+        combine(catalog.directory, sectionId) { directory, id -> directory to id },
+        combine(topics, waiting) { t, w -> t to w },
         combine(selectedTopicId, chosenTopic, sort) { id, chosen, order -> Triple(id, chosen, order) },
         current.flatMapLatest { it.pane },
-    ) { (s, t, w), (id, chosen, order), pane ->
-        val selected = id?.let { wanted -> t.firstOrNull { it.id == wanted } ?: w.firstOrNull { it.id == wanted } ?: chosen?.takeIf { it.id == wanted } }
-        SectionUiState(section, s, t, w, selected, order, pane, clock.nowMillis())
+    ) { (directory, id), (t, w), (wanted, chosen, order), pane ->
+        val selected = wanted?.let { topicId -> t.firstOrNull { it.id == topicId } ?: w.firstOrNull { it.id == topicId } ?: chosen?.takeIf { it.id == topicId } }
+        val found = directory.find(id)
+        SectionUiState(
+            sectionId = id,
+            section = found ?: Section(id = id),
+            countsKnown = found != null && countsKnown(directory, found),
+            topics = t,
+            waiting = w,
+            selectedTopic = selected,
+            sort = order,
+            feed = pane,
+            nowMillis = clock.nowMillis(),
+        )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, SectionUiState(section))
 
     val notices: Flow<CommunityNotice> = merge(
@@ -116,27 +139,42 @@ class SectionViewModel @Inject constructor(
 
     init {
         viewModelScope.launch { network.available.collect { feed.onNetworkBack() } }
+        // A link to a section that was merged away opens the one it became, as soon as that is known.
+        viewModelScope.launch {
+            catalog.directory.map { it.resolve(route.sectionId) }.distinctUntilChanged().collect { id ->
+                if (id != sectionId.value) {
+                    sectionId.value = id
+                    switchFeed()
+                    loadAround()
+                }
+            }
+        }
     }
 
     fun open() {
         feed.open()
-        viewModelScope.launch {
-            community.sections().onSuccess { all -> stats.value = all.firstOrNull { it.section == section } }
+        if (!catalog.directory.value.settled(section)) catalog.lookUp(section)
+        viewModelScope.launch { catalog.refresh() }
+        loadAround()
+        val wanted = selectedTopicId.value
+        if (wanted != null && chosenTopic.value == null) {
+            viewModelScope.launch { community.topic(wanted).onSuccess { chosenTopic.value = it } }
         }
+    }
+
+    /** The section's topics, and this person's own waiting ones in it. */
+    private fun loadAround() {
+        val id = section
         viewModelScope.launch {
-            community.topics(section = section)
+            community.topics(section = id)
                 .onSuccess { found -> topics.value = found.filter { it.status == TopicStatus.Approved }.sortedByDescending { it.followerCount } }
                 .onFailure { Timber.i(it, "Reading a section's topics failed") }
         }
         viewModelScope.launch {
             community.myTopics().onSuccess { mine ->
                 // A waiting topic's lists sit under Other until a moderator places it.
-                waiting.value = mine.filter { it.status == TopicStatus.Pending && (it.section ?: ListCategory.Other) == section }
+                waiting.value = mine.filter { it.status == TopicStatus.Pending && (it.section ?: ListCategory.Other.id) == id }
             }
-        }
-        val wanted = selectedTopicId.value
-        if (wanted != null && chosenTopic.value == null) {
-            viewModelScope.launch { community.topic(wanted).onSuccess { chosenTopic.value = it } }
         }
     }
 
@@ -162,27 +200,23 @@ class SectionViewModel @Inject constructor(
     }
 
     private fun loaderFor(topicId: String?, order: FeedSort): FeedLoader {
-        val key = FeedKeys.section(section.id, topicId) + if (order == FeedSort.Recent) ":newest" else ""
+        val id = section
+        val key = FeedKeys.section(id, topicId) + if (order == FeedSort.Recent) ":newest" else ""
         return loaders.getOrPut(key) {
             FeedLoader(key, viewModelScope, cache, clock, menu::isVisible) { after ->
-                community.feed(category = section, topic = topicId, sort = order, after = after)
+                community.feed(category = id, topic = topicId, sort = order, after = after)
             }
         }
     }
 
     /** Answers in the same frame; goes back, with a snackbar, if the server refuses. */
     fun toggleSectionFollow() {
-        val before = stats.value ?: SectionStats(section)
-        val now = !before.following
-        stats.value = before.followed(now)
+        val id = section
+        val now = catalog.directory.value.find(id)?.following != true
         viewModelScope.launch {
-            val result = if (now) community.followSection(section) else community.unfollowSection(section)
-            result.fold(
-                onSuccess = { if (!now) notes.send(CommunityNotice.Unfollowed(section)) },
-                onFailure = {
-                    stats.value = before
-                    notes.send(CommunityNotice.FollowFailed)
-                },
+            catalog.setFollowing(id, now).fold(
+                onSuccess = { if (!now) notes.send(CommunityNotice.Unfollowed(id)) },
+                onFailure = { notes.send(CommunityNotice.FollowFailed) },
             )
         }
     }
@@ -213,3 +247,6 @@ class SectionViewModel @Inject constructor(
 
     fun report(summary: PublishedListSummary, reason: ReportReason, note: String?) = menu.report(feed, summary, reason, note)
 }
+
+/** A built-in's counts are the app's zeros until the list was read; anybody else's section only ever came from the server. */
+private fun countsKnown(directory: SectionDirectory, found: Section): Boolean = directory.counted || found.art == null

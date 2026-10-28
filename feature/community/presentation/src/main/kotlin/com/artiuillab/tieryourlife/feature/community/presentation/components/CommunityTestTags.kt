@@ -1,7 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.components
 
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
 object CommunityTestTags {
     const val COMMUNITY_LOADING = "home_community_loading"
@@ -22,6 +21,6 @@ object CommunityTestTags {
     fun communityCard(id: String): String = "community_card_$id"
     fun communityCardAuthor(id: String): String = "community_card_author_$id"
     fun communityCardTopic(id: String): String = "community_card_topic_$id"
-    fun categoryFilter(category: ListCategory?): String = "home_category_${category?.id ?: "all"}"
+    fun categoryFilter(sectionId: String?): String = "home_category_${sectionId ?: "all"}"
     fun reportReason(reason: ReportReason): String = "community_report_reason_${reason.id}"
 }

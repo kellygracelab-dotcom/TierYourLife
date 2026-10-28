@@ -13,7 +13,7 @@ class BoardOrderTest {
         id: Long,
         editedAt: Long? = id,
         favouritedAt: Long? = null,
-        category: ListCategory? = null,
+        category: String? = null,
         publishedId: String? = null,
     ) = TierList(
         id = id,
@@ -90,12 +90,12 @@ class BoardOrderTest {
     fun `a category filter keeps only that category`() {
         val arranged = BoardOrder.arrange(
             listOf(
-                board(1, category = ListCategory.Games),
-                board(2, category = ListCategory.Food),
+                board(1, category = ListCategory.Games.id),
+                board(2, category = ListCategory.Food.id),
                 board(3, category = null),
             ),
             BoardSort.Newest,
-            BoardFilters(category = ListCategory.Food),
+            BoardFilters(category = ListCategory.Food.id),
         )
 
         assertEquals(listOf(2L), ids(arranged.all))
@@ -119,12 +119,12 @@ class BoardOrderTest {
     fun `two filters both have to be satisfied`() {
         val arranged = BoardOrder.arrange(
             listOf(
-                board(1, category = ListCategory.Food, publishedId = "a"),
-                board(2, category = ListCategory.Food, publishedId = null),
-                board(3, category = ListCategory.Games, publishedId = "b"),
+                board(1, category = ListCategory.Food.id, publishedId = "a"),
+                board(2, category = ListCategory.Food.id, publishedId = null),
+                board(3, category = ListCategory.Games.id, publishedId = "b"),
             ),
             BoardSort.Newest,
-            BoardFilters(category = ListCategory.Food, published = PublishedFilter.Public),
+            BoardFilters(category = ListCategory.Food.id, published = PublishedFilter.Public),
         )
 
         assertEquals(listOf(1L), ids(arranged.all))
@@ -169,7 +169,7 @@ class BoardOrderTest {
     @Test
     fun `filters know whether any of them is on`() {
         assertFalse(BoardFilters().any)
-        assertTrue(BoardFilters(category = ListCategory.Food).any)
+        assertTrue(BoardFilters(category = ListCategory.Food.id).any)
         assertTrue(BoardFilters(published = PublishedFilter.Private).any)
     }
 }

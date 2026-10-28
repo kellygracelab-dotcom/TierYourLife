@@ -30,19 +30,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
-import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStats
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.distinctUntilChanged
 
-/** What the tiles do: open a section, follow or stop following it from the long-press menu. */
+/** What the tiles do, by section id: open a section, follow or stop following it from the long-press menu, or open them all. */
 internal class TileActions(
-    val onOpen: (ListCategory) -> Unit = {},
-    val onFollow: (ListCategory) -> Unit = {},
-    val onUnfollow: (ListCategory) -> Unit = {},
+    val onOpen: (String) -> Unit = {},
+    val onFollow: (String) -> Unit = {},
+    val onUnfollow: (String) -> Unit = {},
+    val onOpenAll: () -> Unit = {},
 )
 
 /** What a card in a feed does. */
@@ -53,32 +54,40 @@ internal class CardActions(
 
 private val FeedSpacing = 12.dp
 
-/** The nine tiles, laid out the way the window has room for (§2.1, §6.1, §7.1). */
+/**
+ * The section tiles, laid out the way the window has room for (§2.1, §6.1,
+ * §7.1), in the order given: as many as the slots hold, the last one leading
+ * to all of them when there are more ([homeTiles]).
+ */
 @Composable
 internal fun TilesBlock(
     layout: HomeLayout,
-    sections: List<SectionStats>,
+    sections: List<Section>,
     countsKnown: Boolean,
     actions: TileActions,
     modifier: Modifier = Modifier,
 ) {
-    val byId = sections.associateBy { it.section }
-    val tile: @Composable (ListCategory, Modifier, Boolean) -> Unit = { section, tileModifier, centred ->
-        val stats = byId[section]
+    val home = homeTiles(sections, layout)
+    val style = if (layout == HomeLayout.Cover) TileStyle.Cover else TileStyle()
+    val tile: @Composable (Section, Modifier, Boolean) -> Unit = { section, tileModifier, centred ->
         SectionTile(
             section = section,
-            newThisWeek = stats?.newThisWeek?.takeIf { countsKnown && section != ListCategory.Other },
-            following = stats?.following == true,
-            onOpen = { actions.onOpen(section) },
-            onFollow = { actions.onFollow(section) },
-            onUnfollow = { actions.onUnfollow(section) },
+            newThisWeek = section.newThisWeek.takeIf { countsKnown && !section.isOther },
+            following = section.following,
+            onOpen = { actions.onOpen(section.id) },
+            onFollow = { actions.onFollow(section.id) },
+            onUnfollow = { actions.onUnfollow(section.id) },
             modifier = tileModifier,
             centredLabel = centred,
-            style = if (layout == HomeLayout.Cover) TileStyle.Cover else TileStyle(),
+            style = style,
             longPressMenu = layout != HomeLayout.Cover,
         )
     }
-    val all = ListCategory.entries
+    val slot: @Composable (Section?, Modifier) -> Unit = { section, slotModifier ->
+        if (section != null) tile(section, slotModifier, false) else AllSectionsTile(home.total, actions.onOpenAll, slotModifier, style = style)
+    }
+    // Null stands for the slot that leads to every section.
+    val slots: List<Section?> = home.tiles + if (home.allSections) listOf(null) else emptyList()
     when (layout) {
         HomeLayout.CompactHeight -> LazyRow(
             modifier = modifier
@@ -87,37 +96,38 @@ internal fun TilesBlock(
             contentPadding = PaddingValues(top = 12.dp, start = gridSide(layout), end = gridSide(layout)),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            items(all, key = { it.id }) { section -> tile(section, Modifier.size(width = 160.dp, height = 88.dp), false) }
+            items(slots, key = { it?.id ?: ALL_SECTIONS_KEY }) { section -> slot(section, Modifier.size(width = 160.dp, height = 88.dp)) }
         }
 
         HomeLayout.Portrait -> Column(modifier.padding(top = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            all.filter { it != ListCategory.Other }.chunked(2).forEach { pair ->
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    pair.forEach { section -> tile(section, Modifier.weight(1f).height(96.dp), false) }
-                }
-            }
-            tile(ListCategory.Other, Modifier.fillMaxWidth().height(56.dp), true)
+            TileRows(home.tiles, columns = 2, gap = 10.dp) { section, rowModifier -> tile(section, rowModifier.height(96.dp), false) }
+            home.row?.let { tile(it, Modifier.fillMaxWidth().height(56.dp), true) }
+            if (home.allSections) AllSectionsTile(home.total, actions.onOpenAll, Modifier.fillMaxWidth().height(56.dp), row = true)
         }
 
         HomeLayout.Medium, HomeLayout.Cover -> {
             val height = if (layout == HomeLayout.Cover) 70.dp else 120.dp
             val gap = if (layout == HomeLayout.Cover) 6.dp else 10.dp
             Column(modifier.padding(top = if (layout == HomeLayout.Cover) 0.dp else 16.dp), verticalArrangement = Arrangement.spacedBy(gap)) {
-                all.chunked(3).forEach { row ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(gap)) {
-                        row.forEach { section -> tile(section, Modifier.weight(1f).height(height), false) }
-                    }
-                }
+                TileRows(slots, columns = 3, gap = gap) { section, rowModifier -> slot(section, rowModifier.height(height)) }
             }
         }
 
         HomeLayout.Wide -> Column(modifier.padding(top = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            listOf(all.take(5), all.drop(5)).forEach { row ->
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    row.forEach { section -> tile(section, Modifier.weight(1f).height(112.dp), false) }
-                    if (row.size < 5) Spacer(Modifier.weight((5 - row.size).toFloat()))
-                }
-            }
+            TileRows(slots, columns = 5, gap = 12.dp) { section, rowModifier -> slot(section, rowModifier.height(112.dp)) }
+        }
+    }
+}
+
+private const val ALL_SECTIONS_KEY = "all-sections"
+
+/** Rows of [columns] equal tiles; a short last row keeps the same widths and leaves the rest empty. */
+@Composable
+internal fun <T> TileRows(items: List<T>, columns: Int, gap: Dp, tile: @Composable (T, Modifier) -> Unit) {
+    items.chunked(columns).forEach { row ->
+        Row(horizontalArrangement = Arrangement.spacedBy(gap)) {
+            row.forEach { item -> tile(item, Modifier.weight(1f)) }
+            if (row.size < columns) Spacer(Modifier.weight((columns - row.size).toFloat()))
         }
     }
 }

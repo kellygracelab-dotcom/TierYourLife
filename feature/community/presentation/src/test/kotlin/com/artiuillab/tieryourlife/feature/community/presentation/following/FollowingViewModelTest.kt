@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSectio
 import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
+import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
@@ -22,7 +23,7 @@ import org.junit.Test
 
 private val ann = FollowedAuthor(uid = "a", name = "Ann", photoUrl = null)
 private val bea = FollowedAuthor(uid = "b", name = "Bea", photoUrl = "https://example.test/bea.jpg")
-private val pokemon = Topic(id = "t1", name = "Pokémon", section = ListCategory.Games, status = TopicStatus.Approved)
+private val pokemon = Topic(id = "t1", name = "Pokémon", section = ListCategory.Games.id, status = TopicStatus.Approved)
 private val cafes = Topic(id = "t2", name = "Kharkiv cafés", section = null, status = TopicStatus.Pending)
 
 class FollowingViewModelTest {
@@ -37,19 +38,19 @@ class FollowingViewModelTest {
         made.forEach { it.viewModelScope.cancel() }
     }
 
-    private fun viewModel(fake: FollowingFake) = FollowingViewModel(fake).also { made += it }
+    private fun viewModel(fake: FollowingFake) = FollowingViewModel(fake, sectionCatalogFor(fake)).also { made += it }
 
     @Test
     fun sectionsTopicsAndPeople_areListed_withTheWaitingTopicsBeside() = runBlocking {
         val viewModel = viewModel(
-            FollowingFake(people = listOf(ann, bea), topics = listOf(pokemon), sections = listOf(FollowedSection(ListCategory.Food, 4120)), mine = listOf(cafes)),
+            FollowingFake(people = listOf(ann, bea), topics = listOf(pokemon), sections = listOf(FollowedSection(ListCategory.Food.id, 4120)), mine = listOf(cafes)),
         )
 
         val ready = viewModel.state.firstWithin { it is FollowingUiState.Ready } as FollowingUiState.Ready
 
         assertEquals(listOf("a", "b"), ready.authors.map { it.uid })
         assertEquals(listOf("t1"), ready.topics.map { it.id })
-        assertEquals(listOf(ListCategory.Food), ready.sections.map { it.section })
+        assertEquals(listOf(ListCategory.Food.id), ready.sections.map { it.id })
         assertEquals(listOf("t2"), ready.waiting.map { it.id })
     }
 
@@ -96,13 +97,13 @@ class FollowingViewModelTest {
 
     @Test
     fun stoppingASection_tellsTheServer() = runBlocking {
-        val fake = FollowingFake(sections = listOf(FollowedSection(ListCategory.Food)))
+        val fake = FollowingFake(sections = listOf(FollowedSection(ListCategory.Food.id)))
         val viewModel = viewModel(fake)
         viewModel.state.firstWithin { it is FollowingUiState.Ready }
 
-        viewModel.toggle(FollowKeys.section(ListCategory.Food))
+        viewModel.toggle(FollowKeys.section(ListCategory.Food.id))
 
-        assertEquals(ListCategory.Food, withTimeout(5_000) { fake.sectionUnfollowed.await() })
+        assertEquals(ListCategory.Food.id, withTimeout(5_000) { fake.sectionUnfollowed.await() })
     }
 
     @Test
@@ -123,7 +124,7 @@ private class FollowingFake(
 ) : FakeCommunityRepository() {
     val unfollowAsked = CompletableDeferred<String>()
     val followAsked = CompletableDeferred<String>()
-    val sectionUnfollowed = CompletableDeferred<ListCategory>()
+    val sectionUnfollowed = CompletableDeferred<String>()
 
     override suspend fun following(): Result<Following> =
         if (fails) Result.failure(IllegalStateException("offline")) else Result.success(Following(people, topics, sections))
@@ -142,7 +143,7 @@ private class FollowingFake(
 
     override suspend fun unfollowTopic(id: String): Result<Unit> = answer()
 
-    override suspend fun unfollowSection(section: ListCategory): Result<Unit> {
+    override suspend fun unfollowSection(section: String): Result<Unit> {
         sectionUnfollowed.complete(section)
         return answer()
     }

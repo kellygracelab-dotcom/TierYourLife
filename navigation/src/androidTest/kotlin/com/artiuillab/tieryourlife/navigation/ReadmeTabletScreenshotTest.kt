@@ -137,13 +137,13 @@ class ReadmeTabletScreenshotTest {
                     phase = FeedPhase.Ready,
                     lists =
                     listOf(
-                        summary("1", "Films I make people watch", "Olena M.", ListCategory.FilmTv, 34, cover = Poster.GODFATHER),
+                        summary("1", "Films I make people watch", "Olena M.", ListCategory.FilmTv.id, 34, cover = Poster.GODFATHER),
                         summary(
-                            "3", "Every Ghibli film", "Mira", ListCategory.Anime, 22,
+                            "3", "Every Ghibli film", "Mira", ListCategory.Anime.id, 22,
                             previews = listOf(Poster.SPIRITED_AWAY, Poster.INTERSTELLAR, Poster.MATRIX, Poster.INCEPTION),
                         ),
-                        summary("2", "Ramen in Kyiv", "Taras", ListCategory.Food, 12),
-                        summary("4", "Albums I put on to work", "Olena M.", ListCategory.Music, 41),
+                        summary("2", "Ramen in Kyiv", "Taras", ListCategory.Food.id, 12),
+                        summary("4", "Albums I put on to work", "Olena M.", ListCategory.Music.id, 41),
                     ),
                 ),
             ),
@@ -209,7 +209,7 @@ class ReadmeTabletScreenshotTest {
         id: String,
         title: String,
         author: String,
-        category: ListCategory,
+        category: String,
         itemCount: Int,
         cover: String? = null,
         previews: List<String> = emptyList(),

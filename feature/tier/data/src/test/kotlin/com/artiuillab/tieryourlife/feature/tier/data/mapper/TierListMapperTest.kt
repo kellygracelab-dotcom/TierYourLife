@@ -112,6 +112,14 @@ class TierListMapperTest {
     }
 
     @Test
+    fun a_section_this_phone_has_not_heard_of_is_kept_as_it_was_stored() {
+        val entity = TierListEntity(id = 1, title = "Ramen", category = "street-food")
+
+        assertEquals("street-food", entity.toDomain().category)
+        assertEquals("street-food", TierListWithTiers(tierList = entity, tiers = emptyList()).toDomain().category)
+    }
+
+    @Test
     fun one_picture_is_a_cover_and_not_a_collage() {
         assertEquals(null, listOf("https://example.com/a.jpg").toStoredCoverImageUrls())
         assertEquals(emptyList<String>(), TierListEntity(id = 1, title = "Films").toDomain().coverImageUrls)

@@ -30,7 +30,7 @@ private val published = PublishedList(
         title = "Every A24 film",
         authorUid = "author-1",
         authorName = "Olena M.",
-        category = ListCategory.FilmTv,
+        category = ListCategory.FilmTv.id,
         itemCount = 2,
         updatedAtMillis = 0,
     ),

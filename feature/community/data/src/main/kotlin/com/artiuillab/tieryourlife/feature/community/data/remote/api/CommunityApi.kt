@@ -23,6 +23,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicMergeR
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicNameRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicSectionRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicsDto
+import kotlinx.serialization.json.JsonObject
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -61,6 +62,9 @@ interface CommunityApi {
 
     @GET("lists/sections")
     suspend fun sections(): SectionsDto
+
+    @GET("lists/sections/{id}")
+    suspend fun section(@Path("id") id: String): JsonObject
 
     @POST("lists/sections/{id}/follow")
     suspend fun followSection(@Path("id") id: String): SectionFollowDto
