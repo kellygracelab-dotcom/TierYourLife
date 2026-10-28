@@ -29,6 +29,11 @@ data class SectionDto(
     val following: Boolean = false,
     val collage: List<String> = emptyList(),
     val fileUnder: String? = null,
+    /** Sent on a proposal to its proposer and to moderators. */
+    val proposerUid: String? = null,
+    val declineNote: String? = null,
+    val mergedInto: String? = null,
+    val waitingLists: Int = 0,
 )
 
 @Serializable
@@ -36,6 +41,12 @@ data class ThemePairDto(val light: String, val dark: String)
 
 @Serializable
 data class SectionsDto(val sections: List<SectionDto> = emptyList(), val updatedAt: Long? = null)
+
+@Serializable
+data class SectionNameCheckDto(val free: Boolean = false, val id: String? = null, val code: String? = null)
+
+@Serializable
+data class SectionProposalDto(val name: String, val icon: String, val pictureId: String, val fileUnder: String)
 
 /** The body of `410 MERGED`. */
 @Serializable

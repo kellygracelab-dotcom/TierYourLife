@@ -4,12 +4,19 @@ import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.FakeSectionStore
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposal
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
+import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -64,7 +71,7 @@ class AllSectionsViewModelTest {
         assertTrue(AllSectionsUiState(sections = twenty + cars).searchable)
     }
 
-    private class Community(val followFails: Boolean = false) : FakeCommunityRepository() {
+    private class Community(val followFails: Boolean = false, val withdrawFails: Boolean = false) : FakeCommunityRepository() {
         var reads = 0
 
         override suspend fun sections(): Result<List<Section>> {
@@ -74,6 +81,12 @@ class AllSectionsViewModelTest {
 
         override suspend fun followSection(id: String): Result<Unit> =
             if (followFails) Result.failure(IOException("offline")) else Result.success(Unit)
+
+        override suspend fun proposeSection(proposal: SectionProposal): Result<Section> =
+            Result.success(Section(id = "street-food", name = proposal.name, status = SectionStatus.Pending, fileUnder = proposal.fileUnder))
+
+        override suspend fun withdrawProposal(id: String): Result<Unit> =
+            if (withdrawFails) Result.failure(IOException("offline")) else Result.success(Unit)
     }
 
     private val made = mutableListOf<AllSectionsViewModel>()
@@ -83,7 +96,11 @@ class AllSectionsViewModelTest {
         made.forEach { it.viewModelScope.cancel() }
     }
 
-    private fun viewModel(community: Community) = AllSectionsViewModel(sectionCatalogFor(community)).also { made += it }
+    private fun viewModel(community: Community, store: FakeSectionStore = FakeSectionStore()) = viewModel(sectionCatalogFor(community, store))
+
+    private fun viewModel(catalog: SectionCatalog) = AllSectionsViewModel(catalog).also { made += it }
+
+    private fun keptWith(vararg mine: Section) = FakeSectionStore(SectionDirectory(sections = Section.BUILT_IN + mine, fetchedAtMillis = 1L))
 
     @Test
     fun opening_readsTheSections_andShowsOnlyThoseOrdinaryScreensDraw() = runBlocking {
@@ -133,4 +150,53 @@ class AllSectionsViewModelTest {
         val back = viewModel.state.firstWithin { s -> !s.sections.first { it.id == "cars" }.following }
         assertEquals(0, back.sections.first { it.id == "cars" }.followerCount)
     }
+
+    @Test
+    fun aProposalSentWhileTheScreenIsOpen_isAnnounced_andWaitsFirst() = runBlocking {
+        val catalog = sectionCatalogFor(Community())
+        val viewModel = viewModel(catalog)
+        // The screen has seen what was waiting before: only what comes after is news.
+        withContext(Dispatchers.Main) {}
+
+        catalog.propose(SectionProposal("Street food", "local_cafe", "p-1", "food"))
+
+        withTimeout(5_000) { viewModel.proposed.first() }
+        val state = viewModel.state.firstWithin { it.waiting.isNotEmpty() }
+        assertEquals(listOf("street-food"), state.waiting.map { it.id })
+        assertTrue(state.sections.none { it.id == "street-food" })
+    }
+
+    @Test
+    fun withdrawing_takesTheWaitingSectionAway() = runBlocking {
+        val viewModel = viewModel(Community(), keptWith(waitingOne))
+        viewModel.state.firstWithin { it.waiting.isNotEmpty() }
+
+        viewModel.withdraw(waitingOne.id)
+
+        assertTrue(viewModel.state.firstWithin { it.waiting.isEmpty() }.waiting.isEmpty())
+    }
+
+    @Test
+    fun aWithdrawalThatFails_saysSo_andTheSectionStillWaits() = runBlocking {
+        val viewModel = viewModel(Community(withdrawFails = true), keptWith(waitingOne))
+        viewModel.state.firstWithin { it.waiting.isNotEmpty() }
+
+        viewModel.withdraw(waitingOne.id)
+
+        assertEquals(CommunityNotice.ActionFailed, withTimeout(5_000) { viewModel.notices.first() })
+        assertEquals(listOf(waitingOne.id), viewModel.state.value.waiting.map { it.id })
+    }
+
+    @Test
+    fun aDeclinedProposal_isANotice_untilDismissed() = runBlocking {
+        val declined = Section(id = "kites", name = "Kites", status = SectionStatus.Declined, mine = true, declineNote = "Too close to Hobbies")
+        val viewModel = viewModel(Community(), keptWith(declined))
+
+        assertEquals(listOf("kites"), viewModel.state.firstWithin { it.notices.isNotEmpty() }.notices.map { it.id })
+        viewModel.withdraw("kites")
+
+        assertTrue(viewModel.state.firstWithin { it.notices.isEmpty() }.notices.isEmpty())
+    }
+
+    private val waitingOne = Section(id = "street-food", name = "Street food", status = SectionStatus.Pending, fileUnder = "food", mine = true)
 }

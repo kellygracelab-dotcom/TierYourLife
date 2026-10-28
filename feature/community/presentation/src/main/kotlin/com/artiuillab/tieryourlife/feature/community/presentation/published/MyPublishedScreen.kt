@@ -53,6 +53,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListS
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AnonymousFace
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -207,6 +208,14 @@ private fun PublishedRow(
             )
             // Only its owner sees whose it is; everybody else sees nobody.
             if (summary.anonymous) AnonymousTag(Modifier.testTag(MyPublishedTestTags.anonymous(summary.id)))
+        }
+        summary.proposedSection?.let { proposed ->
+            Text(
+                text = stringResource(R.string.section_moves_to, summary.proposedSectionName ?: sectionLabel(proposed)),
+                modifier = Modifier.testTag(MyPublishedTestTags.movesTo(summary.id)),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
         // What the feed is showing is not what the board says any more. Said
         // here rather than left to be discovered by opening it, because the

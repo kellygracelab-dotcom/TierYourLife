@@ -1,7 +1,9 @@
 package com.artiuillab.tieryourlife.feature.community.domain.repository
 
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -89,6 +91,18 @@ class KeptSectionCatalog(
         }
         return result
     }
+
+    override suspend fun propose(proposal: SectionProposal): Result<Section> =
+        community.proposeSection(proposal).onSuccess { sent ->
+            state.update { it.withProposal(sent) }
+            keep()
+        }
+
+    override suspend fun withdraw(id: String): Result<Unit> =
+        community.withdrawProposal(id).onSuccess {
+            state.update { it.withoutProposal(id) }
+            keep()
+        }
 
     private suspend fun keep() = store.write(state.value)
 

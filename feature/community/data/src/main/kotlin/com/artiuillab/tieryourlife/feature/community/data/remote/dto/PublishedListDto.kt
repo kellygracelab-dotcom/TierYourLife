@@ -21,6 +21,9 @@ data class PublishedListSummaryDto(
     val topicName: String? = null,
     val rankingCount: Int = 0,
     val basedOn: BasedOnDto? = null,
+    /** From `GET lists/mine`: the author's own waiting proposal this list moves to, and its name. */
+    val proposedSection: String? = null,
+    val proposedSectionName: String? = null,
 )
 
 @Serializable

@@ -46,8 +46,10 @@ import com.artiuillab.tieryourlife.feature.community.presentation.navigation.nav
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToFollowing
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToModeration
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToMyPublished
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToProposeSection
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToSection
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToTopic
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.proposeSectionScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.sectionScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.topicScreen
 import com.artiuillab.tieryourlife.feature.play.presentation.PlayOverBoards
@@ -252,6 +254,7 @@ private fun NavContent(
             onChooseTopic = { id -> navController.navigateToTopicPicker(id) },
             onOpenPublishedList = { id -> navController.navigateToCommunityList(id) },
             play = PlayOverBoards,
+            onProposeSection = { fileUnder -> navController.navigateToProposeSection(fileUnder) },
         )
         coverPickerScreen(
             onBack = { navController.popBackStack() },
@@ -303,10 +306,22 @@ private fun NavContent(
             onOpenList = { route -> navController.navigateToCommunityList(route) },
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
         )
-        // No proposing yet: the form comes next, and the button waits for it.
         allSectionsScreen(
             onBack = { navController.popBackStack() },
             onOpenSection = { route -> navController.navigateToSection(route) },
+            onProposeSection = { navController.navigateToProposeSection() },
+        )
+        proposeSectionScreen(
+            onClose = { navController.popBackStack() },
+            // The form goes; a guest comes back to it signed in by opening it again.
+            onSignIn = {
+                navController.popBackStack()
+                navController.navigateToAccount()
+            },
+            onOpenSection = { route ->
+                navController.popBackStack()
+                navController.navigateToSection(route)
+            },
         )
         followingScreen(
             onBack = { navController.popBackStack() },

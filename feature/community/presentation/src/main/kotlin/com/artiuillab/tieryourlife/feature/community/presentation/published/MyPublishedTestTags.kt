@@ -14,4 +14,6 @@ internal object MyPublishedTestTags {
     fun takeDown(id: String): String = "my_published_take_down_$id"
 
     fun anonymous(id: String): String = "my_published_anonymous_$id"
+
+    fun movesTo(id: String): String = "my_published_moves_to_$id"
 }

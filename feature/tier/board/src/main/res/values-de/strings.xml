@@ -147,4 +147,7 @@
     <string name="tier_detail_play_needs_cards">Zum Spielen braucht es mindestens 3 Karten</string>
     <string name="list_settings_anonymous">Anonym veröffentlichen</string>
     <string name="list_settings_anonymous_body">Dein Name und dein Bild werden bei der Liste nicht gezeigt. Sie gehört weiter dir: Nur du kannst sie bearbeiten oder löschen.</string>
+    <string name="list_settings_propose_section">Bereich vorschlagen</string>
+    <string name="list_settings_category_waiting">Wartet auf einen Moderator</string>
+    <string name="list_settings_moves_to">Zieht nach %1$s, sobald er angenommen ist</string>
 </resources>

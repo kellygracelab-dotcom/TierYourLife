@@ -147,4 +147,7 @@
     <string name="tier_detail_play_needs_cards">Play needs at least 3 cards</string>
     <string name="list_settings_anonymous">Publish anonymously</string>
     <string name="list_settings_anonymous_body">Your name and face aren\'t shown with the list. It\'s still yours: only you can edit it or delete it.</string>
+    <string name="list_settings_propose_section">Propose a section</string>
+    <string name="list_settings_category_waiting">Waiting for a moderator</string>
+    <string name="list_settings_moves_to">Moves to %1$s once it’s approved</string>
 </resources>

@@ -62,6 +62,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.SearchIcon
 import com.artiuillab.tieryourlife.core.theme.ui.SearchTopBar
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingActions
@@ -69,6 +70,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.Fol
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedViewModel
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingTab
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingSectionSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingTopicSheet
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSectionNames
 import kotlinx.coroutines.flow.Flow
@@ -99,6 +101,8 @@ class ExploreCallbacks(
     val onExitSearch: () -> Unit = {},
     val onRetrySearch: () -> Unit = {},
     val onQuickFollow: (String) -> Unit = {},
+    /** Withdraws a waiting section proposal, or dismisses a notice. */
+    val onWithdrawProposal: (String) -> Unit = {},
 )
 
 /** Where Community leads. */
@@ -170,6 +174,7 @@ fun CommunityHomeScreen(
             onExitSearch = explore::exitSearch,
             onRetrySearch = explore::retrySearch,
             onQuickFollow = following::quickFollow,
+            onWithdrawProposal = following::withdrawProposal,
         ),
         destinations = CommunityDestinations(
             onOpenList = { onOpenList(CommunityRoute.CommunityList.of(it)) },
@@ -276,6 +281,7 @@ private fun HomeBody(
     var exploreMenu by remember { mutableStateOf<PublishedListSummary?>(null) }
     var followingMenu by remember { mutableStateOf<PublishedListSummary?>(null) }
     var waitingTopic by rememberSaveable(stateSaver = TopicSaver) { mutableStateOf<Topic?>(null) }
+    var waitingSection by rememberSaveable { mutableStateOf<String?>(null) }
     val searching = explore.query != null
 
     LaunchedEffect(Unit) { exploreFeed.onOpen() }
@@ -356,6 +362,8 @@ private fun HomeBody(
                                         onManage = destinations.onManageFollowing,
                                         onQuickFollow = exploreCalls.onQuickFollow,
                                         onOpenAllSections = destinations.onOpenAllSections,
+                                        onOpenWaitingSection = { waitingSection = it.id },
+                                        onDismissNotice = exploreCalls.onWithdrawProposal,
                                         onGoToExplore = { selectTab(0) },
                                     ),
                                     cards = CardActions(destinations.onOpenList) { followingMenu = it },
@@ -385,7 +393,30 @@ private fun HomeBody(
 
     FeedListMenus(exploreMenu, { exploreMenu = null }, exploreFeed, destinations.onOpenAuthor)
     FeedListMenus(followingMenu, { followingMenu = null }, followingFeed, destinations.onOpenAuthor)
-    waitingTopic?.let { topic -> WaitingTopicSheet(topic = topic, onDismiss = { waitingTopic = null }) }
+    WaitingSheets(
+        topic = waitingTopic,
+        section = following.waitingSections.firstOrNull { it.id == waitingSection },
+        onWithdraw = exploreCalls.onWithdrawProposal,
+        onClose = {
+            waitingTopic = null
+            waitingSection = null
+        },
+    )
+}
+
+@Composable
+private fun WaitingSheets(topic: Topic?, section: Section?, onWithdraw: (String) -> Unit, onClose: () -> Unit) {
+    if (topic != null) WaitingTopicSheet(topic = topic, onDismiss = onClose)
+    if (section != null) {
+        WaitingSectionSheet(
+            section = section,
+            onWithdraw = {
+                onClose()
+                onWithdraw(section.id)
+            },
+            onDismiss = onClose,
+        )
+    }
 }
 
 /** Explore · Following (§1.2): two equal tabs under a phone's bar, or hugging their labels under a rail's title (§7.1). */

@@ -47,6 +47,8 @@ internal data class KeptSections(
     val sections: List<SectionDto> = emptyList(),
     val extra: List<SectionDto> = emptyList(),
     val merged: Map<String, String> = emptyMap(),
+    /** The ids of this person's own proposals: the server sends the proposer, not "yours". */
+    val mine: List<String> = emptyList(),
 )
 
 private val keptJson = Json {
@@ -61,6 +63,7 @@ internal fun encodeSections(directory: SectionDirectory): String = keptJson.enco
         sections = directory.sections.map { it.toDto() },
         extra = directory.extra.values.map { it.toDto() },
         merged = directory.merged,
+        mine = directory.sections.filter { it.mine }.map { it.id },
     ),
 )
 
@@ -68,7 +71,7 @@ internal fun decodeSections(json: String, fetchedAtMillis: Long): SectionDirecto
     val kept = keptJson.decodeFromString(KeptSections.serializer(), json)
     if (kept.sections.isEmpty()) return null
     return SectionDirectory(
-        sections = kept.sections.map { it.toDomain() },
+        sections = kept.sections.map { it.toDomain().copy(mine = it.id in kept.mine) },
         extra = kept.extra.map { it.toDomain() }.associateBy { it.id },
         merged = kept.merged,
         fetchedAtMillis = fetchedAtMillis,

@@ -64,6 +64,9 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.WideCo
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.countText
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.homeLayoutFor
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.community.presentation.section.ProposalNotices
+import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingSectionSheet
+import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingSectionTile
 import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.common.labelWith
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSectionNames
@@ -92,6 +95,8 @@ class AllSectionsCallbacks(
     val onQueryChange: (String) -> Unit = {},
     val onFollow: (String) -> Unit = {},
     val onUnfollow: (String) -> Unit = {},
+    /** Withdraws a waiting proposal, or dismisses a notice. */
+    val onWithdraw: (String) -> Unit = {},
 )
 
 /**
@@ -116,8 +121,10 @@ fun AllSectionsScreen(
             onQueryChange = viewModel::updateQuery,
             onFollow = viewModel::follow,
             onUnfollow = viewModel::unfollow,
+            onWithdraw = viewModel::withdraw,
         ),
         notices = viewModel.notices,
+        proposed = viewModel.proposed,
         onProposeSection = onProposeSection,
     )
 }
@@ -135,20 +142,39 @@ fun AllSectionsContent(
     calls: AllSectionsCallbacks = AllSectionsCallbacks(),
     notices: Flow<CommunityNotice> = emptyFlow(),
     onProposeSection: (() -> Unit)? = null,
+    proposed: Flow<Unit> = emptyFlow(),
 ) {
     val snackbar = remember { SnackbarHostState() }
+    var openWaiting by remember { mutableStateOf<String?>(null) }
     AllSectionsNotices(notices, snackbar, calls.onFollow)
+    ProposedSnackbar(proposed, snackbar)
     Surface(modifier.fillMaxSize().testTag(AllSectionsTestTags.SCREEN), color = MaterialTheme.colorScheme.surface) {
         Box(Modifier.fillMaxSize()) {
             BarredScreen(bar = { TopBar(onBack) }) {
                 BoxWithConstraints(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                     val layout = homeLayoutFor(currentWindowShape, maxHeight)
-                    SectionsGrid(state, layout, calls, onProposeSection)
+                    SectionsGrid(state, layout, calls, onProposeSection, onOpenWaiting = { openWaiting = it })
                 }
             }
             SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
         }
     }
+    state.waiting.firstOrNull { it.id == openWaiting }?.let { section ->
+        WaitingSectionSheet(
+            section = section,
+            onWithdraw = {
+                openWaiting = null
+                calls.onWithdraw(section.id)
+            },
+            onDismiss = { openWaiting = null },
+        )
+    }
+}
+
+@Composable
+private fun ProposedSnackbar(proposed: Flow<Unit>, snackbar: SnackbarHostState) {
+    val resources = LocalResources.current
+    LaunchedEffect(proposed) { proposed.collect { snackbar.showSnackbar(resources.getString(R.string.propose_sent)) } }
 }
 
 /** Columns and tile heights as Home has them: two on a phone, three from 600, five from 840. */
@@ -163,7 +189,13 @@ private fun gridShapeOf(layout: HomeLayout): GridShape = when (layout) {
 }
 
 @Composable
-private fun SectionsGrid(state: AllSectionsUiState, layout: HomeLayout, calls: AllSectionsCallbacks, onProposeSection: (() -> Unit)?) {
+private fun SectionsGrid(
+    state: AllSectionsUiState,
+    layout: HomeLayout,
+    calls: AllSectionsCallbacks,
+    onProposeSection: (() -> Unit)?,
+    onOpenWaiting: (String) -> Unit,
+) {
     val shape = gridShapeOf(layout)
     val resources = LocalResources.current
     val tag = currentLanguageTag()
@@ -182,6 +214,11 @@ private fun SectionsGrid(state: AllSectionsUiState, layout: HomeLayout, calls: A
     ) {
         item(key = "head", span = { GridItemSpan(maxLineSpan) }) {
             CountAndSort(state.sections.size, state.sort, calls.onSort)
+        }
+        if (state.notices.isNotEmpty()) {
+            item(key = "notices", span = { GridItemSpan(maxLineSpan) }) {
+                ProposalNotices(state.notices, onDismiss = calls.onWithdraw)
+            }
         }
         if (state.searchable) {
             item(key = "find", span = { GridItemSpan(maxLineSpan) }) {
@@ -207,6 +244,10 @@ private fun SectionsGrid(state: AllSectionsUiState, layout: HomeLayout, calls: A
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+        }
+        // Their own waiting proposals first, whatever the order: seen by nobody else.
+        items(state.waiting, key = { "waiting-" + it.id }) { section ->
+            WaitingSectionTile(section, onOpen = { onOpenWaiting(section.id) }, modifier = Modifier.height(shape.tileHeight))
         }
         items(shown, key = { it.id }) { section ->
             SectionTile(

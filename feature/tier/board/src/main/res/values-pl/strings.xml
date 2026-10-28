@@ -167,4 +167,7 @@
     <string name="tier_detail_play_needs_cards">Do gry potrzebne są co najmniej 3 karty</string>
     <string name="list_settings_anonymous">Publikuj anonimowo</string>
     <string name="list_settings_anonymous_body">Twoje imię i zdjęcie nie są pokazywane przy liście. Nadal jest twoja: tylko ty możesz ją edytować lub usunąć.</string>
+    <string name="list_settings_propose_section">Zaproponuj dział</string>
+    <string name="list_settings_category_waiting">Czeka na moderatora</string>
+    <string name="list_settings_moves_to">Trafi do działu %1$s, gdy zostanie zatwierdzony</string>
 </resources>

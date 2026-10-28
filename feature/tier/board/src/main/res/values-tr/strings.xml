@@ -147,4 +147,7 @@
     <string name="tier_detail_play_needs_cards">Oynamak için en az 3 kart gerekir</string>
     <string name="list_settings_anonymous">Anonim olarak yayınla</string>
     <string name="list_settings_anonymous_body">Adın ve fotoğrafın listeyle birlikte gösterilmez. Liste yine senindir: yalnızca sen düzenleyebilir veya silebilirsin.</string>
+    <string name="list_settings_propose_section">Bölüm öner</string>
+    <string name="list_settings_category_waiting">Moderatör bekleniyor</string>
+    <string name="list_settings_moves_to">Onaylanınca %1$s bölümüne taşınacak</string>
 </resources>

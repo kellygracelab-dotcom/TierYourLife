@@ -137,4 +137,7 @@
     <string name="tier_detail_play_needs_cards">プレイするにはカードが3枚以上必要です</string>
     <string name="list_settings_anonymous">匿名で公開</string>
     <string name="list_settings_anonymous_body">リストにあなたの名前と写真は表示されません。リストはあなたのもののままで、編集や削除ができるのはあなただけです。</string>
+    <string name="list_settings_propose_section">セクションを提案</string>
+    <string name="list_settings_category_waiting">モデレーターの確認待ち</string>
+    <string name="list_settings_moves_to">承認されると「%1$s」に移ります</string>
 </resources>

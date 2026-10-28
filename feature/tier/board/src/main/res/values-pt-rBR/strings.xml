@@ -157,4 +157,7 @@
     <string name="tier_detail_play_needs_cards">Para jogar, são necessários pelo menos 3 cards</string>
     <string name="list_settings_anonymous">Publicar anonimamente</string>
     <string name="list_settings_anonymous_body">Seu nome e sua foto não aparecem com a lista. Ela continua sendo sua: só você pode editá-la ou excluí-la.</string>
+    <string name="list_settings_propose_section">Propor uma seção</string>
+    <string name="list_settings_category_waiting">Aguardando um moderador</string>
+    <string name="list_settings_moves_to">Vai para %1$s quando for aprovada</string>
 </resources>

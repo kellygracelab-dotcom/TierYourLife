@@ -73,6 +73,10 @@ sealed interface CommunityRoute {
     @Serializable
     data object AllSections : CommunityRoute
 
+    /** The proposal form; [fileUnder] is the section of the list it was opened from, if any. */
+    @Serializable
+    data class ProposeSection(val fileUnder: String? = null) : CommunityRoute
+
     /**
      * One topic's page. The name and section travel so the header is right
      * before the server answers; a chip that knows only the id sends the id.
@@ -113,6 +117,10 @@ internal fun SavedStateHandle.topicRoute() = CommunityRoute.Topic(
     topicId = required(CommunityRoute.Topic::topicId.name),
     name = get<String>(CommunityRoute.Topic::name.name),
     section = get<String>(CommunityRoute.Topic::section.name),
+)
+
+internal fun SavedStateHandle.proposeSectionRoute() = CommunityRoute.ProposeSection(
+    fileUnder = get<String>(CommunityRoute.ProposeSection::fileUnder.name),
 )
 
 internal fun SavedStateHandle.sectionRoute() = CommunityRoute.Section(

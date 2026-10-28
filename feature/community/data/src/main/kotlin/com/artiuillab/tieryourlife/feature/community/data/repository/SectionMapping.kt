@@ -18,8 +18,9 @@ import retrofit2.HttpException
  * from before sections were data, takes the built-in's own or the default; an
  * icon the app cannot draw is the default, and only a web picture is kept.
  */
-internal fun SectionDto.toDomain(): Section {
+internal fun SectionDto.toDomain(me: String? = null): Section {
     val art = ListCategory.fromId(id)
+    val status = SectionStatus.fromId(status)
     return Section(
         id = id,
         name = name.orEmpty().trim(),
@@ -30,7 +31,7 @@ internal fun SectionDto.toDomain(): Section {
         tint = tint?.toDomain(),
         topicBg = topicBg?.toDomain(),
         topicIcon = topicIcon?.toDomain(),
-        status = SectionStatus.fromId(status),
+        status = status,
         hidden = hidden,
         builtIn = builtIn ?: (art != null),
         rank = rank,
@@ -42,6 +43,11 @@ internal fun SectionDto.toDomain(): Section {
         following = following,
         collage = collage.filter { it.startsWith("https://") }.take(COLLAGE_SIZE),
         fileUnder = fileUnder,
+        // Moderators are sent everybody's proposals; only the ones this account sent are its own.
+        mine = status != SectionStatus.Approved && me != null && proposerUid == me,
+        declineNote = declineNote?.takeIf { it.isNotBlank() },
+        mergedInto = mergedInto,
+        waitingLists = waitingLists,
     )
 }
 
@@ -67,6 +73,9 @@ internal fun Section.toDto() = SectionDto(
     following = following,
     collage = collage,
     fileUnder = fileUnder,
+    declineNote = declineNote,
+    mergedInto = mergedInto,
+    waitingLists = waitingLists,
 )
 
 /** A colour pair only when both halves read as colours: half a pair is no look, and Other's stands in. */
@@ -81,16 +90,16 @@ private const val COLLAGE_SIZE = 4
  * Other moved last in case it was not. An empty answer is no answer: the nine
  * stand rather than nothing at all.
  */
-internal fun sectionsFrom(answer: List<SectionDto>): List<Section> {
-    val all = answer.filter { it.id.isNotBlank() }.distinctBy { it.id }.map { it.toDomain() }
+internal fun sectionsFrom(answer: List<SectionDto>, me: String? = null): List<Section> {
+    val all = answer.filter { it.id.isNotBlank() }.distinctBy { it.id }.map { it.toDomain(me) }
     if (all.isEmpty()) return Section.BUILT_IN
     return all.filterNot { it.isOther } + all.filter { it.isOther }
 }
 
 /** One section's answer, bare or wrapped as `{"section": …}`: the draft names the call, not the envelope. */
-internal fun sectionFrom(answer: JsonObject): Section {
+internal fun sectionFrom(answer: JsonObject, me: String? = null): Section {
     val body = (answer["section"] as? JsonObject) ?: answer
-    return networkJson.decodeFromJsonElement(SectionDto.serializer(), body).toDomain()
+    return networkJson.decodeFromJsonElement(SectionDto.serializer(), body).toDomain(me)
 }
 
 /** A refusal that is itself an answer: 404 is no such section, 410 one that lives on under another id. Null for any other failure. */

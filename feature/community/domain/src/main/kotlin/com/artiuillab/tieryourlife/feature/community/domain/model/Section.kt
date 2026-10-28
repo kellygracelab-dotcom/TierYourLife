@@ -55,6 +55,14 @@ data class Section(
     val collage: List<String> = emptyList(),
     /** On a waiting proposal: where its proposer's lists live meanwhile. */
     val fileUnder: String? = null,
+    /** This person's own proposal: waiting, or turned down or merged and not yet dismissed. Moderators get everybody's. */
+    val mine: Boolean = false,
+    /** A moderator's word on a declined proposal, for its proposer. */
+    val declineNote: String? = null,
+    /** Where a merged proposal went. */
+    val mergedInto: String? = null,
+    /** How many of the proposer's lists wait for this one. */
+    val waitingLists: Int = 0,
 ) {
     /** The built-in this section is, whose art and words the app has of its own; null for everybody else's. */
     val art: ListCategory? get() = ListCategory.fromId(id)
@@ -63,6 +71,12 @@ data class Section(
     val shown: Boolean get() = status == SectionStatus.Approved && !hidden
 
     val isOther: Boolean get() = id == ListCategory.Other.id
+
+    /** This person's own proposal still waiting for a moderator. */
+    val waiting: Boolean get() = mine && status == SectionStatus.Pending
+
+    /** This person's own proposal decided against: a notice until they dismiss it. */
+    val settledAgainst: Boolean get() = mine && (status == SectionStatus.Declined || status == SectionStatus.Merged)
 
     /** `names[locale] ?? name`: the exact tag first, then its language, so `pt-BR` and a plain `uk` both find theirs. Null when the server named nothing. */
     fun nameIn(languageTag: String): String? {

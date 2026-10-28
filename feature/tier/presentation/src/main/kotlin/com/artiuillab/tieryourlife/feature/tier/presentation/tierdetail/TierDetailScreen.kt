@@ -40,6 +40,8 @@ fun TierDetailScreen(
     focusTierId: Long? = null,
     /** Play over this board; navigation hands in the real one. */
     play: BoardPlay = NoPlay,
+    /** The proposal form, from the end of the category picker. */
+    onProposeSection: ((String?) -> Unit)? = null,
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
     val screen by viewModel.screen.collectAsStateWithLifecycle()
@@ -91,6 +93,7 @@ fun TierDetailScreen(
             onUpdatePublished = viewModel::updatePublished,
             onSetCategory = viewModel::setCategory,
             onCategoryNotChosen = viewModel::categoryNotChosen,
+            onProposeSection = onProposeSection,
             onChooseCover = onChooseCover,
             onChooseTopic = onChooseTopic,
             onAddClick = { addSheetVisible = true },
