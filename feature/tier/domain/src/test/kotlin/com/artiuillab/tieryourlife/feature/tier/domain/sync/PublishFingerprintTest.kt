@@ -31,6 +31,20 @@ class PublishFingerprintTest {
     }
 
     @Test
+    fun goingAnonymous_showsUp() {
+        assertNotEquals(print(board()), print(board().copy(anonymous = true)))
+    }
+
+    // A list published before the flag existed must not suddenly read as behind.
+    @Test
+    fun aListThatIsNotAnonymous_keepsTheFingerprintItHadBeforeTheFlag() {
+        val bare = TierList(id = 1, title = "T", tiers = emptyList())
+
+        assertEquals(sha256("1:T|~|~|"), print(bare))
+        assertEquals(sha256("1:T|~|~|9:anonymous|"), print(bare.copy(anonymous = true)))
+    }
+
+    @Test
     fun changingTheCover_showsUp() {
         assertNotEquals(print(board()), print(board(cover = "https://example.test/other.jpg")))
     }
@@ -95,6 +109,9 @@ class PublishFingerprintTest {
         val other = board(cardImage = "/data/user/0/app/files/tier_images/def")
         assertNotEquals(print(one), print(other))
     }
+
+    private fun sha256(text: String): String =
+        java.security.MessageDigest.getInstance("SHA-256").digest(text.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
 
     /** The last path segment, which is how the app names its own pictures. */
     private fun print(list: TierList): String =

@@ -58,6 +58,8 @@ class RecordingTierRepository(
 
     override suspend fun setCategory(id: Long, category: String?) = Unit
 
+    override suspend fun setAnonymous(id: Long, anonymous: Boolean) = Unit
+
     val covers = mutableListOf<Pair<Long, List<String>>>()
 
     /** Every topic set, as (id, topicId, topicName, newTopicName). */

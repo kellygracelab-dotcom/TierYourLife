@@ -259,4 +259,6 @@
     <string name="all_sections_sort_name">A–Z</string>
     <string name="all_sections_find">Bölüm bul</string>
     <string name="all_sections_propose">Bölüm öner</string>
+    <string name="community_anonymous">Anonim</string>
+    <string name="community_based_on_nameless">“%1$s” temel alınarak</string>
 </resources>

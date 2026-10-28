@@ -25,7 +25,7 @@ class KeptPageTest {
         topicId = "t",
         topicName = "Noodles",
         rankingCount = 2,
-        basedOn = BasedOn("src", "Source", "Olena"),
+        basedOn = BasedOn("src", "Source", "Olena", authorUid = "u-olena"),
     )
 
     @Test

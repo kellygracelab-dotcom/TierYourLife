@@ -287,4 +287,6 @@
     <string name="all_sections_sort_name">А–Я</string>
     <string name="all_sections_find">Найти раздел</string>
     <string name="all_sections_propose">Предложить раздел</string>
+    <string name="community_anonymous">Анонимно</string>
+    <string name="community_based_on_nameless">По мотивам «%1$s»</string>
 </resources>

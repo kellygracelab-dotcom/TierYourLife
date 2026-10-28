@@ -16,5 +16,8 @@ object EditorialAuthors {
     )
 
     fun isEditorial(authorUid: String, anonymous: Boolean = false): Boolean =
-        anonymous || authorUid.isBlank() || authorUid in uids
+        anonymous || authorUid.isBlank() || isTheAppsOwn(authorUid)
+
+    /** The app's own lists show no author row at all; anybody else's anonymous list says "Anonymous". */
+    fun isTheAppsOwn(authorUid: String): Boolean = authorUid in uids
 }

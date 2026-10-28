@@ -145,4 +145,6 @@
     <string name="tier_detail_drop_unrank_dock">Drop on the pool to unrank</string>
     <string name="tier_detail_content_description_play">Play</string>
     <string name="tier_detail_play_needs_cards">Play needs at least 3 cards</string>
+    <string name="list_settings_anonymous">Publish anonymously</string>
+    <string name="list_settings_anonymous_body">Your name and face aren\'t shown with the list. It\'s still yours: only you can edit it or delete it.</string>
 </resources>

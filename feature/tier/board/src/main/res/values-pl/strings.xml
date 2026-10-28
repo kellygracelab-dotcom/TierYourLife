@@ -165,4 +165,6 @@
     <string name="tier_detail_drop_unrank_dock">Upuść na pulę, aby usunąć z rankingu</string>
     <string name="tier_detail_content_description_play">Graj</string>
     <string name="tier_detail_play_needs_cards">Do gry potrzebne są co najmniej 3 karty</string>
+    <string name="list_settings_anonymous">Publikuj anonimowo</string>
+    <string name="list_settings_anonymous_body">Twoje imię i zdjęcie nie są pokazywane przy liście. Nadal jest twoja: tylko ty możesz ją edytować lub usunąć.</string>
 </resources>

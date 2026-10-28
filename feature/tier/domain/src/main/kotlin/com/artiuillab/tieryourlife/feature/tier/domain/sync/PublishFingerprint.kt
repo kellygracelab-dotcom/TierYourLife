@@ -36,6 +36,8 @@ object PublishFingerprint {
             eat(item.title)
             eat(picture(item.imageUrl, pictureIdOf))
         }
+        // Only when true, last: every copy published before this keeps its fingerprint, and is not suddenly behind.
+        if (list.anonymous) eat(ANONYMOUS)
 
         return digest.digest().joinToString("") { byte -> "%02x".format(byte) }
     }
@@ -46,4 +48,6 @@ object PublishFingerprint {
 
     /** Distinguishes an absent field from an empty one. */
     private const val NOTHING = "~|"
+
+    private const val ANONYMOUS = "anonymous"
 }

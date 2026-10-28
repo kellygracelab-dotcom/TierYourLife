@@ -127,6 +127,12 @@ data class PublishListRequestDto(
     val newTopic: String? = null,
     /** The published list the cards were taken from; the server decides whether this is a ranking of it. */
     val takenFrom: String? = null,
+    /**
+     * Always sent, true or false, with no default: a republish without the
+     * field keeps whatever the server has, which is how an older app cannot
+     * turn an anonymous list back into a named one.
+     */
+    val anonymous: Boolean,
 )
 
 @Serializable
@@ -145,7 +151,14 @@ data class ReportRequestDto(
 )
 
 @Serializable
-data class BasedOnDto(val id: String, val title: String = "", val authorName: String = "")
+data class BasedOnDto(
+    val id: String,
+    val title: String = "",
+    /** Empty for an anonymous original, and on copies made before credits carried a uid. */
+    val authorUid: String = "",
+    /** Empty, or missing, for an anonymous original. */
+    val authorName: String? = null,
+)
 
 @Serializable
 data class RankingDto(

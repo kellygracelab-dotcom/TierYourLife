@@ -315,4 +315,6 @@
     <string name="all_sections_sort_name">أ–ي</string>
     <string name="all_sections_find">ابحث عن قسم</string>
     <string name="all_sections_propose">اقترح قسمًا</string>
+    <string name="community_anonymous">مجهول</string>
+    <string name="community_based_on_nameless">مبني على «%1$s»</string>
 </resources>

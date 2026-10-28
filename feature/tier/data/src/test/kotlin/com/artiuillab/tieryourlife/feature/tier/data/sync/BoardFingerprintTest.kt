@@ -174,4 +174,70 @@ class BoardFingerprintTest {
     fun `two different boards do not collide`() {
         assertNotEquals(fingerprint(), fingerprint(board = board.copy(uid = "board-2")))
     }
+
+    // The site computes the same text; these two are the vectors it checks too.
+    private val bare = TierListEntity(id = 1, title = "T", displayMode = "WRAP", uid = "u")
+
+    @Test
+    fun `an anonymous board adds one field after everything else, as the site writes it`() {
+        val print = BoardFingerprint.of(bare.copy(anonymous = true), emptyList(), emptyList(), ::pictureIdOf)
+
+        assertEquals(sha256("1:u|1:T|4:WRAP|~|~|~|~|~|9:anonymous|"), print)
+        assertEquals("b7c68568ab4c48be25a724e26ef8f14ac5f940178b556a1cb4afb7183c717394", print)
+    }
+
+    @Test
+    fun `a board that is not anonymous keeps the fingerprint it always had`() {
+        val print = BoardFingerprint.of(bare, emptyList(), emptyList(), ::pictureIdOf)
+
+        assertEquals(sha256("1:u|1:T|4:WRAP|~|~|~|~|~|"), print)
+        assertEquals("8e5ded7251916b6817519d19b768e298cb2e38b195ef08173f4e22c50189b27f", print)
+    }
+
+    @Test
+    fun `the anonymous field comes after the last card, not among the board's own`() {
+        val anonymous = board.copy(anonymous = true)
+
+        assertNotEquals(fingerprint(), fingerprint(board = anonymous))
+        assertEquals(fingerprint(board = anonymous), fingerprint(board = anonymous))
+    }
+
+    private val game = """{"kind":"swiss","count":4,"seed":7,"refine":false,"ids":["a","b","c","d"],"history":[[0,1,0],[2,3,null]],"round":1,"startedAt":1793146000000,"scope":["t-s"],"keepTier":true}"""
+
+    @Test
+    fun `a saved game comes last, written the way the site writes it`() {
+        val print = BoardFingerprint.of(bare.copy(anonymous = true, play = game), emptyList(), emptyList(), ::pictureIdOf)
+
+        assertEquals(sha256("1:u|1:T|4:WRAP|~|~|~|~|~|9:anonymous|${game.length}:$game|"), print)
+        assertEquals("b97bfcf2595276d8399cacd16b85ec5341c62ae5ea9916330b394bf61c9cea89", print)
+    }
+
+    // The server's bytes are not the text: spacing and key order are its own.
+    @Test
+    fun `the game is hashed in its one written form, whatever order the server sent it in`() {
+        val shuffled = """{ "keepTier": true, "history": [[0, 1, 0], [2, 3, null]], "scope": ["t-s"], "startedAt": 1793146000000,
+            "round": 1, "ids": ["a", "b", "c", "d"], "refine": false, "seed": 7, "count": 4, "kind": "swiss" }"""
+
+        assertEquals(game, BoardFingerprint.canonicalPlay(shuffled))
+        assertEquals(fingerprint(board = board.copy(play = game)), fingerprint(board = board.copy(play = shuffled)))
+    }
+
+    @Test
+    fun `scope only when present, keepTier only when true`() {
+        val plain = """{"kind":"hill","count":2,"seed":1,"refine":true,"ids":["a","b"],"history":[],"round":0,"startedAt":5,"keepTier":false}"""
+
+        assertEquals(
+            """{"kind":"hill","count":2,"seed":1,"refine":true,"ids":["a","b"],"history":[],"round":0,"startedAt":5}""",
+            BoardFingerprint.canonicalPlay(plain),
+        )
+    }
+
+    @Test
+    fun `a saved game changes it, and text that is no game leaves it as it was`() {
+        assertNotEquals(fingerprint(), fingerprint(board = board.copy(play = game)))
+        assertEquals(fingerprint(), fingerprint(board = board.copy(play = "not a game")))
+    }
+
+    private fun sha256(text: String): String =
+        java.security.MessageDigest.getInstance("SHA-256").digest(text.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
 }

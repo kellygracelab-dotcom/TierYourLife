@@ -51,6 +51,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CoverIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.presentation.R
+import com.artiuillab.tieryourlife.feature.community.presentation.components.AnonymousFace
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
@@ -198,11 +199,15 @@ private fun PublishedRow(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
-        Text(
-            text = pluralStringResource(R.plurals.community_item_count, summary.itemCount, summary.itemCount),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                text = pluralStringResource(R.plurals.community_item_count, summary.itemCount, summary.itemCount),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            // Only its owner sees whose it is; everybody else sees nobody.
+            if (summary.anonymous) AnonymousTag(Modifier.testTag(MyPublishedTestTags.anonymous(summary.id)))
+        }
         // What the feed is showing is not what the board says any more. Said
         // here rather than left to be discovered by opening it, because the
         // person who edited the board is the last to notice: their own copy
@@ -242,6 +247,25 @@ private fun PublishedRow(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun AnonymousTag(modifier: Modifier = Modifier) {
+    Row(
+        modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+            .padding(start = 4.dp, end = 8.dp, top = 2.dp, bottom = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        AnonymousFace(size = 16.dp)
+        Text(
+            text = stringResource(R.string.community_anonymous),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

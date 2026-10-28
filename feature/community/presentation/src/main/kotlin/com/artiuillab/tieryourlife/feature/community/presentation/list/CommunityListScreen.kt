@@ -44,6 +44,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.presentation.R
+import com.artiuillab.tieryourlife.feature.community.presentation.components.AnonymousAuthorLine
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorLine
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
@@ -339,7 +340,7 @@ private fun UnderTheTitle(
     onOpenList: (String) -> Unit,
     onOpenRankings: () -> Unit,
 ) {
-    // A list that stands without an author has no line to pin here.
+    // One of the app's own lists has no line to pin here; somebody's anonymous one has a line that leads nowhere.
     if (!loaded.editorial) {
         AuthorLine(
             name = loaded.authorName,
@@ -348,6 +349,8 @@ private fun UnderTheTitle(
             onOpenAuthor = { onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl) },
             onToggleFollow = onToggleFollow,
         )
+    } else if (loaded.byNobody) {
+        AnonymousAuthorLine()
     }
     val basedOn = loaded.basedOn
     if (basedOn != null) {

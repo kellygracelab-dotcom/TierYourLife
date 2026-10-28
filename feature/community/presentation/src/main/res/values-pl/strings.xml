@@ -287,4 +287,6 @@
     <string name="all_sections_sort_name">A–Z</string>
     <string name="all_sections_find">Znajdź dział</string>
     <string name="all_sections_propose">Zaproponuj dział</string>
+    <string name="community_anonymous">Anonimowo</string>
+    <string name="community_based_on_nameless">Na podstawie „%1$s”</string>
 </resources>

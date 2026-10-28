@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.presentation.R
+import com.artiuillab.tieryourlife.feature.community.presentation.components.AnonymousFace
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 
@@ -106,7 +107,8 @@ internal fun FeedCard(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
-            if (!summary.editorial) {
+            // The app's own lists stand with no author row; somebody's anonymous one says so.
+            if (!summary.editorial || summary.byNobody) {
                 Row(
                     Modifier
                         .padding(top = 8.dp)
@@ -114,11 +116,15 @@ internal fun FeedCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
-                    AuthorFace(photoUrl = summary.authorPhotoUrl, name = summary.authorName, size = 20.dp)
+                    if (summary.byNobody) {
+                        AnonymousFace(size = 20.dp)
+                    } else {
+                        AuthorFace(photoUrl = summary.authorPhotoUrl, name = summary.authorName, size = 20.dp)
+                    }
                     Text(
-                        text = summary.authorName,
+                        text = if (summary.byNobody) stringResource(R.string.community_anonymous) else summary.authorName,
                         style = MetaStyle,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = if (summary.byNobody) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )

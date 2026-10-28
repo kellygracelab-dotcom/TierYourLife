@@ -155,4 +155,6 @@
     <string name="tier_detail_drop_unrank_dock">Suelta en la reserva para quitar el rango</string>
     <string name="tier_detail_content_description_play">Jugar</string>
     <string name="tier_detail_play_needs_cards">Para jugar hacen falta al menos 3 cartas</string>
+    <string name="list_settings_anonymous">Publicar de forma anónima</string>
+    <string name="list_settings_anonymous_body">Tu nombre y tu foto no aparecen con la lista. Sigue siendo tuya: solo tú puedes editarla o eliminarla.</string>
 </resources>

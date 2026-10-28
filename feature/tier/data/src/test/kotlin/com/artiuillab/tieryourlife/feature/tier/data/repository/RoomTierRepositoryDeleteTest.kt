@@ -52,6 +52,8 @@ private class RecordingTierDao : TierDao {
 
     override suspend fun setCategory(id: Long, category: String?) = Unit
 
+    override suspend fun setAnonymous(id: Long, anonymous: Boolean) = Unit
+
     override suspend fun setCover(id: Long, coverImageUrl: String?, coverImageUrls: String?) = Unit
 
     override suspend fun countPublishedLists(): Int = 0

@@ -108,6 +108,7 @@ class CommunityListViewModel @Inject constructor(
                         authorUid = answer.summary.authorUid,
                         authorPhotoUrl = answer.summary.authorPhotoUrl,
                         editorial = answer.summary.editorial,
+                        byNobody = answer.summary.byNobody,
                         rankingCount = answer.summary.rankingCount,
                         takeCount = answer.summary.takeCount,
                         basedOn = answer.summary.basedOn,

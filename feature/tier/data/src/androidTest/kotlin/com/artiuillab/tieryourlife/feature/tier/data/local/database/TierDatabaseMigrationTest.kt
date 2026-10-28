@@ -375,6 +375,35 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    // Room's own migration from the two schemas: two columns with defaults,
+    // every board kept as it was, none of them anonymous and none with a game.
+    @Test
+    fun migration13To14_keepsEveryBoard_namedAndWithoutAGame() {
+        helper.createDatabase(TEST_DB, 13).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, publishedFingerprint, " +
+                    "authorName, category, coverImageUrl, coverImageUrls, topicId, topicName, newTopicName, " +
+                    "takenFrom, rankingOf, uid, arrivedFrom, editedAt, favouritedAt) " +
+                    "VALUES (1, 'Films', NULL, 'WRAP', 'pub-1', 'print-1', NULL, 'film_tv', NULL, NULL, 't-1', 'Oscars', NULL, " +
+                    "NULL, NULL, 'board-1', NULL, 5, 7)",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 14, true)
+
+        migratedDb.query("SELECT anonymous, play, title, publishedId, publishedFingerprint, topicName, favouritedAt FROM tier_lists WHERE id = 1").use {
+            check(it.moveToFirst())
+            assertEquals("not anonymous", 0, it.getInt(0))
+            assertTrue("no game", it.isNull(1))
+            assertEquals("Films", it.getString(2))
+            assertEquals("pub-1", it.getString(3))
+            assertEquals("print-1", it.getString(4))
+            assertEquals("Oscars", it.getString(5))
+            assertEquals(7L, it.getLong(6))
+        }
+    }
+
     private fun editedAt(db: androidx.sqlite.db.SupportSQLiteDatabase): Long =
         db.query("SELECT editedAt FROM tier_lists WHERE id = 1").use {
             check(it.moveToFirst())

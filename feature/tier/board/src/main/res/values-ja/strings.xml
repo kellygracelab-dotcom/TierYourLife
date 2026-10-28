@@ -135,4 +135,6 @@
     <string name="tier_detail_drop_unrank_dock">プールにドロップするとランク外に戻ります</string>
     <string name="tier_detail_content_description_play">プレイ</string>
     <string name="tier_detail_play_needs_cards">プレイするにはカードが3枚以上必要です</string>
+    <string name="list_settings_anonymous">匿名で公開</string>
+    <string name="list_settings_anonymous_body">リストにあなたの名前と写真は表示されません。リストはあなたのもののままで、編集や削除ができるのはあなただけです。</string>
 </resources>

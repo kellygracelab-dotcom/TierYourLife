@@ -259,4 +259,6 @@
     <string name="all_sections_sort_name">A–Z</string>
     <string name="all_sections_find">Find a section</string>
     <string name="all_sections_propose">Propose a section</string>
+    <string name="community_anonymous">Anonymous</string>
+    <string name="community_based_on_nameless">Based on “%1$s”</string>
 </resources>

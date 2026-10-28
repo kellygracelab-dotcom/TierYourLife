@@ -145,4 +145,6 @@
     <string name="tier_detail_drop_unrank_dock">Sıralamadan çıkarmak için havuza bırakın</string>
     <string name="tier_detail_content_description_play">Oyna</string>
     <string name="tier_detail_play_needs_cards">Oynamak için en az 3 kart gerekir</string>
+    <string name="list_settings_anonymous">Anonim olarak yayınla</string>
+    <string name="list_settings_anonymous_body">Adın ve fotoğrafın listeyle birlikte gösterilmez. Liste yine senindir: yalnızca sen düzenleyebilir veya silebilirsin.</string>
 </resources>
