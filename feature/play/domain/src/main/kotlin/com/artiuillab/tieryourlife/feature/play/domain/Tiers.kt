@@ -7,6 +7,27 @@ import kotlin.math.min
 /** Groups are accepted once they explain this much of the spread. */
 const val ENOUGH_FIT = 0.9
 
+/** Below this many answered duels per card the evidence is thin: at most [THIN_GROUPS] groups, and a card shows dashed. */
+const val SOLID_DUELS = 2
+
+const val THIN_GROUPS = 3
+
+/** A card that met fewer than [SOLID_DUELS] others is drawn dashed in the result. */
+fun Standing.isDashed(card: Int): Boolean = played[card] < SOLID_DUELS
+
+/**
+ * The result says it rests on little: a tier left empty between filled ones,
+ * or more than a quarter of the cards dashed.
+ */
+fun isThin(standing: Standing, tiers: List<List<Int>>): Boolean {
+    val filled = tiers.indices.filter { tiers[it].isNotEmpty() }
+    val gap = filled.size > 1 && (filled.first()..filled.last()).any { tiers[it].isEmpty() }
+    val dashed = standing.played.indices.count { standing.isDashed(it) }
+    return gap || dashed * QUARTERS > standing.played.size
+}
+
+private const val QUARTERS = 4
+
 /**
  * Cards cut into [tierCount] tiers, best first, each tier left to right from
  * best. As few groups as explain the spread (Jenks's goodness of variance fit),
@@ -26,7 +47,8 @@ fun tiers(standing: Standing, tierCount: Int): List<List<Int>> {
         return result
     }
     val scaled = values.map { (it - bottom) / (top - bottom) }
-    val groups = groupsOf(scaled, maxGroups = min(tierCount, scaled.size))
+    val fits = min(tierCount, scaled.size)
+    val groups = groupsOf(scaled, maxGroups = if (standing.duelsPerCard < SOLID_DUELS) min(fits, THIN_GROUPS) else fits)
     var previous = -1
     val placed = groups.mapIndexed { index, range ->
         val mean = range.sumOf { scaled[it] } / range.count()

@@ -122,7 +122,10 @@ private fun standingVectors() = buildJsonArray {
                     putJsonArray("order") { standing.order.forEach { add(it) } }
                     putJsonArray("logStrength") { standing.logStrength.forEach { add(it) } }
                     putJsonArray("wins") { standing.wins.forEach { add(it) } }
-                    put("tiers", tiersJson(tiers(standing, case.tierCount)))
+                    putJsonArray("played") { standing.played.forEach { add(it) } }
+                    val placed = tiers(standing, case.tierCount)
+                    put("tiers", tiersJson(placed))
+                    put("thin", isThin(standing, placed))
                 }
             },
         )
@@ -144,7 +147,9 @@ private fun gameVectors() = buildJsonArray {
                 if (case.script.isNotEmpty()) putJsonArray("script") { case.script.forEach { add(it) } }
                 putJsonObject("expect") {
                     put("history", historyJson(history))
-                    put("tiers", tiersJson(result(case.spec, history, case.tierCount)))
+                    val placed = result(case.spec, history, case.tierCount)
+                    put("tiers", tiersJson(placed))
+                    put("thin", isThin(standing(case.spec.count, history.duels()), placed))
                 }
             },
         )

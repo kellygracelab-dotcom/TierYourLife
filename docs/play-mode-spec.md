@@ -110,7 +110,8 @@ x[i] = round9(ln(p[i]))               # round9(v) = floor(v * 1e9 + 0.5) / 1e9
    - Prefix sums run in index order: `ssd(a, b) = max(0, S2 − S1² / len)`.
    - When splits cost the same, the earliest start (`<` scanning starts upward) wins.
    - The goodness of variance fit is `GVF(c) = 1 − cost(c) / ssd(all)`.
-   - Use the smallest `c` with `GVF ≥ 0.9`. If none reaches it, use `min(k, n)`.
+   - Use the smallest `c` with `GVF ≥ 0.9`. If none reaches it, use the largest allowed `c`.
+   - **Thin evidence:** when answered duels per card (each duel counted for both cards: `Σ played / n`) is below 2, `c` is at most 3, whatever the fit.
 4. **Placement.**
    - Group `g`, counted from the best, aims at tier `floor((1 − mean(v of g)) × (k − 1) + 0.5)`.
    - The first group always goes to tier 0. Each later group goes at least one tier below the one before.
@@ -118,6 +119,16 @@ x[i] = round9(ln(p[i]))               # round9(v) = floor(v * 1e9 + 0.5) / 1e9
 5. Cards sit in their group's tier in order.
 
 The result: only the first tier is sure to be filled. A real gap leaves the tiers between empty, and the weakest cards still land low.
+
+## Honesty about the result
+
+- `played[i]` counts the real duels card `i` took part in; skips don't count.
+- A card with `played < 2` is **dashed** in the result preview.
+- The result is **thin**, and shows a banner, when:
+  - an empty tier sits between the first and last filled tiers, or
+  - more than a quarter of the cards are dashed (`dashed × 4 > n`).
+
+The vectors carry `played` for every standing, and `thin` for every standing and game.
 
 ## Saving
 

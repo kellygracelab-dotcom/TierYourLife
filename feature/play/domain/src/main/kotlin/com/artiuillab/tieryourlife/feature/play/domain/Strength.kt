@@ -13,7 +13,12 @@ data class Standing(
     val logStrength: List<Double>,
     /** Per card index: duels actually won. */
     val wins: List<Int>,
-)
+    /** Per card index: duels actually played, skips not counted. */
+    val played: List<Int>,
+) {
+    /** Answered duels per card, each duel counted for both its cards. */
+    val duelsPerCard: Double get() = if (played.isEmpty()) 0.0 else played.sum().toDouble() / played.size
+}
 
 const val STRENGTH_ROUNDS = 200
 
@@ -29,10 +34,13 @@ const val STRENGTH_ROUNDS = 200
 fun standing(count: Int, duels: List<Duel>): Standing {
     val met = Array(count) { IntArray(count) }
     val wins = IntArray(count)
+    val played = IntArray(count)
     for (duel in duels) {
         met[duel.winner][duel.loser]++
         met[duel.loser][duel.winner]++
         wins[duel.winner]++
+        played[duel.winner]++
+        played[duel.loser]++
     }
     var strength = DoubleArray(count) { 1.0 }
     repeat(STRENGTH_ROUNDS) {
@@ -51,7 +59,7 @@ fun standing(count: Int, duels: List<Duel>): Standing {
     val order = (0 until count).sortedWith(
         compareByDescending<Int> { logs[it] }.thenByDescending { wins[it] }.thenBy { it },
     )
-    return Standing(order = order, logStrength = logs, wins = wins.toList())
+    return Standing(order = order, logStrength = logs, wins = wins.toList(), played = played.toList())
 }
 
 internal fun roundNine(value: Double): Double = floor(value * NINE_PLACES + HALF) / NINE_PLACES

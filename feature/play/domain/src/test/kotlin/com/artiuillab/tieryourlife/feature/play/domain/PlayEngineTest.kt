@@ -101,6 +101,29 @@ class PlayEngineTest {
     }
 
     @Test
+    fun thinEvidence_allowsAtMostThreeGroups() {
+        // Six cards, five duels: under two per card, so a chain cannot fill six tiers.
+        val chain = standing(6, (0..4).map { Duel(it, it + 1) })
+        assertTrue(chain.duelsPerCard < SOLID_DUELS)
+        assertTrue(tiers(chain, tierCount = 6).count { it.isNotEmpty() } <= THIN_GROUPS)
+    }
+
+    @Test
+    fun aCardThatMetFewerThanTwo_isDashed_andAQuarterDashedIsThin() {
+        val standing = standing(4, listOf(Duel(0, 1), Duel(0, 2), Duel(1, 2), Duel(0, 1)))
+        assertEquals(listOf(false, false, false, true), (0..3).map { standing.isDashed(it) })
+        assertEquals(false, isThin(standing, listOf(listOf(0), listOf(1), listOf(2, 3))))
+        assertEquals(true, isThin(standing(4, listOf(Duel(0, 1))), listOf(listOf(0, 1, 2, 3))))
+    }
+
+    @Test
+    fun anEmptyTierBetweenFilledOnes_isThin() {
+        val solid = standing(2, List(4) { Duel(0, 1) })
+        assertEquals(true, isThin(solid, listOf(listOf(0), emptyList(), listOf(1))))
+        assertEquals(false, isThin(solid, listOf(listOf(0), listOf(1), emptyList())))
+    }
+
+    @Test
     fun oneCard_isNoGame() {
         assertNull(nextPair(GameSpec(GameKind.Bracket, 1, seed = 0), emptyList()))
     }
