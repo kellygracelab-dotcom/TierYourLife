@@ -8,4 +8,6 @@ data class Tier(
     val items: List<TierItem>,
     val isPool: Boolean = false,
     val caption: String? = null,
+    /** The same on every device, unlike [id]; what a saved game names a tier by. Empty where nothing keeps one. */
+    val uid: String = "",
 )

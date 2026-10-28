@@ -15,7 +15,8 @@ kotlin {
 }
 
 dependencies {
+    // The game the account keeps is JSON both clients write in one normal
+    // form, built and read as a tree; no classes are serialized.
+    implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit)
-    // The shared vectors are JSON, read as a tree; nothing here is serialized.
-    testImplementation(libs.kotlinx.serialization.json)
 }

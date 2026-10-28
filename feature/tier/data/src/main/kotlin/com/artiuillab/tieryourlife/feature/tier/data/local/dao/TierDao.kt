@@ -142,6 +142,10 @@ interface TierDao {
     @Query("UPDATE tier_lists SET anonymous = :anonymous WHERE id = :id")
     suspend fun setAnonymous(id: Long, anonymous: Boolean)
 
+    // Not a column the edited trigger watches: playing a board is not editing it.
+    @Query("UPDATE tier_lists SET play = :play WHERE id = :id")
+    suspend fun setPlay(id: Long, play: String?)
+
     // A time, not a flag: several starred boards need an order among
     // themselves, and null already means "not starred".
     @Query("UPDATE tier_lists SET favouritedAt = :at WHERE id = :id")

@@ -75,6 +75,24 @@ class TierListMapperTest {
         )
     }
 
+    // Play names cards and tiers by uid in the game the account keeps, and reads that game off the board.
+    @Test
+    fun a_boards_uids_and_its_saved_game_reach_the_domain() {
+        val game = """{"kind":"hill","count":2,"seed":1,"refine":false,"ids":["i-1","i-2"],"history":[],"round":0,"startedAt":5}"""
+        val tier = TierEntity(id = 3, tierListId = 1, position = 0, label = "S", colorLight = "#B03A32", colorDark = "#F1948C", uid = "t-s")
+        val item = TierItemEntity(id = 4, tierId = 3, position = 0, title = "Dune", imageUrl = null, uid = "i-1")
+
+        val board = TierListWithTiers(
+            tierList = TierListEntity(id = 1, title = "Films", play = game),
+            tiers = listOf(TierWithItems(tier = tier, items = listOf(item))),
+        ).toDomain()
+
+        assertEquals(game, board.play)
+        assertEquals("t-s", board.tiers.single().uid)
+        assertEquals("i-1", board.tiers.single().items.single().uid)
+        assertEquals(game, TierListEntity(id = 1, title = "Films", play = game).toDomain().play)
+    }
+
     @Test
     fun tier_list_entity_with_known_display_mode_maps_to_the_matching_enum_constant() {
         val entity = TierListEntity(id = 1, title = "Films", displayMode = "HORIZONTAL_SCROLL")

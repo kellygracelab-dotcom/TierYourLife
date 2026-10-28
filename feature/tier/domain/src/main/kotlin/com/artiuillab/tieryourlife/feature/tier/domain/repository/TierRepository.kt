@@ -60,6 +60,9 @@ interface TierRepository {
     /** A known topic by id and name, a new one by name alone, or none; a known one leaves no draft behind. */
     suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?)
 
+    /** The board's saved game as the shared JSON, or none once it is over; it travels with the board on the next sync. */
+    suspend fun setPlay(id: Long, play: String?)
+
     suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode)
 
     suspend fun renameTierList(id: Long, title: String)

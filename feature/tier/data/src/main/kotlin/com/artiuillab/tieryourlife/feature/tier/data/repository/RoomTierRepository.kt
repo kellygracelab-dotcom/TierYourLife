@@ -100,6 +100,10 @@ class RoomTierRepository internal constructor(
         dao.setAnonymous(id, anonymous)
     }
 
+    override suspend fun setPlay(id: Long, play: String?) {
+        dao.setPlay(id, play)
+    }
+
     override suspend fun setCover(id: Long, pictures: List<String>) {
         dao.setCover(id, coverImageUrl = pictures.singleOrNull(), coverImageUrls = pictures.toStoredCoverImageUrls())
     }

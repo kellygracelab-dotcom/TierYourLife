@@ -30,6 +30,7 @@ internal fun TierListEntity.toDomain(): TierList = TierList(
     arrivedFrom = arrivedFrom,
     editedAt = editedAt,
     favouritedAt = favouritedAt,
+    play = play,
 )
 
 internal fun TierListWithTiers.toDomain(): TierList = TierList(
@@ -54,6 +55,7 @@ internal fun TierListWithTiers.toDomain(): TierList = TierList(
     arrivedFrom = tierList.arrivedFrom,
     editedAt = tierList.editedAt,
     favouritedAt = tierList.favouritedAt,
+    play = tierList.play,
 )
 
 private fun String.toDisplayMode(): TierListDisplayMode =
@@ -69,6 +71,7 @@ private fun TierWithItems.toDomain(): Tier = Tier(
         .map { it.toDomain() },
     isPool = tier.isPool,
     caption = tier.caption,
+    uid = tier.uid,
 )
 
 private fun TierItemEntity.toDomain(): TierItem = TierItem(
@@ -76,6 +79,7 @@ private fun TierItemEntity.toDomain(): TierItem = TierItem(
     title = title,
     imageUrl = imageUrl,
     source = source.toTierItemSource(),
+    uid = uid,
 )
 
 private fun String.toTierItemSource(): TierItemSource =

@@ -105,6 +105,7 @@ private data class GameRecord(
     val startedAt: Long,
     val scope: List<Long>? = null,
     val keepTier: Boolean = false,
+    val onBoard: Boolean = false,
 ) {
     /** Null for a record this version cannot read: a game from a newer one is dropped, not guessed at. */
     fun toGame(): SavedGame? {
@@ -124,6 +125,7 @@ private data class GameRecord(
             startedAt = startedAt,
             scope = scope,
             keepTier = keepTier,
+            onBoard = onBoard,
         )
     }
 
@@ -139,6 +141,7 @@ private data class GameRecord(
             startedAt = game.startedAt,
             scope = game.scope,
             keepTier = game.keepTier,
+            onBoard = game.onBoard,
         )
     }
 }
