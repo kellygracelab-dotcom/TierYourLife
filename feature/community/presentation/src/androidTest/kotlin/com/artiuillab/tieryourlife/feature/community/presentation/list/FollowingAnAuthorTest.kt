@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
+import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
@@ -137,6 +138,7 @@ class FollowingAnAuthorTest {
         community = community,
         tiers = tiers,
         preferences = FakeAppPreferences(),
+        accounts = FakeAccountRepository(),
         savedStateHandle = SavedStateHandle(mapOf("publishedId" to "abc")),
     )
 }
