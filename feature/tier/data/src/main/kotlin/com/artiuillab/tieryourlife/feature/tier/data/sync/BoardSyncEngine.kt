@@ -205,7 +205,7 @@ class BoardSyncEngine @Inject constructor(
     /** The account's copy replaces what is here, uid and all. */
     private suspend fun takeOver(incoming: KeptBoardDto) {
         val existing = dao.boardByUid(incoming.uid) ?: return adopt(incoming)
-        dao.replaceContents(incoming.toEntity(existing.id, existing.uid), incoming.tiers(images::pathFor))
+        dao.replaceContents(incoming.toEntity(existing.id, existing.uid).keepingLocalFieldsOf(existing), incoming.tiers(images::pathFor))
         remember(incoming.uid, incoming.revision, fingerprintOf(dao.boardByUid(incoming.uid) ?: return))
     }
 
@@ -306,6 +306,22 @@ internal fun keptPlay(stored: String?, json: Json): JsonElement? = stored?.let {
         .onFailure { failure -> Timber.w(failure, "A kept game no longer reads") }
         .getOrNull()
 }
+
+/**
+ * What the account never holds stays as this phone had it: the star, the topic,
+ * where a copy came from, what was last published. Without this every pulled
+ * change wiped them.
+ */
+internal fun TierListEntity.keepingLocalFieldsOf(here: TierListEntity) = copy(
+    publishedFingerprint = here.publishedFingerprint,
+    topicId = here.topicId,
+    topicName = here.topicName,
+    newTopicName = here.newTopicName,
+    takenFrom = here.takenFrom,
+    rankingOf = here.rankingOf,
+    arrivedFrom = here.arrivedFrom,
+    favouritedAt = here.favouritedAt,
+)
 
 internal fun KeptBoardDto.toEntity(id: Long, uid: String) = TierListEntity(
     id = id,
