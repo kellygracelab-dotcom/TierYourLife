@@ -69,7 +69,7 @@ internal fun RowScope.ReaderBarControls(
             modifier = Modifier.padding(end = 8.dp).testTag(CommunityListTestTags.RANKINGS),
         )
     }
-    if (state.knowsTheirs) {
+    if (state.knowsTheirs && !state.own) {
         WhoseArrangement(
             showing = state.showing,
             theirsLabel = state.chosenRanking?.authorName ?: stringResource(R.string.community_showing_theirs),
@@ -78,7 +78,26 @@ internal fun RowScope.ReaderBarControls(
         )
         Spacer(Modifier.width(8.dp))
     }
-    SaveInBar(state = state, mode = mode, onSaveClick = onSaveClick, onOpenSaved = onOpenSaved)
+    if (state.own) {
+        state.ownBoardId?.let { board -> OpenOwnBoardInBar(mode) { onOpenSaved(board) } }
+    } else {
+        SaveInBar(state = state, mode = mode, onSaveClick = onSaveClick, onOpenSaved = onOpenSaved)
+    }
+}
+
+/** On their own list there is nothing to save: the board it came from is the place to change it. */
+@Composable
+private fun OpenOwnBoardInBar(mode: BoardBar, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        contentPadding = PaddingValues(horizontal = 14.dp),
+        modifier = Modifier
+            .height(if (mode == BoardBar.Docked) TABLET_CONTROL_HEIGHT else BAR_BUTTON_HEIGHT)
+            .widthIn(max = BAR_BUTTON_MAX_WIDTH)
+            .testTag(CommunityListTestTags.OPEN_BOARD),
+    ) {
+        Text(text = stringResource(R.string.community_open_your_board), maxLines = 1, overflow = TextOverflow.Ellipsis)
+    }
 }
 
 /** Save, or Open once the copy exists; a tablet's bar has a tonal one with its icon. */

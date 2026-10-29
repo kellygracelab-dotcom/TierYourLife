@@ -319,4 +319,6 @@
         <item quantity="many">Tienes %1$d de %2$d propuestas en espera.</item>
         <item quantity="other">Tienes %1$d de %2$d propuestas en espera.</item>
     </plurals>
+    <string name="community_your_list">Tu lista, tal como la ven los demás.</string>
+    <string name="community_open_your_board">Abrir tu tablero</string>
 </resources>

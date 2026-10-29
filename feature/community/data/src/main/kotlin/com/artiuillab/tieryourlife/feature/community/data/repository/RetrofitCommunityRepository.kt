@@ -52,6 +52,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposa
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
+import com.artiuillab.tieryourlife.feature.community.domain.model.isOwnList
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -99,7 +100,7 @@ class RetrofitCommunityRepository @Inject constructor(
             topic = topic,
         )
         CommunityPage(
-            lists = page.lists.map { it.toSummary() },
+            lists = page.lists.map { it.toSummary(me) },
             nextCursor = page.nextCursor,
             followingNobody = page.followingNobody,
         )
@@ -241,11 +242,11 @@ class RetrofitCommunityRepository @Inject constructor(
     }
 
     override suspend fun myPublished(): Result<List<PublishedListSummary>> = attempt("Reading what this account has published") {
-        api.myPublished().lists.map { it.toSummary() }
+        api.myPublished().lists.map { it.toSummary(me) }
     }
 
     override suspend fun open(id: String): Result<PublishedList> = attempt("Opening a published list") {
-        api.open(id).toDomain()
+        api.open(id).toDomain(me)
     }
 
     override suspend fun publish(list: TierList): Result<Published> = try {
@@ -394,7 +395,8 @@ private fun PendingTopicDto.toDomain() = PendingTopic(
     similar = similar.map { it.toDomain() },
 )
 
-internal fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
+/** [me] is the signed-in uid; a kept page has its owner's lists marked already. */
+internal fun PublishedListSummaryDto.toSummary(me: String? = null) = PublishedListSummary(
     id = id,
     title = title,
     authorUid = authorUid,
@@ -414,12 +416,13 @@ internal fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     basedOn = basedOn?.toDomain(),
     proposedSection = proposedSection,
     proposedSectionName = proposedSectionName,
+    mine = isOwnList(mine, authorUid, me),
 )
 
 /** Old lists stored the word "null" as a cover; only a web address is a picture. */
 internal fun String?.webPictureOrNull(): String? = this?.trim()?.takeIf { it.startsWith("https://", ignoreCase = true) }
 
-internal fun PublishedListDto.toDomain() = PublishedList(
+internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
     summary = PublishedListSummary(
         id = id,
         title = title,
@@ -438,6 +441,7 @@ internal fun PublishedListDto.toDomain() = PublishedList(
         topicName = topicName,
         rankingCount = rankingCount,
         basedOn = basedOn?.toDomain(),
+        mine = isOwnList(mine, authorUid, me),
     ),
     tiers = tiers.mapIndexed { index, tier ->
         Tier(
@@ -535,4 +539,5 @@ internal fun PublishedListSummary.toDto() = PublishedListSummaryDto(
     basedOn = basedOn?.let { BasedOnDto(id = it.id, title = it.title, authorUid = it.authorUid, authorName = it.authorName) },
     proposedSection = proposedSection,
     proposedSectionName = proposedSectionName,
+    mine = mine,
 )

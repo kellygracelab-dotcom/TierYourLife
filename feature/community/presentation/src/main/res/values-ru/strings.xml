@@ -334,4 +334,6 @@
         <item quantity="many">Ждут %1$d из %2$d ваших предложений.</item>
         <item quantity="other">Ждут %1$d из %2$d ваших предложений.</item>
     </plurals>
+    <string name="community_your_list">Ваш список — таким его видят другие.</string>
+    <string name="community_open_your_board">Открыть вашу доску</string>
 </resources>

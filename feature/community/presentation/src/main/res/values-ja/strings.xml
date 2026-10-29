@@ -289,4 +289,6 @@
     <plurals name="propose_waiting_count">
         <item quantity="other">%2$d件中%1$d件の提案が確認待ちです。</item>
     </plurals>
+    <string name="community_your_list">あなたのリストです。ほかの人にはこう見えます。</string>
+    <string name="community_open_your_board">自分のボードを開く</string>
 </resources>

@@ -304,4 +304,6 @@
         <item quantity="one">%2$d önerinden %1$d tanesi bekliyor.</item>
         <item quantity="other">%2$d önerinden %1$d tanesi bekliyor.</item>
     </plurals>
+    <string name="community_your_list">Listen, başkalarının gördüğü hâliyle.</string>
+    <string name="community_open_your_board">Panonu aç</string>
 </resources>

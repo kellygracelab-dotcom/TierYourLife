@@ -21,7 +21,7 @@ data class SavedTemplate(
 class RecordingTierRepository(
     /** Stands in for a local copy that knows it was published. */
     private val publishedIdOfFirstList: String? = null,
-    /** What getTierListById finds. */
+    /** What getTierListById finds, and boardPublishedAs by its publishedId. */
     private val boards: List<TierList> = emptyList(),
 ) : TierRepository {
 
@@ -52,7 +52,7 @@ class RecordingTierRepository(
 
     override suspend fun publishedStanding(): PublishedStanding = PublishedStanding()
 
-    override suspend fun boardPublishedAs(publishedId: String): TierList? = null
+    override suspend fun boardPublishedAs(publishedId: String): TierList? = boards.firstOrNull { it.publishedId == publishedId }
 
     override suspend fun setFavouritedAt(id: Long, at: Long?) = Unit
 

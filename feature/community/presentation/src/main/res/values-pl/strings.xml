@@ -334,4 +334,6 @@
         <item quantity="many">Czeka %1$d z %2$d twoich propozycji.</item>
         <item quantity="other">Czeka %1$d z %2$d twoich propozycji.</item>
     </plurals>
+    <string name="community_your_list">Twoja lista, tak jak widzą ją inni.</string>
+    <string name="community_open_your_board">Otwórz swoją tablicę</string>
 </resources>

@@ -304,4 +304,6 @@
         <item quantity="one">You have %1$d of %2$d proposals waiting.</item>
         <item quantity="other">You have %1$d of %2$d proposals waiting.</item>
     </plurals>
+    <string name="community_your_list">Your list, as others see it.</string>
+    <string name="community_open_your_board">Open your board</string>
 </resources>

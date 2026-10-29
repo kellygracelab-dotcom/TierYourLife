@@ -45,8 +45,9 @@ fun ListActionsSheet(
     authorPhotoUrl: String?,
     onDismiss: () -> Unit,
     onOpenAuthor: (() -> Unit)?,
-    onHide: () -> Unit,
-    onReport: () -> Unit,
+    /** Null on this person's own list, as is [onReport]: neither means anything there. */
+    onHide: (() -> Unit)?,
+    onReport: (() -> Unit)?,
     /** On a topic's page: the list is fine, it is just not of this topic. Nothing hides; a moderator moves it. */
     onWrongTopic: (() -> Unit)? = null,
 ) {
@@ -112,19 +113,23 @@ fun ListActionsSheet(
                     icon = { size, tint -> CategoryIcon(size, tint) },
                 )
             }
-            ActionRow(
-                text = stringResource(R.string.community_action_hide),
-                testTag = CommunityTestTags.ACTION_HIDE,
-                onClick = onHide,
-                icon = { size, tint -> HideIcon(size, tint) },
-            )
-            ActionRow(
-                text = stringResource(R.string.community_action_report),
-                testTag = CommunityTestTags.ACTION_REPORT,
-                onClick = onReport,
-                icon = { size, tint -> FlagIcon(size, tint) },
-                color = MaterialTheme.colorScheme.error,
-            )
+            if (onHide != null) {
+                ActionRow(
+                    text = stringResource(R.string.community_action_hide),
+                    testTag = CommunityTestTags.ACTION_HIDE,
+                    onClick = onHide,
+                    icon = { size, tint -> HideIcon(size, tint) },
+                )
+            }
+            if (onReport != null) {
+                ActionRow(
+                    text = stringResource(R.string.community_action_report),
+                    testTag = CommunityTestTags.ACTION_REPORT,
+                    onClick = onReport,
+                    icon = { size, tint -> FlagIcon(size, tint) },
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
             Spacer(Modifier.height(12.dp))
         }
     }

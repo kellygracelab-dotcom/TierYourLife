@@ -334,4 +334,6 @@
         <item quantity="many">Чекають %1$d з %2$d ваших пропозицій.</item>
         <item quantity="other">Чекають %1$d з %2$d ваших пропозицій.</item>
     </plurals>
+    <string name="community_your_list">Ваш список — таким його бачать інші.</string>
+    <string name="community_open_your_board">Відкрити вашу дошку</string>
 </resources>

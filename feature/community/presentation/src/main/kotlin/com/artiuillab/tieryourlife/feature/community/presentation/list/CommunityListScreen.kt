@@ -75,7 +75,8 @@ fun CommunityListScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var playOpen by rememberSaveable { mutableStateOf(false) }
-    val playRequest = (state as? CommunityListUiState.Success)?.let { loaded ->
+    // Their own list is played on their own board, not here.
+    val playRequest = (state as? CommunityListUiState.Success)?.takeUnless { it.own }?.let { loaded ->
         remember(loaded.shown, loaded.mine) { PlayRequest.someoneElses(viewModel.publishedId, shown = loaded.shown, mine = loaded.mine) }
     }
 
@@ -193,11 +194,18 @@ fun CommunityListScreenContent(
                         TierDetailScreenContent(
                             // Read-only while their arrangement is on screen.
                             state = TierDetailUiState.Success(loaded.shown),
-                            actions = TierDetailActions(onBack = onBack, onMoveItem = onMoveItem, onPlay = onPlay, playSaved = playSaved),
+                            actions = TierDetailActions(
+                                onBack = onBack,
+                                onMoveItem = onMoveItem,
+                                onPlay = onPlay.takeUnless { loaded.own },
+                                playSaved = playSaved,
+                            ),
                             // Theirs is theirs; yours is yours to arrange, and what
-                            // you save is whichever is on screen.
-                            readOnly = loaded.showing == Showing.Theirs,
-                            onReaderMoreClick = { actionsVisible = true },
+                            // you save is whichever is on screen. Your own list is
+                            // changed on your board, never here.
+                            readOnly = loaded.own || loaded.showing == Showing.Theirs,
+                            // Their own anonymous list leaves the menu nothing to offer.
+                            onReaderMoreClick = { actionsVisible = true }.takeUnless { loaded.own && loaded.editorial },
                             belowTopBar = {
                                 UnderTheTitle(
                                     loaded = loaded,
@@ -294,11 +302,11 @@ fun CommunityListScreenContent(
                     onHide = {
                         actionsVisible = false
                         onHide()
-                    },
+                    }.takeUnless { loaded.own },
                     onReport = {
                         actionsVisible = false
                         reportVisible = true
-                    },
+                    }.takeUnless { loaded.own },
                 )
             }
 
@@ -383,8 +391,8 @@ private fun ReaderStrip(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             // Only where there is something to switch to: a snapshot without
-            // the author's arrangement has one half.
-            if (state.knowsTheirs) {
+            // the author's arrangement has one half, and their own list has only theirs.
+            if (state.knowsTheirs && !state.own) {
                 WhoseArrangement(
                     showing = state.showing,
                     theirsLabel = state.chosenRanking?.authorName ?: stringResource(R.string.community_showing_theirs),
@@ -393,7 +401,18 @@ private fun ReaderStrip(
             }
             Spacer(Modifier.weight(1f))
             val savedId = state.savedId
-            if (savedId != null) {
+            if (state.own) {
+                state.ownBoardId?.let { board ->
+                    Button(
+                        onClick = { onOpenSaved(board) },
+                        modifier = Modifier
+                            .widthIn(max = SAVE_BUTTON_MAX_WIDTH)
+                            .testTag(CommunityListTestTags.OPEN_BOARD),
+                    ) {
+                        Text(text = stringResource(R.string.community_open_your_board), textAlign = TextAlign.Center, maxLines = 2)
+                    }
+                }
+            } else if (savedId != null) {
                 Button(
                     onClick = { onOpenSaved(savedId) },
                     modifier = Modifier
@@ -541,6 +560,7 @@ private fun CommunityListArrangedDarkPreview() = TierYourLifeTheme(true) {
 /** What the reader's copy is, in the words of the strip's sentence. */
 private val CommunityListUiState.Success.statusRes: Int
     get() = when {
+        own -> R.string.community_your_list
         savedId != null -> R.string.community_saved_to_your_lists
         arranged -> R.string.community_not_saved_yet
         // "Someone else's" would name an owner a list without an author does not have.

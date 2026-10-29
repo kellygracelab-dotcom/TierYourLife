@@ -364,4 +364,6 @@
         <item quantity="many">لديك %1$d من %2$d اقتراحات قيد الانتظار.</item>
         <item quantity="other">لديك %1$d من %2$d اقتراحات قيد الانتظار.</item>
     </plurals>
+    <string name="community_your_list">قائمتك كما يراها الآخرون.</string>
+    <string name="community_open_your_board">افتح لوحتك</string>
 </resources>

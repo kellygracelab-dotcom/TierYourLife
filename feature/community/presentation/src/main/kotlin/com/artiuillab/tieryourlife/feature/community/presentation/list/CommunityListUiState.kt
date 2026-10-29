@@ -53,6 +53,13 @@ sealed interface CommunityListUiState {
         val chosenRanking: Ranking? = null,
         /** The board as [chosenRanking] placed it, or [list] while none is chosen. */
         val theirs: TierList = list,
+        /**
+         * This person's own list, named or anonymous: shown as others see it,
+         * with nothing to save, hide, report or follow.
+         */
+        val own: Boolean = false,
+        /** On their own list, the board on this phone it was published from, if there is one. */
+        val ownBoardId: Long? = null,
     ) : CommunityListUiState {
         /** What the board area is drawing right now. */
         val shown: TierList get() = if (showing == Showing.Theirs) theirs else mine

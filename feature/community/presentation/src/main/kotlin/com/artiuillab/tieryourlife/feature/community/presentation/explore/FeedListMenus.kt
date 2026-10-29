@@ -14,6 +14,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Rep
  * A card's long-press menu and what follows from it: the existing sheet with
  * its author, Hide and Report, then the report dialog and the note that it
  * was sent. One per feed, so hiding reaches the feed the card came from.
+ * This person's own list offers neither; their own anonymous one has nothing
+ * left to offer, so it opens no sheet.
  */
 @Composable
 internal fun FeedListMenus(
@@ -25,7 +27,7 @@ internal fun FeedListMenus(
     var reportFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var reportedFrom by remember { mutableStateOf<PublishedListSummary?>(null) }
 
-    target?.let { summary ->
+    target?.takeUnless { it.mine && it.editorial }?.let { summary ->
         ListActionsSheet(
             title = summary.title,
             authorName = summary.authorName.takeUnless { summary.editorial },
@@ -42,11 +44,11 @@ internal fun FeedListMenus(
             onHide = {
                 onDismiss()
                 feed.onHideList(summary)
-            },
+            }.takeUnless { summary.mine },
             onReport = {
                 onDismiss()
                 reportFor = summary
-            },
+            }.takeUnless { summary.mine },
         )
     }
     reportFor?.let { summary ->

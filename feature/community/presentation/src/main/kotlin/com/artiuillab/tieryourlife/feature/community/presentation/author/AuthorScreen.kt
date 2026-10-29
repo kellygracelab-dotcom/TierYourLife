@@ -163,7 +163,8 @@ fun AuthorScreenContent(
                                     onSelectCategory = {},
                                     onOpen = { onOpenList(CommunityRoute.CommunityList.of(it)) },
                                     onRetry = onRetry,
-                                    onLongPress = { summary -> actionsFor = summary },
+                                    // Their own profile: nothing to hide or report, and nowhere else to go.
+                                    onLongPress = { summary -> actionsFor = summary.takeUnless { it.mine } },
                                     showCategories = false,
                                     showAuthor = false,
                                 )

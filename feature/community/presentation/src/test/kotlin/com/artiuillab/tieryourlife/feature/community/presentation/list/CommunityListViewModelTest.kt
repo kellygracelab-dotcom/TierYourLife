@@ -5,10 +5,12 @@ import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
+import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
@@ -20,6 +22,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -271,14 +274,58 @@ class CommunityListViewModelTest {
 
     private fun CommunityListUiState.saved() = (this as? CommunityListUiState.Success)?.savedId != null
 
+    @Test
+    fun myOwnAnonymousList_isShownAsOthersSeeIt_withMyBoardToOpen_andNobodyToFollow() = runBlocking {
+        val community = TestCommunity(summary = { it.copy(authorUid = "", authorName = "", anonymous = true, mine = true) })
+        val board = TierList(id = 12, title = "Every A24 film", tiers = emptyList(), publishedId = "abc")
+        val viewModel = viewModel(community = community, tiers = RecordingTierRepository(boards = listOf(board)))
+
+        val state = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.ownBoardId != null } as CommunityListUiState.Success
+
+        assertTrue(state.own)
+        assertEquals(Showing.Theirs, state.showing)
+        assertEquals(12L, state.ownBoardId)
+        assertEquals(0, community.followStateAsked)
+    }
+
+    @Test
+    fun myOwnList_offersNothingToSave_hideOrReport() = runBlocking {
+        val tiers = RecordingTierRepository()
+        val preferences = FakeAppPreferences()
+        val community = TestCommunity(summary = { it.copy(mine = true) })
+        val viewModel = viewModel(community = community, tiers = tiers, preferences = preferences)
+        val state = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+
+        viewModel.saveToMyLists(Showing.Theirs)
+        viewModel.report(ReportReason.Spam, null)
+
+        assertTrue(state.own)
+        assertEquals(null, state.ownBoardId)
+        assertTrue(tiers.templates.isEmpty())
+        assertTrue(preferences.hiddenListIds().isEmpty())
+        assertTrue(community.reported.isEmpty())
+    }
+
+    @Test
+    fun somebodyElsesList_isTheirs_andTheirAuthorCanBeFollowed() = runBlocking {
+        val community = TestCommunity()
+        val viewModel = viewModel(community = community)
+
+        val state = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.follow != null } as CommunityListUiState.Success
+
+        assertFalse(state.own)
+        assertEquals(1, community.followStateAsked)
+    }
+
     private fun viewModel(
         community: CommunityRepository = TestCommunity(),
         tiers: RecordingTierRepository = RecordingTierRepository(),
         handle: SavedStateHandle = SavedStateHandle(mapOf("publishedId" to "abc")),
+        preferences: FakeAppPreferences = FakeAppPreferences(),
     ) = CommunityListViewModel(
         community = community,
         tiers = tiers,
-        preferences = FakeAppPreferences(),
+        preferences = preferences,
         savedStateHandle = handle,
     )
 }
@@ -287,14 +334,27 @@ private class TestCommunity(
     private val rankings: List<Ranking> = emptyList(),
     private val refusesWithdrawal: Boolean = false,
     private val takeCount: Int = 0,
+    private val summary: (PublishedListSummary) -> PublishedListSummary = { it },
 ) : FakeCommunityRepository() {
     val withdrawn = mutableListOf<String>()
+    val reported = mutableListOf<String>()
+    var followStateAsked = 0
+
+    override suspend fun followState(authorUid: String): Result<FollowState> {
+        followStateAsked++
+        return Result.success(FollowState(following = false, followers = 3))
+    }
+
+    override suspend fun report(publishedId: String, reason: ReportReason, note: String?): Result<Unit> {
+        reported += publishedId
+        return Result.success(Unit)
+    }
 
     /** Held until the test lets the refusal through. */
     val refusal = CompletableDeferred<Unit>()
 
     override suspend fun open(id: String): Result<PublishedList> =
-        Result.success(published.copy(summary = published.summary.copy(rankingCount = rankings.size, takeCount = takeCount)))
+        Result.success(published.copy(summary = summary(published.summary.copy(rankingCount = rankings.size, takeCount = takeCount))))
 
     override suspend fun publish(list: TierList): Result<Published> =
         Result.success(Published(id = "abc", fingerprint = "sent"))

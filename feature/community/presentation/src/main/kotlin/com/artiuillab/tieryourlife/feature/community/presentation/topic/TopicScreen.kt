@@ -169,11 +169,11 @@ fun TopicScreenContent(
                 onHide = {
                     actionsFor = null
                     onHideList(summary)
-                },
+                }.takeUnless { summary.mine },
                 onReport = {
                     actionsFor = null
                     reportFor = summary
-                },
+                }.takeUnless { summary.mine },
                 onWrongTopic = {
                     actionsFor = null
                     onNotThisTopic(summary)

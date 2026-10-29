@@ -24,6 +24,8 @@ data class PublishedListSummaryDto(
     /** From `GET lists/mine`: the author's own waiting proposal this list moves to, and its name. */
     val proposedSection: String? = null,
     val proposedSectionName: String? = null,
+    /** Sent only to the list's owner, and only as true. */
+    val mine: Boolean = false,
 )
 
 @Serializable
@@ -113,6 +115,7 @@ data class PublishedListDto(
     val takeCount: Int = 0,
     val rankingCount: Int = 0,
     val basedOn: BasedOnDto? = null,
+    val mine: Boolean = false,
 )
 
 @Serializable

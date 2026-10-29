@@ -32,6 +32,8 @@ data class PublishedListSummary(
     /** On the author's own list: the waiting proposal it moves to once approved, and its name. */
     val proposedSection: String? = null,
     val proposedSectionName: String? = null,
+    /** This person's own list, as [isOwnList] decides: no Save, Hide or Report, no following themselves. */
+    val mine: Boolean = false,
 ) {
     /** Shown without its author, and leading to no profile. */
     val editorial: Boolean get() = EditorialAuthors.isEditorial(authorUid, anonymous)
@@ -39,6 +41,13 @@ data class PublishedListSummary(
     /** Somebody's list out without their name, rather than one of the app's own: its author reads "Anonymous". */
     val byNobody: Boolean get() = editorial && !EditorialAuthors.isTheAppsOwn(authorUid)
 }
+
+/**
+ * Whether a list is the signed-in person's own. The server says so with
+ * [mine]; without it a matching uid does, but an anonymous list carries no
+ * uid, so only the server can say it is theirs.
+ */
+fun isOwnList(mine: Boolean, authorUid: String, myUid: String?): Boolean = mine || (authorUid.isNotBlank() && authorUid == myUid)
 
 /** Their cards and tier definitions, with no ranking; where it goes is the reader's business. */
 data class PublishedList(

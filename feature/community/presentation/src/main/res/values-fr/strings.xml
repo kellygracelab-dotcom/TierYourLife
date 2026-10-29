@@ -319,4 +319,6 @@
         <item quantity="many">%1$d de vos %2$d propositions sont en attente.</item>
         <item quantity="other">%1$d de vos %2$d propositions sont en attente.</item>
     </plurals>
+    <string name="community_your_list">Votre liste, telle que les autres la voient.</string>
+    <string name="community_open_your_board">Ouvrir votre tableau</string>
 </resources>

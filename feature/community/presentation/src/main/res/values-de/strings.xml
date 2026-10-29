@@ -304,4 +304,6 @@
         <item quantity="one">%1$d von %2$d Vorschlägen wartet.</item>
         <item quantity="other">%1$d von %2$d Vorschlägen warten.</item>
     </plurals>
+    <string name="community_your_list">Deine Liste, so wie andere sie sehen.</string>
+    <string name="community_open_your_board">Dein Board öffnen</string>
 </resources>
