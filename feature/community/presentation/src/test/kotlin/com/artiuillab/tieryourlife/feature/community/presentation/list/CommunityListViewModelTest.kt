@@ -1,16 +1,23 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
+import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefusal
+import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
@@ -19,8 +26,11 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -48,6 +58,14 @@ class CommunityListViewModelTest {
 
     @get:Rule
     val main = MainDispatcherRule()
+
+    private val made = mutableListOf<CommunityListViewModel>()
+
+    /** Each view model's coroutines end with its test, the account's watch among them. */
+    @After
+    fun clear() {
+        made.forEach { it.viewModelScope.cancel() }
+    }
 
     @Test
     fun opening_putsTheAuthorsCardsInThePool_andLeavesEveryTierEmpty() = runBlocking {
@@ -322,20 +340,158 @@ class CommunityListViewModelTest {
         tiers: RecordingTierRepository = RecordingTierRepository(),
         handle: SavedStateHandle = SavedStateHandle(mapOf("publishedId" to "abc")),
         preferences: FakeAppPreferences = FakeAppPreferences(),
+        accounts: FakeAccountRepository = FakeAccountRepository(),
     ) = CommunityListViewModel(
         community = community,
         tiers = tiers,
         preferences = preferences,
         savedStateHandle = handle,
-    )
+        accounts = accounts,
+    ).also { made += it }
+
+    private val signedIn = FakeAccountRepository(Account.SignedIn(email = "ann@example.com", photoUrl = null))
+
+    /** Moonlight into S on the reader's own half: arranged, and ready to show. */
+    private suspend fun arranged(viewModel: CommunityListViewModel): CommunityListUiState.Success {
+        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        viewModel.show(Showing.Mine)
+        viewModel.moveItem(itemId = 1, toTierId = loaded.mine.tiers.first { !it.isPool }.id, toPosition = 0)
+        return viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.arranged == true } as CommunityListUiState.Success
+    }
+
+    @Test
+    fun showingMyRanking_sendsMineInTheListsOrder_andPutsMeFirstAsYou() = runBlocking {
+        val community = TestCommunity(takeCount = 0)
+        val viewModel = viewModel(community = community, accounts = signedIn)
+        assertFalse(arranged(viewModel).rankingsOnChip > 0)
+
+        viewModel.showMyRanking()
+
+        assertEquals(RankingNotice.Shown, withTimeout(5_000) { viewModel.rankingNotices.first() })
+        assertEquals(listOf(listOf(null, 0) to listOf("S", "A")), community.shownRankings)
+        val state = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.rankings?.isNotEmpty() == true } as CommunityListUiState.Success
+        assertTrue(state.rankings.first().mine)
+        assertEquals(1, state.rankingCount)
+        assertEquals(1, state.rankingsOnChip)
+        assertFalse(state.sendingRanking)
+    }
+
+    @Test
+    fun showingItAgain_changesTheOneShown_withoutCountingItTwice() = runBlocking {
+        val community = TestCommunity(rankings = listOf(myOldRanking), shownIsNew = false)
+        val viewModel = viewModel(community = community, accounts = signedIn)
+        arranged(viewModel)
+        viewModel.rankings.load()
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.rankings?.isNotEmpty() == true }
+
+        viewModel.showMyRanking()
+
+        withTimeout(5_000) { viewModel.rankingNotices.first() }
+        val state = viewModel.state.value as CommunityListUiState.Success
+        assertEquals(1, state.rankings.size)
+        assertEquals(listOf(null, 0), state.rankings.single().arrangement)
+        assertEquals(1, state.rankingCount)
+    }
+
+    @Test
+    fun nothingArranged_nothingToShow() = runBlocking {
+        val community = TestCommunity()
+        val viewModel = viewModel(community = community, accounts = signedIn)
+        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+
+        viewModel.showMyRanking()
+
+        assertFalse(loaded.canShowRanking)
+        assertTrue(community.shownRankings.isEmpty())
+    }
+
+    @Test
+    fun aGuest_isAskedToSignIn_andNothingIsSent() = runBlocking {
+        val community = TestCommunity()
+        val viewModel = viewModel(community = community)
+        assertFalse(arranged(viewModel).signedIn)
+
+        viewModel.showMyRanking()
+
+        assertEquals(RankingNotice.SignInFirst, withTimeout(5_000) { viewModel.rankingNotices.first() })
+        assertTrue(community.shownRankings.isEmpty())
+    }
+
+    @Test
+    fun signingInWhileTheListIsOpen_letsTheRankingBeShown() = runBlocking {
+        val accounts = FakeAccountRepository()
+        val viewModel = viewModel(accounts = accounts)
+        arranged(viewModel)
+
+        accounts.accounts.value = Account.SignedIn(email = "ann@example.com", photoUrl = null)
+
+        assertTrue((viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.signedIn == true } as CommunityListUiState.Success).canShowRanking)
+    }
+
+    @Test
+    fun myOwnList_isNeverSentAsMyRanking() = runBlocking {
+        val community = TestCommunity(summary = { it.copy(mine = true) })
+        val viewModel = viewModel(community = community, accounts = signedIn)
+        viewModel.state.firstWithin { it is CommunityListUiState.Success }
+
+        viewModel.putInMine(TierList(id = 0, title = "x", tiers = emptyList()))
+        viewModel.showMyRanking()
+
+        assertFalse((viewModel.state.value as CommunityListUiState.Success).canShowRanking)
+        assertTrue(community.shownRankings.isEmpty())
+    }
+
+    @Test
+    fun aSessionTheServerNoLongerKnows_isAskedToSignInAgain() = runBlocking {
+        val community = TestCommunity(showRefusal = RankingRefusal.NotSignedIn)
+        val viewModel = viewModel(community = community, accounts = signedIn)
+        arranged(viewModel)
+
+        viewModel.showMyRanking()
+
+        assertEquals(RankingNotice.SignInFirst, withTimeout(5_000) { viewModel.rankingNotices.first() })
+        assertFalse((viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.sendingRanking == false } as CommunityListUiState.Success).sendingRanking)
+    }
+
+    @Test
+    fun anyOtherRefusal_saysItFailed_andShowsNothing() = runBlocking {
+        val community = TestCommunity(showRefusal = RankingRefusal.Failed)
+        val viewModel = viewModel(community = community, accounts = signedIn)
+        arranged(viewModel)
+
+        viewModel.showMyRanking()
+
+        assertEquals(UserMessage.ActionFailed, withTimeout(5_000) { viewModel.userMessages.first() })
+        assertTrue((viewModel.state.value as CommunityListUiState.Success).rankings.isEmpty())
+    }
 }
+
+private val myOldRanking = Ranking(
+    uid = "me",
+    authorName = "Ann",
+    authorPhotoUrl = null,
+    arrangement = listOf(0, 0),
+    tierLabels = listOf("S", "A"),
+    updatedAtMillis = 0,
+    mine = true,
+)
 
 private class TestCommunity(
     private val rankings: List<Ranking> = emptyList(),
     private val refusesWithdrawal: Boolean = false,
     private val takeCount: Int = 0,
     private val summary: (PublishedListSummary) -> PublishedListSummary = { it },
+    private val shownIsNew: Boolean = true,
+    private val showRefusal: RankingRefusal? = null,
 ) : FakeCommunityRepository() {
+    val shownRankings = mutableListOf<Pair<List<Int?>, List<String>>>()
+
+    override suspend fun showMyRanking(listId: String, arrangement: List<Int?>, tierLabels: List<String>): Result<ShownRanking> {
+        shownRankings += arrangement to tierLabels
+        showRefusal?.let { return Result.failure(RankingRefused(it)) }
+        val ranking = Ranking("me", "Ann", null, arrangement, tierLabels, updatedAtMillis = 1, mine = true)
+        return Result.success(ShownRanking(ranking, created = shownIsNew))
+    }
     val withdrawn = mutableListOf<String>()
     val reported = mutableListOf<String>()
     var followStateAsked = 0

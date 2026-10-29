@@ -18,6 +18,8 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionFoll
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionNameCheckDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionProposalDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionsDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ShowRankingRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ShownRankingDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SuggestedAuthorsDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TakeDownRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicDto
@@ -31,6 +33,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -137,6 +140,9 @@ interface CommunityApi {
 
     @DELETE("lists/{id}/rankings/mine")
     suspend fun deleteMyRanking(@Path("id") id: String)
+
+    @PUT("lists/{id}/rankings/mine")
+    suspend fun showMyRanking(@Path("id") id: String, @Body request: ShowRankingRequestDto): ShownRankingDto
 
     @GET("lists/mine")
     suspend fun myPublished(): PublishedFeedDto

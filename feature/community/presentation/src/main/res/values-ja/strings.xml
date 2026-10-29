@@ -291,4 +291,8 @@
     </plurals>
     <string name="community_your_list">あなたのリストです。ほかの人にはこう見えます。</string>
     <string name="community_open_your_board">自分のボードを開く</string>
+    <string name="community_show_my_ranking">自分のランキングをほかの人に見せる</string>
+    <string name="community_sign_in_to_show_ranking">ランキングを見せるにはログインしてください</string>
+    <string name="community_ranking_shown">あなたのランキングがリストのランキングに加わりました</string>
+    <string name="community_action_sign_in">ログイン</string>
 </resources>

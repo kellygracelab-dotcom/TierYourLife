@@ -16,6 +16,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionNameCheck
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposal
+import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -117,6 +118,13 @@ interface CommunityRepository {
 
     /** Takes this person's ranking of that list down. */
     suspend fun withdrawRanking(listId: String): Result<Unit>
+
+    /**
+     * Shows this person's placing of somebody else's list to others, or
+     * changes the one shown: one entry per item in the list's order, a tier's
+     * position or null. A refusal is a RankingRefused.
+     */
+    suspend fun showMyRanking(listId: String, arrangement: List<Int?>, tierLabels: List<String>): Result<ShownRanking>
 
     /** As the server has it, not as this phone remembers: a list survives the phone that published it. */
     suspend fun myPublished(): Result<List<PublishedListSummary>>

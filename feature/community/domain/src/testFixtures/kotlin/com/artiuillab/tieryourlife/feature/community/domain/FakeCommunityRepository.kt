@@ -16,6 +16,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionNameCheck
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposal
+import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
@@ -88,6 +89,9 @@ open class FakeCommunityRepository : CommunityRepository {
         Result.success(RankingsPage(emptyList(), null))
 
     override suspend fun withdrawRanking(listId: String): Result<Unit> = Result.success(Unit)
+
+    override suspend fun showMyRanking(listId: String, arrangement: List<Int?>, tierLabels: List<String>): Result<ShownRanking> =
+        notSetUp("showMyRanking")
 
     override suspend fun moveList(publishedId: String, category: String, topicId: String?): Result<Unit> =
         Result.success(Unit)

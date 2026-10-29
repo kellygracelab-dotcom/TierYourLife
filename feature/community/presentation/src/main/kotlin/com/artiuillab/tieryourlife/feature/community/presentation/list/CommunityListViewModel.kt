@@ -8,6 +8,8 @@ import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
@@ -35,6 +37,7 @@ class CommunityListViewModel @Inject constructor(
     private val tiers: TierRepository,
     private val preferences: AppPreferences,
     savedStateHandle: SavedStateHandle,
+    private val accounts: AccountRepository,
 ) : ViewModel() {
 
     private val route = savedStateHandle.communityListRoute()
@@ -52,8 +55,18 @@ class CommunityListViewModel @Inject constructor(
     /** The readers' placings of this list: read on demand, chosen into the left half, this reader's own taken down. */
     internal val rankings = ListRankings(publishedId, community, _state, viewModelScope, messages)
 
+    /** Told once a ranking was shown, or that it takes signing in. */
+    val rankingNotices: Flow<RankingNotice> = rankings.notices
+
     init {
         load()
+        viewModelScope.launch {
+            accounts.account.collect { account ->
+                _state.update { current ->
+                    if (current is CommunityListUiState.Success) current.copy(signedIn = account is Account.SignedIn) else current
+                }
+            }
+        }
     }
 
     private fun loadFollowState(authorUid: String) {
@@ -116,6 +129,7 @@ class CommunityListViewModel @Inject constructor(
                         basedOn = answer.summary.basedOn,
                         section = answer.summary.category,
                         own = own,
+                        signedIn = accounts.current() is Account.SignedIn,
                     )
                 },
                 onFailure = { CommunityListUiState.Error },
@@ -198,6 +212,8 @@ class CommunityListViewModel @Inject constructor(
             }
         }
     }
+
+    fun showMyRanking() = rankings.showMine()
 
     fun hide() {
         val current = _state.value as? CommunityListUiState.Success ?: return

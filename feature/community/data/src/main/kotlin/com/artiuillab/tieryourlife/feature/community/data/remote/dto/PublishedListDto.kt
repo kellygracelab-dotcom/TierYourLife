@@ -177,6 +177,24 @@ data class RankingDto(
     val mine: Boolean = false,
 )
 
+/** One entry per list item, in the list's order: a tier's position, or null for unplaced. */
+@Serializable
+data class ShowRankingRequestDto(
+    val arrangement: List<Int?>,
+    val tierLabels: List<String>,
+)
+
+@Serializable
+data class ShownRankingDto(
+    val uid: String,
+    val authorName: String = "",
+    val authorPhotoUrl: String? = null,
+    val arrangement: List<Int?> = emptyList(),
+    val tierLabels: List<String> = emptyList(),
+    val updatedAtMs: Long = 0,
+    val created: Boolean = false,
+)
+
 @Serializable
 data class RankingsPageDto(
     val rankings: List<RankingDto> = emptyList(),

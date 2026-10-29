@@ -62,10 +62,10 @@ internal fun RowScope.ReaderBarControls(
         )
         Spacer(Modifier.width(8.dp))
     }
-    if (compact && state.takeCount > 0) {
+    if (compact && state.rankingsOnChip > 0) {
         AssistChip(
             onClick = onOpenRankings,
-            label = { Text(pluralStringResource(R.plurals.community_rankings_count, state.takeCount, state.takeCount)) },
+            label = { Text(pluralStringResource(R.plurals.community_rankings_count, state.rankingsOnChip, state.rankingsOnChip)) },
             modifier = Modifier.padding(end = 8.dp).testTag(CommunityListTestTags.RANKINGS),
         )
     }

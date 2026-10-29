@@ -346,6 +346,7 @@ private fun NavContent(
             },
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
             play = PlayOverBoards,
+            onSignIn = { navController.navigateToAccount() },
         )
         aiStudioScreen(
             onBack = { ids ->

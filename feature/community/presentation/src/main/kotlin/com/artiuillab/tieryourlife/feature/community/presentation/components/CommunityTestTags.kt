@@ -14,6 +14,7 @@ object CommunityTestTags {
     const val ACTION_VIEW_AUTHOR = "community_action_view_author"
     const val ACTION_HIDE = "community_action_hide"
     const val ACTION_REPORT = "community_action_report"
+    const val ACTION_SHOW_RANKING = "community_action_show_ranking"
     const val ACTION_WRONG_TOPIC = "community_action_wrong_topic"
     const val REPORT_DIALOG = "community_report_dialog"
     const val REPORT_NOTE = "community_report_note"

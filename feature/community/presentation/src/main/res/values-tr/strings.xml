@@ -306,4 +306,8 @@
     </plurals>
     <string name="community_your_list">Listen, başkalarının gördüğü hâliyle.</string>
     <string name="community_open_your_board">Panonu aç</string>
+    <string name="community_show_my_ranking">Sıralamamı başkalarına göster</string>
+    <string name="community_sign_in_to_show_ranking">Sıralamanı göstermek için giriş yap</string>
+    <string name="community_ranking_shown">Sıralaman listenin sıralamaları arasında</string>
+    <string name="community_action_sign_in">Giriş yap</string>
 </resources>

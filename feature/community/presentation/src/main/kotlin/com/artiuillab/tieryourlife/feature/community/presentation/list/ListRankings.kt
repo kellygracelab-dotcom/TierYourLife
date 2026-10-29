@@ -4,10 +4,15 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
+import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefusal
+import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefused
+import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -27,6 +32,9 @@ internal class ListRankings(
     /** The list as the server handed it over, for placing its cards a reader's way. */
     private var opened: PublishedList? = null
     private var cursor: String? = null
+
+    private val told = Channel<RankingNotice>(Channel.BUFFERED)
+    val notices: Flow<RankingNotice> = told.receiveAsFlow()
 
     fun opened(answer: PublishedList) {
         opened = answer
@@ -115,16 +123,52 @@ internal class ListRankings(
         }
     }
 
-    /** The author's cards where [ranking] put them, under the words it gave the tiers. */
-    private fun placedBy(answer: PublishedList, ranking: Ranking): TierList {
-        val where = ranking.arrangement
-        val ranked = answer.tiers.mapIndexed { index, tier ->
-            tier.copy(
-                label = ranking.tierLabels.getOrNull(index) ?: tier.label,
-                items = answer.items.filterIndexed { at, _ -> where.getOrNull(at) == index },
+    /**
+     * Mine, shown to others as this reader's ranking, or the one shown before
+     * changed. Only somebody else's list, only once Mine was arranged, and only
+     * signed in: a guest is asked to sign in instead.
+     */
+    fun showMine() {
+        val current = state.value as? CommunityListUiState.Success ?: return
+        val answer = opened ?: return
+        if (!current.canShowRanking || current.sendingRanking) return
+        if (!current.signedIn) {
+            told.trySend(RankingNotice.SignInFirst)
+            return
+        }
+        state.update { now -> if (now is CommunityListUiState.Success) now.copy(sendingRanking = true) else now }
+        scope.launch {
+            community.showMyRanking(listId, arrangementOf(answer, current.mine), tierLabelsOf(answer, current.mine)).fold(
+                onSuccess = { shown ->
+                    state.update { now -> if (now is CommunityListUiState.Success) now.withMine(shown, answer) else now }
+                    told.send(RankingNotice.Shown)
+                },
+                onFailure = { error ->
+                    Timber.w(error, "Showing a ranking failed")
+                    state.update { now -> if (now is CommunityListUiState.Success) now.copy(sendingRanking = false) else now }
+                    if ((error as? RankingRefused)?.reason == RankingRefusal.NotSignedIn) {
+                        told.send(RankingNotice.SignInFirst)
+                    } else {
+                        messages.send(UserMessage.ActionFailed)
+                    }
+                },
             )
         }
-        val unranked = answer.items.filterIndexed { at, _ -> where.getOrNull(at) == null }
-        return TierList(id = 0, title = answer.summary.title, tiers = ranked + pool(unranked), authorName = ranking.authorName)
+    }
+
+    /** First among the readers', as the server lists it, and in the left half if an older one of theirs was there. */
+    private fun CommunityListUiState.Success.withMine(shown: ShownRanking, answer: PublishedList): CommunityListUiState.Success {
+        val ranking = shown.ranking
+        val wasShown = chosenRanking?.mine == true || chosenRanking?.uid == ranking.uid
+        return copy(
+            sendingRanking = false,
+            rankings = listOf(ranking) + rankings.filterNot { it.mine || it.uid == ranking.uid },
+            rankingCount = rankingCount + if (shown.created) 1 else 0,
+            chosenRanking = if (wasShown) ranking else chosenRanking,
+            theirs = if (wasShown) placedBy(answer, ranking) else theirs,
+        )
     }
 }
+
+/** What a reader is told after asking to show their ranking; a failure is the usual one. */
+enum class RankingNotice { Shown, SignInFirst }

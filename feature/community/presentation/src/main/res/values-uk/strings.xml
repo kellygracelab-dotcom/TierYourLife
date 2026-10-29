@@ -336,4 +336,8 @@
     </plurals>
     <string name="community_your_list">Ваш список — таким його бачать інші.</string>
     <string name="community_open_your_board">Відкрити вашу дошку</string>
+    <string name="community_show_my_ranking">Показати моє ранжування іншим</string>
+    <string name="community_sign_in_to_show_ranking">Увійдіть, щоб показати своє ранжування</string>
+    <string name="community_ranking_shown">Ваше ранжування тепер серед ранжувань списку</string>
+    <string name="community_action_sign_in">Увійти</string>
 </resources>
