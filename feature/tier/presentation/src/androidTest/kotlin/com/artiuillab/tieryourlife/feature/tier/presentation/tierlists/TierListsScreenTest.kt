@@ -129,6 +129,31 @@ class TierListsScreenTest {
         ).assertIsDisplayed()
     }
 
+    // The star on a found board did nothing: the results passed it an empty callback.
+    @Test
+    fun search_inPictures_theStarStarsTheBoard() {
+        val starred = mutableListOf<Long>()
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierListsScreenContent(
+                    state = TierListsUiState.Success(
+                        listOf(tierList(1L, "Pizza in Lisbon", intArrayOf(0, 0, 0, 0, 0, 0))),
+                        1,
+                        0,
+                        HomeMode.Searching("piz"),
+                        asPictures = true,
+                    ),
+                    onTierListClick = {},
+                    onToggleFavourite = { starred += it },
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(TierListsTestTags.star(1L)).performClick()
+
+        assertEquals(listOf(1L), starred)
+    }
+
     @Test
     fun search_withNoMatches_showsTheNoResultsState() {
         val lists = listOf(tierList(1L, "Pizza in Lisbon", intArrayOf(0, 0, 0, 0, 0, 0)))

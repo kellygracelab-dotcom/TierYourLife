@@ -345,6 +345,7 @@ fun TierListsScreenContent(
                             query = mode.query,
                             asPictures = asPictures,
                             onTierListClick = onTierListClick,
+                            onToggleFavourite = onToggleFavourite,
                         )
 
                         totalListCount == 0 -> HomeEmptyState(onCreateNamedList = onCreateNamedList)
@@ -660,6 +661,7 @@ private fun SearchResults(
     query: String,
     asPictures: Boolean,
     onTierListClick: (Long) -> Unit,
+    onToggleFavourite: (Long) -> Unit,
 ) {
     if (lists.isEmpty()) {
         HomeEmptyStateLayout(
@@ -695,7 +697,7 @@ private fun SearchResults(
                 lists = lists,
                 favourites = emptyList(),
                 grouped = false,
-                onToggleFavourite = {},
+                onToggleFavourite = onToggleFavourite,
                 here = null,
                 conflict = null,
                 isSelecting = false,
