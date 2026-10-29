@@ -19,9 +19,11 @@ fun NavGraphBuilder.communityListScreen(
     onOpenList: (String) -> Unit = {},
     /** Play over the list; its result fills Mine. */
     play: BoardPlay = NoPlay,
+    /** A guest asked to show their ranking: the account screen, and back to the list after. */
+    onSignIn: () -> Unit = {},
 ) {
     composable<CommunityRoute.CommunityList> {
-        CommunityListScreen(onBack = onBack, onOpenSaved = onOpenSaved, onAuthorClick = onAuthorClick, onOpenList = onOpenList, play = play)
+        CommunityListScreen(onBack = onBack, onOpenSaved = onOpenSaved, onAuthorClick = onAuthorClick, onOpenList = onOpenList, play = play, onSignIn = onSignIn)
     }
 }
 

@@ -16,6 +16,8 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTi
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.RankingDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ReportRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionProposalDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ShowRankingRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ShownRankingDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TakeDownRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicMergeRequestDto
@@ -24,6 +26,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicSectio
 import com.artiuillab.tieryourlife.feature.community.data.remote.isAppUnverified
 import com.artiuillab.tieryourlife.feature.community.data.remote.proposalError
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
+import com.artiuillab.tieryourlife.feature.community.data.remote.rankingRefusal
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
@@ -43,15 +46,18 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
+import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionNameCheck
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposal
+import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
+import com.artiuillab.tieryourlife.feature.community.domain.model.isOwnList
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -99,7 +105,7 @@ class RetrofitCommunityRepository @Inject constructor(
             topic = topic,
         )
         CommunityPage(
-            lists = page.lists.map { it.toSummary() },
+            lists = page.lists.map { it.toSummary(me) },
             nextCursor = page.nextCursor,
             followingNobody = page.followingNobody,
         )
@@ -240,12 +246,21 @@ class RetrofitCommunityRepository @Inject constructor(
         api.deleteMyRanking(listId)
     }
 
+    override suspend fun showMyRanking(listId: String, arrangement: List<Int?>, tierLabels: List<String>): Result<ShownRanking> = try {
+        Result.success(api.showMyRanking(listId, ShowRankingRequestDto(arrangement, tierLabels)).toShown())
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Timber.w(e, "Showing a ranking failed")
+        Result.failure(RankingRefused(e.rankingRefusal()))
+    }
+
     override suspend fun myPublished(): Result<List<PublishedListSummary>> = attempt("Reading what this account has published") {
-        api.myPublished().lists.map { it.toSummary() }
+        api.myPublished().lists.map { it.toSummary(me) }
     }
 
     override suspend fun open(id: String): Result<PublishedList> = attempt("Opening a published list") {
-        api.open(id).toDomain()
+        api.open(id).toDomain(me)
     }
 
     override suspend fun publish(list: TierList): Result<Published> = try {
@@ -394,7 +409,8 @@ private fun PendingTopicDto.toDomain() = PendingTopic(
     similar = similar.map { it.toDomain() },
 )
 
-internal fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
+/** [me] is the signed-in uid; a kept page has its owner's lists marked already. */
+internal fun PublishedListSummaryDto.toSummary(me: String? = null) = PublishedListSummary(
     id = id,
     title = title,
     authorUid = authorUid,
@@ -414,12 +430,13 @@ internal fun PublishedListSummaryDto.toSummary() = PublishedListSummary(
     basedOn = basedOn?.toDomain(),
     proposedSection = proposedSection,
     proposedSectionName = proposedSectionName,
+    mine = isOwnList(mine, authorUid, me),
 )
 
 /** Old lists stored the word "null" as a cover; only a web address is a picture. */
 internal fun String?.webPictureOrNull(): String? = this?.trim()?.takeIf { it.startsWith("https://", ignoreCase = true) }
 
-internal fun PublishedListDto.toDomain() = PublishedList(
+internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
     summary = PublishedListSummary(
         id = id,
         title = title,
@@ -438,6 +455,7 @@ internal fun PublishedListDto.toDomain() = PublishedList(
         topicName = topicName,
         rankingCount = rankingCount,
         basedOn = basedOn?.toDomain(),
+        mine = isOwnList(mine, authorUid, me),
     ),
     tiers = tiers.mapIndexed { index, tier ->
         Tier(
@@ -501,6 +519,19 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
 
 private fun BasedOnDto.toDomain() = BasedOn(id = id, title = title, authorName = authorName.orEmpty(), authorUid = authorUid)
 
+internal fun ShownRankingDto.toShown() = ShownRanking(
+    ranking = Ranking(
+        uid = uid,
+        authorName = authorName,
+        authorPhotoUrl = authorPhotoUrl,
+        arrangement = arrangement,
+        tierLabels = tierLabels,
+        updatedAtMillis = updatedAtMs,
+        mine = true,
+    ),
+    created = created,
+)
+
 private fun RankingDto.toDomain() = Ranking(
     uid = uid,
     authorName = authorName,
@@ -535,4 +566,5 @@ internal fun PublishedListSummary.toDto() = PublishedListSummaryDto(
     basedOn = basedOn?.let { BasedOnDto(id = it.id, title = it.title, authorUid = it.authorUid, authorName = it.authorName) },
     proposedSection = proposedSection,
     proposedSectionName = proposedSectionName,
+    mine = mine,
 )

@@ -24,6 +24,8 @@ data class PublishedListSummaryDto(
     /** From `GET lists/mine`: the author's own waiting proposal this list moves to, and its name. */
     val proposedSection: String? = null,
     val proposedSectionName: String? = null,
+    /** Sent only to the list's owner, and only as true. */
+    val mine: Boolean = false,
 )
 
 @Serializable
@@ -113,6 +115,7 @@ data class PublishedListDto(
     val takeCount: Int = 0,
     val rankingCount: Int = 0,
     val basedOn: BasedOnDto? = null,
+    val mine: Boolean = false,
 )
 
 @Serializable
@@ -172,6 +175,24 @@ data class RankingDto(
     val tierLabels: List<String> = emptyList(),
     val updatedAtMs: Long = 0,
     val mine: Boolean = false,
+)
+
+/** One entry per list item, in the list's order: a tier's position, or null for unplaced. */
+@Serializable
+data class ShowRankingRequestDto(
+    val arrangement: List<Int?>,
+    val tierLabels: List<String>,
+)
+
+@Serializable
+data class ShownRankingDto(
+    val uid: String,
+    val authorName: String = "",
+    val authorPhotoUrl: String? = null,
+    val arrangement: List<Int?> = emptyList(),
+    val tierLabels: List<String> = emptyList(),
+    val updatedAtMs: Long = 0,
+    val created: Boolean = false,
 )
 
 @Serializable

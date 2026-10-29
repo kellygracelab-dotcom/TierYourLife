@@ -26,6 +26,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.core.theme.ui.CategoryIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FlagIcon
+import com.artiuillab.tieryourlife.core.theme.ui.FormatListNumberedIcon
 import com.artiuillab.tieryourlife.core.theme.ui.HideIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PersonIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.R
@@ -45,10 +46,14 @@ fun ListActionsSheet(
     authorPhotoUrl: String?,
     onDismiss: () -> Unit,
     onOpenAuthor: (() -> Unit)?,
-    onHide: () -> Unit,
-    onReport: () -> Unit,
+    /** Null on this person's own list, as is [onReport]: neither means anything there. */
+    onHide: (() -> Unit)?,
+    onReport: (() -> Unit)?,
     /** On a topic's page: the list is fine, it is just not of this topic. Nothing hides; a moderator moves it. */
     onWrongTopic: (() -> Unit)? = null,
+    /** On somebody else's list the reader has arranged: show their ranking to others, or, for a guest, sign in to. */
+    onShowMyRanking: (() -> Unit)? = null,
+    signInToShowRanking: Boolean = false,
 ) {
     AdaptiveSheet(
         onDismiss = onDismiss,
@@ -112,19 +117,31 @@ fun ListActionsSheet(
                     icon = { size, tint -> CategoryIcon(size, tint) },
                 )
             }
-            ActionRow(
-                text = stringResource(R.string.community_action_hide),
-                testTag = CommunityTestTags.ACTION_HIDE,
-                onClick = onHide,
-                icon = { size, tint -> HideIcon(size, tint) },
-            )
-            ActionRow(
-                text = stringResource(R.string.community_action_report),
-                testTag = CommunityTestTags.ACTION_REPORT,
-                onClick = onReport,
-                icon = { size, tint -> FlagIcon(size, tint) },
-                color = MaterialTheme.colorScheme.error,
-            )
+            if (onShowMyRanking != null) {
+                ActionRow(
+                    text = stringResource(if (signInToShowRanking) R.string.community_sign_in_to_show_ranking else R.string.community_show_my_ranking),
+                    testTag = CommunityTestTags.ACTION_SHOW_RANKING,
+                    onClick = onShowMyRanking,
+                    icon = { size, tint -> FormatListNumberedIcon(size, tint) },
+                )
+            }
+            if (onHide != null) {
+                ActionRow(
+                    text = stringResource(R.string.community_action_hide),
+                    testTag = CommunityTestTags.ACTION_HIDE,
+                    onClick = onHide,
+                    icon = { size, tint -> HideIcon(size, tint) },
+                )
+            }
+            if (onReport != null) {
+                ActionRow(
+                    text = stringResource(R.string.community_action_report),
+                    testTag = CommunityTestTags.ACTION_REPORT,
+                    onClick = onReport,
+                    icon = { size, tint -> FlagIcon(size, tint) },
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
             Spacer(Modifier.height(12.dp))
         }
     }

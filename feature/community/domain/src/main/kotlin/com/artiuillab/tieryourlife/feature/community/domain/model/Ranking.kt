@@ -16,3 +16,11 @@ data class Ranking(
 )
 
 data class RankingsPage(val rankings: List<Ranking>, val nextCursor: String?)
+
+/** This reader's placing as the server now keeps it; [created] when it was not shown before. */
+data class ShownRanking(val ranking: Ranking, val created: Boolean)
+
+/** Why a reader's placing was not shown. */
+enum class RankingRefusal { NotSignedIn, Banned, OwnList, Failed }
+
+class RankingRefused(val reason: RankingRefusal) : Exception(reason.name)

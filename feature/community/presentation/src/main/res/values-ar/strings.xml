@@ -364,4 +364,10 @@
         <item quantity="many">لديك %1$d من %2$d اقتراحات قيد الانتظار.</item>
         <item quantity="other">لديك %1$d من %2$d اقتراحات قيد الانتظار.</item>
     </plurals>
+    <string name="community_your_list">قائمتك كما يراها الآخرون.</string>
+    <string name="community_open_your_board">افتح لوحتك</string>
+    <string name="community_show_my_ranking">اعرض ترتيبي للآخرين</string>
+    <string name="community_sign_in_to_show_ranking">سجّل الدخول لعرض ترتيبك</string>
+    <string name="community_ranking_shown">أصبح ترتيبك ضمن ترتيبات القائمة</string>
+    <string name="community_action_sign_in">تسجيل الدخول</string>
 </resources>

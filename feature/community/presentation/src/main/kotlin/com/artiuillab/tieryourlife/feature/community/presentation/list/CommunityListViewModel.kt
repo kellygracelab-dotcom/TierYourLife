@@ -3,10 +3,13 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
@@ -34,6 +37,7 @@ class CommunityListViewModel @Inject constructor(
     private val tiers: TierRepository,
     private val preferences: AppPreferences,
     savedStateHandle: SavedStateHandle,
+    private val accounts: AccountRepository,
 ) : ViewModel() {
 
     private val route = savedStateHandle.communityListRoute()
@@ -51,8 +55,18 @@ class CommunityListViewModel @Inject constructor(
     /** The readers' placings of this list: read on demand, chosen into the left half, this reader's own taken down. */
     internal val rankings = ListRankings(publishedId, community, _state, viewModelScope, messages)
 
+    /** Told once a ranking was shown, or that it takes signing in. */
+    val rankingNotices: Flow<RankingNotice> = rankings.notices
+
     init {
         load()
+        viewModelScope.launch {
+            accounts.account.collect { account ->
+                _state.update { current ->
+                    if (current is CommunityListUiState.Success) current.copy(signedIn = account is Account.SignedIn) else current
+                }
+            }
+        }
     }
 
     private fun loadFollowState(authorUid: String) {
@@ -98,11 +112,12 @@ class CommunityListViewModel @Inject constructor(
             _state.value = community.open(publishedId).fold(
                 onSuccess = { answer ->
                     rankings.opened(answer)
+                    val own = answer.summary.mine
                     CommunityListUiState.Success(
                         list = asTheAuthorLeftIt(answer),
                         mine = emptied(answer),
-                        // What somebody came for: the list as its author ranked it.
-                        showing = if (answer.arrangement.isEmpty()) Showing.Mine else Showing.Theirs,
+                        // What somebody came for: the list as its author ranked it. Their own is only ever that.
+                        showing = if (answer.arrangement.isEmpty() && !own) Showing.Mine else Showing.Theirs,
                         knowsTheirs = answer.arrangement.isNotEmpty(),
                         authorName = answer.summary.authorName,
                         authorUid = answer.summary.authorUid,
@@ -113,13 +128,23 @@ class CommunityListViewModel @Inject constructor(
                         takeCount = answer.summary.takeCount,
                         basedOn = answer.summary.basedOn,
                         section = answer.summary.category,
+                        own = own,
+                        signedIn = accounts.current() is Account.SignedIn,
                     )
                 },
                 onFailure = { CommunityListUiState.Error },
             )
-            (_state.value as? CommunityListUiState.Success)
-                ?.takeUnless { it.editorial }
-                ?.let { loadFollowState(it.authorUid) }
+            val loaded = _state.value as? CommunityListUiState.Success ?: return@launch
+            if (loaded.own) findOwnBoard() else if (!loaded.editorial) loadFollowState(loaded.authorUid)
+        }
+    }
+
+    private suspend fun findOwnBoard() {
+        val board = runSuspendCatching { tiers.boardPublishedAs(publishedId) }
+            .onFailure { Timber.i(it, "Not offering the board behind $publishedId") }
+            .getOrNull() ?: return
+        _state.update { current ->
+            if (current is CommunityListUiState.Success) current.copy(ownBoardId = board.id) else current
         }
     }
 
@@ -154,7 +179,7 @@ class CommunityListViewModel @Inject constructor(
     /** The copy's id lands in the state; the screen then offers to open it rather than leaving on its own. */
     fun saveToMyLists(which: Showing) {
         val current = _state.value as? CommunityListUiState.Success ?: return
-        if (current.saving || current.savedId != null) return
+        if (current.own || current.saving || current.savedId != null) return
         _state.update { (it as CommunityListUiState.Success).copy(saving = true) }
 
         viewModelScope.launch {
@@ -188,8 +213,11 @@ class CommunityListViewModel @Inject constructor(
         }
     }
 
+    fun showMyRanking() = rankings.showMine()
+
     fun hide() {
         val current = _state.value as? CommunityListUiState.Success ?: return
+        if (current.own) return
         preferences.hideList(publishedId, current.list.title)
     }
 
@@ -199,6 +227,7 @@ class CommunityListViewModel @Inject constructor(
 
     /** Off this reader's screen at once; whether it comes down for everyone is a person's decision. */
     fun report(reason: ReportReason, note: String?) {
+        if ((_state.value as? CommunityListUiState.Success)?.own == true) return
         hide()
         viewModelScope.launch {
             community.report(publishedId, reason, note).onFailure {

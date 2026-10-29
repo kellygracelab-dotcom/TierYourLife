@@ -319,4 +319,10 @@
         <item quantity="many">Você tem %1$d de %2$d propostas aguardando.</item>
         <item quantity="other">Você tem %1$d de %2$d propostas aguardando.</item>
     </plurals>
+    <string name="community_your_list">Sua lista, como os outros a veem.</string>
+    <string name="community_open_your_board">Abrir seu quadro</string>
+    <string name="community_show_my_ranking">Mostrar meu ranking aos outros</string>
+    <string name="community_sign_in_to_show_ranking">Entre para mostrar seu ranking</string>
+    <string name="community_ranking_shown">Seu ranking está entre os rankings da lista</string>
+    <string name="community_action_sign_in">Entrar</string>
 </resources>

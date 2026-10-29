@@ -10,6 +10,7 @@ internal object CommunityListTestTags {
     const val SAVE_THEIRS = "community_list_save_theirs"
     const val SAVE_MINE = "community_list_save_mine"
     const val OPEN_SAVED = "community_list_open_saved"
+    const val OPEN_BOARD = "community_list_open_board"
     const val STATUS = "community_list_status"
     const val ERROR = "community_list_error"
     const val MORE = "community_list_more"

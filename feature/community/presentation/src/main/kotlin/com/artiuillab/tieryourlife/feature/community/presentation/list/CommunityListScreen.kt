@@ -10,25 +10,33 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -41,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.presentation.R
@@ -58,6 +67,8 @@ import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private val SWITCH_HEIGHT = 36.dp
@@ -71,11 +82,13 @@ fun CommunityListScreen(
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onOpenList: (String) -> Unit = {},
     play: BoardPlay = NoPlay,
+    onSignIn: () -> Unit = {},
     viewModel: CommunityListViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var playOpen by rememberSaveable { mutableStateOf(false) }
-    val playRequest = (state as? CommunityListUiState.Success)?.let { loaded ->
+    // Their own list is played on their own board, not here.
+    val playRequest = (state as? CommunityListUiState.Success)?.takeUnless { it.own }?.let { loaded ->
         remember(loaded.shown, loaded.mine) { PlayRequest.someoneElses(viewModel.publishedId, shown = loaded.shown, mine = loaded.mine) }
     }
 
@@ -106,6 +119,10 @@ fun CommunityListScreen(
         onWithdrawRanking = viewModel.rankings::withdrawMine,
         onPlay = { playOpen = true },
         playSaved = playRequest?.let { play.isSaved(it.key) } == true,
+        onShowMyRanking = viewModel::showMyRanking,
+        onSignIn = onSignIn,
+        userMessages = viewModel.userMessages,
+        rankingNotices = viewModel.rankingNotices,
     )
     if (playRequest != null) {
         play.Layer(request = playRequest, open = playOpen, onArranged = viewModel::putInMine, onClose = { playOpen = false })
@@ -137,6 +154,10 @@ fun CommunityListScreenContent(
     /** Play from either half; its result fills Mine. */
     onPlay: (() -> Unit)? = null,
     playSaved: Boolean = false,
+    onShowMyRanking: () -> Unit = {},
+    onSignIn: () -> Unit = {},
+    userMessages: Flow<UserMessage> = emptyFlow(),
+    rankingNotices: Flow<RankingNotice> = emptyFlow(),
 ) {
     var actionsVisible by remember { mutableStateOf(false) }
     var reportVisible by remember { mutableStateOf(false) }
@@ -193,11 +214,16 @@ fun CommunityListScreenContent(
                         TierDetailScreenContent(
                             // Read-only while their arrangement is on screen.
                             state = TierDetailUiState.Success(loaded.shown),
-                            actions = TierDetailActions(onBack = onBack, onMoveItem = onMoveItem, onPlay = onPlay, playSaved = playSaved),
+                            actions = TierDetailActions(
+                                onBack = onBack,
+                                onMoveItem = onMoveItem,
+                                onPlay = onPlay.takeUnless { loaded.own },
+                                playSaved = playSaved,
+                            ),
                             // Theirs is theirs; yours is yours to arrange, and what
                             // you save is whichever is on screen.
-                            readOnly = loaded.showing == Showing.Theirs,
-                            onReaderMoreClick = { actionsVisible = true },
+                            readOnly = loaded.readOnly,
+                            onReaderMoreClick = { actionsVisible = true }.takeIf { loaded.hasMenu },
                             belowTopBar = {
                                 UnderTheTitle(
                                     loaded = loaded,
@@ -278,27 +304,13 @@ fun CommunityListScreenContent(
             }
 
             if (actionsVisible) {
-                ListActionsSheet(
-                    title = loaded.list.title,
-                    authorName = loaded.authorName.takeUnless { loaded.editorial },
-                    authorPhotoUrl = loaded.authorPhotoUrl,
+                ListMenu(
+                    loaded = loaded,
                     onDismiss = { actionsVisible = false },
-                    onOpenAuthor = if (loaded.editorial) {
-                        null
-                    } else {
-                        {
-                            actionsVisible = false
-                            onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl)
-                        }
-                    },
-                    onHide = {
-                        actionsVisible = false
-                        onHide()
-                    },
-                    onReport = {
-                        actionsVisible = false
-                        reportVisible = true
-                    },
+                    onOpenAuthor = { onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl) },
+                    onHide = onHide,
+                    onReport = { reportVisible = true },
+                    onShowMyRanking = { if (loaded.signedIn) onShowMyRanking() else onSignIn() },
                 )
             }
 
@@ -328,7 +340,63 @@ fun CommunityListScreenContent(
                 )
             }
         }
+        ListSnackbar(userMessages, rankingNotices, onSignIn)
     }
+}
+
+/**
+ * The list's menu: its author, Hide and Report on somebody else's list, and
+ * once the reader has arranged their own half, showing it to others. Each
+ * closes the menu first.
+ */
+@Composable
+private fun ListMenu(
+    loaded: CommunityListUiState.Success,
+    onDismiss: () -> Unit,
+    onOpenAuthor: () -> Unit,
+    onHide: () -> Unit,
+    onReport: () -> Unit,
+    onShowMyRanking: () -> Unit,
+) {
+    fun closing(action: () -> Unit): () -> Unit = {
+        onDismiss()
+        action()
+    }
+    ListActionsSheet(
+        title = loaded.list.title,
+        authorName = loaded.authorName.takeUnless { loaded.editorial },
+        authorPhotoUrl = loaded.authorPhotoUrl,
+        onDismiss = onDismiss,
+        onOpenAuthor = closing(onOpenAuthor).takeUnless { loaded.editorial },
+        onHide = closing(onHide).takeUnless { loaded.own },
+        onReport = closing(onReport).takeUnless { loaded.own },
+        onShowMyRanking = closing(onShowMyRanking).takeIf { loaded.canShowRanking },
+        signInToShowRanking = !loaded.signedIn,
+    )
+}
+
+/** What went wrong, and what became of a ranking the reader asked to show; a guest can go and sign in from it. */
+@Composable
+private fun ListSnackbar(userMessages: Flow<UserMessage>, rankingNotices: Flow<RankingNotice>, onSignIn: () -> Unit) {
+    val host = remember { SnackbarHostState() }
+    val resources = LocalResources.current
+    val signIn by rememberUpdatedState(onSignIn)
+    LaunchedEffect(userMessages) { userMessages.collect { host.showSnackbar(resources.getString(ThemeR.string.snack_action_failed)) } }
+    LaunchedEffect(rankingNotices) {
+        rankingNotices.collect { notice ->
+            when (notice) {
+                RankingNotice.Shown -> host.showSnackbar(resources.getString(R.string.community_ranking_shown))
+                RankingNotice.SignInFirst -> {
+                    val answer = host.showSnackbar(
+                        message = resources.getString(R.string.community_sign_in_to_show_ranking),
+                        actionLabel = resources.getString(R.string.community_action_sign_in),
+                    )
+                    if (answer == SnackbarResult.ActionPerformed) signIn()
+                }
+            }
+        }
+    }
+    SnackbarHost(host, Modifier.fillMaxSize().wrapContentHeight(Alignment.Bottom).navigationBarsPadding())
 }
 
 /** Under the title: the author, the list this one was changed from, and whose placings there are. */
@@ -356,8 +424,8 @@ private fun UnderTheTitle(
     if (basedOn != null) {
         BasedOnLine(basedOn = basedOn, onOpen = { onOpenList(basedOn.id) })
     }
-    if (loaded.takeCount > 0) {
-        RankingsLine(count = loaded.takeCount, chosen = loaded.chosenRanking, onOpen = onOpenRankings)
+    if (loaded.rankingsOnChip > 0) {
+        RankingsLine(count = loaded.rankingsOnChip, chosen = loaded.chosenRanking, onOpen = onOpenRankings)
     }
 }
 
@@ -383,8 +451,8 @@ private fun ReaderStrip(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             // Only where there is something to switch to: a snapshot without
-            // the author's arrangement has one half.
-            if (state.knowsTheirs) {
+            // the author's arrangement has one half, and their own list has only theirs.
+            if (state.knowsTheirs && !state.own) {
                 WhoseArrangement(
                     showing = state.showing,
                     theirsLabel = state.chosenRanking?.authorName ?: stringResource(R.string.community_showing_theirs),
@@ -393,7 +461,18 @@ private fun ReaderStrip(
             }
             Spacer(Modifier.weight(1f))
             val savedId = state.savedId
-            if (savedId != null) {
+            if (state.own) {
+                state.ownBoardId?.let { board ->
+                    Button(
+                        onClick = { onOpenSaved(board) },
+                        modifier = Modifier
+                            .widthIn(max = SAVE_BUTTON_MAX_WIDTH)
+                            .testTag(CommunityListTestTags.OPEN_BOARD),
+                    ) {
+                        Text(text = stringResource(R.string.community_open_your_board), textAlign = TextAlign.Center, maxLines = 2)
+                    }
+                }
+            } else if (savedId != null) {
                 Button(
                     onClick = { onOpenSaved(savedId) },
                     modifier = Modifier
@@ -541,6 +620,7 @@ private fun CommunityListArrangedDarkPreview() = TierYourLifeTheme(true) {
 /** What the reader's copy is, in the words of the strip's sentence. */
 private val CommunityListUiState.Success.statusRes: Int
     get() = when {
+        own -> R.string.community_your_list
         savedId != null -> R.string.community_saved_to_your_lists
         arranged -> R.string.community_not_saved_yet
         // "Someone else's" would name an owner a list without an author does not have.

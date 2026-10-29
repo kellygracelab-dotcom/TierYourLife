@@ -334,4 +334,10 @@
         <item quantity="many">Ждут %1$d из %2$d ваших предложений.</item>
         <item quantity="other">Ждут %1$d из %2$d ваших предложений.</item>
     </plurals>
+    <string name="community_your_list">Ваш список — таким его видят другие.</string>
+    <string name="community_open_your_board">Открыть вашу доску</string>
+    <string name="community_show_my_ranking">Показать моё ранжирование другим</string>
+    <string name="community_sign_in_to_show_ranking">Войдите, чтобы показать своё ранжирование</string>
+    <string name="community_ranking_shown">Ваше ранжирование теперь среди ранжирований списка</string>
+    <string name="community_action_sign_in">Войти</string>
 </resources>

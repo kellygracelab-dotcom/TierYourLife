@@ -334,4 +334,10 @@
         <item quantity="many">Czeka %1$d z %2$d twoich propozycji.</item>
         <item quantity="other">Czeka %1$d z %2$d twoich propozycji.</item>
     </plurals>
+    <string name="community_your_list">Twoja lista, tak jak widzą ją inni.</string>
+    <string name="community_open_your_board">Otwórz swoją tablicę</string>
+    <string name="community_show_my_ranking">Pokaż mój ranking innym</string>
+    <string name="community_sign_in_to_show_ranking">Zaloguj się, aby pokazać swój ranking</string>
+    <string name="community_ranking_shown">Twój ranking jest wśród rankingów listy</string>
+    <string name="community_action_sign_in">Zaloguj się</string>
 </resources>

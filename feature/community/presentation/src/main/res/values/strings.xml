@@ -304,4 +304,10 @@
         <item quantity="one">You have %1$d of %2$d proposals waiting.</item>
         <item quantity="other">You have %1$d of %2$d proposals waiting.</item>
     </plurals>
+    <string name="community_your_list">Your list, as others see it.</string>
+    <string name="community_open_your_board">Open your board</string>
+    <string name="community_show_my_ranking">Show my ranking to others</string>
+    <string name="community_sign_in_to_show_ranking">Sign in to show your ranking</string>
+    <string name="community_ranking_shown">Your ranking is in the list’s rankings</string>
+    <string name="community_action_sign_in">Sign in</string>
 </resources>

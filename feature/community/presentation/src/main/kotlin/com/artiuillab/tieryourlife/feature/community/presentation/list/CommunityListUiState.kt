@@ -53,9 +53,32 @@ sealed interface CommunityListUiState {
         val chosenRanking: Ranking? = null,
         /** The board as [chosenRanking] placed it, or [list] while none is chosen. */
         val theirs: TierList = list,
+        /**
+         * This person's own list, named or anonymous: shown as others see it,
+         * with nothing to save, hide, report or follow.
+         */
+        val own: Boolean = false,
+        /** On their own list, the board on this phone it was published from, if there is one. */
+        val ownBoardId: Long? = null,
+        /** Signed in with an account: only then can their ranking be shown to others. */
+        val signedIn: Boolean = false,
+        /** Their ranking on its way to the server. */
+        val sendingRanking: Boolean = false,
     ) : CommunityListUiState {
         /** What the board area is drawing right now. */
         val shown: TierList get() = if (showing == Showing.Theirs) theirs else mine
+
+        /** Their own list is changed on their board, never here; somebody else's arrangement is theirs. */
+        val readOnly: Boolean get() = own || showing == Showing.Theirs
+
+        /** Their own anonymous list leaves the menu nothing to offer. */
+        val hasMenu: Boolean get() = !(own && editorial)
+
+        /** Somebody else's list, arranged the reader's way, by hand or by a game. */
+        val canShowRanking: Boolean get() = !own && arranged
+
+        /** The chip's number: copies taken, or the rankings shown when a ranking needed no copy. */
+        val rankingsOnChip: Int get() = maxOf(takeCount, rankingCount)
     }
 
     data object Error : CommunityListUiState
