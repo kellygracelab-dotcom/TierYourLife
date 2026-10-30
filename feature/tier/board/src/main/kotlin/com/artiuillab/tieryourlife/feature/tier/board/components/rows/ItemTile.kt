@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,6 +24,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.ui.CardLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -39,8 +43,13 @@ fun ItemTile(item: TierItem, width: Dp, height: Dp) {
         contentAlignment = Alignment.Center,
     ) {
         if (item.imageUrl != null) {
+            val context = LocalPlatformContext.current
+            // Each poster fades in on its own; one already in memory is simply there.
+            val request = remember(item.imageUrl) {
+                ImageRequest.Builder(context).data(item.imageUrl).crossfade(POSTER_FADE_MILLIS).build()
+            }
             AsyncImage(
-                model = item.imageUrl,
+                model = request,
                 contentDescription = item.title,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
@@ -61,6 +70,7 @@ fun ItemTile(item: TierItem, width: Dp, height: Dp) {
     }
 }
 
+private const val POSTER_FADE_MILLIS = 150
 private val COMPACT_TILE_WIDTH = 40.dp
 private val ROOMY_TILE_WIDTH = 52.dp
 private val SMALL_LABEL = TextStyle(fontSize = 8.sp, lineHeight = 10.sp, fontWeight = FontWeight.Medium)

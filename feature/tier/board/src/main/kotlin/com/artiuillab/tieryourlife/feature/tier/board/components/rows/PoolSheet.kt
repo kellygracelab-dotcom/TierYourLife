@@ -81,8 +81,10 @@ private val DOCKED_ADD_FIELD_WIDTH = 300.dp
  * The pool as a sheet docked under the rows: folded, a strip with the count,
  * a glimpse of the cards and the Add chip; open, the whole row of cards. It
  * opens on its own only where there is work to do, someone's own board with
- * cards left to rank; a reader's pool and an empty one start folded. A tap
- * on the strip or a pull on it switches, and a drop lands in it either way.
+ * cards left to rank; a reader's pool and an empty one start folded. Given a
+ * [side], it opens whenever that side's pool has cards and folds when it has
+ * none, each time the side changes. A tap on the strip or a pull on it
+ * switches, and a drop lands in it either way.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -105,8 +107,11 @@ fun PoolSheet(
     docked: Boolean = false,
     /** A line under a docked pool's head from the screen around the board: a reader's word on what their copy is. */
     note: (@Composable () -> Unit)? = null,
+    side: Any? = null,
+    /** False leaves the count out of a folded, empty strip, for [accessories] to say what it means. */
+    countWhenEmpty: Boolean = true,
 ) {
-    var expanded by rememberSaveable(pool.id) { mutableStateOf(!readOnly && pool.items.isNotEmpty()) }
+    var expanded by rememberSaveable(pool.id, side) { mutableStateOf(poolOpensOnItsOwn(side, readOnly, pool.items.size)) }
     val memory = LocalBoardLayoutMemory.current
     val dockRows = memory.poolDockRows.takeIf { it in BoardLayoutMemory.DockRowChoices } ?: BoardLayoutMemory.DEFAULT_DOCK_ROWS
     val lifting = docked && dragController.draggedPayload != null && !readOnly
@@ -195,7 +200,9 @@ fun PoolSheet(
                 return@Column
             }
             accessories?.invoke(!expanded)
-            StripHead(pool = pool, expanded = expanded, readOnly = readOnly, onAddClick = onAddClick, onGenerateClick = onGenerateClick)
+            if (stripCounts(countWhenEmpty, count, readOnly)) {
+                StripHead(pool = pool, expanded = expanded, readOnly = readOnly, onAddClick = onAddClick, onGenerateClick = onGenerateClick)
+            }
         }
         if (expanded && docked) {
             PoolCardsWrapped(
@@ -217,6 +224,12 @@ fun PoolSheet(
         }
     }
 }
+
+/** Open where there are cards to rank: on someone's own board, or on whichever side of a screen with sides is shown. */
+internal fun poolOpensOnItsOwn(side: Any?, readOnly: Boolean, cards: Int): Boolean = (side != null || !readOnly) && cards > 0
+
+/** A count of none with nothing to add beside it says nothing the accessories cannot say better. */
+private fun stripCounts(countWhenEmpty: Boolean, cards: Int, readOnly: Boolean): Boolean = countWhenEmpty || cards > 0 || !readOnly
 
 /** The first few pictures, small, so a folded pool still says what is in it. */
 @Composable

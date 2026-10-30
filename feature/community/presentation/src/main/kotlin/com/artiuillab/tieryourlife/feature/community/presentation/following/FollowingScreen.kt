@@ -212,7 +212,7 @@ private fun LazyListScope.topicsBlock(state: FollowingUiState.Ready, onToggle: (
             following = key !in state.stopped,
             onOpen = { onOpen(topic) },
             onToggle = { onToggle(key) },
-        ) { TopicSquare(section, 48.dp, 20.dp) }
+        ) { TopicSquare(section, 48.dp, 20.dp, topic.pictureUrl) }
     }
     items(state.waiting, key = { "w:" + it.id }) { topic ->
         val section = topic.section ?: ListCategory.Other.id

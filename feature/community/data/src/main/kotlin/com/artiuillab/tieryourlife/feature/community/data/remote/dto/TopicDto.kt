@@ -13,6 +13,7 @@ data class TopicDto(
     val following: Boolean = false,
     val createdBy: String = "",
     val mergedInto: String? = null,
+    val pictureUrl: String? = null,
 )
 
 @Serializable
@@ -32,6 +33,7 @@ data class PendingTopicDto(
     val following: Boolean = false,
     val createdBy: String = "",
     val mergedInto: String? = null,
+    val pictureUrl: String? = null,
     val proposerName: String = "",
     val requestedSection: String? = null,
     val similar: List<TopicDto> = emptyList(),

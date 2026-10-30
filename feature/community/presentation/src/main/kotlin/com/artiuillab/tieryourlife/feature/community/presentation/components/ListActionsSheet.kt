@@ -30,6 +30,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.FlagIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FormatListNumberedIcon
 import com.artiuillab.tieryourlife.core.theme.ui.GridViewIcon
 import com.artiuillab.tieryourlife.core.theme.ui.HideIcon
+import com.artiuillab.tieryourlife.core.theme.ui.LeaderboardIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PersonIcon
 import com.artiuillab.tieryourlife.core.theme.ui.VisibilityIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.R
@@ -64,6 +65,9 @@ fun ListActionsSheet(
     anonymous: Boolean = false,
     /** On their own list: down for everyone. */
     onTakeDown: (() -> Unit)? = null,
+    /** On a list's page, first: the readers' placings of it, and how many there are. */
+    onOpenRankings: (() -> Unit)? = null,
+    rankingCount: Int = 0,
 ) {
     AdaptiveSheet(
         onDismiss = onDismiss,
@@ -75,42 +79,21 @@ fun ListActionsSheet(
                 .navigationBarsPadding()
                 .testTag(CommunityTestTags.LIST_ACTIONS_SHEET),
         ) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .padding(bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (authorName != null) {
-                    AuthorFace(photoUrl = authorPhotoUrl, name = authorName, size = 32.dp)
-                    Spacer(Modifier.width(12.dp))
-                }
-                Column(Modifier.fillMaxWidth()) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    if (authorName != null) {
-                        Text(
-                            text = stringResource(R.string.community_by_author, authorName),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                }
-            }
+            SheetHead(title = title, authorName = authorName, authorPhotoUrl = authorPhotoUrl)
 
             HorizontalDivider(
                 Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 color = MaterialTheme.colorScheme.outlineVariant,
             )
 
+            if (onOpenRankings != null) {
+                ActionRow(
+                    text = stringResource(R.string.community_action_rankings, rankingCount),
+                    testTag = CommunityTestTags.ACTION_RANKINGS,
+                    onClick = onOpenRankings,
+                    icon = { size, tint -> LeaderboardIcon(size, tint) },
+                )
+            }
             if (onOpenAuthor != null && authorName != null) {
                 ActionRow(
                     text = stringResource(R.string.community_action_view_author, authorName),
@@ -178,6 +161,41 @@ fun ListActionsSheet(
                 )
             }
             Spacer(Modifier.height(12.dp))
+        }
+    }
+}
+
+/** The list's title over the sheet, with its author's face and name when it has an author. */
+@Composable
+private fun SheetHead(title: String, authorName: String?, authorPhotoUrl: String?) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .padding(bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (authorName != null) {
+            AuthorFace(photoUrl = authorPhotoUrl, name = authorName, size = 32.dp)
+            Spacer(Modifier.width(12.dp))
+        }
+        Column(Modifier.fillMaxWidth()) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            if (authorName != null) {
+                Text(
+                    text = stringResource(R.string.community_by_author, authorName),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
     }
 }

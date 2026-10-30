@@ -15,6 +15,7 @@ object CommunityTestTags {
     const val ACTION_HIDE = "community_action_hide"
     const val ACTION_REPORT = "community_action_report"
     const val ACTION_SHOW_RANKING = "community_action_show_ranking"
+    const val ACTION_RANKINGS = "community_action_rankings"
     const val ACTION_WRONG_TOPIC = "community_action_wrong_topic"
     const val ACTION_YOUR_PUBLIC_LISTS = "community_action_your_public_lists"
     const val ACTION_PUBLISH_ANONYMOUSLY = "community_action_publish_anonymously"

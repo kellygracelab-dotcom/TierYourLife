@@ -28,4 +28,6 @@ internal object ExploreTestTags {
     fun card(id: String) = "explore_card_$id"
     fun reason(id: String) = "explore_reason_$id"
     fun stripItem(key: String) = "following_strip_$key"
+    const val TOPIC_SQUARE = "topic_square"
+    const val TOPIC_PICTURE = "topic_picture"
 }

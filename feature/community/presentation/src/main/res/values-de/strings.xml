@@ -171,12 +171,10 @@
     <string name="community_ranking_author">Autor der Liste</string>
     <string name="community_ranking_you">Du</string>
     <string name="community_ranking_withdraw">Zurückziehen</string>
+    <string name="community_action_rankings">Reihungen · %1$d</string>
+    <string name="community_rank_it_yourself">Selbst ordnen</string>
+    <string name="community_drag_any_card">Zieh eine Karte</string>
     <string name="community_based_on">Nach „%1$s“ von %2$s</string>
-    <string name="community_showing_ranking_of">Gezeigt: %1$s</string>
-    <plurals name="community_rankings_count">
-        <item quantity="one">%d Reihung</item>
-        <item quantity="other">%d Reihungen</item>
-    </plurals>
     <string name="explore_tab_explore">Entdecken</string>
     <string name="explore_tab_following">Gefolgt</string>
     <string name="explore_title_community">Community</string>

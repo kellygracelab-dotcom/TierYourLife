@@ -31,6 +31,9 @@ interface FeedCacheDao {
 
     @Query("DELETE FROM feed_cache WHERE openedAt < :before")
     suspend fun dropOpenedBefore(before: Long)
+
+    @Query("DELETE FROM feed_cache WHERE `key` = :key")
+    suspend fun drop(key: String)
 }
 
 /**

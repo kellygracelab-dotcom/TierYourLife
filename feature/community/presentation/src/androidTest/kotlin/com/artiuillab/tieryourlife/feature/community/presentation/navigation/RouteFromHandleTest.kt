@@ -47,6 +47,19 @@ class RouteFromHandleTest {
             authorName = "Olena M.",
             itemCount = 12,
             tierColors = "#B03A32,#C06A25",
+            tierCounts = "5,4,3",
+            authorUid = "u-olena",
+            authorPhotoUrl = "https://example.test/o.jpg",
+            byNobody = true,
+            mine = true,
+            anonymous = true,
+            section = "film_tv",
+            rankingCount = 13,
+            followKnown = true,
+            following = true,
+            basedOnId = "src",
+            basedOnTitle = "Every A24 film",
+            basedOnAuthor = "kenji",
         )
         val entry = entryFor(route)
 

@@ -171,12 +171,10 @@
     <string name="community_ranking_author">Listenin yazarı</string>
     <string name="community_ranking_you">Siz</string>
     <string name="community_ranking_withdraw">Geri çek</string>
+    <string name="community_action_rankings">Sıralamalar · %1$d</string>
+    <string name="community_rank_it_yourself">Kendin sırala</string>
+    <string name="community_drag_any_card">Bir kartı sürükle</string>
     <string name="community_based_on">%2$s tarafından “%1$s” temel alınarak</string>
-    <string name="community_showing_ranking_of">Gösterilen: %1$s</string>
-    <plurals name="community_rankings_count">
-        <item quantity="one">%d sıralama</item>
-        <item quantity="other">%d sıralama</item>
-    </plurals>
     <string name="explore_tab_explore">Keşfet</string>
     <string name="explore_tab_following">Takip</string>
     <string name="explore_title_community">Topluluk</string>

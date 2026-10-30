@@ -26,6 +26,8 @@ class KeptPageTest {
         topicName = "Noodles",
         rankingCount = 2,
         basedOn = BasedOn("src", "Source", "Olena", authorUid = "u-olena"),
+        tierCounts = listOf(n, 0, 1),
+        viewerFollowsAuthor = n % 2 == 0,
     )
 
     @Test

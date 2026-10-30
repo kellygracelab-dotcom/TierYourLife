@@ -54,4 +54,12 @@ data class TierDetailActions(
     val playSaved: Boolean = false,
     /** A card picked up (true) or put down (false), for a screen that says something while one is in the air. */
     val onCardLifted: (Boolean) -> Unit = {},
+    /**
+     * Which of a screen's arrangements the board shows, for a screen with more
+     * than one: each time it changes the pool opens if that side has cards in
+     * it and folds if it has none. Null keeps the board's own rule.
+     */
+    val poolSide: Any? = null,
+    /** False where a folded, empty pool has something better to say than its count of none. */
+    val emptyPoolCounted: Boolean = true,
 )

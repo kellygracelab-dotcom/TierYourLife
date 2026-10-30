@@ -9,9 +9,12 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
+import com.artiuillab.tieryourlife.feature.community.domain.model.ListGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.OpenedLists
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -39,6 +42,7 @@ class CommunityListViewModel @Inject constructor(
     private val preferences: AppPreferences,
     savedStateHandle: SavedStateHandle,
     private val accounts: AccountRepository,
+    private val openedLists: OpenedLists,
 ) : ViewModel() {
 
     private val route = savedStateHandle.communityListRoute()
@@ -47,7 +51,10 @@ class CommunityListViewModel @Inject constructor(
     /** What the card showed, for the screen to draw while the list is on its way. */
     val preview: ListPreview? = route.preview()
 
-    private val _state = MutableStateFlow<CommunityListUiState>(CommunityListUiState.Loading)
+    /** The first frame is the real page with blank cards when the card knew how the tiers fill. */
+    private val _state = MutableStateFlow(
+        preview?.firstFrame(publishedId, signedIn = accounts.current() is Account.SignedIn) ?: CommunityListUiState.Loading,
+    )
     val state: StateFlow<CommunityListUiState> = _state.asStateFlow()
 
     private val messages = UserMessages()
@@ -72,10 +79,14 @@ class CommunityListViewModel @Inject constructor(
         messages = messages,
         tell = told::send,
         reread = { open(quietly = true) },
+        forget = { openedLists.forget(publishedId) },
     )
 
     /** Mine as it was before a move on Theirs replaced it, for Undo. */
     private var beforeTheirs: Pair<TierList, Boolean>? = null
+
+    /** When the board on screen was last changed by its author, as the server said. */
+    private var shownUpdatedAt: Long? = null
 
     init {
         load()
@@ -129,44 +140,86 @@ class CommunityListViewModel @Inject constructor(
         viewModelScope.launch { open(quietly = false) }
     }
 
-    /** Quietly: no placeholder in between, and a failure leaves what was there. */
+    /**
+     * The copy kept from the last visit is drawn first, when nothing real is
+     * on screen yet, and the server is asked behind it. Quietly: no
+     * placeholder in between. Whatever real page is on screen stays when the
+     * server cannot be reached; a list that is gone is forgotten.
+     */
     private suspend fun open(quietly: Boolean) {
-        val before = _state.value as? CommunityListUiState.Success
-        if (!quietly) _state.value = CommunityListUiState.Loading
-        val opened = community.open(publishedId).fold(
+        if ((_state.value as? CommunityListUiState.Success)?.arriving != false) {
+            openedLists.read(publishedId)?.let { kept -> present(kept) }
+        }
+        if (!quietly && _state.value !is CommunityListUiState.Success) _state.value = CommunityListUiState.Loading
+        community.open(publishedId).fold(
             onSuccess = { answer ->
-                rankings.opened(answer)
-                ownList.opened(answer.summary)
-                val own = answer.summary.mine
-                CommunityListUiState.Success(
-                    list = asTheAuthorLeftIt(answer),
-                    mine = emptied(answer),
-                    // What somebody came for: the list as its author ranked it. Their own is only ever that.
-                    showing = if (answer.arrangement.isEmpty() && !own) Showing.Mine else Showing.Theirs,
-                    knowsTheirs = answer.arrangement.isNotEmpty(),
-                    authorName = answer.summary.authorName,
-                    authorUid = answer.summary.authorUid,
-                    authorPhotoUrl = answer.summary.authorPhotoUrl,
-                    editorial = answer.summary.editorial,
-                    byNobody = answer.summary.byNobody,
-                    rankingCount = answer.summary.rankingCount,
-                    takeCount = answer.summary.takeCount,
-                    basedOn = answer.summary.basedOn,
-                    section = answer.summary.category,
-                    own = own,
-                    anonymous = answer.summary.anonymous,
-                    listId = publishedId,
-                    signedIn = accounts.current() is Account.SignedIn,
-                    ownBoardId = before?.ownBoardId.takeIf { quietly },
-                    trashedBoardId = before?.trashedBoardId.takeIf { quietly },
-                    ownBoardLookedUp = quietly && before?.ownBoardLookedUp == true,
-                )
+                openedLists.keep(answer)
+                val loaded = present(answer)
+                if (loaded.own) {
+                    ownList.find()
+                } else if (!loaded.editorial && answer.summary.viewerFollowsAuthor == null) {
+                    loadFollowState(loaded.authorUid)
+                }
             },
-            onFailure = { if (quietly && before != null) before else CommunityListUiState.Error },
+            onFailure = { error ->
+                if (error is ListGone) openedLists.forget(publishedId)
+                val onScreen = _state.value as? CommunityListUiState.Success
+                if (error is ListGone || onScreen == null || onScreen.arriving) _state.value = CommunityListUiState.Error
+            },
         )
-        _state.value = opened
-        val loaded = opened as? CommunityListUiState.Success ?: return
-        if (loaded.own) ownList.find() else if (!loaded.editorial) loadFollowState(loaded.authorUid)
+    }
+
+    /**
+     * The answer on screen. The same board as the one already there, by the
+     * author's last change and by its cards, keeps everything the reader did
+     * with it; only the counts and the lines about it change.
+     */
+    private fun present(answer: PublishedList): CommunityListUiState.Success {
+        val before = _state.value as? CommunityListUiState.Success
+        val fresh = stateOf(answer, before)
+        val sameBoard = before != null &&
+            !before.arriving &&
+            shownUpdatedAt == answer.summary.updatedAtMillis &&
+            before.list == fresh.list
+        if (!sameBoard) rankings.opened(answer)
+        ownList.opened(answer.summary)
+        shownUpdatedAt = answer.summary.updatedAtMillis
+        val shown = if (sameBoard) fresh.keepingWhatTheReaderDid(before) else fresh
+        _state.value = shown
+        return shown
+    }
+
+    private fun stateOf(answer: PublishedList, before: CommunityListUiState.Success?): CommunityListUiState.Success {
+        val own = answer.summary.mine
+        val knowsTheirs = answer.arrangement.isNotEmpty()
+        // What somebody came for: the list as its author ranked it. Their own is only ever that.
+        val opensOn = if (!knowsTheirs && !own) Showing.Mine else Showing.Theirs
+        return CommunityListUiState.Success(
+            list = asTheAuthorLeftIt(answer),
+            mine = emptied(answer),
+            // A switch flipped while the blank cards were up stays flipped.
+            showing = if (before?.arriving == true && knowsTheirs && !own) before.showing else opensOn,
+            knowsTheirs = knowsTheirs,
+            authorName = answer.summary.authorName,
+            authorUid = answer.summary.authorUid,
+            authorPhotoUrl = answer.summary.authorPhotoUrl,
+            editorial = answer.summary.editorial,
+            byNobody = answer.summary.byNobody,
+            follow = answer.summary.viewerFollowsAuthor
+                ?.let { FollowState(following = it, followers = before?.follow?.followers ?: 0) }
+                ?: before?.follow,
+            rankingCount = answer.summary.rankingCount,
+            takeCount = answer.summary.takeCount,
+            basedOn = answer.summary.basedOn,
+            section = answer.summary.category,
+            own = own,
+            anonymous = answer.summary.anonymous,
+            listId = publishedId,
+            signedIn = accounts.current() is Account.SignedIn,
+            ownBoardId = before?.ownBoardId,
+            trashedBoardId = before?.trashedBoardId,
+            ownBoardLookedUp = before?.ownBoardLookedUp == true,
+        )
     }
 
     /** Two boards kept side by side: your own work stays where you left it while you glance at the author's. */
@@ -179,7 +232,7 @@ class CommunityListViewModel @Inject constructor(
     /** In memory only until a copy is asked for, so backing out costs nothing. */
     fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
         val current = _state.value as? CommunityListUiState.Success ?: return
-        if (current.own) return
+        if (current.own || current.arriving) return
         if (current.showing == Showing.Theirs) return startFromTheirs(current, itemId, toTierId, toPosition)
         _state.update { state ->
             if (state !is CommunityListUiState.Success) return@update state
@@ -217,14 +270,19 @@ class CommunityListViewModel @Inject constructor(
     /** A game's result on someone else's list: it becomes the reader's own arrangement, on screen, still unsaved. */
     fun putInMine(board: TierList) {
         _state.update { current ->
-            if (current !is CommunityListUiState.Success) current else current.copy(mine = board, showing = Showing.Mine, arranged = true)
+            if (current !is CommunityListUiState.Success || current.arriving) {
+                current
+            } else {
+                current.copy(mine = board, showing = Showing.Mine, arranged = true)
+            }
         }
     }
 
     /** The copy's id lands in the state; the screen then offers to open it rather than leaving on its own. */
     fun saveToMyLists(which: Showing) {
         val current = _state.value as? CommunityListUiState.Success ?: return
-        if (current.own || current.saving || current.savedId != null) return
+        if (current.own || current.arriving) return
+        if (current.saving || current.savedId != null) return
         _state.update { (it as CommunityListUiState.Success).copy(saving = true) }
 
         viewModelScope.launch {
@@ -307,6 +365,22 @@ class CommunityListViewModel @Inject constructor(
         authorName = published.summary.authorName,
     )
 }
+
+/** The counts and lines of this answer, with the reader's own work and choices from [before]. */
+private fun CommunityListUiState.Success.keepingWhatTheReaderDid(before: CommunityListUiState.Success) = copy(
+    mine = before.mine,
+    showing = before.showing,
+    arranged = before.arranged,
+    saving = before.saving,
+    savedId = before.savedId,
+    rankings = before.rankings,
+    rankingsLoading = before.rankingsLoading,
+    moreRankings = before.moreRankings,
+    chosenRanking = before.chosenRanking,
+    theirs = before.theirs,
+    sendingRanking = before.sendingRanking,
+    ownBusy = before.ownBusy,
+)
 
 /** The one tier a published list does not carry: where its unplaced cards wait. */
 internal fun pool(items: List<TierItem>) = Tier(

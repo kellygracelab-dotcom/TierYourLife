@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
+import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
+
 /** What the card showed before its list was opened: enough to draw the screen before the answer. */
 data class ListPreview(
     val title: String,
@@ -7,6 +9,17 @@ data class ListPreview(
     val authorName: String?,
     val itemCount: Int,
     val tierColors: List<String>,
+    /** Cards per tier as the author left them, the pool last; empty when the card did not know. */
+    val tierCounts: List<Int> = emptyList(),
+    val authorUid: String = "",
+    val authorPhotoUrl: String? = null,
+    val byNobody: Boolean = false,
+    val mine: Boolean = false,
+    val anonymous: Boolean = false,
+    val section: String? = null,
+    val rankingCount: Int = 0,
+    val viewerFollowsAuthor: Boolean? = null,
+    val basedOn: BasedOn? = null,
 )
 
 /** More than this and a row wraps, which the placeholder never does; the real board may. */

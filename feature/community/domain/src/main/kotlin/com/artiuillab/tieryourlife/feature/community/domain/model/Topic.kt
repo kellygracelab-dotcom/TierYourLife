@@ -25,6 +25,8 @@ data class Topic(
     val following: Boolean = false,
     val createdBy: String = "",
     val mergedInto: String? = null,
+    /** Its own square picture; without one the section's tinted square stands in. */
+    val pictureUrl: String? = null,
 ) {
     val pending: Boolean get() = status == TopicStatus.Pending
 }

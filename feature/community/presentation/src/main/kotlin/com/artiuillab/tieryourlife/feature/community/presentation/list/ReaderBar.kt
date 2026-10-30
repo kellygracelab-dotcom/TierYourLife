@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
@@ -19,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -40,9 +37,9 @@ private val BAR_AUTHOR_MAX_WIDTH = 160.dp
 /**
  * The reader's strip, said in the bar: whose arrangement is on screen and the
  * save, without the sentence under them. In a short window's single bar the
- * author comes along, since the line that names them has no room of its own,
- * and so do the rankings when there are any. A tablet held upright has the
- * room for a taller switch and a tonal save with its icon.
+ * author comes along, since the line that names them has no room of its own.
+ * The rankings are in the menu. A tablet held upright has the room for a
+ * taller switch and a tonal save with its icon.
  */
 @Composable
 internal fun RowScope.ReaderBarControls(
@@ -52,7 +49,6 @@ internal fun RowScope.ReaderBarControls(
     onSaveClick: () -> Unit,
     onOpenSaved: (Long) -> Unit,
     onOpenAuthor: () -> Unit,
-    onOpenRankings: () -> Unit,
     onOwnBoard: () -> Unit = {},
     onCopyLink: () -> Unit = {},
 ) {
@@ -69,13 +65,6 @@ internal fun RowScope.ReaderBarControls(
             testTag = CommunityListTestTags.BAR_AUTHOR,
         )
         Spacer(Modifier.width(8.dp))
-    }
-    if (compact && state.rankingsOnChip > 0) {
-        AssistChip(
-            onClick = onOpenRankings,
-            label = { Text(pluralStringResource(R.plurals.community_rankings_count, state.rankingsOnChip, state.rankingsOnChip)) },
-            modifier = Modifier.padding(end = 8.dp).testTag(CommunityListTestTags.RANKINGS),
-        )
     }
     if (state.knowsTheirs && !state.own) {
         WhoseArrangement(

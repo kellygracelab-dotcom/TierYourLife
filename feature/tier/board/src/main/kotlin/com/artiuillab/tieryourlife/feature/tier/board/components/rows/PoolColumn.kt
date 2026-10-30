@@ -30,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -113,19 +114,29 @@ fun PoolColumn(
     indexBeside: Boolean = false,
     /** A line under the pool's title from the screen around the board: a reader's word on what their copy is. */
     note: (@Composable () -> Unit)? = null,
+    /**
+     * Which of a screen's arrangements is shown: the choice then belongs to
+     * that side alone, kept for this screen rather than for the device, and
+     * starts again from the rule each time the side changes.
+     */
+    side: Any? = null,
 ) {
     val memory = LocalBoardLayoutMemory.current
     val count = pool.items.size
+    var sideChoice by rememberSaveable(pool.id, side) { mutableStateOf<Boolean?>(null) }
     // The count the person's choice was made against; a different count hands
     // the decision back to the board.
     var seenCount by rememberSaveable(pool.id) { mutableIntStateOf(count) }
     LaunchedEffect(count) {
         if (count != seenCount) {
-            memory.poolColumnCollapsed = null
+            if (side == null) memory.poolColumnCollapsed = null
+            sideChoice = null
             seenCount = count
         }
     }
-    val collapsed = memory.poolColumnCollapsed ?: (count == 0)
+    val choice = if (side != null) sideChoice else memory.poolColumnCollapsed
+    val collapsed = choice ?: (count == 0)
+    val choose: (Boolean) -> Unit = { fold -> if (side != null) sideChoice = fold else memory.poolColumnCollapsed = fold }
     val openWidth = openColumnWidth(roomy, indexBeside)
     val width by animateDpAsState(if (collapsed) POOL_STRIP_WIDTH else openWidth, tween(WIDTH_MILLIS), label = "pool column width")
     val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
@@ -160,7 +171,7 @@ fun PoolColumn(
                 readOnly = readOnly,
                 lifting = lifting,
                 dragController = dragController,
-                onOpen = { memory.poolColumnCollapsed = false },
+                onOpen = { choose(false) },
                 onAddClick = onAddClick,
             )
             return@Column
@@ -172,7 +183,7 @@ fun PoolColumn(
             lifting = lifting,
             dragController = dragController,
             note = note,
-            onFold = { memory.poolColumnCollapsed = true },
+            onFold = { choose(true) },
             onAddClick = onAddClick,
             onGenerateClick = onGenerateClick,
         )

@@ -170,6 +170,16 @@ fun FormatListNumberedIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, au
     }
 }
 
+/** Three bars of a podium: other people's placings. */
+@Composable
+fun LeaderboardIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = Stroke(width = 1.6f * scale)
+    val corner = CornerRadius(1f * scale)
+    drawRoundRect(color, Offset(3f * scale, 11f * scale), Size(6f * scale, 9f * scale), corner, style = stroke)
+    drawRoundRect(color, Offset(9f * scale, 5f * scale), Size(6f * scale, 15f * scale), corner, style = stroke)
+    drawRoundRect(color, Offset(15f * scale, 14f * scale), Size(6f * scale, 6f * scale), corner, style = stroke)
+}
+
 @Composable
 fun ExpandLessIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     val stroke = 1.7f * scale

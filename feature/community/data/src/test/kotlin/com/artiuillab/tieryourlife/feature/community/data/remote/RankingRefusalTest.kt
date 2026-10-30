@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.data.remote
 
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.RankingDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ShowRankingRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ShownRankingDto
 import com.artiuillab.tieryourlife.feature.community.data.repository.toShown
@@ -41,10 +42,19 @@ class RankingRefusalTest {
     private val json = Json { ignoreUnknownKeys = true }
 
     @Test
-    fun anUnplacedCard_travelsAsNull() {
-        val body = json.encodeToString(ShowRankingRequestDto.serializer(), ShowRankingRequestDto(listOf(1, null, 0), listOf("S", "A")))
+    fun anUnplacedCard_travelsAsNull_besideTheRowsThatKeepTheOrder() {
+        val request = ShowRankingRequestDto(listOf(1, null, 0), listOf(listOf(2), listOf(0)), listOf("S", "A"))
 
-        assertEquals("""{"arrangement":[1,null,0],"tierLabels":["S","A"]}""", body)
+        val body = json.encodeToString(ShowRankingRequestDto.serializer(), request)
+
+        assertEquals("""{"arrangement":[1,null,0],"rows":[[2],[0]],"tierLabels":["S","A"]}""", body)
+    }
+
+    @Test
+    fun aRankingKeptWithoutRows_readsAsNone() {
+        val ranking = json.decodeFromString(RankingDto.serializer(), """{"uid":"u","arrangement":[0,null]}""")
+
+        assertEquals(emptyList<List<Int>>(), ranking.rows)
     }
 
     @Test

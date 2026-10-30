@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
@@ -181,7 +183,7 @@ internal fun FollowedStrip(following: Following, waiting: List<Topic>, actions: 
             }
             following.topics.forEach { topic ->
                 item(key = "t-${topic.id}") {
-                    StripItem(topic.name, "t-${topic.id}", { actions.onOpenTopic(topic) }) { TopicSquare(topic.section, StripVisual, 22.dp) }
+                    StripItem(topic.name, "t-${topic.id}", { actions.onOpenTopic(topic) }) { TopicSquare(topic.section, StripVisual, 22.dp, topic.pictureUrl) }
                 }
             }
             waiting.forEach { topic ->
@@ -230,19 +232,32 @@ private fun FollowedSectionItem(followed: FollowedSection, actions: FollowingAct
     }
 }
 
-/** A topic's square: its section's sign on the section's pale tint, Other's while it has no section. */
+/**
+ * A topic's square: its own picture, cropped, once it has one; until then,
+ * and under it while it loads, its section's sign on the section's pale tint,
+ * Other's while it has no section.
+ */
 @Composable
-internal fun TopicSquare(sectionId: String?, size: Dp, icon: Dp) {
+internal fun TopicSquare(sectionId: String?, size: Dp, icon: Dp, pictureUrl: String? = null) {
     val placed = rememberSection(sectionId ?: ListCategory.Other.id)
     val look = lookOf(placed)
     Box(
         Modifier
             .size(size)
             .clip(RoundedCornerShape(if (size > 40.dp) 14.dp else 12.dp))
-            .background(look.topicBgNow),
+            .background(look.topicBgNow)
+            .testTag(ExploreTestTags.TOPIC_SQUARE),
         contentAlignment = Alignment.Center,
     ) {
         SectionIcon(placed, icon, look.topicIconNow)
+        if (pictureUrl != null) {
+            AsyncImage(
+                model = pictureUrl,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize().testTag(ExploreTestTags.TOPIC_PICTURE),
+                contentScale = ContentScale.Crop,
+            )
+        }
     }
 }
 

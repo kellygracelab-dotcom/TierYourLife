@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.FakeOpenedLists
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -528,6 +529,7 @@ class CommunityListViewModelTest {
         preferences = preferences,
         savedStateHandle = handle,
         accounts = accounts,
+        openedLists = FakeOpenedLists(),
     ).also { made += it }
 
     private val signedIn = FakeAccountRepository(Account.SignedIn(email = "ann@example.com", photoUrl = null))
@@ -544,16 +546,16 @@ class CommunityListViewModelTest {
     fun showingMyRanking_sendsMineInTheListsOrder_andPutsMeFirstAsYou() = runBlocking {
         val community = TestCommunity(takeCount = 0)
         val viewModel = viewModel(community = community, accounts = signedIn)
-        assertFalse(arranged(viewModel).rankingsOnChip > 0)
+        assertEquals(0, arranged(viewModel).rankingCount)
 
         viewModel.showMyRanking()
 
         assertEquals(RankingNotice.Shown, withTimeout(5_000) { viewModel.rankingNotices.first() })
         assertEquals(listOf(listOf(null, 0) to listOf("S", "A")), community.shownRankings)
+        assertEquals(listOf(listOf(listOf(1), emptyList())), community.shownRows)
         val state = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.rankings?.isNotEmpty() == true } as CommunityListUiState.Success
         assertTrue(state.rankings.first().mine)
         assertEquals(1, state.rankingCount)
-        assertEquals(1, state.rankingsOnChip)
         assertFalse(state.sendingRanking)
     }
 
@@ -678,11 +680,18 @@ private class TestCommunity(
     }
 
     val shownRankings = mutableListOf<Pair<List<Int?>, List<String>>>()
+    val shownRows = mutableListOf<List<List<Int>>>()
 
-    override suspend fun showMyRanking(listId: String, arrangement: List<Int?>, tierLabels: List<String>): Result<ShownRanking> {
+    override suspend fun showMyRanking(
+        listId: String,
+        arrangement: List<Int?>,
+        rows: List<List<Int>>,
+        tierLabels: List<String>,
+    ): Result<ShownRanking> {
         shownRankings += arrangement to tierLabels
+        shownRows += rows
         showRefusal?.let { return Result.failure(RankingRefused(it)) }
-        val ranking = Ranking("me", "Ann", null, arrangement, tierLabels, updatedAtMillis = 1, mine = true)
+        val ranking = Ranking("me", "Ann", null, arrangement, tierLabels, updatedAtMillis = 1, mine = true, rows = rows)
         return Result.success(ShownRanking(ranking, created = shownIsNew))
     }
     val withdrawn = mutableListOf<String>()

@@ -121,14 +121,21 @@ interface CommunityRepository {
 
     /**
      * Shows this person's placing of somebody else's list to others, or
-     * changes the one shown: one entry per item in the list's order, a tier's
-     * position or null. A refusal is a RankingRefused.
+     * changes the one shown. [rows] are the tiers' cards left to right, by
+     * position among the list's items; [arrangement] says where each card
+     * went, for a server that does not read rows yet. A refusal is a RankingRefused.
      */
-    suspend fun showMyRanking(listId: String, arrangement: List<Int?>, tierLabels: List<String>): Result<ShownRanking>
+    suspend fun showMyRanking(
+        listId: String,
+        arrangement: List<Int?>,
+        rows: List<List<Int>>,
+        tierLabels: List<String>,
+    ): Result<ShownRanking>
 
     /** As the server has it, not as this phone remembers: a list survives the phone that published it. */
     suspend fun myPublished(): Result<List<PublishedListSummary>>
 
+    /** A list that is not there any more fails with [com.artiuillab.tieryourlife.feature.community.domain.model.ListGone]. */
     suspend fun open(id: String): Result<PublishedList>
 
     /**

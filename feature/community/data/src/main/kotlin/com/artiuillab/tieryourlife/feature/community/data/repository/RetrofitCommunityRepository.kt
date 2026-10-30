@@ -37,6 +37,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSection
 import com.artiuillab.tieryourlife.feature.community.domain.model.Following
+import com.artiuillab.tieryourlife.feature.community.domain.model.ListGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
@@ -246,8 +247,13 @@ class RetrofitCommunityRepository @Inject constructor(
         api.deleteMyRanking(listId)
     }
 
-    override suspend fun showMyRanking(listId: String, arrangement: List<Int?>, tierLabels: List<String>): Result<ShownRanking> = try {
-        Result.success(api.showMyRanking(listId, ShowRankingRequestDto(arrangement, tierLabels)).toShown())
+    override suspend fun showMyRanking(
+        listId: String,
+        arrangement: List<Int?>,
+        rows: List<List<Int>>,
+        tierLabels: List<String>,
+    ): Result<ShownRanking> = try {
+        Result.success(api.showMyRanking(listId, ShowRankingRequestDto(arrangement, rows, tierLabels)).toShown())
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
@@ -260,7 +266,11 @@ class RetrofitCommunityRepository @Inject constructor(
     }
 
     override suspend fun open(id: String): Result<PublishedList> = attempt("Opening a published list") {
-        api.open(id).toDomain(me)
+        try {
+            api.open(id).toDomain(me)
+        } catch (refused: HttpException) {
+            throw refused.goneIfMissing()
+        }
     }
 
     override suspend fun publish(list: TierList): Result<Published> = try {
@@ -368,11 +378,15 @@ private fun Throwable.asPublishError(): PublishError = when {
     else -> PublishError.Unknown
 }
 
+/** Not found is an answer about the list, not about the network: it is gone. */
+internal fun HttpException.goneIfMissing(): Exception = if (code() == HTTP_NOT_FOUND) ListGone() else this
+
 private const val TOO_MANY_PENDING_TOPICS = "TOO_MANY_PENDING_TOPICS"
 private const val TOPIC_UNAVAILABLE = "TOPIC_UNAVAILABLE"
 private const val BAD_NAME = "BAD_NAME"
 private const val HTTP_BAD_REQUEST = 400
 private const val HTTP_FORBIDDEN = 403
+private const val HTTP_NOT_FOUND = 404
 private const val HTTP_CONFLICT = 409
 private const val HTTP_TOO_LARGE = 413
 private const val HTTP_UNPROCESSABLE = 422
@@ -390,6 +404,7 @@ private fun TopicDto.toDomain() = Topic(
     following = following,
     createdBy = createdBy,
     mergedInto = mergedInto,
+    pictureUrl = pictureUrl.webPictureOrNull(),
 )
 
 private fun PendingTopicDto.toDomain() = PendingTopic(
@@ -403,6 +418,7 @@ private fun PendingTopicDto.toDomain() = PendingTopic(
         following = following,
         createdBy = createdBy,
         mergedInto = mergedInto,
+        pictureUrl = pictureUrl.webPictureOrNull(),
     ),
     proposerName = proposerName,
     requestedSection = requestedSection?.takeIf { it.isNotBlank() },
@@ -431,6 +447,8 @@ internal fun PublishedListSummaryDto.toSummary(me: String? = null) = PublishedLi
     proposedSection = proposedSection,
     proposedSectionName = proposedSectionName,
     mine = isOwnList(mine, authorUid, me),
+    tierCounts = tierCounts,
+    viewerFollowsAuthor = viewerFollowsAuthor,
 )
 
 /** Old lists stored the word "null" as a cover; only a web address is a picture. */
@@ -456,6 +474,8 @@ internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
         rankingCount = rankingCount,
         basedOn = basedOn?.toDomain(),
         mine = isOwnList(mine, authorUid, me),
+        tierCounts = tierCounts,
+        viewerFollowsAuthor = viewerFollowsAuthor,
     ),
     tiers = tiers.mapIndexed { index, tier ->
         Tier(
@@ -528,6 +548,7 @@ internal fun ShownRankingDto.toShown() = ShownRanking(
         tierLabels = tierLabels,
         updatedAtMillis = updatedAtMs,
         mine = true,
+        rows = rows,
     ),
     created = created,
 )
@@ -540,6 +561,7 @@ private fun RankingDto.toDomain() = Ranking(
     tierLabels = tierLabels,
     updatedAtMillis = updatedAtMs,
     mine = mine,
+    rows = rows,
 )
 
 /** Any id the server sends is a section now; a list it filed nowhere is Other's. */
@@ -567,4 +589,34 @@ internal fun PublishedListSummary.toDto() = PublishedListSummaryDto(
     proposedSection = proposedSection,
     proposedSectionName = proposedSectionName,
     mine = mine,
+    tierCounts = tierCounts,
+    viewerFollowsAuthor = viewerFollowsAuthor,
+)
+
+/** An opened list back as the server sent it, so a kept one is read by the same mapping. */
+internal fun PublishedList.toDto() = PublishedListDto(
+    id = summary.id,
+    title = summary.title,
+    authorUid = summary.authorUid,
+    authorName = summary.authorName,
+    authorPhotoUrl = summary.authorPhotoUrl,
+    category = summary.category,
+    itemCount = summary.itemCount,
+    coverImageUrl = summary.coverImageUrl,
+    previewImages = summary.previewImages,
+    tierColors = summary.tierColors,
+    updatedAt = summary.updatedAtMillis,
+    tiers = tiers.map { PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark) },
+    items = items.mapIndexed { index, item ->
+        PublishedItemDto(title = item.title, imageUrl = item.imageUrl, tierIndex = arrangement.getOrNull(index))
+    },
+    anonymous = summary.anonymous,
+    topicId = summary.topicId,
+    topicName = summary.topicName,
+    takeCount = summary.takeCount,
+    rankingCount = summary.rankingCount,
+    basedOn = summary.basedOn?.let { BasedOnDto(id = it.id, title = it.title, authorUid = it.authorUid, authorName = it.authorName) },
+    mine = summary.mine,
+    tierCounts = summary.tierCounts,
+    viewerFollowsAuthor = summary.viewerFollowsAuthor,
 )
