@@ -115,6 +115,9 @@ data class ResultState(
     val intoMine: Boolean,
 ) {
     val canRefine: Boolean get() = refineDuels > 0
+
+    /** Every duel skipped is no evidence at all: applying would only pile the cards into the first tier. */
+    val canApply: Boolean get() = duels > 0
 }
 
 @Immutable

@@ -4,9 +4,6 @@ import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 
-/** Groups are accepted once they explain this much of the spread. */
-const val ENOUGH_FIT = 0.9
-
 /** Below this many answered duels per card the evidence is thin: at most [THIN_GROUPS] groups, and a card shows dashed. */
 const val SOLID_DUELS = 2
 
@@ -27,10 +24,11 @@ private const val QUARTERS = 4
 
 /**
  * Cards cut into [tierCount] tiers, best first, each tier left to right from
- * best. As few groups as explain the spread (Jenks's goodness of variance fit),
- * and each group goes to the tier its strength points at, so a real gap leaves
- * the tiers in between empty and the weakest still land low. Only the first
- * tier is sure to be filled.
+ * best. On solid evidence there are as many groups as tiers, or as distinct
+ * strengths when there are fewer; on thin evidence at most [THIN_GROUPS].
+ * Equal strengths never split. With fewer groups than tiers each group goes to
+ * the tier its strength points at, so a real gap leaves the tiers between
+ * empty and the weakest still land low.
  */
 fun tiers(standing: Standing, tierCount: Int): List<List<Int>> {
     require(tierCount >= 1) { "A board has at least one tier" }
@@ -44,8 +42,8 @@ fun tiers(standing: Standing, tierCount: Int): List<List<Int>> {
         return result
     }
     val scaled = values.map { (it - bottom) / (top - bottom) }
-    val fits = min(tierCount, scaled.size)
-    val groups = groupsOf(scaled, maxGroups = if (standing.duelsPerCard < SOLID_DUELS) min(fits, THIN_GROUPS) else fits)
+    val fits = min(tierCount, scaled.distinct().size)
+    val groups = groupsOf(scaled, if (standing.duelsPerCard < SOLID_DUELS) min(fits, THIN_GROUPS) else fits)
     var previous = -1
     val placed = groups.mapIndexed { index, range ->
         val mean = range.sumOf { scaled[it] } / range.count()
@@ -62,11 +60,11 @@ fun tiers(standing: Standing, tierCount: Int): List<List<Int>> {
 }
 
 /**
- * The fewest groups of consecutive values whose fit reaches [ENOUGH_FIT], at
- * most [maxGroups]. Fisher's exact method; among equal splits the earliest
- * wins, so both platforms pick the same one.
+ * Exactly [count] groups of consecutive values with the least spread within
+ * them, by Fisher's exact method; among equal splits the earliest wins, so
+ * both platforms pick the same one.
  */
-internal fun groupsOf(values: List<Double>, maxGroups: Int): List<IntRange> {
+internal fun groupsOf(values: List<Double>, count: Int): List<IntRange> {
     val n = values.size
     val sums = DoubleArray(n + 1)
     val squares = DoubleArray(n + 1)
@@ -79,11 +77,10 @@ internal fun groupsOf(values: List<Double>, maxGroups: Int): List<IntRange> {
         val sum = sums[to + 1] - sums[from]
         return max(0.0, squares[to + 1] - squares[from] - sum * sum / size)
     }
-    val total = spread(0, n - 1)
-    val cost = Array(maxGroups + 1) { DoubleArray(n) }
-    val start = Array(maxGroups + 1) { IntArray(n) }
+    val cost = Array(count + 1) { DoubleArray(n) }
+    val start = Array(count + 1) { IntArray(n) }
     for (i in 0 until n) cost[1][i] = spread(0, i)
-    for (groups in 2..maxGroups) {
+    for (groups in 2..count) {
         for (i in groups - 1 until n) {
             var best = Double.MAX_VALUE
             var bestStart = groups - 1
@@ -98,12 +95,9 @@ internal fun groupsOf(values: List<Double>, maxGroups: Int): List<IntRange> {
             start[groups][i] = bestStart
         }
     }
-    val chosen = (1..maxGroups).firstOrNull { groups ->
-        total == 0.0 || 1 - cost[groups][n - 1] / total >= ENOUGH_FIT
-    } ?: maxGroups
     val ranges = ArrayDeque<IntRange>()
     var end = n - 1
-    for (groups in chosen downTo 1) {
+    for (groups in count downTo 1) {
         val from = if (groups == 1) 0 else start[groups][end]
         ranges.addFirst(from..end)
         end = from - 1

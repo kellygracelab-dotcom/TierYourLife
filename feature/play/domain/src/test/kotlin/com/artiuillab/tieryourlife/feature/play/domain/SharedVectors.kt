@@ -44,6 +44,20 @@ internal val standingCases = listOf(
     StandingCase("a cycle is a tie, broken by original order", 3, 4, listOf(Duel(0, 1), Duel(1, 2), Duel(2, 0))),
     StandingCase("a single tier holds everything", 4, 1, listOf(Duel(3, 2), Duel(2, 1), Duel(1, 0))),
     StandingCase("more tiers than cards", 3, 6, listOf(Duel(2, 1), Duel(2, 0), Duel(1, 0), Duel(2, 1))),
+    StandingCase(
+        "a card nobody met sits by its strength",
+        5,
+        5,
+        listOf(Duel(0, 1), Duel(0, 2), Duel(0, 3), Duel(1, 2), Duel(1, 3), Duel(2, 3)),
+    ),
+    StandingCase(
+        "ties stay together, and fewer groups than tiers spread by strength",
+        6,
+        6,
+        listOf(Duel(0, 1), Duel(1, 0), Duel(2, 3), Duel(3, 2), Duel(4, 5), Duel(5, 4)) +
+            (0..1).flatMap { top -> (2..5).map { Duel(top, it) } } +
+            (2..3).flatMap { middle -> (4..5).map { Duel(middle, it) } },
+    ),
 )
 
 internal val gameCases = listOf(
@@ -55,6 +69,10 @@ internal val gameCases = listOf(
     GameCase("swiss of nine, later card wins, then close calls", GameSpec(GameKind.Swiss, 9, seed = 99, refine = true), 5, "higherWins"),
     GameCase("swiss of two runs out of new pairs", GameSpec(GameKind.Swiss, 2, seed = 5), 3, "lowerWins"),
     GameCase("bracket of sixteen is held to three groups by thin evidence", GameSpec(GameKind.Bracket, 16, seed = 1), 8, "lowerWins"),
+    GameCase("hill of twenty is held to three groups by thin evidence", GameSpec(GameKind.Hill, 20, seed = 20), 10, "lowerWins"),
+    GameCase("swiss of twelve fills seven tiers", GameSpec(GameKind.Swiss, 12, seed = 12), 7, "lowerWins"),
+    GameCase("swiss of sixty-four fills twenty tiers", GameSpec(GameKind.Swiss, 64, seed = 64), 20, "lowerWins"),
+    GameCase("swiss of sixty-four into two tiers", GameSpec(GameKind.Swiss, 64, seed = 64), 2, "lowerWins"),
 )
 
 internal data class RefineCase(val name: String, val count: Int, val history: List<Outcome>)

@@ -69,6 +69,7 @@
     </plurals>
     <string name="play_dashed_legend">Dashed: played fewer than 2 duels.</string>
     <string name="play_empty_tier">Empty</string>
+    <string name="play_nothing_to_apply">Every duel was skipped, so there is nothing to apply.</string>
     <plurals name="play_thin">
         <item quantity="one">%1$d card played fewer than 2 duels, so its place is a guess. Refine adds up to %2$d duels for it, or apply now and adjust by hand.</item>
         <item quantity="other">%1$d cards played fewer than 2 duels, so their places are a guess. Refine adds up to %2$d duels for them, or apply now and adjust by hand.</item>

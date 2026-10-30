@@ -21,6 +21,7 @@ object PlayTestTags {
     const val QUIT = "play_quit"
     const val RESULT = "play_result"
     const val THIN = "play_thin"
+    const val NOTHING_TO_APPLY = "play_nothing_to_apply"
     const val APPLY = "play_apply"
     const val REFINE = "play_refine"
     const val PLAY_AGAIN = "play_again"

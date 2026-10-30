@@ -69,6 +69,7 @@
     </plurals>
     <string name="play_dashed_legend">Kesikli: 2 düellodan az oynadı.</string>
     <string name="play_empty_tier">Boş</string>
+    <string name="play_nothing_to_apply">Tüm düellolar geçildi, uygulanacak bir şey yok.</string>
     <plurals name="play_thin">
         <item quantity="one">%1$d kart 2 düellodan az oynadı, bu yüzden yeri bir tahmin. İyileştir onun için en fazla %2$d düello ekler; ya da şimdi uygulayıp elle düzeltin.</item>
         <item quantity="other">%1$d kart 2 düellodan az oynadı, bu yüzden yerleri bir tahmin. İyileştir onlar için en fazla %2$d düello ekler; ya da şimdi uygulayıp elle düzeltin.</item>

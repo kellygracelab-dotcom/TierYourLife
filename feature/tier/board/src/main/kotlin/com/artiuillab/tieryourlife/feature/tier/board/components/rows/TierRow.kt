@@ -208,8 +208,7 @@ fun TierRow(
                     ),
                     color = colors.onBand,
                 )
-                val captionShown = rowDensity.captionOnEmptyRows || tier.items.isNotEmpty()
-                tier.caption?.takeIf { captionShown }?.let { caption ->
+                tier.caption?.let { caption ->
                     if (LocalDensity.current.fontScale < CAPTION_HIDDEN_FONT_SCALE) {
                         Text(
                             text = caption,
@@ -271,8 +270,8 @@ fun TierRow(
             FlowRow(
                 modifier = Modifier
                     .weight(1f)
-                    .heightIn(min = rowDensity.emptyHeight)
                     .padding(rowDensity.padding)
+                    .heightIn(min = rowDensity.tileHeight)
                     .testTag(TierDetailTestTags.tierItems(tier.id)),
                 horizontalArrangement = Arrangement.spacedBy(rowDensity.gap),
                 verticalArrangement = Arrangement.spacedBy(rowDensity.gap),
@@ -282,7 +281,7 @@ fun TierRow(
                     Text(
                         text = stringResource(R.string.tier_detail_drop_items_here),
                         modifier = Modifier
-                            .heightIn(min = rowDensity.emptyHeight - rowDensity.padding * 2)
+                            .heightIn(min = rowDensity.tileHeight)
                             .padding(start = 9.dp)
                             .wrapContentHeight(Alignment.CenterVertically),
                         style = MaterialTheme.typography.bodySmall,

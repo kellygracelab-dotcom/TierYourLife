@@ -34,12 +34,31 @@ class PlayEngineTest {
     }
 
     @Test
-    fun twoClearGroups_goToTheTopAndTheBottom_leavingTheMiddleEmpty() {
+    fun twoClearGroups_haveTwoDistinctStrengths_soOnlyTheTopAndTheBottomFill() {
         val duels = (0..2).flatMap { top -> (3..5).map { bottom -> Duel(top, bottom) } }
         val tiers = tiers(standing(6, duels), tierCount = 5)
         assertEquals(setOf(0, 1, 2), tiers.first().toSet())
         assertEquals(setOf(3, 4, 5), tiers.last().toSet())
         assertTrue(tiers.subList(1, 4).all { it.isEmpty() })
+    }
+
+    @Test
+    fun aSolidSwiss_fillsEveryTier_whateverTheirNumber() {
+        val spec = GameSpec(GameKind.Swiss, 64, seed = 64)
+        val history = play(GameCase("", spec, 20, "lowerWins"))
+        listOf(2, 7, 10, 20).forEach { tierCount ->
+            assertTrue(result(spec, history, tierCount).all { it.isNotEmpty() })
+        }
+    }
+
+    @Test
+    fun equalStrengths_neverSplit_andFewerGroupsThanTiersSpreadByStrength() {
+        val pairs = listOf(0 to 1, 2 to 3, 4 to 5)
+        val duels = pairs.flatMap { (a, b) -> listOf(Duel(a, b), Duel(b, a)) } +
+            (0..1).flatMap { top -> (2..5).map { Duel(top, it) } } +
+            (2..3).flatMap { middle -> (4..5).map { Duel(middle, it) } }
+        val tiers = tiers(standing(6, duels), tierCount = 6)
+        assertEquals(listOf(setOf(0, 1), emptySet(), setOf(2, 3), emptySet(), emptySet(), setOf(4, 5)), tiers.map { it.toSet() })
     }
 
     @Test

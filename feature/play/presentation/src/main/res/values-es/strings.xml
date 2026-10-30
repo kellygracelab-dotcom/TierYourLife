@@ -78,6 +78,7 @@
     </plurals>
     <string name="play_dashed_legend">Borde discontinuo: jugaron menos de 2 duelos.</string>
     <string name="play_empty_tier">Vacío</string>
+    <string name="play_nothing_to_apply">Se saltaron todos los duelos, así que no hay nada que aplicar.</string>
     <plurals name="play_thin">
         <item quantity="one">%1$d carta jugó menos de 2 duelos, así que su puesto es una suposición. Afinar añade hasta %2$d duelos para ella, o aplica ahora y ajusta a mano.</item>
         <item quantity="many">%1$d cartas jugaron menos de 2 duelos, así que sus puestos son una suposición. Afinar añade hasta %2$d duelos para ellas, o aplica ahora y ajusta a mano.</item>

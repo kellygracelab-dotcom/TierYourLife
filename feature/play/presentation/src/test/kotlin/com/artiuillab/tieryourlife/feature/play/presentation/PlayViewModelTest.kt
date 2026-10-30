@@ -205,6 +205,24 @@ class PlayViewModelTest {
     }
 
     @Test
+    fun everyDuelSkipped_leavesNothingToApply_andApplyMovesNoCard() = runBlocking {
+        val repository = MovingTierRepository(unranked)
+        val viewModel = viewModel(boards = repository)
+        viewModel.open()
+        viewModel.picker.start()
+        while (viewModel.state.value.stage is PlayStage.Dueling) viewModel.duel.skip()
+        val result = (viewModel.state.value.stage as PlayStage.Finished).result
+        assertEquals(0, result.duels)
+        assertFalse(result.canApply)
+
+        viewModel.result.apply()
+
+        assertTrue(viewModel.state.value.stage is PlayStage.Finished)
+        assertTrue(repository.moves.isEmpty())
+        assertEquals(unranked.ids(), repository.board.ids())
+    }
+
+    @Test
     fun oneTierKept_isOnlyReorderedInside_andNothingElseMoves() = runBlocking {
         val ranked = board(1L to listOf(1L, 2L, 3L, 4L), 2L to listOf(5L), POOL to listOf(6L))
         val repository = MovingTierRepository(ranked)

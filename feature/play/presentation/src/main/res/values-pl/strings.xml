@@ -87,6 +87,7 @@
     </plurals>
     <string name="play_dashed_legend">Linia przerywana: mniej niż 2 pojedynki.</string>
     <string name="play_empty_tier">Pusto</string>
+    <string name="play_nothing_to_apply">Wszystkie pojedynki pominięto, więc nie ma czego zastosować.</string>
     <plurals name="play_thin">
         <item quantity="one">%1$d karta rozegrała mniej niż 2 pojedynki, więc jej miejsce to zgadywanie. Doprecyzowanie doda do %2$d pojedynków dla niej albo zastosuj teraz i popraw ręcznie.</item>
         <item quantity="few">%1$d karty rozegrały mniej niż 2 pojedynki, więc ich miejsca to zgadywanie. Doprecyzowanie doda do %2$d pojedynków dla nich albo zastosuj teraz i popraw ręcznie.</item>

@@ -105,6 +105,7 @@
     </plurals>
     <string name="play_dashed_legend">الإطار المتقطّع: لعبت أقل من مواجهتين.</string>
     <string name="play_empty_tier">فارغ</string>
+    <string name="play_nothing_to_apply">تم تخطي كل المواجهات، فلا شيء لتطبيقه.</string>
     <plurals name="play_thin">
         <item quantity="zero">%1$d بطاقة لعبت أقل من مواجهتين، لذا أماكنها تخمين. يضيف التحسين حتى %2$d مواجهة لها، أو طبّق الآن وعدّل يدويًا.</item>
         <item quantity="one">%1$d بطاقة لعبت أقل من مواجهتين، لذا مكانها تخمين. يضيف التحسين حتى %2$d مواجهة لها، أو طبّق الآن وعدّل يدويًا.</item>
