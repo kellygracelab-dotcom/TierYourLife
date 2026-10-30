@@ -45,11 +45,15 @@ private fun decodeShrunk(resolver: ContentResolver, uri: Uri, crop: FaceCrop?): 
         decodeShrunkTheOldWay(crop) { resolver.openInputStream(uri) }
     }
 
-private fun decodeShrunkTheOldWay(crop: FaceCrop?, open: () -> InputStream?): Bitmap? {
+/** Measuring only, decodeStream always answers null; what counts is whether the file opened and had a size. */
+private fun boundsOf(open: () -> InputStream?): BitmapFactory.Options? {
     val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    val stream = open() ?: return null
-    stream.use { BitmapFactory.decodeStream(it, null, bounds) }
-    if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+    open()?.use { BitmapFactory.decodeStream(it, null, bounds) }
+    return bounds.takeIf { it.outWidth > 0 && it.outHeight > 0 }
+}
+
+private fun decodeShrunkTheOldWay(crop: FaceCrop?, open: () -> InputStream?): Bitmap? {
+    val bounds = boundsOf(open) ?: return null
 
     val orientation = open()?.use { stream ->
         ExifInterface(stream).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
