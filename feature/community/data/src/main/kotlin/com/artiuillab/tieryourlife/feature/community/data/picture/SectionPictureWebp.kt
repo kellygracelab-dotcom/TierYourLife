@@ -26,7 +26,9 @@ private const val THREE_QUARTER_TURN = 270f
 /** The picture's size as it stands upright; null when it cannot be read. */
 internal fun uprightSize(resolver: ContentResolver, uri: Uri): PictureSize? {
     val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) } ?: return null
+    // Measuring only, decodeStream always answers null; what counts is whether the file opened.
+    val stream = resolver.openInputStream(uri) ?: return null
+    stream.use { BitmapFactory.decodeStream(it, null, bounds) }
     if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
     val turned = orientationOf { resolver.openInputStream(uri) } in QUARTER_TURNS
     return if (turned) PictureSize(bounds.outHeight, bounds.outWidth) else PictureSize(bounds.outWidth, bounds.outHeight)

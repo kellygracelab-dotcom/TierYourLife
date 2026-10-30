@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
@@ -141,10 +142,13 @@ fun ProposeSectionContent(
                 state.signedIn == null -> Unit
                 state.signedIn == false -> SignInFirst(onSignIn = onSignIn, onCancel = onClose)
                 !form -> TooManyWaiting(state, onClose)
-                else -> Form(state, calls, onOpenSection, discarding, onKeepEditing = { discarding = false }, onDiscard = onClose)
+                else -> Form(state, calls, onOpenSection)
             }
         }
     }
+    // A dialog, not a line at the foot of the form: there it sat below the
+    // fold, so Back and the close button seemed to do nothing.
+    if (discarding) DiscardDialog(onKeepEditing = { discarding = false }, onDiscard = onClose)
 }
 
 @Composable
@@ -184,9 +188,6 @@ private fun Form(
     state: ProposeSectionUiState,
     calls: ProposeCallbacks,
     onOpenSection: (String) -> Unit,
-    discarding: Boolean,
-    onKeepEditing: () -> Unit,
-    onDiscard: () -> Unit,
 ) {
     val editable = !state.sending
     Column(
@@ -228,7 +229,6 @@ private fun Form(
             )
         }
         state.error?.let { ErrorBar(it, onRetry = calls.onPropose.takeIf { state.canPropose }) }
-        if (discarding) DiscardRow(onKeepEditing = onKeepEditing, onDiscard = onDiscard)
     }
 }
 
@@ -257,17 +257,14 @@ private fun ErrorBar(error: ProposalError, onRetry: (() -> Unit)?) {
 }
 
 @Composable
-private fun DiscardRow(onKeepEditing: () -> Unit, onDiscard: () -> Unit) {
-    Row(Modifier.fillMaxWidth().testTag(ProposeTestTags.DISCARD), verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            stringResource(R.string.propose_discard_question),
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        TextButton(onClick = onKeepEditing) { Text(stringResource(R.string.propose_keep_editing)) }
-        TextButton(onClick = onDiscard) { Text(stringResource(R.string.propose_discard)) }
-    }
+private fun DiscardDialog(onKeepEditing: () -> Unit, onDiscard: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onKeepEditing,
+        text = { Text(stringResource(R.string.propose_discard_question)) },
+        confirmButton = { TextButton(onClick = onDiscard) { Text(stringResource(R.string.propose_discard)) } },
+        dismissButton = { TextButton(onClick = onKeepEditing) { Text(stringResource(R.string.propose_keep_editing)) } },
+        modifier = Modifier.testTag(ProposeTestTags.DISCARD),
+    )
 }
 
 /** Every refusal the form shows above its actions, in words. Name and picture refusals stay on their fields. */
