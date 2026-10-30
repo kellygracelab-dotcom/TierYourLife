@@ -32,6 +32,7 @@
         <item quantity="many">نحو %1$d دقيقة</item>
         <item quantity="other">نحو %1$d دقيقة</item>
     </plurals>
+    <string name="play_new_game">أو ابدأ لعبة جديدة</string>
     <string name="play_resume">متابعة</string>
     <string name="play_resume_progress">%1$s · %2$d من %3$d</string>
     <string name="play_started_today">بدأت اليوم</string>
@@ -58,6 +59,15 @@
     <string name="play_cancel">إلغاء</string>
     <string name="play_start">ابدأ</string>
     <string name="play_continue">التالي</string>
+    <string name="play_back">رجوع</string>
+    <plurals name="play_cards_limit">
+        <item quantity="zero">حتى %1$d بطاقة في اللعبة الواحدة</item>
+        <item quantity="one">حتى بطاقة واحدة في اللعبة الواحدة</item>
+        <item quantity="two">حتى بطاقتين في اللعبة الواحدة</item>
+        <item quantity="few">حتى %1$d بطاقات في اللعبة الواحدة</item>
+        <item quantity="many">حتى %1$d بطاقة في اللعبة الواحدة</item>
+        <item quantity="other">حتى %1$d بطاقة في اللعبة الواحدة</item>
+    </plurals>
     <string name="play_pool">المجمّع</string>
     <string name="play_everything">الكل</string>
     <plurals name="play_cards">
@@ -125,13 +135,13 @@
     <string name="play_apply">تطبيق</string>
     <string name="play_put_in_mine">ضعها في «ترتيبي»</string>
     <string name="play_refine">تحسين</string>
-    <plurals name="play_refine_adds">
-        <item quantity="zero">+ لا مواجهات</item>
-        <item quantity="one">+ مواجهة واحدة</item>
-        <item quantity="two">+ حتى مواجهتين</item>
-        <item quantity="few">+ حتى %1$d مواجهات</item>
-        <item quantity="many">+ حتى %1$d مواجهة</item>
-        <item quantity="other">+ حتى %1$d مواجهة</item>
+    <plurals name="play_refine_up_to">
+        <item quantity="zero">تحسين · لا مواجهات</item>
+        <item quantity="one">تحسين · مواجهة واحدة</item>
+        <item quantity="two">تحسين · حتى مواجهتين</item>
+        <item quantity="few">تحسين · حتى %1$d مواجهات</item>
+        <item quantity="many">تحسين · حتى %1$d مواجهة</item>
+        <item quantity="other">تحسين · حتى %1$d مواجهة</item>
     </plurals>
     <string name="play_again">العب مجددًا</string>
     <string name="play_snack_game_saved">حُفظت اللعبة · %1$d من %2$d</string>

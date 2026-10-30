@@ -109,6 +109,7 @@ internal fun resultOf(session: Session, intoMine: Boolean): ResultState {
                 colorLight = tier.colorLight,
                 colorDark = tier.colorDark,
                 cards = cards.map { ResultCard(session.card(it), standing.isDashed(it)) },
+                caption = tier.caption?.takeIf { it.isNotBlank() },
             )
         },
         dashed = (0 until game.spec.count).count { standing.isDashed(it) },

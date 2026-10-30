@@ -19,6 +19,8 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.artiuillab.tieryourlife.core.theme.layout.FullScreenTask
+import com.artiuillab.tieryourlife.core.theme.layout.isShortWindow
 import com.artiuillab.tieryourlife.core.theme.ui.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
@@ -93,6 +95,7 @@ internal fun PlayLayer(
                 ),
             )
             is PlayStage.Dueling -> {
+                FullScreenTask()
                 BackHandler(onBack = viewModel.duel::quit)
                 DuelScreen(
                     duel = stage.duel,
@@ -103,6 +106,7 @@ internal fun PlayLayer(
                 )
             }
             is PlayStage.Finished -> {
+                FullScreenTask()
                 BackHandler(onBack = viewModel.duel::quit)
                 ResultScreen(
                     result = stage.result,
@@ -121,8 +125,8 @@ internal fun PlayLayer(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .navigationBarsPadding()
-                // Over the duels, clear of Skip.
-                .padding(start = 16.dp, end = 16.dp, bottom = if (stage is PlayStage.Dueling) 96.dp else 16.dp),
+                // Over the duels, clear of Skip, which a short window puts between the cards instead.
+                .padding(start = 16.dp, end = 16.dp, bottom = if (stage is PlayStage.Dueling && !isShortWindow) 96.dp else 16.dp),
         )
     }
 }

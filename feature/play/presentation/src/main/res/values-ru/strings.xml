@@ -26,6 +26,7 @@
         <item quantity="many">около %1$d мин</item>
         <item quantity="other">около %1$d мин</item>
     </plurals>
+    <string name="play_new_game">Или начните новую игру</string>
     <string name="play_resume">Продолжить</string>
     <string name="play_resume_progress">%1$s · %2$d из %3$d</string>
     <string name="play_started_today">Начата сегодня</string>
@@ -48,6 +49,13 @@
     <string name="play_cancel">Отмена</string>
     <string name="play_start">Начать</string>
     <string name="play_continue">Далее</string>
+    <string name="play_back">Назад</string>
+    <plurals name="play_cards_limit">
+        <item quantity="one">До %1$d карточки за одну игру</item>
+        <item quantity="few">До %1$d карточек за одну игру</item>
+        <item quantity="many">До %1$d карточек за одну игру</item>
+        <item quantity="other">До %1$d карточки за одну игру</item>
+    </plurals>
     <string name="play_pool">Пул</string>
     <string name="play_everything">Всё</string>
     <plurals name="play_cards">
@@ -103,11 +111,11 @@
     <string name="play_apply">Применить</string>
     <string name="play_put_in_mine">Положить в «Моя»</string>
     <string name="play_refine">Уточнить</string>
-    <plurals name="play_refine_adds">
-        <item quantity="one">+ до %1$d дуэли</item>
-        <item quantity="few">+ до %1$d дуэлей</item>
-        <item quantity="many">+ до %1$d дуэлей</item>
-        <item quantity="other">+ до %1$d дуэли</item>
+    <plurals name="play_refine_up_to">
+        <item quantity="one">Уточнить · до %1$d дуэли</item>
+        <item quantity="few">Уточнить · до %1$d дуэлей</item>
+        <item quantity="many">Уточнить · до %1$d дуэлей</item>
+        <item quantity="other">Уточнить · до %1$d дуэли</item>
     </plurals>
     <string name="play_again">Сыграть ещё</string>
     <string name="play_snack_game_saved">Игра сохранена · %1$d из %2$d</string>

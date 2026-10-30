@@ -23,6 +23,7 @@
         <item quantity="many">environ %1$d min</item>
         <item quantity="other">environ %1$d min</item>
     </plurals>
+    <string name="play_new_game">Ou lancez une nouvelle partie</string>
     <string name="play_resume">Reprendre</string>
     <string name="play_resume_progress">%1$s · %2$d sur %3$d</string>
     <string name="play_started_today">Commencée aujourd’hui</string>
@@ -43,6 +44,12 @@
     <string name="play_cancel">Annuler</string>
     <string name="play_start">Commencer</string>
     <string name="play_continue">Continuer</string>
+    <string name="play_back">Retour</string>
+    <plurals name="play_cards_limit">
+        <item quantity="one">Jusqu’à %1$d carte par partie</item>
+        <item quantity="many">Jusqu’à %1$d cartes par partie</item>
+        <item quantity="other">Jusqu’à %1$d cartes par partie</item>
+    </plurals>
     <string name="play_pool">Le réservoir</string>
     <string name="play_everything">Tout</string>
     <plurals name="play_cards">
@@ -92,10 +99,10 @@
     <string name="play_apply">Appliquer</string>
     <string name="play_put_in_mine">Mettre dans « Le mien »</string>
     <string name="play_refine">Affiner</string>
-    <plurals name="play_refine_adds">
-        <item quantity="one">+ %1$d duel</item>
-        <item quantity="many">+ jusqu’à %1$d duels</item>
-        <item quantity="other">+ jusqu’à %1$d duels</item>
+    <plurals name="play_refine_up_to">
+        <item quantity="one">Affiner · %1$d duel</item>
+        <item quantity="many">Affiner · jusqu’à %1$d duels</item>
+        <item quantity="other">Affiner · jusqu’à %1$d duels</item>
     </plurals>
     <string name="play_again">Rejouer</string>
     <string name="play_snack_game_saved">Partie enregistrée · %1$d sur %2$d</string>

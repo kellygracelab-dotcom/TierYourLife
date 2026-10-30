@@ -17,6 +17,7 @@
     <plurals name="play_estimate_minutes">
         <item quantity="other">約 %1$d 分</item>
     </plurals>
+    <string name="play_new_game">または新しいゲームを始める</string>
     <string name="play_resume">再開</string>
     <string name="play_resume_progress">%1$s · %2$d / %3$d</string>
     <string name="play_started_today">今日開始</string>
@@ -33,6 +34,10 @@
     <string name="play_cancel">キャンセル</string>
     <string name="play_start">開始</string>
     <string name="play_continue">次へ</string>
+    <string name="play_back">戻る</string>
+    <plurals name="play_cards_limit">
+        <item quantity="other">1 回のゲームで最大 %1$d 枚</item>
+    </plurals>
     <string name="play_pool">プール</string>
     <string name="play_everything">すべて</string>
     <plurals name="play_cards">
@@ -70,8 +75,8 @@
     <string name="play_apply">適用</string>
     <string name="play_put_in_mine">「自分」に入れる</string>
     <string name="play_refine">仕上げ</string>
-    <plurals name="play_refine_adds">
-        <item quantity="other">+ 最大 %1$d 回の対戦</item>
+    <plurals name="play_refine_up_to">
+        <item quantity="other">仕上げ · 最大 %1$d 回の対戦</item>
     </plurals>
     <string name="play_again">もう一度</string>
     <string name="play_snack_game_saved">ゲームを保存しました · %1$d / %2$d</string>

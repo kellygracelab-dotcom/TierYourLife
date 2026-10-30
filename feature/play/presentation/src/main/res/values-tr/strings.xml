@@ -20,6 +20,7 @@
         <item quantity="one">yaklaşık %1$d dk</item>
         <item quantity="other">yaklaşık %1$d dk</item>
     </plurals>
+    <string name="play_new_game">Ya da yeni bir oyun başlat</string>
     <string name="play_resume">Devam et</string>
     <string name="play_resume_progress">%1$s · %2$d/%3$d</string>
     <string name="play_started_today">Bugün başladı</string>
@@ -38,6 +39,11 @@
     <string name="play_cancel">İptal</string>
     <string name="play_start">Başlat</string>
     <string name="play_continue">Devam</string>
+    <string name="play_back">Geri</string>
+    <plurals name="play_cards_limit">
+        <item quantity="one">Bir oyunda en fazla %1$d kart</item>
+        <item quantity="other">Bir oyunda en fazla %1$d kart</item>
+    </plurals>
     <string name="play_pool">Havuz</string>
     <string name="play_everything">Tümü</string>
     <plurals name="play_cards">
@@ -81,9 +87,9 @@
     <string name="play_apply">Uygula</string>
     <string name="play_put_in_mine">“Benimki”ne koy</string>
     <string name="play_refine">İyileştir</string>
-    <plurals name="play_refine_adds">
-        <item quantity="one">+ %1$d düello</item>
-        <item quantity="other">+ en fazla %1$d düello</item>
+    <plurals name="play_refine_up_to">
+        <item quantity="one">İyileştir · %1$d düello</item>
+        <item quantity="other">İyileştir · en fazla %1$d düello</item>
     </plurals>
     <string name="play_again">Yeniden oyna</string>
     <string name="play_snack_game_saved">Oyun kaydedildi · %1$d/%2$d</string>

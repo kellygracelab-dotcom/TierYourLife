@@ -67,6 +67,28 @@ class PlayViewModelTest {
         assertEquals(listOf(1L, 2L, 3L), result.tiers.map { it.tierId })
     }
 
+    // The preview draws each band as the board does, its name under the letter; a blank name is no name.
+    @Test
+    fun theResult_namesEachTier_asItsBandDoes() = runBlocking {
+        val named = unranked.copy(
+            tiers = unranked.tiers.map { tier ->
+                when (tier.id) {
+                    1L -> tier.copy(caption = "Masterpiece")
+                    2L -> tier.copy(caption = " ")
+                    else -> tier
+                }
+            },
+        )
+        val viewModel = viewModel(boards = MovingTierRepository(named), request = PlayRequest.ownBoard(named))
+        viewModel.open()
+        viewModel.picker.start()
+
+        viewModel.playToTheEnd()
+
+        val result = (viewModel.state.value.stage as PlayStage.Finished).result
+        assertEquals(listOf("Masterpiece", null, null), result.tiers.map { it.caption })
+    }
+
     @Test
     fun quitting_keepsTheGame_andSaysHowFarItGot() = runBlocking {
         val games = FakeSavedGames()

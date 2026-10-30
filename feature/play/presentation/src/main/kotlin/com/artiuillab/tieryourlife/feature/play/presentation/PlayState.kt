@@ -127,6 +127,8 @@ data class ResultTier(
     val colorLight: String,
     val colorDark: String,
     val cards: List<ResultCard>,
+    /** The band's name under its letter, as the board shows it. */
+    val caption: String? = null,
 )
 
 @Immutable
