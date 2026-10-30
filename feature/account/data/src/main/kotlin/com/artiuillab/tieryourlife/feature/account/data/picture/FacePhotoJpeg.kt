@@ -47,7 +47,8 @@ private fun decodeShrunk(resolver: ContentResolver, uri: Uri, crop: FaceCrop?): 
 
 private fun decodeShrunkTheOldWay(crop: FaceCrop?, open: () -> InputStream?): Bitmap? {
     val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    open()?.use { BitmapFactory.decodeStream(it, null, bounds) } ?: return null
+    val stream = open() ?: return null
+    stream.use { BitmapFactory.decodeStream(it, null, bounds) }
     if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
 
     val orientation = open()?.use { stream ->
