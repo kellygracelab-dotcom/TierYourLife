@@ -26,6 +26,7 @@
         <item quantity="many">około %1$d min</item>
         <item quantity="other">około %1$d min</item>
     </plurals>
+    <string name="play_new_game">Albo zacznij nową grę</string>
     <string name="play_resume">Wznów</string>
     <string name="play_resume_progress">%1$s · %2$d z %3$d</string>
     <string name="play_started_today">Rozpoczęta dziś</string>
@@ -48,6 +49,13 @@
     <string name="play_cancel">Anuluj</string>
     <string name="play_start">Zacznij</string>
     <string name="play_continue">Dalej</string>
+    <string name="play_back">Wstecz</string>
+    <plurals name="play_cards_limit">
+        <item quantity="one">Do %1$d karty w jednej grze</item>
+        <item quantity="few">Do %1$d kart w jednej grze</item>
+        <item quantity="many">Do %1$d kart w jednej grze</item>
+        <item quantity="other">Do %1$d karty w jednej grze</item>
+    </plurals>
     <string name="play_pool">Pula</string>
     <string name="play_everything">Wszystko</string>
     <plurals name="play_cards">
@@ -103,11 +111,11 @@
     <string name="play_apply">Zastosuj</string>
     <string name="play_put_in_mine">Wstaw do „Mój”</string>
     <string name="play_refine">Doprecyzuj</string>
-    <plurals name="play_refine_adds">
-        <item quantity="one">+ do %1$d pojedynku</item>
-        <item quantity="few">+ do %1$d pojedynków</item>
-        <item quantity="many">+ do %1$d pojedynków</item>
-        <item quantity="other">+ do %1$d pojedynku</item>
+    <plurals name="play_refine_up_to">
+        <item quantity="one">Doprecyzuj · do %1$d pojedynku</item>
+        <item quantity="few">Doprecyzuj · do %1$d pojedynków</item>
+        <item quantity="many">Doprecyzuj · do %1$d pojedynków</item>
+        <item quantity="other">Doprecyzuj · do %1$d pojedynku</item>
     </plurals>
     <string name="play_again">Zagraj ponownie</string>
     <string name="play_snack_game_saved">Gra zapisana · %1$d z %2$d</string>

@@ -128,3 +128,50 @@ internal fun InfoIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale
     drawCircle(color, 1.1f * scale, Offset(12f * scale, 8f * scale))
     drawLine(color, Offset(12f * scale, 11f * scale), Offset(12f * scale, 16.5f * scale), stroke, StrokeCap.Round)
 }
+
+/** Two ticks beside two lines: choose which cards play. */
+@Composable
+internal fun ChecklistIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
+    val stroke = 1.7f * scale
+    listOf(8f, 16f).forEach { y ->
+        drawLine(color, Offset(3.5f * scale, y * scale), Offset(5.5f * scale, (y + 2f) * scale), stroke, StrokeCap.Round)
+        drawLine(color, Offset(5.5f * scale, (y + 2f) * scale), Offset(9f * scale, (y - 2f) * scale), stroke, StrokeCap.Round)
+        drawLine(color, Offset(12.5f * scale, (y + 0.5f) * scale), Offset(20.5f * scale, (y + 0.5f) * scale), stroke, StrokeCap.Round)
+    }
+}
+
+/** A tray: the cards not placed yet. */
+@Composable
+internal fun PoolIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.7f * scale
+    drawRoundRect(
+        color = color,
+        topLeft = Offset(4f * scale, 4f * scale),
+        size = Size(16f * scale, 16f * scale),
+        cornerRadius = CornerRadius(2f * scale),
+        style = Stroke(stroke),
+    )
+    val tray = Path().apply {
+        moveTo(4f * scale, 13f * scale)
+        lineTo(8.5f * scale, 13f * scale)
+        lineTo(10f * scale, 15.5f * scale)
+        lineTo(14f * scale, 15.5f * scale)
+        lineTo(15.5f * scale, 13f * scale)
+        lineTo(20f * scale, 13f * scale)
+    }
+    drawPath(tray, color, style = Stroke(stroke, join = StrokeJoin.Round))
+}
+
+/** A dotted frame round a square: every card on the board. */
+@Composable
+internal fun EverythingIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.6f * scale
+    for (step in 0..4) {
+        val at = (4f + step * 4f) * scale
+        drawCircle(color, stroke * 0.6f, Offset(at, 4f * scale))
+        drawCircle(color, stroke * 0.6f, Offset(at, 20f * scale))
+        drawCircle(color, stroke * 0.6f, Offset(4f * scale, at))
+        drawCircle(color, stroke * 0.6f, Offset(20f * scale, at))
+    }
+    drawRect(color, topLeft = Offset(8.5f * scale, 8.5f * scale), size = Size(7f * scale, 7f * scale), style = Stroke(stroke))
+}

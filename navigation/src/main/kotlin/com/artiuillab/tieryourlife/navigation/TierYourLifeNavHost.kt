@@ -13,8 +13,10 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
@@ -27,6 +29,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
+import com.artiuillab.tieryourlife.core.theme.layout.FullScreenTasks
+import com.artiuillab.tieryourlife.core.theme.layout.LocalFullScreenTasks
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.feature.account.presentation.navigation.accountScreen
 import com.artiuillab.tieryourlife.feature.account.presentation.navigation.navigateToAccount
@@ -84,9 +88,11 @@ fun TierYourLifeNavHost(
 ) {
     // The rail replaces the tabs once there is room beside the content.
     // Outside the NavHost so it stays put while destinations change under it.
+    // A full-screen task, the duels or the AI studio, has the window to itself.
+    val tasks = remember { FullScreenTasks() }
+    val entry by navController.currentBackStackEntryAsState()
     Row(Modifier.fillMaxSize()) {
-        if (currentWindowShape.hasRail) {
-            val entry by navController.currentBackStackEntryAsState()
+        if (currentWindowShape.hasRail && !tasks.any && !railHiddenOn(entry?.destination?.route)) {
             HomeRail(
                 selected = railDestinationOf(entry),
                 onSelect = { destination -> navController.goTo(destination) },
@@ -95,13 +101,15 @@ fun TierYourLifeNavHost(
                 onNewList = { navController.navigateToHome(community = false, makeBoard = true) },
             )
         }
-        NavContent(
-            navController = navController,
-            themeChoice = themeChoice,
-            onThemeChoiceChange = onThemeChoiceChange,
-            languageTag = languageTag,
-            onLanguageTagChange = onLanguageTagChange,
-        )
+        CompositionLocalProvider(LocalFullScreenTasks provides tasks) {
+            NavContent(
+                navController = navController,
+                themeChoice = themeChoice,
+                onThemeChoiceChange = onThemeChoiceChange,
+                languageTag = languageTag,
+                onLanguageTagChange = onLanguageTagChange,
+            )
+        }
     }
     HandOffDelivery(navController, handOff, onHandOffDone)
     BoardReporter(navController, onBoardShown)
@@ -151,6 +159,10 @@ internal fun railDestinationFor(route: String?, onCommunity: Boolean): RailDesti
         "Settings" -> RailDestination.Settings
         else -> null
     }
+
+/** Destinations that are one task from end to end and want every pixel of a short window for it. */
+internal fun railHiddenOn(route: String?): Boolean =
+    route?.substringBefore('?')?.substringBefore('/')?.substringAfterLast('.') == "AiStudioRoute"
 
 private fun NavHostController.goTo(destination: RailDestination) {
     when (destination) {

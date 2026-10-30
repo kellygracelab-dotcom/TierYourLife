@@ -20,6 +20,7 @@
         <item quantity="one">about %1$d min</item>
         <item quantity="other">about %1$d min</item>
     </plurals>
+    <string name="play_new_game">Or start a new game</string>
     <string name="play_resume">Resume</string>
     <string name="play_resume_progress">%1$s · %2$d of %3$d</string>
     <string name="play_started_today">Started today</string>
@@ -38,6 +39,11 @@
     <string name="play_cancel">Cancel</string>
     <string name="play_start">Start</string>
     <string name="play_continue">Continue</string>
+    <string name="play_back">Back</string>
+    <plurals name="play_cards_limit">
+        <item quantity="one">Up to %1$d card in one game</item>
+        <item quantity="other">Up to %1$d cards in one game</item>
+    </plurals>
     <string name="play_pool">The pool</string>
     <string name="play_everything">Everything</string>
     <plurals name="play_cards">
@@ -81,9 +87,9 @@
     <string name="play_apply">Apply</string>
     <string name="play_put_in_mine">Put in Mine</string>
     <string name="play_refine">Refine</string>
-    <plurals name="play_refine_adds">
-        <item quantity="one">+ %1$d duel</item>
-        <item quantity="other">+ up to %1$d duels</item>
+    <plurals name="play_refine_up_to">
+        <item quantity="one">Refine · %1$d duel</item>
+        <item quantity="other">Refine · up to %1$d duels</item>
     </plurals>
     <string name="play_again">Play again</string>
     <string name="play_snack_game_saved">Game saved · %1$d of %2$d</string>

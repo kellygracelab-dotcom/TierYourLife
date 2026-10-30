@@ -1,7 +1,9 @@
 package com.artiuillab.tieryourlife.navigation
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
@@ -37,6 +39,16 @@ class RailDestinationTest {
         // A sibling of Settings in the same file: its name carries "Settings" and lights nothing.
         assertNull(railDestinationFor(hidden, onCommunity = false))
         assertNull(railDestinationFor(null, onCommunity = false))
+    }
+
+    // A short window has no height to spare and the studio is one task from
+    // start to finish; the board keeps the rail, so it is one tap from home.
+    @Test
+    fun theAiStudio_hidesTheRail_andTheBoardKeepsIt() {
+        assertTrue(railHiddenOn("com.artiuillab.tieryourlife.feature.aistudio.presentation.navigation.AiStudioRoute/{tierListId}/{listTitle}"))
+        assertFalse(railHiddenOn(board))
+        assertFalse(railHiddenOn(lists))
+        assertFalse(railHiddenOn(null))
     }
 
     // The community flag is only meaningful on the home route. On any other it
