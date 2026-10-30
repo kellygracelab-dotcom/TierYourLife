@@ -236,7 +236,10 @@ fun TierListsScreenContent(
         onDeleteLists(ids)
         snackbarHostState.currentSnackbarData?.dismiss()
         coroutineScope.launch {
-            val message = resources.getQuantityString(R.plurals.snack_lists_deleted, ids.size, ids.size)
+            // Deleting takes the public copy down too, and Undo does not put it back up.
+            val anyPublic = lists.any { it.id in ids && it.isPublic }
+            val said = if (anyPublic) R.plurals.snack_lists_deleted_and_taken_down else R.plurals.snack_lists_deleted
+            val message = resources.getQuantityString(said, ids.size, ids.size)
             val result = snackbarHostState.showSnackbar(
                 message = message,
                 actionLabel = undoLabel,

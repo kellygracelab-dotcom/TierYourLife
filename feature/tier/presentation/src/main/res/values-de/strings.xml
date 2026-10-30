@@ -204,4 +204,8 @@
         <item quantity="one">%1$d Karte</item>
         <item quantity="other">%1$d Karten</item>
     </plurals>
+    <plurals name="snack_lists_deleted_and_taken_down">
+        <item quantity="one">%1$d Liste gelöscht, die öffentliche Kopie entfernt</item>
+        <item quantity="other">%1$d Listen gelöscht, die öffentlichen Kopien entfernt</item>
+    </plurals>
 </resources>

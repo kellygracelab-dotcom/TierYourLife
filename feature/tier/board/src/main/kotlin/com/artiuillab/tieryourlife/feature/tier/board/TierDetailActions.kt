@@ -52,4 +52,6 @@ data class TierDetailActions(
     val onPlay: (() -> Unit)? = null,
     /** A game of this board is put down: the button carries a dot. */
     val playSaved: Boolean = false,
+    /** A card picked up (true) or put down (false), for a screen that says something while one is in the air. */
+    val onCardLifted: (Boolean) -> Unit = {},
 )

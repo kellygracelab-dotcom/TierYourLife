@@ -82,6 +82,20 @@ interface AppPreferences {
     fun markConflictSeen(listUid: String)
 
     /**
+     * The account each published id on this phone was last seen in, by id. A
+     * board can carry an id another account published, and only that account
+     * can say it is gone.
+     */
+    fun publishedOwners(): Map<String, String> = emptyMap()
+
+    fun setPublishedOwners(owners: Map<String, String>) = Unit
+
+    /** The account the last check of what is published ran for: a different one now means somebody switched. */
+    fun lastPublishingAccount(): String? = null
+
+    fun setLastPublishingAccount(account: String?) = Unit
+
+    /**
      * Whether the person folded the pool's side column (true), opened it
      * (false), or left it to the board (null). Kept on this device only: it is
      * about this screen's room, not about the boards.

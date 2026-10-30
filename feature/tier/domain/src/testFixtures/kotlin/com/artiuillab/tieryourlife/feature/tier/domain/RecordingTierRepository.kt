@@ -23,10 +23,23 @@ class RecordingTierRepository(
     private val publishedIdOfFirstList: String? = null,
     /** What getTierListById finds, and boardPublishedAs by its publishedId. */
     private val boards: List<TierList> = emptyList(),
+    /** What getTrashEntries finds. */
+    private val trash: List<TrashEntry> = emptyList(),
 ) : TierRepository {
 
     val templates = mutableListOf<SavedTemplate>()
     var clearedPublishedId: Long? = null
+
+    /** Every published id written, as (id, publishedId), cleared ones included. */
+    val publishedIds = mutableListOf<Pair<Long, String?>>()
+
+    /** Every anonymity set, as (id, anonymous). */
+    val anonymity = mutableListOf<Pair<Long, Boolean>>()
+
+    /** Every section set, as (id, category). */
+    val categories = mutableListOf<Pair<Long, String?>>()
+
+    val restored = mutableListOf<Long>()
 
     override suspend fun createFromTemplate(
         title: String,
@@ -40,6 +53,7 @@ class RecordingTierRepository(
     }
 
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) {
+        publishedIds += id to publishedId
         if (publishedId == null) clearedPublishedId = id
     }
 
@@ -56,9 +70,13 @@ class RecordingTierRepository(
 
     override suspend fun setFavouritedAt(id: Long, at: Long?) = Unit
 
-    override suspend fun setCategory(id: Long, category: String?) = Unit
+    override suspend fun setCategory(id: Long, category: String?) {
+        categories += id to category
+    }
 
-    override suspend fun setAnonymous(id: Long, anonymous: Boolean) = Unit
+    override suspend fun setAnonymous(id: Long, anonymous: Boolean) {
+        anonymity += id to anonymous
+    }
 
     /** Every game written to a board, as (id, the shared JSON or null). */
     val plays = mutableListOf<Pair<Long, String?>>()
@@ -117,11 +135,13 @@ class RecordingTierRepository(
     ) = Unit
     override suspend fun reorderTiers(orderedTierIds: List<Long>) = Unit
     override suspend fun deleteTierLists(ids: List<Long>) = Unit
-    override suspend fun restoreTierLists(ids: List<Long>) = Unit
+    override suspend fun restoreTierLists(ids: List<Long>) {
+        restored += ids
+    }
     override suspend fun deleteTierItem(id: Long) = Unit
     override suspend fun restoreTierItem(id: Long) = Unit
     override suspend fun deleteTierListPermanently(id: Long) = Unit
     override suspend fun deleteTierItemPermanently(id: Long) = Unit
     override suspend fun emptyTrash() = Unit
-    override suspend fun getTrashEntries(): List<TrashEntry> = emptyList()
+    override suspend fun getTrashEntries(): List<TrashEntry> = trash
 }

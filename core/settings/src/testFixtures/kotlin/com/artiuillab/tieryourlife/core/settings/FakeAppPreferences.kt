@@ -81,4 +81,19 @@ class FakeAppPreferences(
     override fun conflictsSeen(): Set<String> = emptySet()
 
     override fun markConflictSeen(listUid: String) = Unit
+
+    private var owners = emptyMap<String, String>()
+    private var publishingAccount: String? = null
+
+    override fun publishedOwners(): Map<String, String> = owners
+
+    override fun setPublishedOwners(owners: Map<String, String>) {
+        this.owners = owners
+    }
+
+    override fun lastPublishingAccount(): String? = publishingAccount
+
+    override fun setLastPublishingAccount(account: String?) {
+        publishingAccount = account
+    }
 }

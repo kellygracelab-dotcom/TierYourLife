@@ -334,10 +334,32 @@
         <item quantity="many">Чекають %1$d з %2$d ваших пропозицій.</item>
         <item quantity="other">Чекають %1$d з %2$d ваших пропозицій.</item>
     </plurals>
-    <string name="community_your_list">Ваш список — таким його бачать інші.</string>
     <string name="community_open_your_board">Відкрити вашу дошку</string>
     <string name="community_show_my_ranking">Показати моє ранжування іншим</string>
     <string name="community_sign_in_to_show_ranking">Увійдіть, щоб показати своє ранжування</string>
     <string name="community_ranking_shown">Ваше ранжування тепер серед ранжувань списку</string>
     <string name="community_action_sign_in">Увійти</string>
+    <string name="community_your_list_badge">Ваш список</string>
+    <string name="community_own_published">Опубліковано</string>
+    <plurals name="community_own_published_rankings">
+        <item quantity="one">Опубліковано · %1$d рейтинг</item>
+        <item quantity="few">Опубліковано · %1$d рейтинги</item>
+        <item quantity="many">Опубліковано · %1$d рейтингів</item>
+        <item quantity="other">Опубліковано · %1$d рейтингу</item>
+    </plurals>
+    <string name="community_own_anonymous">Анонімно · лише ви бачите, що він ваш</string>
+    <string name="community_own_list_line">Так його бачать відвідувачі. Зміни — на вашій дошці.</string>
+    <string name="community_restore_from_trash">Повернути з кошика</string>
+    <string name="community_get_back_as_board">Повернути як дошку</string>
+    <string name="community_copy_link">Копіювати посилання</string>
+    <string name="community_link_copied">Посилання скопійовано</string>
+    <string name="community_action_publish_anonymously">Опублікувати без імені</string>
+    <string name="community_action_publish_named">Опублікувати з іменем</string>
+    <string name="community_drop_to_start_yours">Відпустіть, щоб почати свою версію · Моє почнеться з рейтингу: %1$s</string>
+    <string name="community_drop_to_start_yours_unnamed">Відпустіть, щоб почати свою версію · Моє почнеться з цього рейтингу</string>
+    <string name="community_started_from_theirs">Вашу версію почато з рейтингу: %1$s</string>
+    <string name="community_started_from_theirs_unnamed">Вашу версію почато з цього рейтингу</string>
+    <string name="community_replaced_yours">Вашу версію замінено рейтингом: %1$s</string>
+    <string name="community_replaced_yours_unnamed">Вашу версію замінено цим рейтингом</string>
+    <string name="community_action_undo">Скасувати</string>
 </resources>

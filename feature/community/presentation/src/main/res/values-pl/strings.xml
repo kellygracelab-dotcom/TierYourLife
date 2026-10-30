@@ -334,10 +334,32 @@
         <item quantity="many">Czeka %1$d z %2$d twoich propozycji.</item>
         <item quantity="other">Czeka %1$d z %2$d twoich propozycji.</item>
     </plurals>
-    <string name="community_your_list">Twoja lista, tak jak widzą ją inni.</string>
     <string name="community_open_your_board">Otwórz swoją tablicę</string>
     <string name="community_show_my_ranking">Pokaż mój ranking innym</string>
     <string name="community_sign_in_to_show_ranking">Zaloguj się, aby pokazać swój ranking</string>
     <string name="community_ranking_shown">Twój ranking jest wśród rankingów listy</string>
     <string name="community_action_sign_in">Zaloguj się</string>
+    <string name="community_your_list_badge">Twoja lista</string>
+    <string name="community_own_published">Opublikowana</string>
+    <plurals name="community_own_published_rankings">
+        <item quantity="one">Opublikowana · %1$d ranking</item>
+        <item quantity="few">Opublikowana · %1$d rankingi</item>
+        <item quantity="many">Opublikowana · %1$d rankingów</item>
+        <item quantity="other">Opublikowana · %1$d rankingu</item>
+    </plurals>
+    <string name="community_own_anonymous">Anonimowa · tylko ty widzisz, że jest twoja</string>
+    <string name="community_own_list_line">Tak widzą ją odwiedzający. Zmiany robisz na swojej tablicy.</string>
+    <string name="community_restore_from_trash">Przywróć z kosza</string>
+    <string name="community_get_back_as_board">Odzyskaj jako tablicę</string>
+    <string name="community_copy_link">Kopiuj link</string>
+    <string name="community_link_copied">Skopiowano link</string>
+    <string name="community_action_publish_anonymously">Opublikuj bez mojego imienia</string>
+    <string name="community_action_publish_named">Opublikuj z moim imieniem</string>
+    <string name="community_drop_to_start_yours">Upuść, by zacząć swoją wersję · Mój zaczyna się od rankingu: %1$s</string>
+    <string name="community_drop_to_start_yours_unnamed">Upuść, by zacząć swoją wersję · Mój zaczyna się od tego rankingu</string>
+    <string name="community_started_from_theirs">Twoja wersja zaczyna się od rankingu: %1$s</string>
+    <string name="community_started_from_theirs_unnamed">Twoja wersja zaczyna się od tego rankingu</string>
+    <string name="community_replaced_yours">Zastąpiono twoją wersję rankingiem: %1$s</string>
+    <string name="community_replaced_yours_unnamed">Zastąpiono twoją wersję tym rankingiem</string>
+    <string name="community_action_undo">Cofnij</string>
 </resources>

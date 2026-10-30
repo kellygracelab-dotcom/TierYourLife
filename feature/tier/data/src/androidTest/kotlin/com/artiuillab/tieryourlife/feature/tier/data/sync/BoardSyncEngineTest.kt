@@ -8,6 +8,8 @@ import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.IncomingTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.TierDatabase
@@ -68,8 +70,9 @@ class BoardSyncEngineTest {
     private fun engine(
         account: Account = FakeAccountRepository.signedIn,
         backUp: Boolean = true,
+        preferences: FakeAppPreferences = FakeAppPreferences(backUpBoards = backUp),
+        community: CommunityRepository = FakeCommunityRepository(),
     ): BoardSyncEngine {
-        val preferences = FakeAppPreferences(backUpBoards = backUp)
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         return BoardSyncEngine(
             dao = dao,
@@ -80,7 +83,7 @@ class BoardSyncEngineTest {
             pictures = PictureSync(dao, images, NoPictures, preferences, Metered),
             preferences = preferences,
             deviceName = DeviceName(context),
-            community = FakeCommunityRepository(),
+            community = community,
         )
     }
 
@@ -184,8 +187,42 @@ class BoardSyncEngineTest {
         assertNotNull(dao.boardByUid("remote-1"))
     }
 
-    private suspend fun givenLocalBoard(title: String): String {
-        val board = TierListEntity(title = title)
+    // Signing into a second account used to wipe every id the first had published off its boards.
+    @Test
+    fun anotherAccountsSync_leavesTheFirstAccountsPublishedListsAlone() = runBlocking {
+        givenLocalBoard("Films", publishedId = "ann-1")
+        givenLocalBoard("Games", publishedId = "bob-1")
+        val preferences = FakeAppPreferences()
+        val ann = Account.SignedIn(email = "ann@example.com", photoUrl = null, uid = "ann")
+        val bob = Account.SignedIn(email = "bob@example.com", photoUrl = null, uid = "bob")
+
+        engine(account = ann, preferences = preferences, community = Publishing("ann-1")).sync()
+        engine(account = bob, preferences = preferences, community = Publishing("bob-1")).sync()
+        engine(account = bob, preferences = preferences, community = Publishing("bob-1")).sync()
+
+        assertEquals(setOf("ann-1", "bob-1"), dao.allBoards().mapNotNull { it.publishedId }.toSet())
+    }
+
+    @Test
+    fun aListTheSameAccountTookDown_isForgotten() = runBlocking {
+        givenLocalBoard("Films", publishedId = "ann-1")
+        val preferences = FakeAppPreferences()
+        val ann = Account.SignedIn(email = "ann@example.com", photoUrl = null, uid = "ann")
+
+        engine(account = ann, preferences = preferences, community = Publishing("ann-1")).sync()
+        engine(account = ann, preferences = preferences, community = Publishing()).sync()
+
+        assertEquals(emptyList<String>(), dao.allBoards().mapNotNull { it.publishedId })
+    }
+
+    private class Publishing(private vararg val ids: String) : FakeCommunityRepository() {
+        override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(
+            ids.map { PublishedListSummary(id = it, title = it, authorUid = "", authorName = "", category = "other", itemCount = 1, updatedAtMillis = 0) },
+        )
+    }
+
+    private suspend fun givenLocalBoard(title: String, publishedId: String? = null): String {
+        val board = TierListEntity(title = title, publishedId = publishedId)
         dao.addBoard(
             board,
             listOf(

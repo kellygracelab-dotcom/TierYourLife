@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
+import android.content.res.Resources
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -83,6 +85,7 @@ fun CommunityListScreen(
     onOpenList: (String) -> Unit = {},
     play: BoardPlay = NoPlay,
     onSignIn: () -> Unit = {},
+    onOpenMyPublished: () -> Unit = {},
     viewModel: CommunityListViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -123,6 +126,15 @@ fun CommunityListScreen(
         onSignIn = onSignIn,
         userMessages = viewModel.userMessages,
         rankingNotices = viewModel.rankingNotices,
+        own = OwnListCallbacks(
+            onRestore = viewModel.ownList::restore,
+            onGetBack = viewModel.ownList::getBack,
+            onTakeDown = viewModel.ownList::takeDown,
+            onOpenMyPublished = onOpenMyPublished,
+            onPublishAnonymously = viewModel.ownList::publishAnonymously,
+        ),
+        onUndoStartFromTheirs = viewModel::undoStartFromTheirs,
+        listNotices = viewModel.listNotices,
     )
     if (playRequest != null) {
         play.Layer(request = playRequest, open = playOpen, onArranged = viewModel::putInMine, onClose = { playOpen = false })
@@ -158,8 +170,24 @@ fun CommunityListScreenContent(
     onSignIn: () -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
     rankingNotices: Flow<RankingNotice> = emptyFlow(),
+    own: OwnListCallbacks = OwnListCallbacks(),
+    onUndoStartFromTheirs: () -> Unit = {},
+    listNotices: Flow<ListNotice> = emptyFlow(),
 ) {
     var actionsVisible by remember { mutableStateOf(false) }
+    // A card in the air on Theirs: the strip says what dropping it will do.
+    var lifted by remember { mutableStateOf(false) }
+    val snackbars = remember { SnackbarHostState() }
+    val loadedNow = state as? CommunityListUiState.Success
+    val copyLink = rememberCopyLink(loadedNow?.listId.orEmpty(), snackbars)
+    val onOwnBoard: () -> Unit = {
+        when (loadedNow?.ownBoardAction) {
+            OwnBoardAction.Open -> loadedNow.ownBoardId?.let(onOpenSaved)
+            OwnBoardAction.Restore -> own.onRestore()
+            OwnBoardAction.GetBack -> own.onGetBack()
+            null -> Unit
+        }
+    }
     var reportVisible by remember { mutableStateOf(false) }
     var reportedFrom by remember { mutableStateOf(false) }
     var saveChoiceVisible by remember { mutableStateOf(false) }
@@ -219,11 +247,12 @@ fun CommunityListScreenContent(
                                 onMoveItem = onMoveItem,
                                 onPlay = onPlay.takeUnless { loaded.own },
                                 playSaved = playSaved,
+                                onCardLifted = { lifted = it },
                             ),
-                            // Theirs is theirs; yours is yours to arrange, and what
-                            // you save is whichever is on screen.
+                            // Theirs is theirs, and their own list changes on its board; a move
+                            // on Theirs still arrives, and starts the reader's own version from it.
                             readOnly = loaded.readOnly,
-                            onReaderMoreClick = { actionsVisible = true }.takeIf { loaded.hasMenu },
+                            onReaderMoreClick = { actionsVisible = true },
                             belowTopBar = {
                                 UnderTheTitle(
                                     loaded = loaded,
@@ -240,14 +269,17 @@ fun CommunityListScreenContent(
                             poolAccessories = { _ ->
                                 ReaderStrip(
                                     state = loaded,
+                                    lifted = lifted,
                                     onShow = onShow,
                                     // Two arrangements to choose from only once the author's is known.
                                     onSaveClick = { if (loaded.knowsTheirs) saveChoiceVisible = true else onSave(Showing.Mine) },
                                     onOpenSaved = onOpenSaved,
+                                    onOwnBoard = onOwnBoard,
+                                    onCopyLink = copyLink,
                                 )
                             },
                             // The strip's sentence, under the side pool's title.
-                            poolNote = { ReaderStatusLine(loaded) },
+                            poolNote = { ReaderStatusLine(loaded, lifted) },
                             // The same, in the bar, when the pool sits beside the rows.
                             barExtras = { mode ->
                                 ReaderBarControls(
@@ -261,6 +293,8 @@ fun CommunityListScreenContent(
                                         onOpenRankings()
                                         rankingsVisible = true
                                     },
+                                    onOwnBoard = onOwnBoard,
+                                    onCopyLink = copyLink,
                                 )
                             },
                             // On a tablet held upright the bar grows and says who and where under the title.
@@ -311,6 +345,7 @@ fun CommunityListScreenContent(
                     onHide = onHide,
                     onReport = { reportVisible = true },
                     onShowMyRanking = { if (loaded.signedIn) onShowMyRanking() else onSignIn() },
+                    own = own,
                 )
             }
 
@@ -340,13 +375,22 @@ fun CommunityListScreenContent(
                 )
             }
         }
-        ListSnackbar(userMessages, rankingNotices, onSignIn)
+        ListSnackbar(
+            host = snackbars,
+            userMessages = userMessages,
+            rankingNotices = rankingNotices,
+            listNotices = listNotices,
+            onSignIn = onSignIn,
+            onUndoStartFromTheirs = onUndoStartFromTheirs,
+            onTakenDown = onBack,
+        )
     }
 }
 
 /**
  * The list's menu: its author, Hide and Report on somebody else's list, and
- * once the reader has arranged their own half, showing it to others. Each
+ * once the reader has arranged their own half, showing it to others. On their
+ * own list: their public lists, the name on or off, and taking it down. Each
  * closes the menu first.
  */
 @Composable
@@ -357,30 +401,50 @@ private fun ListMenu(
     onHide: () -> Unit,
     onReport: () -> Unit,
     onShowMyRanking: () -> Unit,
+    own: OwnListCallbacks,
 ) {
     fun closing(action: () -> Unit): () -> Unit = {
         onDismiss()
         action()
     }
+    val mine = loaded.own
     ListActionsSheet(
         title = loaded.list.title,
         authorName = loaded.authorName.takeUnless { loaded.editorial },
         authorPhotoUrl = loaded.authorPhotoUrl,
         onDismiss = onDismiss,
-        onOpenAuthor = closing(onOpenAuthor).takeUnless { loaded.editorial },
-        onHide = closing(onHide).takeUnless { loaded.own },
-        onReport = closing(onReport).takeUnless { loaded.own },
+        onOpenAuthor = closing(onOpenAuthor).takeUnless { loaded.editorial || mine },
+        onHide = closing(onHide).takeUnless { mine },
+        onReport = closing(onReport).takeUnless { mine },
         onShowMyRanking = closing(onShowMyRanking).takeIf { loaded.canShowRanking },
         signInToShowRanking = !loaded.signedIn,
+        onOpenMyPublished = closing(own.onOpenMyPublished).takeIf { mine },
+        // Sent again from the board, so only where the board is on this phone.
+        onPublishAnonymously = closing { own.onPublishAnonymously(!loaded.anonymous) }.takeIf { mine && loaded.ownBoardId != null },
+        anonymous = loaded.anonymous,
+        onTakeDown = closing(own.onTakeDown).takeIf { mine },
     )
 }
 
-/** What went wrong, and what became of a ranking the reader asked to show; a guest can go and sign in from it. */
+/**
+ * What went wrong, what became of a ranking the reader asked to show, and a
+ * version started from Theirs, with Undo. A guest can go and sign in from it;
+ * their own list taken down leaves the page.
+ */
 @Composable
-private fun ListSnackbar(userMessages: Flow<UserMessage>, rankingNotices: Flow<RankingNotice>, onSignIn: () -> Unit) {
-    val host = remember { SnackbarHostState() }
+private fun ListSnackbar(
+    host: SnackbarHostState,
+    userMessages: Flow<UserMessage>,
+    rankingNotices: Flow<RankingNotice>,
+    listNotices: Flow<ListNotice>,
+    onSignIn: () -> Unit,
+    onUndoStartFromTheirs: () -> Unit,
+    onTakenDown: () -> Unit,
+) {
     val resources = LocalResources.current
     val signIn by rememberUpdatedState(onSignIn)
+    val undo by rememberUpdatedState(onUndoStartFromTheirs)
+    val leave by rememberUpdatedState(onTakenDown)
     LaunchedEffect(userMessages) { userMessages.collect { host.showSnackbar(resources.getString(ThemeR.string.snack_action_failed)) } }
     LaunchedEffect(rankingNotices) {
         rankingNotices.collect { notice ->
@@ -396,7 +460,33 @@ private fun ListSnackbar(userMessages: Flow<UserMessage>, rankingNotices: Flow<R
             }
         }
     }
+    LaunchedEffect(listNotices) {
+        listNotices.collect { notice ->
+            when (notice) {
+                ListNotice.TakenDown -> leave()
+                is ListNotice.StartedFromTheirs -> {
+                    host.currentSnackbarData?.dismiss()
+                    val answer = host.showSnackbar(
+                        message = resources.startedFromTheirs(notice),
+                        actionLabel = resources.getString(R.string.community_action_undo),
+                        duration = SnackbarDuration.Long,
+                    )
+                    if (answer == SnackbarResult.ActionPerformed) undo()
+                }
+            }
+        }
+    }
     SnackbarHost(host, Modifier.fillMaxSize().wrapContentHeight(Alignment.Bottom).navigationBarsPadding())
+}
+
+private fun Resources.startedFromTheirs(notice: ListNotice.StartedFromTheirs): String {
+    val name = notice.name
+    return when {
+        notice.replaced && name != null -> getString(R.string.community_replaced_yours, name)
+        notice.replaced -> getString(R.string.community_replaced_yours_unnamed)
+        name != null -> getString(R.string.community_started_from_theirs, name)
+        else -> getString(R.string.community_started_from_theirs_unnamed)
+    }
 }
 
 /** Under the title: the author, the list this one was changed from, and whose placings there are. */
@@ -409,7 +499,9 @@ private fun UnderTheTitle(
     onOpenRankings: () -> Unit,
 ) {
     // One of the app's own lists has no line to pin here; somebody's anonymous one has a line that leads nowhere.
-    if (!loaded.editorial) {
+    if (loaded.own) {
+        OwnListLine(loaded)
+    } else if (!loaded.editorial) {
         AuthorLine(
             name = loaded.authorName,
             photoUrl = loaded.authorPhotoUrl,
@@ -437,9 +529,12 @@ private fun UnderTheTitle(
 @Composable
 private fun ReaderStrip(
     state: CommunityListUiState.Success,
+    lifted: Boolean,
     onShow: (Showing) -> Unit,
     onSaveClick: () -> Unit,
     onOpenSaved: (Long) -> Unit,
+    onOwnBoard: () -> Unit,
+    onCopyLink: () -> Unit,
 ) {
     Column(
         Modifier
@@ -462,16 +557,8 @@ private fun ReaderStrip(
             Spacer(Modifier.weight(1f))
             val savedId = state.savedId
             if (state.own) {
-                state.ownBoardId?.let { board ->
-                    Button(
-                        onClick = { onOpenSaved(board) },
-                        modifier = Modifier
-                            .widthIn(max = SAVE_BUTTON_MAX_WIDTH)
-                            .testTag(CommunityListTestTags.OPEN_BOARD),
-                    ) {
-                        Text(text = stringResource(R.string.community_open_your_board), textAlign = TextAlign.Center, maxLines = 2)
-                    }
-                }
+                CopyLinkButton(onClick = onCopyLink)
+                OwnBoardButton(state = state, onClick = onOwnBoard)
             } else if (savedId != null) {
                 Button(
                     onClick = { onOpenSaved(savedId) },
@@ -498,7 +585,7 @@ private fun ReaderStrip(
             }
         }
         Text(
-            text = stringResource(state.statusRes),
+            text = statusText(state, lifted),
             modifier = Modifier
                 .padding(top = 4.dp)
                 .testTag(CommunityListTestTags.STATUS),
@@ -620,7 +707,7 @@ private fun CommunityListArrangedDarkPreview() = TierYourLifeTheme(true) {
 /** What the reader's copy is, in the words of the strip's sentence. */
 private val CommunityListUiState.Success.statusRes: Int
     get() = when {
-        own -> R.string.community_your_list
+        own -> R.string.community_own_list_line
         savedId != null -> R.string.community_saved_to_your_lists
         arranged -> R.string.community_not_saved_yet
         // "Someone else's" would name an owner a list without an author does not have.
@@ -628,11 +715,23 @@ private val CommunityListUiState.Success.statusRes: Int
         else -> R.string.community_someone_elses
     }
 
+/** The strip's sentence; while a card is in the air on Theirs, what dropping it does. */
+@Composable
+private fun statusText(state: CommunityListUiState.Success, lifted: Boolean): String {
+    if (!lifted || state.own || state.showing != Showing.Theirs) return stringResource(state.statusRes)
+    val name = state.theirsName
+    return if (name != null) {
+        stringResource(R.string.community_drop_to_start_yours, name)
+    } else {
+        stringResource(R.string.community_drop_to_start_yours_unnamed)
+    }
+}
+
 /** The same sentence, small, under the side pool's title. */
 @Composable
-private fun ReaderStatusLine(state: CommunityListUiState.Success) {
+private fun ReaderStatusLine(state: CommunityListUiState.Success, lifted: Boolean) {
     Text(
-        text = stringResource(state.statusRes),
+        text = statusText(state, lifted),
         modifier = Modifier.testTag(CommunityListTestTags.STATUS),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,

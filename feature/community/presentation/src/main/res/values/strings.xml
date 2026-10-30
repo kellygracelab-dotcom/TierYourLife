@@ -304,10 +304,30 @@
         <item quantity="one">You have %1$d of %2$d proposals waiting.</item>
         <item quantity="other">You have %1$d of %2$d proposals waiting.</item>
     </plurals>
-    <string name="community_your_list">Your list, as others see it.</string>
     <string name="community_open_your_board">Open your board</string>
     <string name="community_show_my_ranking">Show my ranking to others</string>
     <string name="community_sign_in_to_show_ranking">Sign in to show your ranking</string>
     <string name="community_ranking_shown">Your ranking is in the list’s rankings</string>
     <string name="community_action_sign_in">Sign in</string>
+    <string name="community_your_list_badge">Your list</string>
+    <string name="community_own_published">Published</string>
+    <plurals name="community_own_published_rankings">
+        <item quantity="one">Published · %1$d ranking</item>
+        <item quantity="other">Published · %1$d rankings</item>
+    </plurals>
+    <string name="community_own_anonymous">Anonymous · only you see it\'s yours</string>
+    <string name="community_own_list_line">This is what visitors see. Changes happen on your board.</string>
+    <string name="community_restore_from_trash">Restore from trash</string>
+    <string name="community_get_back_as_board">Get it back as a board</string>
+    <string name="community_copy_link">Copy link</string>
+    <string name="community_link_copied">Link copied</string>
+    <string name="community_action_publish_anonymously">Publish without my name</string>
+    <string name="community_action_publish_named">Publish with my name</string>
+    <string name="community_drop_to_start_yours">Drop it to start your version · Mine begins as %1$s\'s</string>
+    <string name="community_drop_to_start_yours_unnamed">Drop it to start your version · Mine begins as this ranking</string>
+    <string name="community_started_from_theirs">Your version starts from %1$s\'s ranking</string>
+    <string name="community_started_from_theirs_unnamed">Your version starts from this ranking</string>
+    <string name="community_replaced_yours">Replaced your version with %1$s\'s ranking</string>
+    <string name="community_replaced_yours_unnamed">Replaced your version with this ranking</string>
+    <string name="community_action_undo">Undo</string>
 </resources>

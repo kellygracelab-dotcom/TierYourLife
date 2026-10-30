@@ -3,7 +3,6 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
@@ -20,10 +19,12 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -57,6 +58,24 @@ class CommunityListViewModel @Inject constructor(
 
     /** Told once a ranking was shown, or that it takes signing in. */
     val rankingNotices: Flow<RankingNotice> = rankings.notices
+
+    private val told = Channel<ListNotice>(Channel.BUFFERED)
+    val listNotices: Flow<ListNotice> = told.receiveAsFlow()
+
+    /** On their own list: the board behind it, and the list's name and taking down. */
+    internal val ownList = OwnList(
+        publishedId = publishedId,
+        community = community,
+        tiers = tiers,
+        state = _state,
+        scope = viewModelScope,
+        messages = messages,
+        tell = told::send,
+        reread = { open(quietly = true) },
+    )
+
+    /** Mine as it was before a move on Theirs replaced it, for Undo. */
+    private var beforeTheirs: Pair<TierList, Boolean>? = null
 
     init {
         load()
@@ -107,45 +126,47 @@ class CommunityListViewModel @Inject constructor(
     }
 
     fun load() {
-        viewModelScope.launch {
-            _state.value = CommunityListUiState.Loading
-            _state.value = community.open(publishedId).fold(
-                onSuccess = { answer ->
-                    rankings.opened(answer)
-                    val own = answer.summary.mine
-                    CommunityListUiState.Success(
-                        list = asTheAuthorLeftIt(answer),
-                        mine = emptied(answer),
-                        // What somebody came for: the list as its author ranked it. Their own is only ever that.
-                        showing = if (answer.arrangement.isEmpty() && !own) Showing.Mine else Showing.Theirs,
-                        knowsTheirs = answer.arrangement.isNotEmpty(),
-                        authorName = answer.summary.authorName,
-                        authorUid = answer.summary.authorUid,
-                        authorPhotoUrl = answer.summary.authorPhotoUrl,
-                        editorial = answer.summary.editorial,
-                        byNobody = answer.summary.byNobody,
-                        rankingCount = answer.summary.rankingCount,
-                        takeCount = answer.summary.takeCount,
-                        basedOn = answer.summary.basedOn,
-                        section = answer.summary.category,
-                        own = own,
-                        signedIn = accounts.current() is Account.SignedIn,
-                    )
-                },
-                onFailure = { CommunityListUiState.Error },
-            )
-            val loaded = _state.value as? CommunityListUiState.Success ?: return@launch
-            if (loaded.own) findOwnBoard() else if (!loaded.editorial) loadFollowState(loaded.authorUid)
-        }
+        viewModelScope.launch { open(quietly = false) }
     }
 
-    private suspend fun findOwnBoard() {
-        val board = runSuspendCatching { tiers.boardPublishedAs(publishedId) }
-            .onFailure { Timber.i(it, "Not offering the board behind $publishedId") }
-            .getOrNull() ?: return
-        _state.update { current ->
-            if (current is CommunityListUiState.Success) current.copy(ownBoardId = board.id) else current
-        }
+    /** Quietly: no placeholder in between, and a failure leaves what was there. */
+    private suspend fun open(quietly: Boolean) {
+        val before = _state.value as? CommunityListUiState.Success
+        if (!quietly) _state.value = CommunityListUiState.Loading
+        val opened = community.open(publishedId).fold(
+            onSuccess = { answer ->
+                rankings.opened(answer)
+                ownList.opened(answer.summary)
+                val own = answer.summary.mine
+                CommunityListUiState.Success(
+                    list = asTheAuthorLeftIt(answer),
+                    mine = emptied(answer),
+                    // What somebody came for: the list as its author ranked it. Their own is only ever that.
+                    showing = if (answer.arrangement.isEmpty() && !own) Showing.Mine else Showing.Theirs,
+                    knowsTheirs = answer.arrangement.isNotEmpty(),
+                    authorName = answer.summary.authorName,
+                    authorUid = answer.summary.authorUid,
+                    authorPhotoUrl = answer.summary.authorPhotoUrl,
+                    editorial = answer.summary.editorial,
+                    byNobody = answer.summary.byNobody,
+                    rankingCount = answer.summary.rankingCount,
+                    takeCount = answer.summary.takeCount,
+                    basedOn = answer.summary.basedOn,
+                    section = answer.summary.category,
+                    own = own,
+                    anonymous = answer.summary.anonymous,
+                    listId = publishedId,
+                    signedIn = accounts.current() is Account.SignedIn,
+                    ownBoardId = before?.ownBoardId.takeIf { quietly },
+                    trashedBoardId = before?.trashedBoardId.takeIf { quietly },
+                    ownBoardLookedUp = quietly && before?.ownBoardLookedUp == true,
+                )
+            },
+            onFailure = { if (quietly && before != null) before else CommunityListUiState.Error },
+        )
+        _state.value = opened
+        val loaded = opened as? CommunityListUiState.Success ?: return
+        if (loaded.own) ownList.find() else if (!loaded.editorial) loadFollowState(loaded.authorUid)
     }
 
     /** Two boards kept side by side: your own work stays where you left it while you glance at the author's. */
@@ -157,15 +178,39 @@ class CommunityListViewModel @Inject constructor(
 
     /** In memory only until a copy is asked for, so backing out costs nothing. */
     fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
-        _state.update { current ->
-            if (current !is CommunityListUiState.Success) return@update current
-            // Their arrangement is theirs. A drag while it was on screen used
-            // to land in the author's board and snap back.
-            if (current.showing == Showing.Theirs) return@update current
-            current.copy(
-                mine = current.mine.withItemMoved(itemId, toTierId, toPosition),
+        val current = _state.value as? CommunityListUiState.Success ?: return
+        if (current.own) return
+        if (current.showing == Showing.Theirs) return startFromTheirs(current, itemId, toTierId, toPosition)
+        _state.update { state ->
+            if (state !is CommunityListUiState.Success) return@update state
+            state.copy(mine = state.mine.withItemMoved(itemId, toTierId, toPosition), arranged = true)
+        }
+    }
+
+    /**
+     * A move while their arrangement is on screen: the reader's own version
+     * begins as what they were looking at, a chosen reader's placing included,
+     * with that one move made. The board stays as it was under the finger.
+     */
+    private fun startFromTheirs(current: CommunityListUiState.Success, itemId: Long, toTierId: Long, toPosition: Int) {
+        beforeTheirs = current.mine to current.arranged
+        _state.update { state ->
+            if (state !is CommunityListUiState.Success) return@update state
+            state.copy(
+                mine = state.mine.copy(tiers = state.theirs.tiers).withItemMoved(itemId, toTierId, toPosition),
+                showing = Showing.Mine,
                 arranged = true,
             )
+        }
+        viewModelScope.launch { told.send(ListNotice.StartedFromTheirs(current.theirsName, replaced = current.arranged)) }
+    }
+
+    /** Mine as it was before, and their arrangement back on screen. */
+    fun undoStartFromTheirs() {
+        val (mine, arranged) = beforeTheirs ?: return
+        beforeTheirs = null
+        _state.update { state ->
+            if (state !is CommunityListUiState.Success) state else state.copy(mine = mine, arranged = arranged, showing = Showing.Theirs)
         }
     }
 

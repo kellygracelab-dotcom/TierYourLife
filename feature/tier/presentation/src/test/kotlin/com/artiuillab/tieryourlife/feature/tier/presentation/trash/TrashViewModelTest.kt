@@ -40,10 +40,9 @@ class TrashViewModelTest {
         assertEquals(TrashUiState.Error, viewModel.state.firstWithin { it != TrashUiState.Loading })
     }
 
-    // Restored private: the snapshot it left in the community is taken down
-    // and the board forgets it was ever published.
+    // Restoring is undoing the delete: the public copy stays up and the board keeps its id.
     @Test
-    fun restoringAPublishedList_takesItsSnapshotDownAndRestoresItPrivate() = runBlocking {
+    fun restoringAPublishedList_leavesItsPublicCopyUp() = runBlocking {
         val repository = TrashRepository(listOf(published, private))
         val community = Community()
         val viewModel = TrashViewModel(repository, community)
@@ -52,8 +51,8 @@ class TrashViewModelTest {
         viewModel.restoreList(published.id)
         viewModel.state.firstWithin { (it as? TrashUiState.Success)?.entries == listOf(private) }
 
-        assertEquals(listOf("pub-1"), community.unpublished)
-        assertEquals(published.id, repository.clearedPublishedId)
+        assertTrue(community.unpublished.isEmpty())
+        assertEquals(null, repository.clearedPublishedId)
     }
 
     @Test
@@ -93,20 +92,6 @@ class TrashViewModelTest {
 
         assertEquals(UserMessage.PublishedListStillPublic, message)
         assertEquals(TrashUiState.Success(listOf(published)), state)
-    }
-
-    // Forgetting the id would leave the copy public with no switch left to turn it off.
-    @Test
-    fun restoringAListWhoseSnapshotWouldNotComeDown_keepsItsPublishedId() = runBlocking {
-        val repository = TrashRepository(listOf(published))
-        val viewModel = TrashViewModel(repository, Community(unpublishFails = true))
-        viewModel.state.firstWithin { it is TrashUiState.Success }
-
-        viewModel.restoreList(published.id)
-        val message = withTimeout(TIMEOUT_MILLIS) { viewModel.userMessages.first() }
-
-        assertEquals(UserMessage.PublishedListStillPublic, message)
-        assertEquals(null, repository.clearedPublishedId)
     }
 
     @Test

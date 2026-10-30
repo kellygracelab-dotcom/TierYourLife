@@ -204,4 +204,8 @@
         <item quantity="one">%1$d kart</item>
         <item quantity="other">%1$d kart</item>
     </plurals>
+    <plurals name="snack_lists_deleted_and_taken_down">
+        <item quantity="one">%1$d liste silindi ve herkese açık kopyası kaldırıldı</item>
+        <item quantity="other">%1$d liste silindi ve herkese açık kopyaları kaldırıldı</item>
+    </plurals>
 </resources>

@@ -23,6 +23,8 @@ private const val KEY_LAST_KNOWN_TRASH = "last_known_trash"
 private const val KEY_LAST_KNOWN_STORED_BYTES = "last_known_stored_bytes"
 private const val KEY_POOL_COLUMN_COLLAPSED = "poolColumnCollapsed"
 private const val KEY_POOL_DOCK_ROWS = "poolDockRows"
+private const val KEY_PUBLISHED_OWNERS = "published_owners"
+private const val KEY_LAST_PUBLISHING_ACCOUNT = "last_publishing_account"
 
 @Singleton
 class SharedPreferencesAppPreferences @Inject constructor(
@@ -81,6 +83,20 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun setPoolColumnCollapsed(collapsed: Boolean?) {
         prefs.edit { if (collapsed == null) remove(KEY_POOL_COLUMN_COLLAPSED) else putBoolean(KEY_POOL_COLUMN_COLLAPSED, collapsed) }
+    }
+
+    override fun publishedOwners(): Map<String, String> =
+        entriesIn(KEY_PUBLISHED_OWNERS).associate { it.id to it.label }
+
+    override fun setPublishedOwners(owners: Map<String, String>) {
+        val records = owners.entries.fold(emptySet<String>()) { records, (id, account) -> HiddenRecords.with(records, id, account) }
+        prefs.edit { putStringSet(KEY_PUBLISHED_OWNERS, records) }
+    }
+
+    override fun lastPublishingAccount(): String? = prefs.getString(KEY_LAST_PUBLISHING_ACCOUNT, null)
+
+    override fun setLastPublishingAccount(account: String?) {
+        prefs.edit { putString(KEY_LAST_PUBLISHING_ACCOUNT, account) }
     }
 
     override fun poolDockRows(): Int = prefs.getInt(KEY_POOL_DOCK_ROWS, DEFAULT_POOL_DOCK_ROWS)

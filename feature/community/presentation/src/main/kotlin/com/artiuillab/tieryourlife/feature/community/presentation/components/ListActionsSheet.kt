@@ -25,10 +25,13 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.core.theme.ui.CategoryIcon
+import com.artiuillab.tieryourlife.core.theme.ui.DeleteOutlineIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FlagIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FormatListNumberedIcon
+import com.artiuillab.tieryourlife.core.theme.ui.GridViewIcon
 import com.artiuillab.tieryourlife.core.theme.ui.HideIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PersonIcon
+import com.artiuillab.tieryourlife.core.theme.ui.VisibilityIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 
 /**
@@ -54,6 +57,13 @@ fun ListActionsSheet(
     /** On somebody else's list the reader has arranged: show their ranking to others, or, for a guest, sign in to. */
     onShowMyRanking: (() -> Unit)? = null,
     signInToShowRanking: Boolean = false,
+    /** On this person's own list: the list of all their public ones. */
+    onOpenMyPublished: (() -> Unit)? = null,
+    /** On their own list with its board on this phone: out again without the name, or with it when [anonymous]. */
+    onPublishAnonymously: (() -> Unit)? = null,
+    anonymous: Boolean = false,
+    /** On their own list: down for everyone. */
+    onTakeDown: (() -> Unit)? = null,
 ) {
     AdaptiveSheet(
         onDismiss = onDismiss,
@@ -123,6 +133,31 @@ fun ListActionsSheet(
                     testTag = CommunityTestTags.ACTION_SHOW_RANKING,
                     onClick = onShowMyRanking,
                     icon = { size, tint -> FormatListNumberedIcon(size, tint) },
+                )
+            }
+            if (onOpenMyPublished != null) {
+                ActionRow(
+                    text = stringResource(R.string.my_published_title),
+                    testTag = CommunityTestTags.ACTION_YOUR_PUBLIC_LISTS,
+                    onClick = onOpenMyPublished,
+                    icon = { size, tint -> GridViewIcon(size, tint) },
+                )
+            }
+            if (onPublishAnonymously != null) {
+                ActionRow(
+                    text = stringResource(if (anonymous) R.string.community_action_publish_named else R.string.community_action_publish_anonymously),
+                    testTag = CommunityTestTags.ACTION_PUBLISH_ANONYMOUSLY,
+                    onClick = onPublishAnonymously,
+                    icon = { size, tint -> VisibilityIcon(size, tint, off = !anonymous) },
+                )
+            }
+            if (onTakeDown != null) {
+                ActionRow(
+                    text = stringResource(R.string.moderation_action_take_down),
+                    testTag = CommunityTestTags.ACTION_TAKE_DOWN,
+                    onClick = onTakeDown,
+                    icon = { size, tint -> DeleteOutlineIcon(size, tint) },
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
             if (onHide != null) {

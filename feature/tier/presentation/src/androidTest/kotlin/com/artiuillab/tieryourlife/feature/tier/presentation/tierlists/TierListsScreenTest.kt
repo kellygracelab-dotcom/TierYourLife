@@ -269,6 +269,21 @@ class TierListsScreenTest {
         composeRule.runOnIdle { assertEquals(null, openedId) }
     }
 
+    // Deleting takes the public copy down too; the snackbar says so rather than leaving it to be found out.
+    @Test
+    fun deletingAPublicList_saysItsPublicCopyCameDownToo() {
+        val lists = listOf(
+            tierList(1L, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 1)).copy(publishedId = "pub-1"),
+            tierList(2L, "Every A24 film", intArrayOf(1, 0, 0, 0, 0, 1)),
+        )
+        setLiveScreen(lists)
+
+        composeRule.onNodeWithTag("tier_list_card_1").performTouchInput { longClick() }
+        composeRule.onNodeWithTag(TierListsTestTags.SELECTION_DELETE).performClick()
+
+        composeRule.onNodeWithText(plural(R.plurals.snack_lists_deleted_and_taken_down, 1)).assertIsDisplayed()
+    }
+
     @Test
     fun delete_removesTheCardsAndShowsTheUndoSnackbar_andUndoRestoresThem() {
         val lists = listOf(
