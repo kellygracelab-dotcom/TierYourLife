@@ -191,12 +191,13 @@ class BoardSyncEngineTest {
     @Test
     fun anotherAccountsSync_leavesTheFirstAccountsPublishedListsAlone() = runBlocking {
         givenLocalBoard("Films", publishedId = "ann-1")
-        givenLocalBoard("Games", publishedId = "bob-1")
         val preferences = FakeAppPreferences()
         val ann = Account.SignedIn(email = "ann@example.com", photoUrl = null, uid = "ann")
         val bob = Account.SignedIn(email = "bob@example.com", photoUrl = null, uid = "bob")
 
         engine(account = ann, preferences = preferences, community = Publishing("ann-1")).sync()
+        // Signed into Bob's account, who publishes a board of his own from this phone.
+        givenLocalBoard("Games", publishedId = "bob-1")
         engine(account = bob, preferences = preferences, community = Publishing("bob-1")).sync()
         engine(account = bob, preferences = preferences, community = Publishing("bob-1")).sync()
 
