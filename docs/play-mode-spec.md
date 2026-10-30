@@ -107,19 +107,22 @@ x[i] = round9(ln(p[i]))               # round9(v) = floor(v * 1e9 + 0.5) / 1e9
 
 1. If there are no cards, every tier is empty. If `k == 1`, or every `x` is equal, every card goes in the first tier, in order.
 2. Scale the cards to `v = (x − min) / (max − min)`, in order (best first).
-3. **Groups.** Use Fisher's exact optimal split into consecutive groups, minimising the within-group sum of squared deviations, for `c = 1..min(k, n)`.
+3. **How many groups.** `distinct` is the number of distinct values among the `v`. Answered duels per card, each duel counted for both cards, is `Σ played / n`.
+   - **Solid evidence** (`Σ played / n ≥ 2`): `c = min(k, distinct)`.
+   - **Thin evidence** (`Σ played / n < 2`): `c = min(k, distinct, 3)`.
+   - There is no fit threshold: the engine always makes exactly `c` groups.
+4. **Groups.** Use Fisher's exact optimal split of the `v`, in order, into exactly `c` consecutive groups, minimising the within-group sum of squared deviations.
    - Prefix sums run in index order: `ssd(a, b) = max(0, S2 − S1² / len)`.
    - When splits cost the same, the earliest start (`<` scanning starts upward) wins.
-   - The goodness of variance fit is `GVF(c) = 1 − cost(c) / ssd(all)`.
-   - Use the smallest `c` with `GVF ≥ 0.9`. If none reaches it, use the largest allowed `c`.
-   - **Thin evidence:** when answered duels per card (each duel counted for both cards: `Σ played / n`) is below 2, `c` is at most 3, whatever the fit.
-4. **Placement.**
+   - Because `c ≤ distinct`, equal strengths never split.
+5. **Placement.**
    - Group `g`, counted from the best, aims at tier `floor((1 − mean(v of g)) × (k − 1) + 0.5)`.
    - The first group always goes to tier 0. Each later group goes at least one tier below the one before.
    - Then, from the last group back, cap group `g` at `k − c + g`, so every group fits.
-5. Cards sit in their group's tier in order.
+   - When `c == k` this puts group `g` in tier `g`: every tier is filled.
+6. Cards sit in their group's tier in order.
 
-The result: only the first tier is sure to be filled. A real gap leaves the tiers between empty, and the weakest cards still land low.
+The result: on solid evidence every tier is filled, unless there are fewer distinct strengths than tiers. Then, and on thin evidence, a real gap leaves the tiers between empty, and the weakest cards still land low.
 
 ## Honesty about the result
 

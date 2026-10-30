@@ -78,6 +78,7 @@
     </plurals>
     <string name="play_dashed_legend">Tracejado: jogou menos de 2 duelos.</string>
     <string name="play_empty_tier">Vazio</string>
+    <string name="play_nothing_to_apply">Todos os duelos foram pulados, então não há nada para aplicar.</string>
     <plurals name="play_thin">
         <item quantity="one">%1$d card jogou menos de 2 duelos, então o lugar dele é um palpite. Refinar adiciona até %2$d duelos para ele, ou aplique agora e ajuste à mão.</item>
         <item quantity="many">%1$d cards jogaram menos de 2 duelos, então os lugares deles são um palpite. Refinar adiciona até %2$d duelos para eles, ou aplique agora e ajuste à mão.</item>

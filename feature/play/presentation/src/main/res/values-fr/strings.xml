@@ -78,6 +78,7 @@
     </plurals>
     <string name="play_dashed_legend">En pointillés : moins de 2 duels joués.</string>
     <string name="play_empty_tier">Vide</string>
+    <string name="play_nothing_to_apply">Tous les duels ont été passés, il n\'y a rien à appliquer.</string>
     <plurals name="play_thin">
         <item quantity="one">%1$d carte a joué moins de 2 duels, sa place est donc une supposition. Affiner ajoute jusqu’à %2$d duels pour elle, ou appliquez maintenant et ajustez à la main.</item>
         <item quantity="many">%1$d cartes ont joué moins de 2 duels, leurs places sont donc une supposition. Affiner ajoute jusqu’à %2$d duels pour elles, ou appliquez maintenant et ajustez à la main.</item>

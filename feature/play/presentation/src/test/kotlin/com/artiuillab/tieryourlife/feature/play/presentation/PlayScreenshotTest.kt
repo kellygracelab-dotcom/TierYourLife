@@ -100,6 +100,11 @@ class PlayScreenshotTest {
         ResultScreen(result = result.copy(thin = false, dashed = 0, refineDuels = 0, intoMine = true, tiers = result.tiers.map { tier -> tier.copy(cards = tier.cards.map { it.copy(dashed = false) }) }), actions = ResultActions())
     }
 
+    @Test
+    fun aResult_withEveryDuelSkipped_hasNothingToApply() = capture("play_result_nothing_to_apply") {
+        ResultScreen(result = result.copy(duels = 0, refineDuels = 0), actions = ResultActions())
+    }
+
     private companion object {
         const val DAY = 24 * 60 * 60 * 1000L
 

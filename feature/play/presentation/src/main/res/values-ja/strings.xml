@@ -60,6 +60,7 @@
     </plurals>
     <string name="play_dashed_legend">点線：対戦が 2 回未満のカード。</string>
     <string name="play_empty_tier">空</string>
+    <string name="play_nothing_to_apply">すべての対戦をスキップしたため、適用するものはありません。</string>
     <plurals name="play_thin">
         <item quantity="other">%1$d 枚のカードは対戦が 2 回未満のため、位置は推測です。仕上げでこれらのカードに最大 %2$d 回の対戦を追加するか、今すぐ適用して手で調整してください。</item>
     </plurals>

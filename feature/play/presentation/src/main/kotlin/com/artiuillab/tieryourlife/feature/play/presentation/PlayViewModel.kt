@@ -201,7 +201,7 @@ class PlayViewModel @Inject constructor(
         fun apply() {
             val current = session ?: return
             val request = request ?: return
-            val shown = (stage as? PlayStage.Finished)?.result ?: return
+            val shown = (stage as? PlayStage.Finished)?.result?.takeIf { it.canApply } ?: return
             val placement = shown.tiers.associate { tier -> tier.tierId to tier.cards.map { it.item.id } }
             session = null
             close()

@@ -17,8 +17,6 @@ import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 @Immutable
 data class TierRowDensity(
     val bandWidth: Dp,
-    /** A row with nothing in it. */
-    val emptyHeight: Dp,
     val tileWidth: Dp,
     val tileHeight: Dp,
     val padding: Dp,
@@ -30,18 +28,15 @@ data class TierRowDensity(
     val letterLineHeight: TextUnit = TextUnit.Unspecified,
     val captionSize: TextUnit = TextUnit.Unspecified,
     val captionLineHeight: TextUnit = TextUnit.Unspecified,
-    /** A low empty row has no height for a caption under its letter. */
-    val captionOnEmptyRows: Boolean = true,
     /** "Drop items here" in an empty row while the pool has cards to drop. */
     val emptyHint: Boolean = false,
 ) {
-    /** A row with cards in one line. */
+    /** A row with cards in one line, and an empty row too: it is as tall as one holding a card. */
     val occupiedHeight: Dp get() = tileHeight + padding * 2
 
     companion object {
         val Regular = TierRowDensity(
             bandWidth = 64.dp,
-            emptyHeight = 84.dp,
             tileWidth = 44.dp,
             tileHeight = 64.dp,
             padding = 10.dp,
@@ -50,7 +45,6 @@ data class TierRowDensity(
         )
         val Compact = TierRowDensity(
             bandWidth = 64.dp,
-            emptyHeight = 56.dp,
             tileWidth = 40.dp,
             tileHeight = 58.dp,
             padding = 7.dp,
@@ -60,12 +54,10 @@ data class TierRowDensity(
             letterLineHeight = 24.sp,
             captionSize = 9.sp,
             captionLineHeight = 11.sp,
-            captionOnEmptyRows = false,
             emptyHint = true,
         )
         val Roomy = TierRowDensity(
             bandWidth = 80.dp,
-            emptyHeight = 72.dp,
             tileWidth = 52.dp,
             tileHeight = 76.dp,
             padding = 10.dp,

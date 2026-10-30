@@ -47,6 +47,7 @@ import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.board.common.dashedBorder
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.ItemTile
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRowDensity
 
 /** What the result screen's buttons do. */
 internal data class ResultActions(
@@ -89,7 +90,7 @@ internal fun ResultScreen(result: ResultState, actions: ResultActions) {
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         ResultHeading(result)
-                        result.tiers.forEach { PreviewRow(it) }
+                        if (result.canApply) result.tiers.forEach { PreviewRow(it) }
                     }
                 }
                 ResultButtons(result = result, actions = actions, oneRow = oneRow)
@@ -114,6 +115,10 @@ private fun ResultHeading(result: ResultState) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
+    if (!result.canApply) {
+        NoteBanner(stringResource(R.string.play_nothing_to_apply), Modifier.testTag(PlayTestTags.NOTHING_TO_APPLY))
+        return
+    }
     if (result.thin) ThinBanner(result)
     if (result.dashed > 0) {
         Text(
@@ -127,22 +132,28 @@ private fun ResultHeading(result: ResultState) {
 /** More than a quarter of the cards met fewer than two others: their places are said to be a guess. */
 @Composable
 private fun ThinBanner(result: ResultState) {
+    NoteBanner(
+        text = if (result.canRefine) {
+            pluralStringResource(R.plurals.play_thin, result.dashed, result.dashed, result.refineDuels)
+        } else {
+            pluralStringResource(R.plurals.play_thin_refined, result.dashed, result.dashed)
+        },
+        modifier = Modifier.testTag(PlayTestTags.THIN),
+    )
+}
+
+@Composable
+private fun NoteBanner(text: String, modifier: Modifier) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainer,
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag(PlayTestTags.THIN),
+        modifier = modifier.fillMaxWidth(),
     ) {
         Row(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
             InfoIcon(18.dp, MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.width(12.dp))
             Text(
-                text = if (result.canRefine) {
-                    pluralStringResource(R.plurals.play_thin, result.dashed, result.dashed, result.refineDuels)
-                } else {
-                    pluralStringResource(R.plurals.play_thin_refined, result.dashed, result.dashed)
-                },
+                text = text,
                 style = TextStyle(fontSize = 13.sp, lineHeight = 18.sp),
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -158,45 +169,51 @@ private fun PreviewRow(tier: ResultTier) {
         Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .heightIn(min = if (tier.cards.isEmpty()) EMPTY_ROW else 0.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(colors.rowTint),
     ) {
         Box(
             Modifier
-                .width(BAND_WIDTH)
+                .width(PREVIEW.bandWidth)
                 .fillMaxHeight()
                 .background(colors.band),
             contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = tier.label,
-                style = TierYourLifeType.current.tierBandLetter.merge(TextStyle(fontSize = 20.sp, lineHeight = 24.sp)),
+                style = TierYourLifeType.current.tierBandLetter.merge(
+                    TextStyle(fontSize = PREVIEW.letterSize, lineHeight = PREVIEW.letterLineHeight),
+                ),
                 color = colors.onBand,
                 maxLines = 1,
             )
         }
         if (tier.cards.isEmpty()) {
-            Text(
-                text = stringResource(R.string.play_empty_tier),
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(start = 12.dp),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Box(
+                Modifier
+                    .padding(PREVIEW.padding)
+                    .heightIn(min = PREVIEW.tileHeight)
+                    .padding(start = 5.dp),
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                Text(
+                    text = stringResource(R.string.play_empty_tier),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         } else {
             FlowRow(
                 Modifier
                     .weight(1f)
-                    .padding(7.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
+                    .padding(PREVIEW.padding),
+                horizontalArrangement = Arrangement.spacedBy(PREVIEW.gap),
+                verticalArrangement = Arrangement.spacedBy(PREVIEW.gap),
             ) {
                 val outline = MaterialTheme.colorScheme.outline
                 tier.cards.forEach { card ->
                     Box(if (card.dashed) Modifier.dashedBorder(1.5.dp, outline, 6.dp, dashLength = 4.dp, gapLength = 3.dp) else Modifier) {
-                        ItemTile(card.item, TILE_WIDTH, TILE_HEIGHT)
+                        ItemTile(card.item, PREVIEW.tileWidth, PREVIEW.tileHeight)
                     }
                 }
             }
@@ -204,16 +221,17 @@ private fun PreviewRow(tier: ResultTier) {
     }
 }
 
-private val BAND_WIDTH = 64.dp
-private val EMPTY_ROW = 40.dp
-private val TILE_WIDTH = 40.dp
-private val TILE_HEIGHT = 58.dp
+private val PREVIEW = TierRowDensity.Compact
 
 /** Stacked full width on a phone, in the order of how likely each is; one row on anything wider. */
 @Composable
 private fun ResultButtons(result: ResultState, actions: ResultActions, oneRow: Boolean) {
     val apply: @Composable (Modifier) -> Unit = { modifier ->
-        Button(onClick = actions.onApply, modifier = modifier.heightIn(min = 44.dp).testTag(PlayTestTags.APPLY)) {
+        Button(
+            onClick = actions.onApply,
+            enabled = result.canApply,
+            modifier = modifier.heightIn(min = 44.dp).testTag(PlayTestTags.APPLY),
+        ) {
             Text(stringResource(if (result.intoMine) R.string.play_put_in_mine else R.string.play_apply))
         }
     }

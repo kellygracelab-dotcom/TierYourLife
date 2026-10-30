@@ -69,6 +69,7 @@
     </plurals>
     <string name="play_dashed_legend">Gestrichelt: weniger als 2 Duelle gespielt.</string>
     <string name="play_empty_tier">Leer</string>
+    <string name="play_nothing_to_apply">Alle Duelle wurden übersprungen, es gibt nichts zu übernehmen.</string>
     <plurals name="play_thin">
         <item quantity="one">%1$d Karte hat weniger als 2 Duelle gespielt, ihr Platz ist also geraten. Verfeinern fügt bis zu %2$d Duelle für sie hinzu – oder jetzt übernehmen und von Hand anpassen.</item>
         <item quantity="other">%1$d Karten haben weniger als 2 Duelle gespielt, ihre Plätze sind also geraten. Verfeinern fügt bis zu %2$d Duelle für sie hinzu – oder jetzt übernehmen und von Hand anpassen.</item>
