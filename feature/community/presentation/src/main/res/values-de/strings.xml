@@ -304,10 +304,30 @@
         <item quantity="one">%1$d von %2$d Vorschlägen wartet.</item>
         <item quantity="other">%1$d von %2$d Vorschlägen warten.</item>
     </plurals>
-    <string name="community_your_list">Deine Liste, so wie andere sie sehen.</string>
     <string name="community_open_your_board">Dein Board öffnen</string>
     <string name="community_show_my_ranking">Meine Reihung anderen zeigen</string>
     <string name="community_sign_in_to_show_ranking">Melde dich an, um deine Reihung zu zeigen</string>
     <string name="community_ranking_shown">Deine Reihung steht jetzt bei den Reihungen der Liste</string>
     <string name="community_action_sign_in">Anmelden</string>
+    <string name="community_your_list_badge">Deine Liste</string>
+    <string name="community_own_published">Veröffentlicht</string>
+    <plurals name="community_own_published_rankings">
+        <item quantity="one">Veröffentlicht · %1$d Ranking</item>
+        <item quantity="other">Veröffentlicht · %1$d Rankings</item>
+    </plurals>
+    <string name="community_own_anonymous">Anonym · nur du siehst, dass sie dir gehört</string>
+    <string name="community_own_list_line">So sehen Besucher sie. Ändern kannst du sie auf deinem Board.</string>
+    <string name="community_restore_from_trash">Aus dem Papierkorb holen</string>
+    <string name="community_get_back_as_board">Als Board zurückholen</string>
+    <string name="community_copy_link">Link kopieren</string>
+    <string name="community_link_copied">Link kopiert</string>
+    <string name="community_action_publish_anonymously">Ohne meinen Namen veröffentlichen</string>
+    <string name="community_action_publish_named">Mit meinem Namen veröffentlichen</string>
+    <string name="community_drop_to_start_yours">Loslassen für deine Version · Meine beginnt mit dem Ranking von %1$s</string>
+    <string name="community_drop_to_start_yours_unnamed">Loslassen für deine Version · Meine beginnt mit diesem Ranking</string>
+    <string name="community_started_from_theirs">Deine Version beginnt mit dem Ranking von %1$s</string>
+    <string name="community_started_from_theirs_unnamed">Deine Version beginnt mit diesem Ranking</string>
+    <string name="community_replaced_yours">Deine Version durch das Ranking von %1$s ersetzt</string>
+    <string name="community_replaced_yours_unnamed">Deine Version durch dieses Ranking ersetzt</string>
+    <string name="community_action_undo">Rückgängig</string>
 </resources>

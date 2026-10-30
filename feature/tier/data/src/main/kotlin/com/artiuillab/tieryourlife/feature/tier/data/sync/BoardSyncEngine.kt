@@ -102,17 +102,32 @@ class BoardSyncEngine @Inject constructor(
     /**
      * Drops a published id the account no longer has: a snapshot can vanish
      * without this phone (taken down, or unpublished elsewhere), and a board
-     * still claiming to be public hides the one switch that would fix it.
+     * still claiming to be public hides the one switch that would fix it. Only
+     * the account that published an id can drop it: signing into another one
+     * must not wipe the first account's lists off its boards.
      */
     private suspend fun forgetWhatIsNoLongerPublished() {
-        val claimed = dao.allBoards().mapNotNull { it.publishedId }.distinct()
-        if (claimed.isEmpty()) return
-        val theirs = community.myPublished().getOrElse { return }.map { it.id }.toSet()
-        val gone = claimed.filterNot { it in theirs }
-        if (gone.isNotEmpty()) {
-            Timber.i("%d published list(s) are no longer in the account", gone.size)
-            dao.forgetPublished(gone)
+        val signedIn = accounts.account.first() as? Account.SignedIn ?: return
+        val account = signedIn.uid ?: signedIn.email.orEmpty()
+        val claimed = dao.allBoards().mapNotNullTo(mutableSetOf()) { it.publishedId }
+        val theirs = if (claimed.isEmpty()) {
+            emptySet()
+        } else {
+            community.myPublished().getOrElse { return }.mapTo(mutableSetOf()) { it.id }
         }
+        val reconciled = reconcilePublished(
+            claimed = claimed,
+            inAccount = theirs,
+            account = account,
+            lastAccount = preferences.lastPublishingAccount(),
+            owners = preferences.publishedOwners(),
+        )
+        if (reconciled.forget.isNotEmpty()) {
+            Timber.i("%d published list(s) are no longer in the account", reconciled.forget.size)
+            dao.forgetPublished(reconciled.forget.toList())
+        }
+        preferences.setPublishedOwners(reconciled.owners)
+        preferences.setLastPublishingAccount(account)
     }
 
     /** Read from the database each run, so a download that failed last week is tried again. */

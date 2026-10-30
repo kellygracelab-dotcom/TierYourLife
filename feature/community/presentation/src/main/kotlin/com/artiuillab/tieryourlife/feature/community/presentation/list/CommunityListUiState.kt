@@ -8,6 +8,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 /** Whose arrangement is on screen. */
 enum class Showing { Theirs, Mine }
 
+/** What their own list's page offers for the board behind it. */
+enum class OwnBoardAction { Open, Restore, GetBack }
+
 sealed interface CommunityListUiState {
     data object Loading : CommunityListUiState
 
@@ -60,6 +63,15 @@ sealed interface CommunityListUiState {
         val own: Boolean = false,
         /** On their own list, the board on this phone it was published from, if there is one. */
         val ownBoardId: Long? = null,
+        /** The same board, waiting in the trash. */
+        val trashedBoardId: Long? = null,
+        /** True once this phone has been asked for the board, so "not here" is an answer rather than a guess. */
+        val ownBoardLookedUp: Boolean = false,
+        /** Restoring, rebuilding, republishing or taking it down: one at a time. */
+        val ownBusy: Boolean = false,
+        /** Out without the author's name; on their own list, what "Publish with my name" turns back. */
+        val anonymous: Boolean = false,
+        val listId: String = "",
         /** Signed in with an account: only then can their ranking be shown to others. */
         val signedIn: Boolean = false,
         /** Their ranking on its way to the server. */
@@ -68,11 +80,24 @@ sealed interface CommunityListUiState {
         /** What the board area is drawing right now. */
         val shown: TierList get() = if (showing == Showing.Theirs) theirs else mine
 
-        /** Their own list is changed on their board, never here; somebody else's arrangement is theirs. */
+        /**
+         * Nothing to add to or edit: their own list is changed on their board,
+         * and Theirs is the author's. A move on Theirs still comes through, and
+         * starts the reader's own version.
+         */
         val readOnly: Boolean get() = own || showing == Showing.Theirs
 
-        /** Their own anonymous list leaves the menu nothing to offer. */
-        val hasMenu: Boolean get() = !(own && editorial)
+        /** Never an empty bar on their own list: the board, or the way to get it back. */
+        val ownBoardAction: OwnBoardAction? get() = when {
+            !own -> null
+            ownBoardId != null -> OwnBoardAction.Open
+            trashedBoardId != null -> OwnBoardAction.Restore
+            ownBoardLookedUp -> OwnBoardAction.GetBack
+            else -> null
+        }
+
+        /** Whose placing the left half shows, by name; null when it has none to give. */
+        val theirsName: String? get() = chosenRanking?.authorName ?: authorName.takeUnless { editorial || it.isBlank() }
 
         /** Somebody else's list, arranged the reader's way, by hand or by a game. */
         val canShowRanking: Boolean get() = !own && arranged

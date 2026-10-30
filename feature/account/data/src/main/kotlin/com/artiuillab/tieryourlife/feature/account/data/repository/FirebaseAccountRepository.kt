@@ -176,6 +176,7 @@ private fun FirebaseUser?.toAccount(): Account = when {
             email = email ?: google?.email,
             photoUrl = (photoUrl ?: google?.photoUrl)?.toString(),
             displayName = displayName ?: google?.displayName,
+            uid = uid,
         )
     }
 }

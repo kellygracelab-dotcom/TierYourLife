@@ -232,4 +232,10 @@
         <item quantity="many">%1$d карточек</item>
         <item quantity="other">%1$d карточки</item>
     </plurals>
+    <plurals name="snack_lists_deleted_and_taken_down">
+        <item quantity="one">%1$d список удалён, его публичная копия снята</item>
+        <item quantity="few">%1$d списка удалено, их публичные копии сняты</item>
+        <item quantity="many">%1$d списков удалено, их публичные копии сняты</item>
+        <item quantity="other">%1$d списка удалено, их публичные копии сняты</item>
+    </plurals>
 </resources>

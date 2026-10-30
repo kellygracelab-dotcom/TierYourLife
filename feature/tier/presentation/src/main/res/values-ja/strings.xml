@@ -190,4 +190,7 @@
     <plurals name="cover_cards_count">
         <item quantity="other">%1$d枚のカード</item>
     </plurals>
+    <plurals name="snack_lists_deleted_and_taken_down">
+        <item quantity="other">%1$d件のリストを削除し、公開中のコピーも取り下げました</item>
+    </plurals>
 </resources>

@@ -304,10 +304,30 @@
         <item quantity="one">%2$d önerinden %1$d tanesi bekliyor.</item>
         <item quantity="other">%2$d önerinden %1$d tanesi bekliyor.</item>
     </plurals>
-    <string name="community_your_list">Listen, başkalarının gördüğü hâliyle.</string>
     <string name="community_open_your_board">Panonu aç</string>
     <string name="community_show_my_ranking">Sıralamamı başkalarına göster</string>
     <string name="community_sign_in_to_show_ranking">Sıralamanı göstermek için giriş yap</string>
     <string name="community_ranking_shown">Sıralaman listenin sıralamaları arasında</string>
     <string name="community_action_sign_in">Giriş yap</string>
+    <string name="community_your_list_badge">Senin listen</string>
+    <string name="community_own_published">Yayında</string>
+    <plurals name="community_own_published_rankings">
+        <item quantity="one">Yayında · %1$d sıralama</item>
+        <item quantity="other">Yayında · %1$d sıralama</item>
+    </plurals>
+    <string name="community_own_anonymous">Anonim · senin olduğunu yalnızca sen görüyorsun</string>
+    <string name="community_own_list_line">Ziyaretçiler bunu görür. Değişiklikler panonda yapılır.</string>
+    <string name="community_restore_from_trash">Çöp kutusundan geri al</string>
+    <string name="community_get_back_as_board">Pano olarak geri al</string>
+    <string name="community_copy_link">Bağlantıyı kopyala</string>
+    <string name="community_link_copied">Bağlantı kopyalandı</string>
+    <string name="community_action_publish_anonymously">Adım olmadan yayınla</string>
+    <string name="community_action_publish_named">Adımla yayınla</string>
+    <string name="community_drop_to_start_yours">Kendi sürümünü başlatmak için bırak · Benimki %1$s sıralamasıyla başlar</string>
+    <string name="community_drop_to_start_yours_unnamed">Kendi sürümünü başlatmak için bırak · Benimki bu sıralamayla başlar</string>
+    <string name="community_started_from_theirs">Sürümün %1$s sıralamasından başlıyor</string>
+    <string name="community_started_from_theirs_unnamed">Sürümün bu sıralamadan başlıyor</string>
+    <string name="community_replaced_yours">Sürümün %1$s sıralamasıyla değiştirildi</string>
+    <string name="community_replaced_yours_unnamed">Sürümün bu sıralamayla değiştirildi</string>
+    <string name="community_action_undo">Geri al</string>
 </resources>

@@ -21,9 +21,19 @@ fun NavGraphBuilder.communityListScreen(
     play: BoardPlay = NoPlay,
     /** A guest asked to show their ranking: the account screen, and back to the list after. */
     onSignIn: () -> Unit = {},
+    /** On their own list: all their public ones. */
+    onOpenMyPublished: () -> Unit = {},
 ) {
     composable<CommunityRoute.CommunityList> {
-        CommunityListScreen(onBack = onBack, onOpenSaved = onOpenSaved, onAuthorClick = onAuthorClick, onOpenList = onOpenList, play = play, onSignIn = onSignIn)
+        CommunityListScreen(
+            onBack = onBack,
+            onOpenSaved = onOpenSaved,
+            onAuthorClick = onAuthorClick,
+            onOpenList = onOpenList,
+            play = play,
+            onSignIn = onSignIn,
+            onOpenMyPublished = onOpenMyPublished,
+        )
     }
 }
 

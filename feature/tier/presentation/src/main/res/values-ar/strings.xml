@@ -260,4 +260,12 @@
         <item quantity="many">%1$d بطاقة</item>
         <item quantity="other">%1$d بطاقة</item>
     </plurals>
+    <plurals name="snack_lists_deleted_and_taken_down">
+        <item quantity="zero">لم يتم حذف أي قائمة</item>
+        <item quantity="one">تم حذف قائمة واحدة وإزالة نسختها العامة</item>
+        <item quantity="two">تم حذف قائمتين وإزالة نسختيهما العامتين</item>
+        <item quantity="few">تم حذف %1$d قوائم وإزالة نسخها العامة</item>
+        <item quantity="many">تم حذف %1$d قائمة وإزالة نسخها العامة</item>
+        <item quantity="other">تم حذف %1$d قائمة وإزالة نسخها العامة</item>
+    </plurals>
 </resources>

@@ -232,4 +232,10 @@
         <item quantity="many">%1$d kart</item>
         <item quantity="other">%1$d karty</item>
     </plurals>
+    <plurals name="snack_lists_deleted_and_taken_down">
+        <item quantity="one">%1$d listę usunięto, a jej publiczną kopię wycofano</item>
+        <item quantity="few">%1$d listy usunięto, a ich publiczne kopie wycofano</item>
+        <item quantity="many">%1$d list usunięto, a ich publiczne kopie wycofano</item>
+        <item quantity="other">%1$d listy usunięto, a ich publiczne kopie wycofano</item>
+    </plurals>
 </resources>

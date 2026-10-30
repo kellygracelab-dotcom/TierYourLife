@@ -334,10 +334,32 @@
         <item quantity="many">Ждут %1$d из %2$d ваших предложений.</item>
         <item quantity="other">Ждут %1$d из %2$d ваших предложений.</item>
     </plurals>
-    <string name="community_your_list">Ваш список — таким его видят другие.</string>
     <string name="community_open_your_board">Открыть вашу доску</string>
     <string name="community_show_my_ranking">Показать моё ранжирование другим</string>
     <string name="community_sign_in_to_show_ranking">Войдите, чтобы показать своё ранжирование</string>
     <string name="community_ranking_shown">Ваше ранжирование теперь среди ранжирований списка</string>
     <string name="community_action_sign_in">Войти</string>
+    <string name="community_your_list_badge">Ваш список</string>
+    <string name="community_own_published">Опубликован</string>
+    <plurals name="community_own_published_rankings">
+        <item quantity="one">Опубликован · %1$d рейтинг</item>
+        <item quantity="few">Опубликован · %1$d рейтинга</item>
+        <item quantity="many">Опубликован · %1$d рейтингов</item>
+        <item quantity="other">Опубликован · %1$d рейтинга</item>
+    </plurals>
+    <string name="community_own_anonymous">Анонимно · только вы видите, что он ваш</string>
+    <string name="community_own_list_line">Так его видят посетители. Изменения — на вашей доске.</string>
+    <string name="community_restore_from_trash">Вернуть из корзины</string>
+    <string name="community_get_back_as_board">Вернуть как доску</string>
+    <string name="community_copy_link">Копировать ссылку</string>
+    <string name="community_link_copied">Ссылка скопирована</string>
+    <string name="community_action_publish_anonymously">Опубликовать без имени</string>
+    <string name="community_action_publish_named">Опубликовать с именем</string>
+    <string name="community_drop_to_start_yours">Отпустите, чтобы начать свою версию · Моя начнётся с рейтинга: %1$s</string>
+    <string name="community_drop_to_start_yours_unnamed">Отпустите, чтобы начать свою версию · Моя начнётся с этого рейтинга</string>
+    <string name="community_started_from_theirs">Ваша версия начата с рейтинга: %1$s</string>
+    <string name="community_started_from_theirs_unnamed">Ваша версия начата с этого рейтинга</string>
+    <string name="community_replaced_yours">Ваша версия заменена рейтингом: %1$s</string>
+    <string name="community_replaced_yours_unnamed">Ваша версия заменена этим рейтингом</string>
+    <string name="community_action_undo">Отменить</string>
 </resources>

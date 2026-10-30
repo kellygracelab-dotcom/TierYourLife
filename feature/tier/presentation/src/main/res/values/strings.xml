@@ -205,4 +205,8 @@
         <item quantity="one">%1$d card</item>
         <item quantity="other">%1$d cards</item>
     </plurals>
+    <plurals name="snack_lists_deleted_and_taken_down">
+        <item quantity="one">%1$d list deleted and its public copy taken down</item>
+        <item quantity="other">%1$d lists deleted and their public copies taken down</item>
+    </plurals>
 </resources>

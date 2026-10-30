@@ -15,6 +15,8 @@ sealed interface Account {
         val email: String?,
         val photoUrl: String?,
         val displayName: String? = null,
+        /** Who it is, whatever the name and face say: one account told from another. */
+        val uid: String? = null,
     ) : Account {
 
         /** What the community shows as the author. */

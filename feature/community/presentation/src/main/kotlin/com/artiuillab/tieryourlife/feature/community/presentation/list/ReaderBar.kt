@@ -1,7 +1,9 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -14,6 +16,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
@@ -50,9 +53,14 @@ internal fun RowScope.ReaderBarControls(
     onOpenSaved: (Long) -> Unit,
     onOpenAuthor: () -> Unit,
     onOpenRankings: () -> Unit,
+    onOwnBoard: () -> Unit = {},
+    onCopyLink: () -> Unit = {},
 ) {
     val compact = mode == BoardBar.Compact
-    if (compact && !state.editorial) {
+    if (compact && state.own) {
+        YourListChip()
+        Spacer(Modifier.width(8.dp))
+    } else if (compact && !state.editorial) {
         AuthorPill(
             name = state.authorName,
             photoUrl = state.authorPhotoUrl,
@@ -79,24 +87,12 @@ internal fun RowScope.ReaderBarControls(
         Spacer(Modifier.width(8.dp))
     }
     if (state.own) {
-        state.ownBoardId?.let { board -> OpenOwnBoardInBar(mode) { onOpenSaved(board) } }
+        val height = if (mode == BoardBar.Docked) TABLET_CONTROL_HEIGHT else BAR_BUTTON_HEIGHT
+        CopyLinkButton(onClick = onCopyLink, height = height)
+        Spacer(Modifier.width(8.dp))
+        OwnBoardButton(state = state, onClick = onOwnBoard, height = height, maxLines = 1)
     } else {
         SaveInBar(state = state, mode = mode, onSaveClick = onSaveClick, onOpenSaved = onOpenSaved)
-    }
-}
-
-/** On their own list there is nothing to save: the board it came from is the place to change it. */
-@Composable
-private fun OpenOwnBoardInBar(mode: BoardBar, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        contentPadding = PaddingValues(horizontal = 14.dp),
-        modifier = Modifier
-            .height(if (mode == BoardBar.Docked) TABLET_CONTROL_HEIGHT else BAR_BUTTON_HEIGHT)
-            .widthIn(max = BAR_BUTTON_MAX_WIDTH)
-            .testTag(CommunityListTestTags.OPEN_BOARD),
-    ) {
-        Text(text = stringResource(R.string.community_open_your_board), maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 
@@ -143,6 +139,13 @@ private fun SaveInBar(state: CommunityListUiState.Success, mode: BoardBar, onSav
 /** A tablet's line under the title: who made the list and in which section, a tap away from their profile. */
 @Composable
 internal fun AuthorAndSection(state: CommunityListUiState.Success, onOpenAuthor: () -> Unit) {
+    if (state.own) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            YourListChip()
+            OwnMetaText(state)
+        }
+        return
+    }
     val section = state.section?.let { sectionLabel(it) }
     val text = listOfNotNull(state.authorName.takeUnless { state.editorial }, section).joinToString(" · ") + " ›"
     Text(

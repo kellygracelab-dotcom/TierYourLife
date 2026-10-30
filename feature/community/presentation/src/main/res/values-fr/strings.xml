@@ -319,10 +319,31 @@
         <item quantity="many">%1$d de vos %2$d propositions sont en attente.</item>
         <item quantity="other">%1$d de vos %2$d propositions sont en attente.</item>
     </plurals>
-    <string name="community_your_list">Votre liste, telle que les autres la voient.</string>
     <string name="community_open_your_board">Ouvrir votre tableau</string>
     <string name="community_show_my_ranking">Montrer mon classement aux autres</string>
     <string name="community_sign_in_to_show_ranking">Connectez-vous pour montrer votre classement</string>
     <string name="community_ranking_shown">Votre classement figure parmi ceux de la liste</string>
     <string name="community_action_sign_in">Se connecter</string>
+    <string name="community_your_list_badge">Votre liste</string>
+    <string name="community_own_published">Publiée</string>
+    <plurals name="community_own_published_rankings">
+        <item quantity="one">Publiée · %1$d classement</item>
+        <item quantity="many">Publiée · %1$d classements</item>
+        <item quantity="other">Publiée · %1$d classements</item>
+    </plurals>
+    <string name="community_own_anonymous">Anonyme · vous seul voyez qu’elle est à vous</string>
+    <string name="community_own_list_line">Voici ce que voient les visiteurs. Les modifications se font sur votre tableau.</string>
+    <string name="community_restore_from_trash">Restaurer depuis la corbeille</string>
+    <string name="community_get_back_as_board">La récupérer en tableau</string>
+    <string name="community_copy_link">Copier le lien</string>
+    <string name="community_link_copied">Lien copié</string>
+    <string name="community_action_publish_anonymously">Publier sans mon nom</string>
+    <string name="community_action_publish_named">Publier avec mon nom</string>
+    <string name="community_drop_to_start_yours">Lâchez pour commencer votre version · Le mien part du classement de %1$s</string>
+    <string name="community_drop_to_start_yours_unnamed">Lâchez pour commencer votre version · Le mien part de ce classement</string>
+    <string name="community_started_from_theirs">Votre version part du classement de %1$s</string>
+    <string name="community_started_from_theirs_unnamed">Votre version part de ce classement</string>
+    <string name="community_replaced_yours">Votre version remplacée par le classement de %1$s</string>
+    <string name="community_replaced_yours_unnamed">Votre version remplacée par ce classement</string>
+    <string name="community_action_undo">Annuler</string>
 </resources>

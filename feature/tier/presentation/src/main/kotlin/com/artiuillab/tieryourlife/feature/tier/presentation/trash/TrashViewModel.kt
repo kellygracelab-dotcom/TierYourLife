@@ -38,18 +38,9 @@ class TrashViewModel @Inject constructor(
         viewModelScope.launch { reloadEntries() }
     }
 
-    /**
-     * Restored private when its snapshot could be taken down. When it could
-     * not, it comes back still knowing it is public, so its own switch can
-     * take it down later; forgetting the id would leave it public for good.
-     */
+    /** Back as it was, public copy and all: only removing it for good takes that down. */
     fun restoreList(id: Long) {
-        mutate("Restoring a list") {
-            val stillPublic = takeDownPublished(listOf(id))
-            if (id !in stillPublic) repository.setPublished(id, null, null)
-            repository.restoreTierLists(listOf(id))
-            if (stillPublic.isNotEmpty()) messages.send(UserMessage.PublishedListStillPublic)
-        }
+        mutate("Restoring a list") { repository.restoreTierLists(listOf(id)) }
     }
 
     fun restoreItem(id: Long) {

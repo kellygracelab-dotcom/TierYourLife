@@ -319,10 +319,31 @@
         <item quantity="many">Tienes %1$d de %2$d propuestas en espera.</item>
         <item quantity="other">Tienes %1$d de %2$d propuestas en espera.</item>
     </plurals>
-    <string name="community_your_list">Tu lista, tal como la ven los demás.</string>
     <string name="community_open_your_board">Abrir tu tablero</string>
     <string name="community_show_my_ranking">Mostrar mi ranking a los demás</string>
     <string name="community_sign_in_to_show_ranking">Inicia sesión para mostrar tu ranking</string>
     <string name="community_ranking_shown">Tu ranking ya está entre los de la lista</string>
     <string name="community_action_sign_in">Iniciar sesión</string>
+    <string name="community_your_list_badge">Tu lista</string>
+    <string name="community_own_published">Publicada</string>
+    <plurals name="community_own_published_rankings">
+        <item quantity="one">Publicada · %1$d clasificación</item>
+        <item quantity="many">Publicada · %1$d clasificaciones</item>
+        <item quantity="other">Publicada · %1$d clasificaciones</item>
+    </plurals>
+    <string name="community_own_anonymous">Anónima · solo tú ves que es tuya</string>
+    <string name="community_own_list_line">Esto es lo que ven los visitantes. Los cambios se hacen en tu tablero.</string>
+    <string name="community_restore_from_trash">Restaurar de la papelera</string>
+    <string name="community_get_back_as_board">Recuperarla como tablero</string>
+    <string name="community_copy_link">Copiar enlace</string>
+    <string name="community_link_copied">Enlace copiado</string>
+    <string name="community_action_publish_anonymously">Publicar sin mi nombre</string>
+    <string name="community_action_publish_named">Publicar con mi nombre</string>
+    <string name="community_drop_to_start_yours">Suéltala para empezar tu versión · Mío empieza con la clasificación de %1$s</string>
+    <string name="community_drop_to_start_yours_unnamed">Suéltala para empezar tu versión · Mío empieza con esta clasificación</string>
+    <string name="community_started_from_theirs">Tu versión parte de la clasificación de %1$s</string>
+    <string name="community_started_from_theirs_unnamed">Tu versión parte de esta clasificación</string>
+    <string name="community_replaced_yours">Tu versión se reemplazó por la clasificación de %1$s</string>
+    <string name="community_replaced_yours_unnamed">Tu versión se reemplazó por esta clasificación</string>
+    <string name="community_action_undo">Deshacer</string>
 </resources>

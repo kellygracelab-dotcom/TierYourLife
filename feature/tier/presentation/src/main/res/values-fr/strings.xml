@@ -218,4 +218,9 @@
         <item quantity="many">%1$d cartes</item>
         <item quantity="other">%1$d cartes</item>
     </plurals>
+    <plurals name="snack_lists_deleted_and_taken_down">
+        <item quantity="one">%1$d liste supprimée et sa copie publique retirée</item>
+        <item quantity="many">%1$d listes supprimées et leurs copies publiques retirées</item>
+        <item quantity="other">%1$d listes supprimées et leurs copies publiques retirées</item>
+    </plurals>
 </resources>

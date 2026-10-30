@@ -25,6 +25,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
@@ -98,22 +99,93 @@ class CommunityListViewModelTest {
         assertTrue(tiers.templates.isEmpty())
     }
 
-    // The bug this replaces: a card dragged while the author's arrangement was
-    // on screen landed in the author's board, which is not the one being
-    // drawn -- so it sprang back to the pool on the next glance.
+    // A move on the author's arrangement used to be ignored. Now it starts the
+    // reader's own version from what they were looking at, with that one move made.
     @Test
-    fun draggingWhileTheirArrangementIsShown_movesNothing() = runBlocking {
-        val viewModel = viewModel()
+    fun movingACardOnTheirs_startsMineFromTheirs_withThatMove_andSwitchesToMine() = runBlocking {
+        val viewModel = viewModel(community = TestCommunity(arrangement = listOf(0, null)))
         val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        assertEquals(Showing.Theirs, loaded.showing)
+
+        viewModel.moveItem(itemId = 1, toTierId = 1, toPosition = 0)
+
+        val after = viewModel.state.value as CommunityListUiState.Success
+        assertEquals(Showing.Mine, after.showing)
+        assertTrue(after.arranged)
+        assertEquals(listOf("Hereditary"), after.mine.tiers.first { it.id == 0L }.items.map { it.title })
+        assertEquals(listOf("Moonlight"), after.mine.tiers.first { it.id == 1L }.items.map { it.title })
+        assertEquals(loaded.list, after.list)
+        assertEquals(ListNotice.StartedFromTheirs("Olena M.", replaced = false), withTimeout(5_000) { viewModel.listNotices.first() })
+    }
+
+    @Test
+    fun undo_afterStartingFromTheirs_putsMineBack_andTheirsOnScreen() = runBlocking {
+        val viewModel = viewModel(community = TestCommunity(arrangement = listOf(0, null)))
+        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        viewModel.moveItem(itemId = 1, toTierId = 1, toPosition = 0)
+
+        viewModel.undoStartFromTheirs()
+
+        val after = viewModel.state.value as CommunityListUiState.Success
+        assertEquals(Showing.Theirs, after.showing)
+        assertEquals(loaded.mine, after.mine)
+        assertFalse(after.arranged)
+    }
+
+    @Test
+    fun startingFromTheirsOverAnArrangedMine_saysItReplacedIt_andUndoBringsItBack() = runBlocking {
+        val viewModel = viewModel(community = TestCommunity(arrangement = listOf(0, null)))
+        val mine = arranged(viewModel).mine
         viewModel.show(Showing.Theirs)
-        val poolItem = loaded.mine.tiers.first { it.isPool }.items.first()
-        val target = loaded.mine.tiers.first { !it.isPool }
 
-        viewModel.moveItem(poolItem.id, target.id, 0)
+        viewModel.moveItem(itemId = 0, toTierId = 1, toPosition = 0)
+        val notice = withTimeout(5_000) { viewModel.listNotices.first() }
+        viewModel.undoStartFromTheirs()
 
-        val after = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
-        assertEquals(false, after.arranged)
-        assertEquals(loaded.list.tiers.map { tier -> tier.items.size }, after.list.tiers.map { it.items.size })
+        assertEquals(ListNotice.StartedFromTheirs("Olena M.", replaced = true), notice)
+        val after = viewModel.state.value as CommunityListUiState.Success
+        assertEquals(mine, after.mine)
+        assertTrue(after.arranged)
+    }
+
+    // Theirs is whoever's placing is on screen: a chosen reader's is the one copied, under their words.
+    @Test
+    fun movingOnAChosenReadersRanking_startsMineFromTheirs() = runBlocking {
+        val kyle = Ranking("r1", "Kyle H.", null, arrangement = listOf(1, 0), tierLabels = listOf("Top", "Next"), updatedAtMillis = 0)
+        val viewModel = viewModel(community = TestCommunity(rankings = listOf(kyle), arrangement = listOf(0, null)))
+        viewModel.state.firstWithin { it is CommunityListUiState.Success }
+        viewModel.rankings.load()
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.rankings?.isNotEmpty() == true }
+        viewModel.rankings.choose(kyle)
+
+        viewModel.moveItem(itemId = 0, toTierId = 0, toPosition = 1)
+
+        val after = viewModel.state.value as CommunityListUiState.Success
+        assertEquals(Showing.Mine, after.showing)
+        assertEquals(listOf("Top", "Next"), after.mine.tiers.filterNot { it.isPool }.map { it.label })
+        assertEquals(listOf("Moonlight", "Hereditary"), after.mine.tiers.first { it.id == 0L }.items.map { it.title })
+        assertEquals("Kyle H.", (withTimeout(5_000) { viewModel.listNotices.first() } as ListNotice.StartedFromTheirs).name)
+    }
+
+    @Test
+    fun anAnonymousAuthorsArrangement_isStartedFromWithoutAName() = runBlocking {
+        val community = TestCommunity(arrangement = listOf(0, null), summary = { it.copy(authorUid = "", authorName = "", anonymous = true) })
+        val viewModel = viewModel(community = community)
+        viewModel.state.firstWithin { it is CommunityListUiState.Success }
+
+        viewModel.moveItem(itemId = 1, toTierId = 1, toPosition = 0)
+
+        assertEquals(ListNotice.StartedFromTheirs(null, replaced = false), withTimeout(5_000) { viewModel.listNotices.first() })
+    }
+
+    @Test
+    fun onMyOwnList_aMoveChangesNothing() = runBlocking {
+        val viewModel = viewModel(community = TestCommunity(arrangement = listOf(0, null), summary = { it.copy(mine = true) }))
+        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+
+        viewModel.moveItem(itemId = 1, toTierId = 1, toPosition = 0)
+
+        assertEquals(loaded.copy(ownBoardLookedUp = true), viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.ownBoardLookedUp == true })
     }
 
     @Test
@@ -324,6 +396,115 @@ class CommunityListViewModelTest {
         assertTrue(community.reported.isEmpty())
     }
 
+    private fun ownCommunity(anonymous: Boolean = false, unpublishFails: Boolean = false) = TestCommunity(
+        arrangement = listOf(0, null),
+        unpublishFails = unpublishFails,
+        summary = { if (anonymous) it.copy(authorUid = "", authorName = "", anonymous = true, mine = true) else it.copy(mine = true) },
+    )
+
+    private suspend fun lookedUp(viewModel: CommunityListViewModel) =
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.ownBoardLookedUp == true } as CommunityListUiState.Success
+
+    @Test
+    fun myOwnList_withItsBoardHere_offersToOpenIt() = runBlocking {
+        val board = TierList(id = 12, title = "Every A24 film", tiers = emptyList(), publishedId = "abc")
+        val viewModel = viewModel(community = ownCommunity(), tiers = RecordingTierRepository(boards = listOf(board)))
+
+        assertEquals(OwnBoardAction.Open, lookedUp(viewModel).ownBoardAction)
+    }
+
+    @Test
+    fun myOwnList_withItsBoardInTheTrash_offersToRestoreIt_andRestoredItOpens() = runBlocking {
+        val trashed = TrashEntry.DeletedList(id = 5, title = "Every A24 film", itemCount = 2, deletedAtMillis = 0, publishedId = "abc")
+        val tiers = RecordingTierRepository(trash = listOf(trashed))
+        val viewModel = viewModel(community = ownCommunity(), tiers = tiers)
+        assertEquals(OwnBoardAction.Restore, lookedUp(viewModel).ownBoardAction)
+
+        viewModel.ownList.restore()
+        val restored = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.ownBoardId == 5L } as CommunityListUiState.Success
+
+        assertEquals(listOf(5L), tiers.restored)
+        assertEquals(OwnBoardAction.Open, restored.ownBoardAction)
+    }
+
+    // Owned, not taken: no takenFrom, still out as this list so Update sends to the same link, and as nameless as it went out.
+    @Test
+    fun myOwnList_withNoBoardAnywhere_getsItBackAsMyOwnBoard() = runBlocking {
+        val tiers = RecordingTierRepository()
+        val viewModel = viewModel(community = ownCommunity(anonymous = true), tiers = tiers)
+        assertEquals(OwnBoardAction.GetBack, lookedUp(viewModel).ownBoardAction)
+
+        viewModel.ownList.getBack()
+        val back = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.ownBoardId == 7L } as CommunityListUiState.Success
+
+        val template = tiers.templates.single()
+        assertEquals(null, template.takenFrom)
+        assertEquals("", template.authorName)
+        assertEquals(listOf("Hereditary"), template.tiers.first().items.map { it.title })
+        assertEquals(listOf("Moonlight"), template.items.map { it.title })
+        assertEquals(listOf(7L to "abc"), tiers.publishedIds)
+        assertEquals(listOf(7L to true), tiers.anonymity)
+        assertEquals(listOf(7L to ListCategory.FilmTv.id), tiers.categories)
+        assertEquals(OwnBoardAction.Open, back.ownBoardAction)
+    }
+
+    @Test
+    fun takingMyListDown_unpublishesIt_forgetsItOnTheBoard_andLeaves() = runBlocking {
+        val board = TierList(id = 12, title = "Every A24 film", tiers = emptyList(), publishedId = "abc")
+        val tiers = RecordingTierRepository(boards = listOf(board))
+        val community = ownCommunity()
+        val viewModel = viewModel(community = community, tiers = tiers)
+        lookedUp(viewModel)
+
+        viewModel.ownList.takeDown()
+
+        assertEquals(ListNotice.TakenDown, withTimeout(5_000) { viewModel.listNotices.first() })
+        assertEquals(listOf("abc"), community.unpublished)
+        assertEquals(12L, tiers.clearedPublishedId)
+    }
+
+    @Test
+    fun aTakeDownTheServerRefuses_saysSo_andTheBoardKeepsItsId() = runBlocking {
+        val board = TierList(id = 12, title = "Every A24 film", tiers = emptyList(), publishedId = "abc")
+        val tiers = RecordingTierRepository(boards = listOf(board))
+        val viewModel = viewModel(community = ownCommunity(unpublishFails = true), tiers = tiers)
+        lookedUp(viewModel)
+
+        viewModel.ownList.takeDown()
+
+        assertEquals(UserMessage.ActionFailed, withTimeout(5_000) { viewModel.userMessages.first() })
+        assertEquals(null, tiers.clearedPublishedId)
+    }
+
+    @Test
+    fun publishingWithoutMyName_marksTheBoardAnonymous_andSendsItAgainOverTheSameList() = runBlocking {
+        val board = TierList(id = 12, title = "Every A24 film", tiers = emptyList(), publishedId = "abc")
+        val tiers = RecordingTierRepository(boards = listOf(board))
+        val community = ownCommunity()
+        val viewModel = viewModel(community = community, tiers = tiers)
+        lookedUp(viewModel)
+
+        viewModel.ownList.publishAnonymously(true)
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.let { s -> !s.ownBusy && tiers.publishedIds.isNotEmpty() } == true }
+
+        assertEquals(listOf(12L to true), tiers.anonymity)
+        assertEquals(listOf(12L), community.sent.map { it.id })
+        assertEquals(listOf(12L to "abc"), tiers.publishedIds)
+    }
+
+    @Test
+    fun publishingWithoutMyName_refused_putsTheNameBackOnTheBoard() = runBlocking {
+        val board = TierList(id = 12, title = "Every A24 film", tiers = emptyList(), publishedId = "abc")
+        val tiers = RecordingTierRepository(boards = listOf(board))
+        val viewModel = viewModel(community = ownCommunity().apply { publishFails = true }, tiers = tiers)
+        lookedUp(viewModel)
+
+        viewModel.ownList.publishAnonymously(true)
+
+        assertEquals(UserMessage.ActionFailed, withTimeout(5_000) { viewModel.userMessages.first() })
+        assertEquals(listOf(12L to true, 12L to false), tiers.anonymity)
+    }
+
     @Test
     fun somebodyElsesList_isTheirs_andTheirAuthorCanBeFollowed() = runBlocking {
         val community = TestCommunity()
@@ -483,7 +664,19 @@ private class TestCommunity(
     private val summary: (PublishedListSummary) -> PublishedListSummary = { it },
     private val shownIsNew: Boolean = true,
     private val showRefusal: RankingRefusal? = null,
+    private val arrangement: List<Int?> = emptyList(),
+    private val unpublishFails: Boolean = false,
 ) : FakeCommunityRepository() {
+    val unpublished = mutableListOf<String>()
+    val sent = mutableListOf<TierList>()
+    var publishFails = false
+
+    override suspend fun unpublish(publishedId: String): Result<Unit> {
+        if (unpublishFails) return Result.failure(IllegalStateException("offline"))
+        unpublished += publishedId
+        return Result.success(Unit)
+    }
+
     val shownRankings = mutableListOf<Pair<List<Int?>, List<String>>>()
 
     override suspend fun showMyRanking(listId: String, arrangement: List<Int?>, tierLabels: List<String>): Result<ShownRanking> {
@@ -509,11 +702,18 @@ private class TestCommunity(
     /** Held until the test lets the refusal through. */
     val refusal = CompletableDeferred<Unit>()
 
-    override suspend fun open(id: String): Result<PublishedList> =
-        Result.success(published.copy(summary = summary(published.summary.copy(rankingCount = rankings.size, takeCount = takeCount))))
+    override suspend fun open(id: String): Result<PublishedList> = Result.success(
+        published.copy(
+            summary = summary(published.summary.copy(rankingCount = rankings.size, takeCount = takeCount)),
+            arrangement = arrangement,
+        ),
+    )
 
-    override suspend fun publish(list: TierList): Result<Published> =
-        Result.success(Published(id = "abc", fingerprint = "sent"))
+    override suspend fun publish(list: TierList): Result<Published> {
+        if (publishFails) return Result.failure(IllegalStateException("offline"))
+        sent += list
+        return Result.success(Published(id = "abc", fingerprint = "sent"))
+    }
 
     override suspend fun rankings(listId: String, after: String?): Result<RankingsPage> = Result.success(RankingsPage(rankings, null))
 
