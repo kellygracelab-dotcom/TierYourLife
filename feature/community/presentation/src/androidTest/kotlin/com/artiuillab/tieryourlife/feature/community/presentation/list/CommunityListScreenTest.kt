@@ -166,13 +166,23 @@ class CommunityListScreenTest {
         assertEquals(7L, opened)
     }
 
-    // The pool starts folded on someone else's arrangement; what the reader does
-    // with the board must not fold away with it.
+    // The author's arrangement usually leaves nothing unranked, so the pool
+    // starts folded on it; what the reader does with the board must not fold away with it.
     @Test
     fun theSwitchAndTheSave_sitInTheFoldedStrip() {
-        setScreen()
+        setScreen(state = successState().withEveryCardRanked())
 
         composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertDoesNotExist()
+        composeRule.onNodeWithTag(CommunityListTestTags.showing(Showing.Theirs)).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertIsDisplayed()
+    }
+
+    // Cards left in the pool of the side on screen open it, and the strip stays above them.
+    @Test
+    fun aPoolWithCardsInIt_opens_withTheSwitchAndTheSaveStillThere() {
+        setScreen()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertIsDisplayed()
         composeRule.onNodeWithTag(CommunityListTestTags.showing(Showing.Theirs)).assertIsDisplayed()
         composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertIsDisplayed()
     }
@@ -246,6 +256,13 @@ class CommunityListScreenTest {
         authorName = "Olena M.",
         authorUid = "author-1",
     )
+
+    /** Every card in a tier, as an author's arrangement usually leaves them: nothing in the pool. */
+    private fun CommunityListUiState.Success.withEveryCardRanked(): CommunityListUiState.Success {
+        val cards = list.tiers.flatMap { it.items }
+        val ranked = list.copy(tiers = list.tiers.map { tier -> tier.copy(items = if (tier.isPool) emptyList() else cards) })
+        return copy(list = ranked, theirs = ranked)
+    }
 
     private fun string(id: Int, vararg args: Any): String =
         InstrumentationRegistry.getInstrumentation().targetContext.getString(id, *args)
