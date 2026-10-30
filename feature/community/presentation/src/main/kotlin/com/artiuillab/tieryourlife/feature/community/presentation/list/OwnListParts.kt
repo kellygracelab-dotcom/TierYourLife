@@ -71,7 +71,7 @@ internal fun YourListChip(modifier: Modifier = Modifier) {
 @Composable
 internal fun ownMeta(state: CommunityListUiState.Success): String = when {
     state.anonymous || state.byNobody -> stringResource(R.string.community_own_anonymous)
-    state.rankingsOnChip > 0 -> pluralStringResource(R.plurals.community_own_published_rankings, state.rankingsOnChip, state.rankingsOnChip)
+    state.rankingCount > 0 -> pluralStringResource(R.plurals.community_own_published_rankings, state.rankingCount, state.rankingCount)
     else -> stringResource(R.string.community_own_published)
 }
 

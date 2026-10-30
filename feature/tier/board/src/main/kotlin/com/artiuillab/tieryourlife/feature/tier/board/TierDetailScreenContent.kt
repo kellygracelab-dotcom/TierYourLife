@@ -643,6 +643,8 @@ private fun TierScreenBody(
                             accessories = poolAccessories.takeUnless { docked },
                             docked = docked,
                             note = poolNote.takeIf { docked },
+                            side = actions.poolSide,
+                            countWhenEmpty = actions.emptyPoolCounted,
                         )
                     }
                 }
@@ -661,6 +663,7 @@ private fun TierScreenBody(
                         roomy = !short,
                         indexBeside = indexBeside,
                         note = poolNote,
+                        side = actions.poolSide,
                         modifier = Modifier
                             .navigationBarsPadding()
                             .padding(POOL_COLUMN_MARGIN),

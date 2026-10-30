@@ -26,6 +26,9 @@ data class PublishedListSummaryDto(
     val proposedSectionName: String? = null,
     /** Sent only to the list's owner, and only as true. */
     val mine: Boolean = false,
+    val tierCounts: List<Int> = emptyList(),
+    /** Only to a signed-in reader, and only on a named list. */
+    val viewerFollowsAuthor: Boolean? = null,
 )
 
 @Serializable
@@ -116,6 +119,8 @@ data class PublishedListDto(
     val rankingCount: Int = 0,
     val basedOn: BasedOnDto? = null,
     val mine: Boolean = false,
+    val tierCounts: List<Int> = emptyList(),
+    val viewerFollowsAuthor: Boolean? = null,
 )
 
 @Serializable
@@ -175,12 +180,19 @@ data class RankingDto(
     val tierLabels: List<String> = emptyList(),
     val updatedAtMs: Long = 0,
     val mine: Boolean = false,
+    /** Empty for a placing kept before its order was. */
+    val rows: List<List<Int>> = emptyList(),
 )
 
-/** One entry per list item, in the list's order: a tier's position, or null for unplaced. */
+/**
+ * The tiers' cards left to right by item position, and the same as one entry
+ * per item (a tier's position or null) for a server that does not read rows.
+ * A server that does lets rows win.
+ */
 @Serializable
 data class ShowRankingRequestDto(
     val arrangement: List<Int?>,
+    val rows: List<List<Int>>,
     val tierLabels: List<String>,
 )
 
@@ -193,6 +205,7 @@ data class ShownRankingDto(
     val tierLabels: List<String> = emptyList(),
     val updatedAtMs: Long = 0,
     val created: Boolean = false,
+    val rows: List<List<Int>> = emptyList(),
 )
 
 @Serializable

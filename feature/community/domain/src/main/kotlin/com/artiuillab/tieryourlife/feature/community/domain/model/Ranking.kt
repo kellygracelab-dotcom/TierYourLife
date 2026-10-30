@@ -13,6 +13,8 @@ data class Ranking(
     val updatedAtMillis: Long,
     /** This reader's own, which the server lists first. */
     val mine: Boolean = false,
+    /** Each tier's cards left to right, by position among the list's items; empty on a placing kept without its order. */
+    val rows: List<List<Int>> = emptyList(),
 )
 
 data class RankingsPage(val rankings: List<Ranking>, val nextCursor: String?)
@@ -24,3 +26,6 @@ data class ShownRanking(val ranking: Ranking, val created: Boolean)
 enum class RankingRefusal { NotSignedIn, Banned, OwnList, Failed }
 
 class RankingRefused(val reason: RankingRefusal) : Exception(reason.name)
+
+/** The list is not there any more: taken down, or never published. */
+class ListGone : Exception("The list is gone")

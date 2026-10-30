@@ -90,8 +90,8 @@ fun CommunityListScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var playOpen by rememberSaveable { mutableStateOf(false) }
-    // Their own list is played on their own board, not here.
-    val playRequest = (state as? CommunityListUiState.Success)?.takeUnless { it.own }?.let { loaded ->
+    // Their own list is played on their own board, not here; blank cards are not played at all.
+    val playRequest = (state as? CommunityListUiState.Success)?.takeUnless { it.own || it.arriving }?.let { loaded ->
         remember(loaded.shown, loaded.mine) { PlayRequest.someoneElses(viewModel.publishedId, shown = loaded.shown, mine = loaded.mine) }
     }
 
@@ -192,6 +192,11 @@ fun CommunityListScreenContent(
     var reportedFrom by remember { mutableStateOf(false) }
     var saveChoiceVisible by remember { mutableStateOf(false) }
     var rankingsVisible by remember { mutableStateOf(false) }
+    val openRankings = {
+        onOpenRankings()
+        rankingsVisible = true
+    }
+    val onSaveClick: () -> Unit = { saveTapped(loadedNow, askWhich = { saveChoiceVisible = true }, save = onSave) }
 
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         // The placeholder, the board and the failure trade places with a short
@@ -245,9 +250,11 @@ fun CommunityListScreenContent(
                             actions = TierDetailActions(
                                 onBack = onBack,
                                 onMoveItem = onMoveItem,
-                                onPlay = onPlay.takeUnless { loaded.own },
+                                onPlay = onPlay.takeUnless { loaded.own || loaded.arriving },
                                 playSaved = playSaved,
                                 onCardLifted = { lifted = it },
+                                poolSide = loaded.showing,
+                                emptyPoolCounted = false,
                             ),
                             // Theirs is theirs, and their own list changes on its board; a move
                             // on Theirs still arrives, and starts the reader's own version from it.
@@ -259,10 +266,6 @@ fun CommunityListScreenContent(
                                     onAuthorClick = onAuthorClick,
                                     onToggleFollow = onToggleFollow,
                                     onOpenList = onOpenList,
-                                    onOpenRankings = {
-                                        onOpenRankings()
-                                        rankingsVisible = true
-                                    },
                                 )
                             },
                             // In the pool sheet's strip, in reach whether the pool is folded or open.
@@ -271,8 +274,7 @@ fun CommunityListScreenContent(
                                     state = loaded,
                                     lifted = lifted,
                                     onShow = onShow,
-                                    // Two arrangements to choose from only once the author's is known.
-                                    onSaveClick = { if (loaded.knowsTheirs) saveChoiceVisible = true else onSave(Showing.Mine) },
+                                    onSaveClick = onSaveClick,
                                     onOpenSaved = onOpenSaved,
                                     onOwnBoard = onOwnBoard,
                                     onCopyLink = copyLink,
@@ -286,13 +288,9 @@ fun CommunityListScreenContent(
                                     state = loaded,
                                     mode = mode,
                                     onShow = onShow,
-                                    onSaveClick = { if (loaded.knowsTheirs) saveChoiceVisible = true else onSave(Showing.Mine) },
+                                    onSaveClick = onSaveClick,
                                     onOpenSaved = onOpenSaved,
                                     onOpenAuthor = { onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl) },
-                                    onOpenRankings = {
-                                        onOpenRankings()
-                                        rankingsVisible = true
-                                    },
                                     onOwnBoard = onOwnBoard,
                                     onCopyLink = copyLink,
                                 )
@@ -345,6 +343,7 @@ fun CommunityListScreenContent(
                     onHide = onHide,
                     onReport = { reportVisible = true },
                     onShowMyRanking = { if (loaded.signedIn) onShowMyRanking() else onSignIn() },
+                    onOpenRankings = openRankings,
                     own = own,
                 )
             }
@@ -387,11 +386,20 @@ fun CommunityListScreenContent(
     }
 }
 
+/** Two arrangements to choose from only once the author's is known; nothing to save while the cards are blank. */
+private fun saveTapped(state: CommunityListUiState.Success?, askWhich: () -> Unit, save: (Showing) -> Unit) {
+    when {
+        state == null || state.arriving -> Unit
+        state.knowsTheirs -> askWhich()
+        else -> save(Showing.Mine)
+    }
+}
+
 /**
- * The list's menu: its author, Hide and Report on somebody else's list, and
- * once the reader has arranged their own half, showing it to others. On their
- * own list: their public lists, the name on or off, and taking it down. Each
- * closes the menu first.
+ * The list's menu: the readers' rankings first, on any list. Then its author,
+ * Hide and Report on somebody else's list, and once the reader has arranged
+ * their own half, showing it to others. On their own list: their public
+ * lists, the name on or off, and taking it down. Each closes the menu first.
  */
 @Composable
 private fun ListMenu(
@@ -401,6 +409,7 @@ private fun ListMenu(
     onHide: () -> Unit,
     onReport: () -> Unit,
     onShowMyRanking: () -> Unit,
+    onOpenRankings: () -> Unit,
     own: OwnListCallbacks,
 ) {
     fun closing(action: () -> Unit): () -> Unit = {
@@ -423,6 +432,8 @@ private fun ListMenu(
         onPublishAnonymously = closing { own.onPublishAnonymously(!loaded.anonymous) }.takeIf { mine && loaded.ownBoardId != null },
         anonymous = loaded.anonymous,
         onTakeDown = closing(own.onTakeDown).takeIf { mine },
+        onOpenRankings = closing(onOpenRankings),
+        rankingCount = loaded.rankingCount,
     )
 }
 
@@ -489,14 +500,13 @@ private fun Resources.startedFromTheirs(notice: ListNotice.StartedFromTheirs): S
     }
 }
 
-/** Under the title: the author, the list this one was changed from, and whose placings there are. */
+/** Under the title: the author and the list this one was changed from. */
 @Composable
 private fun UnderTheTitle(
     loaded: CommunityListUiState.Success,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onToggleFollow: () -> Unit,
     onOpenList: (String) -> Unit,
-    onOpenRankings: () -> Unit,
 ) {
     // One of the app's own lists has no line to pin here; somebody's anonymous one has a line that leads nowhere.
     if (loaded.own) {
@@ -515,9 +525,6 @@ private fun UnderTheTitle(
     val basedOn = loaded.basedOn
     if (basedOn != null) {
         BasedOnLine(basedOn = basedOn, onOpen = { onOpenList(basedOn.id) })
-    }
-    if (loaded.rankingsOnChip > 0) {
-        RankingsLine(count = loaded.rankingsOnChip, chosen = loaded.chosenRanking, onOpen = onOpenRankings)
     }
 }
 
@@ -584,18 +591,33 @@ private fun ReaderStrip(
                 }
             }
         }
-        Text(
-            text = statusText(state, lifted),
-            modifier = Modifier
-                .padding(top = 4.dp)
-                .testTag(CommunityListTestTags.STATUS),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
+        if (state.foldsToRankIt && !lifted) {
+            RankItYourselfLine()
+        } else {
+            Text(
+                text = statusText(state, lifted),
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .testTag(CommunityListTestTags.STATUS),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }
+
+/**
+ * Theirs with nothing left unranked and nothing of the reader's yet: the
+ * folded pool has one thing to say, that the cards are there to be moved.
+ */
+internal val CommunityListUiState.Success.foldsToRankIt: Boolean
+    get() = !own &&
+        showing == Showing.Theirs &&
+        !arranged &&
+        savedId == null &&
+        shown.tiers.firstOrNull { it.isPool }?.items.isNullOrEmpty()
 
 /**
  * Asked at the moment of saving rather than read off the switch: a reader

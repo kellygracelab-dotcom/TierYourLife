@@ -42,7 +42,7 @@ sealed interface CommunityListUiState {
         val savedId: Long? = null,
         /** How many readers have placed these cards their own way. */
         val rankingCount: Int = 0,
-        /** How many readers saved a copy: the number on the chip, as on every feed card. */
+        /** How many readers saved a copy. */
         val takeCount: Int = 0,
         /** The list this one was changed from, when the author took it from somebody. */
         val basedOn: BasedOn? = null,
@@ -76,6 +76,11 @@ sealed interface CommunityListUiState {
         val signedIn: Boolean = false,
         /** Their ranking on its way to the server. */
         val sendingRanking: Boolean = false,
+        /**
+         * Drawn from what the tapped card knew, before the server answered:
+         * blank cards where the real ones will stand, nothing to move or save yet.
+         */
+        val arriving: Boolean = false,
     ) : CommunityListUiState {
         /** What the board area is drawing right now. */
         val shown: TierList get() = if (showing == Showing.Theirs) theirs else mine
@@ -101,9 +106,6 @@ sealed interface CommunityListUiState {
 
         /** Somebody else's list, arranged the reader's way, by hand or by a game. */
         val canShowRanking: Boolean get() = !own && arranged
-
-        /** The chip's number: copies taken, or the rankings shown when a ranking needed no copy. */
-        val rankingsOnChip: Int get() = maxOf(takeCount, rankingCount)
     }
 
     data object Error : CommunityListUiState

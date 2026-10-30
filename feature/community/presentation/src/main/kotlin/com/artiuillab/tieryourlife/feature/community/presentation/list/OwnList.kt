@@ -37,6 +37,8 @@ internal class OwnList(
     private val tell: suspend (ListNotice) -> Unit,
     /** Reads the list again without the placeholder, once the server holds a new copy. */
     private val reread: suspend () -> Unit,
+    /** Drops the copy kept on this phone once the list is down. */
+    private val forget: suspend () -> Unit = {},
 ) {
     private var opened: PublishedListSummary? = null
 
@@ -107,6 +109,7 @@ internal class OwnList(
     /** As from the list of their public lists: down for everyone, and forgotten by the board that sent it. */
     fun takeDown() = busy("Taking down a list from its page") { current ->
         community.unpublish(publishedId).getOrThrow()
+        forget()
         listOfNotNull(current.ownBoardId, current.trashedBoardId).forEach { id ->
             runSuspendCatching { tiers.setPublished(id, null, null) }
                 .onFailure { Timber.w(it, "Forgetting $publishedId on this phone failed") }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -78,6 +79,7 @@ internal object SectionTestTags {
     const val BAR = "section_bar"
     const val CHIPS = "section_chips"
     const val CHIP_ALL = "section_chip_all"
+    const val CHIP_PICTURE = "section_chip_picture"
     const val SUGGEST = "section_chip_suggest"
     const val TOPIC_ROW = "section_topic_row"
     const val SORT = "section_sort"
@@ -194,7 +196,7 @@ internal fun TopicChipsRow(
         }
         chips.forEach { topic ->
             item(key = topic.id) {
-                TopicChip(topic.name, selected?.id == topic.id, Modifier.testTag(SectionTestTags.chip(topic.id))) { onSelect(topic) }
+                TopicChip(topic.name, selected?.id == topic.id, Modifier.testTag(SectionTestTags.chip(topic.id)), topic.pictureUrl) { onSelect(topic) }
             }
         }
         waiting.forEach { topic ->
@@ -216,15 +218,19 @@ private val ChipLabel = TextStyle(fontSize = 13.sp, lineHeight = 16.sp, fontWeig
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopicChip(label: String, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
+private fun TopicChip(label: String, selected: Boolean, modifier: Modifier, pictureUrl: String? = null, onClick: () -> Unit) {
     FilterChip(
         selected = selected,
         onClick = onClick,
         label = { Text(label, style = ChipLabel) },
-        leadingIcon = if (selected) {
-            { CheckIcon(16.dp, MaterialTheme.colorScheme.onPrimaryContainer) }
-        } else {
-            null
+        leadingIcon = when {
+            selected -> {
+                { CheckIcon(16.dp, MaterialTheme.colorScheme.onPrimaryContainer) }
+            }
+            pictureUrl != null -> {
+                { ChipPicture(pictureUrl) }
+            }
+            else -> null
         },
         shape = RoundedCornerShape(8.dp),
         colors = FilterChipDefaults.filterChipColors(
@@ -233,6 +239,21 @@ private fun TopicChip(label: String, selected: Boolean, modifier: Modifier, onCl
             labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
         modifier = modifier.height(32.dp),
+    )
+}
+
+/** A topic's own picture at the size of a chip's icon, cropped to its rounded square, on the chip's tint while it loads. */
+@Composable
+private fun ChipPicture(url: String) {
+    AsyncImage(
+        model = url,
+        contentDescription = null,
+        modifier = Modifier
+            .size(20.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+            .testTag(SectionTestTags.CHIP_PICTURE),
+        contentScale = ContentScale.Crop,
     )
 }
 
@@ -273,7 +294,7 @@ internal fun TopicRow(topic: Topic, sectionId: String, onToggleFollow: () -> Uni
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            TopicSquare(topic.section ?: sectionId, 36.dp, 18.dp)
+            TopicSquare(topic.section ?: sectionId, 36.dp, 18.dp, topic.pictureUrl)
             Column(Modifier.weight(1f)) {
                 Text(topic.name, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(

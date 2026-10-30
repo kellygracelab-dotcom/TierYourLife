@@ -138,7 +138,8 @@ internal class ListRankings(
         }
         state.update { now -> if (now is CommunityListUiState.Success) now.copy(sendingRanking = true) else now }
         scope.launch {
-            community.showMyRanking(listId, arrangementOf(answer, current.mine), tierLabelsOf(answer, current.mine)).fold(
+            val mine = current.mine
+            community.showMyRanking(listId, arrangementOf(answer, mine), rowsOf(answer, mine), tierLabelsOf(answer, mine)).fold(
                 onSuccess = { shown ->
                     state.update { now -> if (now is CommunityListUiState.Success) now.withMine(shown, answer) else now }
                     told.send(RankingNotice.Shown)

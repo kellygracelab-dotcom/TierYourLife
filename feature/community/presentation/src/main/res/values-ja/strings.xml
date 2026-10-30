@@ -165,11 +165,10 @@
     <string name="community_ranking_author">リストの作者</string>
     <string name="community_ranking_you">あなた</string>
     <string name="community_ranking_withdraw">取り下げる</string>
+    <string name="community_action_rankings">ランキング · %1$d</string>
+    <string name="community_rank_it_yourself">自分で並べる</string>
+    <string name="community_drag_any_card">カードをドラッグ</string>
     <string name="community_based_on">%2$sの「%1$s」をもとに</string>
-    <string name="community_showing_ranking_of">表示中: %1$s</string>
-    <plurals name="community_rankings_count">
-        <item quantity="other">ランキング%d件</item>
-    </plurals>
     <string name="explore_tab_explore">見つける</string>
     <string name="explore_tab_following">フォロー中</string>
     <string name="explore_title_community">コミュニティ</string>

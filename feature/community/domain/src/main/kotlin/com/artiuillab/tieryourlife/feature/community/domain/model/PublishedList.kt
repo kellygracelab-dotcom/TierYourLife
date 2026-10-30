@@ -34,6 +34,10 @@ data class PublishedListSummary(
     val proposedSectionName: String? = null,
     /** This person's own list, as [isOwnList] decides: no Save, Hide or Report, no following themselves. */
     val mine: Boolean = false,
+    /** Cards per tier as the author left them, the pool last; empty from a server that does not say. */
+    val tierCounts: List<Int> = emptyList(),
+    /** Whether the signed-in reader follows the author; null when the server did not say. */
+    val viewerFollowsAuthor: Boolean? = null,
 ) {
     /** Shown without its author, and leading to no profile. */
     val editorial: Boolean get() = EditorialAuthors.isEditorial(authorUid, anonymous)

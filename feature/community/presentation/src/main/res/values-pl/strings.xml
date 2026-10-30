@@ -183,14 +183,10 @@
     <string name="community_ranking_author">Autor listy</string>
     <string name="community_ranking_you">Ty</string>
     <string name="community_ranking_withdraw">Wycofaj</string>
+    <string name="community_action_rankings">Rankingi · %1$d</string>
+    <string name="community_rank_it_yourself">Ułóż sam</string>
+    <string name="community_drag_any_card">Przeciągnij kartę</string>
     <string name="community_based_on">Na podstawie „%1$s” od %2$s</string>
-    <string name="community_showing_ranking_of">Pokazano: %1$s</string>
-    <plurals name="community_rankings_count">
-        <item quantity="one">%d ranking</item>
-        <item quantity="few">%d rankingi</item>
-        <item quantity="many">%d rankingów</item>
-        <item quantity="other">%d rankingu</item>
-    </plurals>
     <string name="explore_tab_explore">Odkrywaj</string>
     <string name="explore_tab_following">Obserwowane</string>
     <string name="explore_title_community">Społeczność</string>

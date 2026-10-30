@@ -23,7 +23,7 @@ internal object CommunityListTestTags {
     const val AUTHOR_AND_SECTION = "community_list_author_and_section"
     const val BASED_ON = "community_list_based_on"
     const val ANONYMOUS_AUTHOR = "community_list_anonymous_author"
-    const val RANKINGS = "community_list_rankings"
+    const val RANK_IT_YOURSELF = "community_list_rank_it_yourself"
     const val RANKINGS_SHEET = "community_list_rankings_sheet"
     const val RANKING_AUTHOR = "community_list_ranking_author"
     const val WITHDRAW_RANKING = "community_list_withdraw_ranking"

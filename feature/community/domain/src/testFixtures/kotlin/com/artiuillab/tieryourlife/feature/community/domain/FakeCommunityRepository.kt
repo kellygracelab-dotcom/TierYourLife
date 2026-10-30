@@ -90,7 +90,12 @@ open class FakeCommunityRepository : CommunityRepository {
 
     override suspend fun withdrawRanking(listId: String): Result<Unit> = Result.success(Unit)
 
-    override suspend fun showMyRanking(listId: String, arrangement: List<Int?>, tierLabels: List<String>): Result<ShownRanking> =
+    override suspend fun showMyRanking(
+        listId: String,
+        arrangement: List<Int?>,
+        rows: List<List<Int>>,
+        tierLabels: List<String>,
+    ): Result<ShownRanking> =
         notSetUp("showMyRanking")
 
     override suspend fun moveList(publishedId: String, category: String, topicId: String?): Result<Unit> =

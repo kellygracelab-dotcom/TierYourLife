@@ -183,14 +183,10 @@
     <string name="community_ranking_author">Автор списку</string>
     <string name="community_ranking_you">Ви</string>
     <string name="community_ranking_withdraw">Зняти</string>
+    <string name="community_action_rankings">Ранжування · %1$d</string>
+    <string name="community_rank_it_yourself">Розкладіть самі</string>
+    <string name="community_drag_any_card">Перетягніть картку</string>
     <string name="community_based_on">За мотивами «%1$s» від %2$s</string>
-    <string name="community_showing_ranking_of">Дивимось: %1$s</string>
-    <plurals name="community_rankings_count">
-        <item quantity="one">%d ранжування</item>
-        <item quantity="few">%d ранжування</item>
-        <item quantity="many">%d ранжувань</item>
-        <item quantity="other">%d ранжування</item>
-    </plurals>
     <string name="explore_tab_explore">Огляд</string>
     <string name="explore_tab_following">Підписки</string>
     <string name="explore_title_community">Спільнота</string>

@@ -177,13 +177,10 @@
     <string name="community_ranking_author">Auteur de la liste</string>
     <string name="community_ranking_you">Vous</string>
     <string name="community_ranking_withdraw">Retirer</string>
+    <string name="community_action_rankings">Classements · %1$d</string>
+    <string name="community_rank_it_yourself">Classez-la vous-même</string>
+    <string name="community_drag_any_card">Faites glisser une carte</string>
     <string name="community_based_on">D’après « %1$s » de %2$s</string>
-    <string name="community_showing_ranking_of">Affiché : %1$s</string>
-    <plurals name="community_rankings_count">
-        <item quantity="one">%d classement</item>
-        <item quantity="many">%d classements</item>
-        <item quantity="other">%d classements</item>
-    </plurals>
     <string name="explore_tab_explore">Explorer</string>
     <string name="explore_tab_following">Abonnements</string>
     <string name="explore_title_community">Communauté</string>
