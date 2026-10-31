@@ -2,9 +2,11 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.trash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
+import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
@@ -22,6 +24,8 @@ import javax.inject.Inject
 class TrashViewModel @Inject constructor(
     private val repository: TierRepository,
     private val community: CommunityRepository,
+    private val accounts: AccountRepository,
+    private val preferences: AppPreferences,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<TrashUiState>(TrashUiState.Loading)
@@ -83,10 +87,12 @@ class TrashViewModel @Inject constructor(
     /**
      * Lists trashed before deleting also took them out of the community still
      * carry a snapshot. Emptying the trash is the last chance to remove it.
-     * Answers with the ids whose snapshot is still out there.
+     * Answers with the ids whose snapshot is still out there. One another
+     * account published is left alone: B cannot take down A's list.
      */
     private suspend fun takeDownPublished(ids: List<Long>): Set<Long> {
         val entries = (_state.value as? TrashUiState.Success)?.entries.orEmpty()
+        val somebodyElses = publishedByAnotherAccount(accounts, preferences)
         return entries.filterIsInstance<TrashEntry.DeletedList>()
             .filter { it.id in ids }
             .mapNotNull { list ->
@@ -94,6 +100,7 @@ class TrashViewModel @Inject constructor(
                 val publishedId = list.publishedId
                 val takenDown = when {
                     rankingOf != null -> community.withdrawRanking(rankingOf)
+                    publishedId in somebodyElses -> return@mapNotNull null
                     publishedId != null -> community.unpublish(publishedId)
                     else -> return@mapNotNull null
                 }

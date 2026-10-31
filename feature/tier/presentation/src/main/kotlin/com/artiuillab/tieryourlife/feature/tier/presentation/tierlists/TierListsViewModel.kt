@@ -17,6 +17,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
+import com.artiuillab.tieryourlife.feature.tier.presentation.trash.publishedByAnotherAccount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -266,14 +267,16 @@ class TierListsViewModel @Inject constructor(
         }
     }
 
-    /** Answers with the ids that could not be taken out of the community. */
+    /** Answers with the ids that could not be taken out of the community. Another account's stay up, theirs to take down. */
     private suspend fun takeDownPublished(ids: List<Long>): Set<Long> {
         val published = lastLoadedLists.filter { it.id in ids && it.isPublic }
+        val somebodyElses = publishedByAnotherAccount(accounts, preferences)
         return published.mapNotNull { list ->
             val rankingOf = list.rankingOf
             val publishedId = list.publishedId
             val takenDown = when {
                 rankingOf != null -> community.withdrawRanking(rankingOf)
+                publishedId in somebodyElses -> return@mapNotNull null
                 publishedId != null -> community.unpublish(publishedId)
                 else -> return@mapNotNull null
             }

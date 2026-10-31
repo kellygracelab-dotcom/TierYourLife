@@ -1,8 +1,11 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.trash
 
+import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
@@ -26,7 +29,7 @@ class TrashViewModelTest {
 
     @Test
     fun opening_showsWhatIsInTheTrash() = runBlocking {
-        val viewModel = TrashViewModel(TrashRepository(listOf(published, card)), Community())
+        val viewModel = TrashViewModel(TrashRepository(listOf(published, card)), Community(), FakeAccountRepository(), FakeAppPreferences())
 
         val state = viewModel.state.firstWithin { it is TrashUiState.Success } as TrashUiState.Success
 
@@ -35,7 +38,7 @@ class TrashViewModelTest {
 
     @Test
     fun aTrashThatCannotBeRead_isAnErrorRatherThanEmpty() = runBlocking {
-        val viewModel = TrashViewModel(TrashRepository(emptyList(), readFails = true), Community())
+        val viewModel = TrashViewModel(TrashRepository(emptyList(), readFails = true), Community(), FakeAccountRepository(), FakeAppPreferences())
 
         assertEquals(TrashUiState.Error, viewModel.state.firstWithin { it != TrashUiState.Loading })
     }
@@ -45,7 +48,7 @@ class TrashViewModelTest {
     fun restoringAPublishedList_leavesItsPublicCopyUp() = runBlocking {
         val repository = TrashRepository(listOf(published, private))
         val community = Community()
-        val viewModel = TrashViewModel(repository, community)
+        val viewModel = TrashViewModel(repository, community, FakeAccountRepository(), FakeAppPreferences())
         viewModel.state.firstWithin { it is TrashUiState.Success }
 
         viewModel.restoreList(published.id)
@@ -59,7 +62,7 @@ class TrashViewModelTest {
     fun emptyingTheTrash_takesDownEveryPublishedSnapshotInIt() = runBlocking {
         val repository = TrashRepository(listOf(published, private, card))
         val community = Community()
-        val viewModel = TrashViewModel(repository, community)
+        val viewModel = TrashViewModel(repository, community, FakeAccountRepository(), FakeAppPreferences())
         viewModel.state.firstWithin { it is TrashUiState.Success }
 
         viewModel.emptyTrash()
@@ -71,7 +74,7 @@ class TrashViewModelTest {
     @Test
     fun deletingACardForGood_leavesTheCommunityAlone() = runBlocking {
         val community = Community()
-        val viewModel = TrashViewModel(TrashRepository(listOf(published, card)), community)
+        val viewModel = TrashViewModel(TrashRepository(listOf(published, card)), community, FakeAccountRepository(), FakeAppPreferences())
         viewModel.state.firstWithin { it is TrashUiState.Success }
 
         viewModel.removeItemPermanently(card.id)
@@ -83,7 +86,7 @@ class TrashViewModelTest {
     // Deleted for good, nothing on this phone could take its snapshot down any more.
     @Test
     fun emptyingTheTrash_keepsAListWhoseSnapshotWouldNotComeDown() = runBlocking {
-        val viewModel = TrashViewModel(TrashRepository(listOf(published, private, card)), Community(unpublishFails = true))
+        val viewModel = TrashViewModel(TrashRepository(listOf(published, private, card)), Community(unpublishFails = true), FakeAccountRepository(), FakeAppPreferences())
         viewModel.state.firstWithin { it is TrashUiState.Success }
 
         viewModel.emptyTrash()
@@ -94,9 +97,37 @@ class TrashViewModelTest {
         assertEquals(TrashUiState.Success(listOf(published)), state)
     }
 
+    // A published on this phone, then B signed in: only A can take it down, and it stays A's in A's account.
+    @Test
+    fun aListAnotherAccountPublished_isDeletedHereWithoutAskingForATakedown() = runBlocking {
+        val community = Community(unpublishFails = true)
+        val preferences = FakeAppPreferences().apply { setPublishedOwners(mapOf("pub-1" to "uid-a")) }
+        val accounts = FakeAccountRepository(Account.SignedIn(email = "b@example.com", photoUrl = null, uid = "uid-b"))
+        val viewModel = TrashViewModel(TrashRepository(listOf(published, card)), community, accounts, preferences)
+        viewModel.state.firstWithin { it is TrashUiState.Success }
+
+        viewModel.removeListPermanently(published.id)
+        viewModel.state.firstWithin { (it as? TrashUiState.Success)?.entries == listOf(card) }
+
+        assertTrue(community.asked.isEmpty())
+    }
+
+    @Test
+    fun aListThisAccountPublished_stillComesDownFirst() = runBlocking {
+        val community = Community(unpublishFails = true)
+        val preferences = FakeAppPreferences().apply { setPublishedOwners(mapOf("pub-1" to "uid-b")) }
+        val accounts = FakeAccountRepository(Account.SignedIn(email = "b@example.com", photoUrl = null, uid = "uid-b"))
+        val viewModel = TrashViewModel(TrashRepository(listOf(published, card)), community, accounts, preferences)
+        viewModel.state.firstWithin { it is TrashUiState.Success }
+
+        viewModel.removeListPermanently(published.id)
+
+        assertEquals(UserMessage.PublishedListStillPublic, withTimeout(TIMEOUT_MILLIS) { viewModel.userMessages.first() })
+    }
+
     @Test
     fun aFailedRestore_saysSoAndKeepsTheEntry() = runBlocking {
-        val viewModel = TrashViewModel(TrashRepository(listOf(card), writesFail = true), Community())
+        val viewModel = TrashViewModel(TrashRepository(listOf(card), writesFail = true), Community(), FakeAccountRepository(), FakeAppPreferences())
         viewModel.state.firstWithin { it is TrashUiState.Success }
 
         viewModel.restoreItem(card.id)
@@ -108,8 +139,10 @@ class TrashViewModelTest {
 
     private class Community(private val unpublishFails: Boolean = false) : FakeCommunityRepository() {
         val unpublished = mutableListOf<String>()
+        val asked = mutableListOf<String>()
 
         override suspend fun unpublish(publishedId: String): Result<Unit> {
+            asked += publishedId
             if (unpublishFails) return Result.failure(IllegalStateException("offline"))
             unpublished += publishedId
             return Result.success(Unit)

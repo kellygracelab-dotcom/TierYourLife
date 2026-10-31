@@ -55,7 +55,28 @@ class KeptListTest {
 
     @Test
     fun `an opened list reads back as it was kept`() {
-        assertEquals(opened, decodeOpened(encodeOpened(opened)))
+        assertEquals(opened, decodeOpened(encodeOpened(opened, keptBy = "author-1"), me = "author-1"))
+    }
+
+    // A kept their list on this phone, then B signed in and opened it offline.
+    @Test
+    fun `a list kept under another account is not mine and does not know whom I follow`() {
+        val read = decodeOpened(encodeOpened(opened, keptBy = "author-1"), me = "reader-2")?.summary
+
+        assertEquals(false, read?.mine)
+        assertNull(read?.viewerFollowsAuthor)
+    }
+
+    @Test
+    fun `a list kept under another account is still mine when I wrote it`() {
+        val keptByReader = opened.copy(summary = opened.summary.copy(mine = false))
+
+        assertEquals(true, decodeOpened(encodeOpened(keptByReader, keptBy = "reader-2"), me = "author-1")?.summary?.mine)
+    }
+
+    @Test
+    fun `a row kept before the keeper was written reads as never kept`() {
+        assertNull(decodeOpened("""{"id":"abc","title":"Every A24 film","mine":true}""", me = "reader-2"))
     }
 
     @Test

@@ -61,7 +61,7 @@ class CommunityListViewModel @Inject constructor(
     val userMessages: Flow<UserMessage> = messages.flow
 
     /** The readers' placings of this list: read on demand, chosen into the left half, this reader's own taken down. */
-    internal val rankings = ListRankings(publishedId, community, _state, viewModelScope, messages)
+    internal val rankings = ListRankings(publishedId, community, _state, viewModelScope, messages, reread = { open(quietly = true) })
 
     /** Told once a ranking was shown, or that it takes signing in. */
     val rankingNotices: Flow<RankingNotice> = rankings.notices
@@ -88,6 +88,9 @@ class CommunityListViewModel @Inject constructor(
     /** When the board on screen was last changed by its author, as the server said. */
     private var shownUpdatedAt: Long? = null
 
+    /** Taps on Follow so far: an answer asked for before the latest one does not get to undo it. */
+    private var followTaps = 0
+
     init {
         load()
         viewModelScope.launch {
@@ -101,10 +104,12 @@ class CommunityListViewModel @Inject constructor(
 
     private fun loadFollowState(authorUid: String) {
         if (authorUid.isEmpty()) return
+        val tapsBefore = followTaps
         viewModelScope.launch {
             val state = community.followState(authorUid)
                 .onFailure { Timber.i(it, "Not showing whether this author is followed") }
                 .getOrNull() ?: return@launch
+            if (followTaps != tapsBefore) return@launch
             _state.update { current ->
                 if (current is CommunityListUiState.Success) current.copy(follow = state) else current
             }
@@ -119,6 +124,7 @@ class CommunityListViewModel @Inject constructor(
             following = !was.following,
             followers = (was.followers + if (was.following) -1 else 1).coerceAtLeast(0),
         )
+        followTaps++
         _state.update { (it as CommunityListUiState.Success).copy(follow = now) }
 
         viewModelScope.launch {
@@ -148,13 +154,14 @@ class CommunityListViewModel @Inject constructor(
      */
     private suspend fun open(quietly: Boolean) {
         if ((_state.value as? CommunityListUiState.Success)?.arriving != false) {
-            openedLists.read(publishedId)?.let { kept -> present(kept) }
+            openedLists.read(publishedId)?.let { kept -> present(kept, fromServer = false) }
         }
         if (!quietly && _state.value !is CommunityListUiState.Success) _state.value = CommunityListUiState.Loading
+        val tapsBefore = followTaps
         community.open(publishedId).fold(
             onSuccess = { answer ->
                 openedLists.keep(answer)
-                val loaded = present(answer)
+                val loaded = present(answer, fromServer = true, followTapped = followTaps != tapsBefore)
                 if (loaded.own) {
                     ownList.find()
                 } else if (!loaded.editorial && answer.summary.viewerFollowsAuthor == null) {
@@ -174,14 +181,14 @@ class CommunityListViewModel @Inject constructor(
      * author's last change and by its cards, keeps everything the reader did
      * with it; only the counts and the lines about it change.
      */
-    private fun present(answer: PublishedList): CommunityListUiState.Success {
+    private fun present(answer: PublishedList, fromServer: Boolean, followTapped: Boolean = false): CommunityListUiState.Success {
         val before = _state.value as? CommunityListUiState.Success
-        val fresh = stateOf(answer, before)
+        val fresh = stateOf(answer, before, followTapped)
         val sameBoard = before != null &&
             !before.arriving &&
             shownUpdatedAt == answer.summary.updatedAtMillis &&
             before.list == fresh.list
-        if (!sameBoard) rankings.opened(answer)
+        rankings.opened(answer, fromServer, sameBoard)
         ownList.opened(answer.summary)
         shownUpdatedAt = answer.summary.updatedAtMillis
         val shown = if (sameBoard) fresh.keepingWhatTheReaderDid(before) else fresh
@@ -189,7 +196,11 @@ class CommunityListViewModel @Inject constructor(
         return shown
     }
 
-    private fun stateOf(answer: PublishedList, before: CommunityListUiState.Success?): CommunityListUiState.Success {
+    private fun stateOf(
+        answer: PublishedList,
+        before: CommunityListUiState.Success?,
+        followTapped: Boolean,
+    ): CommunityListUiState.Success {
         val own = answer.summary.mine
         val knowsTheirs = answer.arrangement.isNotEmpty()
         // What somebody came for: the list as its author ranked it. Their own is only ever that.
@@ -205,8 +216,10 @@ class CommunityListViewModel @Inject constructor(
             authorPhotoUrl = answer.summary.authorPhotoUrl,
             editorial = answer.summary.editorial,
             byNobody = answer.summary.byNobody,
-            follow = answer.summary.viewerFollowsAuthor
-                ?.let { FollowState(following = it, followers = before?.follow?.followers ?: 0) }
+            // A tap made while this answer was on its way is newer than it.
+            follow = before?.follow.takeIf { followTapped }
+                ?: answer.summary.viewerFollowsAuthor
+                    ?.let { FollowState(following = it, followers = before?.follow?.followers ?: 0) }
                 ?: before?.follow,
             rankingCount = answer.summary.rankingCount,
             takeCount = answer.summary.takeCount,

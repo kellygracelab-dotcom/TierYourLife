@@ -21,5 +21,8 @@ sealed interface Account {
 
         /** What the community shows as the author. */
         val authorName: String? get() = displayName?.takeIf { it.isNotBlank() }
+
+        /** What this phone files per-account records under, such as whose each published id is. */
+        val recordKey: String get() = uid ?: email.orEmpty()
     }
 }

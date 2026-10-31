@@ -517,19 +517,63 @@ class CommunityListViewModelTest {
         assertEquals(1, community.followStateAsked)
     }
 
+    // The open answer was read before the follow landed; the server followed, so the button must not go back.
+    @Test
+    fun aFollowTappedWhileTheListIsOnItsWay_isNotUndoneByTheAnswer() = runBlocking {
+        val community = TestCommunity(takeCount = 5, holdOpen = true, summary = { it.copy(viewerFollowsAuthor = false) })
+        val kept = published.copy(summary = published.summary.copy(viewerFollowsAuthor = false))
+        val viewModel = viewModel(community = community, accounts = signedIn, openedLists = FakeOpenedLists(kept))
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.follow != null }
+
+        viewModel.toggleFollow()
+        community.openHeld.complete(Unit)
+        val state = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.takeCount == 5 } as CommunityListUiState.Success
+
+        assertEquals(true, state.follow?.following)
+    }
+
+    // Rows name cards by their place in the list; a kept copy the author has changed since would place them under the wrong items.
+    @Test
+    fun showingMyRanking_fromAKeptCopyTheAuthorChanged_sendsNothing() = runBlocking {
+        val community = TestCommunity().apply { offline = true }
+        val kept = published.copy(items = published.items + TierItem(2, "Pearl", null), summary = published.summary.copy(itemCount = 3))
+        val viewModel = viewModel(community = community, accounts = signedIn, openedLists = FakeOpenedLists(kept))
+        arranged(viewModel)
+
+        community.offline = false
+        viewModel.showMyRanking()
+
+        assertEquals(UserMessage.ActionFailed, withTimeout(5_000) { viewModel.userMessages.first() })
+        assertTrue(community.shownRankings.isEmpty())
+    }
+
+    @Test
+    fun showingMyRanking_fromAKeptCopyStillTheSame_readsItAgainAndSends() = runBlocking {
+        val community = TestCommunity().apply { offline = true }
+        val viewModel = viewModel(community = community, accounts = signedIn, openedLists = FakeOpenedLists(published))
+        arranged(viewModel)
+
+        community.offline = false
+        viewModel.showMyRanking()
+
+        assertEquals(RankingNotice.Shown, withTimeout(5_000) { viewModel.rankingNotices.first() })
+        assertEquals(listOf(listOf(listOf(1), emptyList())), community.shownRows)
+    }
+
     private fun viewModel(
         community: CommunityRepository = TestCommunity(),
         tiers: RecordingTierRepository = RecordingTierRepository(),
         handle: SavedStateHandle = SavedStateHandle(mapOf("publishedId" to "abc")),
         preferences: FakeAppPreferences = FakeAppPreferences(),
         accounts: FakeAccountRepository = FakeAccountRepository(),
+        openedLists: FakeOpenedLists = FakeOpenedLists(),
     ) = CommunityListViewModel(
         community = community,
         tiers = tiers,
         preferences = preferences,
         savedStateHandle = handle,
         accounts = accounts,
-        openedLists = FakeOpenedLists(),
+        openedLists = openedLists,
     ).also { made += it }
 
     private val signedIn = FakeAccountRepository(Account.SignedIn(email = "ann@example.com", photoUrl = null))
@@ -668,8 +712,13 @@ private class TestCommunity(
     private val showRefusal: RankingRefusal? = null,
     private val arrangement: List<Int?> = emptyList(),
     private val unpublishFails: Boolean = false,
+    private val holdOpen: Boolean = false,
 ) : FakeCommunityRepository() {
     val unpublished = mutableListOf<String>()
+
+    /** Lets a held open answer through. */
+    val openHeld = CompletableDeferred<Unit>()
+    var offline = false
     val sent = mutableListOf<TierList>()
     var publishFails = false
 
@@ -711,12 +760,16 @@ private class TestCommunity(
     /** Held until the test lets the refusal through. */
     val refusal = CompletableDeferred<Unit>()
 
-    override suspend fun open(id: String): Result<PublishedList> = Result.success(
-        published.copy(
-            summary = summary(published.summary.copy(rankingCount = rankings.size, takeCount = takeCount)),
-            arrangement = arrangement,
-        ),
-    )
+    override suspend fun open(id: String): Result<PublishedList> {
+        if (holdOpen) openHeld.await()
+        if (offline) return Result.failure(IllegalStateException("offline"))
+        return Result.success(
+            published.copy(
+                summary = summary(published.summary.copy(rankingCount = rankings.size, takeCount = takeCount)),
+                arrangement = arrangement,
+            ),
+        )
+    }
 
     override suspend fun publish(list: TierList): Result<Published> {
         if (publishFails) return Result.failure(IllegalStateException("offline"))

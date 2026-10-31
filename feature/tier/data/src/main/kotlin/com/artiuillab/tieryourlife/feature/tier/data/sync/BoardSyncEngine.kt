@@ -107,8 +107,7 @@ class BoardSyncEngine @Inject constructor(
      * must not wipe the first account's lists off its boards.
      */
     private suspend fun forgetWhatIsNoLongerPublished() {
-        val signedIn = accounts.account.first() as? Account.SignedIn ?: return
-        val account = signedIn.uid ?: signedIn.email.orEmpty()
+        val account = (accounts.account.first() as? Account.SignedIn)?.recordKey ?: return
         val claimed = dao.allBoards().mapNotNullTo(mutableSetOf()) { it.publishedId }
         val theirs = if (claimed.isEmpty()) {
             emptySet()
