@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -78,12 +79,12 @@ object BoardFingerprint {
     /**
      * The saved game as both clients write it, not as the server's bytes
      * happen to come: no whitespace, the keys in one order, `scope` only when
-     * present and `keepTier` only when true. Null when the text is not a game.
+     * present and not empty, and `keepTier` only when true. Null when the text is not a game.
      */
     internal fun canonicalPlay(raw: String): String? {
         val game = runCatching { Json.parseToJsonElement(raw) }.getOrNull() as? JsonObject ?: return null
         val fields = PLAY_KEYS.mapNotNull { key -> game[key]?.takeUnless { it is JsonNull }?.let { key to it } } +
-            listOfNotNull(game["scope"]?.takeUnless { it is JsonNull }?.let { "scope" to it }) +
+            listOfNotNull(game["scope"]?.takeUnless { it is JsonNull || it == JsonArray(emptyList()) }?.let { "scope" to it }) +
             listOfNotNull(game["keepTier"]?.takeIf { it == JsonPrimitive(true) }?.let { "keepTier" to it })
         return fields.joinToString(",", "{", "}") { (key, value) -> "${JsonPrimitive(key)}:$value" }
     }

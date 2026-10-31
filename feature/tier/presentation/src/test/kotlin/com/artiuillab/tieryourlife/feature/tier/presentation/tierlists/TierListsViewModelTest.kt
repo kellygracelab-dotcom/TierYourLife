@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
@@ -298,6 +299,25 @@ class TierListsViewModelTest {
         assertEquals(UserMessage.PublishedListStillPublic, message.await())
         val state = viewModel.state.firstWithin { it is TierListsUiState.Success } as TierListsUiState.Success
         assertEquals(listOf(1L), state.lists.map { it.id })
+    }
+
+    // The proxy refuses anyone but the author, so asking would only keep the list forever.
+    @Test
+    fun deletingAListAnotherAccountPublished_leavesItsCopyToThem() = runBlocking {
+        val repository = FakeTierRepository(
+            initial = listOf(fakeList(id = 1, title = "Films", publishedId = "published-1")),
+        )
+        val community = TestCommunity(unpublishResult = Result.failure(IllegalStateException("403")))
+        val preferences = FakeAppPreferences().apply { setPublishedOwners(mapOf("published-1" to "uid-a")) }
+        val accounts = FakeAccountRepository(Account.SignedIn(email = "b@example.com", photoUrl = null, uid = "uid-b"))
+        val viewModel = TierListsViewModel(repository, community, preferences, accounts, NoBoardSync, NoPictureRestore)
+        viewModel.loadTierLists()
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
+
+        viewModel.deleteTierLists(listOf(1L))
+        viewModel.state.firstWithin { it is TierListsUiState.Success && it.lists.isEmpty() }
+
+        assertTrue(community.takenDown.isEmpty())
     }
 
     private fun fakeList(id: Long, title: String, publishedId: String? = null, editedAt: Long? = null): TierList =

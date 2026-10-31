@@ -28,17 +28,22 @@ internal class ListRankings(
     private val state: MutableStateFlow<CommunityListUiState>,
     private val scope: CoroutineScope,
     private val messages: UserMessages,
+    private val reread: suspend () -> Unit,
 ) {
     /** The list as the server handed it over, for placing its cards a reader's way. */
     private var opened: PublishedList? = null
+
+    /** False while [opened] is the copy kept from an earlier visit, which the author may have changed since. */
+    private var fromServer = false
     private var cursor: String? = null
 
     private val told = Channel<RankingNotice>(Channel.BUFFERED)
     val notices: Flow<RankingNotice> = told.receiveAsFlow()
 
-    fun opened(answer: PublishedList) {
+    fun opened(answer: PublishedList, fromServer: Boolean, sameBoard: Boolean = false) {
         opened = answer
-        cursor = null
+        this.fromServer = fromServer
+        if (!sameBoard) cursor = null
     }
 
     /** The first page, asked for when the sheet opens; nothing is read for a list nobody has ranked. */
@@ -126,11 +131,14 @@ internal class ListRankings(
     /**
      * Mine, shown to others as this reader's ranking, or the one shown before
      * changed. Only somebody else's list, only once Mine was arranged, and only
-     * signed in: a guest is asked to sign in instead.
+     * signed in: a guest is asked to sign in instead. Its rows name the cards
+     * by where they sit in the list, so only a list the server handed over in
+     * this visit will do: a kept copy is read again first, and one that changed
+     * meanwhile sends nothing.
      */
     fun showMine() {
         val current = state.value as? CommunityListUiState.Success ?: return
-        val answer = opened ?: return
+        if (opened == null) return
         if (!current.canShowRanking || current.sendingRanking) return
         if (!current.signedIn) {
             told.trySend(RankingNotice.SignInFirst)
@@ -138,7 +146,13 @@ internal class ListRankings(
         }
         state.update { now -> if (now is CommunityListUiState.Success) now.copy(sendingRanking = true) else now }
         scope.launch {
-            val mine = current.mine
+            val answer = freshAnswer()
+            val mine = (state.value as? CommunityListUiState.Success)?.takeIf { it.canShowRanking }?.mine
+            if (answer == null || mine == null) {
+                stopSending()
+                messages.send(UserMessage.ActionFailed)
+                return@launch
+            }
             community.showMyRanking(listId, arrangementOf(answer, mine), rowsOf(answer, mine), tierLabelsOf(answer, mine)).fold(
                 onSuccess = { shown ->
                     state.update { now -> if (now is CommunityListUiState.Success) now.withMine(shown, answer) else now }
@@ -146,7 +160,7 @@ internal class ListRankings(
                 },
                 onFailure = { error ->
                     Timber.w(error, "Showing a ranking failed")
-                    state.update { now -> if (now is CommunityListUiState.Success) now.copy(sendingRanking = false) else now }
+                    stopSending()
                     if ((error as? RankingRefused)?.reason == RankingRefusal.NotSignedIn) {
                         told.send(RankingNotice.SignInFirst)
                     } else {
@@ -155,6 +169,16 @@ internal class ListRankings(
                 },
             )
         }
+    }
+
+    /** The list as the server has it now: the kept copy is read again first, and null when that fails. */
+    private suspend fun freshAnswer(): PublishedList? {
+        if (!fromServer) reread()
+        return opened?.takeIf { fromServer }
+    }
+
+    private fun stopSending() {
+        state.update { now -> if (now is CommunityListUiState.Success) now.copy(sendingRanking = false) else now }
     }
 
     /** First among the readers', as the server lists it, and in the left half if an older one of theirs was there. */

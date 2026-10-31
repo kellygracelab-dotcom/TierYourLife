@@ -35,7 +35,8 @@ data class SharedGame(
 /**
  * The JSON both clients write and the proxy checks (readPlay in its sync.ts),
  * in its one normal form: compact, the keys in the order below, `scope` only
- * for part of a board and `keepTier` only when true over a single tier. A
+ * for part of a board (an empty one is the whole board, as the website writes
+ * it) and `keepTier` only when true over a single tier. A
  * game written any other way the proxy writes back differently, and the
  * board's fingerprint would never settle.
  */
@@ -58,7 +59,7 @@ object SharedGameJson {
         }
         put("round", game.round)
         put("startedAt", game.startedAt)
-        game.scope?.let { tiers -> putJsonArray("scope") { tiers.forEach { add(it) } } }
+        game.scope?.takeIf { it.isNotEmpty() }?.let { tiers -> putJsonArray("scope") { tiers.forEach { add(it) } } }
         if (game.keepTier && game.scope?.size == 1) put("keepTier", true)
     }.toString()
 

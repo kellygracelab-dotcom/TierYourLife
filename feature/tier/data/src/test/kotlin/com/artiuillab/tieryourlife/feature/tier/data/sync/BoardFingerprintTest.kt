@@ -232,6 +232,14 @@ class BoardFingerprintTest {
         )
     }
 
+    // The website's canonicalPlay leaves an empty scope out; written here, the board's fingerprint would never settle.
+    @Test
+    fun `an empty scope is no scope`() {
+        val plain = """{"kind":"hill","count":2,"seed":1,"refine":true,"ids":["a","b"],"history":[],"round":0,"startedAt":5}"""
+
+        assertEquals(plain, BoardFingerprint.canonicalPlay(plain.replace("}", ""","scope":[]}""")))
+    }
+
     @Test
     fun `a saved game changes it, and text that is no game leaves it as it was`() {
         assertNotEquals(fingerprint(), fingerprint(board = board.copy(play = game)))

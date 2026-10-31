@@ -80,6 +80,16 @@ class SharedGameTest {
         assertTrue(json.endsWith(""""round":1,"startedAt":1793146000000}"""))
     }
 
+    // Every tier of the scope gone from this board leaves an empty one, which the proxy and the decoder below refuse.
+    @Test
+    fun anEmptyScope_isWrittenAsTheWholeBoard_andReadsBack() {
+        val local = exampleGame.local(mapOf("a" to 11L, "b" to 12L, "c" to 13L, "d" to 14L)::get, mapOf<String, Long>()::get)
+        val json = local.shared(itemUids::get, tierUids::get, now = Long.MAX_VALUE)?.let(SharedGameJson::encode)
+
+        assertEquals(SharedGameJson.encode(exampleGame.copy(scope = null, keepTier = false)), json)
+        assertEquals(exampleGame.copy(scope = null, keepTier = false), json?.let(SharedGameJson::decode))
+    }
+
     @Test
     fun keepingTheTier_meansNothingOverTwoTiers_andIsNotWritten() {
         val json = SharedGameJson.encode(exampleGame.copy(scope = listOf("t-s", "t-a"), keepTier = true))
