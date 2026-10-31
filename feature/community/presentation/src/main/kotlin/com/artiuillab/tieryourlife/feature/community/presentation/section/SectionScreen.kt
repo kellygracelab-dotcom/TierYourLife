@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -290,7 +289,7 @@ private fun LazyGridScope.sectionControls(state: SectionUiState, calls: SectionC
     }
     item(key = "sort", span = { GridItemSpan(maxLineSpan) }) {
         Box {
-            SortRow(listCount = topic?.listCount ?: state.stats?.listCount, sort = state.sort, onSort = calls.onSelectSort)
+            SortRow(sort = state.sort, onSort = calls.onSelectSort)
         }
     }
 }
@@ -336,7 +335,7 @@ private fun CollapsingBar(state: SectionUiState, grid: LazyGridState, onBack: ()
     }
 }
 
-/** A short window's one bar for a section: back, the name, the counts, and Follow. It scrolls away with the lists. */
+/** A short window's one bar for a section: back, the name, and Follow. It scrolls away with the lists. */
 @Composable
 private fun CompactSectionBar(state: SectionUiState, onBack: () -> Unit, onToggleFollow: () -> Unit) {
     Column {
@@ -351,19 +350,12 @@ private fun CompactSectionBar(state: SectionUiState, onBack: () -> Unit, onToggl
             IconButton(onClick = onBack) { BackIcon() }
             Text(
                 state.section.label(),
+                modifier = Modifier.weight(1f),
                 style = TextStyle(fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.Medium),
                 color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
-            sectionCounts(state.stats)?.let {
-                Text(
-                    "  ·  $it",
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            } ?: Spacer(Modifier.weight(1f))
             FollowToggle(following = state.stats?.following == true, onClick = onToggleFollow, size = FollowSize.Compact)
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)

@@ -43,7 +43,7 @@ class FollowingViewModelTest {
     @Test
     fun sectionsTopicsAndPeople_areListed_withTheWaitingTopicsBeside() = runBlocking {
         val viewModel = viewModel(
-            FollowingFake(people = listOf(ann, bea), topics = listOf(pokemon), sections = listOf(FollowedSection(ListCategory.Food.id, 4120)), mine = listOf(cafes)),
+            FollowingFake(people = listOf(ann, bea), topics = listOf(pokemon), sections = listOf(FollowedSection(ListCategory.Food.id)), mine = listOf(cafes)),
         )
 
         val ready = viewModel.state.firstWithin { it is FollowingUiState.Ready } as FollowingUiState.Ready

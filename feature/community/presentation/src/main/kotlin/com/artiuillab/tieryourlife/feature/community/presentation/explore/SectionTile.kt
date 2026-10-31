@@ -7,7 +7,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -44,34 +43,32 @@ import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionArt
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionLabel
-import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionNewLine
 import com.artiuillab.tieryourlife.feature.tier.board.common.label
 
-/** How a tile is drawn at one window size: label and icon sizes, padding, and whether the "new" line fits. */
+/** How a tile is drawn at one window size: label and icon sizes, padding, and whether a second line fits under the name. */
 internal data class TileStyle(
     val label: TextStyle = TileNameStyle,
     val icon: Dp = 18.dp,
     val start: Dp = 12.dp,
     val end: Dp = 10.dp,
     val bottom: Dp = 10.dp,
-    val showsNew: Boolean = true,
+    val showsSubline: Boolean = true,
     val corner: Dp = 16.dp,
 ) {
     companion object {
-        val Cover = TileStyle(label = TextStyle(fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium), icon = 15.dp, start = 9.dp, end = 6.dp, bottom = 8.dp, showsNew = false, corner = 12.dp)
-        val Mini = TileStyle(label = TextStyle(fontSize = 13.sp, lineHeight = 18.sp, fontWeight = FontWeight.Medium), icon = 16.dp, start = 10.dp, bottom = 10.dp, showsNew = false, corner = 14.dp)
+        val Cover = TileStyle(label = TextStyle(fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium), icon = 15.dp, start = 9.dp, end = 6.dp, bottom = 8.dp, showsSubline = false, corner = 12.dp)
+        val Mini = TileStyle(label = TextStyle(fontSize = 13.sp, lineHeight = 18.sp, fontWeight = FontWeight.Medium), icon = 16.dp, start = 10.dp, bottom = 10.dp, showsSubline = false, corner = 14.dp)
     }
 }
 
 /**
- * A section's tile (§1.3): its art under a scrim, its sign and name, and how
- * many lists are new this week. A long press offers to follow it (§2.3).
+ * A section's tile (§1.3): its art under a scrim, its sign and name. A long
+ * press offers to follow it (§2.3).
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun SectionTile(
     section: Section,
-    newThisWeek: Int?,
     following: Boolean,
     onOpen: () -> Unit,
     onFollow: () -> Unit,
@@ -85,8 +82,6 @@ internal fun SectionTile(
     val haptics = LocalHapticFeedback.current
     val pressScale by animateFloatAsState(if (menuOpen) 0.97f else 1f, tween(120), label = "tile press")
     val name = section.label()
-    val newLine = newThisWeek?.takeIf { style.showsNew && it > 0 }?.let { countText(R.plurals.explore_new_this_week, it) }
-    val described = if (newLine != null) stringResource(R.string.explore_tile_description, name, newLine) else name
     val shape = RoundedCornerShape(style.corner)
 
     Box(modifier) {
@@ -116,23 +111,19 @@ internal fun SectionTile(
                         null
                     },
                 )
-                .semantics { contentDescription = described }
+                .semantics { contentDescription = name }
                 .testTag(ExploreTestTags.tile(section.id)),
         ) {
             SectionArt(section, Modifier.fillMaxSize())
-            Column(
+            Row(
                 Modifier
                     .align(if (centredLabel) Alignment.CenterStart else Alignment.BottomStart)
                     .padding(start = style.start, end = style.end, bottom = if (centredLabel) 0.dp else style.bottom),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(7.dp),
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-                    SectionIcon(section, style.icon, SectionLabel)
-                    Text(name, style = style.label, color = SectionLabel, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                }
-                if (newLine != null) {
-                    Text(newLine, style = CaptionStyle, color = SectionNewLine, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                }
+                SectionIcon(section, style.icon, SectionLabel)
+                Text(name, style = style.label, color = SectionLabel, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
         DropdownMenu(

@@ -11,14 +11,8 @@
     <string name="community_following_nobody">まだ誰もフォローしていません。</string>
     <string name="community_author_unnamed">作者</string>
     <string name="author_failed">このプロフィールを開けませんでした。</string>
-    <plurals name="author_followers_count">
-        <item quantity="other">フォロワー %d 人</item>
-    </plurals>
     <string name="author_no_public_lists">公開リストはありません</string>
     <string name="author_no_public_lists_body">すでに保存したコピーはあなたのもので、そのまま残ります。</string>
-    <plurals name="author_public_lists">
-        <item quantity="other">公開リスト %1$d 件</item>
-    </plurals>
     <string name="author_unavailable">このプロフィールは利用できません</string>
     <string name="author_unavailable_body">リストはフィードにあり、そこから開けます。</string>
     <string name="ban_forever">永久</string>
@@ -151,12 +145,6 @@
     <string name="moderation_remove_moderator">解任</string>
     <string name="author_make_moderator">%1$sをモデレーターにする</string>
     <string name="author_remove_moderator">%1$sをモデレーターから外す</string>
-    <plurals name="topic_lists">
-        <item quantity="other">%d件のリスト</item>
-    </plurals>
-    <plurals name="topic_followers">
-        <item quantity="other">フォロワー%d人</item>
-    </plurals>
     <string name="home_following_empty_topics">フォロー中のトピックからの投稿はまだありません。</string>
     <string name="moderation_action_move">移動…</string>
     <string name="moderation_moderators_unavailable">モデレーターの一覧を読み込めませんでした。</string>
@@ -189,7 +177,6 @@
     <string name="explore_try_again">もう一度試す</string>
     <string name="explore_follow">フォロー</string>
     <string name="explore_following">フォロー中</string>
-    <string name="explore_tile_description">%1$s、%2$s</string>
     <string name="explore_search_hint">コミュニティを検索</string>
     <string name="explore_search_nothing">一致するものがありません。</string>
     <string name="section_all">すべて</string>
@@ -202,7 +189,6 @@
     <string name="section_waiting_body">モデレーターが確認します。承認されるとリストがここに表示されます。それまでは%1$sにあります。</string>
     <string name="section_waiting_only_you">それまでこのトピックはあなたにしか見えません。</string>
     <string name="section_ok">OK</string>
-    <string name="section_counts">%1$s · %2$s</string>
     <string name="section_share_text">TierYourLifeの%1$s</string>
     <string name="following_strip_manage">管理</string>
     <string name="following_reason_section">%1$s内</string>
@@ -214,22 +200,9 @@
     <string name="manage_sections">セクション · %1$d</string>
     <string name="manage_topics">トピック · %1$d</string>
     <string name="manage_people">人 · %1$d</string>
-    <string name="manage_topic_supporting">%1$s内 · %2$s</string>
     <string name="manage_waiting_supporting">%1$s内 · モデレーターの確認待ち</string>
-    <plurals name="explore_new_this_week">
-        <item quantity="other">今週の新着%1$s件</item>
-    </plurals>
     <plurals name="explore_cards">
         <item quantity="other">%1$s枚のカード</item>
-    </plurals>
-    <plurals name="explore_rankings">
-        <item quantity="other">ランキング%1$s件</item>
-    </plurals>
-    <plurals name="explore_followers">
-        <item quantity="other">フォロワー%1$s人</item>
-    </plurals>
-    <plurals name="explore_lists">
-        <item quantity="other">%1$s件のリスト</item>
     </plurals>
     <string name="community_save_short">保存</string>
     <plurals name="moderation_open_count">
@@ -295,9 +268,6 @@
     <string name="community_action_sign_in">ログイン</string>
     <string name="community_your_list_badge">自分のリスト</string>
     <string name="community_own_published">公開中</string>
-    <plurals name="community_own_published_rankings">
-        <item quantity="other">公開中 · ランキング%1$d件</item>
-    </plurals>
     <string name="community_own_anonymous">匿名 · あなたのものだと分かるのはあなただけ</string>
     <string name="community_own_list_line">訪問者にはこう見えます。変更は自分のボードで行います。</string>
     <string name="community_restore_from_trash">ゴミ箱から戻す</string>

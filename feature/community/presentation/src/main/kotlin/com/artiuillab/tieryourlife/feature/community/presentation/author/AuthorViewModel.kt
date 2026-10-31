@@ -104,14 +104,11 @@ class AuthorViewModel @Inject constructor(
         }
     }
 
-    /** Answers before the server does; the count moves with the button, and both go back if the request fails. */
+    /** Answers before the server does, and goes back if the request fails. */
     fun toggleFollow() {
         val current = _state.value as? AuthorUiState.Ready ?: return
         val was = current.follow ?: return
-        val now = FollowState(
-            following = !was.following,
-            followers = (was.followers + if (was.following) -1 else 1).coerceAtLeast(0),
-        )
+        val now = FollowState(following = !was.following)
         _state.update { (it as AuthorUiState.Ready).copy(follow = now) }
 
         viewModelScope.launch {

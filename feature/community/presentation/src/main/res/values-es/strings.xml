@@ -11,18 +11,8 @@
     <string name="community_following_nobody">Aún no sigues a nadie.</string>
     <string name="community_author_unnamed">Autor</string>
     <string name="author_failed">No se pudo abrir este perfil.</string>
-    <plurals name="author_followers_count">
-        <item quantity="one">%d seguidor</item>
-        <item quantity="many">%d seguidores</item>
-        <item quantity="other">%d seguidores</item>
-    </plurals>
     <string name="author_no_public_lists">Sin listas públicas</string>
     <string name="author_no_public_lists_body">Las copias que ya guardaste son tuyas y se quedan donde están.</string>
-    <plurals name="author_public_lists">
-        <item quantity="one">%1$d lista pública</item>
-        <item quantity="other">%1$d listas públicas</item>
-        <item quantity="many">%1$d listas públicas</item>
-    </plurals>
     <string name="author_unavailable">Este perfil no está disponible</string>
     <string name="author_unavailable_body">Sus listas están en el feed y puedes abrir cualquiera desde allí.</string>
     <string name="ban_forever">Para siempre</string>
@@ -159,16 +149,6 @@
     <string name="moderation_remove_moderator">Quitar</string>
     <string name="author_make_moderator">Hacer moderador a %1$s</string>
     <string name="author_remove_moderator">Quitar a %1$s como moderador</string>
-    <plurals name="topic_lists">
-        <item quantity="one">%d lista</item>
-        <item quantity="many">%d listas</item>
-        <item quantity="other">%d listas</item>
-    </plurals>
-    <plurals name="topic_followers">
-        <item quantity="one">%d seguidor</item>
-        <item quantity="many">%d seguidores</item>
-        <item quantity="other">%d seguidores</item>
-    </plurals>
     <string name="home_following_empty_topics">Todavía no hay nada de los temas que sigues.</string>
     <string name="moderation_action_move">Mover…</string>
     <string name="moderation_moderators_unavailable">No se pudo leer la lista de moderadores.</string>
@@ -201,7 +181,6 @@
     <string name="explore_try_again">Intentar de nuevo</string>
     <string name="explore_follow">Seguir</string>
     <string name="explore_following">Siguiendo</string>
-    <string name="explore_tile_description">%1$s, %2$s</string>
     <string name="explore_search_hint">Buscar en la comunidad</string>
     <string name="explore_search_nothing">No hay resultados.</string>
     <string name="section_all">Todo</string>
@@ -214,7 +193,6 @@
     <string name="section_waiting_body">Un moderador lo revisará. Tus listas aparecerán aquí cuando se apruebe; mientras tanto están en %1$s.</string>
     <string name="section_waiting_only_you">Hasta entonces, solo tú ves este tema.</string>
     <string name="section_ok">OK</string>
-    <string name="section_counts">%1$s · %2$s</string>
     <string name="section_share_text">%1$s en TierYourLife</string>
     <string name="following_strip_manage">Gestionar</string>
     <string name="following_reason_section">En %1$s</string>
@@ -226,32 +204,11 @@
     <string name="manage_sections">Secciones · %1$d</string>
     <string name="manage_topics">Temas · %1$d</string>
     <string name="manage_people">Personas · %1$d</string>
-    <string name="manage_topic_supporting">En %1$s · %2$s</string>
     <string name="manage_waiting_supporting">En %1$s · esperando moderación</string>
-    <plurals name="explore_new_this_week">
-        <item quantity="one">%1$s nueva esta semana</item>
-        <item quantity="many">%1$s nuevas esta semana</item>
-        <item quantity="other">%1$s nuevas esta semana</item>
-    </plurals>
     <plurals name="explore_cards">
         <item quantity="one">%1$s carta</item>
         <item quantity="many">%1$s cartas</item>
         <item quantity="other">%1$s cartas</item>
-    </plurals>
-    <plurals name="explore_rankings">
-        <item quantity="one">%1$s ranking</item>
-        <item quantity="many">%1$s rankings</item>
-        <item quantity="other">%1$s rankings</item>
-    </plurals>
-    <plurals name="explore_followers">
-        <item quantity="one">%1$s seguidor</item>
-        <item quantity="many">%1$s seguidores</item>
-        <item quantity="other">%1$s seguidores</item>
-    </plurals>
-    <plurals name="explore_lists">
-        <item quantity="one">%1$s lista</item>
-        <item quantity="many">%1$s listas</item>
-        <item quantity="other">%1$s listas</item>
     </plurals>
     <string name="community_save_short">Guardar</string>
     <plurals name="moderation_open_count">
@@ -323,11 +280,6 @@
     <string name="community_action_sign_in">Iniciar sesión</string>
     <string name="community_your_list_badge">Tu lista</string>
     <string name="community_own_published">Publicada</string>
-    <plurals name="community_own_published_rankings">
-        <item quantity="one">Publicada · %1$d clasificación</item>
-        <item quantity="many">Publicada · %1$d clasificaciones</item>
-        <item quantity="other">Publicada · %1$d clasificaciones</item>
-    </plurals>
     <string name="community_own_anonymous">Anónima · solo tú ves que es tuya</string>
     <string name="community_own_list_line">Esto es lo que ven los visitantes. Los cambios se hacen en tu tablero.</string>
     <string name="community_restore_from_trash">Restaurar de la papelera</string>

@@ -45,7 +45,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.common.label
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 
 /**
- * A section on the Flip's cover (§8): the header with its count, then one
+ * A section on the Flip's cover (§8): the header, then one
  * 56dp row per list. A tap hands the list to the main screen; there is
  * nothing else to press.
  */
@@ -68,11 +68,7 @@ internal fun CoverSection(
         contentPadding = PaddingValues(bottom = 8.dp),
     ) {
         item(key = "header") {
-            CoverHeader(
-                title = state.section.label(),
-                onBack = onBack,
-                count = state.stats?.let { countText(R.plurals.explore_lists, it.listCount) },
-            )
+            CoverHeader(title = state.section.label(), onBack = onBack)
         }
         when {
             rows.isNotEmpty() -> items(rows, key = { it.id }) { summary -> CoverRow(summary) { onOpenList(summary) } }
@@ -84,8 +80,8 @@ internal fun CoverSection(
 
 @Composable
 private fun CoverRow(summary: PublishedListSummary, onClick: () -> Unit) {
-    val rankings = countText(R.plurals.explore_rankings, summary.takeCount)
-    val meta = if (summary.editorial) rankings else "${summary.authorName} · $rankings"
+    val cards = countText(R.plurals.explore_cards, summary.itemCount)
+    val meta = if (summary.editorial) cards else "${summary.authorName} · $cards"
     Row(
         Modifier
             .fillMaxWidth()

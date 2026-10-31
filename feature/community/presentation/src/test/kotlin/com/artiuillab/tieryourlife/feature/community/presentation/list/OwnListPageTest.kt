@@ -171,7 +171,7 @@ class OwnListPageTest {
         show(mineNamed.copy(rankingCount = 3))
 
         composeRule.onNodeWithTag(CommunityListTestTags.YOUR_LIST).assertExists()
-        composeRule.onNodeWithText("Published · 3 rankings").assertExists()
+        composeRule.onNodeWithText("Published").assertExists()
         composeRule.onNodeWithTag(CommunityListTestTags.OPEN_BOARD).assertExists()
     }
 

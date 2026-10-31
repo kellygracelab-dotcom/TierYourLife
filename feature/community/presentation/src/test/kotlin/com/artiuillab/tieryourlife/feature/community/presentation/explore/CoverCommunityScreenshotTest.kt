@@ -33,7 +33,7 @@ private const val COVER_BOTTOM_DP = 50
 
 private val Bands = listOf("#B03A32", "#C06A25", "#A98B1F", "#3F7F55", "#3C6E99")
 
-private fun game(id: String, title: String, author: String, takes: Int) = PublishedListSummary(
+private fun game(id: String, title: String, author: String) = PublishedListSummary(
     id = id,
     title = title,
     authorUid = "u-$author",
@@ -42,22 +42,21 @@ private fun game(id: String, title: String, author: String, takes: Int) = Publis
     itemCount = 20,
     tierColors = Bands,
     updatedAtMillis = 0,
-    takeCount = takes,
 )
 
 private val games = SectionUiState(
     sectionId = ListCategory.Games.id,
-    section = Section.builtIn(ListCategory.Games).copy(listCount = 812, followerCount = 3410),
+    section = Section.builtIn(ListCategory.Games).copy(listCount = 812),
     countsKnown = true,
     feed = FeedPane(
         phase = FeedPhase.Ready,
         lists = listOf(
-            game("1", "PS2 era games", "mariia", 312),
-            game("2", "Every Pokémon starter", "nina", 1204),
-            game("3", "Gym leaders, no pictures needed", "kyle", 8),
-            game("4", "Souls-likes by how fair they feel", "taras", 57),
-            game("5", "Zelda, every one of them", "olena", 1),
-            game("6", "Couch co-op that still works", "artiman", 23),
+            game("1", "PS2 era games", "mariia"),
+            game("2", "Every Pokémon starter", "nina"),
+            game("3", "Gym leaders, no pictures needed", "kyle"),
+            game("4", "Souls-likes by how fair they feel", "taras"),
+            game("5", "Zelda, every one of them", "olena"),
+            game("6", "Couch co-op that still works", "artiman"),
         ),
     ),
 )

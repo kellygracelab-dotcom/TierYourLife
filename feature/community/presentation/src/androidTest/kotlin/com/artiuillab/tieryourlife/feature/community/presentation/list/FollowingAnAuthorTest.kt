@@ -44,42 +44,39 @@ class FollowingAnAuthorTest {
 
     @Test
     fun following_answersBeforeTheServerDoes() = runBlocking {
-        val community = FollowRecorder(followers = 4)
+        val community = FollowRecorder()
         val viewModel = viewModel(community)
         ready(viewModel) { it.follow != null }
 
         viewModel.toggleFollow()
         val after = ready(viewModel) { it.follow?.following == true }
 
-        assertEquals(5, after.follow?.followers)
+        assertTrue(after.follow!!.following)
         assertEquals("author-1", eventually("the follow to reach the server") { community.followed.firstOrNull() })
     }
 
-    // A button that changes while the number beside it does not reads as a bug,
-    // so the two move together -- and go back together.
     @Test
-    fun aFollowTheServerRefuses_putsBothBack() = runBlocking {
-        val community = FollowRecorder(followers = 4, followFails = true)
+    fun aFollowTheServerRefuses_putsTheButtonBack() = runBlocking {
+        val community = FollowRecorder(followFails = true)
         val viewModel = viewModel(community)
         ready(viewModel) { it.follow != null }
 
         viewModel.toggleFollow()
         val after = ready(viewModel) { it.follow?.following == false }
 
-        assertEquals(4, after.follow?.followers)
         assertFalse(after.follow!!.following)
     }
 
     @Test
-    fun unfollowing_takesTheCountBackDown() = runBlocking {
-        val community = FollowRecorder(followers = 9, alreadyFollowing = true)
+    fun unfollowing_reachesTheServer() = runBlocking {
+        val community = FollowRecorder(alreadyFollowing = true)
         val viewModel = viewModel(community)
         ready(viewModel) { it.follow != null }
 
         viewModel.toggleFollow()
         val after = ready(viewModel) { it.follow?.following == false }
 
-        assertEquals(8, after.follow?.followers)
+        assertFalse(after.follow!!.following)
         assertEquals(
             "author-1",
             eventually("the unfollow to reach the server") { community.unfollowed.firstOrNull() },
@@ -163,7 +160,6 @@ private val theList = PublishedList(
 )
 
 private class FollowRecorder(
-    private val followers: Int = 0,
     private val alreadyFollowing: Boolean = false,
     /** False for a server that never answers whether this author is followed. */
     private val answers: Boolean = true,
@@ -175,7 +171,7 @@ private class FollowRecorder(
     val taken = mutableListOf<String>()
 
     override suspend fun followState(authorUid: String): Result<FollowState> = if (answers) {
-        Result.success(FollowState(following = alreadyFollowing, followers = followers))
+        Result.success(FollowState(following = alreadyFollowing))
     } else {
         Result.failure(IllegalStateException("offline"))
     }

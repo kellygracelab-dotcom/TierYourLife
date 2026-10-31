@@ -63,7 +63,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.Dashed
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowSize
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowToggle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScheduleIcon
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.countText
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.TopicSquare
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.section.lookOf
@@ -191,7 +190,7 @@ private fun LazyListScope.sectionsBlock(state: FollowingUiState.Ready, onToggle:
         ManageRow(
             key = key,
             headline = rememberSection(followed.id).label(),
-            supporting = countText(R.plurals.explore_followers, followed.followerCount),
+            supporting = null,
             following = key !in state.stopped,
             onOpen = { onOpen(followed.id) },
             onToggle = { onToggle(key) },
@@ -208,7 +207,7 @@ private fun LazyListScope.topicsBlock(state: FollowingUiState.Ready, onToggle: (
         ManageRow(
             key = key,
             headline = topic.name,
-            supporting = stringResource(R.string.manage_topic_supporting, sectionLabel(section), countText(R.plurals.explore_followers, topic.followerCount)),
+            supporting = stringResource(R.string.following_reason_section, sectionLabel(section)),
             following = key !in state.stopped,
             onOpen = { onOpen(topic) },
             onToggle = { onToggle(key) },
@@ -376,8 +375,8 @@ private fun FollowingPreview() = TierYourLifeTheme {
     FollowingScreenContent(
         state = FollowingUiState.Ready(
             authors = listOf(FollowedAuthor(uid = "a", name = "Olena M.", photoUrl = null)),
-            topics = listOf(Topic(id = "t1", name = "Pokémon", section = ListCategory.Games.id, status = TopicStatus.Approved, followerCount = 210)),
-            sections = listOf(FollowedSection(ListCategory.Food.id, followerCount = 4120)),
+            topics = listOf(Topic(id = "t1", name = "Pokémon", section = ListCategory.Games.id, status = TopicStatus.Approved)),
+            sections = listOf(FollowedSection(ListCategory.Food.id)),
             waiting = listOf(Topic(id = "t2", name = "Shiny hunts", section = ListCategory.Games.id, status = TopicStatus.Pending)),
             stopped = setOf(FollowKeys.person("a")),
         ),

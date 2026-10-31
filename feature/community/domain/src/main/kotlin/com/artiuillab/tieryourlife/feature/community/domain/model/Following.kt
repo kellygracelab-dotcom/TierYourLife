@@ -23,8 +23,8 @@ enum class FeedSort(val id: String) {
 val FeedSource.opensOn: FeedSort
     get() = if (this == FeedSource.Following) FeedSort.Recent else FeedSort.Popular
 
-/** Whether this person follows an author, and how many people do. */
-data class FollowState(val following: Boolean, val followers: Int)
+/** Whether this person follows an author. */
+data class FollowState(val following: Boolean)
 
 /** Somebody this person follows. The name is empty for an author who has no list left. */
 data class FollowedAuthor(
@@ -38,8 +38,6 @@ data class SuggestedAuthor(
     val uid: String,
     val name: String,
     val photoUrl: String?,
-    /** How many times their most taken list has been taken. */
-    val takeCount: Int,
 )
 
 /** Whom and what this account follows, as the one answer the server keeps them in. */

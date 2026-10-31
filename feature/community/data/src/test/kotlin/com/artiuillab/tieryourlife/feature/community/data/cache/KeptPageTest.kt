@@ -21,7 +21,6 @@ class KeptPageTest {
         previewImages = listOf("https://p/$n"),
         tierColors = listOf("#B03A32"),
         updatedAtMillis = 1_000L * n,
-        takeCount = n,
         topicId = "t",
         topicName = "Noodles",
         rankingCount = 2,

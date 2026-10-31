@@ -371,21 +371,7 @@ private fun CommunityCard(
             }
             Text(
                 modifier = Modifier.padding(start = 8.dp, top = 2.dp),
-                // Cards, and once anybody has taken it, people: the second
-                // number is what the popular ordering sorts by.
-                text = pluralStringResource(
-                    R.plurals.community_item_count,
-                    summary.itemCount,
-                    summary.itemCount,
-                ) + if (summary.takeCount > 0) {
-                    " · " + pluralStringResource(
-                        ThemeR.plurals.tier_lists_rankings_count,
-                        summary.takeCount,
-                        summary.takeCount,
-                    )
-                } else {
-                    ""
-                },
+                text = pluralStringResource(R.plurals.community_item_count, summary.itemCount, summary.itemCount),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
             )

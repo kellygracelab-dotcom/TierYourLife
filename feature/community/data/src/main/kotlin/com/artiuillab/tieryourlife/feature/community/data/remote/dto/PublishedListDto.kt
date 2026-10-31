@@ -15,7 +15,6 @@ data class PublishedListSummaryDto(
     val previewImages: List<String> = emptyList(),
     val tierColors: List<String> = emptyList(),
     val updatedAt: Long = 0,
-    val takeCount: Int = 0,
     val anonymous: Boolean = false,
     val topicId: String? = null,
     val topicName: String? = null,
@@ -39,17 +38,13 @@ data class PublishedFeedDto(
 )
 
 @Serializable
-data class FollowStateDto(
-    val following: Boolean = false,
-    val followers: Int = 0,
-)
+data class FollowStateDto(val following: Boolean = false)
 
 @Serializable
 data class SuggestedAuthorDto(
     val uid: String,
     val name: String = "",
     val photoUrl: String? = null,
-    val takeCount: Int = 0,
 )
 
 @Serializable
@@ -115,7 +110,6 @@ data class PublishedListDto(
     val anonymous: Boolean = false,
     val topicId: String? = null,
     val topicName: String? = null,
-    val takeCount: Int = 0,
     val rankingCount: Int = 0,
     val basedOn: BasedOnDto? = null,
     val mine: Boolean = false,

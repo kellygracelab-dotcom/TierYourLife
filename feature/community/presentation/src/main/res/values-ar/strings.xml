@@ -11,24 +11,8 @@
     <string name="community_following_nobody">لا تتابع أحداً بعد.</string>
     <string name="community_author_unnamed">المؤلف</string>
     <string name="author_failed">تعذّر فتح هذا الملف الشخصي.</string>
-    <plurals name="author_followers_count">
-        <item quantity="zero">لا متابعين</item>
-        <item quantity="one">متابع واحد</item>
-        <item quantity="two">متابعان</item>
-        <item quantity="few">%d متابعين</item>
-        <item quantity="many">%d متابعًا</item>
-        <item quantity="other">%d متابع</item>
-    </plurals>
     <string name="author_no_public_lists">لا توجد قوائم عامة</string>
     <string name="author_no_public_lists_body">النسخ التي حفظتها بالفعل ملكك وتبقى في مكانها.</string>
-    <plurals name="author_public_lists">
-        <item quantity="zero">لا قوائم عامة</item>
-        <item quantity="one">قائمة عامة واحدة</item>
-        <item quantity="two">قائمتان عامتان</item>
-        <item quantity="few">%1$d قوائم عامة</item>
-        <item quantity="many">%1$d قائمة عامة</item>
-        <item quantity="other">%1$d قائمة عامة</item>
-    </plurals>
     <string name="author_unavailable">هذا الملف الشخصي غير متاح</string>
     <string name="author_unavailable_body">قوائمه موجودة في الخلاصة ويمكنك فتح أيٍّ منها من هناك.</string>
     <string name="ban_forever">إلى الأبد</string>
@@ -171,22 +155,6 @@
     <string name="moderation_remove_moderator">إزالة</string>
     <string name="author_make_moderator">تعيين %1$s مشرفًا</string>
     <string name="author_remove_moderator">إزالة %1$s من الإشراف</string>
-    <plurals name="topic_lists">
-        <item quantity="zero">لا قوائم</item>
-        <item quantity="one">قائمة واحدة</item>
-        <item quantity="two">قائمتان</item>
-        <item quantity="few">%d قوائم</item>
-        <item quantity="many">%d قائمة</item>
-        <item quantity="other">%d قائمة</item>
-    </plurals>
-    <plurals name="topic_followers">
-        <item quantity="zero">لا متابعين</item>
-        <item quantity="one">متابع واحد</item>
-        <item quantity="two">متابعان</item>
-        <item quantity="few">%d متابعين</item>
-        <item quantity="many">%d متابعًا</item>
-        <item quantity="other">%d متابع</item>
-    </plurals>
     <string name="home_following_empty_topics">لا شيء بعد من المواضيع التي تتابعها.</string>
     <string name="moderation_action_move">نقل…</string>
     <string name="moderation_moderators_unavailable">تعذّرت قراءة قائمة المشرفين.</string>
@@ -219,7 +187,6 @@
     <string name="explore_try_again">حاول مرة أخرى</string>
     <string name="explore_follow">متابعة</string>
     <string name="explore_following">تتابعه</string>
-    <string name="explore_tile_description">%1$s، %2$s</string>
     <string name="explore_search_hint">البحث في المجتمع</string>
     <string name="explore_search_nothing">لا شيء يطابق ذلك.</string>
     <string name="section_all">الكل</string>
@@ -232,7 +199,6 @@
     <string name="section_waiting_body">سيراجعه أحد المشرفين. ستظهر قوائمك هنا بعد الموافقة، وحتى ذلك الحين هي في %1$s.</string>
     <string name="section_waiting_only_you">حتى ذلك الحين لا يرى هذا الموضوع غيرك.</string>
     <string name="section_ok">حسنًا</string>
-    <string name="section_counts">%1$s · %2$s</string>
     <string name="section_share_text">%1$s على TierYourLife</string>
     <string name="following_strip_manage">إدارة</string>
     <string name="following_reason_section">في %1$s</string>
@@ -244,16 +210,7 @@
     <string name="manage_sections">الأقسام · %1$d</string>
     <string name="manage_topics">المواضيع · %1$d</string>
     <string name="manage_people">الأشخاص · %1$d</string>
-    <string name="manage_topic_supporting">في %1$s · %2$s</string>
     <string name="manage_waiting_supporting">في %1$s · بانتظار المشرف</string>
-    <plurals name="explore_new_this_week">
-        <item quantity="zero">لا جديد هذا الأسبوع</item>
-        <item quantity="one">قائمة جديدة هذا الأسبوع</item>
-        <item quantity="two">قائمتان جديدتان هذا الأسبوع</item>
-        <item quantity="few">%1$s قوائم جديدة هذا الأسبوع</item>
-        <item quantity="many">%1$s قائمة جديدة هذا الأسبوع</item>
-        <item quantity="other">%1$s قائمة جديدة هذا الأسبوع</item>
-    </plurals>
     <plurals name="explore_cards">
         <item quantity="zero">لا بطاقات</item>
         <item quantity="one">بطاقة واحدة</item>
@@ -261,30 +218,6 @@
         <item quantity="few">%1$s بطاقات</item>
         <item quantity="many">%1$s بطاقة</item>
         <item quantity="other">%1$s بطاقة</item>
-    </plurals>
-    <plurals name="explore_rankings">
-        <item quantity="zero">لا ترتيبات</item>
-        <item quantity="one">ترتيب واحد</item>
-        <item quantity="two">ترتيبان</item>
-        <item quantity="few">%1$s ترتيبات</item>
-        <item quantity="many">%1$s ترتيبًا</item>
-        <item quantity="other">%1$s ترتيب</item>
-    </plurals>
-    <plurals name="explore_followers">
-        <item quantity="zero">لا متابعين</item>
-        <item quantity="one">متابع واحد</item>
-        <item quantity="two">متابعان</item>
-        <item quantity="few">%1$s متابعين</item>
-        <item quantity="many">%1$s متابعًا</item>
-        <item quantity="other">%1$s متابع</item>
-    </plurals>
-    <plurals name="explore_lists">
-        <item quantity="zero">لا قوائم</item>
-        <item quantity="one">قائمة واحدة</item>
-        <item quantity="two">قائمتان</item>
-        <item quantity="few">%1$s قوائم</item>
-        <item quantity="many">%1$s قائمة</item>
-        <item quantity="other">%1$s قائمة</item>
     </plurals>
     <string name="community_save_short">حفظ</string>
     <plurals name="moderation_open_count">
@@ -365,14 +298,6 @@
     <string name="community_action_sign_in">تسجيل الدخول</string>
     <string name="community_your_list_badge">قائمتك</string>
     <string name="community_own_published">منشورة</string>
-    <plurals name="community_own_published_rankings">
-        <item quantity="zero">منشورة · لا تصنيفات</item>
-        <item quantity="one">منشورة · تصنيف واحد</item>
-        <item quantity="two">منشورة · تصنيفان</item>
-        <item quantity="few">منشورة · %1$d تصنيفات</item>
-        <item quantity="many">منشورة · %1$d تصنيفًا</item>
-        <item quantity="other">منشورة · %1$d تصنيف</item>
-    </plurals>
     <string name="community_own_anonymous">مجهولة الاسم · أنت وحدك ترى أنها لك</string>
     <string name="community_own_list_line">هذا ما يراه الزوار. التغييرات تتم على لوحتك.</string>
     <string name="community_restore_from_trash">استعادة من سلة المهملات</string>

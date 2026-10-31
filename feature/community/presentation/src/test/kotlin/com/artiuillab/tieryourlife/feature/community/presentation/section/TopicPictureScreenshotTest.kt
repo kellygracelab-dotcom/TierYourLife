@@ -35,9 +35,9 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 private val Pictured = listOf(
-    Topic("t1", "Pokémon", ListCategory.Games.id, TopicStatus.Approved, listCount = 64, followerCount = 210, pictureUrl = "https://p/t1.webp"),
-    Topic("t2", "Zelda", ListCategory.Games.id, TopicStatus.Approved, listCount = 31, followerCount = 120, pictureUrl = "https://p/t2.webp"),
-    Topic("t3", "Souls-likes", ListCategory.Games.id, TopicStatus.Approved, listCount = 22, followerCount = 90),
+    Topic("t1", "Pokémon", ListCategory.Games.id, TopicStatus.Approved, followerCount = 210, pictureUrl = "https://p/t1.webp"),
+    Topic("t2", "Zelda", ListCategory.Games.id, TopicStatus.Approved, followerCount = 120, pictureUrl = "https://p/t2.webp"),
+    Topic("t3", "Souls-likes", ListCategory.Games.id, TopicStatus.Approved, followerCount = 90),
 )
 
 /** A colour per picture, so each one is seen where it lands. */
@@ -72,7 +72,7 @@ class TopicPictureScreenshotTest {
 
     private val games = SectionUiState(
         sectionId = ListCategory.Games.id,
-        section = Section.builtIn(ListCategory.Games).copy(listCount = 812, followerCount = 3410),
+        section = Section.builtIn(ListCategory.Games).copy(listCount = 812),
         countsKnown = true,
         topics = Pictured,
         feed = FeedPane(phase = FeedPhase.Ready),

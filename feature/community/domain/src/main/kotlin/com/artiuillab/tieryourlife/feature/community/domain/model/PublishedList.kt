@@ -18,8 +18,6 @@ data class PublishedListSummary(
     /** The author's palette, for a card with neither a cover nor card art. */
     val tierColors: List<String> = emptyList(),
     val updatedAtMillis: Long,
-    /** How many people have taken this list: the number the popular ordering sorts by, so what a reader sees and what put it there agree. */
-    val takeCount: Int = 0,
     /** Set by the server once it marks lists that stand without an author; absent before. */
     val anonymous: Boolean = false,
     /** The topic the author filed it under, if any; the name travels too, so a card needs no second read. */

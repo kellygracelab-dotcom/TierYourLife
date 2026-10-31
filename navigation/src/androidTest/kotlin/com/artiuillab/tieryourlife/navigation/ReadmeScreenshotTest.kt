@@ -157,7 +157,6 @@ class ReadmeScreenshotTest {
 
         "community" -> CommunityHomeContent(
             explore = ExploreUiState(
-                countsKnown = true,
                 feed = FeedPane(
                     phase = FeedPhase.Ready,
                     lists =

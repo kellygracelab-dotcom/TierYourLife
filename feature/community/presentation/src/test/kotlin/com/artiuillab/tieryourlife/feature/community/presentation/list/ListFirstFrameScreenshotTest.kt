@@ -58,7 +58,7 @@ private fun landed(): CommunityListUiState.Success {
         theirs = board,
         mine = board.copy(tiers = tiers.map { if (it.isPool) it.copy(items = tiers.flatMap(Tier::items)) else it.copy(items = emptyList()) }),
         arriving = false,
-        follow = FollowState(following = false, followers = 120),
+        follow = FollowState(following = false),
     )
 }
 

@@ -80,13 +80,11 @@ class SystemBarsScreenshotTest {
             itemCount = 10 + n,
             tierColors = listOf("#B03A32", "#C06A25", "#A98B1F", "#3F7F55", "#3C6E99"),
             updatedAtMillis = 0,
-            takeCount = n * 3,
         )
     }
 
     private val explore = ExploreUiState(
-        sections = Section.BUILT_IN.map { it.copy(listCount = 120, followerCount = 3000, newThisWeek = 5) },
-        countsKnown = true,
+        sections = Section.BUILT_IN.map { it.copy(listCount = 120) },
         feed = FeedPane(lists = lists, phase = FeedPhase.Ready),
     )
 

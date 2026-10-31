@@ -77,7 +77,7 @@ internal fun AllSectionsTile(
                     Spacer(Modifier.width(7.dp))
                     Text(title, style = style.label, color = ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
-                if (style.showsNew) {
+                if (style.showsSubline) {
                     Text(counted, style = CaptionStyle, color = dim, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }

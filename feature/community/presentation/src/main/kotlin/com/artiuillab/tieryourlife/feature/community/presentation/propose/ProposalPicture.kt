@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
@@ -42,9 +41,7 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import com.artiuillab.tieryourlife.core.theme.ui.PhotoLibraryIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.CaptionStyle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.TileNameStyle
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.countText
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionLabel
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SymbolIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.section.TileScrimBottom
@@ -52,8 +49,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.section.TileSc
 
 /** Sharp enough to zoom into, small enough to decode at once. */
 private const val PREVIEW_EDGE_PX = 1600
-private const val SAMPLE_COUNT = 12
-private const val SAMPLE_ALPHA = 0.6f
 
 /** Where the picture goes before there is one: the 16:10 space it will fill, asking for it. */
 @Composable
@@ -152,22 +147,18 @@ internal fun PictureCropFrame(
 
 @Composable
 private fun TileLabelPreview(icon: String, name: String, modifier: Modifier = Modifier) {
-    Column(modifier.padding(start = 12.dp, end = 10.dp, bottom = 10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-            SymbolIcon(icon, 18.dp, SectionLabel)
-            Text(
-                name.ifBlank { stringResource(R.string.propose_name_placeholder) },
-                style = TileNameStyle,
-                color = SectionLabel,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+    Row(
+        modifier.padding(start = 12.dp, end = 10.dp, bottom = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(7.dp),
+    ) {
+        SymbolIcon(icon, 18.dp, SectionLabel)
         Text(
-            countText(R.plurals.explore_new_this_week, SAMPLE_COUNT),
-            style = CaptionStyle,
-            color = Color.White.copy(alpha = SAMPLE_ALPHA),
+            name.ifBlank { stringResource(R.string.propose_name_placeholder) },
+            style = TileNameStyle,
+            color = SectionLabel,
             maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

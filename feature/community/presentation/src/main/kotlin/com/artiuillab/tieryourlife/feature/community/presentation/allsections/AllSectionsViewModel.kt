@@ -25,7 +25,6 @@ enum class SectionSort { MostLists, Name }
 data class AllSectionsUiState(
     /** Approved sections in the server's order, before the sort and the search. */
     val sections: List<Section> = Section.BUILT_IN,
-    val countsKnown: Boolean = false,
     val sort: SectionSort = SectionSort.MostLists,
     val query: String = "",
     /** This person's own proposals still waiting: first, and seen by nobody else. */
@@ -51,7 +50,6 @@ class AllSectionsViewModel @Inject constructor(
     val state: StateFlow<AllSectionsUiState> = combine(catalog.directory, sort, query) { directory, order, typed ->
         AllSectionsUiState(
             sections = directory.shown,
-            countsKnown = directory.counted,
             sort = order,
             query = typed,
             waiting = directory.waiting,

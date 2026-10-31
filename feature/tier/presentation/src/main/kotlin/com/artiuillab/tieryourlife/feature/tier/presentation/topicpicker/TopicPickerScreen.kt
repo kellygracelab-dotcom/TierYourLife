@@ -128,7 +128,7 @@ fun TopicPickerScreenContent(
                     item(key = "suggestion") {
                         ChoiceRow(
                             title = stringResource(R.string.topic_picker_suggestion, suggestion.name),
-                            subtitle = suggestion.sectionAndCount(),
+                            subtitle = suggestion.sectionLine(),
                             selected = false,
                             onClick = { onChoose(suggestion) },
                             testTag = TopicPickerTestTags.SUGGESTION,
@@ -180,7 +180,7 @@ fun TopicPickerScreenContent(
                 items(others, key = { "found-" + it.id }) { topic ->
                     ChoiceRow(
                         title = topic.name,
-                        subtitle = topic.sectionAndCount(),
+                        subtitle = topic.sectionLine(),
                         selected = state.chosen.names(topic),
                         onClick = { onChoose(topic) },
                         testTag = TopicPickerTestTags.topic(topic.id),
@@ -194,16 +194,12 @@ fun TopicPickerScreenContent(
 private fun TopicChoice.names(topic: Topic): Boolean = this is TopicChoice.Known && this.topic.id == topic.id
 
 @Composable
-private fun Topic.sectionAndCount(): String {
-    val section = section?.let { sectionLabel(it) }
-    val lists = pluralStringResource(R.plurals.topic_picker_lists, listCount, listCount)
-    return listOfNotNull(section, lists).joinToString(" · ")
-}
+private fun Topic.sectionLine(): String? = section?.let { sectionLabel(it) }
 
 @Composable
-private fun Topic.standing(): String = when (status) {
+private fun Topic.standing(): String? = when (status) {
     TopicStatus.Pending -> stringResource(R.string.topic_picker_waiting)
-    TopicStatus.Approved -> sectionAndCount()
+    TopicStatus.Approved -> sectionLine()
     TopicStatus.Rejected -> stringResource(R.string.topic_picker_rejected)
     TopicStatus.Merged -> stringResource(R.string.topic_picker_merged)
 }
@@ -240,7 +236,7 @@ private fun SectionHeader(text: String) {
 @Composable
 private fun ChoiceRow(
     title: String,
-    subtitle: String,
+    subtitle: String?,
     selected: Boolean,
     onClick: () -> Unit,
     testTag: String,
@@ -259,13 +255,15 @@ private fun ChoiceRow(
             .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
         Text(text = title, style = MaterialTheme.typography.bodyLarge, color = text, maxLines = 2, overflow = TextOverflow.Ellipsis)
-        Text(
-            text = subtitle,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis,
-        )
+        if (subtitle != null) {
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }
 
@@ -309,8 +307,8 @@ private fun TopicPickerPreview() = TierYourLifeTheme {
             title = "Oscar films 2025",
             query = "Osc",
             results = listOf(
-                Topic(id = "t1", name = "Oscars", section = ListCategory.FilmTv.id, status = TopicStatus.Approved, listCount = 41),
-                Topic(id = "t2", name = "Oscar snubs", section = ListCategory.FilmTv.id, status = TopicStatus.Approved, listCount = 6),
+                Topic(id = "t1", name = "Oscars", section = ListCategory.FilmTv.id, status = TopicStatus.Approved),
+                Topic(id = "t2", name = "Oscar snubs", section = ListCategory.FilmTv.id, status = TopicStatus.Approved),
             ),
             mine = listOf(Topic(id = "t9", name = "Kharkiv restaurants", section = null, status = TopicStatus.Pending)),
             chosen = TopicChoice.Known(Topic(id = "t1", name = "Oscars", section = ListCategory.FilmTv.id, status = TopicStatus.Approved)),

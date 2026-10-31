@@ -46,7 +46,7 @@ open class FakeCommunityRepository : CommunityRepository {
     override suspend fun unfollow(authorUid: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun followState(authorUid: String): Result<FollowState> =
-        Result.success(FollowState(following = false, followers = 0))
+        Result.success(FollowState(following = false))
 
     override suspend fun following(): Result<Following> = Result.success(Following(emptyList(), emptyList()))
 

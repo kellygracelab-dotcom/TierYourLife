@@ -29,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -225,12 +224,6 @@ private fun Header(state: TopicUiState, onToggleFollow: () -> Unit) {
         )
         val topic = state.topic
         if (topic != null) {
-            Text(
-                text = pluralStringResource(R.plurals.topic_lists, topic.listCount, topic.listCount) + " · " +
-                    pluralStringResource(R.plurals.topic_followers, topic.followerCount, topic.followerCount),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
             if (topic.status == TopicStatus.Pending) {
                 Text(
                     text = stringResource(R.string.topic_waiting),
@@ -316,7 +309,7 @@ private fun TopicPreview() = TierYourLifeTheme {
         state = TopicUiState(
             name = "Pokémon",
             section = ListCategory.Games.id,
-            topic = Topic(id = "t1", name = "Pokémon", section = ListCategory.Games.id, status = TopicStatus.Approved, listCount = 212, followerCount = 1340),
+            topic = Topic(id = "t1", name = "Pokémon", section = ListCategory.Games.id, status = TopicStatus.Approved),
             feed = CommunityFeed.Ready(emptyList()),
         ),
         onBack = {},

@@ -25,7 +25,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -52,7 +51,7 @@ class ExploreViewModelTest {
 
     private open inner class Community(
         val lists: List<PublishedListSummary> = listOf(summary("a"), summary("b")),
-        val sectionsAnswer: Result<List<Section>> = Result.success(Section.BUILT_IN.map { it.copy(newThisWeek = 3) }),
+        val sectionsAnswer: Result<List<Section>> = Result.success(Section.BUILT_IN.map { it.copy(lists30d = ANSWERED) }),
         val followFails: Boolean = false,
     ) : FakeCommunityRepository() {
         val sorts = mutableListOf<FeedSort>()
@@ -102,26 +101,24 @@ class ExploreViewModelTest {
     ).also { made += it }
 
     @Test
-    fun opening_showsThePopularFeed_andTheNewLinesOnceCounted() = runBlocking {
+    fun opening_showsThePopularFeed_andTheServersSections() = runBlocking {
         val community = Community()
         val viewModel = viewModel(community)
 
         viewModel.open()
-        val state = viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready && it.countsKnown }
+        val state = viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready && it.answered() }
 
         assertEquals(listOf("a", "b"), state.feed.lists.map { it.id })
         assertEquals(FeedSort.Popular, community.sorts.first())
-        assertEquals(3, state.sections.first { it.id == ListCategory.Food.id }.newThisWeek)
     }
 
     @Test
-    fun sectionsTheServerCannotCount_leaveTheTilesWithoutNewLines() = runBlocking {
+    fun sectionsTheServerCannotSend_leaveTheNine() = runBlocking {
         val viewModel = viewModel(Community(sectionsAnswer = Result.failure(IOException("not deployed"))))
 
         viewModel.open()
         val state = viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready }
 
-        assertFalse(state.countsKnown)
         assertEquals(ListCategory.entries.map { it.id }, state.sections.map { it.id })
     }
 
@@ -141,7 +138,7 @@ class ExploreViewModelTest {
         val community = Community(followFails = true)
         val viewModel = viewModel(community)
         viewModel.open()
-        viewModel.state.firstWithin { it.countsKnown }
+        viewModel.state.firstWithin { it.answered() }
 
         viewModel.follow(ListCategory.Food.id)
         withTimeout(5_000) { community.followed.await() }
@@ -155,13 +152,12 @@ class ExploreViewModelTest {
     fun followingASection_saysSo() = runBlocking {
         val viewModel = viewModel(Community())
         viewModel.open()
-        viewModel.state.firstWithin { it.countsKnown }
+        viewModel.state.firstWithin { it.answered() }
 
         viewModel.follow(ListCategory.Games.id)
 
         assertEquals(CommunityNotice.NowFollowing(ListCategory.Games.id), withTimeout(5_000) { viewModel.notices.first() })
         val counted = viewModel.state.firstWithin { state -> state.sections.first { it.id == ListCategory.Games.id }.following }
-        assertEquals(1, counted.sections.first { it.id == ListCategory.Games.id }.followerCount)
         // Followed sections come first, by the server's own rule.
         assertEquals(ListCategory.Games.id, counted.sections.first().id)
     }
@@ -176,20 +172,19 @@ class ExploreViewModelTest {
         val viewModel = viewModel(Community(sectionsAnswer = Result.success(answer)))
 
         viewModel.open()
-        val state = viewModel.state.firstWithin { it.countsKnown }
+        val state = viewModel.state.firstWithin { s -> s.sections.any { it.id == "cars" } }
 
         assertEquals(listOf("cars") + ListCategory.entries.map { it.id }, state.sections.map { it.id })
     }
 
     @Test
     fun keptSections_areWhatOpens_beforeTheServerSaysAnything() = runBlocking {
-        val kept = SectionDirectory(sections = listOf(Section(id = "cars", name = "Cars", newThisWeek = 4)) + Section.BUILT_IN, fetchedAtMillis = clock.now)
+        val kept = SectionDirectory(sections = listOf(Section(id = "cars", name = "Cars")) + Section.BUILT_IN, fetchedAtMillis = clock.now)
         val viewModel = viewModel(Community(sectionsAnswer = Result.failure(IOException("offline"))), kept = kept)
 
-        val state = viewModel.state.firstWithin { it.countsKnown }
+        val state = viewModel.state.firstWithin { s -> s.sections.any { it.id == "cars" } }
 
         assertEquals("cars", state.sections.first().id)
-        assertEquals(4, state.sections.first().newThisWeek)
     }
 
     @Test
@@ -257,3 +252,7 @@ class ExploreViewModelTest {
         assertEquals(mapOf("a" to false), viewModel.state.firstWithin { it.feed.justHidden.isNotEmpty() }.feed.justHidden)
     }
 }
+
+private const val ANSWERED = 3
+
+private fun ExploreUiState.answered() = sections.any { it.lists30d == ANSWERED }

@@ -45,11 +45,9 @@ internal fun CoverCommunityGrid(
             .testTag(ExploreTestTags.COVER_HOME),
     ) {
         CoverHeader(title = stringResource(R.string.explore_title_community), onBack = onBack)
-        // Only the names and the art: the counts are a phone's business.
         TilesBlock(
             layout = HomeLayout.Cover,
             sections = sections,
-            countsKnown = false,
             actions = TileActions(onOpen = onOpenSection),
             modifier = Modifier.padding(start = 14.dp, end = 14.dp, bottom = 8.dp),
         )

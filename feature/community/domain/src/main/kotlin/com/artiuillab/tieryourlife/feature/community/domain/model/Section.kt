@@ -47,9 +47,6 @@ data class Section(
     val listCount: Int = 0,
     /** Lists published in the last thirty days: what orders the unpinned. */
     val lists30d: Int = 0,
-    /** Lists published or changed in the last seven days. */
-    val newThisWeek: Int = 0,
-    val followerCount: Int = 0,
     val following: Boolean = false,
     /** Up to four covers for the section page; empty while too few lists qualify, and the art stands in. */
     val collage: List<String> = emptyList(),
@@ -84,9 +81,8 @@ data class Section(
         return chosen.takeIf { it.isNotBlank() }
     }
 
-    /** The count moves with the button, in the same frame. */
-    fun followed(now: Boolean): Section =
-        if (following == now) this else copy(following = now, followerCount = (followerCount + if (now) 1 else -1).coerceAtLeast(0))
+    /** The button changes in the same frame. */
+    fun followed(now: Boolean): Section = if (following == now) this else copy(following = now)
 
     companion object {
         /** One of the nine as the app knows it before any answer: no name of the server's, no counts. */
@@ -97,8 +93,8 @@ data class Section(
     }
 }
 
-/** A section this person follows, with its count for the row that offers to stop. */
-data class FollowedSection(val id: String, val followerCount: Int = 0)
+/** A section this person follows. */
+data class FollowedSection(val id: String)
 
 /** What the server says of one id asked for alone (`GET lists/sections/{id}`). */
 sealed interface SectionLookup {
