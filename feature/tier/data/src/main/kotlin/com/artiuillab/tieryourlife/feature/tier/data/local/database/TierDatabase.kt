@@ -25,7 +25,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.view.ActiveTierListVi
         ActiveTierListView::class,
         ActiveTierItemView::class,
     ],
-    version = 14,
+    version = 15,
     exportSchema = true,
     // Two new columns with defaults and nothing converted: Room writes the
     // ALTER TABLEs from the exported schemas, and every board stays as it was.

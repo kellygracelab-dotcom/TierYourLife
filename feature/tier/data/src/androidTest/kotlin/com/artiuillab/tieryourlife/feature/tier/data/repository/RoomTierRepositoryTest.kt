@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.TierDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
@@ -44,7 +45,7 @@ class RoomTierRepositoryTest {
         dao = database.tierDao()
         imagesDir = File(context.cacheDir, "test_tier_images_${System.nanoTime()}")
         val imageStore = TierImageStore(imagesDir) { uri -> ByteArrayInputStream("bytes of $uri".toByteArray()) }
-        repository = RoomTierRepository(dao, imageStore)
+        repository = RoomTierRepository(dao, imageStore, FakeAccountRepository())
     }
 
     @After

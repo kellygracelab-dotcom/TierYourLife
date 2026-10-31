@@ -26,11 +26,27 @@ interface BoardSyncDao {
     @Query("SELECT * FROM board_sync")
     suspend fun allSyncRecords(): List<BoardSyncEntity>
 
+    @Query("SELECT * FROM board_sync WHERE account = :account")
+    suspend fun syncRecordsOf(account: String): List<BoardSyncEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun remember(record: BoardSyncEntity)
 
+    @Query("DELETE FROM board_sync WHERE account = :account AND listUid = :listUid")
+    suspend fun forget(account: String, listUid: String)
+
+    /** Every account's row: the board left this phone for all of them, and none of them asked for it. */
     @Query("DELETE FROM board_sync WHERE listUid = :listUid")
-    suspend fun forget(listUid: String)
+    suspend fun forgetEverywhere(listUid: String)
+
+    @Query("DELETE FROM board_sync WHERE account = '${BoardSyncEntity.UNCLAIMED}'")
+    suspend fun forgetUnclaimed()
+
+    @Transaction
+    suspend fun claim(records: List<BoardSyncEntity>) {
+        forgetUnclaimed()
+        records.forEach { remember(it) }
+    }
 
     @Query("DELETE FROM picture_sync")
     suspend fun forgetEveryPicture()

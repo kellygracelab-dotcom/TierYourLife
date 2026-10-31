@@ -56,17 +56,19 @@ class BoardSyncEngine @Inject constructor(
 ) : BoardSync {
 
     override suspend fun sync(): SyncReport {
-        if (accounts.account.first() !is Account.SignedIn || !preferences.backUpBoards()) {
+        val account = signedInAs()
+        if (account.isNullOrBlank() || !preferences.backUpBoards()) {
             return SyncReport(signedIn = false)
         }
 
         val local = dao.allBoards()
         val fingerprints = local.associate { board -> board.uid to fingerprintOf(board) }
         val remote = readIndex()
+        claimUnclaimed(account, fingerprints, remote)
         val steps = planSync(
             local = local.map { board -> LocalBoard(board.uid, fingerprints.getValue(board.uid)) },
             remote = remote.values.toList(),
-            synced = dao.allSyncRecords().map { SyncedBoard(it.listUid, it.revision, it.fingerprint) },
+            synced = dao.syncRecordsOf(account).map { SyncedBoard(it.listUid, it.revision, it.fingerprint) },
         )
 
         // Pictures before boards, so no board ever names a picture the other
@@ -76,8 +78,13 @@ class BoardSyncEngine @Inject constructor(
 
         var carried = 0
         var refused = 0
-        steps.forEach { step ->
-            runSuspendCatching { carry(step, fingerprints) }
+        for ((index, step) in steps.withIndex()) {
+            // Planned from this account's rows; another one signed in since would be handed them.
+            if (signedInAs() != account) {
+                refused += steps.size - index
+                break
+            }
+            runSuspendCatching { carry(step, fingerprints, account) }
                 .onSuccess { carried++ }
                 .onFailure { failure ->
                     refused++
@@ -107,7 +114,7 @@ class BoardSyncEngine @Inject constructor(
      * must not wipe the first account's lists off its boards.
      */
     private suspend fun forgetWhatIsNoLongerPublished() {
-        val account = (accounts.account.first() as? Account.SignedIn)?.recordKey ?: return
+        val account = signedInAs() ?: return
         val claimed = dao.allBoards().mapNotNullTo(mutableSetOf()) { it.publishedId }
         val theirs = if (claimed.isEmpty()) {
             emptySet()
@@ -127,6 +134,20 @@ class BoardSyncEngine @Inject constructor(
         }
         preferences.setPublishedOwners(reconciled.owners)
         preferences.setLastPublishingAccount(account)
+    }
+
+    private suspend fun signedInAs(): String? = (accounts.account.first() as? Account.SignedIn)?.recordKey
+
+    private suspend fun claimUnclaimed(
+        account: String,
+        fingerprints: Map<String, String>,
+        remote: Map<String, RemoteBoard>,
+    ) {
+        val unclaimed = dao.syncRecordsOf(BoardSyncEntity.UNCLAIMED)
+        if (unclaimed.isEmpty()) return
+        val claimed = claimable(unclaimed, fingerprints, remote)
+        dao.claim(claimed.map { it.copy(account = account) })
+        Timber.i("Claimed %d of %d unclaimed sync record(s)", claimed.size, unclaimed.size)
     }
 
     /** Read from the database each run, so a download that failed last week is tried again. */
@@ -156,27 +177,27 @@ class BoardSyncEngine @Inject constructor(
         return found
     }
 
-    private suspend fun carry(step: SyncStep, fingerprints: Map<String, String>) {
+    private suspend fun carry(step: SyncStep, fingerprints: Map<String, String>, account: String) {
         when (step) {
-            is SyncStep.Create -> send(step.uid, basedOn = null, fingerprints = fingerprints)
-            is SyncStep.Update -> send(step.uid, basedOn = step.basedOn, fingerprints = fingerprints)
+            is SyncStep.Create -> send(account, step.uid, basedOn = null, fingerprints = fingerprints)
+            is SyncStep.Update -> send(account, step.uid, basedOn = step.basedOn, fingerprints = fingerprints)
             is SyncStep.KeepBoth -> {
                 // Theirs comes down first, so it is safe here even if the
                 // write below never happens.
-                adopt(api.board(step.uid), asCopy = true)
-                send(step.uid, basedOn = step.basedOn, fingerprints = fingerprints)
+                adopt(account, api.board(step.uid), asCopy = true)
+                send(account, step.uid, basedOn = step.basedOn, fingerprints = fingerprints)
             }
-            is SyncStep.Restore -> takeOver(api.board(step.uid))
-            is SyncStep.Adopt -> adopt(api.board(step.uid))
+            is SyncStep.Restore -> takeOver(account, api.board(step.uid))
+            is SyncStep.Adopt -> adopt(account, api.board(step.uid))
             is SyncStep.DiscardLocal -> {
                 dao.deleteBoardByUid(step.uid)
-                dao.forget(step.uid)
+                dao.forgetEverywhere(step.uid)
             }
             is SyncStep.Forget -> {
                 api.forget(step.uid)
-                dao.forget(step.uid)
+                dao.forget(account, step.uid)
             }
-            is SyncStep.Remember -> remember(step.uid, step.revision, fingerprints.getValue(step.uid))
+            is SyncStep.Remember -> remember(account, step.uid, step.revision, fingerprints.getValue(step.uid))
         }
     }
 
@@ -184,14 +205,14 @@ class BoardSyncEngine @Inject constructor(
      * On a refused write the account's copy is kept beside ours under a new
      * uid, then ours goes up against the revision the refusal named.
      */
-    private suspend fun send(uid: String, basedOn: Int?, fingerprints: Map<String, String>) {
+    private suspend fun send(account: String, uid: String, basedOn: Int?, fingerprints: Map<String, String>) {
         val board = dao.boardByUid(uid) ?: return
         val fingerprint = fingerprints[uid] ?: fingerprintOf(board)
         val answer = api.keep(uid, request(board, fingerprint, basedOn))
 
         if (answer.isSuccessful) {
             val revision = answer.body()?.revision ?: error("The account kept $uid but named no revision")
-            return remember(uid, revision, fingerprint)
+            return remember(account, uid, revision, fingerprint)
         }
         // Thrown rather than logged and returned: the run counts it as refused,
         // so the last-synced time stays put and the stuck banner can show.
@@ -201,13 +222,13 @@ class BoardSyncEngine @Inject constructor(
         // Same content, so take the missed number and stop -- otherwise a
         // kill at the wrong moment leaves a copy of your own board every time.
         if (theirs.fingerprint != null && theirs.fingerprint == fingerprint) {
-            return remember(uid, theirs.revision, fingerprint)
+            return remember(account, uid, theirs.revision, fingerprint)
         }
 
-        adopt(theirs, asCopy = true)
+        adopt(account, theirs, asCopy = true)
         val second = api.keep(uid, request(board, fingerprint, basedOn = theirs.revision))
         if (!second.isSuccessful) throw HttpException(second)
-        second.body()?.let { remember(uid, it.revision, fingerprint) }
+        second.body()?.let { remember(account, uid, it.revision, fingerprint) }
     }
 
     private fun conflictBoard(answer: Response<*>): KeptBoardDto? {
@@ -217,10 +238,10 @@ class BoardSyncEngine @Inject constructor(
     }
 
     /** The account's copy replaces what is here, uid and all. */
-    private suspend fun takeOver(incoming: KeptBoardDto) {
-        val existing = dao.boardByUid(incoming.uid) ?: return adopt(incoming)
+    private suspend fun takeOver(account: String, incoming: KeptBoardDto) {
+        val existing = dao.boardByUid(incoming.uid) ?: return adopt(account, incoming)
         dao.replaceContents(incoming.toEntity(existing.id, existing.uid).keepingLocalFieldsOf(existing), incoming.tiers(images::pathFor))
-        remember(incoming.uid, incoming.revision, fingerprintOf(dao.boardByUid(incoming.uid) ?: return))
+        remember(account, incoming.uid, incoming.revision, fingerprintOf(dao.boardByUid(incoming.uid) ?: return))
     }
 
     /**
@@ -228,7 +249,7 @@ class BoardSyncEngine @Inject constructor(
      * when it lost to the board already here -- two boards a person can sort
      * out, a silent overwrite they cannot.
      */
-    private suspend fun adopt(incoming: KeptBoardDto, asCopy: Boolean = false) {
+    private suspend fun adopt(account: String, incoming: KeptBoardDto, asCopy: Boolean = false) {
         val uid = if (asCopy) UUID.randomUUID().toString() else incoming.uid
         dao.addBoard(
             board = incoming.toEntity(id = 0, uid = uid).copy(
@@ -244,12 +265,13 @@ class BoardSyncEngine @Inject constructor(
         if (asCopy) return
 
         val stored = dao.boardByUid(uid) ?: return
-        remember(uid, incoming.revision, fingerprintOf(stored))
+        remember(account, uid, incoming.revision, fingerprintOf(stored))
     }
 
-    private suspend fun remember(uid: String, revision: Int, fingerprint: String) {
+    private suspend fun remember(account: String, uid: String, revision: Int, fingerprint: String) {
         dao.remember(
             BoardSyncEntity(
+                account = account,
                 listUid = uid,
                 revision = revision,
                 fingerprint = fingerprint,

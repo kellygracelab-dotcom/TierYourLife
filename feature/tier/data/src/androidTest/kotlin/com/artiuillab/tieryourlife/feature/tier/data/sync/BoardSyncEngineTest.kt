@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Community
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.IncomingTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.TierDatabase
+import com.artiuillab.tieryourlife.feature.tier.data.local.entity.BoardSyncEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
@@ -72,12 +73,14 @@ class BoardSyncEngineTest {
         backUp: Boolean = true,
         preferences: FakeAppPreferences = FakeAppPreferences(backUpBoards = backUp),
         community: CommunityRepository = FakeCommunityRepository(),
+        api: BoardsApi = boards,
+        accounts: FakeAccountRepository = FakeAccountRepository(initial = account),
     ): BoardSyncEngine {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         return BoardSyncEngine(
             dao = dao,
-            api = boards,
-            accounts = FakeAccountRepository(initial = account),
+            api = api,
+            accounts = accounts,
             json = networkJson,
             images = images,
             pictures = PictureSync(dao, images, NoPictures, preferences, Metered),
@@ -216,6 +219,114 @@ class BoardSyncEngineTest {
         assertEquals(emptyList<String>(), dao.allBoards().mapNotNull { it.publishedId })
     }
 
+    // The review's case: Bob throws away a board on this phone before his first
+    // sync, and Ann signing back in must not take it out of her account.
+    @Test
+    fun aBoardThrownAwayUnderAnotherAccount_staysInTheFirstAccount() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        val annBoards = FakeBoards()
+        engine(account = ann, api = annBoards).sync()
+
+        throwAway(uid, signedInAs = "bob")
+        engine(account = ann, api = annBoards).sync()
+
+        assertTrue(uid in annBoards.server)
+        assertNotNull("back from Ann's account", dao.boardByUid(uid))
+    }
+
+    @Test
+    fun aBoardThrownAwayUnderTheSameAccount_leavesItsAccount() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        val annBoards = FakeBoards()
+        engine(account = ann, api = annBoards).sync()
+
+        throwAway(uid, signedInAs = "ann")
+        engine(account = ann, api = annBoards).sync()
+
+        assertFalse(uid in annBoards.server)
+    }
+
+    @Test
+    fun anotherAccountsRun_leavesTheFirstAccountsRecordsAsTheyWere() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        val annBoards = FakeBoards()
+        engine(account = ann, api = annBoards).sync()
+        annBoards.server[uid] = annBoards.server.getValue(uid).copy(revision = 6)
+        engine(account = ann, api = annBoards).sync()
+
+        engine(account = bob, api = FakeBoards()).sync()
+
+        assertEquals(listOf(6), dao.syncRecordsOf("ann").map { it.revision })
+        assertEquals(listOf(1), dao.syncRecordsOf("bob").map { it.revision })
+    }
+
+    // Bob's account let go of a board they share; that is Bob's delete, not Ann's.
+    @Test
+    fun aBoardDiscardedForAnotherAccount_comesBackForTheFirst() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        val annBoards = FakeBoards()
+        engine(account = ann, api = annBoards).sync()
+        val bobBoards = FakeBoards()
+        bobBoards.server[uid] = theirBoard(uid, title = "Films", revision = 2).copy(deleted = true)
+
+        engine(account = bob, api = bobBoards).sync()
+        assertNull(dao.boardByUid(uid))
+        engine(account = ann, api = annBoards).sync()
+
+        assertTrue(uid in annBoards.server)
+        assertNotNull(dao.boardByUid(uid))
+    }
+
+    @Test
+    fun aSignInMidRun_stopsTheRestOfThePlan() = runBlocking {
+        givenLocalBoard("Films")
+        givenLocalBoard("Games")
+        val accounts = FakeAccountRepository(initial = ann)
+        val annBoards = FakeBoards().apply { onKeep = { accounts.accounts.value = bob } }
+
+        val report = engine(api = annBoards, accounts = accounts).sync()
+
+        assertEquals(1, annBoards.kept.size)
+        assertEquals(1, report.carried)
+        assertEquals(1, report.refused)
+    }
+
+    @Test
+    fun rowsFromBeforeAccounts_areTakenForBoardsStillHere_andDroppedForBoardsGone() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        val annBoards = FakeBoards()
+        annBoards.server[uid] = theirBoard(uid, title = "Films", revision = 4, fingerprint = fingerprintOf(uid))
+        annBoards.server["gone"] = theirBoard("gone", title = "Games", revision = 2)
+        dao.remember(BoardSyncEntity(BoardSyncEntity.UNCLAIMED, uid, revision = 4, fingerprint = fingerprintOf(uid), syncedAt = 0))
+        dao.remember(BoardSyncEntity(BoardSyncEntity.UNCLAIMED, "gone", revision = 2, fingerprint = "theirs", syncedAt = 0))
+
+        engine(account = ann, api = annBoards).sync()
+
+        assertTrue("not read as a delete", "gone" in annBoards.server)
+        assertEquals(1, dao.boardsInUse().count { it.uid == uid })
+        assertTrue(dao.syncRecordsOf(BoardSyncEntity.UNCLAIMED).isEmpty())
+        assertEquals(setOf(uid, "gone"), dao.syncRecordsOf("ann").map { it.listUid }.toSet())
+    }
+
+    @Test
+    fun aBoardDeletedOnItsOwnUnderAnotherAccount_staysInTheFirstAccount() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        val annBoards = FakeBoards()
+        engine(account = ann, api = annBoards).sync()
+
+        throwAway(uid, signedInAs = "bob", alone = true)
+        engine(account = ann, api = annBoards).sync()
+
+        assertTrue(uid in annBoards.server)
+    }
+
+    private suspend fun throwAway(uid: String, signedInAs: String, alone: Boolean = false) {
+        val tiers = database.tierDao()
+        val id = dao.boardByUid(uid)!!.id
+        tiers.markTierListsDeleted(listOf(id), deletedAt = 1)
+        if (alone) tiers.deleteTierListPermanently(id, account = signedInAs) else tiers.emptyTrash(account = signedInAs)
+    }
+
     private class Publishing(private vararg val ids: String) : FakeCommunityRepository() {
         override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(
             ids.map { PublishedListSummary(id = it, title = it, authorUid = "", authorName = "", category = "other", itemCount = 1, updatedAtMillis = 0) },
@@ -263,6 +374,7 @@ class BoardSyncEngineTest {
         var refuseNextWith: KeptBoardDto? = null
         var keepFails = false
         var refuseWithCode: Int? = null
+        var onKeep: () -> Unit = {}
 
         override suspend fun index(after: String?) = KeptBoardIndexDto(
             server.values.map { KeptBoardSummaryDto(it.uid, it.revision, it.deleted, it.fingerprint) },
@@ -279,6 +391,7 @@ class BoardSyncEngineTest {
                 return Response.error(HTTP_CONFLICT, body.toResponseBody("application/json".toMediaType()))
             }
             kept += uid to request
+            onKeep()
             val revision = (server[uid]?.revision ?: 0) + 1
             server[uid] = KeptBoardDto(uid = uid, revision = revision, fingerprint = request.fingerprint, title = request.title)
             return Response.success(KeptBoardRevisionDto(uid, revision))
@@ -304,5 +417,7 @@ class BoardSyncEngineTest {
 
     private companion object {
         const val HTTP_CONFLICT = 409
+        val ann = Account.SignedIn(email = "ann@example.com", photoUrl = null, uid = "ann")
+        val bob = Account.SignedIn(email = "bob@example.com", photoUrl = null, uid = "bob")
     }
 }
