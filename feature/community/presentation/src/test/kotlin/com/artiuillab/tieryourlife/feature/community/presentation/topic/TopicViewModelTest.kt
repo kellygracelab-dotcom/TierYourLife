@@ -15,6 +15,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.feed.Community
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
@@ -105,9 +107,9 @@ class TopicViewModelTest {
         viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }
 
         viewModel.selectSort(FeedSort.Recent)
-        viewModel.state.firstWithin { it.sort == FeedSort.Recent && it.feed is CommunityFeed.Ready && community.sortsAsked.size == 2 }
+        val asked = community.sortsAsked.firstWithin { it.size == 2 }
 
-        assertEquals(listOf(FeedSort.Popular, FeedSort.Recent), community.sortsAsked)
+        assertEquals(listOf(FeedSort.Popular, FeedSort.Recent), asked)
     }
 
     @Test
@@ -175,7 +177,10 @@ private class TopicFake(
     private val recentGate: CompletableDeferred<Unit>? = null,
 ) : FakeCommunityRepository() {
     val topicsAsked = mutableListOf<String?>()
-    val sortsAsked = mutableListOf<FeedSort>()
+
+    // A flow, not a list: waiting on the view model's state cannot see it change,
+    // since the state after the second answer equals the one before it.
+    val sortsAsked = MutableStateFlow<List<FeedSort>>(emptyList())
     val followAsked = CompletableDeferred<String>()
     val reported = CompletableDeferred<Pair<String, ReportReason>>()
 
@@ -192,7 +197,7 @@ private class TopicFake(
         topic: String?,
     ): Result<CommunityPage> {
         topicsAsked += topic
-        sortsAsked += sort
+        sortsAsked.update { it + sort }
         if (sort == FeedSort.Recent && recentGate != null) {
             recentGate.await()
             return Result.success(CommunityPage(emptyList()))
