@@ -11,20 +11,8 @@
     <string name="community_following_nobody">Вы пока ни на кого не подписаны.</string>
     <string name="community_author_unnamed">Автор</string>
     <string name="author_failed">Не удалось открыть профиль.</string>
-    <plurals name="author_followers_count">
-        <item quantity="one">%d подписчик</item>
-        <item quantity="few">%d подписчика</item>
-        <item quantity="many">%d подписчиков</item>
-        <item quantity="other">%d подписчика</item>
-    </plurals>
     <string name="author_no_public_lists">Публичных списков нет</string>
     <string name="author_no_public_lists_body">Копии, которые вы уже сохранили, ваши и никуда не денутся.</string>
-    <plurals name="author_public_lists">
-        <item quantity="one">%1$d публичный список</item>
-        <item quantity="few">%1$d публичных списка</item>
-        <item quantity="many">%1$d публичных списков</item>
-        <item quantity="other">%1$d публичного списка</item>
-    </plurals>
     <string name="author_unavailable">Этот профиль недоступен</string>
     <string name="author_unavailable_body">Его списки есть в ленте — открывайте их оттуда.</string>
     <string name="ban_forever">Навсегда</string>
@@ -163,18 +151,6 @@
     <string name="moderation_remove_moderator">Снять</string>
     <string name="author_make_moderator">Сделать %1$s модератором</string>
     <string name="author_remove_moderator">Снять %1$s с модерации</string>
-    <plurals name="topic_lists">
-        <item quantity="one">%d список</item>
-        <item quantity="few">%d списка</item>
-        <item quantity="many">%d списков</item>
-        <item quantity="other">%d списка</item>
-    </plurals>
-    <plurals name="topic_followers">
-        <item quantity="one">%d подписчик</item>
-        <item quantity="few">%d подписчика</item>
-        <item quantity="many">%d подписчиков</item>
-        <item quantity="other">%d подписчика</item>
-    </plurals>
     <string name="home_following_empty_topics">Из тем, на которые вы подписаны, пока ничего нет.</string>
     <string name="moderation_action_move">Переместить…</string>
     <string name="moderation_moderators_unavailable">Не удалось прочитать список модераторов.</string>
@@ -207,7 +183,6 @@
     <string name="explore_try_again">Попробовать снова</string>
     <string name="explore_follow">Подписаться</string>
     <string name="explore_following">Вы подписаны</string>
-    <string name="explore_tile_description">%1$s, %2$s</string>
     <string name="explore_search_hint">Поиск по сообществу</string>
     <string name="explore_search_nothing">Ничего не нашлось.</string>
     <string name="section_all">Все</string>
@@ -220,7 +195,6 @@
     <string name="section_waiting_body">Модератор её посмотрит. Ваши списки появятся здесь после одобрения, а пока они в разделе «%1$s».</string>
     <string name="section_waiting_only_you">До тех пор эту тему видите только вы.</string>
     <string name="section_ok">OK</string>
-    <string name="section_counts">%1$s · %2$s</string>
     <string name="section_share_text">%1$s в TierYourLife</string>
     <string name="following_strip_manage">Управлять</string>
     <string name="following_reason_section">В разделе «%1$s»</string>
@@ -232,37 +206,12 @@
     <string name="manage_sections">Разделы · %1$d</string>
     <string name="manage_topics">Темы · %1$d</string>
     <string name="manage_people">Люди · %1$d</string>
-    <string name="manage_topic_supporting">В разделе «%1$s» · %2$s</string>
     <string name="manage_waiting_supporting">В разделе «%1$s» · ждёт модератора</string>
-    <plurals name="explore_new_this_week">
-        <item quantity="one">%1$s новый за неделю</item>
-        <item quantity="few">%1$s новых за неделю</item>
-        <item quantity="many">%1$s новых за неделю</item>
-        <item quantity="other">%1$s нового за неделю</item>
-    </plurals>
     <plurals name="explore_cards">
         <item quantity="one">%1$s карточка</item>
         <item quantity="few">%1$s карточки</item>
         <item quantity="many">%1$s карточек</item>
         <item quantity="other">%1$s карточки</item>
-    </plurals>
-    <plurals name="explore_rankings">
-        <item quantity="one">%1$s ранжирование</item>
-        <item quantity="few">%1$s ранжирования</item>
-        <item quantity="many">%1$s ранжирований</item>
-        <item quantity="other">%1$s ранжирования</item>
-    </plurals>
-    <plurals name="explore_followers">
-        <item quantity="one">%1$s подписчик</item>
-        <item quantity="few">%1$s подписчика</item>
-        <item quantity="many">%1$s подписчиков</item>
-        <item quantity="other">%1$s подписчика</item>
-    </plurals>
-    <plurals name="explore_lists">
-        <item quantity="one">%1$s список</item>
-        <item quantity="few">%1$s списка</item>
-        <item quantity="many">%1$s списков</item>
-        <item quantity="other">%1$s списка</item>
     </plurals>
     <string name="community_save_short">Сохранить</string>
     <plurals name="moderation_open_count">
@@ -337,12 +286,6 @@
     <string name="community_action_sign_in">Войти</string>
     <string name="community_your_list_badge">Ваш список</string>
     <string name="community_own_published">Опубликован</string>
-    <plurals name="community_own_published_rankings">
-        <item quantity="one">Опубликован · %1$d рейтинг</item>
-        <item quantity="few">Опубликован · %1$d рейтинга</item>
-        <item quantity="many">Опубликован · %1$d рейтингов</item>
-        <item quantity="other">Опубликован · %1$d рейтинга</item>
-    </plurals>
     <string name="community_own_anonymous">Анонимно · только вы видите, что он ваш</string>
     <string name="community_own_list_line">Так его видят посетители. Изменения — на вашей доске.</string>
     <string name="community_restore_from_trash">Вернуть из корзины</string>

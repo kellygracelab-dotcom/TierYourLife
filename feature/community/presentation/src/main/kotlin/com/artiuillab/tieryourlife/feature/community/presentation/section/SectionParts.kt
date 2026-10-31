@@ -62,11 +62,9 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.Body13Style
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowSize
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowToggle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScheduleIcon
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.countText
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.edgeToEdge
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.TopicSquare
 import com.artiuillab.tieryourlife.feature.tier.board.common.label
@@ -94,20 +92,9 @@ internal object SectionTestTags {
 
 internal val SectionTitleStyle = TextStyle(fontSize = 28.sp, lineHeight = 36.sp)
 
-/** Followers and lists, in one line under the name. */
-@Composable
-internal fun sectionCounts(stats: Section?): String? {
-    stats ?: return null
-    return stringResource(
-        R.string.section_counts,
-        countText(R.plurals.explore_followers, stats.followerCount),
-        countText(R.plurals.explore_lists, stats.listCount),
-    )
-}
-
 /**
  * The expanded header (§3.1): the four top covers, or the section's art when
- * fewer qualify, under a scrim, with the name, the counts and Follow.
+ * fewer qualify, under a scrim, with the name and Follow.
  */
 @Composable
 internal fun SectionHeader(
@@ -150,12 +137,7 @@ internal fun SectionHeader(
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Column(Modifier.weight(1f)) {
-                Text(section.label(), style = SectionTitleStyle, color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                sectionCounts(stats)?.let { counts ->
-                    Text(counts, style = Body13Style, color = Color.White.copy(alpha = 0.92f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-                }
-            }
+            Text(section.label(), Modifier.weight(1f), style = SectionTitleStyle, color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
             FollowToggle(following = stats?.following == true, onClick = onToggleFollow)
         }
     }
@@ -282,7 +264,7 @@ private fun WaitingChip(name: String, modifier: Modifier, onClick: () -> Unit) {
     }
 }
 
-/** Under the chips while a topic is chosen (§3.2): what it is, how many follow it, and its own Follow. */
+/** Under the chips while a topic is chosen (§3.2): what it is, and its own Follow. */
 @Composable
 internal fun TopicRow(topic: Topic, sectionId: String, onToggleFollow: () -> Unit) {
     Column(Modifier.testTag(SectionTestTags.TOPIC_ROW)) {
@@ -295,29 +277,23 @@ internal fun TopicRow(topic: Topic, sectionId: String, onToggleFollow: () -> Uni
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             TopicSquare(topic.section ?: sectionId, 36.dp, 18.dp, topic.pictureUrl)
-            Column(Modifier.weight(1f)) {
-                Text(topic.name, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(
-                    stringResource(
-                        R.string.section_counts,
-                        countText(R.plurals.explore_followers, topic.followerCount),
-                        countText(R.plurals.explore_lists, topic.listCount),
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
+            Text(
+                topic.name,
+                Modifier.weight(1f),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
             FollowToggle(following = topic.following, onClick = onToggleFollow, size = FollowSize.Topic)
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 
-/** How many lists, and Popular or Newest from a menu (§3.1). */
+/** Popular or Newest from a menu, at the end of the row (§3.1). */
 @Composable
-internal fun SortRow(listCount: Int?, sort: FeedSort, onSort: (FeedSort) -> Unit) {
+internal fun SortRow(sort: FeedSort, onSort: (FeedSort) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Row(
         Modifier
@@ -326,12 +302,7 @@ internal fun SortRow(listCount: Int?, sort: FeedSort, onSort: (FeedSort) -> Unit
             .testTag(SectionTestTags.SORT),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            listCount?.let { countText(R.plurals.explore_lists, it) }.orEmpty(),
-            modifier = Modifier.weight(1f),
-            style = Body13Style,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Spacer(Modifier.weight(1f))
         Box {
             TextButton(onClick = { open = true }) {
                 Text(stringResource(sort.labelRes), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface)

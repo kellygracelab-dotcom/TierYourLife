@@ -348,7 +348,6 @@ private fun MiniTile(section: Section, following: Boolean, onFollow: () -> Unit,
     Box(modifier.height(84.dp)) {
         SectionTile(
             section = section,
-            newThisWeek = null,
             following = following,
             onOpen = onFollow,
             onFollow = onFollow,

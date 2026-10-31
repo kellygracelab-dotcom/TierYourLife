@@ -252,7 +252,6 @@ private fun SectionsGrid(
         items(shown, key = { it.id }) { section ->
             SectionTile(
                 section = section,
-                newThisWeek = section.newThisWeek.takeIf { state.countsKnown && !section.isOther },
                 following = section.following,
                 onOpen = { calls.onOpenSection(section.id) },
                 onFollow = { calls.onFollow(section.id) },

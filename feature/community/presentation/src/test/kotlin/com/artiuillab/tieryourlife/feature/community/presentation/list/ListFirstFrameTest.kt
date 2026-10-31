@@ -88,7 +88,7 @@ class ListFirstFrameTest {
         assertTrue(first.list.tiers.flatMap { it.items }.all { it.title.isEmpty() && it.imageUrl == null })
         assertEquals(listOf("#B03A32", "#C06A25"), first.list.tiers.dropLast(1).map { it.colorLight })
         assertEquals(listOf("#F1948C", "#E9A867"), first.list.tiers.dropLast(1).map { it.colorDark })
-        assertEquals(FollowState(following = true, followers = 0), first.follow)
+        assertEquals(FollowState(following = true), first.follow)
         assertEquals(summary.basedOn, first.basedOn)
         assertEquals("danylo", first.authorName)
         assertEquals(13, first.rankingCount)
@@ -135,7 +135,7 @@ class ListFirstFrameTest {
         val loaded = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.follow != null } as CommunityListUiState.Success
 
         assertEquals(1, community.followStateAsked)
-        assertEquals(FollowState(following = false, followers = 7), loaded.follow)
+        assertEquals(FollowState(following = false), loaded.follow)
     }
 
     @Test
@@ -295,6 +295,6 @@ private class Answering(
 
     override suspend fun followState(authorUid: String): Result<FollowState> {
         followStateAsked++
-        return Result.success(FollowState(following = false, followers = 7))
+        return Result.success(FollowState(following = false))
     }
 }

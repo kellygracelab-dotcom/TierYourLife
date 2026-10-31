@@ -36,7 +36,7 @@ class RankingsInTheMenuTest {
             Tier(id = -1, label = "Unranked", colorLight = "#DAD7E0", colorDark = "#46464F", isPool = true, items = emptyList()),
         ),
     )
-    private val theirs = CommunityListUiState.Success(list = board, authorName = "danylo", authorUid = "danylo", rankingCount = 13, takeCount = 40)
+    private val theirs = CommunityListUiState.Success(list = board, authorName = "danylo", authorUid = "danylo", rankingCount = 13)
 
     private var asked = 0
 

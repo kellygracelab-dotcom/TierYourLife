@@ -156,9 +156,6 @@
     <string name="topic_picker_merged">別のトピックに統合</string>
     <string name="topic_picker_suggestion">「%1$s」に似ています</string>
     <string name="topic_picker_new_waits">%1$s · 承認待ちになります</string>
-    <plurals name="topic_picker_lists">
-        <item quantity="other">%d件のリスト</item>
-    </plurals>
     <string name="cover_picker_status_automatic">未選択: リスト自身の画像を最大6枚</string>
     <string name="cover_picker_status_one">1枚の画像がカバー全体になります</string>
     <plurals name="cover_picker_status_collage">

@@ -211,14 +211,6 @@
     <string name="topic_picker_merged">ضُمّ إلى موضوع آخر</string>
     <string name="topic_picker_suggestion">يشبه «%1$s»</string>
     <string name="topic_picker_new_waits">%1$s · سينتظر الموافقة</string>
-    <plurals name="topic_picker_lists">
-        <item quantity="zero">لا قوائم</item>
-        <item quantity="one">قائمة واحدة</item>
-        <item quantity="two">قائمتان</item>
-        <item quantity="few">%d قوائم</item>
-        <item quantity="many">%d قائمة</item>
-        <item quantity="other">%d قائمة</item>
-    </plurals>
     <string name="cover_picker_status_automatic">لم يُختر شيء: حتى ست صور من القائمة نفسها</string>
     <string name="cover_picker_status_one">صورة واحدة، الغلاف كله</string>
     <plurals name="cover_picker_status_collage">

@@ -123,7 +123,7 @@ class RetrofitCommunityRepository @Inject constructor(
     override suspend fun followState(authorUid: String): Result<FollowState> =
         attempt("Reading whether an author is followed") {
             val state = api.followState(authorUid)
-            FollowState(following = state.following, followers = state.followers)
+            FollowState(following = state.following)
         }
 
     override suspend fun following(): Result<Following> =
@@ -132,7 +132,7 @@ class RetrofitCommunityRepository @Inject constructor(
             Following(
                 authors = answer.authors.map { FollowedAuthor(uid = it.uid, name = it.name, photoUrl = it.photoUrl) },
                 topics = answer.topics.map { it.toDomain() },
-                sections = answer.sections.map { FollowedSection(id = it.id, followerCount = it.followerCount) },
+                sections = answer.sections.map { FollowedSection(id = it.id) },
             )
         }
 
@@ -230,7 +230,7 @@ class RetrofitCommunityRepository @Inject constructor(
                 // Nobody to follow behind a list that stands without an author.
                 .filterNot { EditorialAuthors.isEditorial(it.uid) }
                 .map {
-                    SuggestedAuthor(uid = it.uid, name = it.name, photoUrl = it.photoUrl, takeCount = it.takeCount)
+                    SuggestedAuthor(uid = it.uid, name = it.name, photoUrl = it.photoUrl)
                 }
         }
 
@@ -399,7 +399,6 @@ private fun TopicDto.toDomain() = Topic(
     name = name,
     section = section?.takeIf { it.isNotBlank() },
     status = TopicStatus.fromId(status),
-    listCount = listCount,
     followerCount = followerCount,
     following = following,
     createdBy = createdBy,
@@ -413,7 +412,6 @@ private fun PendingTopicDto.toDomain() = PendingTopic(
         name = name,
         section = section?.takeIf { it.isNotBlank() },
         status = TopicStatus.fromId(status),
-        listCount = listCount,
         followerCount = followerCount,
         following = following,
         createdBy = createdBy,
@@ -438,7 +436,6 @@ internal fun PublishedListSummaryDto.toSummary(me: String? = null) = PublishedLi
     previewImages = previewImages.mapNotNull { it.webPictureOrNull() },
     tierColors = tierColors,
     updatedAtMillis = updatedAt,
-    takeCount = takeCount,
     anonymous = anonymous,
     topicId = topicId,
     topicName = topicName,
@@ -467,7 +464,6 @@ internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
         previewImages = previewImages.mapNotNull { it.webPictureOrNull() },
         tierColors = tierColors,
         updatedAtMillis = updatedAt,
-        takeCount = takeCount,
         anonymous = anonymous,
         topicId = topicId,
         topicName = topicName,
@@ -580,7 +576,6 @@ internal fun PublishedListSummary.toDto() = PublishedListSummaryDto(
     previewImages = previewImages,
     tierColors = tierColors,
     updatedAt = updatedAtMillis,
-    takeCount = takeCount,
     anonymous = anonymous,
     topicId = topicId,
     topicName = topicName,
@@ -613,7 +608,6 @@ internal fun PublishedList.toDto() = PublishedListDto(
     anonymous = summary.anonymous,
     topicId = summary.topicId,
     topicName = summary.topicName,
-    takeCount = summary.takeCount,
     rankingCount = summary.rankingCount,
     basedOn = summary.basedOn?.let { BasedOnDto(id = it.id, title = it.title, authorUid = it.authorUid, authorName = it.authorName) },
     mine = summary.mine,

@@ -36,12 +36,10 @@ data class SearchResults(
     val failed: Boolean = false,
 )
 
-/** Explore (§2): the sections in the server's order, how many lists each has new, and the popular feed under them. */
+/** Explore (§2): the sections in the server's order, and the popular feed under them. */
 data class ExploreUiState(
     /** What the tiles draw: approved sections only. */
     val sections: List<Section> = Section.BUILT_IN,
-    /** False until the server has counted: the "new this week" lines stay hidden rather than say zero. */
-    val countsKnown: Boolean = false,
     val feed: FeedPane = FeedPane(),
     /** Non-null while the search bar is up. */
     val query: String? = null,
@@ -76,7 +74,6 @@ class ExploreViewModel @Inject constructor(
     val state: StateFlow<ExploreUiState> = combine(catalog.directory, feed.pane, query, results) { directory, pane, q, found ->
         ExploreUiState(
             sections = directory.shown,
-            countsKnown = directory.counted,
             feed = pane,
             query = q,
             results = found,

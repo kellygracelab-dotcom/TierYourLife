@@ -20,7 +20,6 @@ data class Topic(
     /** A section id; null while the topic waits: its lists sit under Other until a moderator places it. */
     val section: String?,
     val status: TopicStatus,
-    val listCount: Int = 0,
     val followerCount: Int = 0,
     val following: Boolean = false,
     val createdBy: String = "",

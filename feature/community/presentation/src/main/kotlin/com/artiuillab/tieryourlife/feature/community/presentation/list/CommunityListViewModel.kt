@@ -120,10 +120,7 @@ class CommunityListViewModel @Inject constructor(
     fun toggleFollow() {
         val current = _state.value as? CommunityListUiState.Success ?: return
         val was = current.follow ?: return
-        val now = was.copy(
-            following = !was.following,
-            followers = (was.followers + if (was.following) -1 else 1).coerceAtLeast(0),
-        )
+        val now = FollowState(following = !was.following)
         followTaps++
         _state.update { (it as CommunityListUiState.Success).copy(follow = now) }
 
@@ -219,10 +216,9 @@ class CommunityListViewModel @Inject constructor(
             // A tap made while this answer was on its way is newer than it.
             follow = before?.follow.takeIf { followTapped }
                 ?: answer.summary.viewerFollowsAuthor
-                    ?.let { FollowState(following = it, followers = before?.follow?.followers ?: 0) }
+                    ?.let { FollowState(following = it) }
                 ?: before?.follow,
             rankingCount = answer.summary.rankingCount,
-            takeCount = answer.summary.takeCount,
             basedOn = answer.summary.basedOn,
             section = answer.summary.category,
             own = own,
@@ -314,11 +310,7 @@ class CommunityListViewModel @Inject constructor(
             }
             _state.update { current ->
                 current as CommunityListUiState.Success
-                current.copy(
-                    saving = false,
-                    savedId = newId.takeIf { saved },
-                    takeCount = if (saved) current.takeCount + 1 else current.takeCount,
-                )
+                current.copy(saving = false, savedId = newId.takeIf { saved })
             }
             if (saved) {
                 // What the popular ordering counts. Its failure is not this

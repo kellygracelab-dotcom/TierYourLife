@@ -127,14 +127,11 @@ class TopicViewModel @Inject constructor(
         load()
     }
 
-    /** Answers before the server does; the count moves with the button, and both go back if the request fails. */
+    /** Answers before the server does, and goes back if the request fails. */
     fun toggleFollow() {
         val was = _state.value.topic ?: return
         if (was.status != TopicStatus.Approved) return
-        val now = was.copy(
-            following = !was.following,
-            followerCount = (was.followerCount + if (was.following) -1 else 1).coerceAtLeast(0),
-        )
+        val now = was.copy(following = !was.following)
         _state.update { it.copy(topic = now) }
         viewModelScope.launch {
             val result = if (now.following) community.followTopic(route.topicId) else community.unfollowTopic(route.topicId)

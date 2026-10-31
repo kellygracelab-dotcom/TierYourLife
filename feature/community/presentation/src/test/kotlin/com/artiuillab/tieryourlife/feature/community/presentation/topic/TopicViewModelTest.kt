@@ -31,7 +31,6 @@ private val pokemon = Topic(
     name = "Pokémon",
     section = ListCategory.Games.id,
     status = TopicStatus.Approved,
-    listCount = 12,
     followerCount = 3,
 )
 
@@ -122,7 +121,6 @@ class TopicViewModelTest {
 
         val now = viewModel.state.value.topic!!
         assertTrue(now.following)
-        assertEquals(4, now.followerCount)
         assertEquals("t1", withTimeout(WAIT_MILLIS) { community.followAsked.await() })
     }
 
@@ -133,7 +131,7 @@ class TopicViewModelTest {
 
         viewModel.toggleFollow()
 
-        val back = viewModel.state.firstWithin { it.topic?.following == false && it.topic.followerCount == 3 }
+        val back = viewModel.state.firstWithin { it.topic?.following == false }
         assertEquals(pokemon, back.topic)
     }
 

@@ -24,8 +24,6 @@ data class SectionDto(
     val approvedAt: Long? = null,
     val listCount: Int = 0,
     val lists30d: Int = 0,
-    val followerCount: Int = 0,
-    val newThisWeek: Int = 0,
     val following: Boolean = false,
     val collage: List<String> = emptyList(),
     val fileUnder: String? = null,
@@ -53,7 +51,7 @@ data class SectionProposalDto(val name: String, val icon: String, val pictureId:
 data class SectionMergedDto(val mergedInto: String? = null)
 
 @Serializable
-data class FollowedSectionDto(val id: String, val followerCount: Int = 0)
+data class FollowedSectionDto(val id: String)
 
 @Serializable
 data class SectionFollowDto(val following: Boolean = false)

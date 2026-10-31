@@ -62,23 +62,23 @@ class SectionDirectoryTest {
     }
 
     @Test
-    fun aFollowMadeHere_movesTheSectionFirst_andCountsIt() {
+    fun aFollowMadeHere_movesTheSectionFirst_andMarksIt() {
         val directory = SectionDirectory(sections = listOf(cars, boats, Section.BUILT_IN.last()))
 
         val after = directory.withFollowing("boats", now = true)
 
         assertEquals(listOf("boats", "cars", "other"), after.sections.map { it.id })
-        assertEquals(1, after.find("boats")?.followerCount)
+        assertEquals(true, after.find("boats")?.following)
     }
 
     @Test
     fun anUnfollow_putsTheSectionBackByItsLists() {
-        val directory = SectionDirectory(sections = listOf(boats.copy(following = true, followerCount = 3), cars))
+        val directory = SectionDirectory(sections = listOf(boats.copy(following = true), cars))
 
         val after = directory.withFollowing("boats", now = false)
 
         assertEquals(listOf("cars", "boats"), after.sections.map { it.id })
-        assertEquals(2, after.find("boats")?.followerCount)
+        assertEquals(false, after.find("boats")?.following)
     }
 
     @Test

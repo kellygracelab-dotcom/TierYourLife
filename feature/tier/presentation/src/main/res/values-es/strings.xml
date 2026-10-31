@@ -178,11 +178,6 @@
     <string name="topic_picker_merged">Unido a otro tema</string>
     <string name="topic_picker_suggestion">Se parece a «%1$s»</string>
     <string name="topic_picker_new_waits">%1$s · quedará pendiente de aprobación</string>
-    <plurals name="topic_picker_lists">
-        <item quantity="one">%d lista</item>
-        <item quantity="many">%d listas</item>
-        <item quantity="other">%d listas</item>
-    </plurals>
     <string name="cover_picker_status_automatic">Nada elegido: hasta seis imágenes de la propia lista</string>
     <string name="cover_picker_status_one">Una imagen, toda la portada</string>
     <plurals name="cover_picker_status_collage">

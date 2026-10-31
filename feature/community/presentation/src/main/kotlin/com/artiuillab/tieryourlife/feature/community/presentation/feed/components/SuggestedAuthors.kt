@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -32,7 +31,6 @@ import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedTestTags
-import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 /**
  * Following, from somebody who follows nobody yet.
@@ -108,24 +106,14 @@ private fun AuthorRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Face(author)
-            Column(Modifier.weight(1f)) {
-                Text(
-                    text = author.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Text(
-                    text = pluralStringResource(
-                        ThemeR.plurals.tier_lists_rankings_count,
-                        author.takeCount,
-                        author.takeCount,
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            Text(
+                text = author.name,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
             // Filled while it is an offer, outlined once it has been taken up:
             // the row stays where it is, so the change of shape is the only
             // thing saying the tap landed.

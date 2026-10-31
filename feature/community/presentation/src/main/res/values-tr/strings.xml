@@ -11,16 +11,8 @@
     <string name="community_following_nobody">Henüz kimseyi takip etmiyorsunuz.</string>
     <string name="community_author_unnamed">Yazar</string>
     <string name="author_failed">Bu profil açılamadı.</string>
-    <plurals name="author_followers_count">
-        <item quantity="one">%d takipçi</item>
-        <item quantity="other">%d takipçi</item>
-    </plurals>
     <string name="author_no_public_lists">Herkese açık liste yok</string>
     <string name="author_no_public_lists_body">Zaten kaydettiğiniz kopyalar sizindir ve yerinde kalır.</string>
-    <plurals name="author_public_lists">
-        <item quantity="one">%1$d herkese açık liste</item>
-        <item quantity="other">%1$d herkese açık liste</item>
-    </plurals>
     <string name="author_unavailable">Bu profil kullanılamıyor</string>
     <string name="author_unavailable_body">Listeleri akışta; herhangi birini oradan açabilirsin.</string>
     <string name="ban_forever">Sonsuza dek</string>
@@ -155,14 +147,6 @@
     <string name="moderation_remove_moderator">Kaldır</string>
     <string name="author_make_moderator">%1$s moderatör olsun</string>
     <string name="author_remove_moderator">%1$s moderatörlükten çıkarılsın</string>
-    <plurals name="topic_lists">
-        <item quantity="one">%d liste</item>
-        <item quantity="other">%d liste</item>
-    </plurals>
-    <plurals name="topic_followers">
-        <item quantity="one">%d takipçi</item>
-        <item quantity="other">%d takipçi</item>
-    </plurals>
     <string name="home_following_empty_topics">Takip ettiğiniz konulardan henüz bir şey yok.</string>
     <string name="moderation_action_move">Taşı…</string>
     <string name="moderation_moderators_unavailable">Moderatör listesi okunamadı.</string>
@@ -195,7 +179,6 @@
     <string name="explore_try_again">Tekrar dene</string>
     <string name="explore_follow">Takip et</string>
     <string name="explore_following">Takip ediliyor</string>
-    <string name="explore_tile_description">%1$s, %2$s</string>
     <string name="explore_search_hint">Toplulukta ara</string>
     <string name="explore_search_nothing">Eşleşen bir şey yok.</string>
     <string name="section_all">Tümü</string>
@@ -208,7 +191,6 @@
     <string name="section_waiting_body">Bir moderatör inceleyecek. Onaylanınca listeleriniz burada görünür; o zamana kadar %1$s bölümündeler.</string>
     <string name="section_waiting_only_you">O zamana kadar bu konuyu yalnızca siz görürsünüz.</string>
     <string name="section_ok">Tamam</string>
-    <string name="section_counts">%1$s · %2$s</string>
     <string name="section_share_text">TierYourLife’ta %1$s</string>
     <string name="following_strip_manage">Yönet</string>
     <string name="following_reason_section">%1$s bölümünde</string>
@@ -220,27 +202,10 @@
     <string name="manage_sections">Bölümler · %1$d</string>
     <string name="manage_topics">Konular · %1$d</string>
     <string name="manage_people">Kişiler · %1$d</string>
-    <string name="manage_topic_supporting">%1$s bölümünde · %2$s</string>
     <string name="manage_waiting_supporting">%1$s bölümünde · moderatör bekliyor</string>
-    <plurals name="explore_new_this_week">
-        <item quantity="one">bu hafta %1$s yeni</item>
-        <item quantity="other">bu hafta %1$s yeni</item>
-    </plurals>
     <plurals name="explore_cards">
         <item quantity="one">%1$s kart</item>
         <item quantity="other">%1$s kart</item>
-    </plurals>
-    <plurals name="explore_rankings">
-        <item quantity="one">%1$s sıralama</item>
-        <item quantity="other">%1$s sıralama</item>
-    </plurals>
-    <plurals name="explore_followers">
-        <item quantity="one">%1$s takipçi</item>
-        <item quantity="other">%1$s takipçi</item>
-    </plurals>
-    <plurals name="explore_lists">
-        <item quantity="one">%1$s liste</item>
-        <item quantity="other">%1$s liste</item>
     </plurals>
     <string name="community_save_short">Kaydet</string>
     <plurals name="moderation_open_count">
@@ -309,10 +274,6 @@
     <string name="community_action_sign_in">Giriş yap</string>
     <string name="community_your_list_badge">Senin listen</string>
     <string name="community_own_published">Yayında</string>
-    <plurals name="community_own_published_rankings">
-        <item quantity="one">Yayında · %1$d sıralama</item>
-        <item quantity="other">Yayında · %1$d sıralama</item>
-    </plurals>
     <string name="community_own_anonymous">Anonim · senin olduğunu yalnızca sen görüyorsun</string>
     <string name="community_own_list_line">Ziyaretçiler bunu görür. Değişiklikler panonda yapılır.</string>
     <string name="community_restore_from_trash">Çöp kutusundan geri al</string>

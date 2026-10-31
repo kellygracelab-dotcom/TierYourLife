@@ -59,7 +59,7 @@ internal object CoverHeights {
 
 /**
  * A published list in a feed (§1.4): the cover, then under it the title, the
- * author and the counts, with the reason it is here on the Following feed.
+ * author and how many cards, with the reason it is here on the Following feed.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -143,11 +143,7 @@ internal fun FeedCard(
 }
 
 @Composable
-private fun cardMeta(summary: PublishedListSummary): String {
-    val cards = countText(R.plurals.explore_cards, summary.itemCount)
-    if (summary.takeCount <= 0) return cards
-    return cards + " · " + countText(R.plurals.explore_rankings, summary.takeCount)
-}
+private fun cardMeta(summary: PublishedListSummary): String = countText(R.plurals.explore_cards, summary.itemCount)
 
 /** Left where the card was after hiding it: vanishing reads as deleted. */
 @Composable

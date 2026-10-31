@@ -350,19 +350,6 @@ class CommunityListViewModelTest {
         assertEquals(listOf("abc"), community.withdrawn)
     }
 
-    // The chip says how many copies were saved, the number every feed card shows.
-    @Test
-    fun theChipCountsSaves_andSavingOneMoreCountsAtOnce() = runBlocking {
-        val viewModel = viewModel(community = TestCommunity(takeCount = 9))
-        val opened = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
-        assertEquals(9, opened.takeCount)
-
-        viewModel.saveToMyLists(Showing.Mine)
-
-        val saved = viewModel.state.firstWithin { it.saved() } as CommunityListUiState.Success
-        assertEquals(10, saved.takeCount)
-    }
-
     private fun CommunityListUiState.saved() = (this as? CommunityListUiState.Success)?.savedId != null
 
     @Test
@@ -520,14 +507,14 @@ class CommunityListViewModelTest {
     // The open answer was read before the follow landed; the server followed, so the button must not go back.
     @Test
     fun aFollowTappedWhileTheListIsOnItsWay_isNotUndoneByTheAnswer() = runBlocking {
-        val community = TestCommunity(takeCount = 5, holdOpen = true, summary = { it.copy(viewerFollowsAuthor = false) })
+        val community = TestCommunity(holdOpen = true, summary = { it.copy(viewerFollowsAuthor = false, rankingCount = 5) })
         val kept = published.copy(summary = published.summary.copy(viewerFollowsAuthor = false))
         val viewModel = viewModel(community = community, accounts = signedIn, openedLists = FakeOpenedLists(kept))
         viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.follow != null }
 
         viewModel.toggleFollow()
         community.openHeld.complete(Unit)
-        val state = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.takeCount == 5 } as CommunityListUiState.Success
+        val state = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.rankingCount == 5 } as CommunityListUiState.Success
 
         assertEquals(true, state.follow?.following)
     }
@@ -588,7 +575,7 @@ class CommunityListViewModelTest {
 
     @Test
     fun showingMyRanking_sendsMineInTheListsOrder_andPutsMeFirstAsYou() = runBlocking {
-        val community = TestCommunity(takeCount = 0)
+        val community = TestCommunity()
         val viewModel = viewModel(community = community, accounts = signedIn)
         assertEquals(0, arranged(viewModel).rankingCount)
 
@@ -706,7 +693,6 @@ private val myOldRanking = Ranking(
 private class TestCommunity(
     private val rankings: List<Ranking> = emptyList(),
     private val refusesWithdrawal: Boolean = false,
-    private val takeCount: Int = 0,
     private val summary: (PublishedListSummary) -> PublishedListSummary = { it },
     private val shownIsNew: Boolean = true,
     private val showRefusal: RankingRefusal? = null,
@@ -749,7 +735,7 @@ private class TestCommunity(
 
     override suspend fun followState(authorUid: String): Result<FollowState> {
         followStateAsked++
-        return Result.success(FollowState(following = false, followers = 3))
+        return Result.success(FollowState(following = false))
     }
 
     override suspend fun report(publishedId: String, reason: ReportReason, note: String?): Result<Unit> {
@@ -765,7 +751,7 @@ private class TestCommunity(
         if (offline) return Result.failure(IllegalStateException("offline"))
         return Result.success(
             published.copy(
-                summary = summary(published.summary.copy(rankingCount = rankings.size, takeCount = takeCount)),
+                summary = summary(published.summary.copy(rankingCount = rankings.size)),
                 arrangement = arrangement,
             ),
         )

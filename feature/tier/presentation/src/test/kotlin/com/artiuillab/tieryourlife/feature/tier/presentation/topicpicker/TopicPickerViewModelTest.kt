@@ -16,9 +16,9 @@ import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 
-private val oscars = Topic(id = "t1", name = "Oscars", section = ListCategory.FilmTv.id, status = TopicStatus.Approved, listCount = 41)
-private val snubs = Topic(id = "t2", name = "Oscar snubs", section = ListCategory.FilmTv.id, status = TopicStatus.Approved, listCount = 6)
-private val pixar = Topic(id = "t3", name = "Pixar", section = ListCategory.FilmTv.id, status = TopicStatus.Approved, listCount = 12)
+private val oscars = Topic(id = "t1", name = "Oscars", section = ListCategory.FilmTv.id, status = TopicStatus.Approved)
+private val snubs = Topic(id = "t2", name = "Oscar snubs", section = ListCategory.FilmTv.id, status = TopicStatus.Approved)
+private val pixar = Topic(id = "t3", name = "Pixar", section = ListCategory.FilmTv.id, status = TopicStatus.Approved)
 
 private fun pending(n: Int) = Topic(id = "p$n", name = "Waiting $n", section = null, status = TopicStatus.Pending, createdBy = "me")
 

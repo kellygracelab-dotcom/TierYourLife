@@ -168,6 +168,5 @@ internal val SectionLook.topicIconNow: Color
 
 /** On section art, the same in both themes. */
 internal val SectionLabel = Color.White
-internal val SectionNewLine = Color.White.copy(alpha = 0.88f)
 internal val TileScrimTop = Color.Black.copy(alpha = 0.05f)
 internal val TileScrimBottom = Color.Black.copy(alpha = 0.62f)

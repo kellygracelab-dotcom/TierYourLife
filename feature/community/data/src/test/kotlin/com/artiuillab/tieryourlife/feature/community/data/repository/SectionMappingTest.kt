@@ -50,14 +50,14 @@ class SectionMappingTest {
 
     @Test
     fun `today's answer, counts and nothing else, still gives the nine with their own icons`() {
-        val answer = listOf(SectionDto(id = "anime", listCount = 5), SectionDto(id = "other"), SectionDto(id = "food", newThisWeek = 22))
+        val answer = listOf(SectionDto(id = "anime", listCount = 5), SectionDto(id = "other"), SectionDto(id = "food", lists30d = 22))
 
         val sections = sectionsFrom(answer)
 
         assertEquals(listOf("anime", "food", "other"), sections.map { it.id })
         assertEquals("animation", sections.first().icon)
         assertTrue(sections.all { it.builtIn && it.status == SectionStatus.Approved && it.tint == null && it.name.isEmpty() })
-        assertEquals(22, sections[1].newThisWeek)
+        assertEquals(22, sections[1].lists30d)
     }
 
     @Test

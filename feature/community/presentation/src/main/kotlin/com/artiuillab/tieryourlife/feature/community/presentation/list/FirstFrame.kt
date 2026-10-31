@@ -41,7 +41,7 @@ internal fun ListPreview.firstFrame(listId: String, signedIn: Boolean): Communit
         authorPhotoUrl = authorPhotoUrl,
         editorial = authorName == null,
         byNobody = byNobody,
-        follow = viewerFollowsAuthor?.let { FollowState(following = it, followers = 0) },
+        follow = viewerFollowsAuthor?.let { FollowState(following = it) },
         rankingCount = rankingCount,
         basedOn = basedOn,
         section = section,

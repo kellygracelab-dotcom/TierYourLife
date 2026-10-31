@@ -189,12 +189,6 @@
     <string name="topic_picker_merged">Scalony z innym tematem</string>
     <string name="topic_picker_suggestion">Wygląda jak „%1$s”</string>
     <string name="topic_picker_new_waits">%1$s · poczeka na zatwierdzenie</string>
-    <plurals name="topic_picker_lists">
-        <item quantity="one">%d lista</item>
-        <item quantity="few">%d listy</item>
-        <item quantity="many">%d list</item>
-        <item quantity="other">%d listy</item>
-    </plurals>
     <string name="cover_picker_status_automatic">Nic nie wybrano: do sześciu obrazów z samej listy</string>
     <string name="cover_picker_status_one">Jeden obraz, cała okładka</string>
     <plurals name="cover_picker_status_collage">

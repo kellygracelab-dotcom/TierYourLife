@@ -11,16 +11,8 @@
     <string name="community_following_nobody">Du folgst noch niemandem.</string>
     <string name="community_author_unnamed">Autor</string>
     <string name="author_failed">Dieses Profil konnte nicht geladen werden.</string>
-    <plurals name="author_followers_count">
-        <item quantity="one">%d Abonnent</item>
-        <item quantity="other">%d Abonnenten</item>
-    </plurals>
     <string name="author_no_public_lists">Keine öffentlichen Listen</string>
     <string name="author_no_public_lists_body">Kopien, die du bereits gespeichert hast, gehören dir und bleiben, wo sie sind.</string>
-    <plurals name="author_public_lists">
-        <item quantity="one">%1$d öffentliche Liste</item>
-        <item quantity="other">%1$d öffentliche Listen</item>
-    </plurals>
     <string name="author_unavailable">Dieses Profil ist nicht verfügbar</string>
     <string name="author_unavailable_body">Seine Listen stehen im Feed, dort kannst du jede davon öffnen.</string>
     <string name="ban_forever">Für immer</string>
@@ -155,14 +147,6 @@
     <string name="moderation_remove_moderator">Entfernen</string>
     <string name="author_make_moderator">%1$s zum Moderator machen</string>
     <string name="author_remove_moderator">%1$s als Moderator entfernen</string>
-    <plurals name="topic_lists">
-        <item quantity="one">%d Liste</item>
-        <item quantity="other">%d Listen</item>
-    </plurals>
-    <plurals name="topic_followers">
-        <item quantity="one">%d Follower</item>
-        <item quantity="other">%d Follower</item>
-    </plurals>
     <string name="home_following_empty_topics">Aus den Themen, denen du folgst, gibt es noch nichts.</string>
     <string name="moderation_action_move">Verschieben…</string>
     <string name="moderation_moderators_unavailable">Die Moderatorenliste konnte nicht gelesen werden.</string>
@@ -195,7 +179,6 @@
     <string name="explore_try_again">Erneut versuchen</string>
     <string name="explore_follow">Folgen</string>
     <string name="explore_following">Gefolgt</string>
-    <string name="explore_tile_description">%1$s, %2$s</string>
     <string name="explore_search_hint">In der Community suchen</string>
     <string name="explore_search_nothing">Nichts gefunden.</string>
     <string name="section_all">Alle</string>
@@ -208,7 +191,6 @@
     <string name="section_waiting_body">Ein Moderator sieht es sich an. Deine Listen erscheinen hier nach der Freigabe; bis dahin stehen sie in %1$s.</string>
     <string name="section_waiting_only_you">Bis dahin siehst nur du dieses Thema.</string>
     <string name="section_ok">OK</string>
-    <string name="section_counts">%1$s · %2$s</string>
     <string name="section_share_text">%1$s auf TierYourLife</string>
     <string name="following_strip_manage">Verwalten</string>
     <string name="following_reason_section">In %1$s</string>
@@ -220,27 +202,10 @@
     <string name="manage_sections">Bereiche · %1$d</string>
     <string name="manage_topics">Themen · %1$d</string>
     <string name="manage_people">Personen · %1$d</string>
-    <string name="manage_topic_supporting">In %1$s · %2$s</string>
     <string name="manage_waiting_supporting">In %1$s · wartet auf Moderation</string>
-    <plurals name="explore_new_this_week">
-        <item quantity="one">%1$s neu diese Woche</item>
-        <item quantity="other">%1$s neu diese Woche</item>
-    </plurals>
     <plurals name="explore_cards">
         <item quantity="one">%1$s Karte</item>
         <item quantity="other">%1$s Karten</item>
-    </plurals>
-    <plurals name="explore_rankings">
-        <item quantity="one">%1$s Reihung</item>
-        <item quantity="other">%1$s Reihungen</item>
-    </plurals>
-    <plurals name="explore_followers">
-        <item quantity="one">%1$s Follower</item>
-        <item quantity="other">%1$s Follower</item>
-    </plurals>
-    <plurals name="explore_lists">
-        <item quantity="one">%1$s Liste</item>
-        <item quantity="other">%1$s Listen</item>
     </plurals>
     <string name="community_save_short">Speichern</string>
     <plurals name="moderation_open_count">
@@ -309,10 +274,6 @@
     <string name="community_action_sign_in">Anmelden</string>
     <string name="community_your_list_badge">Deine Liste</string>
     <string name="community_own_published">Veröffentlicht</string>
-    <plurals name="community_own_published_rankings">
-        <item quantity="one">Veröffentlicht · %1$d Ranking</item>
-        <item quantity="other">Veröffentlicht · %1$d Rankings</item>
-    </plurals>
     <string name="community_own_anonymous">Anonym · nur du siehst, dass sie dir gehört</string>
     <string name="community_own_list_line">So sehen Besucher sie. Ändern kannst du sie auf deinem Board.</string>
     <string name="community_restore_from_trash">Aus dem Papierkorb holen</string>

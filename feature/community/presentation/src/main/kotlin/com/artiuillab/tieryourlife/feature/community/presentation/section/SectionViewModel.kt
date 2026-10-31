@@ -56,7 +56,7 @@ class SectionSortMemory @Inject constructor() {
     }
 }
 
-/** A section's page (§3): its counts and followers, its topics, and its lists in the order chosen. */
+/** A section's page (§3): whether it is followed, its topics, and its lists in the order chosen. */
 data class SectionUiState(
     /** The id this page is about: the route's, or the one it was merged into. */
     val sectionId: String,
@@ -225,7 +225,7 @@ class SectionViewModel @Inject constructor(
     fun toggleTopicFollow() {
         val topic = state.value.selectedTopic ?: return
         val now = !topic.following
-        val changed = topic.copy(following = now, followerCount = (topic.followerCount + if (now) 1 else -1).coerceAtLeast(0))
+        val changed = topic.copy(following = now)
         replaceTopic(changed)
         viewModelScope.launch {
             val result = if (now) community.followTopic(topic.id) else community.unfollowTopic(topic.id)

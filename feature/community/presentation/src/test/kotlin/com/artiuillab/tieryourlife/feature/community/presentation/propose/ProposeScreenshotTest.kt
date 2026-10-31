@@ -28,7 +28,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 private val Counted = Section.BUILT_IN.mapIndexed { i, section ->
-    section.copy(listCount = 100 + i * 37, followerCount = 1200 + i * 310, newThisWeek = if (section.isOther) 0 else 4 + i * 3)
+    section.copy(listCount = 100 + i * 37)
 }
 
 /** Waiting for a moderator, with no picture to load: the tile falls back on its tint. */
@@ -104,7 +104,7 @@ class ProposeScreenshotTest {
     @Test
     fun allSections_theirOwnWaitingSectionFirst_withNotices() = capture("all_sections_waiting") {
         AllSectionsContent(
-            AllSectionsUiState(sections = Counted, countsKnown = true, waiting = listOf(StreetFood), notices = listOf(Kites, Bouldering)),
+            AllSectionsUiState(sections = Counted, waiting = listOf(StreetFood), notices = listOf(Kites, Bouldering)),
             onBack = {},
             onProposeSection = {},
         )
@@ -112,7 +112,7 @@ class ProposeScreenshotTest {
 
     @Test
     fun allSections_theirOwnWaitingSection_dark() = capture("all_sections_waiting_dark", dark = true) {
-        AllSectionsContent(AllSectionsUiState(sections = Counted, countsKnown = true, waiting = listOf(StreetFood)), onBack = {})
+        AllSectionsContent(AllSectionsUiState(sections = Counted, waiting = listOf(StreetFood)), onBack = {})
     }
 
     private companion object {

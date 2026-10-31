@@ -108,7 +108,7 @@ class AllSectionsViewModelTest {
         val viewModel = viewModel(community)
 
         viewModel.open()
-        val state = viewModel.state.firstWithin { it.countsKnown }
+        val state = viewModel.state.firstWithin { s -> s.sections.any { it.id == "cars" } }
 
         assertEquals(1, community.reads)
         assertEquals(listOf("cars") + Section.BUILT_IN.map { it.id }, state.sections.map { it.id })
@@ -129,26 +129,26 @@ class AllSectionsViewModelTest {
     fun followingFromALongPress_saysSo() = runBlocking {
         val viewModel = viewModel(Community())
         viewModel.open()
-        viewModel.state.firstWithin { it.countsKnown }
+        viewModel.state.firstWithin { s -> s.sections.any { it.id == "cars" } }
 
         viewModel.follow("cars")
 
         assertEquals(CommunityNotice.NowFollowing("cars"), withTimeout(5_000) { viewModel.notices.first() })
-        val followed = viewModel.state.firstWithin { s -> s.sections.first { it.id == "cars" }.following }
-        assertEquals(1, followed.sections.first { it.id == "cars" }.followerCount)
+        viewModel.state.firstWithin { s -> s.sections.first { it.id == "cars" }.following }
+        Unit
     }
 
     @Test
     fun aRefusedFollow_saysSo_andPutsTheTileBack() = runBlocking {
         val viewModel = viewModel(Community(followFails = true))
         viewModel.open()
-        viewModel.state.firstWithin { it.countsKnown }
+        viewModel.state.firstWithin { s -> s.sections.any { it.id == "cars" } }
 
         viewModel.follow("cars")
 
         assertEquals(CommunityNotice.FollowFailed, withTimeout(5_000) { viewModel.notices.first() })
-        val back = viewModel.state.firstWithin { s -> !s.sections.first { it.id == "cars" }.following }
-        assertEquals(0, back.sections.first { it.id == "cars" }.followerCount)
+        viewModel.state.firstWithin { s -> !s.sections.first { it.id == "cars" }.following }
+        Unit
     }
 
     @Test

@@ -63,7 +63,6 @@ private val FeedSpacing = 12.dp
 internal fun TilesBlock(
     layout: HomeLayout,
     sections: List<Section>,
-    countsKnown: Boolean,
     actions: TileActions,
     modifier: Modifier = Modifier,
 ) {
@@ -72,7 +71,6 @@ internal fun TilesBlock(
     val tile: @Composable (Section, Modifier, Boolean) -> Unit = { section, tileModifier, centred ->
         SectionTile(
             section = section,
-            newThisWeek = section.newThisWeek.takeIf { countsKnown && !section.isOther },
             following = section.following,
             onOpen = { actions.onOpen(section.id) },
             onFollow = { actions.onFollow(section.id) },
@@ -163,7 +161,7 @@ internal fun ExploreTab(
                 verticalArrangement = Arrangement.spacedBy(feedSpacing(layout)),
             ) {
                 item(key = "tiles", span = { GridItemSpan(maxLineSpan) }) {
-                    TilesBlock(layout, state.sections, state.countsKnown, tiles)
+                    TilesBlock(layout, state.sections, tiles)
                 }
                 item(key = "heading", span = { GridItemSpan(maxLineSpan) }) {
                     Text(

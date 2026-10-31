@@ -26,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -291,26 +290,11 @@ private fun Header(state: AuthorUiState.Ready, onToggleFollow: () -> Unit) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        Text(
-            text = pluralStringResource(R.plurals.author_public_lists, state.lists.size, state.lists.size),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
         // Nothing at all until the server has answered. A button here before
         // then would offer to undo something nobody has done.
         val follow = state.follow
         if (follow != null) {
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = pluralStringResource(
-                    R.plurals.author_followers_count,
-                    follow.followers,
-                    follow.followers,
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline,
-            )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
             FollowButton(
                 following = follow.following,
                 onClick = onToggleFollow,

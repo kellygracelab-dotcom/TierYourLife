@@ -189,12 +189,6 @@
     <string name="topic_picker_merged">Слита с другой темой</string>
     <string name="topic_picker_suggestion">Похоже на «%1$s»</string>
     <string name="topic_picker_new_waits">%1$s · будет ждать одобрения</string>
-    <plurals name="topic_picker_lists">
-        <item quantity="one">%d список</item>
-        <item quantity="few">%d списка</item>
-        <item quantity="many">%d списков</item>
-        <item quantity="other">%d списка</item>
-    </plurals>
     <string name="cover_picker_status_automatic">Ничего не выбрано: до шести картинок самого списка</string>
     <string name="cover_picker_status_one">Одна картинка, вся обложка</string>
     <plurals name="cover_picker_status_collage">

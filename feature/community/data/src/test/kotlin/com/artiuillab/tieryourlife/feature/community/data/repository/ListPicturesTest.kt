@@ -32,10 +32,9 @@ class ListPicturesTest {
     }
 
     @Test
-    fun `an opened list knows how many times it was saved`() {
-        val list = PublishedListDto(id = "a", title = "Films", authorName = "A", takeCount = 9, coverImageUrl = "null").toDomain()
+    fun `an opened list with the word null for a cover has none`() {
+        val list = PublishedListDto(id = "a", title = "Films", authorName = "A", coverImageUrl = "null").toDomain()
 
-        assertEquals(9, list.summary.takeCount)
         assertNull(list.summary.coverImageUrl)
     }
 }

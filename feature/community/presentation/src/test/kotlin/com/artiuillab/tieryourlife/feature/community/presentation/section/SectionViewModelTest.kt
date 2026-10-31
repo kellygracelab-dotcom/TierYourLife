@@ -38,8 +38,8 @@ class SectionViewModelTest {
     @get:Rule
     val main = MainDispatcherRule()
 
-    private val zelda = Topic(id = "z", name = "Zelda", section = ListCategory.Games.id, status = TopicStatus.Approved, followerCount = 5, listCount = 3)
-    private val pokemon = Topic(id = "p", name = "Pokémon", section = ListCategory.Games.id, status = TopicStatus.Approved, followerCount = 9, listCount = 7)
+    private val zelda = Topic(id = "z", name = "Zelda", section = ListCategory.Games.id, status = TopicStatus.Approved, followerCount = 5)
+    private val pokemon = Topic(id = "p", name = "Pokémon", section = ListCategory.Games.id, status = TopicStatus.Approved, followerCount = 9)
 
     private inner class Community(
         val followFails: Boolean = false,
@@ -53,7 +53,7 @@ class SectionViewModelTest {
         val refusal = CompletableDeferred<Unit>()
 
         override suspend fun sections(): Result<List<Section>> =
-            Result.success(Section.BUILT_IN.map { it.copy(listCount = 812, followerCount = 3410) })
+            Result.success(Section.BUILT_IN.map { it.copy(listCount = 812) })
 
         override suspend fun section(id: String): Result<SectionLookup> {
             looked += id
@@ -172,8 +172,7 @@ class SectionViewModelTest {
 
         viewModel.toggleSectionFollow()
         // The screen state is combined from several flows, so it is awaited rather than read at once.
-        val shown = viewModel.state.firstWithin { it.stats?.following == true }
-        assertEquals(3411, shown.stats?.followerCount)
+        viewModel.state.firstWithin { it.stats?.following == true }
 
         community.refusal.complete(Unit)
         assertEquals(CommunityNotice.FollowFailed, withTimeout(5_000) { viewModel.notices.first() })
@@ -192,7 +191,6 @@ class SectionViewModelTest {
         viewModel.toggleTopicFollow()
 
         val state = viewModel.state.firstWithin { it.selectedTopic?.following == true }
-        assertEquals(6, state.selectedTopic?.followerCount)
         assertFalse(state.stats?.following == true)
     }
 

@@ -27,7 +27,6 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -67,13 +66,11 @@ internal fun YourListChip(modifier: Modifier = Modifier) {
     }
 }
 
-/** Out under their name with how many have ranked it, or out without it, which only they can tell. */
+/** Out under their name, or out without it, which only they can tell. */
 @Composable
-internal fun ownMeta(state: CommunityListUiState.Success): String = when {
-    state.anonymous || state.byNobody -> stringResource(R.string.community_own_anonymous)
-    state.rankingCount > 0 -> pluralStringResource(R.plurals.community_own_published_rankings, state.rankingCount, state.rankingCount)
-    else -> stringResource(R.string.community_own_published)
-}
+internal fun ownMeta(state: CommunityListUiState.Success): String = stringResource(
+    if (state.anonymous || state.byNobody) R.string.community_own_anonymous else R.string.community_own_published,
+)
 
 /** The chip and the meta line, in the line the author's name takes on somebody else's list. */
 @Composable

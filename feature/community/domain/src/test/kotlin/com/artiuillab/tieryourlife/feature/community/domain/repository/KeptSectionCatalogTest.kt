@@ -194,7 +194,6 @@ class KeptSectionCatalogTest {
 
         val after = catalog.directory.value.find("cars")
         assertFalse(after?.following == true)
-        assertEquals(0, after?.followerCount)
     }
 
     @Test
