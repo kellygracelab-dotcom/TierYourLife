@@ -24,9 +24,9 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.Commun
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.summary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
