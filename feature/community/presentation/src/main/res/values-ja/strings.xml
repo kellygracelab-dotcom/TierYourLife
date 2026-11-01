@@ -179,6 +179,8 @@
     <string name="explore_following">フォロー中</string>
     <string name="explore_search_hint">コミュニティを検索</string>
     <string name="explore_search_nothing">一致するものがありません。</string>
+    <string name="search_sections">セクション</string>
+    <string name="search_lists">リスト</string>
     <string name="section_topics">トピック</string>
     <string name="section_sort_popular">人気</string>
     <string name="section_sort_newest">新着</string>

@@ -185,6 +185,8 @@
     <string name="explore_following">Вы подписаны</string>
     <string name="explore_search_hint">Поиск по сообществу</string>
     <string name="explore_search_nothing">Ничего не нашлось.</string>
+    <string name="search_sections">Разделы</string>
+    <string name="search_lists">Списки</string>
     <string name="section_topics">Темы</string>
     <string name="section_sort_popular">Популярные</string>
     <string name="section_sort_newest">Новые</string>

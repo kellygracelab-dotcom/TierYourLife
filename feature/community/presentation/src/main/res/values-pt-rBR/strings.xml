@@ -183,6 +183,8 @@
     <string name="explore_following">Seguindo</string>
     <string name="explore_search_hint">Buscar na comunidade</string>
     <string name="explore_search_nothing">Nada encontrado.</string>
+    <string name="search_sections">Seções</string>
+    <string name="search_lists">Listas</string>
     <string name="section_topics">Temas</string>
     <string name="section_sort_popular">Populares</string>
     <string name="section_sort_newest">Recentes</string>

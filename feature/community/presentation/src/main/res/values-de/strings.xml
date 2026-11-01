@@ -181,6 +181,8 @@
     <string name="explore_following">Gefolgt</string>
     <string name="explore_search_hint">In der Community suchen</string>
     <string name="explore_search_nothing">Nichts gefunden.</string>
+    <string name="search_sections">Bereiche</string>
+    <string name="search_lists">Listen</string>
     <string name="section_topics">Themen</string>
     <string name="section_sort_popular">Beliebt</string>
     <string name="section_sort_newest">Neueste</string>

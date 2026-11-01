@@ -189,6 +189,8 @@
     <string name="explore_following">تتابعه</string>
     <string name="explore_search_hint">البحث في المجتمع</string>
     <string name="explore_search_nothing">لا شيء يطابق ذلك.</string>
+    <string name="search_sections">الأقسام</string>
+    <string name="search_lists">القوائم</string>
     <string name="section_topics">المواضيع</string>
     <string name="section_sort_popular">الأكثر رواجًا</string>
     <string name="section_sort_newest">الأحدث</string>

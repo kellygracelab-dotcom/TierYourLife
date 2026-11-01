@@ -315,6 +315,8 @@ private fun HomeBody(
                 cards = CardActions(destinations.onOpenList) { exploreMenu = it },
                 onRetry = exploreCalls.onRetrySearch,
                 onOpenTopic = destinations.onOpenTopic,
+                sections = explore.sections,
+                onOpenSection = destinations.onOpenSection,
             )
         }
     } else {
@@ -555,8 +557,13 @@ private fun SearchResultsGrid(
     cards: CardActions,
     onRetry: () -> Unit,
     onOpenTopic: (Topic) -> Unit,
+    sections: List<Section> = emptyList(),
+    onOpenSection: (String) -> Unit = {},
 ) {
     val alpha = rememberSkeletonAlpha()
+    val found = matchingSections(sections, query)
+    val full: androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope.() -> androidx.compose.foundation.lazy.grid.GridItemSpan =
+        { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }
     LazyVerticalGrid(
         columns = GridCells.Fixed(layout.feedColumns.coerceAtLeast(2)),
         modifier = Modifier
@@ -566,20 +573,42 @@ private fun SearchResultsGrid(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
+        // The sections are the phone's own, so they show while the server is still asked.
+        if (found.isNotEmpty()) {
+            item(key = "sections-heading", span = full) { SearchHeading(stringResource(R.string.search_sections)) }
+            item(key = "sections", span = full) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TileRows(found, columns = 3, gap = 8.dp) { section, rowModifier ->
+                        SectionTile(
+                            section = section,
+                            following = section.following,
+                            onOpen = { onOpenSection(section.id) },
+                            onFollow = {},
+                            onUnfollow = {},
+                            modifier = rowModifier.height(84.dp),
+                            style = TileStyle.Mini,
+                            longPressMenu = false,
+                        )
+                    }
+                }
+            }
+        }
         when {
             results.loading -> items(4) { SkeletonCard(alpha, coverHeight = layout.coverHeight) }
-            results.failed -> item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }) {
+            results.failed -> item(span = full) {
                 FeedFailedBlock(retrying = false, onRetry = onRetry)
             }
 
             query.isNotBlank() && results.lists.isEmpty() && results.topics.isEmpty() ->
-                item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }) { SearchNothing() }
+                if (found.isEmpty()) item(span = full) { SearchNothing() }
 
             else -> {
                 if (results.topics.isNotEmpty()) {
-                    item(key = "topics", span = { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }) {
-                        FoundTopicTiles(results.topics, onOpenTopic)
-                    }
+                    item(key = "topics-heading", span = full) { SearchHeading(stringResource(R.string.section_topics)) }
+                    item(key = "topics", span = full) { FoundTopicTiles(results.topics, onOpenTopic) }
+                }
+                if (results.lists.isNotEmpty()) {
+                    item(key = "lists-heading", span = full) { SearchHeading(stringResource(R.string.search_lists)) }
                 }
                 items(results.lists, key = { it.id }) { summary ->
                     FeedCard(
@@ -592,6 +621,25 @@ private fun SearchResultsGrid(
             }
         }
     }
+}
+
+/** Sections whose name, in the language shown or by id, has what was typed in it. */
+@Composable
+private fun matchingSections(sections: List<Section>, query: String): List<Section> {
+    val nameOf = rememberSectionNames()
+    val typed = query.trim()
+    if (typed.isEmpty()) return emptyList()
+    return sections.filter { nameOf(it.id).contains(typed, ignoreCase = true) || it.id.replace('_', ' ').contains(typed, ignoreCase = true) }
+}
+
+@Composable
+private fun SearchHeading(text: String) {
+    Text(
+        text,
+        modifier = Modifier.padding(top = 4.dp),
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurface,
+    )
 }
 
 @Composable
