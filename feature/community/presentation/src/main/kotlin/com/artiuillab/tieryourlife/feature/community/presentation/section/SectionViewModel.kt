@@ -65,6 +65,8 @@ data class SectionUiState(
     val countsKnown: Boolean = false,
     /** Approved topics, the most followed first. */
     val topics: List<Topic> = emptyList(),
+    /** False until the topics were asked about, answered or not: the page waits for them, so nothing moves when they come. */
+    val topicsKnown: Boolean = false,
     /** This person's own topics waiting for a moderator here: seen by nobody else. */
     val waiting: List<Topic> = emptyList(),
     val sort: FeedSort = FeedSort.Popular,
@@ -97,7 +99,7 @@ class SectionViewModel @Inject constructor(
     private val notes = Channel<CommunityNotice>(Channel.BUFFERED)
     private val menu = ListMenuActions(preferences, community, viewModelScope) { notes.send(CommunityNotice.ActionFailed) }
 
-    private val topics = MutableStateFlow<List<Topic>>(emptyList())
+    private val topics = MutableStateFlow<List<Topic>?>(null)
     private val waiting = MutableStateFlow<List<Topic>>(emptyList())
     private val sort = MutableStateFlow(sortMemory.sortOf(section))
 
@@ -118,7 +120,8 @@ class SectionViewModel @Inject constructor(
             sectionId = id,
             section = found ?: Section(id = id),
             countsKnown = found != null && countsKnown(directory, found),
-            topics = t,
+            topics = t.orEmpty(),
+            topicsKnown = t != null,
             waiting = w,
             sort = order,
             feed = pane,
@@ -158,7 +161,10 @@ class SectionViewModel @Inject constructor(
         viewModelScope.launch {
             community.topics(section = id)
                 .onSuccess { found -> topics.value = found.filter { it.status == TopicStatus.Approved }.sortedByDescending { it.followerCount } }
-                .onFailure { Timber.i(it, "Reading a section's topics failed") }
+                .onFailure {
+                    Timber.i(it, "Reading a section's topics failed")
+                    if (topics.value == null) topics.value = emptyList()
+                }
         }
         viewModelScope.launch {
             community.myTopics().onSuccess { mine ->

@@ -73,6 +73,7 @@ class TopicPictureScreenshotTest {
         sectionId = ListCategory.Games.id,
         section = Section.builtIn(ListCategory.Games).copy(listCount = 812),
         countsKnown = true,
+        topicsKnown = true,
         topics = Pictured,
         feed = FeedPane(phase = FeedPhase.Ready),
     )

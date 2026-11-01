@@ -202,7 +202,9 @@
     <string name="following_reason_section">في %1$s</string>
     <string name="following_empty_title">أنت لا تتابع شيئًا بعد</string>
     <string name="following_empty_body">تابع قسمًا أو موضوعًا أو شخصًا لتصلك قوائمه الجديدة هنا أولًا.</string>
-    <string name="following_empty_helper">اضغط + لمتابعة قسم. المواضيع داخل كل قسم، والأشخاص في ملفاتهم.</string>
+    <string name="following_empty_helper">اضغط على الأقسام التي تهمك ثم تابعها كلها مرة واحدة. المواضيع داخل كل قسم، والأشخاص في ملفاتهم.</string>
+    <string name="following_pick_follow">متابعة · %1$d</string>
+    <string name="following_pick_none">اختر قسمًا واحدًا على الأقل</string>
     <string name="following_nothing_published">لم ينشر أحد ممن تتابعهم شيئًا بعد.</string>
     <string name="following_go_explore">الانتقال إلى الاستكشاف</string>
     <string name="manage_sections">الأقسام · %1$d</string>

@@ -74,14 +74,6 @@ internal fun ScheduleIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { s
 }
 
 @Composable
-internal fun GroupIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { s ->
-    drawCircle(color, 3f * s, Offset(9f * s, 8.5f * s), style = line(s))
-    drawArc(color, 180f, 180f, false, Offset(3.5f * s, 14f * s), Size(11f * s, 9f * s), style = line(s))
-    drawCircle(color, 2.4f * s, Offset(16.5f * s, 9.5f * s), style = line(s))
-    drawArc(color, 210f, 150f, false, Offset(13.5f * s, 14.5f * s), Size(8f * s, 7f * s), style = line(s))
-}
-
-@Composable
 internal fun RemoveIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { s ->
     drawLine(color, Offset(6f * s, 12f * s), Offset(18f * s, 12f * s), STROKE * s, StrokeCap.Round)
 }

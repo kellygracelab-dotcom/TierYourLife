@@ -54,10 +54,14 @@ internal data class TileStyle(
     val bottom: Dp = 10.dp,
     val showsSubline: Boolean = true,
     val corner: Dp = 16.dp,
+    val showsIcon: Boolean = true,
 ) {
     companion object {
         val Cover = TileStyle(label = TextStyle(fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium), icon = 15.dp, start = 9.dp, end = 6.dp, bottom = 8.dp, showsSubline = false, corner = 12.dp)
         val Mini = TileStyle(label = TextStyle(fontSize = 13.sp, lineHeight = 18.sp, fontWeight = FontWeight.Medium), icon = 16.dp, start = 10.dp, bottom = 10.dp, showsSubline = false, corner = 14.dp)
+
+        /** The empty Following tab's: the picture and the name, nothing on top of the picture. */
+        val Pick = Mini.copy(showsIcon = false)
     }
 }
 
@@ -77,6 +81,8 @@ internal fun SectionTile(
     style: TileStyle = TileStyle(),
     centredLabel: Boolean = false,
     longPressMenu: Boolean = true,
+    /** Framed as the long-press menu frames it: picked on the empty Following tab. */
+    selected: Boolean = false,
 ) {
     var menuOpen by rememberSaveable(section.id) { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
@@ -90,7 +96,7 @@ internal fun SectionTile(
                 .fillMaxSize()
                 .scale(pressScale)
                 .then(
-                    if (menuOpen) {
+                    if (menuOpen || selected) {
                         Modifier
                             .border(5.dp, MaterialTheme.colorScheme.surface, shape)
                             .padding(3.dp)
@@ -122,7 +128,7 @@ internal fun SectionTile(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(7.dp),
             ) {
-                SectionIcon(section, style.icon, SectionLabel)
+                if (style.showsIcon) SectionIcon(section, style.icon, SectionLabel)
                 Text(name, style = style.label, color = SectionLabel, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }

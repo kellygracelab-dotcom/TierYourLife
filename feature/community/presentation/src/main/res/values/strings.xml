@@ -194,7 +194,9 @@
     <string name="following_reason_section">In %1$s</string>
     <string name="following_empty_title">You aren\'t following anything yet</string>
     <string name="following_empty_body">Follow a section, a topic or a person and their new lists arrive here first.</string>
-    <string name="following_empty_helper">Tap + to follow a section. Topics are inside each section; people, on their profile.</string>
+    <string name="following_empty_helper">Tap the sections you like, then follow them all at once. Topics are inside each section; people, on their profile.</string>
+    <string name="following_pick_follow">Follow · %1$d</string>
+    <string name="following_pick_none">Pick at least one</string>
     <string name="following_nothing_published">Nobody you follow has published anything yet.</string>
     <string name="following_go_explore">Go to Explore</string>
     <string name="manage_sections">Sections · %1$d</string>

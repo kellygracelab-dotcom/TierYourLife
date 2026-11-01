@@ -26,7 +26,9 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.summar
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -120,31 +122,41 @@ class FollowingFeedViewModelTest {
     }
 
     @Test
-    fun followingNothing_offersTheSections_andOneTapMakesItAFeed() = runBlocking {
+    fun followingNothing_offersTheSections_andFollowingThePickedMakesItAFeed() = runBlocking {
         val community = Community()
         val viewModel = viewModel(community)
         viewModel.open()
         assertTrue(viewModel.state.firstWithin { it.following != null && it.feed.phase == FeedPhase.Ready }.followsNothing)
 
-        viewModel.quickFollow(ListCategory.Food.id)
-        viewModel.state.firstWithin { ListCategory.Food.id in it.quickFollowed }
+        withContext(Dispatchers.Main) {
+            viewModel.togglePick(ListCategory.Food.id)
+            viewModel.togglePick(ListCategory.Sport.id)
+            viewModel.togglePick(ListCategory.Sport.id)
+        }
+        assertEquals(setOf(ListCategory.Food.id), viewModel.state.firstWithin { ListCategory.Food.id in it.picked }.picked)
+        withContext(Dispatchers.Main) { viewModel.followPicked() }
 
-        val after = viewModel.state.firstWithin { it.feed.lists.isNotEmpty() }
+        val after = viewModel.state.firstWithin { it.feed.lists.isNotEmpty() && it.picked.isEmpty() }
         assertFalse(after.followsNothing)
+        assertEquals(listOf(ListCategory.Food.id), after.following?.sections?.map { it.id })
         assertEquals(listOf(true to FeedSort.Recent), community.feeds.distinct())
     }
 
     @Test
-    fun aRefusedQuickFollow_putsThePlusBack() = runBlocking {
+    fun aRefusedFollow_keepsThePick_andSaysSo() = runBlocking {
         val viewModel = viewModel(Community(followFails = true))
         viewModel.open()
         viewModel.state.firstWithin { it.following != null }
 
-        viewModel.quickFollow(ListCategory.Sport.id)
+        withContext(Dispatchers.Main) {
+            viewModel.togglePick(ListCategory.Sport.id)
+            viewModel.followPicked()
+        }
 
         assertEquals(CommunityNotice.FollowFailed, withTimeout(5_000) { viewModel.notices.first() })
-        viewModel.state.firstWithin { ListCategory.Sport.id !in it.quickFollowed }
-        Unit
+        val after = viewModel.state.firstWithin { !it.followingPicked }
+        assertEquals(setOf(ListCategory.Sport.id), after.picked)
+        assertTrue(after.followsNothing)
     }
 
     @Test

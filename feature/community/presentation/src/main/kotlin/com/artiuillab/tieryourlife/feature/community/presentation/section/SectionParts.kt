@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +42,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,6 +56,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowToggle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScheduleIcon
 import com.artiuillab.tieryourlife.feature.tier.board.common.label
+import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSection
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
@@ -64,6 +67,8 @@ internal object SectionTestTags {
     const val TOPICS = "section_topics"
     const val TOPIC_PICTURE = "section_topic_picture"
     const val SORT = "section_sort"
+    const val LOADING = "section_loading"
+    const val EMPTY = "section_empty"
     const val WAITING_SHEET = "section_waiting_sheet"
     const val COVER = "section_cover"
     const val COVER_RETRY = "section_cover_retry"
@@ -161,6 +166,27 @@ internal fun TopicTiles(
     }
 }
 
+/** Topics a search found, from any section: each over its own section's art. */
+@Composable
+internal fun FoundTopicTiles(topics: List<Topic>, onOpen: (Topic) -> Unit) = BoxWithConstraints {
+    val columns = (maxWidth / TOPIC_TILE_MIN_WIDTH).toInt().coerceAtLeast(2)
+    Column(Modifier.testTag(SectionTestTags.TOPICS), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(
+            stringResource(R.string.section_topics),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        topics.chunked(columns).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                row.forEach { topic ->
+                    TopicTile(rememberSection(topic.section ?: ListCategory.Other.id), topic, waiting = false, Modifier.weight(1f)) { onOpen(topic) }
+                }
+                repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
+            }
+        }
+    }
+}
+
 @Composable
 private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier: Modifier, onClick: () -> Unit) {
     Box(
@@ -224,6 +250,44 @@ private val TOPIC_TILE_MIN_WIDTH = 170.dp
 private val TileName = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium)
 
 /** Popular or Newest from a menu, at the end of the row (§3.1). */
+@Composable
+internal fun SectionLoading() {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 96.dp)
+            .testTag(SectionTestTags.LOADING),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+internal fun SectionEmpty() {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(start = 32.dp, end = 32.dp, top = 72.dp)
+            .testTag(SectionTestTags.EMPTY),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            stringResource(R.string.home_community_empty),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            stringResource(R.string.home_community_empty_body),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
 @Composable
 internal fun SortRow(sort: FeedSort, onSort: (FeedSort) -> Unit) {
     var open by remember { mutableStateOf(false) }

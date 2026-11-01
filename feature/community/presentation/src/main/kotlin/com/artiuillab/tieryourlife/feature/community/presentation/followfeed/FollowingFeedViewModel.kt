@@ -23,6 +23,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPa
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ListMenuActions
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.toCommunityNotice
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,8 +62,10 @@ data class FollowingFeedUiState(
     /** This person's own topics still waiting for a moderator: seen only by them. */
     val waiting: List<Topic> = emptyList(),
     val feed: FeedPane = FeedPane(),
-    /** Section ids followed from the empty tab's mini tiles in this sitting: their + is a check. */
-    val quickFollowed: Set<String> = emptySet(),
+    /** Sections picked on the empty tab, followed together by its one button. */
+    val picked: Set<String> = emptySet(),
+    /** That button was pressed and is being answered. */
+    val followingPicked: Boolean = false,
     val nowMillis: Long = 0L,
     /** This person's own section proposals still waiting: in their strip, and nobody else's. */
     val waitingSections: List<Section> = emptyList(),
@@ -94,14 +98,17 @@ class FollowingFeedViewModel @Inject constructor(
 
     private val following = MutableStateFlow<Following?>(null)
     private val waiting = MutableStateFlow<List<Topic>>(emptyList())
-    private val quickFollowed = MutableStateFlow<Set<String>>(emptySet())
+    private val picked = MutableStateFlow<Set<String>>(emptySet())
+    private val followingPicked = MutableStateFlow(false)
+    private val picking = combine(picked, followingPicked) { p, busy -> p to busy }
 
-    val state: StateFlow<FollowingFeedUiState> = combine(following, waiting, feed.pane, quickFollowed, catalog.directory) { f, w, pane, quick, directory ->
+    val state: StateFlow<FollowingFeedUiState> = combine(following, waiting, feed.pane, picking, catalog.directory) { f, w, pane, (p, busy), directory ->
         FollowingFeedUiState(
             following = f,
             waiting = w,
             feed = pane,
-            quickFollowed = quick,
+            picked = p,
+            followingPicked = busy,
             nowMillis = clock.nowMillis(),
             waitingSections = directory.waiting,
             proposalNotices = directory.settledAgainst,
@@ -137,24 +144,36 @@ class FollowingFeedViewModel @Inject constructor(
         }
     }
 
-    /** One tap on a mini tile: the + turns into a check at once, and the tab becomes the feed it now has. */
-    fun quickFollow(sectionId: String) {
-        if (sectionId in quickFollowed.value) return
-        quickFollowed.update { it + sectionId }
+    /** A tap on a section of the empty tab picks it or puts it back; nothing is sent until Follow. */
+    fun togglePick(sectionId: String) {
+        if (followingPicked.value) return
+        picked.update { if (sectionId in it) it - sectionId else it + sectionId }
+    }
+
+    /**
+     * Follows every picked section at once, and the tab becomes the feed it now
+     * has. The picks go with it, so a later visit with nothing followed starts
+     * clean; a refused one stays picked, and says so.
+     */
+    fun followPicked() {
+        val chosen = picked.value
+        if (chosen.isEmpty() || followingPicked.value) return
+        followingPicked.value = true
         viewModelScope.launch {
-            catalog.setFollowing(sectionId, now = true).fold(
-                onSuccess = {
-                    following.update { now ->
-                        val base = now ?: Following(emptyList(), emptyList())
-                        base.copy(sections = base.sections + FollowedSection(sectionId))
-                    }
-                    feed.reload()
-                },
-                onFailure = {
-                    quickFollowed.update { it - sectionId }
-                    notes.send(CommunityNotice.FollowFailed)
-                },
-            )
+            val followed = chosen
+                .map { id -> async { id.takeIf { catalog.setFollowing(id, now = true).isSuccess } } }
+                .awaitAll()
+                .filterNotNull()
+            if (followed.isNotEmpty()) {
+                following.update { now ->
+                    val base = now ?: Following(emptyList(), emptyList())
+                    base.copy(sections = base.sections + followed.map(::FollowedSection))
+                }
+                feed.reload()
+            }
+            picked.value = chosen - followed.toSet()
+            followingPicked.value = false
+            if (followed.size < chosen.size) notes.send(CommunityNotice.FollowFailed)
         }
     }
 

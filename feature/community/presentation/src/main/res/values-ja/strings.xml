@@ -192,7 +192,9 @@
     <string name="following_reason_section">%1$s内</string>
     <string name="following_empty_title">まだ何もフォローしていません</string>
     <string name="following_empty_body">セクション、トピック、人をフォローすると、新しいリストが真っ先にここに届きます。</string>
-    <string name="following_empty_helper">+をタップしてセクションをフォロー。トピックは各セクションの中に、人はプロフィールにあります。</string>
+    <string name="following_empty_helper">好きなセクションをタップして、まとめてフォローしましょう。トピックは各セクションの中に、人はプロフィールにあります。</string>
+    <string name="following_pick_follow">フォロー · %1$d</string>
+    <string name="following_pick_none">1つ以上選んでください</string>
     <string name="following_nothing_published">フォロー中の人はまだ何も公開していません。</string>
     <string name="following_go_explore">見つけるへ</string>
     <string name="manage_sections">セクション · %1$d</string>

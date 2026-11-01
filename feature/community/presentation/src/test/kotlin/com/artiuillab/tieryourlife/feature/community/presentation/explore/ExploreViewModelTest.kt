@@ -15,13 +15,17 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListS
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
+import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CachedFeed
 import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -203,6 +207,27 @@ class ExploreViewModelTest {
         viewModel.exitSearch()
         val closed = viewModel.state.firstWithin { it.query == null }
         assertEquals(listOf("a", "b"), closed.feed.lists.map { it.id })
+    }
+
+    @Test
+    fun aSearch_findsTopicsToo_approvedOnesOnly() = runBlocking {
+        val starWars = Topic(id = "sw", name = "Star Wars", section = ListCategory.Anime.id, status = TopicStatus.Approved)
+        val waiting = Topic(id = "st", name = "Star Trek", section = null, status = TopicStatus.Pending)
+        val community = object : Community() {
+            override suspend fun topics(query: String?, section: String?): Result<List<Topic>> =
+                Result.success(if (query == "star") listOf(starWars, waiting) else emptyList())
+        }
+        val viewModel = viewModel(community)
+        viewModel.open()
+        viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready }
+
+        withContext(Dispatchers.Main) {
+            viewModel.enterSearch()
+            viewModel.updateQuery("star")
+        }
+
+        val found = viewModel.state.firstWithin { it.results.topics.isNotEmpty() }
+        assertEquals(listOf("sw"), found.results.topics.map { it.id })
     }
 
     @Test

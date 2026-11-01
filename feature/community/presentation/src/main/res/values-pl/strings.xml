@@ -198,7 +198,9 @@
     <string name="following_reason_section">W dziale %1$s</string>
     <string name="following_empty_title">Jeszcze niczego nie obserwujesz</string>
     <string name="following_empty_body">Obserwuj dział, temat lub osobę, a ich nowe listy trafią tu najpierw.</string>
-    <string name="following_empty_helper">Dotknij +, aby obserwować dział. Tematy są w działach, a osoby w swoich profilach.</string>
+    <string name="following_empty_helper">Dotknij działów, które cię interesują, i obserwuj je wszystkie naraz. Tematy są w działach, a osoby w swoich profilach.</string>
+    <string name="following_pick_follow">Obserwuj · %1$d</string>
+    <string name="following_pick_none">Wybierz co najmniej jeden</string>
     <string name="following_nothing_published">Obserwowani nie opublikowali jeszcze niczego.</string>
     <string name="following_go_explore">Przejdź do Odkrywaj</string>
     <string name="manage_sections">Działy · %1$d</string>

@@ -8,6 +8,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
+import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityNetwork
@@ -26,12 +28,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /** What a search shows instead of the tabs: the server's answer to what was typed. */
 data class SearchResults(
     val lists: List<PublishedListSummary> = emptyList(),
+    /** Approved topics whose name starts with what was typed. */
+    val topics: List<Topic> = emptyList(),
     val loading: Boolean = false,
     val failed: Boolean = false,
 )
@@ -135,9 +140,15 @@ class ExploreViewModel @Inject constructor(
         results.value = results.value.copy(loading = true, failed = false)
         searchJob = viewModelScope.launch {
             delay(SEARCH_DELAY_MILLIS)
-            community.feed(query = typed).fold(
-                onSuccess = { page -> results.value = SearchResults(lists = page.lists.filter(menu::isVisible)) },
-                onFailure = { results.value = SearchResults(failed = true) },
+            val topics = async {
+                community.topics(query = typed).getOrDefault(emptyList()).filter { it.status == TopicStatus.Approved }
+            }
+            val lists = community.feed(query = typed)
+            val found = topics.await()
+            results.value = lists.fold(
+                onSuccess = { page -> SearchResults(lists = page.lists.filter(menu::isVisible), topics = found) },
+                // Topics found are still an answer when the lists could not be read.
+                onFailure = { if (found.isEmpty()) SearchResults(failed = true) else SearchResults(topics = found) },
             )
         }
     }

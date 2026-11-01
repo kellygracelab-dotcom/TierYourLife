@@ -89,7 +89,7 @@ class SectionPictureScreenshotTest {
     fun section_aBuiltInsHeader_showsItsPicture() = capture("section_pictures_header") {
         val games = Pictured.first { it.id == ListCategory.Games.id }
         SectionScreenContent(
-            SectionUiState(sectionId = games.id, section = games, countsKnown = true, feed = FeedPane(phase = FeedPhase.Ready)),
+            SectionUiState(sectionId = games.id, section = games, countsKnown = true, topicsKnown = true, feed = FeedPane(phase = FeedPhase.Ready)),
             onBack = {},
         )
     }
@@ -98,7 +98,7 @@ class SectionPictureScreenshotTest {
     fun section_aBuiltInWithoutAPicture_keepsItsArt() = capture("section_pictures_header_fallback") {
         val books = Pictured.first { it.id == ListCategory.Books.id }
         SectionScreenContent(
-            SectionUiState(sectionId = books.id, section = books, countsKnown = true, feed = FeedPane(phase = FeedPhase.Ready)),
+            SectionUiState(sectionId = books.id, section = books, countsKnown = true, topicsKnown = true, feed = FeedPane(phase = FeedPhase.Ready)),
             onBack = {},
         )
     }
