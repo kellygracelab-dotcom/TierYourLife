@@ -2,13 +2,20 @@ package com.artiuillab.tieryourlife.feature.tier.data.local.image
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.os.Build
 import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
+import java.io.OutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -17,10 +24,16 @@ internal const val MAX_STORED_EDGE_PX = 1000
 
 private const val JPEG_QUALITY = 85
 
+/** As much as the account's own folder takes (storage.rules). */
+private const val MAX_WEB_PICTURE_BYTES = 4L * 1024 * 1024
+
+private const val WEB_TIMEOUT_MILLIS = 10_000
+
 @Singleton
 class TierImageStore internal constructor(
     private val directory: File,
     private val openSource: (String) -> InputStream?,
+    private val openWeb: (String) -> InputStream? = ::openOverHttps,
 ) {
 
     @Inject constructor(@ApplicationContext context: Context) : this(
@@ -70,6 +83,31 @@ class TierImageStore internal constructor(
         return target.absolutePath
     }
 
+    /**
+     * A picture from somebody else's site, kept as the phone's own so it
+     * stays when the site moves it, and syncs and publishes like a photo.
+     * Null when it could not be had: too big, not there, not a picture.
+     */
+    suspend fun downloadToInternalStorage(url: String): String? = withContext(Dispatchers.IO) {
+        if (!url.startsWith("https://")) return@withContext null
+        directory.mkdirs()
+        val target = File(directory, UUID.randomUUID().toString())
+        try {
+            val input = openWeb(url) ?: return@withContext null
+            val written = input.use { source -> target.outputStream().use { sink -> copyAtMost(source, sink, MAX_WEB_PICTURE_BYTES) } }
+            if (!written || !isPicture(target)) {
+                target.delete()
+                return@withContext null
+            }
+            shrinkInPlace(target)
+            target.absolutePath
+        } catch (exception: IOException) {
+            Timber.i(exception, "Could not keep a copy of a web picture")
+            target.delete()
+            null
+        }
+    }
+
     fun deleteCopy(path: String) {
         val file = File(path)
         // Never delete a path outside the app-owned image directory.
@@ -86,6 +124,38 @@ class TierImageStore internal constructor(
             }
         }
     }
+}
+
+private fun openOverHttps(url: String): InputStream? {
+    val connection = URL(url).openConnection() as HttpURLConnection
+    connection.connectTimeout = WEB_TIMEOUT_MILLIS
+    connection.readTimeout = WEB_TIMEOUT_MILLIS
+    connection.instanceFollowRedirects = true
+    if (connection.responseCode !in HttpURLConnection.HTTP_OK until HttpURLConnection.HTTP_MULT_CHOICE) {
+        connection.disconnect()
+        return null
+    }
+    return connection.inputStream
+}
+
+/** False once more than [limit] bytes would be written: a picture that big is not a card's. */
+internal fun copyAtMost(source: InputStream, sink: OutputStream, limit: Long): Boolean {
+    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+    var total = 0L
+    while (true) {
+        val read = source.read(buffer)
+        if (read < 0) return total > 0
+        total += read
+        if (total > limit) return false
+        sink.write(buffer, 0, read)
+    }
+}
+
+/** Whether the bytes decode as a picture at all; a site's error page is not one. */
+private fun isPicture(file: File): Boolean {
+    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    BitmapFactory.decodeFile(file.absolutePath, bounds)
+    return bounds.outWidth > 0 && bounds.outHeight > 0
 }
 
 internal fun shrinkInPlace(file: File) {

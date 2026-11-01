@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.catalogue
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,10 +20,13 @@ import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.CaptionLine
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.CenteredMessage
-import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ResultsList
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.NoticeLine
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ResultsGrid
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ScopeChips
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SearchField
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SelectionBar
 
@@ -30,6 +34,13 @@ internal val FieldFillLight = Color(0xFFEFEDF4)
 internal val FieldFillDark = Color(0xFF2A2A31)
 internal val SelectedRowTintLight = Color(0xFFEDEBFA)
 internal val SelectedRowTintDark = Color(0xFF2E2F45)
+
+/** What the chips under the field say and do; null where a search has no scopes to offer. */
+class ScopeChoice(
+    val first: PictureScope,
+    val selected: PictureScope,
+    val onSelect: (PictureScope) -> Unit,
+)
 
 @Composable
 fun CatalogueSearchScreenContent(
@@ -43,6 +54,8 @@ fun CatalogueSearchScreenContent(
     onToggleSelection: (CatalogueItem) -> Unit = {},
     onConfirmSelection: () -> Unit = {},
     onLoadMore: () -> Unit = {},
+    scopes: ScopeChoice? = null,
+    onSearchEverywhere: () -> Unit = {},
 ) {
     val isDark = TierYourLifeMedia.current.isDark
     val fieldFill = if (isDark) FieldFillDark else FieldFillLight
@@ -73,6 +86,7 @@ fun CatalogueSearchScreenContent(
 
             CaptionLine(listTitle = listTitle)
         }
+        scopes?.let { ScopeChips(first = it.first, selected = it.selected, onSelect = it.onSelect) }
 
         Box(modifier = Modifier.weight(1f)) {
             when (state) {
@@ -83,17 +97,28 @@ fun CatalogueSearchScreenContent(
                 is CatalogueSearchUiState.Loading -> {
                 }
 
-                is CatalogueSearchUiState.Empty -> {
-                    CenteredMessage(
-                        text = stringResource(R.string.item_search_empty_title, state.query),
-                    )
+                is CatalogueSearchUiState.Empty -> Column {
+                    NoticeLine(state.notice)
+                    Spacer(Modifier.height(24.dp))
+                    // An empty scope is not a dead end: one tap asks everything, the web included.
+                    if (scopes != null && !state.searchedEverywhere) {
+                        CenteredMessage(
+                            text = stringResource(R.string.item_search_empty_title, state.query),
+                            body = stringResource(R.string.item_search_empty_everywhere_body),
+                            actionLabel = stringResource(R.string.item_search_everywhere),
+                            onAction = onSearchEverywhere,
+                            actionTag = CatalogueSearchTestTags.ITEM_SEARCH_EVERYWHERE,
+                        )
+                    } else {
+                        CenteredMessage(text = stringResource(R.string.item_search_empty_title, state.query))
+                    }
                 }
 
-                is CatalogueSearchUiState.Success -> {
-                    ResultsList(
+                is CatalogueSearchUiState.Success -> Column {
+                    NoticeLine(state.notice)
+                    ResultsGrid(
                         items = state.items,
                         selectedIds = selectedIds,
-                        selectedTint = if (isDark) SelectedRowTintDark else SelectedRowTintLight,
                         onToggle = onToggleSelection,
                         loadingMore = state.loadingMore,
                         onNearEnd = onLoadMore,

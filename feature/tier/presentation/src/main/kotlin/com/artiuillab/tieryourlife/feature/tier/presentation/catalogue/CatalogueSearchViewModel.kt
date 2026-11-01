@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueSearchPage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -29,13 +30,48 @@ class CatalogueSearchViewModel @Inject constructor(
 
     val state: StateFlow<CatalogueSearchUiState> = _state.asStateFlow()
 
+    private val _scope = MutableStateFlow(PictureScope.All)
+
+    /** Which catalogues are asked; the board's own section until the person picks another. */
+    val scope: StateFlow<PictureScope> = _scope.asStateFlow()
+
     private var searchJob: Job? = null
     private var moreJob: Job? = null
+    private var typedQuery = ""
     private var searchedQuery = ""
+    private var everywhere = false
     private var loadedPage = FIRST_PAGE
+    private var started = false
+
+    /** Once per sheet: a rotation keeps whatever scope the person chose since. */
+    fun start(category: String?) {
+        if (started) return
+        started = true
+        _scope.value = PictureScope.forCategory(category)
+    }
+
+    fun setScope(scope: PictureScope) {
+        if (scope == _scope.value && !everywhere) return
+        _scope.value = scope
+        everywhere = false
+        search(typedQuery)
+    }
+
+    /** The empty scope's way out: every catalogue and the web, for what was searched. */
+    fun searchEverywhere() {
+        cancelInFlight()
+        everywhere = true
+        _scope.value = PictureScope.All
+        if (searchedQuery.length >= MIN_QUERY_LENGTH) {
+            val query = searchedQuery
+            searchJob = viewModelScope.launch { performSearch(query) }
+        }
+    }
 
     fun onQueryChange(query: String) {
         cancelInFlight()
+        typedQuery = query
+        everywhere = false
         val trimmed = query.trim()
         if (trimmed.length < MIN_QUERY_LENGTH) {
             _state.value = CatalogueSearchUiState.Initial
@@ -49,6 +85,7 @@ class CatalogueSearchViewModel @Inject constructor(
 
     fun search(query: String) {
         cancelInFlight()
+        typedQuery = query
         val trimmed = query.trim()
         if (trimmed.length < MIN_QUERY_LENGTH) {
             _state.value = CatalogueSearchUiState.Initial
@@ -64,7 +101,7 @@ class CatalogueSearchViewModel @Inject constructor(
         val nextPage = loadedPage + 1
         _state.value = shown.copy(loadingMore = true)
         moreJob = viewModelScope.launch {
-            repository.search(searchedQuery, appPreferences.languageTag(), nextPage)
+            repository.search(searchedQuery, appPreferences.languageTag(), nextPage, _scope.value, everywhere)
                 .fold(
                     onSuccess = { page -> append(nextPage, page) },
                     // A page that never arrived is no reason to take away the
@@ -79,17 +116,20 @@ class CatalogueSearchViewModel @Inject constructor(
         searchedQuery = trimmedQuery
         loadedPage = FIRST_PAGE
 
-        repository.search(trimmedQuery, appPreferences.languageTag(), FIRST_PAGE)
+        repository.search(trimmedQuery, appPreferences.languageTag(), FIRST_PAGE, _scope.value, everywhere)
             .fold(
                 onSuccess = { page ->
                     _state.value = if (page.items.isEmpty()) {
                         CatalogueSearchUiState.Empty(
                             query = trimmedQuery,
+                            searchedEverywhere = everywhere,
+                            notice = page.notice,
                         )
                     } else {
                         CatalogueSearchUiState.Success(
                             items = page.items,
                             canLoadMore = page.hasMore,
+                            notice = page.notice,
                         )
                     }
                 },

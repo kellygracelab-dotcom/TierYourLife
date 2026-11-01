@@ -47,6 +47,11 @@
     <string name="item_search_error_title">Ergebnisse konnten nicht geladen werden</string>
     <string name="item_search_error_body">Überprüfe deine Verbindung und versuche es erneut.</string>
     <string name="item_search_try_again">Erneut versuchen</string>
+    <string name="item_search_scope_all">Alle</string>
+    <string name="item_search_everywhere">Überall suchen</string>
+    <string name="item_search_empty_everywhere_body">In allen Katalogen und im Web suchen?</string>
+    <string name="item_search_notice_web_daily">Die Websuche ist für heute aufgebraucht. Wir suchen in den Katalogen – morgen wieder überall.</string>
+    <string name="item_search_notice_web_off">Die Websuche pausiert gerade. Wir suchen in den Katalogen.</string>
     <string name="item_search_selected_none">Nichts ausgewählt</string>
     <plurals name="item_search_selected_count">
         <item quantity="one">%1$d ausgewählt</item>

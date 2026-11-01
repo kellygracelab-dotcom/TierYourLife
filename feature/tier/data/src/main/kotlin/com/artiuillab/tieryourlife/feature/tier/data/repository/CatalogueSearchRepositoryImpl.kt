@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.wikidataDetailsQuery
 import com.artiuillab.tieryourlife.feature.tier.data.remote.wikidataLanguageCode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueSearchPage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.search.CatalogueSearchMerger
 import com.artiuillab.tieryourlife.feature.tier.domain.search.WikidataCandidate
@@ -38,10 +39,13 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
     private val wikidataSparqlApi: WikidataSparqlApi,
 ) : CatalogueSearchRepository {
 
+    /** The two catalogues the phone can ask itself: the scope is the server's business (ServerCatalogueSearch). */
     override suspend fun search(
         query: String,
         languageTag: String?,
         page: Int,
+        scope: PictureScope,
+        everywhere: Boolean,
     ): Result<CatalogueSearchPage> {
         val normalizedQuery = query.trim()
 

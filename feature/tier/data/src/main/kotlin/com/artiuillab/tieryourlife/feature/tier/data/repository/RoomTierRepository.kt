@@ -133,10 +133,13 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun addItemsToPool(tierListId: Long, items: List<PoolItemDraft>) {
-        dao.addItemsToPool(
-            tierListId,
-            items.map { NewPoolItem(title = it.title, imageUrl = it.imageUrl) },
-        )
+        val kept = items.map { draft ->
+            val url = draft.imageUrl
+            // A copy that could not be made leaves the address: a picture that may go is better than none.
+            val imageUrl = if (draft.keepCopy && url != null) imageStore.downloadToInternalStorage(url) ?: url else url
+            NewPoolItem(title = draft.title, imageUrl = imageUrl)
+        }
+        dao.addItemsToPool(tierListId, kept)
     }
 
     override suspend fun attachImageToItem(itemId: Long, sourceUri: String) {

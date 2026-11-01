@@ -50,6 +50,11 @@
     <string name="item_search_error_title">No se pudieron cargar los resultados</string>
     <string name="item_search_error_body">Comprueba tu conexión e inténtalo de nuevo.</string>
     <string name="item_search_try_again">Intentar de nuevo</string>
+    <string name="item_search_scope_all">Todo</string>
+    <string name="item_search_everywhere">Buscar en todas partes</string>
+    <string name="item_search_empty_everywhere_body">¿Buscar en todos los catálogos y en la web?</string>
+    <string name="item_search_notice_web_daily">La búsqueda web se agotó por hoy. Buscamos en los catálogos; mañana, de nuevo en todas partes.</string>
+    <string name="item_search_notice_web_off">La búsqueda web está en pausa. Buscamos en los catálogos.</string>
     <string name="item_search_selected_none">Nada seleccionado</string>
     <plurals name="item_search_selected_count">
         <item quantity="one">%1$d seleccionado</item>
