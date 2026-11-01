@@ -16,7 +16,8 @@ import retrofit2.HttpException
 /**
  * A section from what the server sent. Whatever is missing, as on a server
  * from before sections were data, takes the built-in's own or the default; an
- * icon the app cannot draw is the default, and only a web picture is kept.
+ * icon the app cannot draw is the default, and only a web picture is kept,
+ * on a built-in as on anybody's.
  */
 internal fun SectionDto.toDomain(me: String? = null): Section {
     val art = ListCategory.fromId(id)
@@ -26,8 +27,7 @@ internal fun SectionDto.toDomain(me: String? = null): Section {
         name = name.orEmpty().trim(),
         names = names.filterValues { it.isNotBlank() },
         icon = icon?.takeIf { it in SectionSymbols.ALL } ?: art?.symbol ?: SectionSymbols.DEFAULT,
-        // The nine draw their own art, whatever is sent.
-        pictureUrl = pictureUrl?.takeIf { art == null && it.startsWith("https://") },
+        pictureUrl = pictureUrl?.takeIf { it.startsWith("https://") },
         tint = tint?.toDomain(),
         topicBg = topicBg?.toDomain(),
         topicIcon = topicIcon?.toDomain(),

@@ -80,11 +80,11 @@ data class PictureCrop(
     val height: Float,
 )
 
-/** A section's picture: 16:10, at least 960 × 600, and never more than 1440 × 900. */
+/** A section's or a topic's picture: 16:10, at least 960 × 600, and never more than 1600 × 1000. */
 object SectionPictureSize {
     const val ASPECT = 1.6f
     const val MIN_WIDTH = 960
-    const val MAX_WIDTH = 1440
+    const val MAX_WIDTH = 1600
 
     /** The exported width for a crop [cropWidthPx] wide: as wide as it is up to the most, null when it is narrower than the least. */
     fun exportWidth(cropWidthPx: Int): Int? = if (cropWidthPx < MIN_WIDTH) null else minOf(cropWidthPx, MAX_WIDTH)

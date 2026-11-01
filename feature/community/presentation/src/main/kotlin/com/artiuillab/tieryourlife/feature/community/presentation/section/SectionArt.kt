@@ -21,13 +21,15 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
 /**
- * A section's picture. A built-in's is the bundled illustration once it
- * exists, and until then its tint with a quiet hatch; the illustrations are
- * generated from the prompts in docs/design-spec-community-explore.md §12.2
- * and dropped in as res/drawable-nodpi/section_<id>.webp, then listed in
- * [sectionArtRes]. Bundled, never fetched: those tiles paint on the first
- * frame. Anybody else's section is its tint, then its picture, centred, with
- * the tint showing while it loads; no hatch over a picture.
+ * A section's picture. Its own picture from the server comes first, centred,
+ * on a built-in as on anybody's. Under a built-in's lies its own art, the
+ * bundled illustration once it exists and until then its tint with a quiet
+ * hatch, so it shows on the first frame, while the picture loads, and when
+ * there is none; the illustrations are generated from the prompts in
+ * docs/design-spec-community-explore.md §12.2 and dropped in as
+ * res/drawable-nodpi/section_<id>.webp, then listed in [sectionArtRes].
+ * Anybody else's section is its tint while the picture loads; no hatch under
+ * a picture.
  */
 @Composable
 internal fun SectionArt(section: Section, modifier: Modifier = Modifier, scrim: Boolean = true) {
@@ -37,16 +39,17 @@ internal fun SectionArt(section: Section, modifier: Modifier = Modifier, scrim: 
     Box(modifier.background(look.tintNow)) {
         when {
             art != null -> BuiltInArt(art)
-            picture != null -> AsyncImage(
+            // An id nobody here knows yet wears Other's look, hatch and all.
+            picture == null -> Hatch(Modifier.fillMaxSize())
+        }
+        if (picture != null) {
+            AsyncImage(
                 model = picture,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.Center,
             )
-
-            // An id nobody here knows yet wears Other's look, hatch and all.
-            else -> Hatch(Modifier.fillMaxSize())
         }
         if (scrim) {
             Box(

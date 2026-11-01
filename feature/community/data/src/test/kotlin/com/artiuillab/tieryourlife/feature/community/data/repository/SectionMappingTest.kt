@@ -80,12 +80,18 @@ class SectionMappingTest {
     }
 
     @Test
-    fun `a built-in never carries a picture, and nobody carries one that is not on the web`() {
+    fun `a built-in keeps a web picture like anybody, and nobody keeps one that is not on the web`() {
         val sections = sectionsFrom(
-            listOf(SectionDto(id = "food", pictureUrl = "https://x"), SectionDto(id = "cars", pictureUrl = "http://x")),
+            listOf(
+                SectionDto(id = "food", pictureUrl = "https://x"),
+                SectionDto(id = "games"),
+                SectionDto(id = "music", pictureUrl = "http://x"),
+                SectionDto(id = "cars", pictureUrl = "http://x"),
+            ),
         )
 
-        assertTrue(sections.all { it.pictureUrl == null })
+        assertEquals("https://x", sections.first { it.id == "food" }.pictureUrl)
+        assertTrue(sections.filter { it.id != "food" }.all { it.pictureUrl == null })
     }
 
     @Test

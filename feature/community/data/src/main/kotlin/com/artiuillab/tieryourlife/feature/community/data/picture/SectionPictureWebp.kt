@@ -14,7 +14,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.PictureSi
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
-private const val WEBP_QUALITY = 82
+private const val WEBP_QUALITY = 85
 private const val QUARTER_TURN = 90f
 private const val HALF_TURN = 180f
 private const val THREE_QUARTER_TURN = 270f
@@ -34,7 +34,7 @@ internal fun uprightSize(resolver: ContentResolver, uri: Uri): PictureSize? {
     return if (turned) PictureSize(bounds.outHeight, bounds.outWidth) else PictureSize(bounds.outWidth, bounds.outHeight)
 }
 
-/** The cut as a WebP, 1440 × 900 at most and 960 × 600 at least; null when it cannot be decoded or is too small. */
+/** The cut as a WebP at quality 85, 1600 × 1000 at most and 960 × 600 at least; null when it cannot be decoded or is too small. */
 internal fun sectionPictureWebp(resolver: ContentResolver, uri: Uri, crop: PictureCrop): ByteArray? {
     val size = uprightSize(resolver, uri) ?: return null
     val sample = sectionSampleSize(size.width, crop)
