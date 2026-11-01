@@ -48,6 +48,7 @@ private val games = SectionUiState(
     sectionId = ListCategory.Games.id,
     section = Section.builtIn(ListCategory.Games).copy(listCount = 812),
     countsKnown = true,
+    topicsKnown = true,
     feed = FeedPane(
         phase = FeedPhase.Ready,
         lists = listOf(

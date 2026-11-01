@@ -194,7 +194,9 @@
     <string name="following_reason_section">In %1$s</string>
     <string name="following_empty_title">Du folgst noch nichts</string>
     <string name="following_empty_body">Folge einem Bereich, einem Thema oder einer Person, und ihre neuen Listen kommen zuerst hier an.</string>
-    <string name="following_empty_helper">Tippe auf +, um einem Bereich zu folgen. Themen stehen in den Bereichen, Personen in ihrem Profil.</string>
+    <string name="following_empty_helper">Tippe auf die Bereiche, die dich interessieren, und folge allen auf einmal. Themen stehen in den Bereichen, Personen in ihrem Profil.</string>
+    <string name="following_pick_follow">Folgen · %1$d</string>
+    <string name="following_pick_none">Wähle mindestens einen</string>
     <string name="following_nothing_published">Wem du folgst, hat noch nichts veröffentlicht.</string>
     <string name="following_go_explore">Zu Entdecken</string>
     <string name="manage_sections">Bereiche · %1$d</string>

@@ -198,7 +198,9 @@
     <string name="following_reason_section">У розділі «%1$s»</string>
     <string name="following_empty_title">Ви ще ні на що не підписані</string>
     <string name="following_empty_body">Підпишіться на розділ, тему або людину — їхні нові списки надходитимуть сюди першими.</string>
-    <string name="following_empty_helper">Натисніть +, щоб підписатися на розділ. Теми — всередині розділів, люди — у їхніх профілях.</string>
+    <string name="following_empty_helper">Позначте розділи, які подобаються, і підпишіться на всі одразу. Теми — всередині розділів, люди — у їхніх профілях.</string>
+    <string name="following_pick_follow">Підписатися · %1$d</string>
+    <string name="following_pick_none">Виберіть хоча б один</string>
     <string name="following_nothing_published">Ті, на кого ви підписані, ще нічого не опублікували.</string>
     <string name="following_go_explore">Перейти до огляду</string>
     <string name="manage_sections">Розділи · %1$d</string>

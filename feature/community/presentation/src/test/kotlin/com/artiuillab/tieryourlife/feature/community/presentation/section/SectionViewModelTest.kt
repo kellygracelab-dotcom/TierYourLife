@@ -27,6 +27,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -40,7 +41,7 @@ class SectionViewModelTest {
     private val zelda = Topic(id = "z", name = "Zelda", section = ListCategory.Games.id, status = TopicStatus.Approved, followerCount = 5)
     private val pokemon = Topic(id = "p", name = "Pokémon", section = ListCategory.Games.id, status = TopicStatus.Approved, followerCount = 9)
 
-    private inner class Community(
+    private open inner class Community(
         val followFails: Boolean = false,
         val lookups: Map<String, SectionLookup> = emptyMap(),
     ) : FakeCommunityRepository() {
@@ -119,6 +120,20 @@ class SectionViewModelTest {
         assertEquals(812, state.stats?.listCount)
         assertEquals(listOf("p", "z"), state.topics.map { it.id })
         assertEquals(Triple(ListCategory.Games.id, null, FeedSort.Popular), community.asked.first())
+    }
+
+    @Test
+    fun topicsThatCouldNotBeRead_stillLetThePageDraw() = runBlocking {
+        val community = object : Community() {
+            override suspend fun topics(query: String?, section: String?): Result<List<Topic>> = Result.failure(IOException("offline"))
+        }
+        val viewModel = viewModel(community)
+        assertFalse(viewModel.state.value.topicsKnown)
+
+        viewModel.open()
+        val state = viewModel.state.firstWithin { it.topicsKnown }
+
+        assertTrue(state.topics.isEmpty())
     }
 
     @Test

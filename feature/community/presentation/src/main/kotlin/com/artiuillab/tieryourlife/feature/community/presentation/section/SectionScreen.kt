@@ -65,6 +65,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.Commun
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.EnterAlwaysColumn
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedCallbacks
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedListMenus
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowSize
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowToggle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.HomeLayout
@@ -238,8 +239,7 @@ private fun SectionFeed(
                                 SectionHeader(state.section, state.stats, calls.onToggleSectionFollow, Modifier.edgeToEdge(sideOf(layout)))
                             }
                         }
-                        sectionControls(state, calls, onOpenWaiting)
-                        feedItems(state.feed, layout, alpha, cards, feed.onRetry, reasonFor = { null })
+                        sectionBody(state, layout, alpha, feed, calls, cards, onOpenWaiting)
                     }
                 }
             }
@@ -260,16 +260,35 @@ private fun SectionFeed(
 
 private fun sideOf(layout: HomeLayout) = if (layout == HomeLayout.Wide) 24.dp else 16.dp
 
-private fun LazyGridScope.sectionControls(state: SectionUiState, calls: SectionCallbacks, onOpenWaiting: (Topic) -> Unit) {
+/**
+ * The sort first, where it never moves; then one wait for the topics and the
+ * first page together, and everything at once when both are in.
+ */
+private fun LazyGridScope.sectionBody(
+    state: SectionUiState,
+    layout: HomeLayout,
+    alpha: Float,
+    feed: FeedCallbacks,
+    calls: SectionCallbacks,
+    cards: CardActions,
+    onOpenWaiting: (Topic) -> Unit,
+) {
+    item(key = "sort", span = { GridItemSpan(maxLineSpan) }) {
+        SortRow(sort = state.sort, onSort = calls.onSelectSort)
+    }
+    if (!state.topicsKnown || state.feed.phase == FeedPhase.Loading) {
+        item(key = "loading", span = { GridItemSpan(maxLineSpan) }) { SectionLoading() }
+        return
+    }
     if (state.topics.isNotEmpty() || state.waiting.isNotEmpty()) {
         item(key = "topics", span = { GridItemSpan(maxLineSpan) }) {
             TopicTiles(state.section, state.topics, state.waiting, calls.onOpenTopic, onOpenWaiting)
         }
     }
-    item(key = "sort", span = { GridItemSpan(maxLineSpan) }) {
-        Box {
-            SortRow(sort = state.sort, onSort = calls.onSelectSort)
-        }
+    if (state.feed.phase == FeedPhase.Ready && state.feed.lists.isEmpty()) {
+        item(key = "empty", span = { GridItemSpan(maxLineSpan) }) { SectionEmpty() }
+    } else {
+        feedItems(state.feed, layout, alpha, cards, feed.onRetry, reasonFor = { null })
     }
 }
 

@@ -196,7 +196,9 @@
     <string name="following_reason_section">Em %1$s</string>
     <string name="following_empty_title">Você ainda não segue nada</string>
     <string name="following_empty_body">Siga uma seção, um tema ou uma pessoa e as listas novas chegam aqui primeiro.</string>
-    <string name="following_empty_helper">Toque em + para seguir uma seção. Os temas ficam em cada seção; as pessoas, no perfil delas.</string>
+    <string name="following_empty_helper">Toque nas seções de que você gosta e siga todas de uma vez. Os temas ficam em cada seção; as pessoas, no perfil delas.</string>
+    <string name="following_pick_follow">Seguir · %1$d</string>
+    <string name="following_pick_none">Escolha pelo menos uma</string>
     <string name="following_nothing_published">Ninguém que você segue publicou nada ainda.</string>
     <string name="following_go_explore">Ir para Explorar</string>
     <string name="manage_sections">Seções · %1$d</string>

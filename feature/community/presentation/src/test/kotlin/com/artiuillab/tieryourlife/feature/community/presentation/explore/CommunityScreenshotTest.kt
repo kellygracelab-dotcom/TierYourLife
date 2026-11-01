@@ -186,7 +186,7 @@ class CommunityScreenshotTest {
     fun following_followingNothing() = capture("following_empty") {
         CommunityHomeContent(
             explore,
-            FollowingFeedUiState(following = Following(emptyList(), emptyList()), feed = FeedPane(phase = FeedPhase.Ready, followingNobody = true), quickFollowed = setOf(ListCategory.Food.id)),
+            FollowingFeedUiState(following = Following(emptyList(), emptyList()), feed = FeedPane(phase = FeedPhase.Ready, followingNobody = true), picked = setOf(ListCategory.Food.id)),
             startOnFollowing = true,
         )
     }
@@ -195,6 +195,7 @@ class CommunityScreenshotTest {
         sectionId = ListCategory.Games.id,
         section = Section.builtIn(ListCategory.Games).copy(listCount = 812),
         countsKnown = true,
+        topicsKnown = true,
         topics = listOf(
             Topic("t1", "Pokémon", ListCategory.Games.id, TopicStatus.Approved, followerCount = 210),
             Topic("t2", "Zelda", ListCategory.Games.id, TopicStatus.Approved, followerCount = 120),
@@ -210,6 +211,16 @@ class CommunityScreenshotTest {
 
     @Test
     fun section_dark() = capture("section_dark", dark = true) { SectionScreenContent(games, onBack = {}) }
+
+    @Test
+    fun section_waitsForItsTopics() = capture("section_loading") {
+        SectionScreenContent(games.copy(topicsKnown = false, topics = emptyList(), waiting = emptyList()), onBack = {})
+    }
+
+    @Test
+    fun section_withNothingInIt() = capture("section_empty") {
+        SectionScreenContent(games.copy(topics = emptyList(), waiting = emptyList(), feed = FeedPane(phase = FeedPhase.Ready)), onBack = {})
+    }
 
     @Test
     @Config(qualifiers = "w891dp-h411dp-land-xhdpi")

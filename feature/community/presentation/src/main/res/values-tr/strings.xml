@@ -194,7 +194,9 @@
     <string name="following_reason_section">%1$s bölümünde</string>
     <string name="following_empty_title">Henüz hiçbir şeyi takip etmiyorsunuz</string>
     <string name="following_empty_body">Bir bölümü, konuyu ya da kişiyi takip edin; yeni listeleri önce buraya gelsin.</string>
-    <string name="following_empty_helper">Bir bölümü takip etmek için + simgesine dokunun. Konular bölümlerin içinde, kişiler profillerinde.</string>
+    <string name="following_empty_helper">Sevdiğin bölümlere dokun, sonra hepsini birden takip et. Konular bölümlerin içinde, kişiler profillerinde.</string>
+    <string name="following_pick_follow">Takip et · %1$d</string>
+    <string name="following_pick_none">En az birini seç</string>
     <string name="following_nothing_published">Takip ettikleriniz henüz bir şey yayımlamadı.</string>
     <string name="following_go_explore">Keşfet’e git</string>
     <string name="manage_sections">Bölümler · %1$d</string>

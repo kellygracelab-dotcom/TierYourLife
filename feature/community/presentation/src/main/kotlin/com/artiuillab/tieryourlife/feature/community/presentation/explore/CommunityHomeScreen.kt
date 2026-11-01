@@ -71,6 +71,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.Fol
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedViewModel
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingTab
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.community.presentation.section.FoundTopicTiles
 import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingSectionSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingTopicSheet
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSectionNames
@@ -101,7 +102,8 @@ class ExploreCallbacks(
     val onQueryChange: (String) -> Unit = {},
     val onExitSearch: () -> Unit = {},
     val onRetrySearch: () -> Unit = {},
-    val onQuickFollow: (String) -> Unit = {},
+    val onTogglePick: (String) -> Unit = {},
+    val onFollowPicked: () -> Unit = {},
     /** Withdraws a waiting section proposal, or dismisses a notice. */
     val onWithdrawProposal: (String) -> Unit = {},
 )
@@ -176,7 +178,8 @@ fun CommunityHomeScreen(
             onQueryChange = explore::updateQuery,
             onExitSearch = explore::exitSearch,
             onRetrySearch = explore::retrySearch,
-            onQuickFollow = following::quickFollow,
+            onTogglePick = following::togglePick,
+            onFollowPicked = following::followPicked,
             onWithdrawProposal = following::withdrawProposal,
         ),
         destinations = CommunityDestinations(
@@ -311,6 +314,7 @@ private fun HomeBody(
                 layout = layout,
                 cards = CardActions(destinations.onOpenList) { exploreMenu = it },
                 onRetry = exploreCalls.onRetrySearch,
+                onOpenTopic = destinations.onOpenTopic,
             )
         }
     } else {
@@ -364,7 +368,8 @@ private fun HomeBody(
                                         onOpenWaiting = { waitingTopic = it },
                                         onOpenAuthor = { destinations.onOpenAuthor(it.uid, it.name, it.photoUrl) },
                                         onManage = destinations.onManageFollowing,
-                                        onQuickFollow = exploreCalls.onQuickFollow,
+                                        onTogglePick = exploreCalls.onTogglePick,
+                                        onFollowPicked = exploreCalls.onFollowPicked,
                                         onOpenAllSections = destinations.onOpenAllSections,
                                         onOpenWaitingSection = { waitingSection = it.id },
                                         onDismissNotice = exploreCalls.onWithdrawProposal,
@@ -543,7 +548,14 @@ private fun SearchButton(onSearch: () -> Unit) {
 
 /** What was typed, answered by the server: cards, or a line saying there is nothing. */
 @Composable
-private fun SearchResultsGrid(results: SearchResults, query: String, layout: HomeLayout, cards: CardActions, onRetry: () -> Unit) {
+private fun SearchResultsGrid(
+    results: SearchResults,
+    query: String,
+    layout: HomeLayout,
+    cards: CardActions,
+    onRetry: () -> Unit,
+    onOpenTopic: (Topic) -> Unit,
+) {
     val alpha = rememberSkeletonAlpha()
     LazyVerticalGrid(
         columns = GridCells.Fixed(layout.feedColumns.coerceAtLeast(2)),
@@ -560,16 +572,23 @@ private fun SearchResultsGrid(results: SearchResults, query: String, layout: Hom
                 FeedFailedBlock(retrying = false, onRetry = onRetry)
             }
 
-            query.isNotBlank() && results.lists.isEmpty() ->
+            query.isNotBlank() && results.lists.isEmpty() && results.topics.isEmpty() ->
                 item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }) { SearchNothing() }
 
-            else -> items(results.lists, key = { it.id }) { summary ->
-                FeedCard(
-                    summary = summary,
-                    onClick = { cards.onOpen(summary) },
-                    onLongClick = { cards.onLongPress(summary) },
-                    coverHeight = layout.coverHeight,
-                )
+            else -> {
+                if (results.topics.isNotEmpty()) {
+                    item(key = "topics", span = { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }) {
+                        FoundTopicTiles(results.topics, onOpenTopic)
+                    }
+                }
+                items(results.lists, key = { it.id }) { summary ->
+                    FeedCard(
+                        summary = summary,
+                        onClick = { cards.onOpen(summary) },
+                        onLongClick = { cards.onLongPress(summary) },
+                        coverHeight = layout.coverHeight,
+                    )
+                }
             }
         }
     }

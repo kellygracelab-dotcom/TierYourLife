@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +37,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,8 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
-import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
-import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.core.theme.ui.TuneIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSection
@@ -53,12 +55,10 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.AllSectionsTile
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CardActions
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.DashedSquare
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ExploreTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.GroupIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.HomeLayout
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.NearEndWatcher
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScheduleIcon
@@ -89,7 +89,8 @@ internal class FollowingActions(
     val onOpenWaiting: (Topic) -> Unit = {},
     val onOpenAuthor: (FollowedAuthor) -> Unit = {},
     val onManage: () -> Unit = {},
-    val onQuickFollow: (String) -> Unit = {},
+    val onTogglePick: (String) -> Unit = {},
+    val onFollowPicked: () -> Unit = {},
     val onGoToExplore: () -> Unit = {},
     val onOpenAllSections: () -> Unit = {},
     val onOpenWaitingSection: (Section) -> Unit = {},
@@ -121,13 +122,13 @@ internal fun FollowingTab(
                 modifier = Modifier
                     .then(if (layout == HomeLayout.Wide) Modifier.widthIn(max = WideContentMax) else Modifier)
                     .fillMaxSize(),
-                contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = if (state.followsNothing) PickBarRoom else 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 if (state.followsNothing) {
                     item(key = "empty", span = { GridItemSpan(maxLineSpan) }) {
-                        FollowsNothing(state.quickFollowed, actions)
+                        FollowsNothing(state.picked, actions)
                     }
                     return@LazyVerticalGrid
                 }
@@ -152,6 +153,31 @@ internal fun FollowingTab(
                     }
                 }
             }
+            if (state.followsNothing) {
+                PickBar(state.picked.size, state.followingPicked, actions.onFollowPicked, Modifier.align(Alignment.BottomCenter))
+            }
+        }
+    }
+}
+
+private val PickBarRoom = 96.dp
+
+/** Under the empty tab's sections: Follow, once something is picked. */
+@Composable
+private fun PickBar(count: Int, busy: Boolean, onFollow: () -> Unit, modifier: Modifier) {
+    Column(modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        Button(
+            onClick = onFollow,
+            enabled = count > 0 && !busy,
+            modifier = Modifier
+                .navigationBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .fillMaxWidth()
+                .height(48.dp)
+                .testTag(ExploreTestTags.FOLLOW_PICKED),
+        ) {
+            Text(if (count > 0) stringResource(R.string.following_pick_follow, count) else stringResource(R.string.following_pick_none))
         }
     }
 }
@@ -224,11 +250,7 @@ internal fun FollowedStrip(following: Following, waiting: List<Topic>, actions: 
 private fun FollowedSectionItem(followed: FollowedSection, actions: FollowingActions) {
     val section = rememberSection(followed.id)
     StripItem(section.label(), "s-${followed.id}", { actions.onOpenSection(followed.id) }) {
-        Box(Modifier.size(StripVisual).clip(RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
-            SectionArt(section, Modifier.fillMaxSize(), scrim = false)
-            Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)))
-            SectionIcon(section, 22.dp, Color.White)
-        }
+        SectionArt(section, Modifier.size(StripVisual).clip(RoundedCornerShape(14.dp)), scrim = false)
     }
 }
 
@@ -291,25 +313,21 @@ private fun StripItem(
 }
 
 /**
- * Nothing followed at all (§4.2): the sections, each one tap from being
- * followed; nine at most, the last leading to all of them when there are more.
+ * Nothing followed at all (§4.2): every section, picked with a tap and
+ * framed, then followed together by the button under them.
  */
 @Composable
-private fun FollowsNothing(quickFollowed: Set<String>, actions: FollowingActions) {
+private fun FollowsNothing(picked: Set<String>, actions: FollowingActions) {
     val shown = LocalSections.current.directory.shown
-    val more = shown.size > MINI_SLOTS
-    val slots = if (more) shown.filterNot { it.isOther }.take(MINI_SLOTS - 1) + null else shown
     Column(
         Modifier
             .fillMaxWidth()
-            .padding(top = 28.dp, start = 8.dp, end = 8.dp)
+            .padding(top = 24.dp, start = 8.dp, end = 8.dp)
             .testTag(ExploreTestTags.FOLLOWING_EMPTY),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        GroupIcon(36.dp, MaterialTheme.colorScheme.outline)
         Text(
             stringResource(R.string.following_empty_title),
-            modifier = Modifier.padding(top = 4.dp),
             style = TextStyle(fontSize = 20.sp, lineHeight = 26.sp),
             color = MaterialTheme.colorScheme.onSurface,
         )
@@ -319,17 +337,21 @@ private fun FollowsNothing(quickFollowed: Set<String>, actions: FollowingActions
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Column(Modifier.padding(top = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            TileRows(slots, columns = 3, gap = 8.dp) { section, rowModifier ->
-                if (section == null) {
-                    AllSectionsTile(
-                        count = shown.size,
-                        onClick = actions.onOpenAllSections,
-                        modifier = rowModifier.height(84.dp).testTag(ExploreTestTags.ALL_SECTIONS_MINI_TILE),
-                        style = TileStyle.Mini,
-                    )
-                } else {
-                    MiniTile(section, following = section.id in quickFollowed, onFollow = { actions.onQuickFollow(section.id) }, modifier = rowModifier)
-                }
+            TileRows(shown, columns = 3, gap = 8.dp) { section, rowModifier ->
+                SectionTile(
+                    section = section,
+                    following = false,
+                    onOpen = { actions.onTogglePick(section.id) },
+                    onFollow = {},
+                    onUnfollow = {},
+                    modifier = rowModifier
+                        .height(84.dp)
+                        .semantics { selected = section.id in picked }
+                        .testTag(ExploreTestTags.miniTile(section.id)),
+                    style = TileStyle.Pick,
+                    longPressMenu = false,
+                    selected = section.id in picked,
+                )
             }
         }
         Text(
@@ -338,39 +360,6 @@ private fun FollowsNothing(quickFollowed: Set<String>, actions: FollowingActions
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-    }
-}
-
-private const val MINI_SLOTS = 9
-
-@Composable
-private fun MiniTile(section: Section, following: Boolean, onFollow: () -> Unit, modifier: Modifier) {
-    Box(modifier.height(84.dp)) {
-        SectionTile(
-            section = section,
-            following = following,
-            onOpen = onFollow,
-            onFollow = onFollow,
-            onUnfollow = {},
-            modifier = Modifier.fillMaxSize().testTag(ExploreTestTags.miniTile(section.id)),
-            style = TileStyle.Mini,
-            longPressMenu = false,
-        )
-        Box(
-            Modifier
-                .align(Alignment.TopEnd)
-                .padding(8.dp)
-                .size(28.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface),
-            contentAlignment = Alignment.Center,
-        ) {
-            if (following) {
-                CheckIcon(18.dp, MaterialTheme.colorScheme.primary)
-            } else {
-                PlusIcon(18.dp, MaterialTheme.colorScheme.primary)
-            }
-        }
     }
 }
 

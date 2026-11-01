@@ -21,7 +21,7 @@ internal object ExploreTestTags {
     const val FOLLOWING_NOTHING_PUBLISHED = "following_nothing_published"
     const val COVER_HOME = "explore_cover_home"
     const val ALL_SECTIONS_TILE = "explore_all_sections"
-    const val ALL_SECTIONS_MINI_TILE = "following_mini_all_sections"
+    const val FOLLOW_PICKED = "following_follow_picked"
 
     fun tile(sectionId: String) = "explore_tile_$sectionId"
     fun miniTile(sectionId: String) = "following_mini_tile_$sectionId"
