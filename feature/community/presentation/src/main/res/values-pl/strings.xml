@@ -185,12 +185,10 @@
     <string name="explore_following">Obserwujesz</string>
     <string name="explore_search_hint">Szukaj w społeczności</string>
     <string name="explore_search_nothing">Nic nie pasuje.</string>
-    <string name="section_all">Wszystkie</string>
-    <string name="section_suggest_topic">Zaproponuj temat</string>
+    <string name="section_topics">Tematy</string>
     <string name="section_sort_popular">Popularne</string>
     <string name="section_sort_newest">Najnowsze</string>
     <string name="section_share">Udostępnij dział</string>
-    <string name="section_topic_waiting_chip">%1$s · czeka</string>
     <string name="section_waiting_status">Czeka na moderatora</string>
     <string name="section_waiting_body">Moderator go przejrzy. Twoje listy pojawią się tu po zatwierdzeniu, a do tego czasu są w dziale %1$s.</string>
     <string name="section_waiting_only_you">Do tego czasu widzisz ten temat tylko ty.</string>

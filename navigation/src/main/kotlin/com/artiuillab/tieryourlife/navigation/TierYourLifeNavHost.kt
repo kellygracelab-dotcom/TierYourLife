@@ -196,6 +196,7 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
                     onSettingsClick = { navController.navigateToSettings() },
                     onManageFollowing = { navController.navigateToFollowing() },
                     onOpenSection = { route -> navController.navigateToSection(route) },
+                    onOpenTopic = { route -> navController.navigateToTopic(route) },
                     tabs = tabs,
                     onOpenAllSections = { navController.navigateToAllSections() },
                 )
@@ -317,6 +318,7 @@ private fun NavContent(
             onBack = { navController.popBackStack() },
             onOpenList = { route -> navController.navigateToCommunityList(route) },
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
+            onOpenTopic = { route -> navController.navigateToTopic(route) },
         )
         allSectionsScreen(
             onBack = { navController.popBackStack() },

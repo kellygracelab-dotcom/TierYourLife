@@ -183,12 +183,10 @@
     <string name="explore_following">Seguindo</string>
     <string name="explore_search_hint">Buscar na comunidade</string>
     <string name="explore_search_nothing">Nada encontrado.</string>
-    <string name="section_all">Tudo</string>
-    <string name="section_suggest_topic">Sugerir um tema</string>
+    <string name="section_topics">Temas</string>
     <string name="section_sort_popular">Populares</string>
     <string name="section_sort_newest">Recentes</string>
     <string name="section_share">Compartilhar seção</string>
-    <string name="section_topic_waiting_chip">%1$s · aguardando</string>
     <string name="section_waiting_status">Aguardando moderação</string>
     <string name="section_waiting_body">Um moderador vai analisar. Suas listas aparecem aqui depois da aprovação; até lá, ficam em %1$s.</string>
     <string name="section_waiting_only_you">Até lá, só você vê este tema.</string>

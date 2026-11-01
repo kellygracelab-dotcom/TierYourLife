@@ -97,8 +97,9 @@ internal fun CoverHost(
             sectionScreen(
                 onBack = { navController.popBackStack() },
                 onOpenList = { route -> onHandOff(CoverHandOffSubject.CommunityList(route.publishedId, route.title.orEmpty())) },
-                // The cover's rows show no faces to tap.
+                // The cover's rows show no faces or topics to tap.
                 onAuthorClick = { _, _, _ -> },
+                onOpenTopic = {},
             )
         }
         if (handOff != null) {

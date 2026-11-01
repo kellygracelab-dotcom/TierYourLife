@@ -179,12 +179,10 @@
     <string name="explore_following">フォロー中</string>
     <string name="explore_search_hint">コミュニティを検索</string>
     <string name="explore_search_nothing">一致するものがありません。</string>
-    <string name="section_all">すべて</string>
-    <string name="section_suggest_topic">トピックを提案</string>
+    <string name="section_topics">トピック</string>
     <string name="section_sort_popular">人気</string>
     <string name="section_sort_newest">新着</string>
     <string name="section_share">セクションを共有</string>
-    <string name="section_topic_waiting_chip">%1$s · 審査待ち</string>
     <string name="section_waiting_status">モデレーターの確認待ち</string>
     <string name="section_waiting_body">モデレーターが確認します。承認されるとリストがここに表示されます。それまでは%1$sにあります。</string>
     <string name="section_waiting_only_you">それまでこのトピックはあなたにしか見えません。</string>

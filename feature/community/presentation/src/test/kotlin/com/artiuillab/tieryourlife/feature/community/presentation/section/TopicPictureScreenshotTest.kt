@@ -19,7 +19,6 @@ import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.ExploreTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPane
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
 import com.artiuillab.tieryourlife.feature.community.presentation.following.FollowingScreenContent
@@ -43,7 +42,7 @@ private val Pictured = listOf(
 /** A colour per picture, so each one is seen where it lands. */
 private val Paint = mapOf("https://p/t1.webp" to 0xFFE0A030.toInt(), "https://p/t2.webp" to 0xFF3A7D5C.toInt())
 
-/** Topics with a picture of their own show it, cropped, in the chips, the chosen topic's row and Manage; one without keeps the tinted square. */
+/** Topics with a picture of their own show it, cropped, on their tiles and in Manage; one without keeps the section's art or the tinted square. */
 @OptIn(ExperimentalCoilApi::class)
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -79,21 +78,14 @@ class TopicPictureScreenshotTest {
     )
 
     @Test
-    fun chips_light() {
-        capture("topic_picture_chips_light") { SectionScreenContent(games, onBack = {}) }
+    fun tiles_light() {
+        capture("topic_picture_tiles_light") { SectionScreenContent(games, onBack = {}) }
 
-        composeRule.onAllNodesWithTag(SectionTestTags.CHIP_PICTURE, useUnmergedTree = true).assertCountEquals(2)
+        composeRule.onAllNodesWithTag(SectionTestTags.TOPIC_PICTURE, useUnmergedTree = true).assertCountEquals(2)
     }
 
     @Test
-    fun chips_dark() = capture("topic_picture_chips_dark", dark = true) { SectionScreenContent(games, onBack = {}) }
-
-    @Test
-    fun chosenTopic_showsItsPictureInItsRow() {
-        capture("topic_picture_row") { SectionScreenContent(games.copy(selectedTopic = Pictured.first()), onBack = {}) }
-
-        composeRule.onAllNodesWithTag(ExploreTestTags.TOPIC_PICTURE, useUnmergedTree = true).assertCountEquals(1)
-    }
+    fun tiles_dark() = capture("topic_picture_tiles_dark", dark = true) { SectionScreenContent(games, onBack = {}) }
 
     @Test
     fun manage_showsEachTopicsPicture() = capture("topic_picture_manage") {

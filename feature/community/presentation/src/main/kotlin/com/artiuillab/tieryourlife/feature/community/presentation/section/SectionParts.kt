@@ -4,34 +4,27 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,34 +32,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronDownIcon
-import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowSize
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowToggle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScheduleIcon
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.edgeToEdge
-import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.TopicSquare
 import com.artiuillab.tieryourlife.feature.tier.board.common.label
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -75,17 +61,14 @@ internal object SectionTestTags {
     const val SCREEN = "section_screen"
     const val HEADER = "section_header"
     const val BAR = "section_bar"
-    const val CHIPS = "section_chips"
-    const val CHIP_ALL = "section_chip_all"
-    const val CHIP_PICTURE = "section_chip_picture"
-    const val SUGGEST = "section_chip_suggest"
-    const val TOPIC_ROW = "section_topic_row"
+    const val TOPICS = "section_topics"
+    const val TOPIC_PICTURE = "section_topic_picture"
     const val SORT = "section_sort"
     const val WAITING_SHEET = "section_waiting_sheet"
     const val COVER = "section_cover"
     const val COVER_RETRY = "section_cover_retry"
 
-    fun chip(id: String) = "section_chip_$id"
+    fun topic(id: String) = "section_topic_$id"
 
     fun coverRow(id: String) = "section_cover_row_$id"
 }
@@ -145,151 +128,100 @@ internal fun SectionHeader(
 
 private const val COLLAGE_COVERS = 4
 
-/** All · approved topics · the viewer's waiting ones · Suggest a topic (§3.1, §1.7). */
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * The section's topics as tiles, like the sections on Home: the topic's own
+ * picture, or the section's art until it has one, under its name. This
+ * person's waiting ones come last, dimmed, and open what is known about them.
+ */
 @Composable
-internal fun TopicChipsRow(
+internal fun TopicTiles(
+    section: Section,
     topics: List<Topic>,
     waiting: List<Topic>,
-    selected: Topic?,
-    onSelect: (Topic?) -> Unit,
+    onOpen: (Topic) -> Unit,
     onOpenWaiting: (Topic) -> Unit,
-    onSuggest: (() -> Unit)?,
-    side: Dp = 0.dp,
-) {
-    val listState = rememberLazyListState()
-    val chips = topics
-    val selectedIndex = selected?.let { s -> chips.indexOfFirst { it.id == s.id } }?.takeIf { it >= 0 }
-    LaunchedEffect(selectedIndex) {
-        // Kept fully in view: the chip that filters the page is the one to see.
-        if (selectedIndex != null) listState.animateScrollToItem(selectedIndex + 1, scrollOffset = -48)
-    }
-    LazyRow(
-        state = listState,
-        modifier = Modifier
-            .fillMaxWidth()
-            .edgeToEdge(side)
-            .testTag(SectionTestTags.CHIPS),
-        contentPadding = PaddingValues(start = side, top = 12.dp, end = side, bottom = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        item(key = "all") {
-            TopicChip(stringResource(R.string.section_all), selected == null, Modifier.testTag(SectionTestTags.CHIP_ALL)) { onSelect(null) }
-        }
-        chips.forEach { topic ->
-            item(key = topic.id) {
-                TopicChip(topic.name, selected?.id == topic.id, Modifier.testTag(SectionTestTags.chip(topic.id)), topic.pictureUrl) { onSelect(topic) }
+) = BoxWithConstraints {
+    val columns = (maxWidth / TOPIC_TILE_MIN_WIDTH).toInt().coerceAtLeast(2)
+    Column(Modifier.testTag(SectionTestTags.TOPICS), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(
+            stringResource(R.string.section_topics),
+            modifier = Modifier.padding(top = 16.dp),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        val tiles = topics.map { it to false } + waiting.map { it to true }
+        tiles.chunked(columns).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                row.forEach { (topic, isWaiting) ->
+                    TopicTile(section, topic, isWaiting, Modifier.weight(1f)) { if (isWaiting) onOpenWaiting(topic) else onOpen(topic) }
+                }
+                repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
             }
-        }
-        waiting.forEach { topic ->
-            item(key = "w-${topic.id}") { WaitingChip(topic.name, Modifier.testTag(SectionTestTags.chip(topic.id))) { onOpenWaiting(topic) } }
-        }
-        if (onSuggest != null) item(key = "suggest") {
-            AssistChip(
-                onClick = onSuggest,
-                label = { Text(stringResource(R.string.section_suggest_topic), style = ChipLabel) },
-                leadingIcon = { PlusIcon(16.dp, MaterialTheme.colorScheme.primary) },
-                colors = AssistChipDefaults.assistChipColors(labelColor = MaterialTheme.colorScheme.primary),
-                modifier = Modifier.height(32.dp).testTag(SectionTestTags.SUGGEST),
-            )
         }
     }
 }
 
-private val ChipLabel = TextStyle(fontSize = 13.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium)
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopicChip(label: String, selected: Boolean, modifier: Modifier, pictureUrl: String? = null, onClick: () -> Unit) {
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        label = { Text(label, style = ChipLabel) },
-        leadingIcon = when {
-            selected -> {
-                { CheckIcon(16.dp, MaterialTheme.colorScheme.onPrimaryContainer) }
-            }
-            pictureUrl != null -> {
-                { ChipPicture(pictureUrl) }
-            }
-            else -> null
-        },
-        shape = RoundedCornerShape(8.dp),
-        colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        ),
-        modifier = modifier.height(32.dp),
-    )
-}
-
-/** A topic's own picture at the size of a chip's icon, cropped to its rounded square, on the chip's tint while it loads. */
-@Composable
-private fun ChipPicture(url: String) {
-    AsyncImage(
-        model = url,
-        contentDescription = null,
-        modifier = Modifier
-            .size(20.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-            .testTag(SectionTestTags.CHIP_PICTURE),
-        contentScale = ContentScale.Crop,
-    )
-}
-
-/** Like an unselected chip, but dashed: a word of this person's still waiting (§1.7). */
-@Composable
-private fun WaitingChip(name: String, modifier: Modifier, onClick: () -> Unit) {
-    val outline = MaterialTheme.colorScheme.outline
-    Row(
+private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier: Modifier, onClick: () -> Unit) {
+    Box(
         modifier
-            .height(32.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .drawBehind {
-                drawRoundRect(
-                    color = outline,
-                    cornerRadius = CornerRadius(8.dp.toPx()),
-                    style = Stroke(width = 1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 3.dp.toPx()))),
-                )
-            }
+            .aspectRatio(TOPIC_TILE_RATIO)
+            .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+            .semantics { contentDescription = topic.name }
+            .testTag(SectionTestTags.topic(topic.id)),
     ) {
-        ScheduleIcon(16.dp, outline)
-        Text(stringResource(R.string.section_topic_waiting_chip, name), style = ChipLabel, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        SectionArt(section, Modifier.fillMaxSize(), scrim = false)
+        val picture = topic.pictureUrl
+        if (picture != null) {
+            AsyncImage(
+                model = picture,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize().testTag(SectionTestTags.TOPIC_PICTURE),
+            )
+        }
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        0.3f to Color.Black.copy(alpha = if (waiting) 0.45f else 0f),
+                        1f to Color.Black.copy(alpha = 0.7f),
+                    ),
+                ),
+        )
+        if (waiting) {
+            Row(
+                Modifier
+                    .align(Alignment.TopStart)
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color.Black.copy(alpha = 0.55f))
+                    .padding(horizontal = 8.dp, vertical = 3.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                ScheduleIcon(12.dp, Color.White)
+                Text(stringResource(R.string.section_waiting_pill), style = TextStyle(fontSize = 11.sp, lineHeight = 14.sp, fontWeight = FontWeight.Medium), color = Color.White)
+            }
+        }
+        Text(
+            topic.name,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 12.dp, end = 10.dp, bottom = 10.dp),
+            style = TileName,
+            color = Color.White,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
-/** Under the chips while a topic is chosen (§3.2): what it is, and its own Follow. */
-@Composable
-internal fun TopicRow(topic: Topic, sectionId: String, onToggleFollow: () -> Unit) {
-    Column(Modifier.testTag(SectionTestTags.TOPIC_ROW)) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp)
-                .height(56.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            TopicSquare(topic.section ?: sectionId, 36.dp, 18.dp, topic.pictureUrl)
-            Text(
-                topic.name,
-                Modifier.weight(1f),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            FollowToggle(following = topic.following, onClick = onToggleFollow, size = FollowSize.Topic)
-        }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-    }
-}
+private const val TOPIC_TILE_RATIO = 2f
+private val TOPIC_TILE_MIN_WIDTH = 170.dp
+private val TileName = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium)
 
 /** Popular or Newest from a menu, at the end of the row (§3.1). */
 @Composable

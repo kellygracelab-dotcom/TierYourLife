@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -68,7 +67,6 @@ data class SectionUiState(
     val topics: List<Topic> = emptyList(),
     /** This person's own topics waiting for a moderator here: seen by nobody else. */
     val waiting: List<Topic> = emptyList(),
-    val selectedTopic: Topic? = null,
     val sort: FeedSort = FeedSort.Popular,
     val feed: FeedPane = FeedPane(),
     val nowMillis: Long = 0L,
@@ -101,23 +99,20 @@ class SectionViewModel @Inject constructor(
 
     private val topics = MutableStateFlow<List<Topic>>(emptyList())
     private val waiting = MutableStateFlow<List<Topic>>(emptyList())
-    private val selectedTopicId = MutableStateFlow(route.topicId)
-    private val chosenTopic = MutableStateFlow<Topic?>(null)
     private val sort = MutableStateFlow(sortMemory.sortOf(section))
 
     private val loaders = mutableMapOf<String, FeedLoader>()
-    private val current = MutableStateFlow(loaderFor(route.topicId, sort.value))
+    private val current = MutableStateFlow(loaderFor(sort.value))
 
-    /** The feed on screen now: the section's, or the chosen topic's, in the order chosen. */
+    /** The feed on screen now: the section's, in the order chosen. */
     internal val feed: FeedLoader get() = current.value
 
     val state: StateFlow<SectionUiState> = combine(
         combine(catalog.directory, sectionId) { directory, id -> directory to id },
         combine(topics, waiting) { t, w -> t to w },
-        combine(selectedTopicId, chosenTopic, sort) { id, chosen, order -> Triple(id, chosen, order) },
+        sort,
         current.flatMapLatest { it.pane },
-    ) { (directory, id), (t, w), (wanted, chosen, order), pane ->
-        val selected = wanted?.let { topicId -> t.firstOrNull { it.id == topicId } ?: w.firstOrNull { it.id == topicId } ?: chosen?.takeIf { it.id == topicId } }
+    ) { (directory, id), (t, w), order, pane ->
         val found = directory.find(id)
         SectionUiState(
             sectionId = id,
@@ -125,7 +120,6 @@ class SectionViewModel @Inject constructor(
             countsKnown = found != null && countsKnown(directory, found),
             topics = t,
             waiting = w,
-            selectedTopic = selected,
             sort = order,
             feed = pane,
             nowMillis = clock.nowMillis(),
@@ -156,10 +150,6 @@ class SectionViewModel @Inject constructor(
         if (!catalog.directory.value.settled(section)) catalog.lookUp(section)
         viewModelScope.launch { catalog.refresh() }
         loadAround()
-        val wanted = selectedTopicId.value
-        if (wanted != null && chosenTopic.value == null) {
-            viewModelScope.launch { community.topic(wanted).onSuccess { chosenTopic.value = it } }
-        }
     }
 
     /** The section's topics, and this person's own waiting ones in it. */
@@ -178,14 +168,6 @@ class SectionViewModel @Inject constructor(
         }
     }
 
-    /** A chip, or All for null: the feed changes in place, and Back clears the topic before it leaves. */
-    fun selectTopic(topic: Topic?) {
-        if (selectedTopicId.value == topic?.id) return
-        selectedTopicId.value = topic?.id
-        chosenTopic.value = topic
-        switchFeed()
-    }
-
     fun selectSort(order: FeedSort) {
         if (sort.value == order) return
         sort.value = order
@@ -194,17 +176,17 @@ class SectionViewModel @Inject constructor(
     }
 
     private fun switchFeed() {
-        val loader = loaderFor(selectedTopicId.value, sort.value)
+        val loader = loaderFor(sort.value)
         current.value = loader
         loader.open()
     }
 
-    private fun loaderFor(topicId: String?, order: FeedSort): FeedLoader {
+    private fun loaderFor(order: FeedSort): FeedLoader {
         val id = section
-        val key = FeedKeys.section(id, topicId) + if (order == FeedSort.Recent) ":newest" else ""
+        val key = FeedKeys.section(id, null) + if (order == FeedSort.Recent) ":newest" else ""
         return loaders.getOrPut(key) {
             FeedLoader(key, viewModelScope, cache, clock, menu::isVisible) { after ->
-                community.feed(category = id, topic = topicId, sort = order, after = after)
+                community.feed(category = id, sort = order, after = after)
             }
         }
     }
@@ -219,26 +201,6 @@ class SectionViewModel @Inject constructor(
                 onFailure = { notes.send(CommunityNotice.FollowFailed) },
             )
         }
-    }
-
-    /** The topic row's own button: it follows the topic, not the section. */
-    fun toggleTopicFollow() {
-        val topic = state.value.selectedTopic ?: return
-        val now = !topic.following
-        val changed = topic.copy(following = now)
-        replaceTopic(changed)
-        viewModelScope.launch {
-            val result = if (now) community.followTopic(topic.id) else community.unfollowTopic(topic.id)
-            result.onFailure {
-                replaceTopic(topic)
-                notes.send(CommunityNotice.FollowFailed)
-            }
-        }
-    }
-
-    private fun replaceTopic(topic: Topic) {
-        topics.update { all -> all.map { if (it.id == topic.id) topic else it } }
-        if (chosenTopic.value?.id == topic.id) chosenTopic.value = topic
     }
 
     fun hideList(summary: PublishedListSummary) = menu.hideList(feed, summary)

@@ -112,7 +112,8 @@ class CommunityDestinations(
     /** Null where the rail carries Settings. */
     val onSettings: (() -> Unit)? = null,
     val onManageFollowing: () -> Unit = {},
-    val onOpenSection: (sectionId: String, topicId: String?) -> Unit = { _, _ -> },
+    val onOpenSection: (sectionId: String) -> Unit = {},
+    val onOpenTopic: (Topic) -> Unit = {},
     val onOpenAllSections: () -> Unit = {},
 )
 
@@ -129,6 +130,7 @@ fun CommunityHomeScreen(
     onSettingsClick: () -> Unit,
     onManageFollowing: () -> Unit,
     onOpenSection: (CommunityRoute.Section) -> Unit,
+    onOpenTopic: (CommunityRoute.Topic) -> Unit = {},
     tabs: @Composable () -> Unit = {},
     onOpenAllSections: () -> Unit = {},
     explore: ExploreViewModel = hiltViewModel(),
@@ -181,7 +183,8 @@ fun CommunityHomeScreen(
             onOpenAuthor = onAuthorClick,
             onSettings = onSettingsClick.takeUnless { hasRail },
             onManageFollowing = onManageFollowing,
-            onOpenSection = { section, topicId -> onOpenSection(CommunityRoute.Section(section, topicId)) },
+            onOpenSection = { onOpenSection(CommunityRoute.Section(it)) },
+            onOpenTopic = { onOpenTopic(CommunityRoute.Topic.of(it)) },
             onOpenAllSections = onOpenAllSections,
         ),
         tabs = tabs,
@@ -211,7 +214,7 @@ fun CommunityHomeContent(
         BoxWithConstraints(Modifier.fillMaxSize()) {
             val layout = homeLayoutFor(currentWindowShape, maxHeight)
             if (layout == HomeLayout.Cover) {
-                CoverCommunityGrid(onBack = null, sections = explore.sections, onOpenSection = { destinations.onOpenSection(it, null) })
+                CoverCommunityGrid(onBack = null, sections = explore.sections, onOpenSection = destinations.onOpenSection)
             } else {
                 HomeBody(explore, following, layout, exploreFeed, followingFeed, exploreCalls, destinations, tabs, startOnFollowing)
             }
@@ -338,7 +341,7 @@ private fun HomeBody(
                                     layout = layout,
                                     gridState = exploreGrid,
                                     tiles = TileActions(
-                                        onOpen = { destinations.onOpenSection(it, null) },
+                                        onOpen = destinations.onOpenSection,
                                         onFollow = exploreCalls.onFollowSection,
                                         onUnfollow = exploreCalls.onUnfollowSection,
                                         onOpenAll = destinations.onOpenAllSections,
@@ -355,8 +358,8 @@ private fun HomeBody(
                                     layout = layout,
                                     gridState = followingGrid,
                                     actions = FollowingActions(
-                                        onOpenSection = { destinations.onOpenSection(it, null) },
-                                        onOpenTopic = { topic -> topic.section?.let { destinations.onOpenSection(it, topic.id) } },
+                                        onOpenSection = destinations.onOpenSection,
+                                        onOpenTopic = destinations.onOpenTopic,
                                         onOpenWaiting = { waitingTopic = it },
                                         onOpenAuthor = { destinations.onOpenAuthor(it.uid, it.name, it.photoUrl) },
                                         onManage = destinations.onManageFollowing,
