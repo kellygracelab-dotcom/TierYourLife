@@ -15,6 +15,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedLi
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTierDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.RankingDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ReportRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SearchMissDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionProposalDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ShowRankingRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ShownRankingDto
@@ -196,6 +197,9 @@ class RetrofitCommunityRepository @Inject constructor(
     override suspend fun followTopic(id: String): Result<Unit> = attempt("Following a topic") { api.followTopic(id) }
 
     override suspend fun unfollowTopic(id: String): Result<Unit> = attempt("Unfollowing a topic") { api.unfollowTopic(id) }
+
+    override suspend fun reportSearchMiss(query: String): Result<Unit> =
+        attempt("Reporting a search that found nothing") { api.reportSearchMiss(SearchMissDto(query.trim())) }
 
     override suspend fun pendingTopics(): Result<List<PendingTopic>> =
         attempt("Reading the topic queue") { api.pendingTopics().topics.map { it.toDomain() } }

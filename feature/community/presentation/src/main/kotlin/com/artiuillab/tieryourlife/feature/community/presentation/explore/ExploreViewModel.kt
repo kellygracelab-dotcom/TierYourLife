@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
+import com.artiuillab.tieryourlife.feature.community.domain.model.matchesSearch
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityNetwork
@@ -150,6 +151,11 @@ class ExploreViewModel @Inject constructor(
                 // Topics found are still an answer when the lists could not be read.
                 onFailure = { if (found.isEmpty()) SearchResults(failed = true) else SearchResults(topics = found) },
             )
+            val answered = results.value
+            val noSection = catalog.directory.value.shown.none { it.matchesSearch(typed) }
+            if (!answered.failed && answered.lists.isEmpty() && answered.topics.isEmpty() && noSection) {
+                community.reportSearchMiss(typed)
+            }
         }
     }
 

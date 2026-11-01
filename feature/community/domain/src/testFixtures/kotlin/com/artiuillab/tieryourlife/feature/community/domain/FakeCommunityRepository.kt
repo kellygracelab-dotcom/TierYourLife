@@ -74,6 +74,8 @@ open class FakeCommunityRepository : CommunityRepository {
 
     override suspend fun unfollowTopic(id: String): Result<Unit> = Result.success(Unit)
 
+    override suspend fun reportSearchMiss(query: String): Result<Unit> = Result.success(Unit)
+
     override suspend fun pendingTopics(): Result<List<PendingTopic>> =
         Result.failure(IllegalStateException("Only a moderator reads the topic queue"))
 
