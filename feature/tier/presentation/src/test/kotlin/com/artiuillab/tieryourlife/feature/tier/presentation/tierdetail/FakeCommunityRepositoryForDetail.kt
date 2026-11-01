@@ -6,6 +6,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 internal class FakeCommunityRepositoryForDetail(
     private val publishResult: Result<Published> = Result.success(Published("published-1", "sent")),
@@ -13,6 +15,9 @@ internal class FakeCommunityRepositoryForDetail(
     private val topicStatus: TopicStatus = TopicStatus.Pending,
 ) : FakeCommunityRepository() {
     val published = mutableListOf<TierList>()
+
+    // The same, as a flow to wait on: the screen's state need not change when a publish lands.
+    val sent = MutableStateFlow<List<TierList>>(emptyList())
     val unpublished = mutableListOf<String>()
     val withdrawn = mutableListOf<String>()
 
@@ -27,6 +32,7 @@ internal class FakeCommunityRepositoryForDetail(
 
     override suspend fun publish(list: TierList): Result<Published> {
         published += list
+        sent.update { it + list }
         return publishResult
     }
 

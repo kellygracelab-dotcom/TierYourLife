@@ -331,7 +331,7 @@ class TierDetailViewModelTest {
 
         viewModel.setAnonymous(true)
         viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.anonymous == true }
-        viewModel.screen.firstWithin { !it.publish.publishing && community.published.isNotEmpty() }
+        community.sent.firstWithin { it.isNotEmpty() }
 
         assertTrue(community.published.single().anonymous)
     }
@@ -352,7 +352,7 @@ class TierDetailViewModelTest {
         assertTrue(community.published.isEmpty())
 
         viewModel.setPublic(true)
-        viewModel.screen.firstWithin { !it.publish.publishing && community.published.isNotEmpty() }
+        community.sent.firstWithin { it.isNotEmpty() }
         assertTrue(community.published.single().anonymous)
     }
 
