@@ -97,7 +97,8 @@ internal class ListRankings(
             current.copy(
                 chosenRanking = ranking,
                 theirs = if (ranking == null) current.list else placedBy(answer, ranking),
-                showing = Showing.Theirs,
+                // The author's own on a template is an empty half: the reader's is all there is.
+                showing = if (ranking == null && !current.knowsTheirs) Showing.Mine else Showing.Theirs,
             )
         }
     }

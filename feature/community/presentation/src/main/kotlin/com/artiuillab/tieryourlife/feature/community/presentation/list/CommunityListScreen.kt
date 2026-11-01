@@ -390,7 +390,7 @@ fun CommunityListScreenContent(
 private fun saveTapped(state: CommunityListUiState.Success?, askWhich: () -> Unit, save: (Showing) -> Unit) {
     when {
         state == null || state.arriving -> Unit
-        state.knowsTheirs -> askWhich()
+        state.twoHalves -> askWhich()
         else -> save(Showing.Mine)
     }
 }
@@ -552,9 +552,9 @@ private fun ReaderStrip(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            // Only where there is something to switch to: a snapshot without
-            // the author's arrangement has one half, and their own list has only theirs.
-            if (state.knowsTheirs && !state.own) {
+            // Only where there is something to switch to: a template or a snapshot
+            // without the author's arrangement has one half, and their own list has only theirs.
+            if (state.twoHalves) {
                 WhoseArrangement(
                     showing = state.showing,
                     theirsLabel = state.chosenRanking?.authorName ?: stringResource(R.string.community_showing_theirs),

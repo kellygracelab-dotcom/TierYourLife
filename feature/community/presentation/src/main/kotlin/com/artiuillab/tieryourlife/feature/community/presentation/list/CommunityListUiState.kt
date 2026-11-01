@@ -22,8 +22,9 @@ sealed interface CommunityListUiState {
         val showing: Showing = Showing.Theirs,
         /**
          * False on a snapshot published before the author's arrangement was
-         * recorded. Then there is nothing to switch to, and offering the
-         * choice would be offering an empty half.
+         * recorded, and on a list whose author placed nothing: a template.
+         * Then there is nothing to switch to, and offering the choice would
+         * be offering an empty half.
          */
         val knowsTheirs: Boolean = true,
         val authorName: String,
@@ -101,6 +102,9 @@ sealed interface CommunityListUiState {
 
         /** Whose placing the left half shows, by name; null when it has none to give. */
         val theirsName: String? get() = chosenRanking?.authorName ?: authorName.takeUnless { editorial || it.isBlank() }
+
+        /** Two halves to switch between and to choose from on saving: the author's placing, or a reader's chosen into its place. */
+        val twoHalves: Boolean get() = !own && (knowsTheirs || chosenRanking != null)
 
         /** Somebody else's list, arranged the reader's way, by hand or by a game. */
         val canShowRanking: Boolean get() = !own && arranged

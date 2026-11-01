@@ -66,7 +66,7 @@ internal fun RowScope.ReaderBarControls(
         )
         Spacer(Modifier.width(8.dp))
     }
-    if (state.knowsTheirs && !state.own) {
+    if (state.twoHalves) {
         WhoseArrangement(
             showing = state.showing,
             theirsLabel = state.chosenRanking?.authorName ?: stringResource(R.string.community_showing_theirs),
