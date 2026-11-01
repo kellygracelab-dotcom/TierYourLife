@@ -44,7 +44,7 @@ class RoomTierRepositoryTest {
         ).build()
         dao = database.tierDao()
         imagesDir = File(context.cacheDir, "test_tier_images_${System.nanoTime()}")
-        val imageStore = TierImageStore(imagesDir) { uri -> ByteArrayInputStream("bytes of $uri".toByteArray()) }
+        val imageStore = TierImageStore(imagesDir, openSource = { uri -> ByteArrayInputStream("bytes of $uri".toByteArray()) })
         repository = RoomTierRepository(dao, imageStore, FakeAccountRepository())
     }
 

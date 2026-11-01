@@ -38,9 +38,9 @@ class RoomTierRepositoryImageTest {
         ).build()
         dao = database.tierDao()
         imagesDir = File(context.cacheDir, "test_tier_images_${System.nanoTime()}")
-        val store = TierImageStore(imagesDir) { uri ->
+        val store = TierImageStore(imagesDir, openSource = { uri ->
             ByteArrayInputStream("image bytes of $uri".toByteArray())
-        }
+        })
         repository = RoomTierRepository(dao, store) { 1_000L }
     }
 
