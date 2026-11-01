@@ -48,6 +48,7 @@
     <string name="item_search_error_body">Check your connection and try again.</string>
     <string name="item_search_try_again">Try again</string>
     <string name="item_search_scope_all">All</string>
+    <string name="item_search_scope_animals">Animals</string>
     <string name="item_search_everywhere">Search everywhere</string>
     <string name="item_search_empty_everywhere_body">Search every catalogue and the web?</string>
     <string name="item_search_notice_web_daily">Web search is done for today. Searching the catalogues — tomorrow everywhere again.</string>

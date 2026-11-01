@@ -57,5 +57,8 @@ internal fun ScopeChips(
 }
 
 @Composable
-private fun PictureScope.label(): String =
-    ListCategory.fromId(id)?.let { stringResource(it.labelRes) } ?: stringResource(R.string.item_search_scope_all)
+private fun PictureScope.label(): String = when (this) {
+    PictureScope.All -> stringResource(R.string.item_search_scope_all)
+    PictureScope.Animals -> stringResource(R.string.item_search_scope_animals)
+    else -> ListCategory.fromId(id)?.let { stringResource(it.labelRes) } ?: stringResource(R.string.item_search_scope_all)
+}
