@@ -181,12 +181,10 @@
     <string name="explore_following">Following</string>
     <string name="explore_search_hint">Search community lists</string>
     <string name="explore_search_nothing">Nothing matches that.</string>
-    <string name="section_all">All</string>
-    <string name="section_suggest_topic">Suggest a topic</string>
+    <string name="section_topics">Topics</string>
     <string name="section_sort_popular">Popular</string>
     <string name="section_sort_newest">Newest</string>
     <string name="section_share">Share section</string>
-    <string name="section_topic_waiting_chip">%1$s · waiting</string>
     <string name="section_waiting_status">Waiting for a moderator</string>
     <string name="section_waiting_body">A moderator will look at it. Your lists show here once it\'s approved; until then they\'re in %1$s.</string>
     <string name="section_waiting_only_you">Only you see this topic until then.</string>

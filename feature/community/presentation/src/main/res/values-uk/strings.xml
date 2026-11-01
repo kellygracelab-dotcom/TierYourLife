@@ -185,12 +185,10 @@
     <string name="explore_following">Ви підписані</string>
     <string name="explore_search_hint">Пошук у спільноті</string>
     <string name="explore_search_nothing">Нічого не знайдено.</string>
-    <string name="section_all">Усі</string>
-    <string name="section_suggest_topic">Запропонувати тему</string>
+    <string name="section_topics">Теми</string>
     <string name="section_sort_popular">Популярні</string>
     <string name="section_sort_newest">Нові</string>
     <string name="section_share">Поділитися розділом</string>
-    <string name="section_topic_waiting_chip">%1$s · чекає</string>
     <string name="section_waiting_status">Чекає на модератора</string>
     <string name="section_waiting_body">Модератор її перегляне. Ваші списки з’являться тут після схвалення, а поки вони в розділі «%1$s».</string>
     <string name="section_waiting_only_you">Доти цю тему бачите лише ви.</string>

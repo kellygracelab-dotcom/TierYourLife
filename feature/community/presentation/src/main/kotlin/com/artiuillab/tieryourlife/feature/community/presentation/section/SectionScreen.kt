@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.section
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,7 +47,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -88,10 +86,9 @@ import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 /** What a section's page can be asked to do beyond its feed. */
 class SectionCallbacks(
-    val onSelectTopic: (Topic?) -> Unit = {},
+    val onOpenTopic: (Topic) -> Unit = {},
     val onSelectSort: (FeedSort) -> Unit = {},
     val onToggleSectionFollow: () -> Unit = {},
-    val onToggleTopicFollow: () -> Unit = {},
 )
 
 @Composable
@@ -99,6 +96,7 @@ fun SectionScreen(
     onBack: () -> Unit,
     onOpenList: (CommunityRoute.CommunityList) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
+    onOpenTopic: (CommunityRoute.Topic) -> Unit = {},
     viewModel: SectionViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -117,10 +115,9 @@ fun SectionScreen(
             onReport = viewModel::report,
         ),
         calls = SectionCallbacks(
-            onSelectTopic = viewModel::selectTopic,
+            onOpenTopic = { onOpenTopic(CommunityRoute.Topic.of(it)) },
             onSelectSort = viewModel::selectSort,
             onToggleSectionFollow = viewModel::toggleSectionFollow,
-            onToggleTopicFollow = viewModel::toggleTopicFollow,
         ),
         onOpenList = { onOpenList(CommunityRoute.CommunityList.of(it)) },
         onOpenAuthor = onAuthorClick,
@@ -143,7 +140,6 @@ fun SectionScreenContent(
     var menuFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var waitingTopic by remember { mutableStateOf<Topic?>(null) }
     SectionNotices(notices, snackbar, feed.onRefresh, calls.onToggleSectionFollow)
-    BackHandler(enabled = state.selectedTopic != null) { calls.onSelectTopic(null) }
 
     Surface(Modifier.fillMaxSize().testTag(SectionTestTags.SCREEN), color = MaterialTheme.colorScheme.surface) {
         BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -203,7 +199,7 @@ private fun SectionNotices(
     }
 }
 
-/** The grid: header (where there is one), chips, the topic row, the sort row, the lists. */
+/** The grid: header (where there is one), the topics, the sort row, the lists. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SectionFeed(
@@ -221,10 +217,6 @@ private fun SectionFeed(
     val alpha = rememberSkeletonAlpha()
     ScrolledDownWatcher(grid, feed.onScrolledDown)
     NearEndWatcher(grid, state.feed.lists.size, feed.onLoadMore)
-    // A filtered page is reached by scrolling: it opens with the header folded away.
-    LaunchedEffect(state.selectedTopic?.id) {
-        if (headerShown && state.selectedTopic != null && grid.firstVisibleItemIndex == 0) grid.scrollToItem(1)
-    }
     Column(Modifier.fillMaxSize()) {
         OfflineStrip(state.feed.offlineSinceMillis, state.nowMillis, state.feed.retrying, feed.onRetry)
         Box(Modifier.fillMaxSize()) {
@@ -245,7 +237,7 @@ private fun SectionFeed(
                                 SectionHeader(state.section, state.stats, calls.onToggleSectionFollow, Modifier.edgeToEdge(sideOf(layout)))
                             }
                         }
-                        sectionControls(state, calls, onOpenWaiting, sideOf(layout))
+                        sectionControls(state, calls, onOpenWaiting)
                         feedItems(state.feed, layout, alpha, cards, feed.onRetry, reasonFor = { null })
                     }
                 }
@@ -267,24 +259,10 @@ private fun SectionFeed(
 
 private fun sideOf(layout: HomeLayout) = if (layout == HomeLayout.Wide) 24.dp else 16.dp
 
-private fun LazyGridScope.sectionControls(state: SectionUiState, calls: SectionCallbacks, onOpenWaiting: (Topic) -> Unit, side: Dp) {
-    item(key = "chips", span = { GridItemSpan(maxLineSpan) }) {
-        Box {
-            TopicChipsRow(
-                topics = state.topics,
-                waiting = state.waiting,
-                selected = state.selectedTopic,
-                onSelect = calls.onSelectTopic,
-                onOpenWaiting = onOpenWaiting,
-                onSuggest = null,
-                side = side,
-            )
-        }
-    }
-    val topic = state.selectedTopic
-    if (topic != null) {
-        item(key = "topic-${topic.id}", span = { GridItemSpan(maxLineSpan) }) {
-            TopicRow(topic, state.sectionId, calls.onToggleTopicFollow)
+private fun LazyGridScope.sectionControls(state: SectionUiState, calls: SectionCallbacks, onOpenWaiting: (Topic) -> Unit) {
+    if (state.topics.isNotEmpty() || state.waiting.isNotEmpty()) {
+        item(key = "topics", span = { GridItemSpan(maxLineSpan) }) {
+            TopicTiles(state.section, state.topics, state.waiting, calls.onOpenTopic, onOpenWaiting)
         }
     }
     item(key = "sort", span = { GridItemSpan(maxLineSpan) }) {

@@ -183,12 +183,10 @@
     <string name="explore_following">Abonné</string>
     <string name="explore_search_hint">Rechercher dans la communauté</string>
     <string name="explore_search_nothing">Aucun résultat.</string>
-    <string name="section_all">Tout</string>
-    <string name="section_suggest_topic">Proposer un thème</string>
+    <string name="section_topics">Thèmes</string>
     <string name="section_sort_popular">Populaires</string>
     <string name="section_sort_newest">Récentes</string>
     <string name="section_share">Partager la section</string>
-    <string name="section_topic_waiting_chip">%1$s · en attente</string>
     <string name="section_waiting_status">En attente de modération</string>
     <string name="section_waiting_body">Un modérateur va l’examiner. Vos listes apparaîtront ici une fois le thème approuvé ; d’ici là, elles sont dans %1$s.</string>
     <string name="section_waiting_only_you">D’ici là, vous seul voyez ce thème.</string>

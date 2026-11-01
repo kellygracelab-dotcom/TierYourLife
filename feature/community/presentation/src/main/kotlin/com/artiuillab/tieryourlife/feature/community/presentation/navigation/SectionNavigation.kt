@@ -10,9 +10,10 @@ fun NavGraphBuilder.sectionScreen(
     onBack: () -> Unit,
     onOpenList: (CommunityRoute.CommunityList) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
+    onOpenTopic: (CommunityRoute.Topic) -> Unit,
 ) {
     composable<CommunityRoute.Section> {
-        SectionScreen(onBack = onBack, onOpenList = onOpenList, onAuthorClick = onAuthorClick)
+        SectionScreen(onBack = onBack, onOpenList = onOpenList, onAuthorClick = onAuthorClick, onOpenTopic = onOpenTopic)
     }
 }
 

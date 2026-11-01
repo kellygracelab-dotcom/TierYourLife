@@ -27,7 +27,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -95,11 +94,10 @@ class SectionViewModelTest {
 
     private fun viewModel(
         community: FakeCommunityRepository,
-        topic: String? = null,
         memory: SectionSortMemory = SectionSortMemory(),
         sectionId: String = "games",
     ) = SectionViewModel(
-        savedStateHandle = SavedStateHandle(mapOf("sectionId" to sectionId, "topicId" to topic)),
+        savedStateHandle = SavedStateHandle(mapOf("sectionId" to sectionId)),
         community = community,
         cache = FakeCommunityFeedCache(),
         network = FakeCommunityNetwork(),
@@ -121,31 +119,6 @@ class SectionViewModelTest {
         assertEquals(812, state.stats?.listCount)
         assertEquals(listOf("p", "z"), state.topics.map { it.id })
         assertEquals(Triple(ListCategory.Games.id, null, FeedSort.Popular), community.asked.first())
-    }
-
-    @Test
-    fun choosingATopic_filtersTheFeedInPlace_andAllClearsIt() = runBlocking {
-        val community = Community()
-        val viewModel = viewModel(community)
-        viewModel.open()
-        viewModel.state.firstWithin { it.topics.isNotEmpty() }
-
-        viewModel.selectTopic(pokemon)
-        val filtered = viewModel.state.firstWithin { it.feed.lists.map { l -> l.id } == listOf("p") }
-        assertEquals("p", filtered.selectedTopic?.id)
-
-        viewModel.selectTopic(null)
-        val all = viewModel.state.firstWithin { it.selectedTopic == null && it.feed.lists.map { l -> l.id } == listOf("all") }
-        assertEquals(null, all.selectedTopic)
-    }
-
-    @Test
-    fun aTopicInTheRoute_opensChosen() = runBlocking {
-        val viewModel = viewModel(Community(), topic = "z")
-
-        viewModel.open()
-
-        assertEquals("z", viewModel.state.firstWithin { it.selectedTopic != null }.selectedTopic?.id)
     }
 
     @Test
@@ -178,20 +151,6 @@ class SectionViewModelTest {
         assertEquals(CommunityNotice.FollowFailed, withTimeout(5_000) { viewModel.notices.first() })
         viewModel.state.firstWithin { it.stats?.following == false }
         Unit
-    }
-
-    @Test
-    fun theTopicRowFollowsTheTopic_notTheSection() = runBlocking {
-        val viewModel = viewModel(Community())
-        viewModel.open()
-        viewModel.state.firstWithin { it.topics.isNotEmpty() && it.stats != null }
-        viewModel.selectTopic(zelda)
-        viewModel.state.firstWithin { it.selectedTopic != null }
-
-        viewModel.toggleTopicFollow()
-
-        val state = viewModel.state.firstWithin { it.selectedTopic?.following == true }
-        assertFalse(state.stats?.following == true)
     }
 
     @Test

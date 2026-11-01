@@ -212,11 +212,6 @@ class CommunityScreenshotTest {
     fun section_dark() = capture("section_dark", dark = true) { SectionScreenContent(games, onBack = {}) }
 
     @Test
-    fun section_withATopicChosen() = capture("section_topic") {
-        SectionScreenContent(games.copy(selectedTopic = games.topics.first()), onBack = {})
-    }
-
-    @Test
     @Config(qualifiers = "w891dp-h411dp-land-xhdpi")
     fun section_phoneLandscape() = capture("section_landscape") { SectionScreenContent(games, onBack = {}) }
 

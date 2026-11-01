@@ -189,12 +189,10 @@
     <string name="explore_following">تتابعه</string>
     <string name="explore_search_hint">البحث في المجتمع</string>
     <string name="explore_search_nothing">لا شيء يطابق ذلك.</string>
-    <string name="section_all">الكل</string>
-    <string name="section_suggest_topic">اقتراح موضوع</string>
+    <string name="section_topics">المواضيع</string>
     <string name="section_sort_popular">الأكثر رواجًا</string>
     <string name="section_sort_newest">الأحدث</string>
     <string name="section_share">مشاركة القسم</string>
-    <string name="section_topic_waiting_chip">%1$s · بانتظار المراجعة</string>
     <string name="section_waiting_status">بانتظار المشرف</string>
     <string name="section_waiting_body">سيراجعه أحد المشرفين. ستظهر قوائمك هنا بعد الموافقة، وحتى ذلك الحين هي في %1$s.</string>
     <string name="section_waiting_only_you">حتى ذلك الحين لا يرى هذا الموضوع غيرك.</string>

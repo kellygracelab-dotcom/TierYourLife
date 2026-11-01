@@ -98,11 +98,11 @@ sealed interface CommunityRoute {
     data object MyPublished : CommunityRoute
 
     /**
-     * One section's page (§3), with a topic chosen when [topicId] is set.
+     * One section's page (§3): its topics, then its lists.
      * [sectionId] is any section's id; one the phone does not know yet is asked about.
      */
     @Serializable
-    data class Section(val sectionId: String, val topicId: String? = null) : CommunityRoute
+    data class Section(val sectionId: String) : CommunityRoute
 
     /** Everyone this person follows, with a way to stop. */
     @Serializable
@@ -177,7 +177,6 @@ internal fun SavedStateHandle.proposeSectionRoute() = CommunityRoute.ProposeSect
 
 internal fun SavedStateHandle.sectionRoute() = CommunityRoute.Section(
     sectionId = required(CommunityRoute.Section::sectionId.name),
-    topicId = get<String>(CommunityRoute.Section::topicId.name),
 )
 
 private fun <T : Any> SavedStateHandle.required(key: String): T =

@@ -181,12 +181,10 @@
     <string name="explore_following">Takip ediliyor</string>
     <string name="explore_search_hint">Toplulukta ara</string>
     <string name="explore_search_nothing">Eşleşen bir şey yok.</string>
-    <string name="section_all">Tümü</string>
-    <string name="section_suggest_topic">Konu öner</string>
+    <string name="section_topics">Konular</string>
     <string name="section_sort_popular">Popüler</string>
     <string name="section_sort_newest">En yeni</string>
     <string name="section_share">Bölümü paylaş</string>
-    <string name="section_topic_waiting_chip">%1$s · bekliyor</string>
     <string name="section_waiting_status">Moderatör bekleniyor</string>
     <string name="section_waiting_body">Bir moderatör inceleyecek. Onaylanınca listeleriniz burada görünür; o zamana kadar %1$s bölümündeler.</string>
     <string name="section_waiting_only_you">O zamana kadar bu konuyu yalnızca siz görürsünüz.</string>
