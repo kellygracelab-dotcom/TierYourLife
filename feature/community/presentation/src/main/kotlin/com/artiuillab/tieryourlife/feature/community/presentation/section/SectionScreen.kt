@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
@@ -160,7 +161,7 @@ fun SectionScreenContent(
 
                 else -> SectionFeed(state, layout, feed, calls, cards, headerShown = true, onOpenWaiting = { waitingTopic = it }, onBack = onBack)
             }
-            SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
+            SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
         }
     }
     FeedListMenus(menuFor, { menuFor = null }, feed, onOpenAuthor)

@@ -232,6 +232,7 @@ internal fun AccountScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .wrapContentHeight(Alignment.Bottom)
+                .navigationBarsPadding()
                 .testTag(AccountTestTags.NOTICE),
         )
     }

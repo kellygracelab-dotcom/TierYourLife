@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
@@ -215,7 +216,7 @@ fun CommunityHomeContent(
             } else {
                 HomeBody(explore, following, layout, exploreFeed, followingFeed, exploreCalls, destinations, tabs, startOnFollowing)
             }
-            SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
+            SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
         }
     }
 }

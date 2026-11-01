@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.core.theme.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -24,6 +25,6 @@ fun ActionFailedSnackbar(messages: Flow<UserMessage>, modifier: Modifier = Modif
     }
     SnackbarHost(
         hostState = hostState,
-        modifier = modifier.fillMaxSize().wrapContentHeight(Alignment.Bottom),
+        modifier = modifier.fillMaxSize().wrapContentHeight(Alignment.Bottom).navigationBarsPadding(),
     )
 }

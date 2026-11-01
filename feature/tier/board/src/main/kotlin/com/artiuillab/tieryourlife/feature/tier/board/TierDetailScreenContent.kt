@@ -726,6 +726,7 @@ private fun TierScreenBody(
             hostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
+                .then(if (poolTop == null) Modifier.navigationBarsPadding() else Modifier)
                 .padding(start = 16.dp, end = 16.dp, bottom = bottomGap),
         )
     }

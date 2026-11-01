@@ -350,6 +350,7 @@ fun SettingsScreenContent(
                 hostState = snackbarHostState,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
                     .padding(start = 16.dp, end = 16.dp, bottom = 88.dp),
             )
         }
