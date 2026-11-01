@@ -1,16 +1,14 @@
 package com.artiuillab.tieryourlife.core.theme.ui
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
@@ -28,25 +26,32 @@ fun BackIcon() {
     }
 }
 
+/** Material's add_a_photo: a camera with a plus at its shoulder, for adding one's own pictures. */
 @Composable
-fun NoteAddIcon() {
+fun AddPhotoIcon() {
     val color = MaterialTheme.colorScheme.onSurfaceVariant
-    Canvas(Modifier.size(24.dp)) {
-        val scale = size.minDimension / 24f
-        drawNoteAdd(color, scale)
+    VectorIcon(24.dp) { scale ->
+        val stroke = 1.6f * scale
+        val body = Path().apply {
+            moveTo(14.5f * scale, 9f * scale)
+            lineTo(18.5f * scale, 9f * scale)
+            quadraticTo(20f * scale, 9f * scale, 20f * scale, 10.5f * scale)
+            lineTo(20f * scale, 18.5f * scale)
+            quadraticTo(20f * scale, 20f * scale, 18.5f * scale, 20f * scale)
+            lineTo(4.5f * scale, 20f * scale)
+            quadraticTo(3f * scale, 20f * scale, 3f * scale, 18.5f * scale)
+            lineTo(3f * scale, 10.5f * scale)
+            quadraticTo(3f * scale, 9f * scale, 4.5f * scale, 9f * scale)
+            lineTo(6.5f * scale, 9f * scale)
+            lineTo(8f * scale, 6.5f * scale)
+            lineTo(13f * scale, 6.5f * scale)
+            close()
+        }
+        drawPath(body, color, style = Stroke(stroke, cap = StrokeCap.Round, join = StrokeJoin.Round))
+        drawCircle(color, radius = 3.3f * scale, center = Offset(11.5f * scale, 14.3f * scale), style = Stroke(stroke))
+        drawLine(color, Offset(19.5f * scale, 1.8f * scale), Offset(19.5f * scale, 6.8f * scale), stroke, StrokeCap.Round)
+        drawLine(color, Offset(17f * scale, 4.3f * scale), Offset(22f * scale, 4.3f * scale), stroke, StrokeCap.Round)
     }
-}
-
-private fun DrawScope.drawNoteAdd(color: Color, scale: Float) {
-    drawRoundRect(
-        color,
-        Offset(4f * scale, 4f * scale),
-        Size(16f * scale, 16f * scale),
-        CornerRadius(2f * scale),
-        style = Stroke(1.6f * scale),
-    )
-    drawLine(color, Offset(8f * scale, 12f * scale), Offset(16f * scale, 12f * scale), 1.6f * scale, StrokeCap.Round)
-    drawLine(color, Offset(12f * scale, 8f * scale), Offset(12f * scale, 16f * scale), 1.6f * scale, StrokeCap.Round)
 }
 
 @Composable

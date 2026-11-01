@@ -9,6 +9,9 @@ enum class PictureScope(val id: String) {
     Music("music"),
     Books("books"),
     People("people"),
+
+    /** Not a built-in section: an approved one with this id searches animals. */
+    Animals("animals"),
     ;
 
     companion object {

@@ -46,9 +46,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.ui.AddPhotoIcon
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.MoreIcon
-import com.artiuillab.tieryourlife.core.theme.ui.NoteAddIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlayArrowIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
@@ -153,7 +153,7 @@ fun TierScreenTopBar(
                         .size(48.dp)
                         .semantics { contentDescription = manualAddDescription }
                         .testTag(TierDetailTestTags.MANUAL_ADD_BUTTON),
-                ) { NoteAddIcon() }
+                ) { AddPhotoIcon() }
                 IconButton(
                     onClick = onMoreClick,
                     modifier = Modifier

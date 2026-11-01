@@ -54,6 +54,7 @@
     <string name="item_search_error_body">Sprawdź połączenie i spróbuj ponownie.</string>
     <string name="item_search_try_again">Spróbuj ponownie</string>
     <string name="item_search_scope_all">Wszystko</string>
+    <string name="item_search_scope_animals">Zwierzęta</string>
     <string name="item_search_everywhere">Szukaj wszędzie</string>
     <string name="item_search_empty_everywhere_body">Szukać we wszystkich katalogach i w internecie?</string>
     <string name="item_search_notice_web_daily">Wyszukiwanie w internecie na dziś się skończyło. Szukamy w katalogach — jutro znów wszędzie.</string>

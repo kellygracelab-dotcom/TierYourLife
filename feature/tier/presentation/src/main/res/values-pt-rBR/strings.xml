@@ -51,6 +51,7 @@
     <string name="item_search_error_body">Verifique sua conexão e tente novamente.</string>
     <string name="item_search_try_again">Tentar novamente</string>
     <string name="item_search_scope_all">Tudo</string>
+    <string name="item_search_scope_animals">Animais</string>
     <string name="item_search_everywhere">Buscar em tudo</string>
     <string name="item_search_empty_everywhere_body">Buscar em todos os catálogos e na web?</string>
     <string name="item_search_notice_web_daily">A busca na web acabou por hoje. Buscando nos catálogos — amanhã em tudo de novo.</string>

@@ -60,6 +60,7 @@
     <string name="item_search_error_body">تحقق من اتصالك وحاول مرة أخرى.</string>
     <string name="item_search_try_again">المحاولة مرة أخرى</string>
     <string name="item_search_scope_all">الكل</string>
+    <string name="item_search_scope_animals">حيوانات</string>
     <string name="item_search_everywhere">ابحث في كل مكان</string>
     <string name="item_search_empty_everywhere_body">هل تبحث في كل الفهارس وعلى الويب؟</string>
     <string name="item_search_notice_web_daily">انتهى البحث على الويب لهذا اليوم. نبحث في الفهارس، وغدًا في كل مكان من جديد.</string>

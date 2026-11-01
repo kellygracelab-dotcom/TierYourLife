@@ -54,6 +54,7 @@
     <string name="item_search_error_body">Перевірте з\'єднання і спробуйте ще раз.</string>
     <string name="item_search_try_again">Спробувати ще раз</string>
     <string name="item_search_scope_all">Усе</string>
+    <string name="item_search_scope_animals">Тварини</string>
     <string name="item_search_everywhere">Шукати всюди</string>
     <string name="item_search_empty_everywhere_body">Пошукати в усіх каталогах та в інтернеті?</string>
     <string name="item_search_notice_web_daily">Пошук в інтернеті на сьогодні закінчився. Шукаємо в каталогах — завтра знову всюди.</string>
