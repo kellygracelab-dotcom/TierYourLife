@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.data.repository
 
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewPoolItem
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewTemplateTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
@@ -21,11 +23,12 @@ import javax.inject.Inject
 class RoomTierRepository internal constructor(
     private val dao: TierDao,
     private val imageStore: TierImageStore,
+    private val signedInAs: () -> String? = { null },
     private val nowMillis: () -> Long,
 ) : TierRepository {
 
-    @Inject constructor(dao: TierDao, imageStore: TierImageStore) :
-        this(dao, imageStore, System::currentTimeMillis)
+    @Inject constructor(dao: TierDao, imageStore: TierImageStore, accounts: AccountRepository) :
+        this(dao, imageStore, { (accounts.current() as? Account.SignedIn)?.recordKey }, System::currentTimeMillis)
 
     override suspend fun getTierListById(id: Long): TierList? {
         return dao.getTierListWithTiers(id)?.toDomain()
@@ -204,7 +207,7 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun deleteTierListPermanently(id: Long) {
-        dao.deleteTierListById(id)
+        dao.deleteTierListPermanently(id, signedInAs())
         imageStore.deleteOrphans(dao.getAllImageRefs())
     }
 
@@ -217,7 +220,7 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun emptyTrash() {
-        dao.emptyTrash()
+        dao.emptyTrash(signedInAs())
         imageStore.deleteOrphans(dao.getAllImageRefs())
     }
 

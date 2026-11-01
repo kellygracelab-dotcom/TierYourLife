@@ -404,6 +404,30 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    // Every row kept and claimed by nobody: whose it was is not written anywhere,
+    // and the first account to sync takes only the ones it can.
+    @Test
+    fun migration14To15_keepsEverySyncRow_unclaimed() {
+        helper.createDatabase(TEST_DB, 14).apply {
+            execSQL(
+                "INSERT INTO board_sync (listUid, revision, fingerprint, syncedAt) VALUES ('board-1', 3, 'print-1', 9)",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 15, true, MIGRATION_14_15)
+
+        migratedDb.query("SELECT account, listUid, revision, fingerprint, syncedAt FROM board_sync").use {
+            check(it.moveToFirst())
+            assertEquals("", it.getString(0))
+            assertEquals("board-1", it.getString(1))
+            assertEquals(3, it.getInt(2))
+            assertEquals("print-1", it.getString(3))
+            assertEquals(9L, it.getLong(4))
+            assertEquals(1, it.count)
+        }
+    }
+
     private fun editedAt(db: androidx.sqlite.db.SupportSQLiteDatabase): Long =
         db.query("SELECT editedAt FROM tier_lists WHERE id = 1").use {
             check(it.moveToFirst())

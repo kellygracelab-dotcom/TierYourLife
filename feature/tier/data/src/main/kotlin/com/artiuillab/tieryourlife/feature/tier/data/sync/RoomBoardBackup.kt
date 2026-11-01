@@ -1,6 +1,8 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
@@ -18,6 +20,7 @@ class RoomBoardBackup @Inject constructor(
     private val dao: BoardSyncDao,
     private val images: TierImageStore,
     private val api: BoardsApi,
+    private val accounts: AccountRepository,
 ) : BoardBackup {
 
     override suspend fun settings(): BackupSettings {
@@ -46,22 +49,26 @@ class RoomBoardBackup @Inject constructor(
      * the sent record, so turning it back on sends everything again. Nothing
      * local is touched. The switch goes off only once the copy is gone: off
      * stops every sync, so nothing would ever finish a delete left halfway.
+     * Only the signed-in account's rows: the rest are other accounts' boards.
      */
-    override suspend fun stopAndDelete(): Boolean = try {
-        dao.allSyncRecords().forEach { record ->
-            api.forget(record.listUid)
-            dao.forget(record.listUid)
+    override suspend fun stopAndDelete(): Boolean {
+        val account = (accounts.current() as? Account.SignedIn)?.recordKey ?: return false
+        return try {
+            dao.syncRecordsOf(account).forEach { record ->
+                api.forget(record.listUid)
+                dao.forget(account, record.listUid)
+            }
+            dao.forgetEveryPicture()
+            preferences.setLastSyncedAtMs(null)
+            preferences.setBackUpBoards(false)
+            true
+        } catch (e: IOException) {
+            Timber.w(e, "Could not delete every kept board; backup stays on")
+            false
+        } catch (e: HttpException) {
+            Timber.w(e, "The account would not delete every kept board; backup stays on")
+            false
         }
-        dao.forgetEveryPicture()
-        preferences.setLastSyncedAtMs(null)
-        preferences.setBackUpBoards(false)
-        true
-    } catch (e: IOException) {
-        Timber.w(e, "Could not delete every kept board; backup stays on")
-        false
-    } catch (e: HttpException) {
-        Timber.w(e, "The account would not delete every kept board; backup stays on")
-        false
     }
 
     /** Measured from the files this phone sent, not asked of Storage: same answer, no connection needed. */

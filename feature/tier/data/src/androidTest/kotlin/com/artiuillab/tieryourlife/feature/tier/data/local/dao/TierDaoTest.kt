@@ -861,7 +861,7 @@ class TierDaoTest {
         dao.markTierListsDeleted(listOf(trashedListId), deletedAt = 1_000L)
         dao.markTierItemDeleted(trashedItemId, deletedAt = 2_000L)
 
-        dao.emptyTrash()
+        dao.emptyTrash(account = null)
 
         assertTrue(dao.getDeletedTierLists().isEmpty())
         assertTrue(dao.getDeletedTierItems().isEmpty())

@@ -87,6 +87,10 @@ private class RecordingTierDao : TierDao {
         return 1
     }
 
+    override suspend fun forgetTrashedBoardsInOtherAccounts(account: String?) = Unit
+
+    override suspend fun forgetBoardInOtherAccounts(id: Long, account: String?) = Unit
+
     override suspend fun deleteTierItemById(id: Long): Int {
         permanentlyDeletedItemIds += id
         return 1

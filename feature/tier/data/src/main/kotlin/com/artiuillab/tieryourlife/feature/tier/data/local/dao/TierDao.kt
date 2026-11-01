@@ -246,11 +246,42 @@ interface TierDao {
     )
     suspend fun getDeletedTierLists(): List<DeletedTierListRow>
 
+    /**
+     * [account] is who is signed in, or null for nobody. Only that account
+     * keeps its record of the boards going, so only it hears of the delete:
+     * any other would have its copy taken out on its next sign-in.
+     */
     @Transaction
-    suspend fun emptyTrash() {
+    suspend fun emptyTrash(account: String?) {
+        forgetTrashedBoardsInOtherAccounts(account)
         deleteAllTrashedTierLists()
         deleteAllTrashedTierItems()
     }
+
+    /** As [emptyTrash], for one board. */
+    @Transaction
+    suspend fun deleteTierListPermanently(id: Long, account: String?) {
+        forgetBoardInOtherAccounts(id, account)
+        deleteTierListById(id)
+    }
+
+    @Query(
+        """
+        DELETE FROM board_sync
+        WHERE listUid IN (SELECT uid FROM tier_lists WHERE deletedAt IS NOT NULL)
+            AND (:account IS NULL OR account != :account)
+        """,
+    )
+    suspend fun forgetTrashedBoardsInOtherAccounts(account: String?)
+
+    @Query(
+        """
+        DELETE FROM board_sync
+        WHERE listUid IN (SELECT uid FROM tier_lists WHERE id = :id)
+            AND (:account IS NULL OR account != :account)
+        """,
+    )
+    suspend fun forgetBoardInOtherAccounts(id: Long, account: String?)
 
     @Query("DELETE FROM tier_lists WHERE deletedAt IS NOT NULL")
     suspend fun deleteAllTrashedTierLists()

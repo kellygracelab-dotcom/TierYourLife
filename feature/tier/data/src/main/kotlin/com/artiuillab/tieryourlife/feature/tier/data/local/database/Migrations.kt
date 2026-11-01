@@ -3,6 +3,28 @@ package com.artiuillab.tieryourlife.feature.tier.data.local.database
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
+/**
+ * Sync rows say which account they are with. The key grows a column, which
+ * SQLite cannot alter in place, so the table is rebuilt and every row kept,
+ * claimed by nobody: the first account to sync takes the ones it can.
+ */
+val MIGRATION_14_15 = object : Migration(14, 15) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `board_sync_new` (" +
+                "`account` TEXT NOT NULL, `listUid` TEXT NOT NULL, `revision` INTEGER NOT NULL, " +
+                "`fingerprint` TEXT NOT NULL, `syncedAt` INTEGER NOT NULL, " +
+                "PRIMARY KEY(`account`, `listUid`))",
+        )
+        db.execSQL(
+            "INSERT INTO `board_sync_new` (account, listUid, revision, fingerprint, syncedAt) " +
+                "SELECT '', listUid, revision, fingerprint, syncedAt FROM `board_sync`",
+        )
+        db.execSQL("DROP TABLE `board_sync`")
+        db.execSQL("ALTER TABLE `board_sync_new` RENAME TO `board_sync`")
+    }
+}
+
 /** Where a copy came from, and the list it is out as a ranking of. */
 val MIGRATION_12_13 = object : Migration(12, 13) {
     override fun migrate(db: SupportSQLiteDatabase) {
