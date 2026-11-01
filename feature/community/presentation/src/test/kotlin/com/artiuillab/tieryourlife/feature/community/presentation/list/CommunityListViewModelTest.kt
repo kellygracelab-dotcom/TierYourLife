@@ -168,6 +168,38 @@ class CommunityListViewModelTest {
         assertEquals("Kyle H.", (withTimeout(5_000) { viewModel.listNotices.first() } as ListNotice.StartedFromTheirs).name)
     }
 
+    // A template, every card left in the pool: no empty half to switch to, nothing to choose on saving.
+    @Test
+    fun aListWhoseAuthorPlacedNothing_opensOnMine_withOneHalf() = runBlocking {
+        val community = TestCommunity(arrangement = listOf(null, null), summary = { it.copy(authorUid = "", authorName = "", anonymous = true) })
+        val viewModel = viewModel(community = community)
+
+        val state = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+
+        assertEquals(Showing.Mine, state.showing)
+        assertFalse(state.knowsTheirs)
+        assertFalse(state.twoHalves)
+    }
+
+    @Test
+    fun aReadersRankingChosenOnATemplate_isTheOtherHalf_untilTheAuthorsEmptyOneIsChosenBack() = runBlocking {
+        val kyle = Ranking("r1", "Kyle H.", null, arrangement = listOf(1, 0), tierLabels = listOf("Top", "Next"), updatedAtMillis = 0)
+        val viewModel = viewModel(community = TestCommunity(rankings = listOf(kyle), arrangement = listOf(null, null)))
+        viewModel.state.firstWithin { it is CommunityListUiState.Success }
+        viewModel.rankings.load()
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.rankings?.isNotEmpty() == true }
+
+        viewModel.rankings.choose(kyle)
+        val chosen = viewModel.state.value as CommunityListUiState.Success
+        viewModel.rankings.choose(null)
+        val back = viewModel.state.value as CommunityListUiState.Success
+
+        assertTrue(chosen.twoHalves)
+        assertEquals(Showing.Theirs, chosen.showing)
+        assertFalse(back.twoHalves)
+        assertEquals(Showing.Mine, back.showing)
+    }
+
     @Test
     fun anAnonymousAuthorsArrangement_isStartedFromWithoutAName() = runBlocking {
         val community = TestCommunity(arrangement = listOf(0, null), summary = { it.copy(authorUid = "", authorName = "", anonymous = true) })

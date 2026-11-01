@@ -96,6 +96,17 @@ class ListFirstFrameTest {
     }
 
     @Test
+    fun aTemplatesFirstFrame_opensOnMine_withOneHalf() {
+        val template = summary.copy(tierCounts = listOf(0, 0, 4))
+        val viewModel = viewModel(community = Answering(gate = CompletableDeferred()), route = CommunityRoute.CommunityList.of(template))
+
+        val first = viewModel.state.value as CommunityListUiState.Success
+
+        assertEquals(Showing.Mine, first.showing)
+        assertFalse(first.twoHalves)
+    }
+
+    @Test
     fun aCardThatDidNotSayHowTheTiersFill_leavesTheSkeletonToIt() {
         val viewModel = viewModel(community = Answering(gate = CompletableDeferred()), route = CommunityRoute.CommunityList.of(summary.copy(tierCounts = emptyList())))
 

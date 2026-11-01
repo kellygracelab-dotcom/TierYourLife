@@ -199,7 +199,7 @@ class CommunityListViewModel @Inject constructor(
         followTapped: Boolean,
     ): CommunityListUiState.Success {
         val own = answer.summary.mine
-        val knowsTheirs = answer.arrangement.isNotEmpty()
+        val knowsTheirs = answer.arrangement.any { it != null }
         // What somebody came for: the list as its author ranked it. Their own is only ever that.
         val opensOn = if (!knowsTheirs && !own) Showing.Mine else Showing.Theirs
         return CommunityListUiState.Success(

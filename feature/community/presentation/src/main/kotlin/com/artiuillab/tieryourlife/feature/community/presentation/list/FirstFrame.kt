@@ -32,10 +32,12 @@ internal fun ListPreview.firstFrame(listId: String, signedIn: Boolean): Communit
     val placed = ranked + pool(blanks(tierCounts.last()))
     val board = TierList(id = 0, title = title, tiers = placed, authorName = authorName.orEmpty())
     val cards = placed.flatMap { it.items }
+    val template = ranked.all { it.items.isEmpty() }
     return CommunityListUiState.Success(
         list = board,
         mine = board.copy(tiers = ranked.map { it.copy(items = emptyList()) } + pool(cards)),
-        showing = if (cards.isEmpty() && !mine) Showing.Mine else Showing.Theirs,
+        showing = if (template && !mine) Showing.Mine else Showing.Theirs,
+        knowsTheirs = !template,
         authorName = authorName.orEmpty(),
         authorUid = authorUid,
         authorPhotoUrl = authorPhotoUrl,
