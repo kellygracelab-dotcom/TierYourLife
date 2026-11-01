@@ -65,6 +65,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListS
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
+import com.artiuillab.tieryourlife.feature.community.domain.model.matchesSearch
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingActions
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedUiState
@@ -623,13 +624,11 @@ private fun SearchResultsGrid(
     }
 }
 
-/** Sections whose name, in the language shown or by id, has what was typed in it. */
+/** Sections named by what was typed, in any language or by id. */
 @Composable
 private fun matchingSections(sections: List<Section>, query: String): List<Section> {
     val nameOf = rememberSectionNames()
-    val typed = query.trim()
-    if (typed.isEmpty()) return emptyList()
-    return sections.filter { nameOf(it.id).contains(typed, ignoreCase = true) || it.id.replace('_', ' ').contains(typed, ignoreCase = true) }
+    return sections.filter { it.matchesSearch(query, label = nameOf(it.id)) }
 }
 
 @Composable

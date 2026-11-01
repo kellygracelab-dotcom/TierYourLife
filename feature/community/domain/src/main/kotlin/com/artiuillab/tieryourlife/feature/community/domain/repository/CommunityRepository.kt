@@ -83,6 +83,9 @@ interface CommunityRepository {
 
     suspend fun unfollowTopic(id: String): Result<Unit>
 
+    /** Tells the server a search found nothing anywhere: only the words are kept, not who typed them. */
+    suspend fun reportSearchMiss(query: String): Result<Unit>
+
     /** The queue of proposed topics. Fails for everyone but a moderator. */
     suspend fun pendingTopics(): Result<List<PendingTopic>>
 

@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
+import com.artiuillab.tieryourlife.feature.community.domain.model.matchesSearch
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityNetwork
@@ -39,7 +40,10 @@ data class SearchResults(
     val topics: List<Topic> = emptyList(),
     val loading: Boolean = false,
     val failed: Boolean = false,
-)
+) {
+    /** An answer, and an empty one: not a search still asked or one that failed. */
+    val foundNothing: Boolean get() = !loading && !failed && lists.isEmpty() && topics.isEmpty()
+}
 
 /** Explore (§2): the sections in the server's order, and the popular feed under them. */
 data class ExploreUiState(
@@ -150,6 +154,9 @@ class ExploreViewModel @Inject constructor(
                 // Topics found are still an answer when the lists could not be read.
                 onFailure = { if (found.isEmpty()) SearchResults(failed = true) else SearchResults(topics = found) },
             )
+            if (results.value.foundNothing && catalog.directory.value.shown.none { it.matchesSearch(typed) }) {
+                community.reportSearchMiss(typed)
+            }
         }
     }
 

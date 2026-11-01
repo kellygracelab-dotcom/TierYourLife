@@ -52,6 +52,9 @@ data class TopicNameRequestDto(val name: String)
 data class TopicMergeRequestDto(val into: String)
 
 @Serializable
+data class SearchMissDto(val q: String)
+
+@Serializable
 /** The topic travels even when null: an absent one would keep the old topic, a null one drops it. */
 data class MoveListRequestDto(val category: String, val topicId: String?)
 

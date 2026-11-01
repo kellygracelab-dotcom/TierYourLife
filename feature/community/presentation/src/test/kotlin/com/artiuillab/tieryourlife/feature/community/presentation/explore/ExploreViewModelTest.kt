@@ -231,6 +231,33 @@ class ExploreViewModelTest {
     }
 
     @Test
+    fun aSearchNothingAnswers_isToldToTheServer_butOneASectionAnswersIsNot() = runBlocking {
+        val community = object : Community(lists = emptyList()) {
+            val misses = mutableListOf<String>()
+            val told = CompletableDeferred<Unit>()
+
+            override suspend fun reportSearchMiss(query: String): Result<Unit> {
+                misses += query
+                told.complete(Unit)
+                return Result.success(Unit)
+            }
+        }
+        val viewModel = viewModel(community)
+        viewModel.open()
+        viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready && it.answered() }
+
+        withContext(Dispatchers.Main) {
+            viewModel.enterSearch()
+            viewModel.updateQuery("anime")
+        }
+        viewModel.state.firstWithin { it.query == "anime" && !it.results.loading && "anime" in community.queries }
+        withContext(Dispatchers.Main) { viewModel.updateQuery("zzqx") }
+        withTimeout(5_000) { community.told.await() }
+
+        assertEquals(listOf("zzqx"), community.misses)
+    }
+
+    @Test
     fun aFailedSearch_asksAgain_onRetry() = runBlocking {
         val community = object : Community() {
             var refuse = true

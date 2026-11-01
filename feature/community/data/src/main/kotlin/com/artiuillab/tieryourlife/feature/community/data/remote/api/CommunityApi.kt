@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedId
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.RankingsPageDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ReportRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SearchMissDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionFollowDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionNameCheckDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionProposalDto
@@ -101,6 +102,9 @@ interface CommunityApi {
 
     @GET("lists/topics/{id}")
     suspend fun topic(@Path("id") id: String): TopicDto
+
+    @POST("lists/search-misses")
+    suspend fun reportSearchMiss(@Body request: SearchMissDto)
 
     @POST("lists/topics/{id}/follow")
     suspend fun followTopic(@Path("id") id: String)
