@@ -47,6 +47,11 @@
     <string name="item_search_error_title">Sonuçlar yüklenemedi</string>
     <string name="item_search_error_body">Bağlantını kontrol et ve tekrar dene.</string>
     <string name="item_search_try_again">Tekrar dene</string>
+    <string name="item_search_scope_all">Tümü</string>
+    <string name="item_search_everywhere">Her yerde ara</string>
+    <string name="item_search_empty_everywhere_body">Tüm kataloglarda ve web’de aransın mı?</string>
+    <string name="item_search_notice_web_daily">Bugünlük web araması bitti. Kataloglarda arıyoruz; yarın yine her yerde.</string>
+    <string name="item_search_notice_web_off">Web araması şimdilik dinleniyor. Kataloglarda arıyoruz.</string>
     <string name="item_search_selected_none">Hiçbir şey seçilmedi</string>
     <plurals name="item_search_selected_count">
         <item quantity="one">%1$d seçildi</item>

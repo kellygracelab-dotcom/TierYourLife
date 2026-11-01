@@ -1,8 +1,8 @@
 package com.artiuillab.tieryourlife.feature.tier.data.di
 
-import com.artiuillab.tieryourlife.feature.tier.data.repository.CatalogueSearchRepositoryImpl
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomOwnLists
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
+import com.artiuillab.tieryourlife.feature.tier.data.repository.ServerCatalogueSearch
 import com.artiuillab.tieryourlife.feature.tier.data.sync.BoardSyncEngine
 import com.artiuillab.tieryourlife.feature.tier.data.sync.Connection
 import com.artiuillab.tieryourlife.feature.tier.data.sync.OwnPicturesOnThisPhone
@@ -87,6 +87,6 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCatalogueSearchRepository(
-        implementation: CatalogueSearchRepositoryImpl,
+        implementation: ServerCatalogueSearch,
     ): CatalogueSearchRepository
 }

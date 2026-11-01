@@ -43,7 +43,7 @@ class RoomTierRepositoryDeleteTest {
 
     private fun testImageStore(): TierImageStore {
         val directory = Files.createTempDirectory("tier_images_test").toFile()
-        return TierImageStore(directory) { uri -> ByteArrayInputStream("bytes of $uri".toByteArray()) }
+        return TierImageStore(directory, openSource = { uri -> ByteArrayInputStream("bytes of $uri".toByteArray()) })
     }
 }
 

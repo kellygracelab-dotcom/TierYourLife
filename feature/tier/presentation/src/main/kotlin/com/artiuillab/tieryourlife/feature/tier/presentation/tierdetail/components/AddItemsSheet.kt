@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.compone
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,14 +16,18 @@ import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.EndSideSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.CatalogueSearchScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.CatalogueSearchViewModel
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.ScopeChoice
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AddItemsSheet(
     listTitle: String,
+    /** The board's section: its own catalogues are searched first. */
+    category: String?,
     onDismiss: () -> Unit,
     onItemsConfirmed: (List<PoolItemDraft>) -> Unit,
     /** From the end edge, the board left in view: for a board laid out in columns. */
@@ -30,6 +35,8 @@ internal fun AddItemsSheet(
     searchViewModel: CatalogueSearchViewModel = hiltViewModel(),
 ) {
     val searchState by searchViewModel.state.collectAsStateWithLifecycle()
+    val scope by searchViewModel.scope.collectAsStateWithLifecycle()
+    LaunchedEffect(category) { searchViewModel.start(category) }
     var query by rememberSaveable { mutableStateOf("") }
 
     var selectedItems by remember { mutableStateOf<Map<String, CatalogueItem>>(emptyMap()) }
@@ -54,9 +61,13 @@ internal fun AddItemsSheet(
                 }
             },
             onConfirmSelection = {
-                onItemsConfirmed(selectedItems.values.map { PoolItemDraft(title = it.title, imageUrl = it.imageUrl) })
+                onItemsConfirmed(
+                    selectedItems.values.map { PoolItemDraft(title = it.title, imageUrl = it.imageUrl, keepCopy = it.fromWeb) },
+                )
             },
             onLoadMore = searchViewModel::loadMore,
+            scopes = ScopeChoice(first = PictureScope.forCategory(category), selected = scope, onSelect = searchViewModel::setScope),
+            onSearchEverywhere = searchViewModel::searchEverywhere,
         )
     }
     if (side) {

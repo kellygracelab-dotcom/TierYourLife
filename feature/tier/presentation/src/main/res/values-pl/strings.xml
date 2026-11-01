@@ -53,6 +53,11 @@
     <string name="item_search_error_title">Nie udało się wczytać wyników</string>
     <string name="item_search_error_body">Sprawdź połączenie i spróbuj ponownie.</string>
     <string name="item_search_try_again">Spróbuj ponownie</string>
+    <string name="item_search_scope_all">Wszystko</string>
+    <string name="item_search_everywhere">Szukaj wszędzie</string>
+    <string name="item_search_empty_everywhere_body">Szukać we wszystkich katalogach i w internecie?</string>
+    <string name="item_search_notice_web_daily">Wyszukiwanie w internecie na dziś się skończyło. Szukamy w katalogach — jutro znów wszędzie.</string>
+    <string name="item_search_notice_web_off">Wyszukiwanie w internecie chwilowo odpoczywa. Szukamy w katalogach.</string>
     <string name="item_search_selected_none">Nic nie wybrano</string>
     <plurals name="item_search_selected_count">
         <item quantity="one">%1$d wybrano</item>

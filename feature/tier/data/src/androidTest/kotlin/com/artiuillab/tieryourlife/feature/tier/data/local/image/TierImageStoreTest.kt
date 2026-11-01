@@ -32,7 +32,7 @@ class TierImageStoreTest {
     fun aCameraSizedPhoto_isStoredWithinTheEdgeLimit() {
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
         val original = jpegBytes(width = 4000, height = 3000)
-        val store = TierImageStore(directory) { ByteArrayInputStream(original) }
+        val store = TierImageStore(directory, openSource = { ByteArrayInputStream(original) })
 
         val storedPath = store.copyToInternalStorage("content://gallery/photo")
 
@@ -51,7 +51,7 @@ class TierImageStoreTest {
     fun anAlreadySmallPicture_isNeverGrownByBeingStored() {
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
         val original = jpegBytes(width = 120, height = 160)
-        val store = TierImageStore(directory) { ByteArrayInputStream(original) }
+        val store = TierImageStore(directory, openSource = { ByteArrayInputStream(original) })
 
         val storedPath = store.copyToInternalStorage("content://gallery/small")
 
@@ -61,7 +61,7 @@ class TierImageStoreTest {
     @Test
     fun undecodableBytes_areStoredExactlyAsTheyArrived() {
         val original = "not an image at all".toByteArray()
-        val store = TierImageStore(directory) { ByteArrayInputStream(original) }
+        val store = TierImageStore(directory, openSource = { ByteArrayInputStream(original) })
 
         val storedPath = store.copyToInternalStorage("content://gallery/nonsense")
 

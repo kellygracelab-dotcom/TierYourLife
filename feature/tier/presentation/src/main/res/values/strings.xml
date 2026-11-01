@@ -47,6 +47,11 @@
     <string name="item_search_error_title">Couldn’t load results</string>
     <string name="item_search_error_body">Check your connection and try again.</string>
     <string name="item_search_try_again">Try again</string>
+    <string name="item_search_scope_all">All</string>
+    <string name="item_search_everywhere">Search everywhere</string>
+    <string name="item_search_empty_everywhere_body">Search every catalogue and the web?</string>
+    <string name="item_search_notice_web_daily">Web search is done for today. Searching the catalogues — tomorrow everywhere again.</string>
+    <string name="item_search_notice_web_off">Web search is resting for now. Searching the catalogues.</string>
     <string name="item_search_selected_none">Nothing selected</string>
     <plurals name="item_search_selected_count">
         <item quantity="one">%1$d selected</item>

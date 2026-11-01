@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
@@ -81,8 +82,8 @@ class CatalogueSearchScreenContentTest {
         CatalogueItem(id = "tmdb:$index", title = "Title $index", subtitle = null, imageUrl = null)
     }
 
-    private fun topOf(id: String): Float =
-        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(id)).fetchSemanticsNode().boundsInRoot.top
+    private fun boundsOf(id: String): Rect =
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(id)).fetchSemanticsNode().boundsInRoot
 
     @Test
     fun reachingTheEndOfTheResults_asksForTheNextPage() {
@@ -96,14 +97,14 @@ class CatalogueSearchScreenContentTest {
         composeRule.runOnIdle { assertTrue("scrolling to the end should ask for more", loadMoreCalls > 0) }
     }
 
-    // The reader ticks films as they read down the list, so a page arriving
-    // underneath must not move or forget the rows they have already been over.
+    // The reader ticks films as they read through the grid, so a page arriving
+    // after them must not move or forget the tiles they have already been over.
     @Test
     fun aPageArriving_leavesTheTicksAndTheOrderAboveItAlone() {
         val alreadyThere = listOf(dune, arrival, interstellar)
         setContent(CatalogueSearchUiState.Success(alreadyThere, canLoadMore = true))
         composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(arrival.id)).performClick()
-        val orderBefore = alreadyThere.map { topOf(it.id) }
+        val placesBefore = alreadyThere.map { boundsOf(it.id) }
 
         val nextPage = CatalogueItem(id = "tmdb:335984", title = "Blade Runner 2049", subtitle = "2017", imageUrl = null)
         composeRule.runOnIdle {
@@ -112,8 +113,13 @@ class CatalogueSearchScreenContentTest {
 
         composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(arrival.id)).assertIsSelected()
         composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(dune.id)).assertIsNotSelected()
-        assertEquals(orderBefore, alreadyThere.map { topOf(it.id) })
-        assertTrue("the new film belongs below the ones already read", topOf(nextPage.id) > orderBefore.last())
+        assertEquals(placesBefore, alreadyThere.map { boundsOf(it.id) })
+        val last = placesBefore.last()
+        val added = boundsOf(nextPage.id)
+        assertTrue(
+            "the new film belongs after the ones already read, got $added after $last",
+            added.top > last.top || (added.top == last.top && added.left > last.left),
+        )
     }
 
     @Test
@@ -248,21 +254,14 @@ class CatalogueSearchScreenContentTest {
     }
 
     @Test
-    fun selectedRowTint_spansTheFullRowWidth() {
-        setContent(CatalogueSearchUiState.Success(listOf(dune, arrival)))
+    fun pickingATile_marksItWithoutMovingAnything() {
+        val results = listOf(dune, arrival, interstellar)
+        setContent(CatalogueSearchUiState.Success(results))
+        val placesBefore = results.map { boundsOf(it.id) }
+
         composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(dune.id)).performClick()
 
-        val rowWidth = composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(dune.id))
-            .fetchSemanticsNode().boundsInRoot.width
-        val listWidth = composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_RESULTS_LIST)
-            .fetchSemanticsNode().boundsInRoot.width
-
-        assertEquals(
-            "a selected row's own background is its full-bleed tint — its width must equal " +
-                "the sheet-wide list container's width, not something inset within it",
-            listWidth,
-            rowWidth,
-            0.5f,
-        )
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult(dune.id)).assertIsSelected()
+        assertEquals("the mark is drawn on the tile, the grid does not reflow", placesBefore, results.map { boundsOf(it.id) })
     }
 }

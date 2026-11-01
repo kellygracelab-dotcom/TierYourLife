@@ -44,6 +44,11 @@
     <string name="item_search_error_title">結果を読み込めませんでした</string>
     <string name="item_search_error_body">接続を確認して、もう一度お試しください。</string>
     <string name="item_search_try_again">もう一度試す</string>
+    <string name="item_search_scope_all">すべて</string>
+    <string name="item_search_everywhere">すべてで検索</string>
+    <string name="item_search_empty_everywhere_body">すべてのカタログとウェブで検索しますか？</string>
+    <string name="item_search_notice_web_daily">今日のウェブ検索は上限に達しました。カタログから検索します。明日はまたすべてで検索できます。</string>
+    <string name="item_search_notice_web_off">ウェブ検索は現在休止中です。カタログから検索します。</string>
     <string name="item_search_selected_none">何も選択されていません</string>
     <plurals name="item_search_selected_count">
         <item quantity="other">%1$d件選択</item>
