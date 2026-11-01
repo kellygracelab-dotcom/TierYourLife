@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.trash
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.CircularProgressIndicator
@@ -140,7 +141,8 @@ internal fun TrashScreenContent(
             hostState = snackbarHostState,
             modifier = Modifier
                 .fillMaxSize()
-                .wrapContentHeight(Alignment.Bottom),
+                .wrapContentHeight(Alignment.Bottom)
+                .navigationBarsPadding(),
         )
     }
 
