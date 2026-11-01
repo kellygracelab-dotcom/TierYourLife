@@ -5,17 +5,17 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-/** The cut a section's picture becomes: 16:10, 1440 × 900 at most, as wide as it is below that, never under 960 × 600. */
+/** The cut a section's picture becomes: 16:10, 1600 × 1000 at most, as wide as it is below that, never under 960 × 600. */
 class SectionPictureCutTest {
 
     @Test
-    fun aBigPicture_isExportedAt1440By900() {
+    fun aBigPicture_isExportedAt1600By1000() {
         val cut = sectionCut(4000, 3000, PictureCrop(0f, 0f, 1f, 4000f / 1.6f / 3000f))
 
         assertEquals(4000, cut?.width)
         assertEquals(2500, cut?.height)
-        assertEquals(1440, cut?.exportWidth)
-        assertEquals(900, cut?.exportHeight)
+        assertEquals(1600, cut?.exportWidth)
+        assertEquals(1000, cut?.exportHeight)
     }
 
     @Test
@@ -35,7 +35,7 @@ class SectionPictureCutTest {
     fun aShrunkDecode_isMeasuredOnThePictureItself() {
         val cut = sectionCut(1000, 750, PictureCrop(0f, 0f, 1f, 625f / 750f), scale = 4)
 
-        assertEquals(1440, cut?.exportWidth)
+        assertEquals(1600, cut?.exportWidth)
     }
 
     @Test
@@ -48,8 +48,8 @@ class SectionPictureCutTest {
 
     @Test
     fun decodingShrinksOnlyAsFarAsTheWidestExportAllows() {
-        assertEquals(1, sectionSampleSize(2000, PictureCrop(0f, 0f, 1f, 1f)))
-        assertEquals(2, sectionSampleSize(3000, PictureCrop(0f, 0f, 1f, 1f)))
-        assertEquals(4, sectionSampleSize(6000, PictureCrop(0f, 0f, 1f, 1f)))
+        assertEquals(1, sectionSampleSize(3000, PictureCrop(0f, 0f, 1f, 1f)))
+        assertEquals(2, sectionSampleSize(3200, PictureCrop(0f, 0f, 1f, 1f)))
+        assertEquals(4, sectionSampleSize(6400, PictureCrop(0f, 0f, 1f, 1f)))
     }
 }

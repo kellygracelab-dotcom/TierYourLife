@@ -9,7 +9,7 @@ internal data class PixelCut(val left: Int, val top: Int, val width: Int, val he
 
 /**
  * Where [crop] falls in a bitmap of [width] by [height], held inside it and
- * at 16:10, and what it is exported as: 1440 × 900 at most, as wide as the
+ * at 16:10, and what it is exported as: 1600 × 1000 at most, as wide as the
  * cut below that, and never below 960 × 600 — a cut that small is null.
  * [scale] is how far the bitmap was shrunk while decoding, so the floor is
  * measured on the picture itself.
