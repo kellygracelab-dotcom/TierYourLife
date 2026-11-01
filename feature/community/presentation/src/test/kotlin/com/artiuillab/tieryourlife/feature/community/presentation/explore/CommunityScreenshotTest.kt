@@ -223,7 +223,8 @@ class CommunityScreenshotTest {
         stopped = setOf(FollowKeys.person("u-kyle")),
     )
 
-    private val crowded = explore.copy(sections = Fourteen)
+    // Past Home's twenty: every proposable sign and the nine.
+    private val crowded = explore.copy(sections = Theirs + Counted)
 
     @Test
     fun explore_moreSectionsThanSlots_endsInAllSections() = capture("explore_more_sections") { CommunityHomeContent(crowded, FollowingFeedUiState()) }

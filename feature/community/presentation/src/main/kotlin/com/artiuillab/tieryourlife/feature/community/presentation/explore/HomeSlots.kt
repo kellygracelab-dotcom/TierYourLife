@@ -14,31 +14,21 @@ internal data class HomeTiles(
     val total: Int = tiles.size,
 )
 
-/**
- * How many sections Home has room for (Claude Design): a phone's eight and
- * its row, nine at 600–839, ten from 840 and in a short window's row. The
- * cover scrolls through every one.
- */
-internal val HomeLayout.slots: Int?
-    get() = when (this) {
-        HomeLayout.Portrait, HomeLayout.Medium -> 9
-        HomeLayout.Wide, HomeLayout.CompactHeight -> 10
-        HomeLayout.Cover -> null
-    }
+/** How many sections Home shows before the way to all of them; the site shows as many. */
+internal const val HOME_SECTIONS = 20
 
 /**
- * The slot rule: everything when it fits, Other last; otherwise the first
- * sections and, in the last slot, the way to all of them, with Other left for
- * that screen. A phone lays tiles two by two, so an odd one out takes the
- * full-width row: with the nine built-ins, Other, as it always has.
+ * The slot rule: up to twenty sections, Other last; past twenty, the first
+ * twenty and then the way to all of them, a tile or on a phone the full-width
+ * row, with Other left for that screen. A phone lays tiles two by two, so an
+ * odd one out takes the full-width row: with the nine built-ins, Other, as it
+ * always has. The cover scrolls through every one.
  */
 internal fun homeTiles(ordered: List<Section>, layout: HomeLayout): HomeTiles {
-    val rest = ordered.filterNot { it.isOther }
-    val all = rest + ordered.filter { it.isOther }
-    val slots = layout.slots
+    val all = ordered.filterNot { it.isOther } + ordered.filter { it.isOther }
     return when {
-        slots == null -> HomeTiles(all)
-        all.size > slots -> HomeTiles(tiles = rest.take(slots - 1), allSections = true, total = all.size)
+        layout == HomeLayout.Cover -> HomeTiles(all)
+        all.size > HOME_SECTIONS -> HomeTiles(tiles = all.take(HOME_SECTIONS), allSections = true, total = all.size)
         layout == HomeLayout.Portrait && all.size % 2 == 1 -> HomeTiles(tiles = all.dropLast(1), row = all.last(), total = all.size)
         else -> HomeTiles(all)
     }
