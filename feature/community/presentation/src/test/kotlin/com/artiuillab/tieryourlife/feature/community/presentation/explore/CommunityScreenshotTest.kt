@@ -183,6 +183,20 @@ class CommunityScreenshotTest {
     fun following_dark() = capture("following_dark", dark = true) { CommunityHomeContent(explore, following, startOnFollowing = true) }
 
     @Test
+    fun search_findsSectionsTopicsAndLists() = capture("search_everything") {
+        CommunityHomeContent(
+            explore.copy(
+                query = "game",
+                results = SearchResults(
+                    lists = Popular.take(2),
+                    topics = listOf(Topic("t9", "Game Boy classics", ListCategory.Games.id, TopicStatus.Approved)),
+                ),
+            ),
+            following,
+        )
+    }
+
+    @Test
     fun following_followingNothing() = capture("following_empty") {
         CommunityHomeContent(
             explore,

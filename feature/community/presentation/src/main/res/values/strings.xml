@@ -181,6 +181,8 @@
     <string name="explore_following">Following</string>
     <string name="explore_search_hint">Search community lists</string>
     <string name="explore_search_nothing">Nothing matches that.</string>
+    <string name="search_sections">Sections</string>
+    <string name="search_lists">Lists</string>
     <string name="section_topics">Topics</string>
     <string name="section_sort_popular">Popular</string>
     <string name="section_sort_newest">Newest</string>

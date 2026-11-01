@@ -7,7 +7,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** The slot rule, as on the site: up to twenty sections on Home, then the way to all of them. */
+/** The slot rule: up to ten sections on Home, in the server's order, then the way to all of them. */
 class HomeSlotsTest {
 
     private val nine = Section.BUILT_IN
@@ -24,47 +24,37 @@ class HomeSlotsTest {
     }
 
     @Test
-    fun aPhoneWithTwenty_showsThemAll_withoutTheWayToAll() {
-        val sections = theirs(11) + nine
+    fun aPhoneWithTen_showsThemAll_withoutTheWayToAll() {
+        val sections = theirs(1) + nine
         val home = homeTiles(sections, HomeLayout.Portrait)
 
-        assertEquals(20, home.tiles.size)
+        assertEquals(10, home.tiles.size)
         assertNull(home.row)
         assertFalse(home.allSections)
     }
 
     @Test
-    fun aPhoneWithMoreThanTwenty_showsTwenty_andTheRowLeadsToAll() {
-        val sections = theirs(14) + nine
+    fun aPhoneWithMoreThanTen_showsTheFirstTen_andTheRowLeadsToAll() {
+        val sections = theirs(141) + nine
         val home = homeTiles(sections, HomeLayout.Portrait)
 
-        assertEquals(ids(sections.take(20)), ids(home.tiles))
+        assertEquals(ids(sections.take(10)), ids(home.tiles))
         assertNull(home.row)
         assertTrue(home.allSections)
-        assertEquals(23, home.total)
+        assertEquals(150, home.total)
     }
 
     @Test
-    fun aPhoneWithAnOddNumberThatFits_putsTheLastOneOnTheRow() {
-        val sections = theirs(10) + nine
-        val home = homeTiles(sections, HomeLayout.Portrait)
-
-        assertEquals(18, home.tiles.size)
-        assertEquals("other", home.row?.id)
-        assertFalse(home.allSections)
-    }
-
-    @Test
-    fun widerWindows_holdTwenty_thenTwentyAndAllSections() {
+    fun widerWindows_holdTen_thenTenAndAllSections() {
         listOf(HomeLayout.Medium, HomeLayout.Wide, HomeLayout.CompactHeight).forEach { layout ->
-            val fits = homeTiles(theirs(11) + nine, layout)
-            assertEquals(20, fits.tiles.size)
+            val fits = homeTiles(theirs(1) + nine, layout)
+            assertEquals(10, fits.tiles.size)
             assertFalse(fits.allSections)
 
-            val more = homeTiles(theirs(12) + nine, layout)
-            assertEquals(20, more.tiles.size)
+            val more = homeTiles(theirs(2) + nine, layout)
+            assertEquals(10, more.tiles.size)
             assertTrue(more.allSections)
-            assertEquals(21, more.total)
+            assertEquals(11, more.total)
         }
     }
 

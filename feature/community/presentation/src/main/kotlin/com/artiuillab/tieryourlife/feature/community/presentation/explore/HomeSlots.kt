@@ -14,13 +14,17 @@ internal data class HomeTiles(
     val total: Int = tiles.size,
 )
 
-/** How many sections Home shows before the way to all of them; the site shows as many. */
-internal const val HOME_SECTIONS = 20
+/**
+ * How many sections Home shows before the way to all of them; the site shows
+ * twenty. Which ones is the server's order: followed first, then the ones the
+ * owner pinned, then the busiest.
+ */
+internal const val HOME_SECTIONS = 10
 
 /**
- * The slot rule: up to twenty sections, Other last; past twenty, the first
- * twenty and then the way to all of them, a tile or on a phone the full-width
- * row, with Other left for that screen. A phone lays tiles two by two, so an
+ * The slot rule: up to ten sections, Other last; past ten, the first ten and
+ * then the way to all of them, a tile or on a phone the full-width row, with
+ * Other left for that screen. A phone lays tiles two by two, so an
  * odd one out takes the full-width row: with the nine built-ins, Other, as it
  * always has. The cover scrolls through every one.
  */

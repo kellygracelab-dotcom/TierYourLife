@@ -185,6 +185,8 @@
     <string name="explore_following">Obserwujesz</string>
     <string name="explore_search_hint">Szukaj w społeczności</string>
     <string name="explore_search_nothing">Nic nie pasuje.</string>
+    <string name="search_sections">Działy</string>
+    <string name="search_lists">Listy</string>
     <string name="section_topics">Tematy</string>
     <string name="section_sort_popular">Popularne</string>
     <string name="section_sort_newest">Najnowsze</string>

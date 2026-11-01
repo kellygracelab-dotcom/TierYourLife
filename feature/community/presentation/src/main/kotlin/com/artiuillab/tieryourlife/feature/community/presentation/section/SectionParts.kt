@@ -171,11 +171,6 @@ internal fun TopicTiles(
 internal fun FoundTopicTiles(topics: List<Topic>, onOpen: (Topic) -> Unit) = BoxWithConstraints {
     val columns = (maxWidth / TOPIC_TILE_MIN_WIDTH).toInt().coerceAtLeast(2)
     Column(Modifier.testTag(SectionTestTags.TOPICS), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(
-            stringResource(R.string.section_topics),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
         topics.chunked(columns).forEach { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 row.forEach { topic ->

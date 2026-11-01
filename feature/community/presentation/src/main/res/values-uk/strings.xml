@@ -185,6 +185,8 @@
     <string name="explore_following">Ви підписані</string>
     <string name="explore_search_hint">Пошук у спільноті</string>
     <string name="explore_search_nothing">Нічого не знайдено.</string>
+    <string name="search_sections">Розділи</string>
+    <string name="search_lists">Списки</string>
     <string name="section_topics">Теми</string>
     <string name="section_sort_popular">Популярні</string>
     <string name="section_sort_newest">Нові</string>

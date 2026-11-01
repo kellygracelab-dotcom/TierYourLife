@@ -181,6 +181,8 @@
     <string name="explore_following">Takip ediliyor</string>
     <string name="explore_search_hint">Toplulukta ara</string>
     <string name="explore_search_nothing">Eşleşen bir şey yok.</string>
+    <string name="search_sections">Bölümler</string>
+    <string name="search_lists">Listeler</string>
     <string name="section_topics">Konular</string>
     <string name="section_sort_popular">Popüler</string>
     <string name="section_sort_newest">En yeni</string>
