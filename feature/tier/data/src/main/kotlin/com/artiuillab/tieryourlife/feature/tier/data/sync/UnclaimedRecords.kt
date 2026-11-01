@@ -18,7 +18,9 @@ internal fun claimable(
 ): List<BoardSyncEntity> = unclaimed.filter { record ->
     val here = fingerprints[record.listUid] ?: return@filter false
     val theirs = remote[record.listUid]
-    val otherBoardAtThatRevision = theirs != null && theirs.revision == record.revision &&
-        theirs.fingerprint != null && theirs.fingerprint != record.fingerprint
+    val otherBoardAtThatRevision = theirs != null &&
+        theirs.revision == record.revision &&
+        theirs.fingerprint != null &&
+        theirs.fingerprint != record.fingerprint
     !(otherBoardAtThatRevision && here != record.fingerprint)
 }
