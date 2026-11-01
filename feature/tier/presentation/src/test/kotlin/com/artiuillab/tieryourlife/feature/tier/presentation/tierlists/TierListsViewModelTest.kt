@@ -22,12 +22,14 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncReport
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.yield
 import org.junit.Assert.assertEquals
@@ -164,8 +166,12 @@ class TierListsViewModelTest {
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
 
-        viewModel.enterSearch()
-        viewModel.updateSearchQuery("piz")
+        // On Main, where the screen calls them: from the test's own thread the
+        // query raced a redraw already running there, which drew the old one.
+        withContext(Dispatchers.Main) {
+            viewModel.enterSearch()
+            viewModel.updateSearchQuery("piz")
+        }
 
         val state = viewModel.state.firstWithin {
             it is TierListsUiState.Success && (it.mode as? HomeMode.Searching)?.query == "piz"
@@ -205,9 +211,11 @@ class TierListsViewModelTest {
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
 
-        viewModel.enterSearch()
-        viewModel.updateSearchQuery("nothing matches this")
-        viewModel.exitSearch()
+        withContext(Dispatchers.Main) {
+            viewModel.enterSearch()
+            viewModel.updateSearchQuery("nothing matches this")
+            viewModel.exitSearch()
+        }
 
         val state = viewModel.state.firstWithin {
             it is TierListsUiState.Success && it.mode == HomeMode.Browsing
@@ -224,13 +232,13 @@ class TierListsViewModelTest {
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
 
-        viewModel.enterSelection(1L)
+        withContext(Dispatchers.Main) { viewModel.enterSelection(1L) }
         val selecting = viewModel.state.firstWithin {
             it is TierListsUiState.Success && it.mode is HomeMode.Selecting
         } as TierListsUiState.Success
         assertEquals(HomeMode.Selecting(setOf(1L)), selecting.mode)
 
-        viewModel.toggleSelection(1L)
+        withContext(Dispatchers.Main) { viewModel.toggleSelection(1L) }
         val afterDeselect = viewModel.state.firstWithin {
             it is TierListsUiState.Success
         } as TierListsUiState.Success
@@ -247,7 +255,7 @@ class TierListsViewModelTest {
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
 
-        viewModel.enterSelection(2L)
+        withContext(Dispatchers.Main) { viewModel.enterSelection(2L) }
         viewModel.deleteTierLists(listOf(2L))
 
         val afterDelete = viewModel.state.firstWithin {
