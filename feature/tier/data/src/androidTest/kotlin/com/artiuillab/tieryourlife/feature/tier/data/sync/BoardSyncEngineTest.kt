@@ -27,8 +27,11 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardRevisio
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardSummaryDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
@@ -75,6 +78,8 @@ class BoardSyncEngineTest {
         community: CommunityRepository = FakeCommunityRepository(),
         api: BoardsApi = boards,
         accounts: FakeAccountRepository = FakeAccountRepository(initial = account),
+        vault: Pictures = NoPictures,
+        connection: Connection = Metered,
     ): BoardSyncEngine {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         return BoardSyncEngine(
@@ -83,7 +88,7 @@ class BoardSyncEngineTest {
             accounts = accounts,
             json = networkJson,
             images = images,
-            pictures = PictureSync(dao, images, NoPictures, preferences, Metered),
+            pictures = PictureSync(dao, images, vault, preferences, connection),
             preferences = preferences,
             deviceName = DeviceName(context),
             community = community,
@@ -134,6 +139,77 @@ class BoardSyncEngineTest {
         assertEquals(listOf("S"), dao.tiersOf(arrived.id).map { it.label })
         assertEquals(listOf("Doom"), dao.itemsOf(arrived.id).map { it.title })
         assertEquals(4, dao.allSyncRecords().single { it.listUid == "remote-1" }.revision)
+    }
+
+    // A board written down as anything but what is stored here goes straight
+    // back up, and to the site that is a change it did not make.
+    @Test
+    fun aBoardJustAdopted_isNotSentBack_evenOnceItsPictureArrives() = runBlocking {
+        boards.server["remote-1"] = theirBoard("remote-1", title = "Games", revision = 4, pictureId = "poster.jpg")
+        val engine = engine(vault = Holding("poster.jpg"), connection = Unmetered)
+
+        engine.sync()
+        val second = engine.sync()
+
+        assertTrue(images.holds("poster.jpg"))
+        assertEquals(0, second.carried)
+        assertTrue(boards.kept.isEmpty())
+    }
+
+    @Test
+    fun aBoardJustRestored_isNotSentBack() = runBlocking {
+        boards.server["remote-1"] = theirBoard("remote-1", title = "Games", revision = 4)
+        val engine = engine()
+        engine.sync()
+        boards.server["remote-1"] = theirBoard("remote-1", title = "Games, renamed on the site", revision = 5, fingerprint = "theirs-5")
+
+        engine.sync()
+        val second = engine.sync()
+
+        assertEquals("Games, renamed on the site", dao.boardByUid("remote-1")!!.title)
+        assertEquals(0, second.carried)
+        assertTrue(boards.kept.isEmpty())
+    }
+
+    // The list screen and a returning connection start a run each at launch.
+    // The second read the board before the first restored it, took the restore
+    // for an edit here and sent the board back as a new revision.
+    @Test
+    fun aRestoreByARunStartedMeanwhile_isNotSentBack() = runBlocking {
+        boards.server["remote-1"] = theirBoard("remote-1", title = "Games", revision = 4)
+        val engine = engine()
+        engine.sync()
+        boards.server["remote-1"] = theirBoard("remote-1", title = "Games, renamed on the site", revision = 5, fingerprint = "theirs-5")
+        var other: Job? = null
+        boards.onIndex = {
+            boards.onIndex = {}
+            other = launch { engine.sync() }
+            // Long enough for the other run to finish, were it let in.
+            withTimeoutOrNull(OTHER_RUN_MS) { other?.join() }
+        }
+
+        engine.sync()
+        other?.join()
+
+        assertEquals("Games, renamed on the site", dao.boardByUid("remote-1")!!.title)
+        assertTrue(boards.kept.isEmpty())
+    }
+
+    @Test
+    fun anEditMadeDuringARun_goesUpOnce() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        val engine = engine()
+        engine.sync()
+        dao.renameBoard(uid, "Films, edited")
+        boards.onIndex = {
+            boards.onIndex = {}
+            dao.renameBoard(uid, "Films, edited again")
+        }
+
+        engine.sync()
+        engine.sync()
+
+        assertEquals(listOf("Films", "Films, edited again"), boards.kept.map { it.second.title })
     }
 
     // The answer to our last write never arrived. Taking our own board back
@@ -358,6 +434,7 @@ class BoardSyncEngineTest {
         revision: Int,
         fingerprint: String? = "theirs",
         deviceName: String? = null,
+        pictureId: String? = null,
     ) = KeptBoardDto(
         uid = uid,
         revision = revision,
@@ -365,7 +442,7 @@ class BoardSyncEngineTest {
         deviceName = deviceName,
         title = title,
         tiers = listOf(KeptTierDto(uid = "$uid-tier", position = 0, label = "S", colorLight = "#111111", colorDark = "#EEEEEE")),
-        items = listOf(KeptItemDto(uid = "$uid-item", tierUid = "$uid-tier", position = 0, title = "Doom")),
+        items = listOf(KeptItemDto(uid = "$uid-item", pictureId = pictureId, tierUid = "$uid-tier", position = 0, title = "Doom")),
     )
 
     private class FakeBoards : BoardsApi {
@@ -375,10 +452,14 @@ class BoardSyncEngineTest {
         var keepFails = false
         var refuseWithCode: Int? = null
         var onKeep: () -> Unit = {}
+        var onIndex: suspend () -> Unit = {}
 
-        override suspend fun index(after: String?) = KeptBoardIndexDto(
-            server.values.map { KeptBoardSummaryDto(it.uid, it.revision, it.deleted, it.fingerprint) },
-        )
+        override suspend fun index(after: String?): KeptBoardIndexDto {
+            onIndex()
+            return KeptBoardIndexDto(
+                server.values.map { KeptBoardSummaryDto(it.uid, it.revision, it.deleted, it.fingerprint) },
+            )
+        }
 
         override suspend fun board(uid: String): KeptBoardDto = server.getValue(uid)
 
@@ -408,6 +489,12 @@ class BoardSyncEngineTest {
         override suspend fun get(pictureId: String): ByteArray? = null
     }
 
+    private class Holding(private val pictureId: String) : Pictures {
+        override suspend fun put(pictureId: String, bytes: ByteArray) = true
+
+        override suspend fun get(pictureId: String): ByteArray? = byteArrayOf(1, 2, 3).takeIf { pictureId == this.pictureId }
+    }
+
     /** Pictures wait for Wi-Fi, which keeps them out of a test about boards. */
     private object Metered : Connection {
         override val available = emptyFlow<Unit>()
@@ -415,8 +502,15 @@ class BoardSyncEngineTest {
         override fun unmetered() = false
     }
 
+    private object Unmetered : Connection {
+        override val available = emptyFlow<Unit>()
+
+        override fun unmetered() = true
+    }
+
     private companion object {
         const val HTTP_CONFLICT = 409
+        const val OTHER_RUN_MS = 1_000L
         val ann = Account.SignedIn(email = "ann@example.com", photoUrl = null, uid = "ann")
         val bob = Account.SignedIn(email = "bob@example.com", photoUrl = null, uid = "bob")
     }

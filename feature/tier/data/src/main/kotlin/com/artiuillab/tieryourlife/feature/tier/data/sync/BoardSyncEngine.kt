@@ -28,6 +28,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncStep
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncedBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.planSync
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import retrofit2.HttpException
@@ -55,7 +57,16 @@ class BoardSyncEngine @Inject constructor(
     private val community: CommunityRepository,
 ) : BoardSync {
 
-    override suspend fun sync(): SyncReport {
+    private val running = Mutex()
+
+    /**
+     * One run at a time. The list screen and a returning connection both start
+     * one, at launch together; a run that read the boards before the other
+     * restored one took the restore for an edit here and sent it back up.
+     */
+    override suspend fun sync(): SyncReport = running.withLock { run() }
+
+    private suspend fun run(): SyncReport {
         val account = signedInAs()
         if (account.isNullOrBlank() || !preferences.backUpBoards()) {
             return SyncReport(signedIn = false)
@@ -179,13 +190,13 @@ class BoardSyncEngine @Inject constructor(
 
     private suspend fun carry(step: SyncStep, fingerprints: Map<String, String>, account: String) {
         when (step) {
-            is SyncStep.Create -> send(account, step.uid, basedOn = null, fingerprints = fingerprints)
-            is SyncStep.Update -> send(account, step.uid, basedOn = step.basedOn, fingerprints = fingerprints)
+            is SyncStep.Create -> send(account, step.uid, basedOn = null)
+            is SyncStep.Update -> send(account, step.uid, basedOn = step.basedOn)
             is SyncStep.KeepBoth -> {
                 // Theirs comes down first, so it is safe here even if the
                 // write below never happens.
                 adopt(account, api.board(step.uid), asCopy = true)
-                send(account, step.uid, basedOn = step.basedOn, fingerprints = fingerprints)
+                send(account, step.uid, basedOn = step.basedOn)
             }
             is SyncStep.Restore -> takeOver(account, api.board(step.uid))
             is SyncStep.Adopt -> adopt(account, api.board(step.uid))
@@ -203,12 +214,16 @@ class BoardSyncEngine @Inject constructor(
 
     /**
      * On a refused write the account's copy is kept beside ours under a new
-     * uid, then ours goes up against the revision the refusal named.
+     * uid, then ours goes up against the revision the refusal named. The
+     * fingerprint is of what goes up, not of what the run started with: an
+     * edit in between, recorded under the older one, went up again next run.
      */
-    private suspend fun send(account: String, uid: String, basedOn: Int?, fingerprints: Map<String, String>) {
+    private suspend fun send(account: String, uid: String, basedOn: Int?) {
         val board = dao.boardByUid(uid) ?: return
-        val fingerprint = fingerprints[uid] ?: fingerprintOf(board)
-        val answer = api.keep(uid, request(board, fingerprint, basedOn))
+        val tiers = dao.tiersOf(board.id)
+        val items = dao.itemsOf(board.id)
+        val fingerprint = BoardFingerprint.of(board, tiers, items, images::pictureIdOf)
+        val answer = api.keep(uid, request(board, tiers, items, fingerprint, basedOn))
 
         if (answer.isSuccessful) {
             val revision = answer.body()?.revision ?: error("The account kept $uid but named no revision")
@@ -226,7 +241,7 @@ class BoardSyncEngine @Inject constructor(
         }
 
         adopt(account, theirs, asCopy = true)
-        val second = api.keep(uid, request(board, fingerprint, basedOn = theirs.revision))
+        val second = api.keep(uid, request(board, tiers, items, fingerprint, basedOn = theirs.revision))
         if (!second.isSuccessful) throw HttpException(second)
         second.body()?.let { remember(account, uid, it.revision, fingerprint) }
     }
@@ -283,12 +298,13 @@ class BoardSyncEngine @Inject constructor(
     private suspend fun fingerprintOf(board: TierListEntity): String =
         BoardFingerprint.of(board, dao.tiersOf(board.id), dao.itemsOf(board.id), images::pictureIdOf)
 
-    private suspend fun request(
+    private fun request(
         board: TierListEntity,
+        tiers: List<TierEntity>,
+        items: List<TierItemEntity>,
         fingerprint: String,
         basedOn: Int?,
     ): KeepBoardRequestDto {
-        val tiers = dao.tiersOf(board.id)
         val uidByTierId = tiers.associate { it.id to it.uid }
         return KeepBoardRequestDto(
             basedOn = basedOn,
@@ -315,7 +331,7 @@ class BoardSyncEngine @Inject constructor(
                     isPool = tier.isPool,
                 )
             },
-            items = dao.itemsOf(board.id).mapNotNull { item ->
+            items = items.mapNotNull { item ->
                 val tierUid = uidByTierId[item.tierId] ?: return@mapNotNull null
                 KeptItemDto(
                     uid = item.uid,
