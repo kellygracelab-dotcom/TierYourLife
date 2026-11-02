@@ -10,4 +10,5 @@ data class RemovedTierItem(
     val title: String,
     val imageUrl: String?,
     val source: TierItemSource,
+    val credit: String? = null,
 )

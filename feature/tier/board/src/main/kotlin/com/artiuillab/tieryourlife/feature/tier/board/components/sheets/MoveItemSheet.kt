@@ -150,6 +150,16 @@ private fun MoveSheetHeader(item: TierItem) {
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurface,
             )
+            item.credit?.let { credit ->
+                Text(
+                    text = stringResource(R.string.tier_detail_move_sheet_photo_credit, credit),
+                    modifier = Modifier.testTag(TierDetailTestTags.MOVE_SHEET_CREDIT),
+                    style = TierYourLifeType.current.supportingLabel,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             Text(
                 text = stringResource(R.string.tier_detail_move_sheet_subtitle),
                 style = TierYourLifeType.current.supportingLabel,

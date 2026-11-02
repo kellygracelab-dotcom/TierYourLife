@@ -285,4 +285,6 @@
     <string name="community_replaced_yours">自分のバージョンを%1$sのランキングに置き換えました</string>
     <string name="community_replaced_yours_unnamed">自分のバージョンをこのランキングに置き換えました</string>
     <string name="community_action_undo">元に戻す</string>
+    <string name="community_picture_credits">画像クレジット</string>
+    <string name="community_picture_credit_line">%1$s — %2$s</string>
 </resources>

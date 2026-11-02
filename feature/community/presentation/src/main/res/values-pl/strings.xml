@@ -303,4 +303,6 @@
     <string name="community_replaced_yours">Zastąpiono twoją wersję rankingiem: %1$s</string>
     <string name="community_replaced_yours_unnamed">Zastąpiono twoją wersję tym rankingiem</string>
     <string name="community_action_undo">Cofnij</string>
+    <string name="community_picture_credits">Autorzy zdjęć</string>
+    <string name="community_picture_credit_line">%1$s — %2$s</string>
 </resources>

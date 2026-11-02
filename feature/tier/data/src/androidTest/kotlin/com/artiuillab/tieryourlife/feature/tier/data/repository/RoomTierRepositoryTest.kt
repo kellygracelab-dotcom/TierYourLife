@@ -320,4 +320,23 @@ class RoomTierRepositoryTest {
         val pool = requireNotNull(repository.getTierListById(listId)).tiers.single { it.isPool }
         assertEquals(listOf("Interstellar", "Arrival"), pool.items.map { it.title })
     }
+
+    @Test
+    fun a_cards_credit_stays_with_it_from_the_search_to_a_copy_of_its_board() = runBlocking {
+        val listId = repository.createTierList("Animals", CAPTIONS)
+
+        repository.addItemsToPool(
+            listId,
+            listOf(
+                PoolItemDraft(title = "Red fox", imageUrl = "https://example.com/fox.jpg", credit = "© Jane Doe, CC BY"),
+                PoolItemDraft(title = "Badger", imageUrl = null),
+            ),
+        )
+        val pool = requireNotNull(repository.getTierListById(listId)).tiers.single { it.isPool }
+        val copyId = repository.createFromTemplate(title = "Animals", authorName = "", tiers = emptyList(), items = pool.items, takenFrom = null)
+
+        val copied = requireNotNull(repository.getTierListById(copyId)).tiers.single { it.isPool }
+        assertEquals(listOf("© Jane Doe, CC BY", null), pool.items.map { it.credit })
+        assertEquals(listOf("© Jane Doe, CC BY", null), copied.items.map { it.credit })
+    }
 }

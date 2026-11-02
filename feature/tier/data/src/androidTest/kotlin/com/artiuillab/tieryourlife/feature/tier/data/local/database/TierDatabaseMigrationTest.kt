@@ -428,6 +428,39 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    // Nothing was credited before credits existed: every card comes through as it was, credited to nobody.
+    @Test
+    fun migration15To16_keepsEveryCard_creditedToNobody() {
+        helper.createDatabase(TEST_DB, 15).apply {
+            execSQL(
+                "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, publishedFingerprint, " +
+                    "authorName, category, coverImageUrl, coverImageUrls, topicId, topicName, newTopicName, " +
+                    "takenFrom, rankingOf, uid, arrivedFrom, editedAt, favouritedAt, anonymous, play) " +
+                    "VALUES (1, 'Animals', NULL, 'WRAP', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, " +
+                    "NULL, NULL, 'board-1', NULL, 5, NULL, 0, NULL)",
+            )
+            execSQL(
+                "INSERT INTO tiers (id, tierListId, position, label, colorLight, colorDark, isPool, caption, uid) " +
+                    "VALUES (1, 1, 0, 'Unranked', '#DAD7E0', '#46464F', 1, NULL, 'tier-1')",
+            )
+            execSQL(
+                "INSERT INTO tier_items (id, tierId, position, title, imageUrl, source, deletedAt, uid) " +
+                    "VALUES (1, 1, 0, 'Red fox', 'https://example.test/fox.jpg', 'TMDB', NULL, 'card-1')",
+            )
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 16, true, MIGRATION_15_16)
+
+        migratedDb.query("SELECT title, imageUrl, uid, credit FROM tier_items WHERE id = 1").use {
+            check(it.moveToFirst())
+            assertEquals("Red fox", it.getString(0))
+            assertEquals("https://example.test/fox.jpg", it.getString(1))
+            assertEquals("card-1", it.getString(2))
+            assertTrue("credited to nobody", it.isNull(3))
+        }
+    }
+
     private fun editedAt(db: androidx.sqlite.db.SupportSQLiteDatabase): Long =
         db.query("SELECT editedAt FROM tier_lists WHERE id = 1").use {
             check(it.moveToFirst())

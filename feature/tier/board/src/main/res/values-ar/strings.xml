@@ -94,6 +94,7 @@
     <string name="tier_detail_move_sheet_remove_subtitle">يمكن التراجع عنه فورًا بعد ذلك</string>
     <string name="tier_detail_move_sheet_remove_title">إزالة من القائمة</string>
     <string name="tier_detail_move_sheet_subtitle">النقل إلى مستوى</string>
+    <string name="tier_detail_move_sheet_photo_credit">الصورة: %1$s</string>
     <string name="tier_detail_not_found">تعذّر العثور على القائمة.</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="zero">المجمّع · لا شيء غير مصنَّف</item>

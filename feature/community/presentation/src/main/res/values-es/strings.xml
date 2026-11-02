@@ -297,4 +297,6 @@
     <string name="community_replaced_yours">Tu versión se reemplazó por la clasificación de %1$s</string>
     <string name="community_replaced_yours_unnamed">Tu versión se reemplazó por esta clasificación</string>
     <string name="community_action_undo">Deshacer</string>
+    <string name="community_picture_credits">Créditos de las imágenes</string>
+    <string name="community_picture_credit_line">%1$s — %2$s</string>
 </resources>

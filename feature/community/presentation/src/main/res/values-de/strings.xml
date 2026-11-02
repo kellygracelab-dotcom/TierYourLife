@@ -291,4 +291,6 @@
     <string name="community_replaced_yours">Deine Version durch das Ranking von %1$s ersetzt</string>
     <string name="community_replaced_yours_unnamed">Deine Version durch dieses Ranking ersetzt</string>
     <string name="community_action_undo">Rückgängig</string>
+    <string name="community_picture_credits">Bildnachweise</string>
+    <string name="community_picture_credit_line">%1$s — %2$s</string>
 </resources>

@@ -82,6 +82,7 @@
     <string name="tier_detail_move_sheet_remove_subtitle">Se puede deshacer justo después</string>
     <string name="tier_detail_move_sheet_remove_title">Quitar de la lista</string>
     <string name="tier_detail_move_sheet_subtitle">Mover a un nivel</string>
+    <string name="tier_detail_move_sheet_photo_credit">Foto: %1$s</string>
     <string name="tier_detail_not_found">No se encontró la lista.</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Montón · %d sin clasificar</item>

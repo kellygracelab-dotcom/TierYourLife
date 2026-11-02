@@ -315,4 +315,6 @@
     <string name="community_replaced_yours">استُبدلت نسختك بترتيب %1$s</string>
     <string name="community_replaced_yours_unnamed">استُبدلت نسختك بهذا الترتيب</string>
     <string name="community_action_undo">تراجع</string>
+    <string name="community_picture_credits">حقوق الصور</string>
+    <string name="community_picture_credit_line">%1$s — %2$s</string>
 </resources>

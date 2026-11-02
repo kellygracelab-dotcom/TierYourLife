@@ -144,6 +144,8 @@ fun TierDetailScreenContent(
     poolNote: (@Composable () -> Unit)? = null,
     /** On a tablet held upright, the line under the title that takes [belowTopBar]'s place: who made it, in which section. */
     titleSubline: (@Composable () -> Unit)? = null,
+    /** Under the last row, scrolling with them. */
+    footer: (@Composable () -> Unit)? = null,
 ) {
     // Beside the board once there is room. Held back on a short window too: a
     // phone in landscape is wide enough for the column and too short for the board.
@@ -174,6 +176,7 @@ fun TierDetailScreenContent(
                 barExtras = barExtras,
                 poolNote = poolNote,
                 titleSubline = titleSubline,
+                footer = footer,
                 indexBeside = showsIndex,
             )
         }
@@ -197,6 +200,7 @@ private fun TierDetailPane(
     barExtras: (@Composable RowScope.(BoardBar) -> Unit)?,
     poolNote: (@Composable () -> Unit)?,
     titleSubline: (@Composable () -> Unit)?,
+    footer: (@Composable () -> Unit)?,
     indexBeside: Boolean,
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
@@ -236,6 +240,7 @@ private fun TierDetailPane(
                     barExtras = barExtras,
                     poolNote = poolNote,
                     titleSubline = titleSubline,
+                    footer = footer,
                     indexBeside = indexBeside,
                 )
             }
@@ -268,6 +273,7 @@ private fun TierScreenBody(
     barExtras: (@Composable RowScope.(BoardBar) -> Unit)? = null,
     poolNote: (@Composable () -> Unit)? = null,
     titleSubline: (@Composable () -> Unit)? = null,
+    footer: (@Composable () -> Unit)? = null,
     indexBeside: Boolean = false,
 ) {
     val onBack = actions.onBack
@@ -531,6 +537,7 @@ private fun TierScreenBody(
                         rankedTiers = rankedTiers,
                         onSelect = { itemId -> chooserItemId = itemId },
                         modifier = Modifier.weight(1f),
+                        footer = footer,
                     )
 
                     if (pool != null && !glanceable) {
@@ -629,6 +636,10 @@ private fun TierScreenBody(
                                 onEditTier = { tierId -> editingTierId = tierId },
                                 poolHasCards = pool?.items?.isNotEmpty() == true,
                             )
+                        }
+
+                        if (footer != null) {
+                            item { footer() }
                         }
                     }
 

@@ -86,6 +86,7 @@
     <string name="tier_detail_move_sheet_remove_subtitle">Одразу після можна скасувати</string>
     <string name="tier_detail_move_sheet_remove_title">Видалити зі списку</string>
     <string name="tier_detail_move_sheet_subtitle">Перемістити до рівня</string>
+    <string name="tier_detail_move_sheet_photo_credit">Фото: %1$s</string>
     <string name="tier_detail_not_found">Список не знайдено.</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Пул · %d без оцінки</item>

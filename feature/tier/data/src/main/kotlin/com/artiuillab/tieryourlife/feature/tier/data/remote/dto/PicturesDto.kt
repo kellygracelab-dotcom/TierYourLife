@@ -22,6 +22,8 @@ data class PictureHitDto(
     val thumbUrl: String? = null,
     val source: String = "",
     val kind: String = "",
+    /** Who the picture's license asks to be named; absent when it asks for nobody. */
+    val credit: String? = null,
 )
 
 private const val WEB_SOURCE = "web"
@@ -35,6 +37,7 @@ fun PicturesDto.toDomain(): CatalogueSearchPage = CatalogueSearchPage(
             imageUrl = hit.imageUrl,
             thumbUrl = hit.thumbUrl,
             fromWeb = hit.source == WEB_SOURCE,
+            credit = hit.credit?.trim()?.takeIf { it.isNotEmpty() },
         )
     },
     hasMore = hasMore,

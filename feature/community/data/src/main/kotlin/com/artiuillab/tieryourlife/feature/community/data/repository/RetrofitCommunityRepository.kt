@@ -488,7 +488,7 @@ internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
         )
     },
     items = items.mapIndexed { index, item ->
-        TierItem(id = index.toLong(), title = item.title, imageUrl = item.imageUrl)
+        TierItem(id = index.toLong(), title = item.title, imageUrl = item.imageUrl, credit = item.credit)
     },
     // Null on snapshots published before this was remembered: "arrangement
     // unknown", not "ranked nothing".
@@ -531,6 +531,7 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
                     imageUrl = item.imageUrl?.takeIf { it.startsWith("https://") },
                     pictureId = images.pictureIdOf(item.imageUrl)?.takeIf { it in uploaded },
                     tierIndex = where,
+                    credit = item.credit,
                 )
             }
         }
@@ -607,7 +608,7 @@ internal fun PublishedList.toDto() = PublishedListDto(
     updatedAt = summary.updatedAtMillis,
     tiers = tiers.map { PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark) },
     items = items.mapIndexed { index, item ->
-        PublishedItemDto(title = item.title, imageUrl = item.imageUrl, tierIndex = arrangement.getOrNull(index))
+        PublishedItemDto(title = item.title, imageUrl = item.imageUrl, tierIndex = arrangement.getOrNull(index), credit = item.credit)
     },
     anonymous = summary.anonymous,
     topicId = summary.topicId,

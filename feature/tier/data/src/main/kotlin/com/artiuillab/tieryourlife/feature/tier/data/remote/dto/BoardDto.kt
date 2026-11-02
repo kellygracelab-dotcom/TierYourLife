@@ -56,6 +56,8 @@ data class KeptItemDto(
     val imageUrl: String? = null,
     val source: String = "MANUAL",
     val deletedAt: Long? = null,
+    /** Who the picture's license asks to be named. Not in the fingerprint: an older app rewriting the board drops it. */
+    val credit: String? = null,
 )
 
 /** What a board looks like in the index: enough to decide whether to fetch it. */

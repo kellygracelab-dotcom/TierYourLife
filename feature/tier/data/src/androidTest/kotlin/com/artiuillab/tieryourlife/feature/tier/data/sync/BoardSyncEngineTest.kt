@@ -144,6 +144,20 @@ class BoardSyncEngineTest {
     // A board written down as anything but what is stored here goes straight
     // back up, and to the site that is a change it did not make.
     @Test
+    fun aCardsCredit_goesUpWithIt_andComesDownOnAnotherPhone() = runBlocking {
+        givenLocalBoard("Animals", credit = "© Jane Doe, CC BY")
+        boards.server["remote-1"] = theirBoard("remote-1", title = "Birds", revision = 2).let { board ->
+            board.copy(items = board.items.map { it.copy(credit = "© Ann Lee, CC BY-SA") })
+        }
+
+        engine().sync()
+
+        assertEquals(listOf("© Jane Doe, CC BY"), boards.kept.single().second.items.map { it.credit })
+        val arrived = dao.boardByUid("remote-1")!!
+        assertEquals(listOf("© Ann Lee, CC BY-SA"), dao.itemsOf(arrived.id).map { it.credit })
+    }
+
+    @Test
     fun aBoardJustAdopted_isNotSentBack_evenOnceItsPictureArrives() = runBlocking {
         boards.server["remote-1"] = theirBoard("remote-1", title = "Games", revision = 4, pictureId = "poster.jpg")
         val engine = engine(vault = Holding("poster.jpg"), connection = Unmetered)
@@ -409,14 +423,14 @@ class BoardSyncEngineTest {
         )
     }
 
-    private suspend fun givenLocalBoard(title: String, publishedId: String? = null): String {
+    private suspend fun givenLocalBoard(title: String, publishedId: String? = null, credit: String? = null): String {
         val board = TierListEntity(title = title, publishedId = publishedId)
         dao.addBoard(
             board,
             listOf(
                 IncomingTier(
                     tier = TierEntity(tierListId = 0, position = 0, label = "S", colorLight = "#111111", colorDark = "#EEEEEE"),
-                    items = listOf(TierItemEntity(tierId = 0, position = 0, title = "Alien", imageUrl = null)),
+                    items = listOf(TierItemEntity(tierId = 0, position = 0, title = "Alien", imageUrl = null, credit = credit)),
                 ),
             ),
         )

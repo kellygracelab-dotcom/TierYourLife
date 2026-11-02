@@ -7,4 +7,6 @@ data class TierItem(
     val source: TierItemSource = TierItemSource.MANUAL,
     /** The same on every device, unlike [id]; what a saved game names a card by. Empty where nothing keeps one. */
     val uid: String = "",
+    /** Who the picture's license asks to be named, as the search found it; set once, never edited. */
+    val credit: String? = null,
 )

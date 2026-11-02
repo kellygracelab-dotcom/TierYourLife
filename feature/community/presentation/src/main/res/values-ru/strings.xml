@@ -303,4 +303,6 @@
     <string name="community_replaced_yours">Ваша версия заменена рейтингом: %1$s</string>
     <string name="community_replaced_yours_unnamed">Ваша версия заменена этим рейтингом</string>
     <string name="community_action_undo">Отменить</string>
+    <string name="community_picture_credits">Авторы изображений</string>
+    <string name="community_picture_credit_line">%1$s — %2$s</string>
 </resources>

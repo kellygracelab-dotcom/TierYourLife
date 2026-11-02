@@ -82,6 +82,7 @@
     <string name="tier_detail_move_sheet_remove_subtitle">Annulable juste après</string>
     <string name="tier_detail_move_sheet_remove_title">Retirer de la liste</string>
     <string name="tier_detail_move_sheet_subtitle">Déplacer vers un rang</string>
+    <string name="tier_detail_move_sheet_photo_credit">Photo : %1$s</string>
     <string name="tier_detail_not_found">Liste introuvable.</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Réservoir · %d non classé</item>

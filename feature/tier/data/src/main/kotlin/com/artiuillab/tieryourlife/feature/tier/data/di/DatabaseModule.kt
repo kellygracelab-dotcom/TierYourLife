@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_10
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_11_12
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_12_13
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_14_15
+import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_15_16
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_1_2
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_2_3
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_3_4
@@ -41,7 +42,7 @@ object DatabaseModule {
         .addMigrations(
             MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6,
             MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12,
-            MIGRATION_12_13, MIGRATION_14_15,
+            MIGRATION_12_13, MIGRATION_14_15, MIGRATION_15_16,
         )
         // No destructive fallback of any kind. Opening a newer database with an
         // older build used to drop every table without a word, which turns

@@ -50,6 +50,7 @@ interface TierDao {
                     title = item.title,
                     imageUrl = item.imageUrl,
                     source = "TMDB",
+                    credit = item.credit,
                 ),
             )
         }
@@ -101,6 +102,7 @@ interface TierDao {
         title = item.title,
         imageUrl = item.imageUrl,
         source = if (item.imageUrl?.startsWith("http") == true) "TMDB" else "MANUAL",
+        credit = item.credit,
     )
 
     @Query("SELECT COUNT(*) FROM tier_lists WHERE publishedId IS NOT NULL AND deletedAt IS NULL")

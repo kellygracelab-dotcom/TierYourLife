@@ -80,6 +80,7 @@ private fun TierItemEntity.toDomain(): TierItem = TierItem(
     imageUrl = imageUrl,
     source = source.toTierItemSource(),
     uid = uid,
+    credit = credit,
 )
 
 internal fun String.toTierItemSource(): TierItemSource =

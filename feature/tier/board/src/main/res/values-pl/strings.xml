@@ -86,6 +86,7 @@
     <string name="tier_detail_move_sheet_remove_subtitle">Można cofnąć zaraz potem</string>
     <string name="tier_detail_move_sheet_remove_title">Usuń z listy</string>
     <string name="tier_detail_move_sheet_subtitle">Przenieś do poziomu</string>
+    <string name="tier_detail_move_sheet_photo_credit">Zdjęcie: %1$s</string>
     <string name="tier_detail_not_found">Nie znaleziono listy.</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Pula · %d nieocenione</item>
