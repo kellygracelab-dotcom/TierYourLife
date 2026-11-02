@@ -68,10 +68,10 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.matchesSearch
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingActions
-import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.components.LocalOwnFace
 import com.artiuillab.tieryourlife.feature.community.presentation.components.OwnFaceViewModel
+import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingActions
+import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedViewModel
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingTab
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
