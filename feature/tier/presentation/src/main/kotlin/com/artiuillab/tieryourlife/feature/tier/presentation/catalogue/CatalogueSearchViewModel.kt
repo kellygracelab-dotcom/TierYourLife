@@ -111,30 +111,49 @@ class CatalogueSearchViewModel @Inject constructor(
         }
     }
 
+    /**
+     * The quick catalogues first, on screen at once; then, when the quick
+     * answer says the slow ones or the web can add something, their new
+     * results below, while the spinner under the grid says more is coming.
+     */
     private suspend fun performSearch(trimmedQuery: String) {
         _state.value = CatalogueSearchUiState.Loading
         searchedQuery = trimmedQuery
         loadedPage = FIRST_PAGE
+        val language = appPreferences.languageTag()
 
-        repository.search(trimmedQuery, appPreferences.languageTag(), FIRST_PAGE, _scope.value, everywhere)
-            .fold(
-                onSuccess = { page ->
-                    _state.value = if (page.items.isEmpty()) {
-                        CatalogueSearchUiState.Empty(
-                            query = trimmedQuery,
-                            searchedEverywhere = everywhere,
-                            notice = page.notice,
-                        )
-                    } else {
-                        CatalogueSearchUiState.Success(
-                            items = page.items,
-                            canLoadMore = page.hasMore,
-                            notice = page.notice,
-                        )
-                    }
-                },
-                onFailure = { _state.value = CatalogueSearchUiState.Error },
-            )
+        val quick = repository.search(trimmedQuery, language, FIRST_PAGE, _scope.value, everywhere, quick = true)
+        val first = quick.getOrNull()
+        if (first == null || !first.rest) {
+            show(trimmedQuery, quick)
+            return
+        }
+        if (first.items.isNotEmpty()) show(trimmedQuery, quick, restComing = true)
+
+        val whole = repository.search(trimmedQuery, language, FIRST_PAGE, _scope.value, everywhere)
+        when {
+            _state.value !is CatalogueSearchUiState.Success -> show(trimmedQuery, if (whole.isSuccess) whole else quick)
+            whole.isSuccess -> append(FIRST_PAGE, whole.getOrThrow())
+            else -> stopWaiting()
+        }
+    }
+
+    private fun show(query: String, answer: Result<CatalogueSearchPage>, restComing: Boolean = false) {
+        _state.value = answer.fold(
+            onSuccess = { page ->
+                if (page.items.isEmpty()) {
+                    CatalogueSearchUiState.Empty(query = query, searchedEverywhere = everywhere, notice = page.notice)
+                } else {
+                    CatalogueSearchUiState.Success(
+                        items = page.items,
+                        canLoadMore = page.hasMore,
+                        loadingMore = restComing,
+                        notice = page.notice,
+                    )
+                }
+            },
+            onFailure = { CatalogueSearchUiState.Error },
+        )
     }
 
     private fun append(page: Int, loaded: CatalogueSearchPage) {
@@ -145,6 +164,7 @@ class CatalogueSearchViewModel @Inject constructor(
             items = shown.items + loaded.items.filterNot { it.id in alreadyShown },
             canLoadMore = loaded.hasMore,
             loadingMore = false,
+            notice = loaded.notice ?: shown.notice,
         )
     }
 

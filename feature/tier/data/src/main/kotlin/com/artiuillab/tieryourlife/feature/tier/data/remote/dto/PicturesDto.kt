@@ -10,6 +10,7 @@ data class PicturesDto(
     val items: List<PictureHitDto> = emptyList(),
     val hasMore: Boolean = false,
     val notices: List<String> = emptyList(),
+    val rest: Boolean = false,
 )
 
 @Serializable
@@ -37,6 +38,7 @@ fun PicturesDto.toDomain(): CatalogueSearchPage = CatalogueSearchPage(
         )
     },
     hasMore = hasMore,
+    rest = rest,
     // Codes this build does not know are for a newer one.
     notice = notices.firstNotNullOfOrNull { code ->
         when (code) {

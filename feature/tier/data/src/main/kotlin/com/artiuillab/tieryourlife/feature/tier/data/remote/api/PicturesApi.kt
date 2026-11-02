@@ -14,5 +14,6 @@ interface PicturesApi {
         @Query("lang") language: String,
         @Query("page") page: Int,
         @Query("web") web: String? = null,
+        @Query("part") part: String? = null,
     ): PicturesDto
 }

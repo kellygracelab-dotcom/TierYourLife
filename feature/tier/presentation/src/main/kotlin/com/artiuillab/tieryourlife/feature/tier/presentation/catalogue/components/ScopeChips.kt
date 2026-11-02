@@ -23,7 +23,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.Catalogue
 
 /**
  * What to search in, quietly: outlined chips, only the chosen one filled.
- * The board's own scope comes first and "All" after it, and the order holds
+ * "All" comes first and the board's own scope after it, and the order holds
  * still while the person moves between them.
  */
 @Composable
@@ -33,7 +33,9 @@ internal fun ScopeChips(
     onSelect: (PictureScope) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val order = remember(first) { listOf(first) + PictureScope.entries.filter { it != first } }
+    val order = remember(first) {
+        (listOf(PictureScope.All, first) + PictureScope.entries).distinct()
+    }
     LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 16.dp),

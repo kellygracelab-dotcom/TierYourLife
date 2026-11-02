@@ -55,6 +55,16 @@ class ServerCatalogueSearchTest {
     }
 
     @Test
+    fun aQuickSearch_asksForTheQuickPart_andHearsWhetherThereIsMore() = runBlocking {
+        val api = FakePicturesApi(PicturesDto(rest = true))
+
+        val page = search(api).search("dune", "en", 1, PictureScope.Books, quick = true).getOrThrow()
+
+        assertTrue(page.rest)
+        assertEquals("quick", api.parts.single())
+    }
+
+    @Test
     fun aServerThatCannotBeReached_leavesTheCataloguesThePhoneCanAsk() = runBlocking {
         val tmdb = OneFilmTmdb()
 
@@ -83,9 +93,11 @@ private data class Asked(val query: String, val scope: String, val language: Str
 
 private class FakePicturesApi(private val answer: PicturesDto = PicturesDto(), private val failure: IOException? = null) : PicturesApi {
     val asked = mutableListOf<Asked>()
+    val parts = mutableListOf<String?>()
 
-    override suspend fun search(query: String, scope: String, language: String, page: Int, web: String?): PicturesDto {
+    override suspend fun search(query: String, scope: String, language: String, page: Int, web: String?, part: String?): PicturesDto {
         asked += Asked(query, scope, language, page, web)
+        parts += part
         failure?.let { throw it }
         return answer
     }
