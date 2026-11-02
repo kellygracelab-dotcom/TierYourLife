@@ -116,7 +116,9 @@ private fun stepFor(local: LocalBoard, remote: RemoteBoard?, synced: SyncedBoard
     }
 
     val changedHere = local.fingerprint != synced.fingerprint
-    val changedThere = remote.revision != synced.revision
+    // A new revision holding what was last agreed is an echo, a re-save of the
+    // same board, not news; the site reads it the same way.
+    val changedThere = remote.revision != synced.revision && remote.fingerprint != synced.fingerprint
 
     return when {
         changedHere && changedThere -> SyncStep.KeepBoth(local.uid, basedOn = remote.revision)

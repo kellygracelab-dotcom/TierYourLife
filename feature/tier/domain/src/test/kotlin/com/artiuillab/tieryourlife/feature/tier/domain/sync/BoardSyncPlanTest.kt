@@ -55,6 +55,36 @@ class BoardSyncPlanTest {
         assertEquals(listOf(SyncStep.KeepBoth(board, basedOn = 4)), steps)
     }
 
+    // Seen on the site: an echo of the agreed board, under a new revision,
+    // turned an edit made here into a copy carrying older content.
+    @Test
+    fun `a re-save of the agreed board is no change there, so an edit here simply goes up`() {
+        val steps = planSync(local("bbb"), remote(revision = 4, fingerprint = "aaa"), synced(revision = 3, fingerprint = "aaa"))
+
+        assertEquals(listOf(SyncStep.Update(board, basedOn = 4)), steps)
+    }
+
+    @Test
+    fun `a re-save of the agreed board with nothing changed here only takes the new number`() {
+        val steps = planSync(local("aaa"), remote(revision = 4, fingerprint = "aaa"), synced(revision = 3, fingerprint = "aaa"))
+
+        assertEquals(listOf(SyncStep.Remember(board, revision = 4)), steps)
+    }
+
+    @Test
+    fun `a new revision with other content is still a change there`() {
+        val steps = planSync(local("bbb"), remote(revision = 4, fingerprint = "ccc"), synced(revision = 3, fingerprint = "aaa"))
+
+        assertEquals(listOf(SyncStep.KeepBoth(board, basedOn = 4)), steps)
+    }
+
+    @Test
+    fun `a new revision with other content comes down when nothing changed here`() {
+        val steps = planSync(local("aaa"), remote(revision = 4, fingerprint = "ccc"), synced(revision = 3, fingerprint = "aaa"))
+
+        assertEquals(listOf(SyncStep.Restore(board)), steps)
+    }
+
     @Test
     fun `a board on the account and not on the phone is brought down`() {
         val steps = planSync(local = emptyList(), remote = remote(), synced = emptyList())
