@@ -78,6 +78,7 @@
     <string name="tier_detail_move_sheet_remove_subtitle">Can be undone right after</string>
     <string name="tier_detail_move_sheet_remove_title">Remove from list</string>
     <string name="tier_detail_move_sheet_subtitle">Move to a tier</string>
+    <string name="tier_detail_move_sheet_photo_credit">Photo: %1$s</string>
     <string name="tier_detail_not_found">Tier list not found.</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Pool · %d unranked</item>

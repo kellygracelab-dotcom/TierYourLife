@@ -342,6 +342,7 @@ class BoardSyncEngine @Inject constructor(
                     imageUrl = item.imageUrl,
                     source = item.source,
                     deletedAt = item.deletedAt,
+                    credit = item.credit,
                 )
             },
         )
@@ -421,6 +422,7 @@ private fun KeptBoardDto.tiers(
                     source = item.source,
                     deletedAt = item.deletedAt,
                     uid = idFor(item.uid),
+                    credit = item.credit,
                 )
             },
         )

@@ -65,6 +65,7 @@ fun RankedList(
     rankedTiers: List<Tier>,
     onSelect: (itemId: Long) -> Unit,
     modifier: Modifier = Modifier,
+    footer: (@Composable () -> Unit)? = null,
 ) {
     val entries = remember(rankedTiers) { buildRankedEntries(rankedTiers) }
 
@@ -99,6 +100,9 @@ fun RankedList(
                         color = MaterialTheme.colorScheme.outlineVariant,
                     )
                 }
+            }
+            if (footer != null) {
+                item { footer() }
             }
         }
     }

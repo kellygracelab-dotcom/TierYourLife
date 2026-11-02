@@ -11,8 +11,11 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.OwnPictures
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Test
 
@@ -127,6 +130,37 @@ class PublishRequestTest {
         val basedOn = networkJson.decodeFromString(PublishedListDto.serializer(), json).toDomain().summary.basedOn
 
         assertEquals(BasedOn(id = "src", title = "Films", authorName = "Olena", authorUid = "u-7"), basedOn)
+    }
+
+    @Test
+    fun `a credited picture is credited in the feed, and an uncredited one sends no key`() {
+        val credited = board.copy(
+            tiers = listOf(tier(10, "S", TierItem(1, "Red fox", poster, credit = "© Jane Doe, CC BY"), TierItem(2, "Badger", poster))),
+        )
+
+        val body = networkJson.parseToJsonElement(
+            networkJson.encodeToString(PublishListRequestDto.serializer(), credited.toRequest(Pictures, uploaded = emptySet())),
+        ).jsonObject
+        val items = body.getValue("items").jsonArray.map { it.jsonObject }
+
+        assertEquals(JsonPrimitive("© Jane Doe, CC BY"), items[0]["credit"])
+        assertFalse("credit" in items[1])
+    }
+
+    // What an opened list is kept as reads back through the same mapping, so a credit must survive both ways.
+    @Test
+    fun `a published list's credits come back, and stay through the copy kept of it`() {
+        val dto = PublishedListDto(
+            id = "p1",
+            title = "Animals",
+            authorName = "Ann",
+            items = listOf(PublishedItemDto("Red fox", poster, credit = "© Jane Doe, CC BY"), PublishedItemDto("Badger", null)),
+        )
+
+        val published = dto.toDomain()
+
+        assertEquals(listOf("© Jane Doe, CC BY", null), published.items.map { it.credit })
+        assertEquals(listOf("© Jane Doe, CC BY", null), published.toDto().toDomain().items.map { it.credit })
     }
 
     @Test

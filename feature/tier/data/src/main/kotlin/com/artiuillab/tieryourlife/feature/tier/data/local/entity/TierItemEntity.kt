@@ -39,4 +39,6 @@ data class TierItemEntity(
      */
     @ColumnInfo(defaultValue = "''")
     val uid: String = UUID.randomUUID().toString(),
+    /** Who the picture's license asks to be named; written once, when the card is made from a search hit. */
+    val credit: String? = null,
 )

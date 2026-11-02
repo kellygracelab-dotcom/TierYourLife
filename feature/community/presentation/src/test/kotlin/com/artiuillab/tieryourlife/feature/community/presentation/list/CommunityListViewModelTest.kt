@@ -53,7 +53,7 @@ private val published = PublishedList(
         Tier(id = 0, label = "S", colorLight = "#B03A32", colorDark = "#F1948C", items = emptyList()),
         Tier(id = 1, label = "A", colorLight = "#C06A25", colorDark = "#E9A867", items = emptyList()),
     ),
-    items = listOf(TierItem(0, "Hereditary", null), TierItem(1, "Moonlight", "https://i/2.jpg")),
+    items = listOf(TierItem(0, "Hereditary", null), TierItem(1, "Moonlight", "https://i/2.jpg", credit = "© Jane Doe, CC BY")),
 )
 
 class CommunityListViewModelTest {
@@ -300,6 +300,7 @@ class CommunityListViewModelTest {
         assertEquals("Olena M.", template.authorName)
         assertEquals(2, template.items.size)
         assertEquals(2, template.tiers.size)
+        assertEquals(listOf(null, "© Jane Doe, CC BY"), template.items.map { it.credit })
     }
 
     @Test

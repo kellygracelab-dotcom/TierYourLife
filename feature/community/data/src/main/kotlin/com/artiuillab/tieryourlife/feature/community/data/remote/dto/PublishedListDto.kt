@@ -90,6 +90,8 @@ data class PublishedItemDto(
      * published before this existed.
      */
     val tierIndex: Int? = null,
+    /** Who the picture's license asks to be named; absent when it asks for nobody. */
+    val credit: String? = null,
 )
 
 @Serializable

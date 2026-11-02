@@ -61,10 +61,10 @@ class RoomTierRepository internal constructor(
                 caption = tier.caption,
                 colorLight = tier.colorLight,
                 colorDark = tier.colorDark,
-                items = tier.items.map { NewPoolItem(it.title, it.imageUrl) },
+                items = tier.items.map { NewPoolItem(it.title, it.imageUrl, it.credit) },
             )
         },
-        items = items.map { NewPoolItem(it.title, it.imageUrl) },
+        items = items.map { NewPoolItem(it.title, it.imageUrl, it.credit) },
     )
 
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) {
@@ -140,7 +140,7 @@ class RoomTierRepository internal constructor(
             val url = draft.imageUrl
             // A copy that could not be made leaves the address: a picture that may go is better than none.
             val imageUrl = if (draft.keepCopy && url != null) imageStore.downloadToInternalStorage(url) ?: url else url
-            NewPoolItem(title = draft.title, imageUrl = imageUrl)
+            NewPoolItem(title = draft.title, imageUrl = imageUrl, credit = draft.credit)
         }
         dao.addItemsToPool(tierListId, kept)
     }

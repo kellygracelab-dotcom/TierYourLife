@@ -240,6 +240,14 @@ class BoardFingerprintTest {
         assertEquals(plain, BoardFingerprint.canonicalPlay(plain.replace("}", ""","scope":[]}""")))
     }
 
+    // The site leaves credit out as well, and an older app rewriting the board drops it: neither is a change.
+    @Test
+    fun `a picture's credit does not reach the fingerprint`() {
+        val credited = items.map { it.copy(credit = "© Jane Doe, CC BY") }
+
+        assertEquals(fingerprint(), fingerprint(items = credited))
+    }
+
     @Test
     fun `a saved game changes it, and text that is no game leaves it as it was`() {
         assertNotEquals(fingerprint(), fingerprint(board = board.copy(play = game)))

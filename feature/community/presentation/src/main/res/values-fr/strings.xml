@@ -299,4 +299,6 @@
     <string name="community_replaced_yours">Votre version remplacée par le classement de %1$s</string>
     <string name="community_replaced_yours_unnamed">Votre version remplacée par ce classement</string>
     <string name="community_action_undo">Annuler</string>
+    <string name="community_picture_credits">Crédits photo</string>
+    <string name="community_picture_credit_line">%1$s — %2$s</string>
 </resources>

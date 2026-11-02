@@ -78,6 +78,7 @@
     <string name="tier_detail_move_sheet_remove_subtitle">Hemen ardından geri alınabilir</string>
     <string name="tier_detail_move_sheet_remove_title">Listeden kaldır</string>
     <string name="tier_detail_move_sheet_subtitle">Bir seviyeye taşı</string>
+    <string name="tier_detail_move_sheet_photo_credit">Fotoğraf: %1$s</string>
     <string name="tier_detail_not_found">Liste bulunamadı.</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Havuz · %d sıralanmadı</item>

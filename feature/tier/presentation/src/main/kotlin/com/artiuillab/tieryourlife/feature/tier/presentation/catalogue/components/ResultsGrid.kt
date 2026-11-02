@@ -138,6 +138,7 @@ private fun ResultCell(item: CatalogueItem, selected: Boolean, onToggle: () -> U
                     overflow = TextOverflow.Ellipsis,
                 )
             }
+            item.credit?.let { PictureCredit(it) }
         }
     }
 }

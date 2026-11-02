@@ -302,6 +302,7 @@ fun CommunityListScreenContent(
                                     onOpenAuthor = { onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl) },
                                 )
                             },
+                            footer = loaded.list.creditedCards().takeIf { it.isNotEmpty() }?.let { cards -> { PictureCredits(cards) } },
                         )
                     }
                 }

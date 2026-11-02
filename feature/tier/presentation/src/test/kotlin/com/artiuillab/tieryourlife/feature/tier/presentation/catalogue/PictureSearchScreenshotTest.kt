@@ -86,6 +86,24 @@ class PictureSearchScreenshotTest {
         )
     }
 
+    @Test
+    fun aPhotoThatAsksForCredit_namesItsAuthorUnderTheResult() = capture("picture_search_credit") {
+        CatalogueSearchScreenContent(
+            state = CatalogueSearchUiState.Success(
+                items = listOf(
+                    CatalogueItem("inaturalist:42069", "Red Fox", "Vulpes vulpes", "https://i/1.jpg", credit = "© Jane Doe, CC BY"),
+                    CatalogueItem("inaturalist:41", "Gray Wolf", "Canis lupus", "https://i/2.jpg", credit = "© Ivan Petrenko, CC BY-SA"),
+                    CatalogueItem("wikidata:Q8331", "Fox", "Wikidata", "https://i/3.jpg"),
+                ),
+            ),
+            query = "fox",
+            onQueryChange = {},
+            onSearchClick = {},
+            listTitle = "Animals I Could Beat in a Fight",
+            scopes = ScopeChoice(first = PictureScope.Animals, selected = PictureScope.Animals, onSelect = {}),
+        )
+    }
+
     private companion object {
         val OPTIONS = RoborazziOptions(compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0.01F))
     }

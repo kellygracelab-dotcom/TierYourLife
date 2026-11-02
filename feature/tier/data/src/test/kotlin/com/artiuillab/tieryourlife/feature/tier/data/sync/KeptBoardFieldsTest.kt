@@ -3,7 +3,9 @@ package com.artiuillab.tieryourlife.feature.tier.data.sync
 import com.artiuillab.tieryourlife.core.network.networkJson
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -63,6 +65,21 @@ class KeptBoardFieldsTest {
         assertNull(board.play)
         assertFalse("anonymous" in body)
         assertFalse("play" in body)
+    }
+
+    @Test
+    fun `a card's credit comes down with it, and a card without one sends no key`() {
+        val board = networkJson.decodeFromString(
+            KeptBoardDto.serializer(),
+            """{"uid":"b-3","revision":1,"title":"Animals","items":[""" +
+                """{"uid":"c-1","tierUid":"t-1","position":0,"title":"Red fox","credit":"© Jane Doe, CC BY"},""" +
+                """{"uid":"c-2","tierUid":"t-1","position":1,"title":"Badger"}]}""",
+        )
+
+        assertEquals(listOf("© Jane Doe, CC BY", null), board.items.map { it.credit })
+        val sent = board.items.map { networkJson.parseToJsonElement(networkJson.encodeToString(KeptItemDto.serializer(), it)).jsonObject }
+        assertEquals(JsonPrimitive("© Jane Doe, CC BY"), sent[0]["credit"])
+        assertFalse("credit" in sent[1])
     }
 
     @Test

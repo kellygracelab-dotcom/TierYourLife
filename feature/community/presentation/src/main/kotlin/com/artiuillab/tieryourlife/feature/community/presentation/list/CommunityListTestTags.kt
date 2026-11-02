@@ -27,5 +27,6 @@ internal object CommunityListTestTags {
     const val RANKINGS_SHEET = "community_list_rankings_sheet"
     const val RANKING_AUTHOR = "community_list_ranking_author"
     const val WITHDRAW_RANKING = "community_list_withdraw_ranking"
+    const val PICTURE_CREDITS = "community_list_picture_credits"
     fun ranking(uid: String): String = "community_list_ranking_$uid"
 }

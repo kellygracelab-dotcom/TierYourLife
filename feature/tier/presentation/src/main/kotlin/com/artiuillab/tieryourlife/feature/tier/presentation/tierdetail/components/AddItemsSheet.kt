@@ -62,7 +62,9 @@ internal fun AddItemsSheet(
             },
             onConfirmSelection = {
                 onItemsConfirmed(
-                    selectedItems.values.map { PoolItemDraft(title = it.title, imageUrl = it.imageUrl, keepCopy = it.fromWeb) },
+                    selectedItems.values.map {
+                        PoolItemDraft(title = it.title, imageUrl = it.imageUrl, keepCopy = it.fromWeb, credit = it.credit)
+                    },
                 )
             },
             onLoadMore = searchViewModel::loadMore,

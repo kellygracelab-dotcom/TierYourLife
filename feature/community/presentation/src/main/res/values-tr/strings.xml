@@ -293,4 +293,6 @@
     <string name="community_replaced_yours">Sürümün %1$s sıralamasıyla değiştirildi</string>
     <string name="community_replaced_yours_unnamed">Sürümün bu sıralamayla değiştirildi</string>
     <string name="community_action_undo">Geri al</string>
+    <string name="community_picture_credits">Görsel kaynakları</string>
+    <string name="community_picture_credit_line">%1$s — %2$s</string>
 </resources>

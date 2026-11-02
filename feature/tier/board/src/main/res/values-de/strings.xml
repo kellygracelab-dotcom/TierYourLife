@@ -78,6 +78,7 @@
     <string name="tier_detail_move_sheet_remove_subtitle">Lässt sich gleich danach rückgängig machen</string>
     <string name="tier_detail_move_sheet_remove_title">Aus der Liste entfernen</string>
     <string name="tier_detail_move_sheet_subtitle">In eine Stufe verschieben</string>
+    <string name="tier_detail_move_sheet_photo_credit">Foto: %1$s</string>
     <string name="tier_detail_not_found">Liste wurde nicht gefunden.</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Pool · %d nicht eingestuft</item>

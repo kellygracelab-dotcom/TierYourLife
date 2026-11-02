@@ -12,6 +12,7 @@ internal object CatalogueSearchTestTags {
     const val ITEM_SEARCH_BOTTOM_BAR = "tier_detail_item_search_bottom_bar"
     const val ITEM_SEARCH_EVERYWHERE = "tier_detail_item_search_everywhere"
     const val ITEM_SEARCH_NOTICE = "tier_detail_item_search_notice"
+    const val ITEM_SEARCH_CREDIT = "tier_detail_item_search_credit"
     fun itemSearchResult(id: String): String = "tier_detail_item_search_result_$id"
     fun itemSearchScope(id: String): String = "tier_detail_item_search_scope_$id"
 }

@@ -46,6 +46,23 @@ class ServerCatalogueSearchTest {
     }
 
     @Test
+    fun aHitsCredit_comesWithIt_trimmed_andABlankOneIsNone() = runBlocking {
+        val api = FakePicturesApi(
+            PicturesDto(
+                items = listOf(
+                    PictureHitDto(id = "inat:1", title = "Red fox", imageUrl = "https://i/1.jpg", credit = "  © Jane Doe, CC BY "),
+                    PictureHitDto(id = "inat:2", title = "Badger", imageUrl = "https://i/2.jpg", credit = " "),
+                    PictureHitDto(id = "tmdb:3", title = "Fantastic Mr. Fox", imageUrl = "https://t/3.jpg"),
+                ),
+            ),
+        )
+
+        val page = search(api).search("fox", "en", 1, PictureScope.Animals).getOrThrow()
+
+        assertEquals(listOf("© Jane Doe, CC BY", null, null), page.items.map { it.credit })
+    }
+
+    @Test
     fun everywhere_asksAllWithTheWeb_whateverTheScope() = runBlocking {
         val api = FakePicturesApi(PicturesDto())
 

@@ -91,6 +91,7 @@ class RoomTierRepositoryDeleteTest {
         assertEquals("/pictures/moon.jpg", back.imageUrl)
         assertEquals("uid-moon", back.uid)
         assertEquals("GENERATED", back.source)
+        assertEquals("© Jane Doe, CC BY", back.credit)
     }
 
     @Test
@@ -160,7 +161,16 @@ class RoomTierRepositoryDeleteTest {
         tiers += TierEntity(id = POOL, tierListId = LIST, position = 1, label = "Pool", colorLight = "#000000", colorDark = "#000000", isPool = true)
         insertTierItem(TierItemEntity(id = ARRIVAL, tierId = S_TIER, position = 0, title = "Arrival", imageUrl = null))
         insertTierItem(
-            TierItemEntity(id = MOON, tierId = S_TIER, position = 1, title = "Moon", imageUrl = moonImage, source = "GENERATED", uid = "uid-moon"),
+            TierItemEntity(
+                id = MOON,
+                tierId = S_TIER,
+                position = 1,
+                title = "Moon",
+                imageUrl = moonImage,
+                source = "GENERATED",
+                uid = "uid-moon",
+                credit = "© Jane Doe, CC BY",
+            ),
         )
         insertTierItem(TierItemEntity(id = ALIEN, tierId = S_TIER, position = 2, title = "Alien", imageUrl = alienImage))
     }

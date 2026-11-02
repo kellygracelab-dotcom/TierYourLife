@@ -82,6 +82,7 @@
     <string name="tier_detail_move_sheet_remove_subtitle">Dá para desfazer logo em seguida</string>
     <string name="tier_detail_move_sheet_remove_title">Remover da lista</string>
     <string name="tier_detail_move_sheet_subtitle">Mover para um nível</string>
+    <string name="tier_detail_move_sheet_photo_credit">Foto: %1$s</string>
     <string name="tier_detail_not_found">Lista não encontrada.</string>
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="one">Grupo · %d sem classificação</item>

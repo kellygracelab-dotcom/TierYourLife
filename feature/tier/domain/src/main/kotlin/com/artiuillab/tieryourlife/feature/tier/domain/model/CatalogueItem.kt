@@ -9,4 +9,6 @@ data class CatalogueItem(
     val thumbUrl: String? = null,
     /** Found by the web search: someone else's site, so a card keeps its own copy rather than the address. */
     val fromWeb: Boolean = false,
+    /** Who the picture's license asks to be named, such as "© Jane Doe, CC BY". */
+    val credit: String? = null,
 )

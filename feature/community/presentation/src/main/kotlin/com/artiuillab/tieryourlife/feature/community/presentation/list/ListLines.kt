@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -17,6 +18,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 private val RANK_IT_LINE_HEIGHT = 44.dp
 
@@ -66,5 +69,33 @@ internal fun RankItYourselfLine(modifier: Modifier = Modifier) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
         )
+    }
+}
+
+/** The cards whose picture's license asks for a name, in the author's order. */
+internal fun TierList.creditedCards(): List<TierItem> = tiers.flatMap { it.items }.filter { it.credit != null }
+
+/** Under the last row, quiet: who each credited picture is by, as its license asks. */
+@Composable
+internal fun PictureCredits(cards: List<TierItem>, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, top = 20.dp, end = 8.dp, bottom = 8.dp)
+            .testTag(CommunityListTestTags.PICTURE_CREDITS),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.community_picture_credits),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        cards.forEach { card ->
+            Text(
+                text = stringResource(R.string.community_picture_credit_line, card.title, card.credit.orEmpty()),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
