@@ -25,15 +25,14 @@ class TrashViewModelTest {
 
     private val published = TrashEntry.DeletedList(id = 1, title = "Films", itemCount = 3, deletedAtMillis = 10, publishedId = "pub-1")
     private val private = TrashEntry.DeletedList(id = 2, title = "Games", itemCount = 1, deletedAtMillis = 20)
-    private val card = TrashEntry.DeletedItem(id = 9, title = "Alien", listTitle = "Films", wasInPool = false, deletedAtMillis = 30)
 
     @Test
     fun opening_showsWhatIsInTheTrash() = runBlocking {
-        val viewModel = TrashViewModel(TrashRepository(listOf(published, card)), Community(), FakeAccountRepository(), FakeAppPreferences())
+        val viewModel = TrashViewModel(TrashRepository(listOf(published, private)), Community(), FakeAccountRepository(), FakeAppPreferences())
 
         val state = viewModel.state.firstWithin { it is TrashUiState.Success } as TrashUiState.Success
 
-        assertEquals(listOf(published, card), state.entries)
+        assertEquals(listOf(published, private), state.entries)
     }
 
     @Test
@@ -60,7 +59,7 @@ class TrashViewModelTest {
 
     @Test
     fun emptyingTheTrash_takesDownEveryPublishedSnapshotInIt() = runBlocking {
-        val repository = TrashRepository(listOf(published, private, card))
+        val repository = TrashRepository(listOf(published, private))
         val community = Community()
         val viewModel = TrashViewModel(repository, community, FakeAccountRepository(), FakeAppPreferences())
         viewModel.state.firstWithin { it is TrashUiState.Success }
@@ -69,24 +68,14 @@ class TrashViewModelTest {
         viewModel.state.firstWithin { (it as? TrashUiState.Success)?.entries?.isEmpty() == true }
 
         assertEquals(listOf("pub-1"), community.unpublished)
-    }
-
-    @Test
-    fun deletingACardForGood_leavesTheCommunityAlone() = runBlocking {
-        val community = Community()
-        val viewModel = TrashViewModel(TrashRepository(listOf(published, card)), community, FakeAccountRepository(), FakeAppPreferences())
-        viewModel.state.firstWithin { it is TrashUiState.Success }
-
-        viewModel.removeItemPermanently(card.id)
-        viewModel.state.firstWithin { (it as? TrashUiState.Success)?.entries == listOf(published) }
-
-        assertTrue(community.unpublished.isEmpty())
+        assertEquals(listOf(emptySet<Long>()), repository.emptiedKeeping)
     }
 
     // Deleted for good, nothing on this phone could take its snapshot down any more.
     @Test
     fun emptyingTheTrash_keepsAListWhoseSnapshotWouldNotComeDown() = runBlocking {
-        val viewModel = TrashViewModel(TrashRepository(listOf(published, private, card)), Community(unpublishFails = true), FakeAccountRepository(), FakeAppPreferences())
+        val repository = TrashRepository(listOf(published, private))
+        val viewModel = TrashViewModel(repository, Community(unpublishFails = true), FakeAccountRepository(), FakeAppPreferences())
         viewModel.state.firstWithin { it is TrashUiState.Success }
 
         viewModel.emptyTrash()
@@ -95,6 +84,7 @@ class TrashViewModelTest {
 
         assertEquals(UserMessage.PublishedListStillPublic, message)
         assertEquals(TrashUiState.Success(listOf(published)), state)
+        assertEquals(listOf(setOf(published.id)), repository.emptiedKeeping)
     }
 
     // A published on this phone, then B signed in: only A can take it down, and it stays A's in A's account.
@@ -103,11 +93,11 @@ class TrashViewModelTest {
         val community = Community(unpublishFails = true)
         val preferences = FakeAppPreferences().apply { setPublishedOwners(mapOf("pub-1" to "uid-a")) }
         val accounts = FakeAccountRepository(Account.SignedIn(email = "b@example.com", photoUrl = null, uid = "uid-b"))
-        val viewModel = TrashViewModel(TrashRepository(listOf(published, card)), community, accounts, preferences)
+        val viewModel = TrashViewModel(TrashRepository(listOf(published, private)), community, accounts, preferences)
         viewModel.state.firstWithin { it is TrashUiState.Success }
 
         viewModel.removeListPermanently(published.id)
-        viewModel.state.firstWithin { (it as? TrashUiState.Success)?.entries == listOf(card) }
+        viewModel.state.firstWithin { (it as? TrashUiState.Success)?.entries == listOf(private) }
 
         assertTrue(community.asked.isEmpty())
     }
@@ -117,7 +107,7 @@ class TrashViewModelTest {
         val community = Community(unpublishFails = true)
         val preferences = FakeAppPreferences().apply { setPublishedOwners(mapOf("pub-1" to "uid-b")) }
         val accounts = FakeAccountRepository(Account.SignedIn(email = "b@example.com", photoUrl = null, uid = "uid-b"))
-        val viewModel = TrashViewModel(TrashRepository(listOf(published, card)), community, accounts, preferences)
+        val viewModel = TrashViewModel(TrashRepository(listOf(published, private)), community, accounts, preferences)
         viewModel.state.firstWithin { it is TrashUiState.Success }
 
         viewModel.removeListPermanently(published.id)
@@ -127,14 +117,14 @@ class TrashViewModelTest {
 
     @Test
     fun aFailedRestore_saysSoAndKeepsTheEntry() = runBlocking {
-        val viewModel = TrashViewModel(TrashRepository(listOf(card), writesFail = true), Community(), FakeAccountRepository(), FakeAppPreferences())
+        val viewModel = TrashViewModel(TrashRepository(listOf(private), writesFail = true), Community(), FakeAccountRepository(), FakeAppPreferences())
         viewModel.state.firstWithin { it is TrashUiState.Success }
 
-        viewModel.restoreItem(card.id)
+        viewModel.restoreList(private.id)
         val message = withTimeout(TIMEOUT_MILLIS) { viewModel.userMessages.first() }
 
         assertEquals(UserMessage.ActionFailed, message)
-        assertEquals(TrashUiState.Success(listOf(card)), viewModel.state.value)
+        assertEquals(TrashUiState.Success(listOf(private)), viewModel.state.value)
     }
 
     private class Community(private val unpublishFails: Boolean = false) : FakeCommunityRepository() {
@@ -166,13 +156,14 @@ class TrashViewModelTest {
 
         override suspend fun restoreTierLists(ids: List<Long>) = remove { it is TrashEntry.DeletedList && it.id in ids }
 
-        override suspend fun restoreTierItem(id: Long) = remove { it is TrashEntry.DeletedItem && it.id == id }
-
-        override suspend fun deleteTierItemPermanently(id: Long) = remove { it is TrashEntry.DeletedItem && it.id == id }
-
         override suspend fun deleteTierListPermanently(id: Long) = remove { it is TrashEntry.DeletedList && it.id == id }
 
-        override suspend fun emptyTrash() = remove { true }
+        val emptiedKeeping = mutableListOf<Set<Long>>()
+
+        override suspend fun emptyTrash(keepingListIds: Set<Long>) {
+            emptiedKeeping += keepingListIds
+            remove { it is TrashEntry.DeletedList && it.id !in keepingListIds }
+        }
 
         private fun remove(which: (TrashEntry) -> Boolean) {
             check(!writesFail) { "disk" }

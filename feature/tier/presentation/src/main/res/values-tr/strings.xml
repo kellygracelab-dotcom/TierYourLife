@@ -68,9 +68,8 @@
 
     <string name="trash_title">Çöp kutusu</string>
     <string name="trash_load_error">Çöp kutusu yüklenemedi.</string>
-    <string name="trash_subtitle">Silinen listeler ve öğeler, sen kaldırana kadar burada kalır.</string>
+    <string name="trash_subtitle">Silinen listeler, sen kaldırana kadar burada kalır.</string>
     <string name="trash_row_list_meta">Liste · %1$s · silindi %2$s</string>
-    <string name="trash_row_item_meta">Öğe · %1$s içinden · silindi %2$s</string>
     <string name="trash_time_just_now">az önce</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">%1$d dk önce</item>
@@ -88,7 +87,6 @@
     <string name="action_remove">Kaldır</string>
     <string name="remove_dialog_title">Kalıcı olarak kaldırılsın mı?</string>
     <string name="remove_dialog_body_list">%1$s ve %2$s bu cihazdan silinecek. Bu geri alınamaz.</string>
-    <string name="remove_dialog_body_item">%1$s bu cihazdan silinecek. Bu geri alınamaz.</string>
     <string name="menu_empty_trash">Çöp kutusunu boşalt</string>
     <string name="action_empty_trash">Çöp kutusunu boşalt</string>
     <string name="empty_trash_dialog_title">Çöp kutusu boşaltılsın mı?</string>
@@ -98,7 +96,7 @@
         <item quantity="other">%1$d kayıt</item>
     </plurals>
     <string name="trash_empty_title">Çöp kutusu boş</string>
-    <string name="trash_empty_body">Sildiğin listeler ve öğeler burada görünür. Sen kaldırana kadar kalırlar.</string>
+    <string name="trash_empty_body">Sildiğin listeler burada görünür. Sen kaldırana kadar kalırlar.</string>
     <string name="cd_more">Diğer seçenekler</string>
     <string name="cd_restore">%1$s öğesini geri yükle</string>
     <string name="cd_remove">%1$s öğesini kalıcı olarak kaldır</string>

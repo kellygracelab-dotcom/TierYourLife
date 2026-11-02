@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.model
 
+/** Only lists go to the trash: a card removed from a board is gone, with an Undo right after. */
 sealed interface TrashEntry {
     val title: String
     val deletedAtMillis: Long
@@ -13,14 +14,5 @@ sealed interface TrashEntry {
         val publishedId: String? = null,
         /** The same for a list that was out as a ranking of somebody's. */
         val rankingOf: String? = null,
-    ) : TrashEntry
-
-    data class DeletedItem(
-        val id: Long,
-        override val title: String,
-        val listTitle: String,
-        val wasInPool: Boolean,
-        override val deletedAtMillis: Long,
-        val imageUrl: String? = null,
     ) : TrashEntry
 }

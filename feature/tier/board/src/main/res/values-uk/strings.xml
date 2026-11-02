@@ -73,7 +73,7 @@
     </plurals>
     <string name="tier_detail_content_description_edit_title">Редагувати назву списку</string>
     <string name="tier_detail_content_description_manual_add">Додати елемент вручну</string>
-    <string name="tier_detail_item_moved_to_trash">«%1$s» переміщено в кошик</string>
+    <string name="tier_detail_item_removed">Видалено: «%1$s»</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d елемент додано до пулу</item>
         <item quantity="few">%1$d елементи додано до пулу</item>
@@ -83,7 +83,7 @@
     <string name="tier_detail_move_sheet_current_tier">Зараз тут</string>
     <string name="tier_detail_move_sheet_pool_subtitle">Без оцінки, залишається у списку</string>
     <string name="tier_detail_move_sheet_pool_title">Повернути в пул</string>
-    <string name="tier_detail_move_sheet_remove_subtitle">Потрапляє в кошик</string>
+    <string name="tier_detail_move_sheet_remove_subtitle">Одразу після можна скасувати</string>
     <string name="tier_detail_move_sheet_remove_title">Видалити зі списку</string>
     <string name="tier_detail_move_sheet_subtitle">Перемістити до рівня</string>
     <string name="tier_detail_not_found">Список не знайдено.</string>
@@ -114,7 +114,7 @@
     </plurals>
     <string name="tier_detail_ranked_row_description">Місце %1$d, %2$s, рівень %3$s.</string>
     <string name="tier_detail_snackbar_undo">Скасувати</string>
-    <string name="tier_detail_tier_moved_to_trash">Рівень %1$s переміщено в кошик</string>
+    <string name="tier_detail_tier_removed">Рівень %1$s видалено</string>
     <string name="tier_detail_trash_target_label">Видалити</string>
     <string name="tier_editor_add_title">Додати рівень</string>
     <string name="tier_editor_cancel">Скасувати</string>

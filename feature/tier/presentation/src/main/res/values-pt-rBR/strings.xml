@@ -73,9 +73,8 @@
 
     <string name="trash_title">Lixeira</string>
     <string name="trash_load_error">Não foi possível carregar a lixeira.</string>
-    <string name="trash_subtitle">Listas e itens excluídos permanecem aqui até que você os remova.</string>
+    <string name="trash_subtitle">Listas excluídas permanecem aqui até que você as remova.</string>
     <string name="trash_row_list_meta">Lista · %1$s · excluída %2$s</string>
-    <string name="trash_row_item_meta">Item · de %1$s · excluído %2$s</string>
     <string name="trash_time_just_now">agora mesmo</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">há %1$d min</item>
@@ -96,7 +95,6 @@
     <string name="action_remove">Remover</string>
     <string name="remove_dialog_title">Remover permanentemente?</string>
     <string name="remove_dialog_body_list">%1$s e seus %2$s serão excluídos deste dispositivo. Isso não pode ser desfeito.</string>
-    <string name="remove_dialog_body_item">%1$s será excluído deste dispositivo. Isso não pode ser desfeito.</string>
     <string name="menu_empty_trash">Esvaziar lixeira</string>
     <string name="action_empty_trash">Esvaziar lixeira</string>
     <string name="empty_trash_dialog_title">Esvaziar a lixeira?</string>
@@ -107,7 +105,7 @@
         <item quantity="other">%1$d registros</item>
     </plurals>
     <string name="trash_empty_title">A lixeira está vazia</string>
-    <string name="trash_empty_body">Listas e itens que você excluir aparecem aqui. Eles permanecem até que você os remova.</string>
+    <string name="trash_empty_body">Listas que você excluir aparecem aqui. Elas permanecem até que você as remova.</string>
     <string name="cd_more">Mais opções</string>
     <string name="cd_restore">Restaurar %1$s</string>
     <string name="cd_remove">Excluir %1$s permanentemente</string>

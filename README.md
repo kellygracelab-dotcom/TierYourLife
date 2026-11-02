@@ -91,8 +91,8 @@ camera cutout in the corner is a worse version of a gesture that works one fold 
 - **Boards that follow you.** Sign in and they are kept in your account. Two versions of one board
   are never merged — the order of the cards *is* the content — so the account's copy arrives as a
   second board that says where it came from, and you decide.
-- **Trash, not deletion**, with a one-tap restore. Deleting a tier does not take its trashed items
-  with it.
+- **Trash for lists**, with a one-tap restore. A card removed from a board is gone, with an Undo
+  right after.
 - **The community.** Browse by category, search across it, follow authors, open anyone's profile,
   save a copy of any board.
 - **Share a board as a picture.** Drawn, not screenshotted — the whole board at one width with a

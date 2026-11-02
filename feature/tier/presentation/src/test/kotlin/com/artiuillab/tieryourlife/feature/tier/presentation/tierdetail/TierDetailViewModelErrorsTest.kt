@@ -7,6 +7,7 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
@@ -196,13 +197,14 @@ private class FailingTierRepository(
 
     override suspend fun restoreTierLists(ids: List<Long>) = fail()
 
-    override suspend fun deleteTierItem(id: Long) = fail()
+    override suspend fun deleteTierItem(id: Long): RemovedTierItem? = fail()
 
-    override suspend fun restoreTierItem(id: Long) = fail()
+    override suspend fun restoreTierItem(removed: RemovedTierItem) = fail()
+    override suspend fun forgetRemovedTierItem(removed: RemovedTierItem) = fail()
 
     override suspend fun deleteTierItemPermanently(id: Long) = fail()
 
-    override suspend fun emptyTrash() = fail()
+    override suspend fun emptyTrash(keepingListIds: Set<Long>) = fail()
 
     override suspend fun getTrashEntries(): List<TrashEntry> = fail()
 

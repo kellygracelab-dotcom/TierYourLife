@@ -47,10 +47,6 @@ class TrashViewModel @Inject constructor(
         mutate("Restoring a list") { repository.restoreTierLists(listOf(id)) }
     }
 
-    fun restoreItem(id: Long) {
-        mutate("Restoring an item") { repository.restoreTierItem(id) }
-    }
-
     /** Kept while its snapshot is still public: deleted, nothing on this phone could take that down any more. */
     fun removeListPermanently(id: Long) {
         mutate("Deleting a list for good") {
@@ -62,25 +58,12 @@ class TrashViewModel @Inject constructor(
         }
     }
 
-    fun removeItemPermanently(id: Long) {
-        mutate("Deleting an item for good") { repository.deleteTierItemPermanently(id) }
-    }
-
     fun emptyTrash() {
         mutate("Emptying the trash") {
             val stillPublic = takeDownPublished(trashedListIds())
-            if (stillPublic.isEmpty()) {
-                repository.emptyTrash()
-                return@mutate
-            }
             // Everything else goes; the lists still out there stay, for the next try.
-            (_state.value as? TrashUiState.Success)?.entries.orEmpty().forEach { entry ->
-                when (entry) {
-                    is TrashEntry.DeletedList -> if (entry.id !in stillPublic) repository.deleteTierListPermanently(entry.id)
-                    is TrashEntry.DeletedItem -> repository.deleteTierItemPermanently(entry.id)
-                }
-            }
-            messages.send(UserMessage.PublishedListStillPublic)
+            repository.emptyTrash(keepingListIds = stillPublic)
+            if (stillPublic.isNotEmpty()) messages.send(UserMessage.PublishedListStillPublic)
         }
     }
 

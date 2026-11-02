@@ -252,9 +252,16 @@ interface TierDao {
      * any other would have its copy taken out on its next sign-in.
      */
     @Transaction
-    suspend fun emptyTrash(account: String?) {
-        forgetTrashedBoardsInOtherAccounts(account)
-        deleteAllTrashedTierLists()
+    suspend fun emptyTrash(account: String?, keepingListIds: Set<Long> = emptySet()) {
+        if (keepingListIds.isEmpty()) {
+            forgetTrashedBoardsInOtherAccounts(account)
+            deleteAllTrashedTierLists()
+        } else {
+            getDeletedTierLists()
+                .filterNot { it.id in keepingListIds }
+                .forEach { deleteTierListPermanently(it.id, account) }
+        }
+        // Cards an older phone or the web once trashed: the trash no longer shows them, so this is their way out.
         deleteAllTrashedTierItems()
     }
 
@@ -407,11 +414,28 @@ interface TierDao {
     @Query("DELETE FROM tier_items WHERE id = :id")
     suspend fun deleteTierItemById(id: Long): Int
 
-    @Query("UPDATE tier_items SET deletedAt = :deletedAt WHERE id = :id")
-    suspend fun markTierItemDeleted(id: Long, deletedAt: Long)
+    /** For good, closing the gap it leaves in its tier. */
+    @Transaction
+    suspend fun removeTierItem(item: TierItemEntity) {
+        deleteTierItemById(item.id)
+        compactTierPositionsAfter(item.tierId, item.position)
+    }
 
-    @Query("UPDATE tier_items SET deletedAt = NULL WHERE id = :id")
-    suspend fun restoreTierItem(id: Long)
+    /** Where it was, or at the end of the pool where its tier has gone; nowhere where its board has. */
+    @Transaction
+    suspend fun putBackTierItem(item: TierItemEntity, tierListId: Long) {
+        if (getTierListById(tierListId) == null) return
+        val tier = getTierById(item.tierId)?.takeIf { it.tierListId == tierListId }
+        val placed = if (tier != null) {
+            shiftTierPositionsFrom(tier.id, item.position)
+            item
+        } else {
+            val pool = getAllTiersByTierListId(tierListId).firstOrNull { it.isPool } ?: return
+            val end = (getAllTierItemsByTierId(pool.id).maxOfOrNull { it.position } ?: -1) + 1
+            item.copy(tierId = pool.id, position = end)
+        }
+        insertTierItem(placed.copy(deletedAt = null))
+    }
 
     @Query("UPDATE tier_items SET imageUrl = :imageUrl WHERE id = :id")
     suspend fun updateTierItemImage(id: Long, imageUrl: String?)
@@ -421,19 +445,6 @@ interface TierDao {
 
     @Query("SELECT imageUrl FROM tier_items WHERE imageUrl IS NOT NULL")
     suspend fun getAllImageRefs(): List<String>
-
-    @Query(
-        """
-        SELECT i.id AS id, i.title AS title, i.deletedAt AS deletedAt,
-            t.isPool AS wasInPool, l.title AS listTitle, i.imageUrl AS imageUrl
-        FROM tier_items i
-        JOIN tiers t ON i.tierId = t.id
-        JOIN tier_lists l ON t.tierListId = l.id
-        WHERE i.deletedAt IS NOT NULL AND l.deletedAt IS NULL
-        ORDER BY i.deletedAt DESC
-        """,
-    )
-    suspend fun getDeletedTierItems(): List<DeletedTierItemRow>
 
     @Query("UPDATE tier_items SET position = :position WHERE id = :id")
     suspend fun updateTierItemPosition(id: Long, position: Int)

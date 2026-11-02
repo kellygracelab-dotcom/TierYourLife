@@ -67,7 +67,7 @@
     </plurals>
     <string name="tier_detail_content_description_edit_title">Listennamen bearbeiten</string>
     <string name="tier_detail_content_description_manual_add">Element manuell hinzufügen</string>
-    <string name="tier_detail_item_moved_to_trash">%1$s wurde in den Papierkorb verschoben</string>
+    <string name="tier_detail_item_removed">%1$s entfernt</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d Element zum Pool hinzugefügt</item>
         <item quantity="other">%1$d Elemente zum Pool hinzugefügt</item>
@@ -75,7 +75,7 @@
     <string name="tier_detail_move_sheet_current_tier">Aktuell hier</string>
     <string name="tier_detail_move_sheet_pool_subtitle">Nicht eingestuft, bleibt in der Liste</string>
     <string name="tier_detail_move_sheet_pool_title">Zurück in den Pool</string>
-    <string name="tier_detail_move_sheet_remove_subtitle">Wandert in den Papierkorb</string>
+    <string name="tier_detail_move_sheet_remove_subtitle">Lässt sich gleich danach rückgängig machen</string>
     <string name="tier_detail_move_sheet_remove_title">Aus der Liste entfernen</string>
     <string name="tier_detail_move_sheet_subtitle">In eine Stufe verschieben</string>
     <string name="tier_detail_not_found">Liste wurde nicht gefunden.</string>
@@ -98,7 +98,7 @@
     </plurals>
     <string name="tier_detail_ranked_row_description">Platz %1$d, %2$s, Stufe %3$s.</string>
     <string name="tier_detail_snackbar_undo">Rückgängig</string>
-    <string name="tier_detail_tier_moved_to_trash">Stufe %1$s wurde in den Papierkorb verschoben</string>
+    <string name="tier_detail_tier_removed">Stufe %1$s entfernt</string>
     <string name="tier_detail_trash_target_label">Entfernen</string>
     <string name="tier_editor_add_title">Stufe hinzufügen</string>
     <string name="tier_editor_cancel">Abbrechen</string>

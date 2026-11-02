@@ -101,6 +101,7 @@ fun TierDetailScreen(
             onMoveItem = viewModel::moveItem,
             onDeleteItem = viewModel::deleteItem,
             onRestoreItem = viewModel::restoreItem,
+            onForgetDeletedItem = viewModel::forgetDeletedItem,
             onReorderTiers = viewModel::reorderTiers,
             onDeleteTierToPool = viewModel::deleteTierToPool,
             onRestoreTier = viewModel::restoreTier,

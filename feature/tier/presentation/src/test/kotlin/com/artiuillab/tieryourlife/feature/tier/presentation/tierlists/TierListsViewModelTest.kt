@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
@@ -445,11 +446,12 @@ internal class FakeTierRepository(initial: List<TierList>) : TierRepository {
         itemIds: List<Long>,
     ) = unsupported()
     override suspend fun reorderTiers(orderedTierIds: List<Long>) = unsupported()
-    override suspend fun deleteTierItem(id: Long) = unsupported()
-    override suspend fun restoreTierItem(id: Long) = unsupported()
+    override suspend fun deleteTierItem(id: Long): RemovedTierItem? = unsupported()
+    override suspend fun restoreTierItem(removed: RemovedTierItem) = unsupported()
+    override suspend fun forgetRemovedTierItem(removed: RemovedTierItem) = unsupported()
     override suspend fun deleteTierListPermanently(id: Long) = unsupported()
     override suspend fun deleteTierItemPermanently(id: Long) = unsupported()
-    override suspend fun emptyTrash() = unsupported()
+    override suspend fun emptyTrash(keepingListIds: Set<Long>) = unsupported()
     override suspend fun getTrashEntries(): List<TrashEntry> = unsupported()
 
     private fun unsupported(): Nothing =

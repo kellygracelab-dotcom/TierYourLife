@@ -67,7 +67,7 @@
     </plurals>
     <string name="tier_detail_content_description_edit_title">Liste adını düzenle</string>
     <string name="tier_detail_content_description_manual_add">Öğeyi elle ekle</string>
-    <string name="tier_detail_item_moved_to_trash">%1$s çöp kutusuna taşındı</string>
+    <string name="tier_detail_item_removed">%1$s kaldırıldı</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d öğe havuza eklendi</item>
         <item quantity="other">%1$d öğe havuza eklendi</item>
@@ -75,7 +75,7 @@
     <string name="tier_detail_move_sheet_current_tier">Şu anda burada</string>
     <string name="tier_detail_move_sheet_pool_subtitle">Sıralanmadı, listede kalır</string>
     <string name="tier_detail_move_sheet_pool_title">Havuza geri gönder</string>
-    <string name="tier_detail_move_sheet_remove_subtitle">Çöp kutusuna gider</string>
+    <string name="tier_detail_move_sheet_remove_subtitle">Hemen ardından geri alınabilir</string>
     <string name="tier_detail_move_sheet_remove_title">Listeden kaldır</string>
     <string name="tier_detail_move_sheet_subtitle">Bir seviyeye taşı</string>
     <string name="tier_detail_not_found">Liste bulunamadı.</string>
@@ -98,7 +98,7 @@
     </plurals>
     <string name="tier_detail_ranked_row_description">%1$d. sıra, %2$s, seviye %3$s.</string>
     <string name="tier_detail_snackbar_undo">Geri al</string>
-    <string name="tier_detail_tier_moved_to_trash">%1$s seviyesi çöp kutusuna taşındı</string>
+    <string name="tier_detail_tier_removed">%1$s seviyesi kaldırıldı</string>
     <string name="tier_detail_trash_target_label">Kaldır</string>
     <string name="tier_editor_add_title">Seviye ekle</string>
     <string name="tier_editor_cancel">İptal</string>

@@ -63,9 +63,8 @@
 
     <string name="trash_title">ゴミ箱</string>
     <string name="trash_load_error">ゴミ箱を読み込めませんでした。</string>
-    <string name="trash_subtitle">削除されたリストとアイテムは、削除するまでここに残ります。</string>
+    <string name="trash_subtitle">削除されたリストは、削除するまでここに残ります。</string>
     <string name="trash_row_list_meta">リスト · %1$s · %2$s に削除</string>
-    <string name="trash_row_item_meta">アイテム · %1$s から · %2$s に削除</string>
     <string name="trash_time_just_now">たった今</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="other">%1$d分前</item>
@@ -80,7 +79,6 @@
     <string name="action_remove">削除</string>
     <string name="remove_dialog_title">完全に削除しますか？</string>
     <string name="remove_dialog_body_list">%1$s とその %2$s がこの端末から削除されます。これは元に戻せません。</string>
-    <string name="remove_dialog_body_item">%1$s がこの端末から削除されます。これは元に戻せません。</string>
     <string name="menu_empty_trash">ゴミ箱を空にする</string>
     <string name="action_empty_trash">ゴミ箱を空にする</string>
     <string name="empty_trash_dialog_title">ゴミ箱を空にしますか？</string>
@@ -89,7 +87,7 @@
         <item quantity="other">%1$d件</item>
     </plurals>
     <string name="trash_empty_title">ゴミ箱は空です</string>
-    <string name="trash_empty_body">削除したリストとアイテムはここに表示されます。削除するまで残ります。</string>
+    <string name="trash_empty_body">削除したリストはここに表示されます。削除するまで残ります。</string>
     <string name="cd_more">その他のオプション</string>
     <string name="cd_restore">%1$s を復元</string>
     <string name="cd_remove">%1$s を完全に削除</string>

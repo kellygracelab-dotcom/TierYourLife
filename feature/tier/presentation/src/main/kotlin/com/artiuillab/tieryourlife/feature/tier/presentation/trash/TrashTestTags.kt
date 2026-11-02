@@ -16,7 +16,6 @@ internal object TrashTestTags {
     const val EMPTY_TRASH_CANCEL = "trash_empty_trash_cancel"
     fun row(entry: TrashEntry): String = when (entry) {
         is TrashEntry.DeletedList -> "trash_row_list_${entry.id}"
-        is TrashEntry.DeletedItem -> "trash_row_item_${entry.id}"
     }
     fun restoreButton(entry: TrashEntry): String = "${row(entry)}_restore"
     fun removeButton(entry: TrashEntry): String = "${row(entry)}_remove"

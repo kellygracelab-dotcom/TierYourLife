@@ -88,9 +88,8 @@
 
     <string name="trash_title">سلة المهملات</string>
     <string name="trash_load_error">تعذّر تحميل سلة المهملات.</string>
-    <string name="trash_subtitle">تبقى القوائم والعناصر المحذوفة هنا حتى تزيلها.</string>
+    <string name="trash_subtitle">تبقى القوائم المحذوفة هنا حتى تزيلها.</string>
     <string name="trash_row_list_meta">قائمة · %1$s · حُذفت %2$s</string>
-    <string name="trash_row_item_meta">عنصر · من %1$s · حُذف %2$s</string>
     <string name="trash_time_just_now">الآن</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="zero">قبل أقل من دقيقة</item>
@@ -120,7 +119,6 @@
     <string name="action_remove">إزالة</string>
     <string name="remove_dialog_title">الإزالة نهائيًا؟</string>
     <string name="remove_dialog_body_list">سيتم حذف %1$s و%2$s من هذا الجهاز. لا يمكن التراجع عن هذا.</string>
-    <string name="remove_dialog_body_item">سيتم حذف %1$s من هذا الجهاز. لا يمكن التراجع عن هذا.</string>
     <string name="menu_empty_trash">إفراغ سلة المهملات</string>
     <string name="action_empty_trash">إفراغ سلة المهملات</string>
     <string name="empty_trash_dialog_title">إفراغ سلة المهملات؟</string>
@@ -134,7 +132,7 @@
         <item quantity="other">%1$d سجل</item>
     </plurals>
     <string name="trash_empty_title">سلة المهملات فارغة</string>
-    <string name="trash_empty_body">تظهر هنا القوائم والعناصر التي تحذفها. تبقى حتى تزيلها.</string>
+    <string name="trash_empty_body">تظهر هنا القوائم التي تحذفها. تبقى حتى تزيلها.</string>
     <string name="cd_more">خيارات أخرى</string>
     <string name="cd_restore">استعادة %1$s</string>
     <string name="cd_remove">إزالة %1$s نهائيًا</string>

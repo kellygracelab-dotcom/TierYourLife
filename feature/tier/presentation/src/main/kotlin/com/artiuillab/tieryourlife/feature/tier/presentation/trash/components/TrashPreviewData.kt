@@ -9,20 +9,10 @@ internal val previewTrashEntries = listOf(
         itemCount = 12,
         deletedAtMillis = 0L,
     ),
-    TrashEntry.DeletedItem(
+    TrashEntry.DeletedList(
         id = 2,
-        title = "Interstellar",
-        listTitle = "Sci-fi films",
-        wasInPool = false,
+        title = "Board games",
+        itemCount = 7,
         deletedAtMillis = 0L,
-        imageUrl = null,
-    ),
-    TrashEntry.DeletedItem(
-        id = 3,
-        title = "Arrival",
-        listTitle = "Sci-fi films",
-        wasInPool = true,
-        deletedAtMillis = 0L,
-        imageUrl = null,
     ),
 )
