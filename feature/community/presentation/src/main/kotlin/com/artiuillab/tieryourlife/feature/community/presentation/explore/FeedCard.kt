@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.community.presentation.components.AnonymousFace
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
+import com.artiuillab.tieryourlife.feature.community.presentation.components.LocalOwnFace
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 
 /** Spec type sizes the M3 scale has no name for. */
@@ -107,29 +107,7 @@ internal fun FeedCard(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
-            // The app's own lists stand with no author row; somebody's anonymous one says so.
-            if (!summary.editorial || summary.byNobody) {
-                Row(
-                    Modifier
-                        .padding(top = 8.dp)
-                        .heightIn(min = 24.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    if (summary.byNobody) {
-                        AnonymousFace(size = 20.dp)
-                    } else {
-                        AuthorFace(photoUrl = summary.authorPhotoUrl, name = summary.authorName, size = 20.dp)
-                    }
-                    Text(
-                        text = if (summary.byNobody) stringResource(R.string.community_anonymous) else summary.authorName,
-                        style = MetaStyle,
-                        color = if (summary.byNobody) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
+            CardAuthor(summary)
             Text(
                 text = cardMeta(summary),
                 modifier = Modifier.padding(top = 4.dp),
@@ -139,6 +117,42 @@ internal fun FeedCard(
                 overflow = TextOverflow.Ellipsis,
             )
         }
+    }
+}
+
+/**
+ * Whose it is, at a glance: the reader's own with their face and "Your list",
+ * marked when it went out without their name; somebody else's with theirs;
+ * and no row at all for one out without its author's name or the app's own.
+ */
+@Composable
+private fun CardAuthor(summary: PublishedListSummary) {
+    val own = LocalOwnFace.current
+    val (photoUrl, name, text) = when {
+        summary.mine -> Triple(
+            own?.photoUrl ?: summary.authorPhotoUrl,
+            own?.name ?: summary.authorName,
+            stringResource(if (summary.anonymous) R.string.community_your_list_anonymous else R.string.community_your_list),
+        )
+        summary.editorial -> return
+        else -> Triple(summary.authorPhotoUrl, summary.authorName, summary.authorName)
+    }
+    Row(
+        Modifier
+            .padding(top = 8.dp)
+            .heightIn(min = 24.dp)
+            .testTag(ExploreTestTags.cardAuthor(summary.id)),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        AuthorFace(photoUrl = photoUrl, name = name, size = 20.dp)
+        Text(
+            text = text,
+            style = MetaStyle,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 

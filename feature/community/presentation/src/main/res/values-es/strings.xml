@@ -230,6 +230,8 @@
     <string name="all_sections_find">Buscar una sección</string>
     <string name="all_sections_propose">Proponer una sección</string>
     <string name="community_anonymous">Anónimo</string>
+    <string name="community_your_list">Tu lista</string>
+    <string name="community_your_list_anonymous">Tu lista · anónima</string>
     <string name="community_based_on_nameless">Basada en «%1$s»</string>
     <string name="propose_intro">Un moderador revisa cada propuesta. Hasta entonces, tus listas se quedan en la sección que elijas abajo.</string>
     <string name="propose_send">Proponer</string>

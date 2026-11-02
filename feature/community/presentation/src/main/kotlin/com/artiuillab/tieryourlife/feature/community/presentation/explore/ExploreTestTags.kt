@@ -26,6 +26,8 @@ internal object ExploreTestTags {
     fun tile(sectionId: String) = "explore_tile_$sectionId"
     fun miniTile(sectionId: String) = "following_mini_tile_$sectionId"
     fun card(id: String) = "explore_card_$id"
+
+    fun cardAuthor(id: String) = "explore_card_author_$id"
     fun reason(id: String) = "explore_reason_$id"
     fun stripItem(key: String) = "following_strip_$key"
     const val TOPIC_SQUARE = "topic_square"

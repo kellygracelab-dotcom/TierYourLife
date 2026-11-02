@@ -225,6 +225,8 @@
     <string name="all_sections_find">Bereich finden</string>
     <string name="all_sections_propose">Bereich vorschlagen</string>
     <string name="community_anonymous">Anonym</string>
+    <string name="community_your_list">Deine Liste</string>
+    <string name="community_your_list_anonymous">Deine Liste · anonym</string>
     <string name="community_based_on_nameless">Nach „%1$s“</string>
     <string name="propose_intro">Ein Moderator sieht sich jeden Vorschlag an. Bis dahin bleiben deine Listen im Bereich, den du unten wählst.</string>
     <string name="propose_send">Vorschlagen</string>
