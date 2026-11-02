@@ -220,6 +220,8 @@
     <string name="all_sections_find">セクションを探す</string>
     <string name="all_sections_propose">セクションを提案</string>
     <string name="community_anonymous">匿名</string>
+    <string name="community_your_list">あなたのリスト</string>
+    <string name="community_your_list_anonymous">あなたのリスト · 匿名</string>
     <string name="community_based_on_nameless">「%1$s」をもとに</string>
     <string name="propose_intro">提案はすべてモデレーターが確認します。それまで、あなたのリストは下で選ぶセクションに置かれます。</string>
     <string name="propose_send">提案</string>

@@ -36,6 +36,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,6 +68,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.matchesSearch
 import com.artiuillab.tieryourlife.feature.community.presentation.R
+import com.artiuillab.tieryourlife.feature.community.presentation.components.LocalOwnFace
+import com.artiuillab.tieryourlife.feature.community.presentation.components.OwnFaceViewModel
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingActions
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedViewModel
@@ -139,63 +142,67 @@ fun CommunityHomeScreen(
     onOpenAllSections: () -> Unit = {},
     explore: ExploreViewModel = hiltViewModel(),
     following: FollowingFeedViewModel = hiltViewModel(),
+    ownFace: OwnFaceViewModel = hiltViewModel(),
 ) {
     val exploreState by explore.state.collectAsStateWithLifecycle()
     val followingState by following.state.collectAsStateWithLifecycle()
+    val face by ownFace.face.collectAsStateWithLifecycle()
     OnResumeEffect {
         explore.refreshHidden()
         following.refreshHidden()
     }
     val hasRail = currentWindowShape.hasRail
-    CommunityHomeContent(
-        explore = exploreState,
-        following = followingState,
-        exploreFeed = FeedCallbacks(
-            onOpen = explore::open,
-            onRefresh = explore.feed::pullToRefresh,
-            onRetry = explore.feed::retry,
-            onLoadMore = explore.feed::loadMore,
-            onScrolledDown = explore.feed::onScrolledDown,
-            onApplyHeld = explore.feed::applyHeld,
-            onHideList = explore::hideList,
-            onHideAuthor = explore::hideAuthor,
-            onReport = explore::report,
-        ),
-        followingFeed = FeedCallbacks(
-            onOpen = following::open,
-            onRefresh = following.feed::pullToRefresh,
-            onRetry = following.feed::retry,
-            onLoadMore = following.feed::loadMore,
-            onScrolledDown = following.feed::onScrolledDown,
-            onApplyHeld = following.feed::applyHeld,
-            onHideList = following::hideList,
-            onHideAuthor = following::hideAuthor,
-            onReport = following::report,
-        ),
-        exploreCalls = ExploreCallbacks(
-            onFollowSection = explore::follow,
-            onUnfollowSection = explore::unfollow,
-            onEnterSearch = explore::enterSearch,
-            onQueryChange = explore::updateQuery,
-            onExitSearch = explore::exitSearch,
-            onRetrySearch = explore::retrySearch,
-            onTogglePick = following::togglePick,
-            onFollowPicked = following::followPicked,
-            onWithdrawProposal = following::withdrawProposal,
-        ),
-        destinations = CommunityDestinations(
-            onOpenList = { onOpenList(CommunityRoute.CommunityList.of(it)) },
-            onOpenAuthor = onAuthorClick,
-            onSettings = onSettingsClick.takeUnless { hasRail },
-            onManageFollowing = onManageFollowing,
-            onOpenSection = { onOpenSection(CommunityRoute.Section(it)) },
-            onOpenTopic = { onOpenTopic(CommunityRoute.Topic.of(it)) },
-            onOpenAllSections = onOpenAllSections,
-        ),
-        tabs = tabs,
-        notices = remember(explore, following) { merge(explore.notices, following.notices) },
-        onUndoUnfollow = explore::follow,
-    )
+    CompositionLocalProvider(LocalOwnFace provides face) {
+        CommunityHomeContent(
+            explore = exploreState,
+            following = followingState,
+            exploreFeed = FeedCallbacks(
+                onOpen = explore::open,
+                onRefresh = explore.feed::pullToRefresh,
+                onRetry = explore.feed::retry,
+                onLoadMore = explore.feed::loadMore,
+                onScrolledDown = explore.feed::onScrolledDown,
+                onApplyHeld = explore.feed::applyHeld,
+                onHideList = explore::hideList,
+                onHideAuthor = explore::hideAuthor,
+                onReport = explore::report,
+            ),
+            followingFeed = FeedCallbacks(
+                onOpen = following::open,
+                onRefresh = following.feed::pullToRefresh,
+                onRetry = following.feed::retry,
+                onLoadMore = following.feed::loadMore,
+                onScrolledDown = following.feed::onScrolledDown,
+                onApplyHeld = following.feed::applyHeld,
+                onHideList = following::hideList,
+                onHideAuthor = following::hideAuthor,
+                onReport = following::report,
+            ),
+            exploreCalls = ExploreCallbacks(
+                onFollowSection = explore::follow,
+                onUnfollowSection = explore::unfollow,
+                onEnterSearch = explore::enterSearch,
+                onQueryChange = explore::updateQuery,
+                onExitSearch = explore::exitSearch,
+                onRetrySearch = explore::retrySearch,
+                onTogglePick = following::togglePick,
+                onFollowPicked = following::followPicked,
+                onWithdrawProposal = following::withdrawProposal,
+            ),
+            destinations = CommunityDestinations(
+                onOpenList = { onOpenList(CommunityRoute.CommunityList.of(it)) },
+                onOpenAuthor = onAuthorClick,
+                onSettings = onSettingsClick.takeUnless { hasRail },
+                onManageFollowing = onManageFollowing,
+                onOpenSection = { onOpenSection(CommunityRoute.Section(it)) },
+                onOpenTopic = { onOpenTopic(CommunityRoute.Topic.of(it)) },
+                onOpenAllSections = onOpenAllSections,
+            ),
+            tabs = tabs,
+            notices = remember(explore, following) { merge(explore.notices, following.notices) },
+            onUndoUnfollow = explore::follow,
+        )
+    }
 }
 
 /** Stateless, like the app's other screens: drawable from a test or a preview without a view model. */
