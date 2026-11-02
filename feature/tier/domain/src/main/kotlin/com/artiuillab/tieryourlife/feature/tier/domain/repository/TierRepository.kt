@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.repository
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
@@ -110,15 +111,24 @@ interface TierRepository {
 
     suspend fun restoreTierLists(ids: List<Long>)
 
-    suspend fun deleteTierItem(id: Long)
+    /**
+     * For good: only lists go to the trash. Its picture stays until
+     * [forgetRemovedTierItem], for Undo. Null where there was no such card.
+     */
+    suspend fun deleteTierItem(id: Long): RemovedTierItem?
 
-    suspend fun restoreTierItem(id: Long)
+    /** Undo: back in its tier at its place, or at the end of the pool where that tier has gone. */
+    suspend fun restoreTierItem(removed: RemovedTierItem)
+
+    /** Undo can no longer be asked for: its picture on this phone goes too, unless another card shows it. */
+    suspend fun forgetRemovedTierItem(removed: RemovedTierItem)
 
     suspend fun deleteTierListPermanently(id: Long)
 
     suspend fun deleteTierItemPermanently(id: Long)
 
-    suspend fun emptyTrash()
+    /** [keepingListIds] stay in the trash; everything else in it goes. */
+    suspend fun emptyTrash(keepingListIds: Set<Long> = emptySet())
 
     suspend fun getTrashEntries(): List<TrashEntry>
 }

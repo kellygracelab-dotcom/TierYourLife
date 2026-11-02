@@ -70,7 +70,7 @@
     </plurals>
     <string name="tier_detail_content_description_edit_title">Editar o nome da lista</string>
     <string name="tier_detail_content_description_manual_add">Adicionar um item manualmente</string>
-    <string name="tier_detail_item_moved_to_trash">%1$s foi movido para a lixeira</string>
+    <string name="tier_detail_item_removed">%1$s foi removido</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d item adicionado ao grupo</item>
         <item quantity="many">%1$d itens adicionados ao grupo</item>
@@ -79,7 +79,7 @@
     <string name="tier_detail_move_sheet_current_tier">Está aqui agora</string>
     <string name="tier_detail_move_sheet_pool_subtitle">Sem classificação, permanece na lista</string>
     <string name="tier_detail_move_sheet_pool_title">Voltar para o grupo</string>
-    <string name="tier_detail_move_sheet_remove_subtitle">Vai para a lixeira</string>
+    <string name="tier_detail_move_sheet_remove_subtitle">Dá para desfazer logo em seguida</string>
     <string name="tier_detail_move_sheet_remove_title">Remover da lista</string>
     <string name="tier_detail_move_sheet_subtitle">Mover para um nível</string>
     <string name="tier_detail_not_found">Lista não encontrada.</string>
@@ -106,7 +106,7 @@
     </plurals>
     <string name="tier_detail_ranked_row_description">Posição %1$d, %2$s, nível %3$s.</string>
     <string name="tier_detail_snackbar_undo">Desfazer</string>
-    <string name="tier_detail_tier_moved_to_trash">O nível %1$s foi movido para a lixeira</string>
+    <string name="tier_detail_tier_removed">O nível %1$s foi removido</string>
     <string name="tier_detail_trash_target_label">Remover</string>
     <string name="tier_editor_add_title">Adicionar nível</string>
     <string name="tier_editor_cancel">Cancelar</string>

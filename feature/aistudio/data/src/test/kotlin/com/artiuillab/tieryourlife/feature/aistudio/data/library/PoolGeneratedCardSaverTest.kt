@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.aistudio.data.library
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
@@ -110,11 +111,12 @@ private class FakeTierRepository : TierRepository {
     override suspend fun reorderTiers(orderedTierIds: List<Long>) = unsupported()
     override suspend fun deleteTierLists(ids: List<Long>) = unsupported()
     override suspend fun restoreTierLists(ids: List<Long>) = unsupported()
-    override suspend fun deleteTierItem(id: Long) = unsupported()
-    override suspend fun restoreTierItem(id: Long) = unsupported()
+    override suspend fun deleteTierItem(id: Long): RemovedTierItem? = unsupported()
+    override suspend fun restoreTierItem(removed: RemovedTierItem) = unsupported()
+    override suspend fun forgetRemovedTierItem(removed: RemovedTierItem) = unsupported()
     override suspend fun deleteTierListPermanently(id: Long) = unsupported()
     override suspend fun deleteTierItemPermanently(id: Long) = unsupported()
-    override suspend fun emptyTrash() = unsupported()
+    override suspend fun emptyTrash(keepingListIds: Set<Long>) = unsupported()
     override suspend fun getTrashEntries(): List<TrashEntry> = unsupported()
 
     private fun unsupported(): Nothing = throw UnsupportedOperationException("Not used by PoolGeneratedCardSaverTest")

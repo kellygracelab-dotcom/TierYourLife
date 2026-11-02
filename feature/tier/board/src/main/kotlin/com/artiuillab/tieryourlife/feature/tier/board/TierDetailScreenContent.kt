@@ -276,6 +276,7 @@ private fun TierScreenBody(
     val onMoveItem = actions.onMoveItem
     val onDeleteItem = actions.onDeleteItem
     val onRestoreItem = actions.onRestoreItem
+    val onForgetDeletedItem = actions.onForgetDeletedItem
     val onReorderTiers = actions.onReorderTiers
     val onDeleteTierToPool = actions.onDeleteTierToPool
     val onRestoreTier = actions.onRestoreTier
@@ -354,7 +355,7 @@ private fun TierScreenBody(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val resources = LocalResources.current
-    val deletedMessageTemplate = stringResource(R.string.tier_detail_item_moved_to_trash)
+    val deletedMessageTemplate = stringResource(R.string.tier_detail_item_removed)
     val undoLabel = stringResource(R.string.tier_detail_snackbar_undo)
     val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
     val publishedAsRankingMessage = stringResource(ThemeR.string.snack_published_as_ranking)
@@ -404,11 +405,13 @@ private fun TierScreenBody(
             )
             if (result == SnackbarResult.ActionPerformed) {
                 onRestoreItem(itemId)
+            } else {
+                onForgetDeletedItem(itemId)
             }
         }
     }
 
-    val tierDeletedMessageTemplate = stringResource(R.string.tier_detail_tier_moved_to_trash)
+    val tierDeletedMessageTemplate = stringResource(R.string.tier_detail_tier_removed)
 
     val deleteTierAndAnnounce: (Long) -> Unit = { tierId ->
         val tier = rankedTiers.firstOrNull { it.id == tierId }

@@ -73,9 +73,8 @@
 
     <string name="trash_title">Corbeille</string>
     <string name="trash_load_error">Impossible de charger la corbeille.</string>
-    <string name="trash_subtitle">Les listes et éléments supprimés restent ici jusqu\'à ce que vous les retiriez.</string>
+    <string name="trash_subtitle">Les listes supprimées restent ici jusqu\'à ce que vous les retiriez.</string>
     <string name="trash_row_list_meta">Liste · %1$s · supprimée %2$s</string>
-    <string name="trash_row_item_meta">Élément · de %1$s · supprimé %2$s</string>
     <string name="trash_time_just_now">à l\'instant</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">il y a %1$d min</item>
@@ -96,7 +95,6 @@
     <string name="action_remove">Retirer</string>
     <string name="remove_dialog_title">Supprimer définitivement ?</string>
     <string name="remove_dialog_body_list">%1$s et ses %2$s seront supprimés de cet appareil. Cette action est irréversible.</string>
-    <string name="remove_dialog_body_item">%1$s sera supprimé de cet appareil. Cette action est irréversible.</string>
     <string name="menu_empty_trash">Vider la corbeille</string>
     <string name="action_empty_trash">Vider la corbeille</string>
     <string name="empty_trash_dialog_title">Vider la corbeille ?</string>
@@ -107,7 +105,7 @@
         <item quantity="other">%1$d entrées</item>
     </plurals>
     <string name="trash_empty_title">La corbeille est vide</string>
-    <string name="trash_empty_body">Les listes et éléments que vous supprimez apparaissent ici. Ils restent jusqu\'à ce que vous les retiriez.</string>
+    <string name="trash_empty_body">Les listes que vous supprimez apparaissent ici. Elles restent jusqu\'à ce que vous les retiriez.</string>
     <string name="cd_more">Plus d\'options</string>
     <string name="cd_restore">Restaurer %1$s</string>
     <string name="cd_remove">Supprimer %1$s définitivement</string>

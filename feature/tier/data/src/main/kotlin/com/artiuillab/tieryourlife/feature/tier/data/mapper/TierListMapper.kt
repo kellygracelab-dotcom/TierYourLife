@@ -82,7 +82,7 @@ private fun TierItemEntity.toDomain(): TierItem = TierItem(
     uid = uid,
 )
 
-private fun String.toTierItemSource(): TierItemSource =
+internal fun String.toTierItemSource(): TierItemSource =
     TierItemSource.entries.firstOrNull { it.name == this } ?: TierItemSource.MANUAL
 
 private const val SMALLEST_COLLAGE = 2

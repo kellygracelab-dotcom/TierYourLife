@@ -73,7 +73,7 @@
     </plurals>
     <string name="tier_detail_content_description_edit_title">Изменить название списка</string>
     <string name="tier_detail_content_description_manual_add">Добавить элемент вручную</string>
-    <string name="tier_detail_item_moved_to_trash">«%1$s» перемещён в корзину</string>
+    <string name="tier_detail_item_removed">Удалено: «%1$s»</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d элемент добавлен в пул</item>
         <item quantity="few">%1$d элемента добавлено в пул</item>
@@ -83,7 +83,7 @@
     <string name="tier_detail_move_sheet_current_tier">Сейчас здесь</string>
     <string name="tier_detail_move_sheet_pool_subtitle">Без оценки, остаётся в списке</string>
     <string name="tier_detail_move_sheet_pool_title">Вернуть в пул</string>
-    <string name="tier_detail_move_sheet_remove_subtitle">Попадает в корзину</string>
+    <string name="tier_detail_move_sheet_remove_subtitle">Сразу после можно отменить</string>
     <string name="tier_detail_move_sheet_remove_title">Удалить из списка</string>
     <string name="tier_detail_move_sheet_subtitle">Переместить на уровень</string>
     <string name="tier_detail_not_found">Список не найден.</string>
@@ -114,7 +114,7 @@
     </plurals>
     <string name="tier_detail_ranked_row_description">Место %1$d, %2$s, уровень %3$s.</string>
     <string name="tier_detail_snackbar_undo">Отменить</string>
-    <string name="tier_detail_tier_moved_to_trash">Уровень %1$s перемещён в корзину</string>
+    <string name="tier_detail_tier_removed">Уровень %1$s удалён</string>
     <string name="tier_detail_trash_target_label">Удалить</string>
     <string name="tier_editor_add_title">Добавить уровень</string>
     <string name="tier_editor_cancel">Отмена</string>

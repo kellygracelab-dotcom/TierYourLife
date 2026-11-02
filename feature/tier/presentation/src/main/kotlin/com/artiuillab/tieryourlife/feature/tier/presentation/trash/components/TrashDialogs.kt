@@ -16,16 +16,12 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashTestTags
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 @Composable
-internal fun RemoveConfirmDialog(entry: TrashEntry, onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    val body = when (entry) {
-        is TrashEntry.DeletedList -> stringResource(
-            R.string.remove_dialog_body_list,
-            entry.title,
-            pluralStringResource(ThemeR.plurals.list_items_count, entry.itemCount, entry.itemCount),
-        )
-
-        is TrashEntry.DeletedItem -> stringResource(R.string.remove_dialog_body_item, entry.title)
-    }
+internal fun RemoveConfirmDialog(entry: TrashEntry.DeletedList, onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    val body = stringResource(
+        R.string.remove_dialog_body_list,
+        entry.title,
+        pluralStringResource(ThemeR.plurals.list_items_count, entry.itemCount, entry.itemCount),
+    )
 
     AlertDialog(
         onDismissRequest = onDismiss,

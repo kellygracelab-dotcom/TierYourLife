@@ -73,9 +73,8 @@
 
     <string name="trash_title">Papelera</string>
     <string name="trash_load_error">No se pudo cargar la papelera.</string>
-    <string name="trash_subtitle">Las listas y elementos eliminados permanecen aquí hasta que los quites.</string>
+    <string name="trash_subtitle">Las listas eliminadas permanecen aquí hasta que las quites.</string>
     <string name="trash_row_list_meta">Lista · %1$s · eliminada %2$s</string>
-    <string name="trash_row_item_meta">Elemento · de %1$s · eliminado %2$s</string>
     <string name="trash_time_just_now">ahora mismo</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">hace %1$d min</item>
@@ -96,7 +95,6 @@
     <string name="action_remove">Quitar</string>
     <string name="remove_dialog_title">¿Eliminar definitivamente?</string>
     <string name="remove_dialog_body_list">%1$s y sus %2$s se eliminarán de este dispositivo. Esto no se puede deshacer.</string>
-    <string name="remove_dialog_body_item">%1$s se eliminará de este dispositivo. Esto no se puede deshacer.</string>
     <string name="menu_empty_trash">Vaciar la papelera</string>
     <string name="action_empty_trash">Vaciar la papelera</string>
     <string name="empty_trash_dialog_title">¿Vaciar la papelera?</string>
@@ -107,7 +105,7 @@
         <item quantity="other">%1$d entradas</item>
     </plurals>
     <string name="trash_empty_title">La papelera está vacía</string>
-    <string name="trash_empty_body">Las listas y elementos que elimines aparecerán aquí. Permanecen hasta que los quites.</string>
+    <string name="trash_empty_body">Las listas que elimines aparecerán aquí. Permanecen hasta que las quites.</string>
     <string name="cd_more">Más opciones</string>
     <string name="cd_restore">Restaurar %1$s</string>
     <string name="cd_remove">Eliminar %1$s definitivamente</string>

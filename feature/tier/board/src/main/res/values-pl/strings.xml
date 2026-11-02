@@ -73,7 +73,7 @@
     </plurals>
     <string name="tier_detail_content_description_edit_title">Edytuj nazwę listy</string>
     <string name="tier_detail_content_description_manual_add">Dodaj element ręcznie</string>
-    <string name="tier_detail_item_moved_to_trash">%1$s przeniesiono do kosza</string>
+    <string name="tier_detail_item_removed">Usunięto %1$s</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d element dodany do puli</item>
         <item quantity="few">%1$d elementy dodane do puli</item>
@@ -83,7 +83,7 @@
     <string name="tier_detail_move_sheet_current_tier">Obecnie tutaj</string>
     <string name="tier_detail_move_sheet_pool_subtitle">Nieocenione, pozostaje na liście</string>
     <string name="tier_detail_move_sheet_pool_title">Wróć do puli</string>
-    <string name="tier_detail_move_sheet_remove_subtitle">Trafia do kosza</string>
+    <string name="tier_detail_move_sheet_remove_subtitle">Można cofnąć zaraz potem</string>
     <string name="tier_detail_move_sheet_remove_title">Usuń z listy</string>
     <string name="tier_detail_move_sheet_subtitle">Przenieś do poziomu</string>
     <string name="tier_detail_not_found">Nie znaleziono listy.</string>
@@ -114,7 +114,7 @@
     </plurals>
     <string name="tier_detail_ranked_row_description">Miejsce %1$d, %2$s, poziom %3$s.</string>
     <string name="tier_detail_snackbar_undo">Cofnij</string>
-    <string name="tier_detail_tier_moved_to_trash">Poziom %1$s przeniesiono do kosza</string>
+    <string name="tier_detail_tier_removed">Usunięto poziom %1$s</string>
     <string name="tier_detail_trash_target_label">Usuń</string>
     <string name="tier_editor_add_title">Dodaj poziom</string>
     <string name="tier_editor_cancel">Anuluj</string>

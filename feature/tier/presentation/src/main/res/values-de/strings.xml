@@ -68,9 +68,8 @@
 
     <string name="trash_title">Papierkorb</string>
     <string name="trash_load_error">Papierkorb konnte nicht geladen werden.</string>
-    <string name="trash_subtitle">Gelöschte Listen und Elemente bleiben hier, bis du sie entfernst.</string>
+    <string name="trash_subtitle">Gelöschte Listen bleiben hier, bis du sie entfernst.</string>
     <string name="trash_row_list_meta">Liste · %1$s · gelöscht %2$s</string>
-    <string name="trash_row_item_meta">Element · aus %1$s · gelöscht %2$s</string>
     <string name="trash_time_just_now">gerade eben</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">vor %1$d Min.</item>
@@ -88,7 +87,6 @@
     <string name="action_remove">Entfernen</string>
     <string name="remove_dialog_title">Endgültig entfernen?</string>
     <string name="remove_dialog_body_list">%1$s und die %2$s werden von diesem Gerät gelöscht. Das kann nicht rückgängig gemacht werden.</string>
-    <string name="remove_dialog_body_item">%1$s wird von diesem Gerät gelöscht. Das kann nicht rückgängig gemacht werden.</string>
     <string name="menu_empty_trash">Papierkorb leeren</string>
     <string name="action_empty_trash">Papierkorb leeren</string>
     <string name="empty_trash_dialog_title">Papierkorb leeren?</string>
@@ -98,7 +96,7 @@
         <item quantity="other">%1$d Einträge</item>
     </plurals>
     <string name="trash_empty_title">Papierkorb ist leer</string>
-    <string name="trash_empty_body">Gelöschte Listen und Elemente erscheinen hier. Sie bleiben, bis du sie entfernst.</string>
+    <string name="trash_empty_body">Gelöschte Listen erscheinen hier. Sie bleiben, bis du sie entfernst.</string>
     <string name="cd_more">Weitere Optionen</string>
     <string name="cd_restore">%1$s wiederherstellen</string>
     <string name="cd_remove">%1$s endgültig entfernen</string>

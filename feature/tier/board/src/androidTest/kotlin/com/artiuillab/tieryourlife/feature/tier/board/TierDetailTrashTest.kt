@@ -169,7 +169,7 @@ class TierDetailTrashTest : TierDetailScreenTestBase() {
 
         dragTileIntoTrash(TierDetailTestTags.tile(100))
 
-        composeRule.onNodeWithText("Interstellar moved to the trash").assertIsDisplayed()
+        composeRule.onNodeWithText("Removed Interstellar").assertIsDisplayed()
     }
 
     @Test
@@ -235,12 +235,12 @@ class TierDetailTrashTest : TierDetailScreenTestBase() {
         setScreen(TierDetailUiState.Success(list))
 
         dragTileIntoTrash(TierDetailTestTags.tile(100))
-        composeRule.onNodeWithText("Interstellar moved to the trash").assertIsDisplayed()
+        composeRule.onNodeWithText("Removed Interstellar").assertIsDisplayed()
 
         dragTileIntoTrash(TierDetailTestTags.tile(101))
 
-        composeRule.onNodeWithText("Arrival moved to the trash").assertIsDisplayed()
-        composeRule.onNodeWithText("Interstellar moved to the trash").assertDoesNotExist()
+        composeRule.onNodeWithText("Removed Arrival").assertIsDisplayed()
+        composeRule.onNodeWithText("Removed Interstellar").assertDoesNotExist()
     }
 
     @Test
@@ -270,7 +270,7 @@ class TierDetailTrashTest : TierDetailScreenTestBase() {
         composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
         composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET_REMOVE).performClick()
 
-        composeRule.onNodeWithText("Interstellar moved to the trash").assertIsDisplayed()
+        composeRule.onNodeWithText("Removed Interstellar").assertIsDisplayed()
         composeRule.onNodeWithText("Undo").performClick()
 
         composeRule.runOnIdle { assertEquals(listOf(100L), restored) }

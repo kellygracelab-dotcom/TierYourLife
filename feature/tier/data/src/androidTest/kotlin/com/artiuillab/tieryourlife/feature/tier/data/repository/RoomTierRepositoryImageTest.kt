@@ -77,12 +77,24 @@ class RoomTierRepositoryImageTest {
     }
 
     @Test
+    fun a_removed_card_keeps_its_image_copy_for_undo_until_it_is_let_go() = runBlocking {
+        val itemId = insertItem()
+        repository.attachImageToItem(itemId, sourceUri = "content://gallery/42")
+        val storedPath = requireNotNull(dao.getTierItemImageById(itemId))
+
+        val removed = requireNotNull(repository.deleteTierItem(itemId))
+        assertTrue(File(storedPath).exists())
+        repository.forgetRemovedTierItem(removed)
+
+        assertFalse(File(storedPath).exists())
+    }
+
+    @Test
     fun deleting_item_permanently_deletes_its_image_copy() = runBlocking {
         val itemId = insertItem()
         repository.attachImageToItem(itemId, sourceUri = "content://gallery/42")
         val storedPath = requireNotNull(dao.getTierItemImageById(itemId))
 
-        repository.deleteTierItem(itemId)
         repository.deleteTierItemPermanently(itemId)
 
         assertFalse(File(storedPath).exists())

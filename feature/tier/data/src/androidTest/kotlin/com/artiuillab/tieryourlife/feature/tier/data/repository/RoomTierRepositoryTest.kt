@@ -13,12 +13,11 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -198,29 +197,38 @@ class RoomTierRepositoryTest {
         assertEquals(listOf("Doomed"), list.tiers.single { it.id == poolTierId }.items.map { it.title })
     }
 
+    // A card an older phone trashed is kept with the board rather than destroyed with its tier.
     @Test
-    fun delete_tier_keeps_its_trashed_items_by_moving_them_to_the_pool() = runBlocking {
+    fun delete_tier_keeps_a_card_trashed_elsewhere_by_moving_it_to_the_pool() = runBlocking {
         val listId = repository.createTierList("Films", CAPTIONS)
         val before = requireNotNull(repository.getTierListById(listId))
         val sTierId = before.tiers.single { it.label == "S" }.id
         val poolTierId = before.tiers.single { it.isPool }.id
         val trashedId = dao.insertTierItem(
-            TierItemEntity(tierId = sTierId, position = 0, title = "Rescued", imageUrl = null),
+            TierItemEntity(tierId = sTierId, position = 0, title = "Rescued", imageUrl = null, deletedAt = 1_000L),
         )
-        repository.deleteTierItem(trashedId)
 
         repository.deleteTierToPool(sTierId)
 
-        val entry = repository.getTrashEntries()
-            .filterIsInstance<TrashEntry.DeletedItem>()
-            .singleOrNull { it.id == trashedId }
-        assertNotNull("the trashed item was destroyed with its tier", entry)
-        repository.restoreTierItem(trashedId)
-        val after = requireNotNull(repository.getTierListById(listId))
-        assertEquals(
-            listOf("Rescued"),
-            after.tiers.single { it.id == poolTierId }.items.map { it.title },
-        )
+        assertEquals(listOf(trashedId), dao.getTrashedItemsByTierId(poolTierId).map { it.id })
+        assertTrue(repository.getTrashEntries().none { it.title == "Rescued" })
+    }
+
+    @Test
+    fun a_removed_card_put_back_is_the_same_card_in_the_same_place() = runBlocking {
+        val listId = repository.createTierList("Films", CAPTIONS)
+        val sTierId = requireNotNull(repository.getTierListById(listId)).tiers.single { it.label == "S" }.id
+        dao.insertTierItem(TierItemEntity(tierId = sTierId, position = 0, title = "First", imageUrl = null))
+        val movedId = dao.insertTierItem(TierItemEntity(tierId = sTierId, position = 1, title = "Moon", imageUrl = "/moon", source = "GENERATED"))
+        dao.insertTierItem(TierItemEntity(tierId = sTierId, position = 2, title = "Last", imageUrl = null))
+        val before = requireNotNull(repository.getTierListById(listId)).tiers.single { it.id == sTierId }.items
+
+        val removed = requireNotNull(repository.deleteTierItem(movedId))
+
+        assertNull(dao.getTierItemImageById(movedId))
+        assertTrue(repository.getTrashEntries().isEmpty())
+        repository.restoreTierItem(removed)
+        assertEquals(before, requireNotNull(repository.getTierListById(listId)).tiers.single { it.id == sTierId }.items)
     }
 
     @Test

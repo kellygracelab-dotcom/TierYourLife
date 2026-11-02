@@ -53,9 +53,7 @@ fun TrashScreen(
         state = state,
         onBack = onBack,
         onRestoreList = viewModel::restoreList,
-        onRestoreItem = viewModel::restoreItem,
         onRemoveListPermanently = viewModel::removeListPermanently,
-        onRemoveItemPermanently = viewModel::removeItemPermanently,
         onEmptyTrash = viewModel::emptyTrash,
         userMessages = viewModel.userMessages,
     )
@@ -66,16 +64,14 @@ internal fun TrashScreenContent(
     state: TrashUiState,
     onBack: () -> Unit,
     onRestoreList: (Long) -> Unit = {},
-    onRestoreItem: (Long) -> Unit = {},
     onRemoveListPermanently: (Long) -> Unit = {},
-    onRemoveItemPermanently: (Long) -> Unit = {},
     onEmptyTrash: () -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     val entries = (state as? TrashUiState.Success)?.entries.orEmpty()
     var menuExpanded by remember { mutableStateOf(false) }
     var emptyDialogVisible by remember { mutableStateOf(false) }
-    var removeTarget by remember { mutableStateOf<TrashEntry?>(null) }
+    var removeTarget by remember { mutableStateOf<TrashEntry.DeletedList?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
     val stillPublicMessage = stringResource(R.string.snack_published_list_still_public)
@@ -128,7 +124,6 @@ internal fun TrashScreenContent(
                             TrashList(
                                 entries = entries,
                                 onRestoreList = onRestoreList,
-                                onRestoreItem = onRestoreItem,
                                 onRemoveRequested = { removeTarget = it },
                             )
                         }
@@ -152,10 +147,7 @@ internal fun TrashScreenContent(
             entry = target,
             onDismiss = { removeTarget = null },
             onConfirm = {
-                when (target) {
-                    is TrashEntry.DeletedList -> onRemoveListPermanently(target.id)
-                    is TrashEntry.DeletedItem -> onRemoveItemPermanently(target.id)
-                }
+                onRemoveListPermanently(target.id)
                 removeTarget = null
             },
         )

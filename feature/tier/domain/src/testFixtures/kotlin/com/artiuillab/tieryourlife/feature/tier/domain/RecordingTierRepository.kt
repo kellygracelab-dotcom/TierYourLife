@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.domain
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
@@ -138,10 +139,11 @@ class RecordingTierRepository(
     override suspend fun restoreTierLists(ids: List<Long>) {
         restored += ids
     }
-    override suspend fun deleteTierItem(id: Long) = Unit
-    override suspend fun restoreTierItem(id: Long) = Unit
+    override suspend fun deleteTierItem(id: Long): RemovedTierItem? = null
+    override suspend fun restoreTierItem(removed: RemovedTierItem) = Unit
+    override suspend fun forgetRemovedTierItem(removed: RemovedTierItem) = Unit
     override suspend fun deleteTierListPermanently(id: Long) = Unit
     override suspend fun deleteTierItemPermanently(id: Long) = Unit
-    override suspend fun emptyTrash() = Unit
+    override suspend fun emptyTrash(keepingListIds: Set<Long>) = Unit
     override suspend fun getTrashEntries(): List<TrashEntry> = trash
 }

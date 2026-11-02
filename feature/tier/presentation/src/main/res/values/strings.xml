@@ -68,9 +68,8 @@
 
     <string name="trash_title">Trash</string>
     <string name="trash_load_error">Couldn’t load the trash.</string>
-    <string name="trash_subtitle">Deleted lists and items stay here until you remove them.</string>
+    <string name="trash_subtitle">Deleted lists stay here until you remove them.</string>
     <string name="trash_row_list_meta">List · %1$s · deleted %2$s</string>
-    <string name="trash_row_item_meta">Item · from %1$s · deleted %2$s</string>
     <string name="trash_time_just_now">just now</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">%1$d min ago</item>
@@ -88,7 +87,6 @@
     <string name="action_remove">Remove</string>
     <string name="remove_dialog_title">Remove permanently?</string>
     <string name="remove_dialog_body_list">%1$s and its %2$s will be deleted from this device. This can\'t be undone.</string>
-    <string name="remove_dialog_body_item">%1$s will be deleted from this device. This can\'t be undone.</string>
     <string name="menu_empty_trash">Empty trash</string>
     <string name="action_empty_trash">Empty trash</string>
     <string name="empty_trash_dialog_title">Empty the trash?</string>
@@ -98,7 +96,7 @@
         <item quantity="other">%1$d entries</item>
     </plurals>
     <string name="trash_empty_title">Nothing in the trash</string>
-    <string name="trash_empty_body">Lists and items you delete appear here. They stay until you remove them.</string>
+    <string name="trash_empty_body">Lists you delete appear here. They stay until you remove them.</string>
     <string name="cd_more">More options</string>
     <string name="cd_restore">Restore %1$s</string>
     <string name="cd_remove">Remove %1$s permanently</string>

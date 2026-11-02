@@ -12,6 +12,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
@@ -26,6 +27,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -500,6 +502,78 @@ class TierDetailViewModelTest {
         assertEquals(null, repository.publishedIds.single().second)
     }
 
+    // Nothing goes to the trash any more: the card is simply gone from the board.
+    @Test
+    fun deleteItem_takesTheCardOffTheBoard() = runBlocking {
+        val repository = FakeTierRepository(rankedListWithCards())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+
+        viewModel.deleteItem(101)
+        val state = viewModel.board.firstWithin { board -> board.itemIds(10L) == listOf(100L, 102L) } as TierDetailUiState.Success
+
+        assertTrue(state.list.tiers.none { tier -> tier.items.any { it.id == 101L } })
+    }
+
+    @Test
+    fun undo_putsTheCardBackInItsTierAtItsPlace() = runBlocking {
+        val repository = FakeTierRepository(rankedListWithCards())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+
+        viewModel.deleteItem(101)
+        viewModel.board.firstWithin { board -> board.itemIds(10L) == listOf(100L, 102L) }
+        viewModel.restoreItem(101)
+        viewModel.board.firstWithin { board -> board.itemIds(10L) == listOf(100L, 101L, 102L) }
+
+        val restored = repository.restoredItems.single()
+        assertEquals(10L, restored.tierId)
+        assertEquals(1, restored.position)
+        assertEquals("Moon", restored.title)
+        assertEquals("/pictures/moon.jpg", restored.imageUrl)
+        assertEquals(TierItemSource.GENERATED, restored.source)
+        assertEquals("uid-moon", restored.uid)
+        assertFalse(repository.forgotten.isCompleted)
+    }
+
+    @Test
+    fun anUndoLetGo_givesUpTheCardsPictureAndCannotBringItBack() = runBlocking {
+        val repository = FakeTierRepository(rankedListWithCards())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+
+        viewModel.deleteItem(101)
+        viewModel.forgetDeletedItem(101)
+        viewModel.restoreItem(101)
+        viewModel.board.firstWithin { board -> board.itemIds(10L) == listOf(100L, 102L) }
+        val forgotten = withTimeout(5_000) { repository.forgotten.await() }
+
+        assertEquals(101L, forgotten.id)
+        assertTrue(repository.restoredItems.isEmpty())
+    }
+
+    private fun TierDetailUiState.itemIds(tierId: Long): List<Long>? =
+        (this as? TierDetailUiState.Success)?.list?.tiers?.firstOrNull { it.id == tierId }?.items?.map { it.id }
+
+    private fun rankedListWithCards(): TierList = TierList(
+        id = 1,
+        title = "Sci-fi films",
+        tiers = listOf(
+            Tier(
+                id = 10,
+                label = "S",
+                colorLight = "#000000",
+                colorDark = "#000000",
+                items = listOf(
+                    TierItem(id = 100, title = "Arrival", imageUrl = null),
+                    TierItem(id = 101, title = "Moon", imageUrl = "/pictures/moon.jpg", source = TierItemSource.GENERATED, uid = "uid-moon"),
+                    TierItem(id = 102, title = "Alien", imageUrl = null),
+                ),
+            ),
+            Tier(id = 30, label = "Pool", colorLight = "#000000", colorDark = "#000000", items = emptyList(), isPool = true),
+        ),
+    )
+
     private fun savedStateHandle(startInTitleEdit: Boolean = false): SavedStateHandle =
         SavedStateHandle(mapOf("tierListId" to 1L, "startInTitleEdit" to startInTitleEdit))
 
@@ -674,8 +748,43 @@ private class FakeTierRepository(
     }
     override suspend fun deleteTierLists(ids: List<Long>) = unsupported()
     override suspend fun restoreTierLists(ids: List<Long>) = unsupported()
-    override suspend fun deleteTierItem(id: Long) = unsupported()
-    override suspend fun restoreTierItem(id: Long) = unsupported()
+    val restoredItems = mutableListOf<RemovedTierItem>()
+    val forgotten = CompletableDeferred<RemovedTierItem>()
+
+    override suspend fun deleteTierItem(id: Long): RemovedTierItem? {
+        val tier = list.tiers.firstOrNull { tier -> tier.items.any { it.id == id } } ?: return null
+        val position = tier.items.indexOfFirst { it.id == id }
+        val item = tier.items[position]
+        list = list.copy(tiers = list.tiers.map { if (it.id == tier.id) it.copy(items = it.items - item) else it })
+        return RemovedTierItem(
+            id = item.id,
+            uid = item.uid,
+            tierListId = list.id,
+            tierId = tier.id,
+            position = position,
+            title = item.title,
+            imageUrl = item.imageUrl,
+            source = item.source,
+        )
+    }
+
+    override suspend fun restoreTierItem(removed: RemovedTierItem) {
+        restoredItems += removed
+        val item = TierItem(removed.id, removed.title, removed.imageUrl, removed.source, removed.uid)
+        list = list.copy(
+            tiers = list.tiers.map { tier ->
+                if (tier.id != removed.tierId) {
+                    tier
+                } else {
+                    tier.copy(items = tier.items.toMutableList().apply { add(removed.position.coerceAtMost(size), item) })
+                }
+            },
+        )
+    }
+
+    override suspend fun forgetRemovedTierItem(removed: RemovedTierItem) {
+        forgotten.complete(removed)
+    }
     override suspend fun deleteTierListPermanently(id: Long) {
         permanentlyDeletedIds += id
     }
@@ -685,7 +794,7 @@ private class FakeTierRepository(
             tiers = list.tiers.map { tier -> tier.copy(items = tier.items.filterNot { it.id == id }) },
         )
     }
-    override suspend fun emptyTrash() = unsupported()
+    override suspend fun emptyTrash(keepingListIds: Set<Long>) = unsupported()
     override suspend fun getTrashEntries(): List<TrashEntry> = unsupported()
 
     private fun unsupported(): Nothing =

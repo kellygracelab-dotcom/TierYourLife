@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -29,7 +28,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.ui.DeleteIcon
@@ -44,8 +42,7 @@ import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 internal fun TrashList(
     entries: List<TrashEntry>,
     onRestoreList: (Long) -> Unit,
-    onRestoreItem: (Long) -> Unit,
-    onRemoveRequested: (TrashEntry) -> Unit,
+    onRemoveRequested: (TrashEntry.DeletedList) -> Unit,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize().testTag(TrashTestTags.LIST), contentPadding = systemBarsContentPadding()) {
         items(entries, key = { TrashTestTags.row(it) }) { entry ->
@@ -53,12 +50,6 @@ internal fun TrashList(
                 is TrashEntry.DeletedList -> TrashListRow(
                     entry = entry,
                     onRestore = { onRestoreList(entry.id) },
-                    onRemove = { onRemoveRequested(entry) },
-                )
-
-                is TrashEntry.DeletedItem -> TrashItemRow(
-                    entry = entry,
-                    onRestore = { onRestoreItem(entry.id) },
                     onRemove = { onRemoveRequested(entry) },
                 )
             }
@@ -76,18 +67,6 @@ private fun TrashListRow(entry: TrashEntry.DeletedList, onRestore: () -> Unit, o
             pluralStringResource(ThemeR.plurals.list_items_count, entry.itemCount, entry.itemCount),
             relativeTimeText(entry.deletedAtMillis),
         ),
-        entry = entry,
-        onRestore = onRestore,
-        onRemove = onRemove,
-    )
-}
-
-@Composable
-private fun TrashItemRow(entry: TrashEntry.DeletedItem, onRestore: () -> Unit, onRemove: () -> Unit) {
-    TrashRow(
-        thumbnail = { ItemThumbnail(entry.imageUrl) },
-        title = entry.title,
-        meta = stringResource(R.string.trash_row_item_meta, entry.listTitle, relativeTimeText(entry.deletedAtMillis)),
         entry = entry,
         onRestore = onRestore,
         onRemove = onRemove,
@@ -172,26 +151,6 @@ private fun ListThumbnail() {
                         .background(color),
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun ItemThumbnail(imageUrl: String?) {
-    val media = TierYourLifeMedia.current
-    Box(
-        modifier = Modifier
-            .size(40.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(media.tilePlaceholder),
-    ) {
-        if (imageUrl != null) {
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-            )
         }
     }
 }

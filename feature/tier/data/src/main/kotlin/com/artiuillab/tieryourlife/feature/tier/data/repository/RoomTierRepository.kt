@@ -7,8 +7,11 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewTemplateTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.toEntity
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.toRemoved
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toStoredCoverImageUrls
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
@@ -201,12 +204,19 @@ class RoomTierRepository internal constructor(
         dao.restoreTierLists(ids)
     }
 
-    override suspend fun deleteTierItem(id: Long) {
-        dao.markTierItemDeleted(id, nowMillis())
+    override suspend fun deleteTierItem(id: Long): RemovedTierItem? {
+        val item = dao.getTierItemById(id) ?: return null
+        val tier = dao.getTierById(item.tierId) ?: return null
+        dao.removeTierItem(item)
+        return item.toRemoved(tier.tierListId)
     }
 
-    override suspend fun restoreTierItem(id: Long) {
-        dao.restoreTierItem(id)
+    override suspend fun restoreTierItem(removed: RemovedTierItem) {
+        dao.putBackTierItem(removed.toEntity(), removed.tierListId)
+    }
+
+    override suspend fun forgetRemovedTierItem(removed: RemovedTierItem) {
+        removed.imageUrl?.let { letGoOfPicture(it) }
     }
 
     override suspend fun deleteTierListPermanently(id: Long) {
@@ -218,18 +228,21 @@ class RoomTierRepository internal constructor(
         val imagePath = dao.getTierItemImageById(id)
         dao.deleteTierItemById(id)
         if (imagePath != null) {
-            imageStore.deleteCopy(imagePath)
+            letGoOfPicture(imagePath)
         }
     }
 
-    override suspend fun emptyTrash() {
-        dao.emptyTrash(signedInAs())
+    override suspend fun emptyTrash(keepingListIds: Set<Long>) {
+        dao.emptyTrash(signedInAs(), keepingListIds)
         imageStore.deleteOrphans(dao.getAllImageRefs())
     }
 
-    override suspend fun getTrashEntries(): List<TrashEntry> {
-        val lists = dao.getDeletedTierLists().map { it.toDomain() }
-        val items = dao.getDeletedTierItems().map { it.toDomain() }
-        return (lists + items).sortedByDescending { it.deletedAtMillis }
+    // A card with a deletedAt from an older phone or the web stays hidden and unlisted until the trash is emptied.
+    override suspend fun getTrashEntries(): List<TrashEntry> =
+        dao.getDeletedTierLists().map { it.toDomain() }
+
+    /** A board copied from another shares its pictures: the file goes only with the last card showing it. */
+    private suspend fun letGoOfPicture(path: String) {
+        if (path !in dao.getAllImageRefs()) imageStore.deleteCopy(path)
     }
 }

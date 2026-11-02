@@ -78,9 +78,8 @@
 
     <string name="trash_title">Kosz</string>
     <string name="trash_load_error">Nie udało się wczytać kosza.</string>
-    <string name="trash_subtitle">Usunięte listy i elementy pozostają tutaj, dopóki ich nie usuniesz.</string>
+    <string name="trash_subtitle">Usunięte listy pozostają tutaj, dopóki ich nie usuniesz.</string>
     <string name="trash_row_list_meta">Lista · %1$s · usunięto %2$s</string>
-    <string name="trash_row_item_meta">Element · z %1$s · usunięto %2$s</string>
     <string name="trash_time_just_now">przed chwilą</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">%1$d min temu</item>
@@ -104,7 +103,6 @@
     <string name="action_remove">Usuń</string>
     <string name="remove_dialog_title">Usunąć na stałe?</string>
     <string name="remove_dialog_body_list">%1$s i jego %2$s zostaną usunięte z tego urządzenia. Tego nie można cofnąć.</string>
-    <string name="remove_dialog_body_item">%1$s zostanie usunięte z tego urządzenia. Tego nie można cofnąć.</string>
     <string name="menu_empty_trash">Opróżnij kosz</string>
     <string name="action_empty_trash">Opróżnij kosz</string>
     <string name="empty_trash_dialog_title">Opróżnić kosz?</string>
@@ -116,7 +114,7 @@
         <item quantity="other">%1$d wpisu</item>
     </plurals>
     <string name="trash_empty_title">Kosz jest pusty</string>
-    <string name="trash_empty_body">Listy i elementy, które usuwasz, pojawiają się tutaj. Pozostają, dopóki ich nie usuniesz.</string>
+    <string name="trash_empty_body">Listy, które usuwasz, pojawiają się tutaj. Pozostają, dopóki ich nie usuniesz.</string>
     <string name="cd_more">Więcej opcji</string>
     <string name="cd_restore">Przywróć %1$s</string>
     <string name="cd_remove">Usuń %1$s na stałe</string>

@@ -78,9 +78,8 @@
 
     <string name="trash_title">Кошик</string>
     <string name="trash_load_error">Не вдалося завантажити кошик.</string>
-    <string name="trash_subtitle">Видалені списки та елементи залишаються тут, доки ви їх не приберете.</string>
+    <string name="trash_subtitle">Видалені списки залишаються тут, доки ви їх не приберете.</string>
     <string name="trash_row_list_meta">Список · %1$s · видалено %2$s</string>
-    <string name="trash_row_item_meta">Елемент · з %1$s · видалено %2$s</string>
     <string name="trash_time_just_now">щойно</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">%1$d хв тому</item>
@@ -104,7 +103,6 @@
     <string name="action_remove">Видалити</string>
     <string name="remove_dialog_title">Видалити назавжди?</string>
     <string name="remove_dialog_body_list">«%1$s» та його %2$s буде видалено з цього пристрою. Це неможливо скасувати.</string>
-    <string name="remove_dialog_body_item">«%1$s» буде видалено з цього пристрою. Це неможливо скасувати.</string>
     <string name="menu_empty_trash">Очистити кошик</string>
     <string name="action_empty_trash">Очистити кошик</string>
     <string name="empty_trash_dialog_title">Очистити кошик?</string>
@@ -116,7 +114,7 @@
         <item quantity="other">%1$d запису</item>
     </plurals>
     <string name="trash_empty_title">У кошику порожньо</string>
-    <string name="trash_empty_body">Списки та елементи, які ви видаляєте, з\'являються тут. Вони залишаються, доки ви їх не приберете.</string>
+    <string name="trash_empty_body">Списки, які ви видаляєте, з\'являються тут. Вони залишаються, доки ви їх не приберете.</string>
     <string name="cd_more">Більше опцій</string>
     <string name="cd_restore">Відновити %1$s</string>
     <string name="cd_remove">Видалити %1$s назавжди</string>

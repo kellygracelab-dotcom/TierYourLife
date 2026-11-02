@@ -421,8 +421,7 @@ class TierDaoTest {
         val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val poolId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
         dao.insertTierItem(tierItem(tierId = poolId, title = "Active", position = 0))
-        val trashedId = dao.insertTierItem(tierItem(tierId = poolId, title = "Trashed", position = 1))
-        dao.markTierItemDeleted(trashedId, deletedAt = 1_000L)
+        dao.insertTierItem(tierItem(tierId = poolId, title = "Trashed", position = 1).copy(deletedAt = 1_000L))
 
         dao.addItemsToPool(listId, listOf(NewPoolItem(title = "New", imageUrl = null)))
 
@@ -460,9 +459,8 @@ class TierDaoTest {
         val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val itemId = dao.insertTierItem(
-            tierItem(tierId = sTierId, title = "Interstellar", position = 0).copy(imageUrl = "/path/1"),
+            tierItem(tierId = sTierId, title = "Interstellar", position = 0).copy(imageUrl = "/path/1", deletedAt = 1_000L),
         )
-        dao.markTierItemDeleted(itemId, deletedAt = 1_000L)
 
         assertEquals("/path/1", dao.getTierItemImageById(itemId))
     }
@@ -473,10 +471,9 @@ class TierDaoTest {
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         dao.insertTierItem(tierItem(tierId = sTierId, title = "A", position = 0).copy(imageUrl = "/path/1"))
         dao.insertTierItem(tierItem(tierId = sTierId, title = "B", position = 1).copy(imageUrl = null))
-        val trashedWithImage = dao.insertTierItem(
-            tierItem(tierId = sTierId, title = "C", position = 2).copy(imageUrl = "/path/2"),
+        dao.insertTierItem(
+            tierItem(tierId = sTierId, title = "C", position = 2).copy(imageUrl = "/path/2", deletedAt = 1_000L),
         )
-        dao.markTierItemDeleted(trashedWithImage, deletedAt = 1_000L)
 
         val refs = dao.getAllImageRefs()
 
@@ -799,9 +796,7 @@ class TierDaoTest {
             tier(tierListId = filmsId, position = 1, label = "S", colorLight = "#B03A32", colorDark = "#F1948C"),
         )
         val keptId = dao.insertTierItem(tierItem(tierId = tierId, title = "Kept", position = 0))
-        val removedId = dao.insertTierItem(tierItem(tierId = tierId, title = "Removed", position = 1))
-
-        dao.markTierItemDeleted(removedId, deletedAt = 1_000L)
+        dao.insertTierItem(tierItem(tierId = tierId, title = "Trashed elsewhere", position = 1).copy(deletedAt = 1_000L))
 
         val graphItems = requireNotNull(dao.getTierListWithTiers(filmsId)).tiers.single().items
         assertEquals(listOf(keptId), graphItems.map { it.id })
@@ -809,7 +804,7 @@ class TierDaoTest {
     }
 
     @Test
-    fun restore_returns_list_and_item_with_original_ids_and_positions() = runBlocking {
+    fun restore_returns_list_with_original_ids_and_positions() = runBlocking {
         val filmsId = dao.insertTierList(tierList())
         val tierId = dao.insertTier(
             tier(tierListId = filmsId, position = 1, label = "S", colorLight = "#B03A32", colorDark = "#F1948C"),
@@ -818,9 +813,7 @@ class TierDaoTest {
         val secondId = dao.insertTierItem(tierItem(tierId = tierId, title = "Second", position = 1))
 
         dao.markTierListsDeleted(listOf(filmsId), deletedAt = 1_000L)
-        dao.markTierItemDeleted(secondId, deletedAt = 2_000L)
         dao.restoreTierLists(listOf(filmsId))
-        dao.restoreTierItem(secondId)
 
         val graph = requireNotNull(dao.getTierListWithTiers(filmsId))
         assertEquals(filmsId, graph.tierList.id)
@@ -842,7 +835,6 @@ class TierDaoTest {
         dao.deleteTierListById(filmsId)
 
         assertEquals(listOf(keptListId), dao.getDeletedTierLists().map { it.id })
-        assertTrue(dao.getDeletedTierItems().isEmpty())
         assertNull(dao.getTierListById(filmsId))
         assertTrue(dao.getAllTiersByTierListId(filmsId).isEmpty())
         assertTrue(dao.getAllTierItemsByTierId(tierId).isEmpty())
@@ -855,40 +847,83 @@ class TierDaoTest {
         val aliveTierId = dao.insertTier(
             tier(tierListId = aliveListId, position = 1, label = "S", colorLight = "#B03A32", colorDark = "#F1948C"),
         )
-        val trashedItemId = dao.insertTierItem(tierItem(tierId = aliveTierId, title = "Trashed item", position = 0))
+        // A card an older phone sent to the trash, which no longer shows it.
+        dao.insertTierItem(
+            tierItem(tierId = aliveTierId, title = "Trashed item", position = 0).copy(imageUrl = "/legacy", deletedAt = 2_000L),
+        )
         val aliveItemId = dao.insertTierItem(tierItem(tierId = aliveTierId, title = "Alive item", position = 1))
 
         dao.markTierListsDeleted(listOf(trashedListId), deletedAt = 1_000L)
-        dao.markTierItemDeleted(trashedItemId, deletedAt = 2_000L)
 
         dao.emptyTrash(account = null)
 
         assertTrue(dao.getDeletedTierLists().isEmpty())
-        assertTrue(dao.getDeletedTierItems().isEmpty())
+        assertFalse("/legacy" in dao.getAllImageRefs())
         assertEquals(listOf(aliveListId), dao.getAllTierLists().map { it.id })
         assertEquals(listOf(aliveItemId), dao.getAllTierItemsByTierId(aliveTierId).map { it.id })
     }
 
     @Test
-    fun permanently_deleting_trashed_item_removes_only_that_item() = runBlocking {
+    fun empty_trash_keeping_a_list_still_removes_the_others_and_cards_trashed_elsewhere() = runBlocking {
+        val keptListId = dao.insertTierList(tierList(title = "Still public"))
+        val goneListId = dao.insertTierList(tierList(title = "Gone"))
+        val aliveListId = dao.insertTierList(tierList(title = "Alive list"))
+        val aliveTierId = dao.insertTier(
+            tier(tierListId = aliveListId, position = 1, label = "S", colorLight = "#B03A32", colorDark = "#F1948C"),
+        )
+        dao.insertTierItem(
+            tierItem(tierId = aliveTierId, title = "Trashed item", position = 0).copy(imageUrl = "/legacy", deletedAt = 2_000L),
+        )
+        dao.markTierListsDeleted(listOf(keptListId, goneListId), deletedAt = 1_000L)
+
+        dao.emptyTrash(account = null, keepingListIds = setOf(keptListId))
+
+        assertEquals(listOf(keptListId), dao.getDeletedTierLists().map { it.id })
+        assertFalse("/legacy" in dao.getAllImageRefs())
+    }
+
+    @Test
+    fun removing_a_card_deletes_its_row_and_putting_it_back_returns_it_to_its_place() = runBlocking {
         val filmsId = dao.insertTierList(tierList())
         val tierId = dao.insertTier(
             tier(tierListId = filmsId, position = 1, label = "S", colorLight = "#B03A32", colorDark = "#F1948C"),
         )
-        val goneItemId = dao.insertTierItem(tierItem(tierId = tierId, title = "Gone", position = 0))
-        val keptItemId = dao.insertTierItem(tierItem(tierId = tierId, title = "Kept", position = 1))
+        val firstId = dao.insertTierItem(tierItem(tierId = tierId, title = "First", position = 0))
+        val middleId = dao.insertTierItem(tierItem(tierId = tierId, title = "Middle", position = 1))
+        val lastId = dao.insertTierItem(tierItem(tierId = tierId, title = "Last", position = 2))
+        val middle = requireNotNull(dao.getTierItemById(middleId))
 
-        dao.markTierItemDeleted(goneItemId, deletedAt = 1_000L)
-        dao.markTierItemDeleted(keptItemId, deletedAt = 2_000L)
-        dao.deleteTierItemById(goneItemId)
+        dao.removeTierItem(middle)
 
-        assertEquals(listOf(keptItemId), dao.getDeletedTierItems().map { it.id })
-        dao.restoreTierItem(keptItemId)
-        assertEquals(listOf(keptItemId), dao.getAllTierItemsByTierId(tierId).map { it.id })
+        assertNull(dao.getTierItemById(middleId))
+        assertTrue(dao.getTrashedItemsByTierId(tierId).isEmpty())
+        assertEquals(listOf(0, 1), dao.getAllTierItemsByTierId(tierId).map { it.position })
+
+        dao.putBackTierItem(middle, filmsId)
+
+        assertEquals(listOf(firstId, middleId, lastId), dao.getAllTierItemsByTierId(tierId).map { it.id })
+        assertEquals(middle, dao.getTierItemById(middleId))
     }
 
     @Test
-    fun trash_rows_carry_item_count_parent_title_and_pool_flag() = runBlocking {
+    fun putting_a_card_back_whose_tier_has_gone_lands_it_at_the_end_of_the_pool() = runBlocking {
+        val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
+        val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
+        val poolId = dao.getAllTiersByTierListId(listId).single { it.isPool }.id
+        val waitingId = dao.insertTierItem(tierItem(tierId = poolId, title = "Waiting", position = 0))
+        val removedId = dao.insertTierItem(tierItem(tierId = sTierId, title = "Removed", position = 0))
+        val removed = requireNotNull(dao.getTierItemById(removedId))
+
+        dao.removeTierItem(removed)
+        dao.deleteTierToPool(sTierId)
+        dao.putBackTierItem(removed, listId)
+
+        assertEquals(listOf(waitingId, removedId), dao.getAllTierItemsByTierId(poolId).map { it.id })
+        assertEquals(removed.uid, dao.getTierItemById(removedId)?.uid)
+    }
+
+    @Test
+    fun trash_rows_are_lists_only_with_their_item_count() = runBlocking {
         val filmsId = dao.insertTierList(tierList())
         val rankedTierId = dao.insertTier(
             tier(tierListId = filmsId, position = 1, label = "S", colorLight = "#B03A32", colorDark = "#F1948C"),
@@ -900,25 +935,20 @@ class TierDaoTest {
             ),
         )
         dao.insertTierItem(tierItem(tierId = rankedTierId, title = "Ranked one", position = 0))
-        val poolItemId = dao.insertTierItem(tierItem(tierId = poolTierId, title = "Pool one", position = 0))
+        dao.insertTierItem(tierItem(tierId = poolTierId, title = "Pool one", position = 0).copy(deletedAt = 1_000L))
 
         val gamesId = dao.insertTierList(tierList(title = "Games"))
         val gamesTierId = dao.insertTier(
             tier(tierListId = gamesId, position = 1, label = "S", colorLight = "#B03A32", colorDark = "#F1948C"),
         )
         dao.insertTierItem(tierItem(tierId = gamesTierId, title = "Game item", position = 0))
+        dao.insertTierItem(tierItem(tierId = gamesTierId, title = "Trashed game item", position = 1).copy(deletedAt = 1_000L))
 
-        dao.markTierItemDeleted(poolItemId, deletedAt = 1_000L)
         dao.markTierListsDeleted(listOf(gamesId), deletedAt = 2_000L)
 
         val deletedLists = dao.getDeletedTierLists()
-        val deletedItems = dao.getDeletedTierItems()
         assertEquals(listOf("Games"), deletedLists.map { it.title })
         assertEquals(listOf(1), deletedLists.map { it.itemCount })
-        assertEquals(listOf("Pool one"), deletedItems.map { it.title })
-        assertEquals(listOf("Films"), deletedItems.map { it.listTitle })
-        assertTrue(deletedItems.single().wasInPool)
-        assertFalse(deletedItems.any { it.title == "Game item" })
     }
 
     @Test
@@ -926,13 +956,11 @@ class TierDaoTest {
         val listId = dao.createTierListWithDefaultTier(title = "Films", captions = CAPTIONS)
         val sTierId = dao.getAllTiersByTierListId(listId).single { it.label == "S" }.id
         val aTierId = dao.getAllTiersByTierListId(listId).single { it.label == "A" }.id
-        val itemId = dao.insertTierItem(tierItem(tierId = sTierId, title = "Interstellar", position = 0))
-        dao.markTierItemDeleted(itemId, deletedAt = 1_000L)
+        val itemId = dao.insertTierItem(tierItem(tierId = sTierId, title = "Interstellar", position = 0).copy(deletedAt = 1_000L))
 
         dao.moveItem(itemId = itemId, toTierId = aTierId, toPosition = 0)
-        dao.restoreTierItem(itemId)
 
-        assertEquals(listOf(itemId), dao.getAllTierItemsByTierId(sTierId).map { it.id })
+        assertEquals(listOf(itemId), dao.getTrashedItemsByTierId(sTierId).map { it.id })
         assertTrue(dao.getAllTierItemsByTierId(aTierId).isEmpty())
     }
 

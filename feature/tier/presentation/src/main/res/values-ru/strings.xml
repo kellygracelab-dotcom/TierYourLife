@@ -78,9 +78,8 @@
 
     <string name="trash_title">Корзина</string>
     <string name="trash_load_error">Не удалось загрузить корзину.</string>
-    <string name="trash_subtitle">Удалённые списки и элементы остаются здесь, пока вы их не уберёте.</string>
+    <string name="trash_subtitle">Удалённые списки остаются здесь, пока вы их не уберёте.</string>
     <string name="trash_row_list_meta">Список · %1$s · удалён %2$s</string>
-    <string name="trash_row_item_meta">Элемент · из %1$s · удалён %2$s</string>
     <string name="trash_time_just_now">только что</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">%1$d мин назад</item>
@@ -104,7 +103,6 @@
     <string name="action_remove">Удалить</string>
     <string name="remove_dialog_title">Удалить навсегда?</string>
     <string name="remove_dialog_body_list">«%1$s» и его %2$s будут удалены с этого устройства. Это нельзя отменить.</string>
-    <string name="remove_dialog_body_item">«%1$s» будет удалён с этого устройства. Это нельзя отменить.</string>
     <string name="menu_empty_trash">Очистить корзину</string>
     <string name="action_empty_trash">Очистить корзину</string>
     <string name="empty_trash_dialog_title">Очистить корзину?</string>
@@ -116,7 +114,7 @@
         <item quantity="other">%1$d записи</item>
     </plurals>
     <string name="trash_empty_title">В корзине пусто</string>
-    <string name="trash_empty_body">Списки и элементы, которые вы удаляете, появляются здесь. Они остаются, пока вы их не уберёте.</string>
+    <string name="trash_empty_body">Списки, которые вы удаляете, появляются здесь. Они остаются, пока вы их не уберёте.</string>
     <string name="cd_more">Больше опций</string>
     <string name="cd_restore">Восстановить %1$s</string>
     <string name="cd_remove">Удалить %1$s навсегда</string>

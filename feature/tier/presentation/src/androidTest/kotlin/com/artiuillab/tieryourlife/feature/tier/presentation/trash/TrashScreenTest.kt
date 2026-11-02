@@ -118,9 +118,7 @@ class TrashScreenTest {
     private fun setScreen(
         state: TrashUiState,
         onRestoreList: (Long) -> Unit = {},
-        onRestoreItem: (Long) -> Unit = {},
         onRemoveListPermanently: (Long) -> Unit = {},
-        onRemoveItemPermanently: (Long) -> Unit = {},
         onEmptyTrash: () -> Unit = {},
     ) {
         composeRule.setContent {
@@ -129,9 +127,7 @@ class TrashScreenTest {
                     state = state,
                     onBack = {},
                     onRestoreList = onRestoreList,
-                    onRestoreItem = onRestoreItem,
                     onRemoveListPermanently = onRemoveListPermanently,
-                    onRemoveItemPermanently = onRemoveItemPermanently,
                     onEmptyTrash = onEmptyTrash,
                 )
             }

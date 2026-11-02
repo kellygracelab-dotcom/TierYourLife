@@ -64,14 +64,14 @@
     </plurals>
     <string name="tier_detail_content_description_edit_title">リスト名を編集</string>
     <string name="tier_detail_content_description_manual_add">手動でアイテムを追加</string>
-    <string name="tier_detail_item_moved_to_trash">%1$s をゴミ箱に移動しました</string>
+    <string name="tier_detail_item_removed">%1$s を削除しました</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="other">%1$d件をプールに追加しました</item>
     </plurals>
     <string name="tier_detail_move_sheet_current_tier">現在ここにあります</string>
     <string name="tier_detail_move_sheet_pool_subtitle">未評価のまま、リストには残ります</string>
     <string name="tier_detail_move_sheet_pool_title">プールに戻す</string>
-    <string name="tier_detail_move_sheet_remove_subtitle">ゴミ箱に移動します</string>
+    <string name="tier_detail_move_sheet_remove_subtitle">直後なら元に戻せます</string>
     <string name="tier_detail_move_sheet_remove_title">リストから削除</string>
     <string name="tier_detail_move_sheet_subtitle">ティアに移動</string>
     <string name="tier_detail_not_found">リストが見つかりません。</string>
@@ -90,7 +90,7 @@
     </plurals>
     <string name="tier_detail_ranked_row_description">%1$d 位、%2$s、ティア %3$s。</string>
     <string name="tier_detail_snackbar_undo">元に戻す</string>
-    <string name="tier_detail_tier_moved_to_trash">ティア %1$s をゴミ箱に移動しました</string>
+    <string name="tier_detail_tier_removed">ティア %1$s を削除しました</string>
     <string name="tier_detail_trash_target_label">削除</string>
     <string name="tier_editor_add_title">ティアを追加</string>
     <string name="tier_editor_cancel">キャンセル</string>

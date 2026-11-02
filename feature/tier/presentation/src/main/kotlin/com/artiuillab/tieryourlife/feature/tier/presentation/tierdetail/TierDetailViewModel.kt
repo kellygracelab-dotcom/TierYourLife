@@ -17,12 +17,15 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -74,6 +77,8 @@ class TierDetailViewModel @Inject constructor(
 
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
+
+    private val removedItems = mutableMapOf<Long, Deferred<RemovedTierItem?>>()
 
     init {
         viewModelScope.launch {
@@ -272,15 +277,32 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
+    /** Gone for good; what it was is kept until the snackbar's Undo is used or let go. */
     fun deleteItem(itemId: Long) {
-        mutate("Deleting an item") {
-            repository.deleteTierItem(itemId)
+        removedItems[itemId] = viewModelScope.async {
+            var removed: RemovedTierItem? = null
+            messages.guard("Deleting an item") { removed = repository.deleteTierItem(itemId) }
+            reloadTierList()
+            removed
         }
     }
 
     fun restoreItem(itemId: Long) {
-        mutate("Restoring an item") {
-            repository.restoreTierItem(itemId)
+        val removal = removedItems.remove(itemId) ?: return
+        viewModelScope.launch {
+            val removed = removal.await() ?: return@launch
+            messages.guard("Restoring an item") { repository.restoreTierItem(removed) }
+            reloadTierList()
+        }
+    }
+
+    fun forgetDeletedItem(itemId: Long) {
+        val removal = removedItems.remove(itemId) ?: return
+        viewModelScope.launch {
+            val removed = removal.await() ?: return@launch
+            // Nothing on screen changes, so a failure here is not the person's to hear about.
+            runSuspendCatching { repository.forgetRemovedTierItem(removed) }
+                .onFailure { Timber.w(it, "Letting go of a removed item's picture failed") }
         }
     }
 
