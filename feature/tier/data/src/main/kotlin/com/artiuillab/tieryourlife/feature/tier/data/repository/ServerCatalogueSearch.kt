@@ -28,6 +28,7 @@ class ServerCatalogueSearch @Inject constructor(
         page: Int,
         scope: PictureScope,
         everywhere: Boolean,
+        quick: Boolean,
     ): Result<CatalogueSearchPage> {
         val typed = query.trim()
         if (typed.length < MIN_QUERY) return direct.search(typed, languageTag, page)
@@ -40,6 +41,7 @@ class ServerCatalogueSearch @Inject constructor(
                     language = language,
                     page = page,
                     web = if (everywhere) "1" else null,
+                    part = if (quick) "quick" else null,
                 ).toDomain(),
             )
         } catch (exception: IOException) {

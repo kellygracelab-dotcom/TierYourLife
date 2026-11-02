@@ -46,6 +46,7 @@ class CatalogueSearchRepositoryImpl @Inject constructor(
         page: Int,
         scope: PictureScope,
         everywhere: Boolean,
+        quick: Boolean,
     ): Result<CatalogueSearchPage> {
         val normalizedQuery = query.trim()
 
