@@ -24,7 +24,7 @@ kover = "0.9.11"
 robolectric = "4.17"
 roborazzi = "1.77.0"
 detekt = "2.0.0-alpha.6"
-firebaseBom = "35.0.2"
+firebaseBom = "35.1.0"
 credentials = "1.6.0"
 googleid = "1.2.1"
 # Only for the sign-in mark: Google ships their own G in this library.
