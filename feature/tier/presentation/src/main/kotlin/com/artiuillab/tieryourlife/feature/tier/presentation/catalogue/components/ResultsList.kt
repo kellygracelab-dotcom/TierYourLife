@@ -93,6 +93,7 @@ internal fun ResultsList(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
+                        item.credit?.let { PictureCredit(it) }
                     }
                     SelectionCheckbox(isSelected = isSelected)
                 }
