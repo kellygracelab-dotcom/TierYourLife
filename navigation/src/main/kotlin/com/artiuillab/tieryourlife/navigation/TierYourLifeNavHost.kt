@@ -54,6 +54,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.navigation.nav
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToSection
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToTopic
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.proposeSectionScreen
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.rememberListOpener
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.sectionScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.topicScreen
 import com.artiuillab.tieryourlife.feature.play.presentation.PlayOverBoards
@@ -173,7 +174,7 @@ private fun NavHostController.goTo(destination: RailDestination) {
 }
 
 /** The two halves of the home screen are joined here rather than in a feature: they are on their way into two, and only this module will see both. */
-private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
+private fun NavGraphBuilder.homeScreen(navController: NavHostController, openList: (CommunityRoute.CommunityList) -> Unit) {
     composable<Route.TierLists> { backStackEntry ->
         val route = backStackEntry.toRoute<Route.TierLists>()
         HomeScreen(
@@ -191,7 +192,7 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController) {
             },
             community = { tabs ->
                 CommunityHomeScreen(
-                    onOpenList = { id -> navController.navigateToCommunityList(id) },
+                    onOpenList = openList,
                     onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
                     onSettingsClick = { navController.navigateToSettings() },
                     onManageFollowing = { navController.navigateToFollowing() },
@@ -240,6 +241,11 @@ private fun NavContent(
     languageTag: String?,
     onLanguageTagChange: (String?) -> Unit,
 ) {
+    // A card that knows the list is the reader's own goes to its board, with no page pushed in between.
+    val openList = rememberListOpener(
+        toBoard = { id -> navController.navigateToTierDetail(id) },
+        toList = { route -> navController.navigateToCommunityList(route) },
+    )
     // One set of rules for every screen: the next one slides in a little and
     // fades up over the one that stays beneath; back is the same, shorter.
     // Siblings at the top level only fade: nothing is above or below them.
@@ -252,7 +258,7 @@ private fun NavContent(
         popEnterTransition = { if (betweenTopLevels()) fadeIn(tween(POP_MILLIS)) else EnterTransition.None },
         popExitTransition = { if (betweenTopLevels()) fadeOut(tween(POP_MILLIS)) else popOut() },
     ) {
-        homeScreen(navController)
+        homeScreen(navController, openList)
         tierDetailScreen(
             onBack = { navController.popBackStack() },
             // Replaces the board rather than stacking: the column beside it
@@ -266,6 +272,10 @@ private fun NavContent(
             onChooseCover = { id -> navController.navigateToCoverPicker(id) },
             onChooseTopic = { id -> navController.navigateToTopicPicker(id) },
             onOpenPublishedList = { id -> navController.navigateToCommunityList(id) },
+            // As others see it, without handing straight back to this board.
+            onSeeInCommunity = { id ->
+                navController.navigateToCommunityList(CommunityRoute.CommunityList(id, mine = true, fromBoard = true))
+            },
             play = PlayOverBoards,
             onProposeSection = { fileUnder -> navController.navigateToProposeSection(fileUnder) },
         )
@@ -308,15 +318,15 @@ private fun NavContent(
         )
         myPublishedScreen(
             onBack = { navController.popBackStack() },
-            onOpen = { route -> navController.navigateToCommunityList(route) },
+            onOpen = openList,
         )
         authorScreen(
             onBack = { navController.popBackStack() },
-            onOpenList = { route -> navController.navigateToCommunityList(route) },
+            onOpenList = openList,
         )
         sectionScreen(
             onBack = { navController.popBackStack() },
-            onOpenList = { route -> navController.navigateToCommunityList(route) },
+            onOpenList = openList,
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
             onOpenTopic = { route -> navController.navigateToTopic(route) },
         )
@@ -345,7 +355,7 @@ private fun NavContent(
         )
         topicScreen(
             onBack = { navController.popBackStack() },
-            onOpenList = { route -> navController.navigateToCommunityList(route) },
+            onOpenList = openList,
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
         )
         communityListScreen(

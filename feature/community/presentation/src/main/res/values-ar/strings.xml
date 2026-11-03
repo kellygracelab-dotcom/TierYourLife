@@ -295,7 +295,6 @@
         <item quantity="many">لديك %1$d من %2$d اقتراحات قيد الانتظار.</item>
         <item quantity="other">لديك %1$d من %2$d اقتراحات قيد الانتظار.</item>
     </plurals>
-    <string name="community_open_your_board">افتح لوحتك</string>
     <string name="community_show_my_ranking">اعرض ترتيبي للآخرين</string>
     <string name="community_sign_in_to_show_ranking">سجّل الدخول لعرض ترتيبك</string>
     <string name="community_ranking_shown">أصبح ترتيبك ضمن ترتيبات القائمة</string>
@@ -308,8 +307,6 @@
     <string name="community_get_back_as_board">استرجعها كلوحة</string>
     <string name="community_copy_link">نسخ الرابط</string>
     <string name="community_link_copied">تم نسخ الرابط</string>
-    <string name="community_action_publish_anonymously">انشرها بدون اسمي</string>
-    <string name="community_action_publish_named">انشرها باسمي</string>
     <string name="community_drop_to_start_yours">أفلتها لتبدأ نسختك · تبدأ نسختك بترتيب %1$s</string>
     <string name="community_drop_to_start_yours_unnamed">أفلتها لتبدأ نسختك · تبدأ نسختك بهذا الترتيب</string>
     <string name="community_started_from_theirs">نسختك تبدأ من ترتيب %1$s</string>

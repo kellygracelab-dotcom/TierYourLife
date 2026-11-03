@@ -35,6 +35,8 @@
     <string name="list_settings_public_unverified">Google Play no pudo confirmar esta instalación, así que no se puede publicar nada desde ella.</string>
     <string name="list_settings_share">Compartir como imagen</string>
     <string name="list_settings_share_sub">Una imagen de este tablero, con enlace a la app</string>
+    <string name="list_settings_see_in_community">Ver en la Comunidad</string>
+    <string name="list_settings_see_in_community_sub">Como la ven los demás, con sus rankings y el enlace</string>
     <string name="list_settings_update_published">Versión publicada</string>
     <string name="list_settings_update_published_body">Envía este tablero de nuevo, con el mismo enlace.</string>
     <string name="manual_dialog_add">Añadir</string>

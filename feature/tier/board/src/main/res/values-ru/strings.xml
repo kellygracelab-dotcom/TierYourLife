@@ -35,6 +35,8 @@
     <string name="list_settings_public_unverified">Google Play не подтвердил эту установку, поэтому публиковать с неё нельзя.</string>
     <string name="list_settings_share">Поделиться картинкой</string>
     <string name="list_settings_share_sub">Картинка этой доски и ссылка на приложение</string>
+    <string name="list_settings_see_in_community">Посмотреть в Сообществе</string>
+    <string name="list_settings_see_in_community_sub">Как её видят другие: их рейтинги и ссылка</string>
     <string name="list_settings_update_published">Опубликованная версия</string>
     <string name="list_settings_update_published_body">Отправить доску заново, по той же ссылке.</string>
     <string name="manual_dialog_add">Добавить</string>

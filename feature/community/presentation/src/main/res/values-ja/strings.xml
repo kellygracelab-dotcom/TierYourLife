@@ -265,7 +265,6 @@
     <plurals name="propose_waiting_count">
         <item quantity="other">%2$d件中%1$d件の提案が確認待ちです。</item>
     </plurals>
-    <string name="community_open_your_board">自分のボードを開く</string>
     <string name="community_show_my_ranking">自分のランキングをほかの人に見せる</string>
     <string name="community_sign_in_to_show_ranking">ランキングを見せるにはログインしてください</string>
     <string name="community_ranking_shown">あなたのランキングがリストのランキングに加わりました</string>
@@ -278,8 +277,6 @@
     <string name="community_get_back_as_board">ボードとして取り戻す</string>
     <string name="community_copy_link">リンクをコピー</string>
     <string name="community_link_copied">リンクをコピーしました</string>
-    <string name="community_action_publish_anonymously">名前を出さずに公開</string>
-    <string name="community_action_publish_named">名前を出して公開</string>
     <string name="community_drop_to_start_yours">離すと自分のバージョンを開始 · 自分は%1$sのランキングから始まります</string>
     <string name="community_drop_to_start_yours_unnamed">離すと自分のバージョンを開始 · 自分はこのランキングから始まります</string>
     <string name="community_started_from_theirs">%1$sのランキングから自分のバージョンを始めました</string>

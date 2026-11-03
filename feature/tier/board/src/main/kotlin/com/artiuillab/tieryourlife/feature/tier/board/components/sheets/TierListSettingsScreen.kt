@@ -65,6 +65,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.ChevronRightIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CoverIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FormatListNumberedIcon
 import com.artiuillab.tieryourlife.core.theme.ui.GridViewIcon
+import com.artiuillab.tieryourlife.core.theme.ui.LeaderboardIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
 import com.artiuillab.tieryourlife.core.theme.ui.ShareIcon
@@ -107,6 +108,8 @@ fun TierListSettingsScreenContent(
     onChooseTopic: () -> Unit = {},
     onAddCards: () -> Unit = {},
     onShare: () -> Unit = {},
+    /** The published list's own page, where readers' rankings and its link are; null while it is not out. */
+    onSeeInCommunity: (() -> Unit)? = null,
 ) {
     var tierEditorVisible by remember { mutableStateOf(false) }
     var categorySheetVisible by remember { mutableStateOf(false) }
@@ -154,6 +157,9 @@ fun TierListSettingsScreenContent(
                         anonymous = list.anonymous,
                         onSetAnonymous = onSetAnonymous,
                     )
+                    if (onSeeInCommunity != null && publicPending != false) {
+                        SeeInCommunityRow(onClick = onSeeInCommunity)
+                    }
 
                     // A category exists only for the feed; a cover is also the card's
                     // own art, so it stays available to a guest.
@@ -422,6 +428,17 @@ private fun ShareRow(onClick: () -> Unit) {
         subtitle = stringResource(R.string.list_settings_share_sub),
         onClick = onClick,
         testTag = TierDetailTestTags.SHARE_ROW,
+    )
+}
+
+@Composable
+private fun SeeInCommunityRow(onClick: () -> Unit) {
+    SettingsActionRow(
+        icon = { LeaderboardIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = stringResource(R.string.list_settings_see_in_community),
+        subtitle = stringResource(R.string.list_settings_see_in_community_sub),
+        onClick = onClick,
+        testTag = TierDetailTestTags.SEE_IN_COMMUNITY_ROW,
     )
 }
 

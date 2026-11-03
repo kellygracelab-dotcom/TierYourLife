@@ -13,6 +13,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -20,7 +23,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** One's own list, named or anonymous, reads as others see it, says it is theirs, and always has something to do. */
+/** One's own list, named or anonymous, gives way to its board when that is here; otherwise it reads as others see it, says it is theirs, and always has something to do. */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], qualifiers = "en-w411dp-h891dp")
 class OwnListPageTest {
@@ -41,7 +44,12 @@ class OwnListPageTest {
     private val mineNamed = theirs.copy(authorName = "Danylo", authorUid = "me", own = true, ownBoardId = 12)
     private val mineAnonymous = theirs.copy(authorName = "", authorUid = "", editorial = true, byNobody = true, own = true)
 
-    private fun show(state: CommunityListUiState.Success, onOpenSaved: (Long) -> Unit = {}, own: OwnListCallbacks = OwnListCallbacks()) {
+    private fun show(
+        state: CommunityListUiState.Success,
+        onOpenSaved: (Long) -> Unit = {},
+        own: OwnListCallbacks = OwnListCallbacks(),
+        listNotices: Flow<ListNotice> = emptyFlow(),
+    ) {
         composeRule.setContent {
             TierYourLifeTheme {
                 CommunityListScreenContent(
@@ -52,15 +60,16 @@ class OwnListPageTest {
                     onRetry = {},
                     onOpenSaved = onOpenSaved,
                     own = own,
+                    listNotices = listNotices,
                 )
             }
         }
     }
 
+    // The page of one's own list opened from its board: as visitors see it, the link to give out, and no second way back to the board.
     @Test
-    fun myOwnList_saysItIsMine_hasNoSaveAndNoSwitch_butOpensMyBoardAndCopiesTheLink() {
-        val opened = mutableListOf<Long>()
-        show(mineNamed, onOpenSaved = { opened += it })
+    fun myOwnList_fromItsBoard_saysItIsMine_hasNoSaveNoSwitchAndNoBoardButton_butCopiesTheLink() {
+        show(mineNamed.copy(fromBoard = true, ownBoardLookedUp = true))
 
         composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.showing(Showing.Mine)).assertDoesNotExist()
@@ -68,16 +77,22 @@ class OwnListPageTest {
         composeRule.onNodeWithText("Published").assertExists()
         composeRule.onNodeWithText("This is what visitors see. Changes happen on your board.").assertExists()
         composeRule.onNodeWithTag(CommunityListTestTags.COPY_LINK).assertExists()
-        composeRule.onNodeWithTag(CommunityListTestTags.OPEN_BOARD).performClick()
+        composeRule.onNodeWithTag(CommunityListTestTags.RESTORE_BOARD).assertDoesNotExist()
+        composeRule.onNodeWithTag(CommunityListTestTags.GET_BACK_BOARD).assertDoesNotExist()
+    }
+
+    @Test
+    fun myOwnList_whoseBoardIsHere_givesWayToTheBoard() {
+        val opened = mutableListOf<Long>()
+        show(mineNamed, onOpenSaved = { opened += it }, listNotices = flowOf(ListNotice.OpenBoard(12)))
 
         composeRule.runOnIdle { assertEquals(listOf(12L), opened) }
     }
 
     @Test
-    fun myOwnList_sMenu_offersMyPublicLists_myName_andTakingItDown_butNeitherHideNorReport() {
+    fun myOwnList_sMenu_offersMyPublicLists_andTakingItDown_butNeitherHideNorReport() {
         val takenDown = mutableListOf<Unit>()
-        val anonymously = mutableListOf<Boolean>()
-        show(mineNamed, own = OwnListCallbacks(onTakeDown = { takenDown += Unit }, onPublishAnonymously = { anonymously += it }))
+        show(mineNamed.copy(ownBoardId = null, ownBoardLookedUp = true), own = OwnListCallbacks(onTakeDown = { takenDown += Unit }))
 
         composeRule.onNodeWithTag(CommunityListTestTags.MORE).performClick()
 
@@ -85,14 +100,21 @@ class OwnListPageTest {
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_HIDE).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_REPORT).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_YOUR_PUBLIC_LISTS).assertExists()
-        composeRule.onNodeWithText("Publish without my name").performClick()
-        composeRule.onNodeWithTag(CommunityListTestTags.MORE).performClick()
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_TAKE_DOWN).performClick()
 
-        composeRule.runOnIdle {
-            assertEquals(listOf(true), anonymously)
-            assertEquals(1, takenDown.size)
-        }
+        composeRule.runOnIdle { assertEquals(1, takenDown.size) }
+    }
+
+    // The board's Public switch takes it down there, and keeps the board in step with it.
+    @Test
+    fun myOwnList_fromItsBoard_leavesTakingItDownToTheBoard() {
+        show(mineNamed.copy(fromBoard = true, ownBoardLookedUp = true))
+
+        composeRule.onNodeWithTag(CommunityListTestTags.MORE).performClick()
+
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_RANKINGS).assertExists()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_YOUR_PUBLIC_LISTS).assertExists()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_TAKE_DOWN).assertDoesNotExist()
     }
 
     // Danylo opened his own anonymous list and nothing said it was his, nor was there anything to do.
@@ -104,32 +126,19 @@ class OwnListPageTest {
         composeRule.onNodeWithTag(CommunityListTestTags.YOUR_LIST).assertExists()
         composeRule.onNodeWithText("Anonymous · only you see it's yours").assertExists()
         composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertDoesNotExist()
-        composeRule.onNodeWithTag(CommunityListTestTags.OPEN_BOARD).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.GET_BACK_BOARD).performClick()
 
         composeRule.runOnIdle { assertEquals(1, gotBack.size) }
     }
 
     @Test
-    fun myOwnAnonymousList_hasAMenu_withTakeDown_butNoNameToChangeWithoutTheBoard() {
+    fun myOwnAnonymousList_withNoBoardHere_hasAMenu_withTakeDown() {
         show(mineAnonymous.copy(ownBoardLookedUp = true))
 
         composeRule.onNodeWithTag(CommunityListTestTags.MORE).performClick()
 
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_TAKE_DOWN).assertExists()
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_YOUR_PUBLIC_LISTS).assertExists()
-        composeRule.onNodeWithTag(CommunityTestTags.ACTION_PUBLISH_ANONYMOUSLY).assertDoesNotExist()
-    }
-
-    @Test
-    fun myOwnAnonymousList_withItsBoardHere_offersToPutMyNameBack() {
-        val anonymously = mutableListOf<Boolean>()
-        show(mineAnonymous.copy(anonymous = true, ownBoardId = 12, ownBoardLookedUp = true), own = OwnListCallbacks(onPublishAnonymously = { anonymously += it }))
-
-        composeRule.onNodeWithTag(CommunityListTestTags.MORE).performClick()
-        composeRule.onNodeWithText("Publish with my name").performClick()
-
-        composeRule.runOnIdle { assertEquals(listOf(false), anonymously) }
     }
 
     @Test
@@ -137,7 +146,7 @@ class OwnListPageTest {
         val restored = mutableListOf<Unit>()
         show(mineNamed.copy(ownBoardId = null, trashedBoardId = 5, ownBoardLookedUp = true), own = OwnListCallbacks(onRestore = { restored += Unit }))
 
-        composeRule.onNodeWithTag(CommunityListTestTags.OPEN_BOARD).assertDoesNotExist()
+        composeRule.onNodeWithTag(CommunityListTestTags.GET_BACK_BOARD).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.RESTORE_BOARD).performClick()
 
         composeRule.runOnIdle { assertEquals(1, restored.size) }
@@ -147,7 +156,7 @@ class OwnListPageTest {
     fun myOwnList_beforeThisPhoneHasAnswered_offersNoBoardButtonYet() {
         show(mineNamed.copy(ownBoardId = null))
 
-        composeRule.onNodeWithTag(CommunityListTestTags.OPEN_BOARD).assertDoesNotExist()
+        composeRule.onNodeWithTag(CommunityListTestTags.RESTORE_BOARD).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.GET_BACK_BOARD).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.COPY_LINK).assertExists()
     }
@@ -156,23 +165,23 @@ class OwnListPageTest {
     @Test
     @Config(qualifiers = "en-w891dp-h411dp")
     fun myOwnList_inAShortWindowsBar_saysItIsMine_andKeepsTheButtons() {
-        show(mineNamed.copy(rankingCount = 3))
+        show(mineNamed.copy(rankingCount = 3, ownBoardId = null, ownBoardLookedUp = true))
 
         composeRule.onNodeWithTag(CommunityListTestTags.YOUR_LIST).assertExists()
         composeRule.onNodeWithTag(CommunityListTestTags.BAR_AUTHOR).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.COPY_LINK).assertExists()
-        composeRule.onNodeWithTag(CommunityListTestTags.OPEN_BOARD).assertExists()
+        composeRule.onNodeWithTag(CommunityListTestTags.GET_BACK_BOARD).assertExists()
     }
 
     // A tablet held upright: the chip and the meta line take the author line's place under the title.
     @Test
     @Config(qualifiers = "en-w800dp-h1280dp")
     fun myOwnList_onAnUprightTablet_saysItIsMineUnderTheTitle() {
-        show(mineNamed.copy(rankingCount = 3))
+        show(mineNamed.copy(rankingCount = 3, ownBoardId = null, ownBoardLookedUp = true))
 
         composeRule.onNodeWithTag(CommunityListTestTags.YOUR_LIST).assertExists()
         composeRule.onNodeWithText("Published").assertExists()
-        composeRule.onNodeWithTag(CommunityListTestTags.OPEN_BOARD).assertExists()
+        composeRule.onNodeWithTag(CommunityListTestTags.GET_BACK_BOARD).assertExists()
     }
 
     @Test

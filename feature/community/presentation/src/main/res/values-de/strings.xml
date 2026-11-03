@@ -271,7 +271,6 @@
         <item quantity="one">%1$d von %2$d Vorschlägen wartet.</item>
         <item quantity="other">%1$d von %2$d Vorschlägen warten.</item>
     </plurals>
-    <string name="community_open_your_board">Dein Board öffnen</string>
     <string name="community_show_my_ranking">Meine Reihung anderen zeigen</string>
     <string name="community_sign_in_to_show_ranking">Melde dich an, um deine Reihung zu zeigen</string>
     <string name="community_ranking_shown">Deine Reihung steht jetzt bei den Reihungen der Liste</string>
@@ -284,8 +283,6 @@
     <string name="community_get_back_as_board">Als Board zurückholen</string>
     <string name="community_copy_link">Link kopieren</string>
     <string name="community_link_copied">Link kopiert</string>
-    <string name="community_action_publish_anonymously">Ohne meinen Namen veröffentlichen</string>
-    <string name="community_action_publish_named">Mit meinem Namen veröffentlichen</string>
     <string name="community_drop_to_start_yours">Loslassen für deine Version · Meine beginnt mit dem Ranking von %1$s</string>
     <string name="community_drop_to_start_yours_unnamed">Loslassen für deine Version · Meine beginnt mit diesem Ranking</string>
     <string name="community_started_from_theirs">Deine Version beginnt mit dem Ranking von %1$s</string>

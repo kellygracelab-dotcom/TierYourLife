@@ -36,13 +36,12 @@ import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.board.share.SHARE_LINK
 import kotlinx.coroutines.launch
 
-/** What the page of their own list can do beyond opening the board. */
+/** What the page of their own list can do while its board is not on this phone, and from its menu. */
 data class OwnListCallbacks(
     val onRestore: () -> Unit = {},
     val onGetBack: () -> Unit = {},
     val onTakeDown: () -> Unit = {},
     val onOpenMyPublished: () -> Unit = {},
-    val onPublishAnonymously: (Boolean) -> Unit = {},
 )
 
 private val OWN_LINE_HEIGHT = 56.dp
@@ -101,7 +100,7 @@ internal fun OwnMetaText(state: CommunityListUiState.Success, modifier: Modifier
     )
 }
 
-/** Open, restore or rebuild: whichever the board behind the list needs. */
+/** Restore or rebuild: whichever the board behind the list needs. */
 @Composable
 internal fun OwnBoardButton(
     state: CommunityListUiState.Success,
@@ -113,7 +112,6 @@ internal fun OwnBoardButton(
 ) {
     val action = state.ownBoardAction ?: return
     val (text, tag) = when (action) {
-        OwnBoardAction.Open -> R.string.community_open_your_board to CommunityListTestTags.OPEN_BOARD
         OwnBoardAction.Restore -> R.string.community_restore_from_trash to CommunityListTestTags.RESTORE_BOARD
         OwnBoardAction.GetBack -> R.string.community_get_back_as_board to CommunityListTestTags.GET_BACK_BOARD
     }

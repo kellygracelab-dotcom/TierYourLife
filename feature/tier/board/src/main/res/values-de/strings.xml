@@ -35,6 +35,8 @@
     <string name="list_settings_public_unverified">Google Play konnte diese Installation nicht bestätigen, daher lässt sich von hier nichts veröffentlichen.</string>
     <string name="list_settings_share">Als Bild teilen</string>
     <string name="list_settings_share_sub">Ein Bild dieses Boards, mit Link zur App</string>
+    <string name="list_settings_see_in_community">In der Community ansehen</string>
+    <string name="list_settings_see_in_community_sub">So, wie andere sie sehen, mit ihren Rankings und dem Link</string>
     <string name="list_settings_update_published">Veröffentlichte Fassung</string>
     <string name="list_settings_update_published_body">Dieses Board erneut senden, unter demselben Link.</string>
     <string name="manual_dialog_add">Hinzufügen</string>

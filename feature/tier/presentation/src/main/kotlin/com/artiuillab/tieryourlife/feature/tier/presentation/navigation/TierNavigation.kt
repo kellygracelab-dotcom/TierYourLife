@@ -28,6 +28,7 @@ fun NavGraphBuilder.tierDetailScreen(
     onChooseCover: (tierListId: Long) -> Unit = {},
     onChooseTopic: (tierListId: Long) -> Unit = {},
     onOpenPublishedList: (String) -> Unit = {},
+    onSeeInCommunity: ((String) -> Unit)? = null,
     play: BoardPlay = NoPlay,
     onProposeSection: ((String?) -> Unit)? = null,
 ) {
@@ -55,6 +56,7 @@ fun NavGraphBuilder.tierDetailScreen(
             topicChanged = topicChanged,
             onTopicChangeConsumed = { backStackEntry.savedStateHandle[TOPIC_CHANGED_RESULT_KEY] = false },
             onOpenPublishedList = onOpenPublishedList,
+            onSeeInCommunity = onSeeInCommunity,
             focusTierId = route.focusTierId,
             play = play,
             onProposeSection = onProposeSection,

@@ -335,6 +335,7 @@ private fun TierScreenBody(
                 actions.onAddClick()
             },
             onShare = { scope.launch { shareBoard(context, list, palette, shareCaption, shareFooter) } },
+            onSeeInCommunity = actions.onSeeInCommunity?.let { open -> list.publishedId?.let { id -> { open(id) } } },
         )
         return
     }

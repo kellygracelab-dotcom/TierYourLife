@@ -8,8 +8,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 /** Whose arrangement is on screen. */
 enum class Showing { Theirs, Mine }
 
-/** What their own list's page offers for the board behind it. */
-enum class OwnBoardAction { Open, Restore, GetBack }
+/** What their own list's page offers when the board behind it is not on this phone. */
+enum class OwnBoardAction { Restore, GetBack }
 
 sealed interface CommunityListUiState {
     data object Loading : CommunityListUiState
@@ -68,8 +68,10 @@ sealed interface CommunityListUiState {
         val ownBoardLookedUp: Boolean = false,
         /** Restoring, rebuilding, republishing or taking it down: one at a time. */
         val ownBusy: Boolean = false,
-        /** Out without the author's name; on their own list, what "Publish with my name" turns back. */
+        /** Out without the author's name. */
         val anonymous: Boolean = false,
+        /** Their own list, asked for from its board: changed and taken down there, so not here. */
+        val fromBoard: Boolean = false,
         val listId: String = "",
         /** Signed in with an account: only then can their ranking be shown to others. */
         val signedIn: Boolean = false,
@@ -91,10 +93,9 @@ sealed interface CommunityListUiState {
          */
         val readOnly: Boolean get() = own || showing == Showing.Theirs
 
-        /** Never an empty bar on their own list: the board, or the way to get it back. */
+        /** Their own list with no board here: the way to get it back. A board that is here opens instead of this page. */
         val ownBoardAction: OwnBoardAction? get() = when {
-            !own -> null
-            ownBoardId != null -> OwnBoardAction.Open
+            !own || ownBoardId != null -> null
             trashedBoardId != null -> OwnBoardAction.Restore
             ownBoardLookedUp -> OwnBoardAction.GetBack
             else -> null

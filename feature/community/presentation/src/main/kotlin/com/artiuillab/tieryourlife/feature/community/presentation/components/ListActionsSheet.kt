@@ -32,7 +32,6 @@ import com.artiuillab.tieryourlife.core.theme.ui.GridViewIcon
 import com.artiuillab.tieryourlife.core.theme.ui.HideIcon
 import com.artiuillab.tieryourlife.core.theme.ui.LeaderboardIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PersonIcon
-import com.artiuillab.tieryourlife.core.theme.ui.VisibilityIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 
 /**
@@ -60,9 +59,6 @@ fun ListActionsSheet(
     signInToShowRanking: Boolean = false,
     /** On this person's own list: the list of all their public ones. */
     onOpenMyPublished: (() -> Unit)? = null,
-    /** On their own list with its board on this phone: out again without the name, or with it when [anonymous]. */
-    onPublishAnonymously: (() -> Unit)? = null,
-    anonymous: Boolean = false,
     /** On their own list: down for everyone. */
     onTakeDown: (() -> Unit)? = null,
     /** On a list's page, first: the readers' placings of it, and how many there are. */
@@ -124,14 +120,6 @@ fun ListActionsSheet(
                     testTag = CommunityTestTags.ACTION_YOUR_PUBLIC_LISTS,
                     onClick = onOpenMyPublished,
                     icon = { size, tint -> GridViewIcon(size, tint) },
-                )
-            }
-            if (onPublishAnonymously != null) {
-                ActionRow(
-                    text = stringResource(if (anonymous) R.string.community_action_publish_named else R.string.community_action_publish_anonymously),
-                    testTag = CommunityTestTags.ACTION_PUBLISH_ANONYMOUSLY,
-                    onClick = onPublishAnonymously,
-                    icon = { size, tint -> VisibilityIcon(size, tint, off = !anonymous) },
                 )
             }
             if (onTakeDown != null) {
