@@ -11,14 +11,14 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!--
-        No predictive back: the gesture shrank the screen before leaving while
-        the in-app back button left at once, and the two should feel the same.
+        Predictive back: the gesture plays the same leaving motion as the back
+        button, with the screen lifted a little while the finger is down.
     -->
     <application
         android:name=".TierYourLifeApplication"
         tools:targetApi="33"
         android:allowBackup="true"
-        android:enableOnBackInvokedCallback="false"
+        android:enableOnBackInvokedCallback="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
