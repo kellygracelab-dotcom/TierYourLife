@@ -20,12 +20,16 @@ sealed interface ListNotice {
 
     /** A move on Theirs started the reader's own version from [name]'s; [replaced] when Mine had been arranged before. */
     data class StartedFromTheirs(val name: String?, val replaced: Boolean) : ListNotice
+
+    /** Their own list with its board on this phone: the board is where it changes, so the page gives way to it. */
+    data class OpenBoard(val boardId: Long) : ListNotice
 }
 
 /**
  * Their own list's page: the board behind it, found, restored from the trash
- * or rebuilt from the list when this phone has lost it, and what becomes of
- * the list itself, its name and its taking down. One of these at a time.
+ * or rebuilt from the list when this phone has lost it, and the list's taking
+ * down. A board that is here opens in the page's place, unless the page was
+ * asked for from that board. One of these at a time.
  */
 internal class OwnList(
     private val publishedId: String,
@@ -35,15 +39,26 @@ internal class OwnList(
     private val scope: CoroutineScope,
     private val messages: UserMessages,
     private val tell: suspend (ListNotice) -> Unit,
-    /** Reads the list again without the placeholder, once the server holds a new copy. */
-    private val reread: suspend () -> Unit,
+    /** False when the page was asked for from the board itself. */
+    private val opensBoard: Boolean = true,
     /** Drops the copy kept on this phone once the list is down. */
     private val forget: suspend () -> Unit = {},
 ) {
     private var opened: PublishedListSummary? = null
+    private var handedOver = false
 
     fun opened(summary: PublishedListSummary) {
         opened = summary
+    }
+
+    /** Before the server is asked, for a list the card already called theirs. True when the board opens instead. */
+    suspend fun openBoardIfHere(): Boolean {
+        if (!opensBoard) return false
+        val board = runSuspendCatching { tiers.boardPublishedAs(publishedId) }
+            .onFailure { Timber.i(it, "Not opening the board behind $publishedId") }
+            .getOrNull() ?: return false
+        handOver(board.id)
+        return true
     }
 
     /** Left unanswered when this phone cannot be asked: offering to rebuild a board that is here would make a second one. */
@@ -61,12 +76,14 @@ internal class OwnList(
                 .firstOrNull { it.publishedId == publishedId }
         }
         change { it.copy(ownBoardId = board?.id, trashedBoardId = trashed?.id, ownBoardLookedUp = true) }
+        board?.let { handOver(it.id) }
     }
 
     fun restore() = busy("Restoring the board behind a list") { current ->
         val id = current.trashedBoardId ?: return@busy
         tiers.restoreTierLists(listOf(id))
         change { it.copy(ownBoardId = id, trashedBoardId = null) }
+        handOver(id)
     }
 
     /**
@@ -87,23 +104,7 @@ internal class OwnList(
         current.section?.let { tiers.setCategory(id, it) }
         opened?.topicId?.let { topicId -> tiers.setTopic(id, topicId, opened?.topicName, null) }
         change { it.copy(ownBoardId = id) }
-    }
-
-    /** Sent again from the board with the name on or off, over the same id, so every link given out still works. */
-    fun publishAnonymously(anonymous: Boolean) {
-        val id = (state.value as? CommunityListUiState.Success)?.ownBoardId ?: return
-        busy("Publishing a list with its name changed") { current ->
-            tiers.setAnonymous(id, anonymous)
-            val board = tiers.getTierListById(id) ?: error("The board behind $publishedId is gone")
-            community.publish(board).fold(
-                onSuccess = { published -> tiers.setPublished(id, published.id, published.fingerprint) },
-                onFailure = { error ->
-                    tiers.setAnonymous(id, current.anonymous)
-                    throw error
-                },
-            )
-            reread()
-        }
+        handOver(id)
     }
 
     /** As from the list of their public lists: down for everyone, and forgotten by the board that sent it. */
@@ -115,6 +116,12 @@ internal class OwnList(
                 .onFailure { Timber.w(it, "Forgetting $publishedId on this phone failed") }
         }
         tell(ListNotice.TakenDown)
+    }
+
+    private suspend fun handOver(boardId: Long) {
+        if (!opensBoard || handedOver) return
+        handedOver = true
+        tell(ListNotice.OpenBoard(boardId))
     }
 
     private fun busy(operation: String, block: suspend (CommunityListUiState.Success) -> Unit) {

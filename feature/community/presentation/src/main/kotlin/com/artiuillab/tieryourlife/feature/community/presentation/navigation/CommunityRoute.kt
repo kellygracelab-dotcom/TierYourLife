@@ -37,6 +37,8 @@ sealed interface CommunityRoute {
         val basedOnId: String? = null,
         val basedOnTitle: String? = null,
         val basedOnAuthor: String? = null,
+        /** Asked for from its own board: the page stays, rather than handing back to the board it came from. */
+        val fromBoard: Boolean = false,
     ) : CommunityRoute {
 
         fun preview(): ListPreview? = title?.let { known ->
@@ -157,6 +159,7 @@ internal fun SavedStateHandle.communityListRoute() = CommunityRoute.CommunityLis
     basedOnId = get<String>(CommunityRoute.CommunityList::basedOnId.name),
     basedOnTitle = get<String>(CommunityRoute.CommunityList::basedOnTitle.name),
     basedOnAuthor = get<String>(CommunityRoute.CommunityList::basedOnAuthor.name),
+    fromBoard = get<Boolean>(CommunityRoute.CommunityList::fromBoard.name) ?: false,
 )
 
 internal fun SavedStateHandle.authorRoute() = CommunityRoute.Author(

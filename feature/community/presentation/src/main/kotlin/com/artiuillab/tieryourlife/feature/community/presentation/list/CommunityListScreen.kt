@@ -131,7 +131,6 @@ fun CommunityListScreen(
             onGetBack = viewModel.ownList::getBack,
             onTakeDown = viewModel.ownList::takeDown,
             onOpenMyPublished = onOpenMyPublished,
-            onPublishAnonymously = viewModel.ownList::publishAnonymously,
         ),
         onUndoStartFromTheirs = viewModel::undoStartFromTheirs,
         listNotices = viewModel.listNotices,
@@ -182,7 +181,6 @@ fun CommunityListScreenContent(
     val copyLink = rememberCopyLink(loadedNow?.listId.orEmpty(), snackbars)
     val onOwnBoard: () -> Unit = {
         when (loadedNow?.ownBoardAction) {
-            OwnBoardAction.Open -> loadedNow.ownBoardId?.let(onOpenSaved)
             OwnBoardAction.Restore -> own.onRestore()
             OwnBoardAction.GetBack -> own.onGetBack()
             null -> Unit
@@ -383,6 +381,7 @@ fun CommunityListScreenContent(
             onSignIn = onSignIn,
             onUndoStartFromTheirs = onUndoStartFromTheirs,
             onTakenDown = onBack,
+            onOpenBoard = onOpenSaved,
         )
     }
 }
@@ -400,7 +399,8 @@ private fun saveTapped(state: CommunityListUiState.Success?, askWhich: () -> Uni
  * The list's menu: the readers' rankings first, on any list. Then its author,
  * Hide and Report on somebody else's list, and once the reader has arranged
  * their own half, showing it to others. On their own list: their public
- * lists, the name on or off, and taking it down. Each closes the menu first.
+ * lists, and taking it down unless the board it was opened from does that.
+ * Each closes the menu first.
  */
 @Composable
 private fun ListMenu(
@@ -429,10 +429,8 @@ private fun ListMenu(
         onShowMyRanking = closing(onShowMyRanking).takeIf { loaded.canShowRanking },
         signInToShowRanking = !loaded.signedIn,
         onOpenMyPublished = closing(own.onOpenMyPublished).takeIf { mine },
-        // Sent again from the board, so only where the board is on this phone.
-        onPublishAnonymously = closing { own.onPublishAnonymously(!loaded.anonymous) }.takeIf { mine && loaded.ownBoardId != null },
-        anonymous = loaded.anonymous,
-        onTakeDown = closing(own.onTakeDown).takeIf { mine },
+        // The board's own Public switch does it there, and keeps the board in step.
+        onTakeDown = closing(own.onTakeDown).takeIf { mine && !loaded.fromBoard },
         onOpenRankings = closing(onOpenRankings),
         rankingCount = loaded.rankingCount,
     )
@@ -441,7 +439,7 @@ private fun ListMenu(
 /**
  * What went wrong, what became of a ranking the reader asked to show, and a
  * version started from Theirs, with Undo. A guest can go and sign in from it;
- * their own list taken down leaves the page.
+ * their own list taken down leaves the page, and its board found here replaces it.
  */
 @Composable
 private fun ListSnackbar(
@@ -452,11 +450,13 @@ private fun ListSnackbar(
     onSignIn: () -> Unit,
     onUndoStartFromTheirs: () -> Unit,
     onTakenDown: () -> Unit,
+    onOpenBoard: (Long) -> Unit,
 ) {
     val resources = LocalResources.current
     val signIn by rememberUpdatedState(onSignIn)
     val undo by rememberUpdatedState(onUndoStartFromTheirs)
     val leave by rememberUpdatedState(onTakenDown)
+    val openBoard by rememberUpdatedState(onOpenBoard)
     LaunchedEffect(userMessages) { userMessages.collect { host.showSnackbar(resources.getString(ThemeR.string.snack_action_failed)) } }
     LaunchedEffect(rankingNotices) {
         rankingNotices.collect { notice ->
@@ -476,6 +476,7 @@ private fun ListSnackbar(
         listNotices.collect { notice ->
             when (notice) {
                 ListNotice.TakenDown -> leave()
+                is ListNotice.OpenBoard -> openBoard(notice.boardId)
                 is ListNotice.StartedFromTheirs -> {
                     host.currentSnackbarData?.dismiss()
                     val answer = host.showSnackbar(

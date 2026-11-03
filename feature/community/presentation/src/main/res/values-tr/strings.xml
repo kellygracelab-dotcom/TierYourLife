@@ -271,7 +271,6 @@
         <item quantity="one">%2$d önerinden %1$d tanesi bekliyor.</item>
         <item quantity="other">%2$d önerinden %1$d tanesi bekliyor.</item>
     </plurals>
-    <string name="community_open_your_board">Panonu aç</string>
     <string name="community_show_my_ranking">Sıralamamı başkalarına göster</string>
     <string name="community_sign_in_to_show_ranking">Sıralamanı göstermek için giriş yap</string>
     <string name="community_ranking_shown">Sıralaman listenin sıralamaları arasında</string>
@@ -284,8 +283,6 @@
     <string name="community_get_back_as_board">Pano olarak geri al</string>
     <string name="community_copy_link">Bağlantıyı kopyala</string>
     <string name="community_link_copied">Bağlantı kopyalandı</string>
-    <string name="community_action_publish_anonymously">Adım olmadan yayınla</string>
-    <string name="community_action_publish_named">Adımla yayınla</string>
     <string name="community_drop_to_start_yours">Kendi sürümünü başlatmak için bırak · Benimki %1$s sıralamasıyla başlar</string>
     <string name="community_drop_to_start_yours_unnamed">Kendi sürümünü başlatmak için bırak · Benimki bu sıralamayla başlar</string>
     <string name="community_started_from_theirs">Sürümün %1$s sıralamasından başlıyor</string>

@@ -20,7 +20,6 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -32,6 +31,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -385,18 +385,55 @@ class CommunityListViewModelTest {
 
     private fun CommunityListUiState.saved() = (this as? CommunityListUiState.Success)?.savedId != null
 
-    @Test
-    fun myOwnAnonymousList_isShownAsOthersSeeIt_withMyBoardToOpen_andNobodyToFollow() = runBlocking {
-        val community = TestCommunity(summary = { it.copy(authorUid = "", authorName = "", anonymous = true, mine = true) })
-        val board = TierList(id = 12, title = "Every A24 film", tiers = emptyList(), publishedId = "abc")
-        val viewModel = viewModel(community = community, tiers = RecordingTierRepository(boards = listOf(board)))
+    private val myBoard = TierList(id = 12, title = "Every A24 film", tiers = emptyList(), publishedId = "abc")
 
-        val state = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.ownBoardId != null } as CommunityListUiState.Success
+    private fun route(mine: Boolean = false, fromBoard: Boolean = false) =
+        SavedStateHandle(mapOf("publishedId" to "abc", "mine" to mine, "fromBoard" to fromBoard))
+
+    private suspend fun nextNotice(viewModel: CommunityListViewModel) = withTimeout(5_000) { viewModel.listNotices.first() }
+
+    // Danylo tapped his own list and got a page of it with a button to the board: the board is where it changes, so it opens.
+    @Test
+    fun aCardThatSaysTheListIsMine_opensMyBoard_withoutAskingTheServer() = runBlocking {
+        val community = ownCommunity()
+        val viewModel = viewModel(community = community, tiers = RecordingTierRepository(boards = listOf(myBoard)), handle = route(mine = true))
+
+        assertEquals(ListNotice.OpenBoard(12), nextNotice(viewModel))
+        assertEquals(0, community.opens)
+    }
+
+    @Test
+    fun myOwnAnonymousList_openedByIdAlone_opensMyBoard_onceTheServerSaysItIsMine() = runBlocking {
+        val community = TestCommunity(summary = { it.copy(authorUid = "", authorName = "", anonymous = true, mine = true) })
+        val viewModel = viewModel(community = community, tiers = RecordingTierRepository(boards = listOf(myBoard)))
+
+        assertEquals(ListNotice.OpenBoard(12), nextNotice(viewModel))
+        val state = lookedUp(viewModel)
+        assertTrue(state.own)
+        assertEquals(null, state.ownBoardAction)
+        assertEquals(0, community.followStateAsked)
+    }
+
+    @Test
+    fun myOwnList_askedForFromItsBoard_staysAsThePage() = runBlocking {
+        val viewModel = viewModel(community = ownCommunity(), tiers = RecordingTierRepository(boards = listOf(myBoard)), handle = route(mine = true, fromBoard = true))
+
+        val state = lookedUp(viewModel)
 
         assertTrue(state.own)
-        assertEquals(Showing.Theirs, state.showing)
+        assertTrue(state.fromBoard)
         assertEquals(12L, state.ownBoardId)
-        assertEquals(0, community.followStateAsked)
+        assertEquals(null, state.ownBoardAction)
+        assertEquals(null, withTimeoutOrNull(300) { viewModel.listNotices.first() })
+    }
+
+    @Test
+    fun somebodyElsesList_neverOpensABoard() = runBlocking {
+        val viewModel = viewModel(tiers = RecordingTierRepository(boards = listOf(myBoard)))
+
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.follow != null }
+
+        assertEquals(null, withTimeoutOrNull(300) { viewModel.listNotices.first() })
     }
 
     @Test
@@ -426,38 +463,30 @@ class CommunityListViewModelTest {
     private suspend fun lookedUp(viewModel: CommunityListViewModel) =
         viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.ownBoardLookedUp == true } as CommunityListUiState.Success
 
-    @Test
-    fun myOwnList_withItsBoardHere_offersToOpenIt() = runBlocking {
-        val board = TierList(id = 12, title = "Every A24 film", tiers = emptyList(), publishedId = "abc")
-        val viewModel = viewModel(community = ownCommunity(), tiers = RecordingTierRepository(boards = listOf(board)))
-
-        assertEquals(OwnBoardAction.Open, lookedUp(viewModel).ownBoardAction)
-    }
+    private val trashed = TrashEntry.DeletedList(id = 5, title = "Every A24 film", itemCount = 2, deletedAtMillis = 0, publishedId = "abc")
 
     @Test
-    fun myOwnList_withItsBoardInTheTrash_offersToRestoreIt_andRestoredItOpens() = runBlocking {
-        val trashed = TrashEntry.DeletedList(id = 5, title = "Every A24 film", itemCount = 2, deletedAtMillis = 0, publishedId = "abc")
+    fun myOwnList_withItsBoardInTheTrash_offersToRestoreIt_andTheRestoredBoardOpens() = runBlocking {
         val tiers = RecordingTierRepository(trash = listOf(trashed))
-        val viewModel = viewModel(community = ownCommunity(), tiers = tiers)
+        val viewModel = viewModel(community = ownCommunity(), tiers = tiers, handle = route(mine = true))
         assertEquals(OwnBoardAction.Restore, lookedUp(viewModel).ownBoardAction)
 
         viewModel.ownList.restore()
-        val restored = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.ownBoardId == 5L } as CommunityListUiState.Success
 
+        assertEquals(ListNotice.OpenBoard(5), nextNotice(viewModel))
         assertEquals(listOf(5L), tiers.restored)
-        assertEquals(OwnBoardAction.Open, restored.ownBoardAction)
     }
 
     // Owned, not taken: no takenFrom, still out as this list so Update sends to the same link, and as nameless as it went out.
     @Test
-    fun myOwnList_withNoBoardAnywhere_getsItBackAsMyOwnBoard() = runBlocking {
+    fun myOwnList_withNoBoardAnywhere_getsItBackAsMyOwnBoard_andOpensIt() = runBlocking {
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(community = ownCommunity(anonymous = true), tiers = tiers)
         assertEquals(OwnBoardAction.GetBack, lookedUp(viewModel).ownBoardAction)
 
         viewModel.ownList.getBack()
-        val back = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.ownBoardId == 7L } as CommunityListUiState.Success
 
+        assertEquals(ListNotice.OpenBoard(7), nextNotice(viewModel))
         val template = tiers.templates.single()
         assertEquals(null, template.takenFrom)
         assertEquals("", template.authorName)
@@ -466,28 +495,25 @@ class CommunityListViewModelTest {
         assertEquals(listOf(7L to "abc"), tiers.publishedIds)
         assertEquals(listOf(7L to true), tiers.anonymity)
         assertEquals(listOf(7L to ListCategory.FilmTv.id), tiers.categories)
-        assertEquals(OwnBoardAction.Open, back.ownBoardAction)
     }
 
     @Test
-    fun takingMyListDown_unpublishesIt_forgetsItOnTheBoard_andLeaves() = runBlocking {
-        val board = TierList(id = 12, title = "Every A24 film", tiers = emptyList(), publishedId = "abc")
-        val tiers = RecordingTierRepository(boards = listOf(board))
+    fun takingMyListDown_unpublishesIt_forgetsItOnTheTrashedBoard_andLeaves() = runBlocking {
+        val tiers = RecordingTierRepository(trash = listOf(trashed))
         val community = ownCommunity()
         val viewModel = viewModel(community = community, tiers = tiers)
         lookedUp(viewModel)
 
         viewModel.ownList.takeDown()
 
-        assertEquals(ListNotice.TakenDown, withTimeout(5_000) { viewModel.listNotices.first() })
+        assertEquals(ListNotice.TakenDown, nextNotice(viewModel))
         assertEquals(listOf("abc"), community.unpublished)
-        assertEquals(12L, tiers.clearedPublishedId)
+        assertEquals(5L, tiers.clearedPublishedId)
     }
 
     @Test
     fun aTakeDownTheServerRefuses_saysSo_andTheBoardKeepsItsId() = runBlocking {
-        val board = TierList(id = 12, title = "Every A24 film", tiers = emptyList(), publishedId = "abc")
-        val tiers = RecordingTierRepository(boards = listOf(board))
+        val tiers = RecordingTierRepository(trash = listOf(trashed))
         val viewModel = viewModel(community = ownCommunity(unpublishFails = true), tiers = tiers)
         lookedUp(viewModel)
 
@@ -495,35 +521,6 @@ class CommunityListViewModelTest {
 
         assertEquals(UserMessage.ActionFailed, withTimeout(5_000) { viewModel.userMessages.first() })
         assertEquals(null, tiers.clearedPublishedId)
-    }
-
-    @Test
-    fun publishingWithoutMyName_marksTheBoardAnonymous_andSendsItAgainOverTheSameList() = runBlocking {
-        val board = TierList(id = 12, title = "Every A24 film", tiers = emptyList(), publishedId = "abc")
-        val tiers = RecordingTierRepository(boards = listOf(board))
-        val community = ownCommunity()
-        val viewModel = viewModel(community = community, tiers = tiers)
-        lookedUp(viewModel)
-
-        viewModel.ownList.publishAnonymously(true)
-        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.let { s -> !s.ownBusy && tiers.publishedIds.isNotEmpty() } == true }
-
-        assertEquals(listOf(12L to true), tiers.anonymity)
-        assertEquals(listOf(12L), community.sent.map { it.id })
-        assertEquals(listOf(12L to "abc"), tiers.publishedIds)
-    }
-
-    @Test
-    fun publishingWithoutMyName_refused_putsTheNameBackOnTheBoard() = runBlocking {
-        val board = TierList(id = 12, title = "Every A24 film", tiers = emptyList(), publishedId = "abc")
-        val tiers = RecordingTierRepository(boards = listOf(board))
-        val viewModel = viewModel(community = ownCommunity().apply { publishFails = true }, tiers = tiers)
-        lookedUp(viewModel)
-
-        viewModel.ownList.publishAnonymously(true)
-
-        assertEquals(UserMessage.ActionFailed, withTimeout(5_000) { viewModel.userMessages.first() })
-        assertEquals(listOf(12L to true, 12L to false), tiers.anonymity)
     }
 
     @Test
@@ -738,8 +735,7 @@ private class TestCommunity(
     /** Lets a held open answer through. */
     val openHeld = CompletableDeferred<Unit>()
     var offline = false
-    val sent = mutableListOf<TierList>()
-    var publishFails = false
+    var opens = 0
 
     override suspend fun unpublish(publishedId: String): Result<Unit> {
         if (unpublishFails) return Result.failure(IllegalStateException("offline"))
@@ -780,6 +776,7 @@ private class TestCommunity(
     val refusal = CompletableDeferred<Unit>()
 
     override suspend fun open(id: String): Result<PublishedList> {
+        opens++
         if (holdOpen) openHeld.await()
         if (offline) return Result.failure(IllegalStateException("offline"))
         return Result.success(
@@ -788,12 +785,6 @@ private class TestCommunity(
                 arrangement = arrangement,
             ),
         )
-    }
-
-    override suspend fun publish(list: TierList): Result<Published> {
-        if (publishFails) return Result.failure(IllegalStateException("offline"))
-        sent += list
-        return Result.success(Published(id = "abc", fingerprint = "sent"))
     }
 
     override suspend fun rankings(listId: String, after: String?): Result<RankingsPage> = Result.success(RankingsPage(rankings, null))

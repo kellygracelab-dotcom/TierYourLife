@@ -35,6 +35,8 @@ fun TierDetailScreen(
     onTopicChangeConsumed: () -> Unit = {},
     /** The published list this board is out as a ranking of, from the credit under the title. */
     onOpenPublishedList: (String) -> Unit = {},
+    /** This board's own published list, as others see it. */
+    onSeeInCommunity: ((String) -> Unit)? = null,
     addedItemIds: List<Long> = emptyList(),
     onAddedItemConsumed: () -> Unit = {},
     focusTierId: Long? = null,
@@ -91,6 +93,7 @@ fun TierDetailScreen(
             onSetAnonymous = viewModel::setAnonymous,
             publishedIsBehind = publish.publishedIsBehind,
             onUpdatePublished = viewModel::updatePublished,
+            onSeeInCommunity = onSeeInCommunity,
             onSetCategory = viewModel::setCategory,
             onCategoryNotChosen = viewModel::categoryNotChosen,
             onProposeSection = onProposeSection,

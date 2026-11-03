@@ -266,6 +266,10 @@ private fun NavContent(
             onChooseCover = { id -> navController.navigateToCoverPicker(id) },
             onChooseTopic = { id -> navController.navigateToTopicPicker(id) },
             onOpenPublishedList = { id -> navController.navigateToCommunityList(id) },
+            // As others see it, without handing straight back to this board.
+            onSeeInCommunity = { id ->
+                navController.navigateToCommunityList(CommunityRoute.CommunityList(id, mine = true, fromBoard = true))
+            },
             play = PlayOverBoards,
             onProposeSection = { fileUnder -> navController.navigateToProposeSection(fileUnder) },
         )

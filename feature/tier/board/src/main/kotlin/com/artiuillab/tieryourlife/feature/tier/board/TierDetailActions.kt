@@ -16,6 +16,8 @@ data class TierDetailActions(
     /** True only where the published copy is known to differ from the board. */
     val publishedIsBehind: Boolean = false,
     val onUpdatePublished: () -> Unit = {},
+    /** The board's published list as others see it, by its id; null where there is no going there. */
+    val onSeeInCommunity: ((publishedId: String) -> Unit)? = null,
     /** A section id. */
     val onSetCategory: (String) -> Unit = {},
     val onCategoryNotChosen: () -> Unit = {},

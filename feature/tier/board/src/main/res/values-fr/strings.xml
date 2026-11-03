@@ -35,6 +35,8 @@
     <string name="list_settings_public_unverified">Google Play n\'a pas pu confirmer cette installation, donc rien ne peut être publié depuis celle-ci.</string>
     <string name="list_settings_share">Partager en image</string>
     <string name="list_settings_share_sub">Une image de ce tableau, avec un lien vers l\'app</string>
+    <string name="list_settings_see_in_community">Voir dans la Communauté</string>
+    <string name="list_settings_see_in_community_sub">Telle que les autres la voient, avec leurs classements et le lien</string>
     <string name="list_settings_update_published">Version publiée</string>
     <string name="list_settings_update_published_body">Renvoyer ce tableau, sous le même lien.</string>
     <string name="manual_dialog_add">Ajouter</string>

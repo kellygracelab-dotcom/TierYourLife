@@ -35,6 +35,8 @@
     <string name="list_settings_public_unverified">Google Play не підтвердив це встановлення, тому публікувати з нього не можна.</string>
     <string name="list_settings_share">Поділитися картинкою</string>
     <string name="list_settings_share_sub">Картинка цієї дошки та посилання на застосунок</string>
+    <string name="list_settings_see_in_community">Подивитися в Спільноті</string>
+    <string name="list_settings_see_in_community_sub">Як її бачать інші: їхні рейтинги й посилання</string>
     <string name="list_settings_update_published">Опублікована версія</string>
     <string name="list_settings_update_published_body">Надіслати дошку знову, за тим самим посиланням.</string>
     <string name="manual_dialog_add">Додати</string>

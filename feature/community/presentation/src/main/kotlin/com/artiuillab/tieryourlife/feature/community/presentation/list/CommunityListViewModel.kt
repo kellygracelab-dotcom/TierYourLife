@@ -69,7 +69,7 @@ class CommunityListViewModel @Inject constructor(
     private val told = Channel<ListNotice>(Channel.BUFFERED)
     val listNotices: Flow<ListNotice> = told.receiveAsFlow()
 
-    /** On their own list: the board behind it, and the list's name and taking down. */
+    /** On their own list: the board behind it, opened in the page's place, and the list's taking down. */
     internal val ownList = OwnList(
         publishedId = publishedId,
         community = community,
@@ -78,7 +78,7 @@ class CommunityListViewModel @Inject constructor(
         scope = viewModelScope,
         messages = messages,
         tell = told::send,
-        reread = { open(quietly = true) },
+        opensBoard = !route.fromBoard,
         forget = { openedLists.forget(publishedId) },
     )
 
@@ -92,7 +92,10 @@ class CommunityListViewModel @Inject constructor(
     private var followTaps = 0
 
     init {
-        load()
+        viewModelScope.launch {
+            if (route.mine && ownList.openBoardIfHere()) return@launch
+            open(quietly = false)
+        }
         viewModelScope.launch {
             accounts.account.collect { account ->
                 _state.update { current ->
@@ -223,6 +226,7 @@ class CommunityListViewModel @Inject constructor(
             section = answer.summary.category,
             own = own,
             anonymous = answer.summary.anonymous,
+            fromBoard = route.fromBoard,
             listId = publishedId,
             signedIn = accounts.current() is Account.SignedIn,
             ownBoardId = before?.ownBoardId,
