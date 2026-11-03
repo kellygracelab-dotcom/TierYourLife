@@ -22,9 +22,9 @@ private const val POOL_ITEMS = 500
 
 /**
  * A board at exactly the ceiling a published list is allowed: twenty tiers and
- * two thousand cards. Items inside a tier are composed eagerly -- only the
- * tiers themselves are lazy -- so this is where that would show, in every
- * display mode and on the oldest device the app supports.
+ * two thousand cards. A wrapping tier composes only its lines on screen and a
+ * strip only its visible cards; this is where a slip back to drawing every card
+ * would show, in every display mode and on the oldest device the app supports.
  */
 @RunWith(AndroidJUnit4::class)
 class TierDetailLargeListTest {

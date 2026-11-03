@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -581,7 +581,7 @@ private fun TierScreenBody(
                         verticalArrangement = Arrangement.spacedBy(LocalTierRowDensity.current.rowGap),
                     ) {
 
-                        items(displayedTiers, key = { it.id }) { tier ->
+                        itemsIndexed(displayedTiers, key = { _, tier -> tier.id }) { index, tier ->
 
                             val itemModifier = when (tier.id) {
 
@@ -636,6 +636,8 @@ private fun TierScreenBody(
                                 onDoubleTap = { itemId -> chooserItemId = itemId },
                                 onEditTier = { tierId -> editingTierId = tierId },
                                 poolHasCards = pool?.items?.isNotEmpty() == true,
+                                listState = tierListState,
+                                itemIndex = index,
                             )
                         }
 
