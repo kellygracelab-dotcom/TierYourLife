@@ -6,11 +6,12 @@ import javax.inject.Inject
 
 class RoomOwnLists @Inject constructor(
     private val dao: TierDao,
+    private val ownership: BoardOwnership,
 ) : OwnLists {
 
-    override suspend fun publishedCount(): Int = dao.countPublishedLists()
+    override suspend fun publishedCount(): Int = dao.countPublishedLists(ownership.current())
 
-    override suspend fun boardCount(): Int = dao.countBoards()
+    override suspend fun boardCount(): Int = dao.countBoards(ownership.current())
 
-    override suspend fun cardImages(limit: Int): List<String> = dao.cardImageUrls(limit)
+    override suspend fun cardImages(limit: Int): List<String> = dao.cardImageUrls(ownership.current(), limit)
 }

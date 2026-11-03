@@ -3,12 +3,14 @@ package com.artiuillab.tieryourlife.feature.tier.data.di
 import android.content.Context
 import androidx.room.Room
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.OwnerDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_10_11
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_11_12
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_12_13
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_14_15
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_15_16
+import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_16_17
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_1_2
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_2_3
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_3_4
@@ -42,7 +44,7 @@ object DatabaseModule {
         .addMigrations(
             MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6,
             MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12,
-            MIGRATION_12_13, MIGRATION_14_15, MIGRATION_15_16,
+            MIGRATION_12_13, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17,
         )
         // No destructive fallback of any kind. Opening a newer database with an
         // older build used to drop every table without a word, which turns
@@ -60,6 +62,10 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideBoardSyncDao(database: TierDatabase): BoardSyncDao = database.boardSyncDao()
+
+    @Provides
+    @Singleton
+    fun provideOwnerDao(database: TierDatabase): OwnerDao = database.ownerDao()
 
     private const val DATABASE_NAME = "tier_your_life.db"
 }

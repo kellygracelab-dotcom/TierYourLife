@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.di
 
+import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomOwnLists
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
 import com.artiuillab.tieryourlife.feature.tier.data.repository.ServerCatalogueSearch
@@ -12,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.sync.Pictures
 import com.artiuillab.tieryourlife.feature.tier.data.sync.RoomBoardBackup
 import com.artiuillab.tieryourlife.feature.tier.data.sync.RoomBoardMerge
 import com.artiuillab.tieryourlife.feature.tier.data.sync.SystemConnection
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.BoardOwner
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
@@ -35,6 +37,12 @@ abstract class RepositoryModule {
     abstract fun bindTierRepository(
         implementation: RoomTierRepository,
     ): TierRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindBoardOwner(
+        implementation: BoardOwnership,
+    ): BoardOwner
 
     @Binds
     @Singleton

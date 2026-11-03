@@ -2,6 +2,31 @@ package com.artiuillab.tieryourlife.feature.tier.data.local.database
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
+
+/**
+ * Boards belong to someone: an account, or nobody for the ones made without
+ * one. Nothing before said whose a board was, so every board is marked
+ * unsettled and worked out from its sync records once the app knows who is
+ * signed in; nothing is dropped. The view is made again so it carries the new
+ * column whatever the SQLite. Which pictures went up is now kept per account;
+ * the old rows could not say which, so they go and the pictures are sent again.
+ */
+val MIGRATION_16_17 = object : Migration(16, 17) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN ownerUid TEXT")
+        db.execSQL("UPDATE tier_lists SET ownerUid = '${TierListEntity.UNSETTLED}'")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_tier_lists_ownerUid` ON `tier_lists` (`ownerUid`)")
+        db.execSQL("DROP VIEW IF EXISTS `active_tier_lists`")
+        db.execSQL("CREATE VIEW `active_tier_lists` AS SELECT * FROM tier_lists WHERE deletedAt IS NULL")
+        db.execSQL("DROP TABLE IF EXISTS `picture_sync`")
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `picture_sync` (" +
+                "`account` TEXT NOT NULL, `pictureId` TEXT NOT NULL, `uploadedAt` INTEGER NOT NULL, " +
+                "PRIMARY KEY(`account`, `pictureId`))",
+        )
+    }
+}
 
 /** Who a card's picture is credited to. Every card made before is credited to nobody, which is what it showed. */
 val MIGRATION_15_16 = object : Migration(15, 16) {

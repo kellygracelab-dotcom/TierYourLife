@@ -48,7 +48,7 @@
     </plurals>
     <string name="settings_backup_label">Зберігати копію дошок</string>
     <string name="settings_backup_note">Ваші фото та згенеровані картки йдуть у ваш акаунт, де їх бачите лише ви. Публікація копіює картинки списку у стрічку, де їх бачать усі.</string>
-    <string name="settings_backup_off_body">Дошки залишаться на цьому телефоні. Копію в обліковому записі буде видалено, і новий телефон почне з порожнього.</string>
+    <string name="settings_backup_off_body">З телефона нічого не видаляється: дошки залишаться тут. Копію в обліковому записі буде видалено, і новий телефон почне з порожнього. Якщо ввімкнути знову, вони завантажаться заново.</string>
     <string name="settings_backup_off_cancel">Скасувати</string>
     <string name="settings_backup_off_confirm">Видалити копію</string>
     <string name="settings_backup_off_title">Припинити зберігати копію?</string>

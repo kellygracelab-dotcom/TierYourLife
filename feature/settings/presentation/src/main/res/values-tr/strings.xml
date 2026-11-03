@@ -44,7 +44,7 @@
     </plurals>
     <string name="settings_backup_label">Panolarımın yedeğini al</string>
     <string name="settings_backup_note">Fotoğraflarınız ve üretilen kartlar hesabınıza gider, orada yalnızca siz görürsünüz. Yayımlamak, listenin görsellerini herkesin gördüğü akışa kopyalar.</string>
-    <string name="settings_backup_off_body">Panoların bu telefonda kalır. Hesabındaki kopya silinir ve yeni bir telefon boş başlar.</string>
+    <string name="settings_backup_off_body">Bu telefondan hiçbir şey silinmez: panoların burada kalır. Hesabındaki kopya silinir ve yeni bir telefon boş başlar. Yeniden açarsan panolar tekrar yüklenir.</string>
     <string name="settings_backup_off_cancel">İptal</string>
     <string name="settings_backup_off_confirm">Durdur ve sil</string>
     <string name="settings_backup_off_title">Yedekleme durdurulsun mu?</string>

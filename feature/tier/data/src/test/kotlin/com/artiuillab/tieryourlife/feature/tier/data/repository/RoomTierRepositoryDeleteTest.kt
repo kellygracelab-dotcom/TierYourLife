@@ -155,6 +155,21 @@ class RoomTierRepositoryDeleteTest {
         assertEquals(setOf(LIST, STILL_PUBLIC), dao.lists.keys)
     }
 
+    @Test
+    fun `emptying the trash leaves another account's trash where it is`() = runBlocking {
+        val dao = boardWithThreeCards()
+        dao.lists[TRASHED_LIST] = TierListEntity(id = TRASHED_LIST, title = "Games", deletedAt = 7L, ownerUid = "ann")
+        dao.lists[STILL_PUBLIC] = TierListEntity(id = STILL_PUBLIC, title = "Films", deletedAt = 8L, ownerUid = "bob")
+        val repository = RoomTierRepository(dao, imageStore, owner = { "bob" }) { 0L }
+
+        val entries = repository.getTrashEntries()
+        repository.emptyTrash()
+
+        assertEquals(listOf(STILL_PUBLIC), entries.map { (it as TrashEntry.DeletedList).id })
+        assertNotNull(dao.lists[TRASHED_LIST])
+        assertEquals(setOf(LIST, TRASHED_LIST), dao.lists.keys)
+    }
+
     private suspend fun boardWithThreeCards(moonImage: String? = "/pictures/moon.jpg", alienImage: String? = null) = RecordingTierDao().apply {
         lists[LIST] = TierListEntity(id = LIST, title = "Sci-fi films")
         tiers += TierEntity(id = S_TIER, tierListId = LIST, position = 0, label = "S", colorLight = "#000000", colorDark = "#000000")
@@ -203,11 +218,11 @@ private class RecordingTierDao : TierDao {
 
     override suspend fun setCover(id: Long, coverImageUrl: String?, coverImageUrls: String?) = Unit
 
-    override suspend fun countPublishedLists(): Int = 0
+    override suspend fun countPublishedLists(owner: String?): Int = 0
 
-    override suspend fun countBoards(): Int = 0
+    override suspend fun countBoards(owner: String?): Int = 0
 
-    override suspend fun cardImageUrls(limit: Int): List<String> = emptyList()
+    override suspend fun cardImageUrls(owner: String?, limit: Int): List<String> = emptyList()
 
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) = Unit
 
@@ -229,7 +244,7 @@ private class RecordingTierDao : TierDao {
         return 1
     }
 
-    override suspend fun forgetTrashedBoardsInOtherAccounts(account: String?) = Unit
+    override suspend fun forgetTrashedBoardsInOtherAccounts(owner: String?) = Unit
 
     override suspend fun forgetBoardInOtherAccounts(id: Long, account: String?) = Unit
 
@@ -240,22 +255,22 @@ private class RecordingTierDao : TierDao {
 
     override suspend fun insertTierList(tierList: TierListEntity): Long = 0L
     override suspend fun getTierListById(id: Long): TierListEntity? = lists[id]?.takeIf { it.deletedAt == null }
-    override suspend fun getAllTierLists(): List<TierListEntity> = emptyList()
-    override suspend fun getAllTierListsWithTiers(): List<TierListWithTiers> = emptyList()
-    override suspend fun getTierListWithTiers(id: Long): TierListWithTiers? = null
+    override suspend fun getAllTierLists(owner: String?): List<TierListEntity> = emptyList()
+    override suspend fun getAllTierListsWithTiers(owner: String?): List<TierListWithTiers> = emptyList()
+    override suspend fun getTierListWithTiers(id: Long, owner: String?): TierListWithTiers? = null
     override suspend fun restoreTierLists(ids: List<Long>) = Unit
     override suspend fun updateTierListDisplayMode(id: Long, displayMode: String) = Unit
     override suspend fun updateTierListTitle(id: Long, title: String) = Unit
-    override suspend fun getDeletedTierLists(): List<DeletedTierListRow> =
-        lists.values.filter { it.deletedAt != null }.sortedByDescending { it.deletedAt }.map { list ->
+    override suspend fun getDeletedTierLists(owner: String?): List<DeletedTierListRow> =
+        lists.values.filter { it.deletedAt != null && it.ownerUid == owner }.sortedByDescending { it.deletedAt }.map { list ->
             DeletedTierListRow(list.id, list.title, itemCount = 0, deletedAt = list.deletedAt!!, list.publishedId, list.rankingOf)
         }
 
-    override suspend fun deleteAllTrashedTierLists() {
-        lists.values.filter { it.deletedAt != null }.forEach { dropList(it.id) }
+    override suspend fun deleteAllTrashedTierLists(owner: String?) {
+        lists.values.filter { it.deletedAt != null && it.ownerUid == owner }.forEach { dropList(it.id) }
     }
 
-    override suspend fun deleteAllTrashedTierItems() {
+    override suspend fun deleteAllTrashedTierItems(owner: String?) {
         items.removeAll { it.deletedAt != null }
     }
 

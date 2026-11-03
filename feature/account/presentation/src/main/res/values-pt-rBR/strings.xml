@@ -43,27 +43,19 @@
     </plurals>
     <string name="account_reason_devices">Seus quadros seguem você para um telefone novo.</string>
     <string name="account_reason_publish">Publicar uma lista exige uma conta.</string>
-    <string name="account_backup_label">Guardar meus quadros</string>
-    <string name="account_backup_sub">%1$s e suas imagens. Você pode desligar isso nas configurações.</string>
-    <string name="account_sign_out_body_1">Seus quadros ficam neste telefone e na sua conta. Mudanças feitas depois de sair não serão sincronizadas.</string>
+    <string name="account_sign_out_body_1">Seus quadros ficam na conta %1$s e neste telefone, ocultos até você entrar de novo. Fora da conta, você verá só os quadros feitos sem conta.</string>
     <string name="account_sign_out_body_2">Créditos e compras esperam por você aqui.</string>
     <plurals name="account_board_count">
         <item quantity="one">%1$d quadro</item>
         <item quantity="many">%1$d quadros</item>
         <item quantity="other">%1$d quadros</item>
     </plurals>
-    <string name="merge_title">Você já usou esta conta</string>
-    <string name="merge_body">Ela já tem %1$s. Este telefone tem %2$s que você fez sem conta.</string>
-    <string name="merge_keep_title">Manter tudo</string>
-    <string name="merge_keep_sub">Todos os %1$s. Se dois tiverem o mesmo nome, o local ganha “(deste telefone)”.</string>
-    <string name="merge_remote_title">Usar só os quadros da conta</string>
-    <string name="merge_remote_sub">%1$s deste telefone vão para a lixeira. Você pode restaurá-los por 30 dias.</string>
-    <string name="merge_footnote">Nada é apagado em nenhum dos casos.</string>
-    <string name="merge_recommended">Recomendado</string>
-    <string name="merge_action_continue">Continuar</string>
+    <string name="merge_title">Quadros feitos sem conta</string>
+    <string name="merge_body">Este telefone tem %1$s que você fez sem conta. Mover para a conta %2$s?</string>
+    <string name="merge_footnote">Mantidos aqui, eles aparecem sempre que você estiver fora da conta. Nada é apagado em nenhum dos casos.</string>
     <string name="merge_name_suffix">(deste telefone)</string>
     <string name="account_sign_out_title">Sair?</string>
-    <string name="account_sign_out_helper">Seus quadros ficam neste telefone e na sua conta. Mudanças feitas depois de sair não serão sincronizadas. Créditos e compras esperam por você aqui.</string>
+    <string name="account_sign_out_helper">Seus quadros ficam na sua conta e neste telefone, ocultos até você entrar de novo. Créditos e compras esperam por você aqui.</string>
     <string name="account_action_delete">Excluir a conta</string>
     <string name="account_delete_title">Excluir esta conta?</string>
     <string name="account_delete_body">A conta some, e com ela a cópia dos seus quadros, tudo o que você publicou e as imagens ligadas a isso. Não dá para desfazer.</string>
@@ -75,4 +67,7 @@
     <string name="account_face_position_use">Usar esta</string>
     <string name="account_face_position_failed">Não foi possível mostrar a imagem aqui. Ela ainda pode ser usada como está.</string>
     <string name="account_face_position_frame">A imagem que vai no círculo</string>
+    <string name="merge_action_move_in">Mover para a conta %1$s</string>
+    <string name="merge_action_keep_here">Manter só neste telefone</string>
+    <string name="merge_account_fallback">Google</string>
 </resources>

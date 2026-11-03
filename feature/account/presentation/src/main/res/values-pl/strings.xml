@@ -45,9 +45,7 @@
     </plurals>
     <string name="account_reason_devices">Tablice pojadą z tobą na nowy telefon.</string>
     <string name="account_reason_publish">Publikowanie listy wymaga konta.</string>
-    <string name="account_backup_label">Kopia moich tablic</string>
-    <string name="account_backup_sub">%1$s i ich zdjęcia. Możesz to wyłączyć w ustawieniach.</string>
-    <string name="account_sign_out_body_1">Tablice zostają i na tym telefonie, i na koncie. Zmiany po wylogowaniu nie trafią na konto.</string>
+    <string name="account_sign_out_body_1">Tablice zostają na koncie %1$s i na tym telefonie, ukryte do ponownego zalogowania. Po wylogowaniu zobaczysz tylko tablice zrobione bez konta.</string>
     <string name="account_sign_out_body_2">Kredyty i zakupy czekają tu na ciebie.</string>
     <plurals name="account_board_count">
         <item quantity="one">%1$d tablica</item>
@@ -55,18 +53,12 @@
         <item quantity="many">%1$d tablic</item>
         <item quantity="other">%1$d tablicy</item>
     </plurals>
-    <string name="merge_title">Już korzystałeś z tego konta</string>
-    <string name="merge_body">Ma już %1$s. Na tym telefonie jest %2$s zrobione bez konta.</string>
-    <string name="merge_keep_title">Zachowaj wszystko</string>
-    <string name="merge_keep_sub">Wszystkie %1$s. Jeśli dwie mają tę samą nazwę, do lokalnej dojdzie „(z tego telefonu)”.</string>
-    <string name="merge_remote_title">Tylko tablice z konta</string>
-    <string name="merge_remote_sub">%1$s z tego telefonu trafią do kosza. Możesz je przywrócić przez 30 dni.</string>
-    <string name="merge_footnote">Nic nie zostaje usunięte w żadnym przypadku.</string>
-    <string name="merge_recommended">Zalecane</string>
-    <string name="merge_action_continue">Dalej</string>
+    <string name="merge_title">Tablice bez konta</string>
+    <string name="merge_body">Na tym telefonie są tablice zrobione bez konta (%1$s). Przenieść je na konto %2$s?</string>
+    <string name="merge_footnote">Zostawione na telefonie widać zawsze, gdy nie jesteś zalogowany. Nic nie zostaje usunięte w żadnym przypadku.</string>
     <string name="merge_name_suffix">(z tego telefonu)</string>
     <string name="account_sign_out_title">Wylogować?</string>
-    <string name="account_sign_out_helper">Tablice zostają i na tym telefonie, i na koncie. Zmiany po wylogowaniu nie trafią na konto. Kredyty i zakupy czekają tu na ciebie.</string>
+    <string name="account_sign_out_helper">Tablice zostają na koncie i na tym telefonie, ukryte do ponownego zalogowania. Kredyty i zakupy czekają tu na ciebie.</string>
     <string name="account_action_delete">Usuń konto</string>
     <string name="account_delete_title">Usunąć konto?</string>
     <string name="account_delete_body">Konto zniknie, a wraz z nim kopia Twoich list, wszystko, co opublikowałeś, i powiązane obrazy. Tego nie można cofnąć.</string>
@@ -78,4 +70,7 @@
     <string name="account_face_position_use">Użyj</string>
     <string name="account_face_position_failed">Nie da się tu pokazać obrazu. Nadal można go użyć bez zmian.</string>
     <string name="account_face_position_frame">Obraz do umieszczenia w okręgu</string>
+    <string name="merge_action_move_in">Przenieś na konto %1$s</string>
+    <string name="merge_action_keep_here">Zostaw tylko na tym telefonie</string>
+    <string name="merge_account_fallback">Google</string>
 </resources>

@@ -41,26 +41,18 @@
     </plurals>
     <string name="account_reason_devices">Panoların yeni telefona seninle gelir.</string>
     <string name="account_reason_publish">Bir listeyi yayınlamak için hesap gerekir.</string>
-    <string name="account_backup_label">Panolarımın yedeğini al</string>
-    <string name="account_backup_sub">%1$s ve resimleri. Bunu ayarlardan kapatabilirsin.</string>
-    <string name="account_sign_out_body_1">Panoların hem bu telefonda hem hesabında kalır. Çıkış yaptıktan sonraki değişiklikler eşitlenmez.</string>
+    <string name="account_sign_out_body_1">Panoların %1$s hesabında ve bu telefonda kalır, yeniden giriş yapana kadar gizlenir. Çıkış yapınca yalnızca hesapsız yapılan panoları görürsün.</string>
     <string name="account_sign_out_body_2">Krediler ve satın almalar burada seni bekler.</string>
     <plurals name="account_board_count">
         <item quantity="one">1 pano</item>
         <item quantity="other">%1$d pano</item>
     </plurals>
-    <string name="merge_title">Bu hesabı daha önce kullandın</string>
-    <string name="merge_body">Zaten %1$s var. Bu telefonda hesapsız yaptığın %2$s var.</string>
-    <string name="merge_keep_title">Hepsini sakla</string>
-    <string name="merge_keep_sub">Tüm %1$s. İkisinin adı aynıysa yereldekine “(bu telefondan)” eklenir.</string>
-    <string name="merge_remote_title">Yalnızca hesabın panoları</string>
-    <string name="merge_remote_sub">Bu telefondaki %1$s çöp kutusuna gider. 30 gün boyunca geri alabilirsin.</string>
-    <string name="merge_footnote">Hiçbir durumda bir şey silinmez.</string>
-    <string name="merge_recommended">Önerilen</string>
-    <string name="merge_action_continue">Devam</string>
+    <string name="merge_title">Hesapsız yapılan panolar</string>
+    <string name="merge_body">Bu telefonda hesapsız yaptığın %1$s var. %2$s hesabına taşınsın mı?</string>
+    <string name="merge_footnote">Telefonda tutulanlar, oturum kapalıyken görünür. Hiçbir durumda bir şey silinmez.</string>
     <string name="merge_name_suffix">(bu telefondan)</string>
     <string name="account_sign_out_title">Çıkış yapılsın mı?</string>
-    <string name="account_sign_out_helper">Panoların hem bu telefonda hem hesabında kalır. Çıkış yaptıktan sonraki değişiklikler eşitlenmez. Krediler ve satın almalar burada seni bekler.</string>
+    <string name="account_sign_out_helper">Panoların hesabında ve bu telefonda kalır, yeniden giriş yapana kadar gizlenir. Krediler ve satın almalar burada seni bekler.</string>
     <string name="account_action_delete">Hesabı sil</string>
     <string name="account_delete_title">Hesap silinsin mi?</string>
     <string name="account_delete_body">Hesap silinir; onunla birlikte panolarınızın kopyası, yayımladığınız her şey ve bunlara ait görseller de gider. Bu geri alınamaz.</string>
@@ -72,4 +64,7 @@
     <string name="account_face_position_use">Bunu kullan</string>
     <string name="account_face_position_failed">Resim burada gösterilemedi. Yine de olduğu gibi kullanılabilir.</string>
     <string name="account_face_position_frame">Daireye yerleştirilecek resim</string>
+    <string name="merge_action_move_in">%1$s hesabına taşı</string>
+    <string name="merge_action_keep_here">Yalnızca bu telefonda tut</string>
+    <string name="merge_account_fallback">Google</string>
 </resources>

@@ -45,9 +45,7 @@
     </plurals>
     <string name="account_reason_devices">Доски переедут за вами на новый телефон.</string>
     <string name="account_reason_publish">Для публикации списка нужен аккаунт.</string>
-    <string name="account_backup_label">Хранить копию досок</string>
-    <string name="account_backup_sub">%1$s и их картинки. Отключить можно в настройках.</string>
-    <string name="account_sign_out_body_1">Доски останутся и на телефоне, и в аккаунте. Правки после выхода туда не попадут.</string>
+    <string name="account_sign_out_body_1">Доски останутся в аккаунте %1$s и на этом телефоне, скрытые, пока вы снова не войдёте. Без входа вы увидите только доски, сделанные без аккаунта.</string>
     <string name="account_sign_out_body_2">Кредиты и покупки дождутся вас здесь.</string>
     <plurals name="account_board_count">
         <item quantity="one">%1$d доска</item>
@@ -55,18 +53,12 @@
         <item quantity="many">%1$d досок</item>
         <item quantity="other">%1$d доски</item>
     </plurals>
-    <string name="merge_title">Вы уже пользовались этим аккаунтом</string>
-    <string name="merge_body">В нём уже есть %1$s. На этом телефоне — %2$s, сделанные без аккаунта.</string>
-    <string name="merge_keep_title">Оставить всё</string>
-    <string name="merge_keep_sub">Все %1$s. Если две называются одинаково, к местной добавится «(с этого телефона)».</string>
-    <string name="merge_remote_title">Только доски из аккаунта</string>
-    <string name="merge_remote_sub">%1$s с этого телефона уйдут в корзину. Их можно вернуть в течение 30 дней.</string>
-    <string name="merge_footnote">Ничего не удаляется ни в одном случае.</string>
-    <string name="merge_recommended">Рекомендуем</string>
-    <string name="merge_action_continue">Продолжить</string>
+    <string name="merge_title">Доски без аккаунта</string>
+    <string name="merge_body">На этом телефоне есть доски, сделанные без аккаунта (%1$s). Перенести их в аккаунт %2$s?</string>
+    <string name="merge_footnote">Оставленные на телефоне, они видны, когда вы не вошли в аккаунт. Ничего не удаляется ни в одном случае.</string>
     <string name="merge_name_suffix">(с этого телефона)</string>
     <string name="account_sign_out_title">Выйти?</string>
-    <string name="account_sign_out_helper">Доски останутся и на телефоне, и в аккаунте. Правки после выхода туда не попадут. Кредиты и покупки дождутся вас здесь.</string>
+    <string name="account_sign_out_helper">Доски останутся в аккаунте и на телефоне, скрытые до следующего входа. Кредиты и покупки дождутся вас здесь.</string>
     <string name="account_action_delete">Удалить аккаунт</string>
     <string name="account_delete_title">Удалить аккаунт?</string>
     <string name="account_delete_body">Аккаунт исчезнет, а вместе с ним копия ваших досок, всё опубликованное и картинки к нему. Отменить это нельзя.</string>
@@ -78,4 +70,7 @@
     <string name="account_face_position_use">Готово</string>
     <string name="account_face_position_failed">Картинку не удалось показать здесь. Её всё равно можно поставить как есть.</string>
     <string name="account_face_position_frame">Картинка, которую нужно расположить в круге</string>
+    <string name="merge_action_move_in">Перенести в аккаунт %1$s</string>
+    <string name="merge_action_keep_here">Оставить только на этом телефоне</string>
+    <string name="merge_account_fallback">Google</string>
 </resources>

@@ -51,10 +51,20 @@ interface AppPreferences {
 
     fun unhideAuthor(authorUid: String)
 
-    /** On by default; consulted only once signed in. Off has to mean the copy is gone, or the switch is a lie. */
-    fun backUpBoards(): Boolean
+    /**
+     * On by default, for each account by its `recordKey`: switching it off for
+     * one says nothing about the next. Off has to mean the copy is gone, or the
+     * switch is a lie.
+     */
+    fun backUpBoards(account: String): Boolean
 
-    fun setBackUpBoards(backUp: Boolean)
+    fun setBackUpBoards(account: String, backUp: Boolean)
+
+    /**
+     * The one switch from before it was per account goes to [account], whoever
+     * is signed in when this first runs; to nobody when nobody is. Once.
+     */
+    fun settleBackUpChoice(account: String?) = Unit
 
     /** "Not now" means never again: a card that comes back gets swatted unread. */
     fun signInOfferAnswered(): Boolean

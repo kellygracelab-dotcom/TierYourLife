@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -85,10 +86,8 @@ fun AccountScreen(
         onConfirmPosition = viewModel.face::confirmPosition,
         onPickPhoto = { pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
         onNoticeShown = viewModel::dismissNotice,
-        onBackUpBoardsChange = viewModel::setBackUpBoards,
-        onMergeKeepChange = viewModel::setMergeKeep,
-        onApplyMerge = { viewModel.applyMerge(fromThisPhone) },
-        onAbandonMerge = viewModel::abandonMerge,
+        onMoveGuestBoardsIn = { viewModel.moveGuestBoardsIn(fromThisPhone) },
+        onKeepGuestBoardsHere = viewModel::keepGuestBoardsHere,
     )
 }
 
@@ -107,10 +106,8 @@ internal fun AccountScreenContent(
     onConfirmPosition: (FaceCrop?) -> Unit = {},
     onNoticeShown: () -> Unit = {},
     onOpenPublished: () -> Unit = {},
-    onBackUpBoardsChange: (Boolean) -> Unit = {},
-    onMergeKeepChange: (MergeKeep) -> Unit = {},
-    onApplyMerge: () -> Unit = {},
-    onAbandonMerge: () -> Unit = {},
+    onMoveGuestBoardsIn: () -> Unit = {},
+    onKeepGuestBoardsHere: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var nicknameDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -124,6 +121,9 @@ internal fun AccountScreenContent(
         }
     }
 
+    // Leaving the question unanswered would keep syncing stopped until the app restarts.
+    BackHandler(enabled = state.merge != null, onBack = onKeepGuestBoardsHere)
+
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         Column(
             Modifier
@@ -132,7 +132,7 @@ internal fun AccountScreenContent(
         ) {
             BarredScreen(
                 bar = {
-                    CloseBar(if (state.merge != null) onAbandonMerge else onClose)
+                    CloseBar(if (state.merge != null) onKeepGuestBoardsHere else onClose)
                 },
             ) {
                 Column(Modifier.fillMaxSize()) {
@@ -147,13 +147,12 @@ internal fun AccountScreenContent(
                     ) {
                         val merge = state.merge
                         when {
-                            // Before anything is written either way, so closing it
-                            // leaves the person exactly where they were.
+                            // Before anything is moved or sent, so closing it
+                            // leaves the boards where they were.
                             merge != null -> MergePicker(
-                                choice = merge,
-                                keep = state.mergeKeep,
-                                onKeepChange = onMergeKeepChange,
-                                onContinue = onApplyMerge,
+                                question = merge,
+                                onMoveIn = onMoveGuestBoardsIn,
+                                onKeepHere = onKeepGuestBoardsHere,
                             )
 
                             else -> when (val account = state.account) {
@@ -163,9 +162,6 @@ internal fun AccountScreenContent(
 
                             Account.Guest -> SignInPitch(
                                 signingIn = state.signingIn,
-                                boardCount = state.boardCount,
-                                backUpBoards = state.backUpBoards,
-                                onBackUpBoardsChange = onBackUpBoardsChange,
                                 onSignIn = onSignIn,
                                 onNotNow = onClose,
                             )

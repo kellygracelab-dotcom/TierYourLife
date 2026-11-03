@@ -57,8 +57,8 @@ class PictureSyncTest {
         val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(pictureId = "pic-1", bytes = byteArrayOf(1, 2, 3))
 
-        sync.push()
-        sync.push()
+        sync.push(ANN)
+        sync.push(ANN)
 
         assertEquals(listOf("pic-1"), vault.written)
         assertArrayEquals(byteArrayOf(1, 2, 3), vault.held["pic-1"])
@@ -72,8 +72,8 @@ class PictureSyncTest {
         val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(pictureId = "pic-1", bytes = byteArrayOf(1))
 
-        sync.push()
-        sync.push()
+        sync.push(ANN)
+        sync.push(ANN)
 
         assertEquals(listOf("pic-1", "pic-1"), vault.written)
     }
@@ -86,7 +86,7 @@ class PictureSyncTest {
         val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(imageUrl = "https://image.tmdb.org/t/p/w500/a.jpg")
 
-        sync.push()
+        sync.push(ANN)
 
         assertTrue(vault.written.isEmpty())
     }
@@ -99,7 +99,7 @@ class PictureSyncTest {
         val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(pictureId = "pic-1", bytes = byteArrayOf(1), deletedAt = 1_700_000_000_000)
 
-        sync.push()
+        sync.push(ANN)
 
         assertEquals(listOf("pic-1"), vault.written)
     }
@@ -110,7 +110,7 @@ class PictureSyncTest {
         val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(imageUrl = images.pathFor("pic-1"), itemUid = "item-1")
 
-        sync.pull(mapOf("item-1" to "pic-1"))
+        sync.pull(ANN, mapOf("item-1" to "pic-1"))
 
         assertTrue(images.holds("pic-1"))
         assertArrayEquals(byteArrayOf(9, 9), images.read("pic-1"))
@@ -123,7 +123,7 @@ class PictureSyncTest {
         val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(pictureId = "pic-1", bytes = byteArrayOf(1), itemUid = "item-1")
 
-        sync.pull(mapOf("item-1" to "pic-1"))
+        sync.pull(ANN, mapOf("item-1" to "pic-1"))
 
         assertTrue(vault.read.isEmpty())
     }
@@ -136,8 +136,8 @@ class PictureSyncTest {
         val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(imageUrl = images.pathFor("pic-1"), itemUid = "item-1")
 
-        sync.pull(mapOf("item-1" to "pic-1"))
-        sync.push()
+        sync.pull(ANN, mapOf("item-1" to "pic-1"))
+        sync.push(ANN)
 
         assertTrue(vault.written.isEmpty())
     }
@@ -150,7 +150,7 @@ class PictureSyncTest {
         givenCard(imageUrl = images.pathFor("pic-2"), itemUid = "item-2", boardId = 2, title = "Other")
 
         assertTrue(sync.restoring.value.finished)
-        sync.pull(mapOf("item-1" to "pic-1", "item-2" to "pic-2"))
+        sync.pull(ANN, mapOf("item-1" to "pic-1", "item-2" to "pic-2"))
 
         assertTrue(sync.restoring.value.finished)
         assertEquals(PictureRestore.Progress.Idle, sync.restoring.value)
@@ -162,12 +162,38 @@ class PictureSyncTest {
         val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
         givenCard(imageUrl = images.pathFor("pic-1"), itemUid = "item-1")
 
-        sync.pull(mapOf("item-1" to "pic-1"))
+        sync.pull(ANN, mapOf("item-1" to "pic-1"))
 
         assertFalse(images.holds("pic-1"))
         // Still pointing where the picture will land, so the next run asks
         // for it again rather than forgetting it ever existed.
         assertEquals(images.pathFor("pic-1"), dao.itemsOf(1L).single().imageUrl)
+    }
+
+    // Each account keeps its own copy, so a picture in Ann's is not in Bob's.
+    @Test
+    fun aPictureSentForOneAccount_isSentAgainForAnother() = runBlocking {
+        val vault = FakePictures()
+        val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
+        givenCard(pictureId = "pic-1", bytes = byteArrayOf(1))
+        givenCard(imageUrl = images.pathFor("pic-1"), itemUid = "item-2", boardId = 2, title = "Bob's", owner = BOB)
+
+        sync.push(ANN)
+        sync.push(BOB)
+
+        assertEquals(listOf("pic-1", "pic-1"), vault.written)
+    }
+
+    @Test
+    fun anotherAccountsPicture_isNotSentIntoThisOne() = runBlocking {
+        val vault = FakePictures()
+        val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways)
+        givenCard(pictureId = "pic-1", bytes = byteArrayOf(1), owner = BOB)
+        givenCard(pictureId = "pic-2", bytes = byteArrayOf(2), itemUid = "item-2", boardId = 2, title = "Guest's", owner = null)
+
+        sync.push(ANN)
+
+        assertTrue(vault.written.isEmpty())
     }
 
     private suspend fun givenCard(
@@ -178,13 +204,14 @@ class PictureSyncTest {
         deletedAt: Long? = null,
         boardId: Long = 1,
         title: String = "Sci-fi films",
+        owner: String? = ANN,
     ) {
         val path = when {
             pictureId != null && bytes != null -> images.write(pictureId, bytes)
             else -> imageUrl
         }
         if (dao.boardByUid("board-$boardId") == null) {
-            dao.insertBoard(TierListEntity(id = boardId, title = title, uid = "board-$boardId"))
+            dao.insertBoard(TierListEntity(id = boardId, title = title, uid = "board-$boardId", ownerUid = owner))
             dao.insertTier(
                 TierEntity(
                     id = boardId * 10,
@@ -209,6 +236,9 @@ class PictureSyncTest {
         )
     }
 }
+
+private const val ANN = "uid-ann"
+private const val BOB = "uid-bob"
 
 /** Wi-Fi always: these cases are about what moves, not when it is allowed to. */
 private object OnWifiAlways : AppPreferences, Connection {
@@ -251,8 +281,8 @@ private object OnWifiAlways : AppPreferences, Connection {
         this.asPictures = asPictures
     }
 
-    override fun backUpBoards(): Boolean = true
-    override fun setBackUpBoards(backUp: Boolean) = Unit
+    override fun backUpBoards(account: String): Boolean = true
+    override fun setBackUpBoards(account: String, backUp: Boolean) = Unit
     override fun signInOfferAnswered(): Boolean = false
     override fun markSignInOfferAnswered() = Unit
     override fun lastSyncedAtMs(): Long? = null

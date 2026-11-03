@@ -27,6 +27,8 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardRevisio
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardSummaryDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
+import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
+import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -80,6 +82,7 @@ class BoardSyncEngineTest {
         accounts: FakeAccountRepository = FakeAccountRepository(initial = account),
         vault: Pictures = NoPictures,
         connection: Connection = Metered,
+        ownership: BoardOwnership = BoardOwnership(accounts, database.ownerDao(), preferences),
     ): BoardSyncEngine {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         return BoardSyncEngine(
@@ -92,12 +95,13 @@ class BoardSyncEngineTest {
             preferences = preferences,
             deviceName = DeviceName(context),
             community = community,
+            ownership = ownership,
         )
     }
 
     @Test
     fun aGuest_sendsNothing() = runBlocking {
-        givenLocalBoard("Films")
+        givenLocalBoard("Films", owner = null)
 
         val report = engine(account = Account.Guest).sync()
 
@@ -301,14 +305,14 @@ class BoardSyncEngineTest {
     // Signing into a second account used to wipe every id the first had published off its boards.
     @Test
     fun anotherAccountsSync_leavesTheFirstAccountsPublishedListsAlone() = runBlocking {
-        givenLocalBoard("Films", publishedId = "ann-1")
+        givenLocalBoard("Films", publishedId = "ann-1", owner = "ann")
         val preferences = FakeAppPreferences()
         val ann = Account.SignedIn(email = "ann@example.com", photoUrl = null, uid = "ann")
         val bob = Account.SignedIn(email = "bob@example.com", photoUrl = null, uid = "bob")
 
         engine(account = ann, preferences = preferences, community = Publishing("ann-1")).sync()
         // Signed into Bob's account, who publishes a board of his own from this phone.
-        givenLocalBoard("Games", publishedId = "bob-1")
+        givenLocalBoard("Games", publishedId = "bob-1", owner = "bob")
         engine(account = bob, preferences = preferences, community = Publishing("bob-1")).sync()
         engine(account = bob, preferences = preferences, community = Publishing("bob-1")).sync()
 
@@ -317,7 +321,7 @@ class BoardSyncEngineTest {
 
     @Test
     fun aListTheSameAccountTookDown_isForgotten() = runBlocking {
-        givenLocalBoard("Films", publishedId = "ann-1")
+        givenLocalBoard("Films", publishedId = "ann-1", owner = "ann")
         val preferences = FakeAppPreferences()
         val ann = Account.SignedIn(email = "ann@example.com", photoUrl = null, uid = "ann")
 
@@ -327,68 +331,243 @@ class BoardSyncEngineTest {
         assertEquals(emptyList<String>(), dao.allBoards().mapNotNull { it.publishedId })
     }
 
-    // The review's case: Bob throws away a board on this phone before his first
-    // sync, and Ann signing back in must not take it out of her account.
+    // The review's case: Bob empties the trash on this phone, and Ann's board
+    // in it is not his to throw away, here or in her account.
     @Test
-    fun aBoardThrownAwayUnderAnotherAccount_staysInTheFirstAccount() = runBlocking {
-        val uid = givenLocalBoard("Films")
+    fun anotherAccountEmptyingTheTrash_leavesTheFirstAccountsBoard() = runBlocking {
+        val uid = givenLocalBoard("Films", owner = "ann")
         val annBoards = FakeBoards()
         engine(account = ann, api = annBoards).sync()
 
         throwAway(uid, signedInAs = "bob")
         engine(account = ann, api = annBoards).sync()
 
-        assertTrue(uid in annBoards.server)
-        assertNotNull("back from Ann's account", dao.boardByUid(uid))
+        assertEquals(false, annBoards.server[uid]?.deleted)
+        assertNotNull("still in Ann's trash", dao.boardByUid(uid)?.deletedAt)
     }
 
     @Test
     fun aBoardThrownAwayUnderTheSameAccount_leavesItsAccount() = runBlocking {
-        val uid = givenLocalBoard("Films")
+        val uid = givenLocalBoard("Films", owner = "ann")
         val annBoards = FakeBoards()
         engine(account = ann, api = annBoards).sync()
 
         throwAway(uid, signedInAs = "ann")
         engine(account = ann, api = annBoards).sync()
 
-        assertFalse(uid in annBoards.server)
+        assertEquals(true, annBoards.server[uid]?.deleted)
     }
 
+    // The owner's phone sent Ann's boards into Bob's account while he was signed in.
     @Test
-    fun anotherAccountsRun_leavesTheFirstAccountsRecordsAsTheyWere() = runBlocking {
-        val uid = givenLocalBoard("Films")
+    fun anAccountsBoards_neverGoUpIntoAnother() = runBlocking {
+        val uid = givenLocalBoard("Films", owner = "ann")
         val annBoards = FakeBoards()
         engine(account = ann, api = annBoards).sync()
-        annBoards.server[uid] = annBoards.server.getValue(uid).copy(revision = 6)
-        engine(account = ann, api = annBoards).sync()
+        val bobBoards = FakeBoards()
 
-        engine(account = bob, api = FakeBoards()).sync()
+        val report = engine(account = bob, api = bobBoards).sync()
 
-        assertEquals(listOf(6), dao.syncRecordsOf("ann").map { it.revision })
-        assertEquals(listOf(1), dao.syncRecordsOf("bob").map { it.revision })
+        assertEquals(0, report.carried)
+        assertTrue(bobBoards.kept.isEmpty())
+        assertTrue(dao.syncRecordsOf("bob").isEmpty())
+        assertEquals(listOf(uid), dao.syncRecordsOf("ann").map { it.listUid })
     }
 
-    // Bob's account let go of a board they share; that is Bob's delete, not Ann's.
     @Test
-    fun aBoardDiscardedForAnotherAccount_comesBackForTheFirst() = runBlocking {
-        val uid = givenLocalBoard("Films")
+    fun boardsMadeWithoutAnAccount_goUpOnlyOnceMovedIn() = runBlocking {
+        val uid = givenLocalBoard("Films", owner = null)
+        val accounts = FakeAccountRepository(initial = ann)
+        val preferences = FakeAppPreferences()
+        val ownership = BoardOwnership(accounts, database.ownerDao(), preferences)
+
+        engine(accounts = accounts, preferences = preferences, ownership = ownership).sync()
+        assertTrue(boards.kept.isEmpty())
+
+        ownership.release(moveGuestBoardsIn = true)
+        engine(accounts = accounts, preferences = preferences, ownership = ownership).sync()
+
+        assertEquals(listOf(uid), boards.kept.map { it.first })
+        assertEquals("ann", dao.boardByUid(uid)!!.ownerUid)
+    }
+
+    @Test
+    fun boardsKeptOnThisPhoneOnly_stayOutOfTheAccount() = runBlocking {
+        val uid = givenLocalBoard("Films", owner = null)
+        val accounts = FakeAccountRepository(initial = ann)
+        val preferences = FakeAppPreferences()
+        val ownership = BoardOwnership(accounts, database.ownerDao(), preferences)
+
+        ownership.release(moveGuestBoardsIn = false)
+        engine(accounts = accounts, preferences = preferences, ownership = ownership).sync()
+
+        assertTrue(boards.kept.isEmpty())
+        assertNull(dao.boardByUid(uid)!!.ownerUid)
+    }
+
+    // What goes up depends on the answer about this phone's own boards.
+    @Test
+    fun nothingGoesUp_whileThatQuestionIsOpen() = runBlocking {
+        givenLocalBoard("Films", owner = "ann")
+        val accounts = FakeAccountRepository(initial = ann)
+        val preferences = FakeAppPreferences()
+        val ownership = BoardOwnership(accounts, database.ownerDao(), preferences)
+        ownership.hold()
+
+        val report = engine(accounts = accounts, preferences = preferences, ownership = ownership).sync()
+
+        assertFalse(report.signedIn)
+        assertTrue(boards.kept.isEmpty())
+    }
+
+    @Test
+    fun signingBackIn_showsThatAccountsBoards_andOnlyThose() = runBlocking {
+        givenLocalBoard("Ann's films", owner = "ann")
+        givenLocalBoard("Bob's games", owner = "bob")
+        givenLocalBoard("Made without an account", owner = null)
+        val accounts = FakeAccountRepository(initial = ann)
+        val repository = RoomTierRepository(
+            database.tierDao(),
+            images,
+            BoardOwnership(accounts, database.ownerDao(), FakeAppPreferences()),
+        )
+        suspend fun titles() = repository.getAllTierLists().map { it.title }
+
+        assertEquals(listOf("Ann's films"), titles())
+        accounts.accounts.value = Account.Guest
+        assertEquals(listOf("Made without an account"), titles())
+        accounts.accounts.value = bob
+        assertEquals(listOf("Bob's games"), titles())
+        accounts.accounts.value = ann
+        assertEquals(listOf("Ann's films"), titles())
+    }
+
+    // Bob's account holds a board whose uid is Ann's board here: it comes down
+    // to Bob as a copy, and Ann's stays exactly as it was.
+    @Test
+    fun anotherAccountsBoardWithTheSameUid_comesDownAsACopy() = runBlocking {
+        val uid = givenLocalBoard("Films", owner = "ann")
+        val bobBoards = FakeBoards()
+        bobBoards.server[uid] = theirBoard(uid, title = "Films, Bob's", revision = 3)
+
+        engine(account = bob, api = bobBoards).sync()
+        engine(account = bob, api = bobBoards).sync()
+
+        assertEquals("ann", dao.boardByUid(uid)!!.ownerUid)
+        assertEquals("Films", dao.boardByUid(uid)!!.title)
+        val copy = dao.boardsOf("bob").single()
+        assertEquals("Films, Bob's", copy.title)
+        assertEquals(true, bobBoards.server.getValue(uid).deleted)
+        assertEquals(listOf(copy.uid), bobBoards.kept.map { it.first })
+        assertEquals(listOf(copy.uid), dao.syncRecordsOf("bob").map { it.listUid })
+    }
+
+    // Boards from before owners: each goes to the account that agreed on it,
+    // or, with none, to whoever is signed in at the first run.
+    @Test
+    fun boardsFromBeforeOwners_goToTheAccountThatHadThem() = runBlocking {
+        val anns = givenLocalBoard("Ann's films", owner = TierListEntity.UNSETTLED)
+        val unsynced = givenLocalBoard("Never synced", owner = TierListEntity.UNSETTLED)
+        dao.remember(BoardSyncEntity("ann", anns, revision = 2, fingerprint = "f", syncedAt = 1))
+        val bobBoards = FakeBoards()
+
+        engine(account = bob, api = bobBoards).sync()
+
+        assertEquals("ann", dao.boardByUid(anns)!!.ownerUid)
+        assertEquals("bob", dao.boardByUid(unsynced)!!.ownerUid)
+        assertEquals(listOf(unsynced), bobBoards.kept.map { it.first })
+    }
+
+    // Ann's boards once went into Bob's account too. Settled as Bob's, Ann's
+    // account keeps them: they come down to her as copies, never taken out.
+    @Test
+    fun aBoardTwoAccountsHad_isNotTakenOutOfTheOneThatLostIt() = runBlocking {
+        val uid = givenLocalBoard("Films", owner = TierListEntity.UNSETTLED)
+        dao.remember(BoardSyncEntity("ann", uid, revision = 2, fingerprint = "f", syncedAt = 9))
+        dao.remember(BoardSyncEntity("bob", uid, revision = 1, fingerprint = "f", syncedAt = 1))
+        val annBoards = FakeBoards().apply { server[uid] = theirBoard(uid, title = "Films", revision = 2) }
+        val bobBoards = FakeBoards().apply { server[uid] = theirBoard(uid, title = "Films", revision = 1) }
+
+        engine(account = bob, api = bobBoards).sync()
+        engine(account = ann, api = annBoards).sync()
+        engine(account = ann, api = annBoards).sync()
+
+        assertEquals("bob", dao.boardByUid(uid)!!.ownerUid)
+        assertEquals(false, bobBoards.server.getValue(uid).deleted)
+        assertEquals(listOf("Films"), dao.boardsOf("ann").map { it.title })
+        assertEquals(1, annBoards.server.values.count { !it.deleted })
+    }
+
+    // Bob's account let go of a board this phone never agreed on with Bob: a
+    // marker he holds says nothing about the board here.
+    @Test
+    fun aMarkerInAnotherAccount_neverTakesTheBoardAway() = runBlocking {
+        val uid = givenLocalBoard("Films", owner = "ann")
         val annBoards = FakeBoards()
         engine(account = ann, api = annBoards).sync()
         val bobBoards = FakeBoards()
         bobBoards.server[uid] = theirBoard(uid, title = "Films", revision = 2).copy(deleted = true)
 
         engine(account = bob, api = bobBoards).sync()
-        assertNull(dao.boardByUid(uid))
         engine(account = ann, api = annBoards).sync()
 
-        assertTrue(uid in annBoards.server)
-        assertNotNull(dao.boardByUid(uid))
+        assertNull(dao.boardByUid(uid)!!.deletedAt)
+        assertEquals(false, annBoards.server[uid]?.deleted)
+    }
+
+    // The owner's library emptied this way: off left a marker for every board,
+    // and on again read each one as a delete.
+    @Test
+    fun backupOffAndOnAgain_keepsEveryBoard_andSendsThemBackUp() = runBlocking {
+        val films = givenLocalBoard("Films", owner = "ann")
+        val games = givenLocalBoard("Games", owner = "ann")
+        val preferences = FakeAppPreferences()
+        val accounts = FakeAccountRepository(initial = ann)
+        engine(preferences = preferences, accounts = accounts).sync()
+        val backup = RoomBoardBackup(preferences, dao, images, boards, accounts)
+
+        assertTrue(backup.stopAndDelete())
+        assertEquals(listOf(true, true), listOf(films, games).map { boards.server.getValue(it).deleted })
+        backup.start()
+        engine(preferences = preferences, accounts = accounts).sync()
+
+        listOf(films, games).forEach { uid ->
+            assertNull("$uid still in use here", dao.boardByUid(uid)!!.deletedAt)
+            assertEquals("$uid back in the account", false, boards.server.getValue(uid).deleted)
+            assertEquals(1, dao.syncRecordsOf("ann").count { it.listUid == uid })
+        }
+        assertEquals(listOf(2, 2), boards.kept.drop(2).map { it.second.basedOn })
+    }
+
+    @Test
+    fun aBoardThrownAwayElsewhere_goesToTheTrashHereFirst() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        engine().sync()
+        boards.server[uid] = boards.server.getValue(uid).copy(revision = 2, deleted = true)
+
+        engine().sync()
+
+        assertNotNull(dao.boardByUid(uid)!!.deletedAt)
+        assertTrue(dao.allSyncRecords().none { it.listUid == uid })
+    }
+
+    @Test
+    fun aBoardAlreadyInTheTrash_leavesForGood_whenThrownAwayElsewhere() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        engine().sync()
+        database.tierDao().markTierListsDeleted(listOf(dao.boardByUid(uid)!!.id), deletedAt = 1)
+        engine().sync()
+        boards.server[uid] = boards.server.getValue(uid).let { it.copy(revision = it.revision + 1, deleted = true) }
+
+        engine().sync()
+
+        assertNull(dao.boardByUid(uid))
     }
 
     @Test
     fun aSignInMidRun_stopsTheRestOfThePlan() = runBlocking {
-        givenLocalBoard("Films")
-        givenLocalBoard("Games")
+        givenLocalBoard("Films", owner = "ann")
+        givenLocalBoard("Games", owner = "ann")
         val accounts = FakeAccountRepository(initial = ann)
         val annBoards = FakeBoards().apply { onKeep = { accounts.accounts.value = bob } }
 
@@ -401,7 +580,7 @@ class BoardSyncEngineTest {
 
     @Test
     fun rowsFromBeforeAccounts_areTakenForBoardsStillHere_andDroppedForBoardsGone() = runBlocking {
-        val uid = givenLocalBoard("Films")
+        val uid = givenLocalBoard("Films", owner = "ann")
         val annBoards = FakeBoards()
         annBoards.server[uid] = theirBoard(uid, title = "Films", revision = 4, fingerprint = fingerprintOf(uid))
         annBoards.server["gone"] = theirBoard("gone", title = "Games", revision = 2)
@@ -410,29 +589,16 @@ class BoardSyncEngineTest {
 
         engine(account = ann, api = annBoards).sync()
 
-        assertTrue("not read as a delete", "gone" in annBoards.server)
-        assertEquals(1, dao.boardsInUse().count { it.uid == uid })
+        assertEquals("not read as a delete", false, annBoards.server["gone"]?.deleted)
+        assertEquals(1, dao.boardsOf("ann").count { it.uid == uid && it.deletedAt == null })
         assertTrue(dao.syncRecordsOf(BoardSyncEntity.UNCLAIMED).isEmpty())
         assertEquals(setOf(uid, "gone"), dao.syncRecordsOf("ann").map { it.listUid }.toSet())
     }
 
-    @Test
-    fun aBoardDeletedOnItsOwnUnderAnotherAccount_staysInTheFirstAccount() = runBlocking {
-        val uid = givenLocalBoard("Films")
-        val annBoards = FakeBoards()
-        engine(account = ann, api = annBoards).sync()
-
-        throwAway(uid, signedInAs = "bob", alone = true)
-        engine(account = ann, api = annBoards).sync()
-
-        assertTrue(uid in annBoards.server)
-    }
-
-    private suspend fun throwAway(uid: String, signedInAs: String, alone: Boolean = false) {
+    private suspend fun throwAway(uid: String, signedInAs: String) {
         val tiers = database.tierDao()
-        val id = dao.boardByUid(uid)!!.id
-        tiers.markTierListsDeleted(listOf(id), deletedAt = 1)
-        if (alone) tiers.deleteTierListPermanently(id, account = signedInAs) else tiers.emptyTrash(account = signedInAs)
+        tiers.markTierListsDeleted(listOf(dao.boardByUid(uid)!!.id), deletedAt = 1)
+        tiers.emptyTrash(owner = signedInAs)
     }
 
     private class Publishing(private vararg val ids: String) : FakeCommunityRepository() {
@@ -441,8 +607,13 @@ class BoardSyncEngineTest {
         )
     }
 
-    private suspend fun givenLocalBoard(title: String, publishedId: String? = null, credit: String? = null): String {
-        val board = TierListEntity(title = title, publishedId = publishedId)
+    private suspend fun givenLocalBoard(
+        title: String,
+        publishedId: String? = null,
+        credit: String? = null,
+        owner: String? = someone,
+    ): String {
+        val board = TierListEntity(title = title, publishedId = publishedId, ownerUid = owner)
         dao.addBoard(
             board,
             listOf(
@@ -510,8 +681,9 @@ class BoardSyncEngineTest {
             return Response.success(KeptBoardRevisionDto(uid, revision))
         }
 
+        // As the proxy: a marker, not nothing, so the other phone hears of it.
         override suspend fun forget(uid: String) {
-            server.remove(uid)
+            server[uid]?.let { stored -> server[uid] = stored.copy(revision = stored.revision + 1, deleted = true) }
         }
     }
 
@@ -543,6 +715,7 @@ class BoardSyncEngineTest {
     private companion object {
         const val HTTP_CONFLICT = 409
         const val OTHER_RUN_MS = 1_000L
+        val someone = (FakeAccountRepository.signedIn as Account.SignedIn).recordKey
         val ann = Account.SignedIn(email = "ann@example.com", photoUrl = null, uid = "ann")
         val bob = Account.SignedIn(email = "bob@example.com", photoUrl = null, uid = "bob")
     }

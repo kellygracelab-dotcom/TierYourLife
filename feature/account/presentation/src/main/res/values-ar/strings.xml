@@ -49,9 +49,7 @@
     </plurals>
     <string name="account_reason_devices">لوحاتك تنتقل معك إلى هاتف جديد.</string>
     <string name="account_reason_publish">نشر قائمة يتطلّب حسابًا.</string>
-    <string name="account_backup_label">احتفظ بنسخة من لوحاتي</string>
-    <string name="account_backup_sub">%1$s وصورها. يمكنك إيقاف ذلك من الإعدادات.</string>
-    <string name="account_sign_out_body_1">تبقى لوحاتك على هذا الهاتف وفي حسابك. التغييرات بعد تسجيل الخروج لن تُزامن.</string>
+    <string name="account_sign_out_body_1">تبقى لوحاتك في حساب %1$s وعلى هذا الهاتف، مخفية حتى تسجّل الدخول مجددًا. بعد تسجيل الخروج سترى فقط اللوحات التي أُنشئت بلا حساب.</string>
     <string name="account_sign_out_body_2">الأرصدة والمشتريات تنتظرك هنا.</string>
     <plurals name="account_board_count">
         <item quantity="zero">لا لوحات</item>
@@ -61,18 +59,12 @@
         <item quantity="many">%1$d لوحة</item>
         <item quantity="other">%1$d لوحة</item>
     </plurals>
-    <string name="merge_title">لقد استخدمت هذا الحساب من قبل</string>
-    <string name="merge_body">فيه بالفعل %1$s. وعلى هذا الهاتف %2$s أنشأتها بلا حساب.</string>
-    <string name="merge_keep_title">احتفظ بكل شيء</string>
-    <string name="merge_keep_sub">كل %1$s. إذا تطابق اسمان، تُضاف إلى المحلية «(من هذا الهاتف)».</string>
-    <string name="merge_remote_title">استخدم لوحات الحساب فقط</string>
-    <string name="merge_remote_sub">%1$s من هذا الهاتف تذهب إلى المهملات. يمكنك استعادتها خلال 30 يومًا.</string>
-    <string name="merge_footnote">لا يُحذف شيء في الحالتين.</string>
-    <string name="merge_recommended">موصى به</string>
-    <string name="merge_action_continue">متابعة</string>
+    <string name="merge_title">لوحات أُنشئت بلا حساب</string>
+    <string name="merge_body">على هذا الهاتف %1$s أنشأتها بلا حساب. هل تنقلها إلى حساب %2$s؟</string>
+    <string name="merge_footnote">ما تبقيه على الهاتف يظهر كلما كنت خارج حسابك. لا يُحذف شيء في الحالتين.</string>
     <string name="merge_name_suffix">(من هذا الهاتف)</string>
     <string name="account_sign_out_title">تسجيل الخروج؟</string>
-    <string name="account_sign_out_helper">تبقى لوحاتك على هذا الهاتف وفي حسابك. التغييرات بعد تسجيل الخروج لن تُزامن. الأرصدة والمشتريات تنتظرك هنا.</string>
+    <string name="account_sign_out_helper">تبقى لوحاتك في حسابك وعلى هذا الهاتف، مخفية حتى تسجّل الدخول مجددًا. الأرصدة والمشتريات تنتظرك هنا.</string>
     <string name="account_action_delete">حذف الحساب</string>
     <string name="account_delete_title">حذف هذا الحساب؟</string>
     <string name="account_delete_body">سيُحذف الحساب، ومعه نسخة لوحاتك وكل ما نشرته والصور المرتبطة به. لا يمكن التراجع عن ذلك.</string>
@@ -84,4 +76,7 @@
     <string name="account_face_position_use">استخدم هذه</string>
     <string name="account_face_position_failed">تعذّر عرض الصورة هنا. لا يزال بالإمكان استخدامها كما هي.</string>
     <string name="account_face_position_frame">الصورة التي تُوضع في الدائرة</string>
+    <string name="merge_action_move_in">انقلها إلى حساب %1$s</string>
+    <string name="merge_action_keep_here">أبقِها على هذا الهاتف فقط</string>
+    <string name="merge_account_fallback">Google</string>
 </resources>

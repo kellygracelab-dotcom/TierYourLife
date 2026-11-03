@@ -92,9 +92,9 @@ private class FakeAppPreferences(
         this.asPictures = asPictures
     }
 
-    override fun backUpBoards(): Boolean = true
+    override fun backUpBoards(account: String): Boolean = true
 
-    override fun setBackUpBoards(backUp: Boolean) = Unit
+    override fun setBackUpBoards(account: String, backUp: Boolean) = Unit
 
     override fun signInOfferAnswered(): Boolean = false
 

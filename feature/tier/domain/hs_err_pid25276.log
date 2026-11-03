@@ -1,0 +1,268 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 534773760 bytes. Error detail: G1 virtual space
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   This process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+#   JVM is running with Unscaled Compressed Oops mode in which the Java heap is
+#     placed in the first 4GB address space. The Java Heap base address is the
+#     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+#     to set the Java Heap base and to place the Java Heap above 4GB virtual address.
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_windows.cpp:3926), pid=25276, tid=16060
+#
+# JRE version:  (21.0.10+1) (build )
+# Java VM: OpenJDK 64-Bit Server VM (21.0.10+1-b1163.110, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, windows-amd64)
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Dorg.gradle.internal.worker.tmpdir=D:\MyProjects\TierYourLife\TierYourLife\.claude\worktrees\agent-a2c56f1289fdb4ec7\feature\tier\domain\build\tmp\test\work -javaagent:D:\MyProjects\TierYourLife\TierYourLife\.claude\worktrees\agent-a2c56f1289fdb4ec7\feature\tier\domain\build\kover\kover-jvm-agent-0.9.11.jar=file:D:\MyProjects\TierYourLife\TierYourLife\.claude\worktrees\agent-a2c56f1289fdb4ec7\feature\tier\domain\build\tmp\test\kover-agent.args -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 1'
+
+Host: Intel(R) Core(TM) i5-14600KF, 20 cores, 31G,  Windows 11 , 64 bit Build 26100 (10.0.26100.9711)
+Time: Tue Nov  3 13:24:43 2026 FLE Standard Time elapsed time: 0.109136 seconds (0d 0h 0m 0s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00000249ff42fcb0):  JavaThread "Unknown thread" [_thread_in_vm, id=16060, stack(0x0000009886400000,0x0000009886500000) (1024K)]
+
+Stack: [0x0000009886400000,0x0000009886500000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x6ed099]  os::win32::platform_print_native_stack+0xd9  (os_windows_x86.cpp:236)
+V  [jvm.dll+0x8cb76b]  VMError::report+0xd8b  (vmError.cpp:1018)
+V  [jvm.dll+0x8cdf0a]  VMError::report_and_die+0x79a  (vmError.cpp:1886)
+V  [jvm.dll+0x8ce5e3]  VMError::report_and_die+0x43  (vmError.cpp:1656)
+V  [jvm.dll+0x28e1c6]  report_vm_out_of_memory+0x56  (debug.cpp:225)
+V  [jvm.dll+0x6e9955]  os::pd_commit_memory_or_exit+0x75  (os_windows.cpp:3934)
+V  [jvm.dll+0x6dd4ea]  os::commit_memory_or_exit+0x2a  (os.cpp:1957)
+V  [jvm.dll+0x369b4e]  G1PageBasedVirtualSpace::commit+0xde  (g1PageBasedVirtualSpace.cpp:196)
+V  [jvm.dll+0x371a1b]  G1RegionsLargerThanCommitSizeMapper::commit_regions+0x7b  (g1RegionToSpaceMapper.cpp:100)
+V  [jvm.dll+0x3c3619]  HeapRegionManager::expand_any+0xa9  (heapRegionManager.cpp:344)
+V  [jvm.dll+0x3c38bb]  HeapRegionManager::expand_by+0xcb  (heapRegionManager.cpp:361)
+V  [jvm.dll+0x33ce67]  G1CollectedHeap::expand+0xb7  (g1CollectedHeap.cpp:1107)
+V  [jvm.dll+0x33d9ab]  G1CollectedHeap::initialize+0x52b  (g1CollectedHeap.cpp:1480)
+V  [jvm.dll+0x894e7e]  universe_init+0xbe  (universe.cpp:796)
+V  [jvm.dll+0x3d0588]  init_globals+0x48  (init.cpp:133)
+V  [jvm.dll+0x87db91]  Threads::create_vm+0x2a1  (threads.cpp:568)
+V  [jvm.dll+0x464721]  JNI_CreateJavaVM_inner+0x81  (jni.cpp:3628)
+V  [jvm.dll+0x4663c1]  JNI_CreateJavaVM+0x11  (jni.cpp:3723)
+C  [jli.dll+0x52ec]  JavaMain+0x120  (java.c:415)
+C  [ucrtbase.dll+0x2cd30]
+C  [KERNEL32.DLL+0x2dda7]
+C  [ntdll.dll+0x7ee4c]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007ffeac664308, length=0, elements={
+}
+
+Java Threads: ( => current thread )
+Total: 0
+
+Other Threads:
+  0x00000249ff45e540 WorkerThread "GC Thread#0"                     [id=19416, stack(0x0000009886500000,0x0000009886600000) (1024K)]
+  0x00000249ff463d40 ConcurrentGCThread "G1 Main Marker"            [id=35712, stack(0x0000009886600000,0x0000009886700000) (1024K)]
+  0x00000249ff4656d0 WorkerThread "G1 Conc#0"                       [id=24764, stack(0x0000009886700000,0x0000009886800000) (1024K)]
+
+[error occurred during error reporting (printing all threads), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffeabd4f967]
+VM state: not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00007ffeac6d8eb0] Heap_lock - owner thread: 0x00000249ff42fcb0
+
+Heap address: 0x00000000e0000000, size: 512 MB, Compressed Oops mode: 32-bit
+
+CDS archive(s) mapped at: [0x0000000000000000-0x0000000000000000-0x0000000000000000), size 0, SharedBaseAddress: 0x0000000800000000, ArchiveRelocationMode: 1.
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0, Narrow klass range: 0x0
+
+GC Precious Log:
+ CardTable entry size: 512
+ Card Set container configuration: InlinePtr #cards 5 size 8 Array Of Cards #cards 12 size 40 Howl #buckets 4 coarsen threshold 1843 Howl Bitmap #cards 512 size 80 coarsen threshold 460 Card regions per heap region 1 cards per card region 2048
+
+Heap:
+ garbage-first heap   total 0K, used 0K [0x00000000e0000000, 0x0000000100000000)
+  region size 1024K, 0 young (0K), 0 survivors (0K)
+ Metaspace       used 0K, committed 0K, reserved 0K
+  class space    used 0K, committed 0K, reserved 0K
+
+Heap Regions: E=young(eden), S=young(survivor), O=old, HS=humongous(starts), HC=humongous(continues), CS=collection set, F=free, TAMS=top-at-mark-start, PB=parsable bottom
+
+Card table byte_map: [0x0000024992c50000,0x0000024992d50000] _byte_map_base: 0x0000024992550000
+
+Marking Bits: (CMBitMap*) 0x00000249ff45f460
+ Bits: [0x0000024992d50000, 0x0000024993550000)
+
+GC Heap History (0 events):
+No events
+
+Dll operation events (2 events):
+Event: 0.021 Loaded shared library C:\Users\Danylo\.jdks\jbr-21.0.10\bin\java.dll
+Event: 0.022 Loaded shared library C:\Users\Danylo\.jdks\jbr-21.0.10\bin\zip.dll
+
+Deoptimization events (0 events):
+No events
+
+Classes loaded (0 events):
+No events
+
+Classes unloaded (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+ZGC Phase Switch (0 events):
+No events
+
+VM Operations (0 events):
+No events
+
+Memory protections (0 events):
+No events
+
+Nmethod flushes (0 events):
+No events
+
+Events (0 events):
+No events
+
+
+Dynamic libraries:
+0x00007ff6d5f50000 - 0x00007ff6d5f5a000 	C:\Users\Danylo\.jdks\jbr-21.0.10\bin\java.exe
+0x00007fff9ea40000 - 0x00007fff9eca8000 	C:\WINDOWS\SYSTEM32\ntdll.dll
+0x00007fff9d030000 - 0x00007fff9d0fb000 	C:\WINDOWS\System32\KERNEL32.DLL
+0x00007fff9c290000 - 0x00007fff9c691000 	C:\WINDOWS\System32\KERNELBASE.dll
+0x00007fff9bf40000 - 0x00007fff9c08c000 	C:\WINDOWS\System32\ucrtbase.dll
+0x00007fff741f0000 - 0x00007fff7420e000 	C:\Users\Danylo\.jdks\jbr-21.0.10\bin\VCRUNTIME140.dll
+0x00007fff74260000 - 0x00007fff74278000 	C:\Users\Danylo\.jdks\jbr-21.0.10\bin\jli.dll
+0x00007fff9d1a0000 - 0x00007fff9d377000 	C:\WINDOWS\System32\USER32.dll
+0x00007fff9c0a0000 - 0x00007fff9c0c7000 	C:\WINDOWS\System32\win32u.dll
+0x00007fff7f410000 - 0x00007fff7f6a1000 	C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.26100.9711_none_3e07b8b0e334e825\COMCTL32.dll
+0x00007fff9df30000 - 0x00007fff9df5b000 	C:\WINDOWS\System32\GDI32.dll
+0x00007fff9c0d0000 - 0x00007fff9c1fa000 	C:\WINDOWS\System32\gdi32full.dll
+0x00007fff9c6a0000 - 0x00007fff9c743000 	C:\WINDOWS\System32\msvcp_win.dll
+0x00007fff9d380000 - 0x00007fff9d429000 	C:\WINDOWS\System32\msvcrt.dll
+0x00007fff9d7d0000 - 0x00007fff9d801000 	C:\WINDOWS\System32\IMM32.DLL
+0x00007fff74d10000 - 0x00007fff74d1c000 	C:\Users\Danylo\.jdks\jbr-21.0.10\bin\vcruntime140_1.dll
+0x00007fff5fe20000 - 0x00007fff5fea9000 	C:\Users\Danylo\.jdks\jbr-21.0.10\bin\msvcp140.dll
+0x00007ffeaba00000 - 0x00007ffeac7cc000 	C:\Users\Danylo\.jdks\jbr-21.0.10\bin\server\jvm.dll
+0x00007fff9df80000 - 0x00007fff9e03c000 	C:\WINDOWS\System32\ADVAPI32.dll
+0x00007fff9cca0000 - 0x00007fff9cd48000 	C:\WINDOWS\System32\sechost.dll
+0x00007fff9e050000 - 0x00007fff9e168000 	C:\WINDOWS\System32\RPCRT4.dll
+0x00007fff9dea0000 - 0x00007fff9df21000 	C:\WINDOWS\System32\WS2_32.dll
+0x00007fff9b5d0000 - 0x00007fff9b62e000 	C:\WINDOWS\SYSTEM32\POWRPROF.dll
+0x00007fff93e60000 - 0x00007fff93e6b000 	C:\WINDOWS\SYSTEM32\VERSION.dll
+0x00007fff8c5a0000 - 0x00007fff8c5d7000 	C:\WINDOWS\SYSTEM32\WINMM.dll
+0x00007fff9b5b0000 - 0x00007fff9b5c5000 	C:\WINDOWS\SYSTEM32\UMPDC.dll
+0x00007fff9a890000 - 0x00007fff9a8ab000 	C:\WINDOWS\SYSTEM32\kernel.appcore.dll
+0x00007fff74910000 - 0x00007fff7491a000 	C:\Users\Danylo\.jdks\jbr-21.0.10\bin\jimage.dll
+0x00007fff990b0000 - 0x00007fff992fc000 	C:\WINDOWS\SYSTEM32\DBGHELP.DLL
+0x00007fff9d430000 - 0x00007fff9d7bb000 	C:\WINDOWS\System32\combase.dll
+0x00007fff9d8d0000 - 0x00007fff9d9a9000 	C:\WINDOWS\System32\OLEAUT32.dll
+0x00007fff713c0000 - 0x00007fff713fb000 	C:\WINDOWS\SYSTEM32\dbgcore.DLL
+0x00007fff9bc30000 - 0x00007fff9bcdc000 	C:\WINDOWS\System32\bcryptPrimitives.dll
+0x00007fff746e0000 - 0x00007fff746f0000 	C:\Users\Danylo\.jdks\jbr-21.0.10\bin\instrument.dll
+0x00007fff73c20000 - 0x00007fff73c41000 	C:\Users\Danylo\.jdks\jbr-21.0.10\bin\java.dll
+0x00007fff74170000 - 0x00007fff74188000 	C:\Users\Danylo\.jdks\jbr-21.0.10\bin\zip.dll
+
+JVMTI agents:
+D:\MyProjects\TierYourLife\TierYourLife\.claude\worktrees\agent-a2c56f1289fdb4ec7\feature\tier\domain\build\kover\kover-jvm-agent-0.9.11.jar path:none, loaded, not initialized, instrumentlib options:file:D:\MyProjects\TierYourLife\TierYourLife\.claude\worktrees\agent-a2c56f1289fdb4ec7\feature\tier\domain\build\tmp\test\kover-agent.args
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Users\Danylo\.jdks\jbr-21.0.10\bin;C:\WINDOWS\SYSTEM32;C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.26100.9711_none_3e07b8b0e334e825;C:\Users\Danylo\.jdks\jbr-21.0.10\bin\server
+
+VM Arguments:
+jvm_args: -Dorg.gradle.internal.worker.tmpdir=D:\MyProjects\TierYourLife\TierYourLife\.claude\worktrees\agent-a2c56f1289fdb4ec7\feature\tier\domain\build\tmp\test\work -javaagent:D:\MyProjects\TierYourLife\TierYourLife\.claude\worktrees\agent-a2c56f1289fdb4ec7\feature\tier\domain\build\kover\kover-jvm-agent-0.9.11.jar=file:D:\MyProjects\TierYourLife\TierYourLife\.claude\worktrees\agent-a2c56f1289fdb4ec7\feature\tier\domain\build\tmp\test\kover-agent.args -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=GB -Duser.language=en -Duser.variant -ea 
+java_command: worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 1'
+java_class_path (initial): D:\\AppData\\Gradle\\caches\\9.8.2\\workerMain\\gradle-worker.jar;D:\\MyProjects\\TierYourLife\\TierYourLife\\.claude\\worktrees\\agent-a2c56f1289fdb4ec7\\feature\\tier\\domain\\build\\classes\\kotlin\\test;D:\\MyProjects\\TierYourLife\\TierYourLife\\.claude\\worktrees\\agent-a2c56f1289fdb4ec7\\feature\\tier\\domain\\build\\libs\\domain-test-fixtures.jar;D:\\MyProjects\\TierYourLife\\TierYourLife\\.claude\\worktrees\\agent-a2c56f1289fdb4ec7\\feature\\tier\\domain\\build\\libs\\domain.jar;D:\\AppData\\Gradle\\caches\\modules-2\\files-2.1\\org.jetbrains.kotlinx\\kotlinx-coroutines-core-jvm\\1.11.0\\3d57dc678bd8d72a60e7adf0eca5c54e3f4f4b79\\kotlinx-coroutines-core-jvm-1.11.0.jar;D:\\AppData\\Gradle\\caches\\modules-2\\files-2.1\\org.jetbrains.kotlin\\kotlin-stdlib\\2.4.21\\c343e135bd1e7dd94b7ed76b4159068d888d09db\\kotlin-stdlib-2.4.21.jar;D:\\AppData\\Gradle\\caches\\modules-2\\files-2.1\\junit\\junit\\4.13.2\\8ac9e16d933b6fb43bc7f576336b8f4d7eb5ba12\\junit-4.13.2.jar;D:\\AppData\\Gradle\\caches\\modules-2\\files-2.1\\org.jetbrains\\annotations\\23.0.0\\8cc20c07506ec18e0834947b84a864bfc094484e\\annotations-23.0.0.jar;D:\\AppData\\Gradle\\caches\\modules-2\\files-2.1\\org.hamcrest\\hamcrest-core\\1.3\\42a25dc3219429f0e5d060061f71acb49bf010a0\\hamcrest-core-1.3.jar
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     intx CICompilerCount                          = 12                                        {product} {ergonomic}
+     uint ConcGCThreads                            = 4                                         {product} {ergonomic}
+     uint G1ConcRefinementThreads                  = 15                                        {product} {ergonomic}
+   size_t G1HeapRegionSize                         = 1048576                                   {product} {ergonomic}
+    uintx GCDrainStackTargetSize                   = 64                                        {product} {ergonomic}
+   size_t InitialHeapSize                          = 534773760                                 {product} {ergonomic}
+   size_t MarkStackSize                            = 4194304                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 536870912                                 {product} {command line}
+   size_t MinHeapDeltaBytes                        = 1048576                                   {product} {ergonomic}
+   size_t MinHeapSize                              = 8388608                                   {product} {ergonomic}
+    uintx NonNMethodCodeHeapSize                   = 7602480                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122027880                              {pd product} {ergonomic}
+    uintx ProfiledCodeHeapSize                     = 122027880                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+   size_t SoftMaxHeapSize                          = 536870912                              {manageable} {ergonomic}
+     bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
+     bool UseG1GC                                  = true                                      {product} {ergonomic}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags foldmultilines=false
+ #1: stderr all=off uptime,level,tags foldmultilines=false
+
+Release file:
+<release file has not been read>
+Environment Variables:
+JAVA_HOME=C:\Users\Danylo\AppData\Local\Programs\Android Studio\jbr
+PATH=C:\Users\Danylo\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\Danylo\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files\nodejs;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\dotnet;C:\Program Files\Git\cmd;C:\Program Files\GitHub CLI;C:\Program Files (x86)\Microsoft SQL Server\170\Tools\Binn;C:\Program Files\Microsoft SQL Server\170\Tools\Binn;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\180\Tools\Binn;C:\Program Files\Microsoft SQL Server\170\DTS\Binn;C:\Users\Danylo\AppData\Local\Programs\Python\Python310\Scripts;C:\Users\Danylo\AppData\Local\Programs\Python\Python310;C:\Users\Danylo\AppData\Local\Microsoft\WindowsApps;C:\Users\Danylo\AppData\Local\JetBrains\Toolbox\scripts;C:\Users\Danylo\AppData\Local\GitHubDesktop\bin;C:\Users\Danylo\AppData\Roaming\npm;C:\Users\Danylo\.dotnet\tools;C:\Users\Danylo\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1.1-full_build\bin;C:\Users\Danylo\AppData\Local\Microsoft\WinGet\Packages\Stockfish.Stockfish_Microsoft.Winget.Source_8wekyb3d8bbwe\stockfish;C:\Users\Danylo\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin;C:\Users\Danylo\AppData\Local\Programs\Python\Python310;C:\Program Files\nodejs;C:\Program Files\Git\mingw64\bin;C:\Program Files\GitHub CLI;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
+USERNAME=Danylo
+SHELL=C:\Program Files\Git\usr\bin\bash.exe
+TERM=xterm-256color
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 183 Stepping 1, GenuineIntel
+TMP=D:\AppData\Temp\User
+TEMP=D:\AppData\Temp\User
+
+
+
+
+Periodic native trim disabled
+
+JNI global refs:
+JNI global refs: 0, weak refs: 0
+
+JNI global refs memory usage: 0, weak refs: 0
+
+Process memory usage:
+Resident Set Size: 58648K (0% of 33305016K total physical memory with 177128K free physical memory)
+
+OOME stack traces (most recent first):
+Classloader memory used:
+
+---------------  S Y S T E M  ---------------
+
+OS:
+ Windows 11 , 64 bit Build 26100 (10.0.26100.9711)
+OS uptime: 2 days 16:44 hours
+Hyper-V role detected
+
+CPU: total 20 (initial active 20) (10 cores per cpu, 2 threads per core) family 6 model 183 stepping 1 microcode 0x133, cx8, cmov, fxsr, ht, mmx, 3dnowpref, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, erms, clmul, bmi1, bmi2, adx, sha, fma, vzeroupper, clflush, clflushopt, clwb, hv, serialize, rdtscp, rdpid, fsrm, f16c, cet_ibt, cet_ss
+Processor Information for the first 20 processors :
+  Max Mhz: 3500, Current Mhz: 3500, Mhz Limit: 3500
+
+Memory: 4k page, system-wide physical 32524M (172M free)
+TotalPageFile size 76162M (AvailPageFile size 7M)
+current process WorkingSet (physical memory assigned to process): 57M, peak: 57M
+current process commit charge ("private bytes"): 118M, peak: 584M
+
+vm_info: OpenJDK 64-Bit Server VM (21.0.10+1-b1163.110) for windows-amd64 JRE (21.0.10+1-b1163.110), built on 2026-03-06 by "builduser" with MS VC++ 17.14 (VS2022)
+
+END.

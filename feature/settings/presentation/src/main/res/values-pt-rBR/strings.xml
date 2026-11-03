@@ -46,7 +46,7 @@
     </plurals>
     <string name="settings_backup_label">Guardar meus quadros</string>
     <string name="settings_backup_note">Suas fotos e cartas geradas vão para sua conta, onde só você as vê. Publicar copia as imagens para o feed, onde qualquer um as vê.</string>
-    <string name="settings_backup_off_body">Seus quadros ficam neste telefone. A cópia na sua conta é apagada, e um telefone novo começará vazio.</string>
+    <string name="settings_backup_off_body">Nada neste telefone é apagado: seus quadros ficam aqui. A cópia na sua conta é apagada, e um telefone novo começará vazio. Ao ligar de novo, eles sobem outra vez.</string>
     <string name="settings_backup_off_cancel">Cancelar</string>
     <string name="settings_backup_off_confirm">Parar e apagar</string>
     <string name="settings_backup_off_title">Parar de guardar cópia?</string>

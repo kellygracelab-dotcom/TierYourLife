@@ -1,7 +1,6 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -11,101 +10,88 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.domain.sync.MergeChoice
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** The one question worth asking on the way into an account, and the cases where it must not be asked. */
+/** The one question on the way into an account used before: this phone's own boards, and only those. */
 @RunWith(AndroidJUnit4::class)
 class MergePickerTest {
 
     @get:Rule
     val composeRule = createComposeRule()
 
-    private val keeps = mutableListOf<MergeKeep>()
-    private var applied = 0
-    private var abandoned = 0
+    private var movedIn = 0
+    private var keptHere = 0
 
     @Test
-    fun bothSidesHoldSomething_soTheQuestionIsAsked() {
-        setScreen(MergeChoice(accountBoards = 2, localBoards = 3))
+    fun theQuestionNamesTheBoardsAndTheAccount() {
+        setScreen(GuestBoardsQuestion(boards = 3, into = EMAIL))
 
         composeRule.onNodeWithTag(AccountTestTags.MERGE).assertIsDisplayed()
-        composeRule.onNodeWithText(
-            string(R.string.merge_body, plural(2), plural(3)),
-        ).assertIsDisplayed()
-    }
-
-    // Keeping both is the answer that loses nothing, so it is the one already
-    // chosen when the screen appears.
-    @Test
-    fun keepingEverythingIsChosenAlready() {
-        setScreen(MergeChoice(accountBoards = 2, localBoards = 3))
-
-        composeRule.onNodeWithTag(AccountTestTags.MERGE_KEEP_EVERYTHING).assertIsSelected()
-        composeRule.onNodeWithText(string(R.string.merge_recommended)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.merge_body, plural(3), EMAIL)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.merge_action_move_in, EMAIL)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.merge_action_keep_here)).assertIsDisplayed()
     }
 
     @Test
-    fun theOtherAnswerReachesTheCaller() {
-        setScreen(MergeChoice(accountBoards = 2, localBoards = 3))
+    fun anAccountWithoutAnEmail_isStillNamed() {
+        setScreen(GuestBoardsQuestion(boards = 1, into = null))
 
-        composeRule.onNodeWithTag(AccountTestTags.MERGE_ACCOUNT_ONLY).performClick()
-
-        composeRule.runOnIdle { assertEquals(listOf(MergeKeep.AccountOnly), keeps) }
+        val account = string(R.string.merge_account_fallback)
+        composeRule.onNodeWithText(string(R.string.merge_body, plural(1), account)).assertIsDisplayed()
     }
 
     @Test
-    fun continuing_reachesTheCaller() {
-        setScreen(MergeChoice(accountBoards = 1, localBoards = 1))
+    fun movingIn_reachesTheCaller() {
+        setScreen(GuestBoardsQuestion(boards = 2, into = EMAIL))
 
-        composeRule.onNodeWithTag(AccountTestTags.MERGE_CONTINUE).performClick()
+        composeRule.onNodeWithTag(AccountTestTags.MERGE_MOVE_IN).performClick()
 
-        composeRule.runOnIdle { assertEquals(1, applied) }
+        composeRule.runOnIdle {
+            assertEquals(1, movedIn)
+            assertEquals(0, keptHere)
+        }
     }
 
-    // Closing the question is not an answer to it, so the person ends up
-    // signed out with nothing written either way.
     @Test
-    fun closingTheQuestion_writesNothingAndSignsOut() {
-        setScreen(MergeChoice(accountBoards = 1, localBoards = 1))
+    fun keepingHere_reachesTheCaller() {
+        setScreen(GuestBoardsQuestion(boards = 2, into = EMAIL))
+
+        composeRule.onNodeWithTag(AccountTestTags.MERGE_KEEP_HERE).performClick()
+
+        composeRule.runOnIdle {
+            assertEquals(1, keptHere)
+            assertEquals(0, movedIn)
+        }
+    }
+
+    // Closing is the answer that changes nothing: the boards stay where they are.
+    @Test
+    fun closingTheQuestion_keepsTheBoardsHere() {
+        setScreen(GuestBoardsQuestion(boards = 1, into = EMAIL))
 
         composeRule.onNodeWithTag(AccountTestTags.CLOSE).performClick()
 
         composeRule.runOnIdle {
-            assertEquals(1, abandoned)
-            assertEquals(0, applied)
+            assertEquals(1, keptHere)
+            assertEquals(0, movedIn)
         }
     }
 
-    // Both cases where the question has only one possible answer, and asking
-    // it would be a delay rather than a choice.
-    @Test
-    fun anEmptyAccountIsNeverAskedAbout() {
-        assertEquals(false, MergeChoice(accountBoards = 0, localBoards = 4).needed)
-    }
-
-    @Test
-    fun aPhoneWithNoBoardsIsNeverAskedAbout() {
-        assertEquals(false, MergeChoice(accountBoards = 4, localBoards = 0).needed)
-    }
-
-    private fun setScreen(choice: MergeChoice) {
-        keeps.clear()
-        applied = 0
-        abandoned = 0
+    private fun setScreen(question: GuestBoardsQuestion) {
+        movedIn = 0
+        keptHere = 0
         composeRule.setContent {
             TierYourLifeTheme {
                 AccountScreenContent(
-                    state = AccountUiState(account = Account.SignedIn(null, null), merge = choice),
+                    state = AccountUiState(account = Account.SignedIn(question.into, null), merge = question),
                     onClose = {},
                     onSignIn = {},
                     onSignOut = {},
-                    onMergeKeepChange = { keeps += it },
-                    onApplyMerge = { applied++ },
-                    onAbandonMerge = { abandoned++ },
+                    onMoveGuestBoardsIn = { movedIn++ },
+                    onKeepGuestBoardsHere = { keptHere++ },
                 )
             }
         }
@@ -117,4 +103,8 @@ class MergePickerTest {
     private fun plural(count: Int): String =
         InstrumentationRegistry.getInstrumentation().targetContext.resources
             .getQuantityString(R.plurals.account_board_count, count, count)
+
+    private companion object {
+        const val EMAIL = "someone@example.com"
+    }
 }

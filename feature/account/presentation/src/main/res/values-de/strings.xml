@@ -41,26 +41,18 @@
     </plurals>
     <string name="account_reason_devices">Deine Boards kommen mit auf ein neues Telefon.</string>
     <string name="account_reason_publish">Zum Veröffentlichen einer Liste braucht es ein Konto.</string>
-    <string name="account_backup_label">Meine Boards sichern</string>
-    <string name="account_backup_sub">%1$s und ihre Bilder. Du kannst das in den Einstellungen abschalten.</string>
-    <string name="account_sign_out_body_1">Deine Boards bleiben auf diesem Telefon und in deinem Konto. Änderungen nach dem Abmelden werden nicht mehr übertragen.</string>
+    <string name="account_sign_out_body_1">Deine Boards bleiben im Konto %1$s und auf diesem Telefon, verborgen, bis du dich wieder anmeldest. Abgemeldet siehst du nur Boards, die ohne Konto gemacht wurden.</string>
     <string name="account_sign_out_body_2">Credits und Käufe warten hier auf dich.</string>
     <plurals name="account_board_count">
         <item quantity="one">1 Board</item>
         <item quantity="other">%1$d Boards</item>
     </plurals>
-    <string name="merge_title">Du hast dieses Konto schon einmal benutzt</string>
-    <string name="merge_body">Es hat bereits %1$s. Auf diesem Telefon sind %2$s, die du ohne Konto gemacht hast.</string>
-    <string name="merge_keep_title">Alles behalten</string>
-    <string name="merge_keep_sub">Alle %1$s. Haben zwei denselben Namen, bekommt die lokale „(von diesem Telefon)“ dazu.</string>
-    <string name="merge_remote_title">Nur die Boards des Kontos</string>
-    <string name="merge_remote_sub">%1$s von diesem Telefon wandern in den Papierkorb. Du kannst sie 30 Tage lang zurückholen.</string>
-    <string name="merge_footnote">In keinem Fall wird etwas gelöscht.</string>
-    <string name="merge_recommended">Empfohlen</string>
-    <string name="merge_action_continue">Weiter</string>
+    <string name="merge_title">Boards ohne Konto</string>
+    <string name="merge_body">Auf diesem Telefon sind %1$s, die du ohne Konto gemacht hast. In das Konto %2$s verschieben?</string>
+    <string name="merge_footnote">Auf dem Telefon behalten, erscheinen sie, wann immer du abgemeldet bist. In keinem Fall wird etwas gelöscht.</string>
     <string name="merge_name_suffix">(von diesem Telefon)</string>
     <string name="account_sign_out_title">Abmelden?</string>
-    <string name="account_sign_out_helper">Deine Boards bleiben auf diesem Telefon und in deinem Konto. Änderungen nach dem Abmelden werden nicht mehr übertragen. Credits und Käufe warten hier auf dich.</string>
+    <string name="account_sign_out_helper">Deine Boards bleiben in deinem Konto und auf diesem Telefon, verborgen, bis du dich wieder anmeldest. Credits und Käufe warten hier auf dich.</string>
     <string name="account_action_delete">Konto löschen</string>
     <string name="account_delete_title">Konto löschen?</string>
     <string name="account_delete_body">Das Konto verschwindet, und mit ihm die Kopie deiner Boards, alles Veröffentlichte und die zugehörigen Bilder. Das lässt sich nicht rückgängig machen.</string>
@@ -72,4 +64,7 @@
     <string name="account_face_position_use">Verwenden</string>
     <string name="account_face_position_failed">Das Bild kann hier nicht angezeigt werden. Es lässt sich trotzdem so verwenden, wie es ist.</string>
     <string name="account_face_position_frame">Das Bild, das in den Kreis kommt</string>
+    <string name="merge_action_move_in">In das Konto %1$s verschieben</string>
+    <string name="merge_action_keep_here">Nur auf diesem Telefon behalten</string>
+    <string name="merge_account_fallback">Google</string>
 </resources>

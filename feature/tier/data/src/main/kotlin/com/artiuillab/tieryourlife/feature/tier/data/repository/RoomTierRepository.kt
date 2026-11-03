@@ -1,7 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.data.repository
 
-import com.artiuillab.tieryourlife.feature.account.domain.model.Account
-import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewPoolItem
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewTemplateTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
@@ -23,26 +21,30 @@ import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PublishFingerprint
 import javax.inject.Inject
 
+/**
+ * Every read is of one owner's boards and every new board is theirs: [owner]
+ * is the signed-in account, or null for the boards made without one.
+ */
 class RoomTierRepository internal constructor(
     private val dao: TierDao,
     private val imageStore: TierImageStore,
-    private val signedInAs: () -> String? = { null },
+    private val owner: suspend () -> String? = { null },
     private val nowMillis: () -> Long,
 ) : TierRepository {
 
-    @Inject constructor(dao: TierDao, imageStore: TierImageStore, accounts: AccountRepository) :
-        this(dao, imageStore, { (accounts.current() as? Account.SignedIn)?.recordKey }, System::currentTimeMillis)
+    @Inject constructor(dao: TierDao, imageStore: TierImageStore, ownership: BoardOwnership) :
+        this(dao, imageStore, ownership::current, System::currentTimeMillis)
 
     override suspend fun getTierListById(id: Long): TierList? {
-        return dao.getTierListWithTiers(id)?.toDomain()
+        return dao.getTierListWithTiers(id, owner())?.toDomain()
     }
 
     override suspend fun getAllTierLists(): List<TierList> {
-        return dao.getAllTierListsWithTiers().map { it.toDomain() }
+        return dao.getAllTierListsWithTiers(owner()).map { it.toDomain() }
     }
 
     override suspend fun createTierList(title: String, captions: List<String>): Long {
-        return dao.createTierListWithDefaultTier(title = title, captions = captions)
+        return dao.createTierListWithDefaultTier(title = title, captions = captions, owner = owner())
     }
 
     override suspend fun createFromTemplate(
@@ -55,6 +57,7 @@ class RoomTierRepository internal constructor(
         title = title,
         authorName = authorName,
         takenFrom = takenFrom,
+        owner = owner(),
         tiers = tiers.map { tier ->
             NewTemplateTier(
                 label = tier.label,
@@ -76,7 +79,7 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun publishedStanding(): PublishedStanding {
-        val published = dao.getAllTierListsWithTiers()
+        val published = dao.getAllTierListsWithTiers(owner())
             .map { it.toDomain() }
             .filter { board -> board.publishedId != null }
         return PublishedStanding(
@@ -90,7 +93,7 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun boardPublishedAs(publishedId: String): TierList? =
-        dao.getAllTierListsWithTiers()
+        dao.getAllTierListsWithTiers(owner())
             .map { it.toDomain() }
             .firstOrNull { board -> board.publishedId == publishedId }
 
@@ -220,7 +223,7 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun deleteTierListPermanently(id: Long) {
-        dao.deleteTierListPermanently(id, signedInAs())
+        dao.deleteTierListPermanently(id, owner())
         imageStore.deleteOrphans(dao.getAllImageRefs())
     }
 
@@ -233,13 +236,13 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun emptyTrash(keepingListIds: Set<Long>) {
-        dao.emptyTrash(signedInAs(), keepingListIds)
+        dao.emptyTrash(owner(), keepingListIds)
         imageStore.deleteOrphans(dao.getAllImageRefs())
     }
 
     // A card with a deletedAt from an older phone or the web stays hidden and unlisted until the trash is emptied.
     override suspend fun getTrashEntries(): List<TrashEntry> =
-        dao.getDeletedTierLists().map { it.toDomain() }
+        dao.getDeletedTierLists(owner()).map { it.toDomain() }
 
     /** A board copied from another shares its pictures: the file goes only with the last card showing it. */
     private suspend fun letGoOfPicture(path: String) {

@@ -108,6 +108,45 @@ class BoardSyncPlanTest {
         assertEquals(listOf(SyncStep.DiscardLocal(board)), steps)
     }
 
+    // What emptied the library: backup off leaves a marker for every board and
+    // drops every record, and on again read each marker as a delete.
+    @Test
+    fun `a marker for a board this phone never agreed on is written over, not obeyed`() {
+        val steps = planSync(local(), remote(revision = 5, deleted = true), synced = emptyList())
+
+        assertEquals(listOf(SyncStep.Revive(board, basedOn = 5)), steps)
+    }
+
+    @Test
+    fun `backup switched off and on again sends every board back up`() {
+        val steps = planSync(
+            local = listOf(LocalBoard("first", "aaa"), LocalBoard("second", "bbb"), LocalBoard("never-sent", "ccc")),
+            remote = listOf(
+                RemoteBoard("first", revision = 3, deleted = true),
+                RemoteBoard("second", revision = 8, deleted = true),
+            ),
+            synced = emptyList(),
+        )
+
+        assertEquals(
+            listOf(
+                SyncStep.Revive("first", basedOn = 3),
+                SyncStep.Revive("second", basedOn = 8),
+                SyncStep.Create("never-sent"),
+            ),
+            steps,
+        )
+    }
+
+    @Test
+    fun `a marker is obeyed only by the account that agreed on the board`() {
+        val agreed = planSync(local(), remote(revision = 2, deleted = true), synced(revision = 1))
+        val neverAgreed = planSync(local(), remote(revision = 2, deleted = true), synced = emptyList())
+
+        assertEquals(listOf(SyncStep.DiscardLocal(board)), agreed)
+        assertEquals(listOf(SyncStep.Revive(board, basedOn = 2)), neverAgreed)
+    }
+
     @Test
     fun `a board already gone from both sides is left alone`() {
         val steps = planSync(local = emptyList(), remote = remote(deleted = true), synced = synced())

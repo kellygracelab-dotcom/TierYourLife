@@ -105,7 +105,7 @@ class RoomTierRepositoryImageTest {
         val itemId = insertItem()
         repository.attachImageToItem(itemId, sourceUri = "content://gallery/42")
         val storedPath = requireNotNull(dao.getTierItemImageById(itemId))
-        val listId = dao.getAllTierLists().single().id
+        val listId = dao.getAllTierLists(owner = null).single().id
 
         repository.deleteTierLists(listOf(listId))
         repository.emptyTrash()

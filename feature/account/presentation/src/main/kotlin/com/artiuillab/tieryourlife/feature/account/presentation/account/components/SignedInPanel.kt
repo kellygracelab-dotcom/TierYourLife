@@ -195,6 +195,7 @@ internal fun SignedInPanel(
 
     if (confirming) {
         SignOutDialog(
+            email = email,
             onConfirm = {
                 confirming = false
                 onSignOut()

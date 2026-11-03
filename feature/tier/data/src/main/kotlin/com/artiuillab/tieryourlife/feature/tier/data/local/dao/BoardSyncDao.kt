@@ -40,46 +40,53 @@ interface BoardSyncDao {
     @Query("DELETE FROM board_sync WHERE listUid = :listUid")
     suspend fun forgetEverywhere(listUid: String)
 
-    @Query("DELETE FROM board_sync WHERE account = '${BoardSyncEntity.UNCLAIMED}'")
-    suspend fun forgetUnclaimed()
+    @Query("DELETE FROM board_sync WHERE account = '${BoardSyncEntity.UNCLAIMED}' AND listUid IN (:listUids)")
+    suspend fun forgetUnclaimed(listUids: List<String>)
 
+    /** [considered] are the unclaimed rows looked at; the ones not [claimed] among them go. */
     @Transaction
-    suspend fun claim(records: List<BoardSyncEntity>) {
-        forgetUnclaimed()
-        records.forEach { remember(it) }
+    suspend fun claim(considered: List<String>, claimed: List<BoardSyncEntity>) {
+        forgetUnclaimed(considered)
+        claimed.forEach { remember(it) }
     }
 
-    @Query("DELETE FROM picture_sync")
-    suspend fun forgetEveryPicture()
+    @Query("DELETE FROM picture_sync WHERE account = :account")
+    suspend fun forgetPicturesOf(account: String)
 
-    @Query("SELECT pictureId FROM picture_sync")
-    suspend fun sentPictureIds(): List<String>
+    @Query("SELECT pictureId FROM picture_sync WHERE account = :account")
+    suspend fun sentPictureIds(account: String): List<String>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun rememberPicture(record: PictureSyncEntity)
 
     /** Trashed cards included: restoring one to a blank tile is not restoring it. */
-    @Query("SELECT DISTINCT imageUrl FROM tier_items WHERE imageUrl IS NOT NULL")
-    suspend fun allImageUrls(): List<String>
+    @Query(
+        """
+        SELECT DISTINCT i.imageUrl FROM tier_items i
+            JOIN tiers t ON i.tierId = t.id
+            JOIN tier_lists l ON t.tierListId = l.id
+        WHERE i.imageUrl IS NOT NULL AND l.ownerUid = :owner
+        """,
+    )
+    suspend fun imageUrlsOf(owner: String): List<String>
 
     @Query("UPDATE tier_items SET imageUrl = :imageUrl WHERE uid = :itemUid")
     suspend fun setItemImage(itemUid: String, imageUrl: String)
 
+    /** Every board on the phone, whoever's: only for questions about the phone as a whole. */
     @Query("SELECT * FROM tier_lists")
     suspend fun allBoards(): List<TierListEntity>
 
-    @Query("SELECT * FROM tier_lists WHERE deletedAt IS NULL")
-    suspend fun boardsInUse(): List<TierListEntity>
+    /** One account's boards, trash included. Another's are never sent, whoever is signed in. */
+    @Query("SELECT * FROM tier_lists WHERE ownerUid = :owner")
+    suspend fun boardsOf(owner: String): List<TierListEntity>
 
     /** Not touching editedAt: nothing about the board changed, and stamping it would make every phone re-send an identical board. */
-    @Query("UPDATE tier_lists SET publishedId = NULL WHERE publishedId IN (:goneIds)")
-    suspend fun forgetPublished(goneIds: List<String>)
+    @Query("UPDATE tier_lists SET publishedId = NULL WHERE publishedId IN (:goneIds) AND ownerUid = :owner")
+    suspend fun forgetPublished(owner: String, goneIds: List<String>)
 
     @Query("UPDATE tier_lists SET title = :title WHERE uid = :uid")
     suspend fun renameBoard(uid: String, title: String)
-
-    @Query("UPDATE tier_lists SET deletedAt = :deletedAt WHERE deletedAt IS NULL")
-    suspend fun trashEveryBoard(deletedAt: Long)
 
     @Query("SELECT * FROM tier_lists WHERE uid = :uid")
     suspend fun boardByUid(uid: String): TierListEntity?
@@ -115,10 +122,20 @@ interface BoardSyncDao {
     @Query("DELETE FROM tier_lists WHERE uid = :uid")
     suspend fun deleteBoardByUid(uid: String)
 
+    @Query("UPDATE tier_lists SET deletedAt = :deletedAt WHERE uid = :uid")
+    suspend fun trashBoard(uid: String, deletedAt: Long)
+
     /** A board arriving for the first time, under the uid the account keeps it as. */
     @Transaction
     suspend fun addBoard(board: TierListEntity, tiers: List<IncomingTier>) {
         writeContents(insertBoard(board.copy(id = 0)), tiers)
+    }
+
+    /** Together, so a run that dies between the two does not bring the same board down again as another copy. */
+    @Transaction
+    suspend fun addBoardRemembering(board: TierListEntity, tiers: List<IncomingTier>, record: BoardSyncEntity) {
+        addBoard(board, tiers)
+        remember(record)
     }
 
     /**

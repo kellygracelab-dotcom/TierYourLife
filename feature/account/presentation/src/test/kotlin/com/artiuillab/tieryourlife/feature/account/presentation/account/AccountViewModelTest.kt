@@ -1,9 +1,6 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account
 
-import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.Features
-import com.artiuillab.tieryourlife.core.settings.HiddenEntry
-import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
@@ -19,7 +16,6 @@ import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCre
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
-import com.artiuillab.tieryourlife.feature.tier.domain.sync.MergeChoice
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -52,24 +48,86 @@ class AccountViewModelTest {
         assertEquals(listOf("token-1"), repository.tokens)
     }
 
-    // Two libraries are never merged without asking, and an account that could
-    // not be read might hold one: the sign-in is undone instead.
+    // The guest became the account, so the boards are the same person's.
     @Test
-    fun signIn_whenTheAccountsBoardsCannotBeRead_undoesTheSignInAndSaysSo() = runBlocking {
-        var signedOut = false
-        val repository = FakeAccountRepository(onSignOut = { signedOut = true })
-        val viewModel = viewModel(
-            repository,
-            FakeGoogleCredential(GoogleCredentialResult.Token("token-1")),
-            merge = UnreadableAccount,
-        )
+    fun signIn_thatTurnsTheGuestIntoTheAccount_movesTheGuestBoardsIn_unasked() = runBlocking {
+        val merge = RecordingMerge(guestBoards = 3)
+        val viewModel = viewModel(credential = FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
 
         viewModel.signIn(picker::request)
-        val state = viewModel.state.firstWithin { it.notice != null }
+        merge.answered.await()
 
-        assertEquals(AccountNotice.SignInFailed, state.notice)
-        assertEquals(true, signedOut)
-        assertNull(state.merge)
+        assertEquals(listOf("hold", "moveIn:null"), merge.calls)
+        assertNull(viewModel.state.value.merge)
+    }
+
+    @Test
+    fun signIn_intoAnAccountUsedBefore_asksAboutTheGuestBoards_andMovesNothingYet() = runBlocking {
+        val merge = RecordingMerge(guestBoards = 2)
+        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = true))
+        val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
+
+        viewModel.signIn(picker::request)
+        val state = viewModel.state.firstWithin { it.merge != null }
+
+        assertEquals(GuestBoardsQuestion(boards = 2, into = FakeAccountRepository.SIGNED_IN_EMAIL), state.merge)
+        assertEquals(listOf("hold"), merge.calls)
+    }
+
+    @Test
+    fun signIn_intoAnAccountUsedBefore_withNoGuestBoards_asksNothing() = runBlocking {
+        val merge = RecordingMerge(guestBoards = 0)
+        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = true))
+        val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
+
+        viewModel.signIn(picker::request)
+        merge.answered.await()
+
+        assertEquals(listOf("hold", "keepHere"), merge.calls)
+        assertNull(viewModel.state.value.merge)
+    }
+
+    @Test
+    fun guestBoardsQuestion_answeredMove_movesThemIn_withThisPhonesName() = runBlocking {
+        val merge = RecordingMerge(guestBoards = 2)
+        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = true))
+        val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
+        viewModel.signIn(picker::request)
+        viewModel.state.firstWithin { it.merge != null }
+
+        viewModel.moveGuestBoardsIn("(Pixel)")
+        merge.answered.await()
+
+        assertEquals(listOf("hold", "moveIn:(Pixel)"), merge.calls)
+        assertNull(viewModel.state.value.merge)
+    }
+
+    @Test
+    fun guestBoardsQuestion_answeredKeep_leavesThemOnThePhone() = runBlocking {
+        val merge = RecordingMerge(guestBoards = 2)
+        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = true))
+        val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
+        viewModel.signIn(picker::request)
+        viewModel.state.firstWithin { it.merge != null }
+
+        viewModel.keepGuestBoardsHere()
+        merge.answered.await()
+
+        assertEquals(listOf("hold", "keepHere"), merge.calls)
+        assertNull(viewModel.state.value.merge)
+    }
+
+    // A failed sign-in leaves the guest where they were, and syncing is not left waiting.
+    @Test
+    fun signIn_thatFails_releasesTheHold_movingNothing() = runBlocking {
+        val merge = RecordingMerge(guestBoards = 2)
+        val repository = FakeAccountRepository(outcome = SignInOutcome.Failed)
+        val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
+
+        viewModel.signIn(picker::request)
+        merge.answered.await()
+
+        assertEquals(listOf("hold", "keepHere"), merge.calls)
     }
 
     // Closing the picker is a decision, not a fault: nothing should be said
@@ -393,12 +451,12 @@ class AccountViewModelTest {
         credits: GenerationCredits = FakeGenerationCredits(),
         publishedLists: OwnLists = FakeOwnLists(),
         erasure: AccountErasure = NoErasure,
-        merge: BoardMerge = NoMerge,
+        merge: BoardMerge = RecordingMerge(guestBoards = 0),
         community: FakeCommunityRepository = FakeCommunityForAccount(),
         facePhotos: FacePhotos = FakeFacePhotos(),
     ): AccountViewModel {
         picker = credential
-        return AccountViewModel(repository, credits, publishedLists, community, FakeAppPreferences(), merge, erasure, facePhotos)
+        return AccountViewModel(repository, credits, publishedLists, community, merge, erasure, facePhotos)
     }
 }
 
@@ -461,75 +519,25 @@ private class FakeGenerationCredits(private val balance: Int? = null) : Generati
     }
 }
 
-/** The account's index would not load. */
-private object UnreadableAccount : BoardMerge {
-    override suspend fun choice(): MergeChoice? = null
-    override suspend fun keepEverything(fromThisPhone: String) = Unit
-    override suspend fun useAccountBoards() = Unit
-}
+private class RecordingMerge(private val guestBoards: Int) : BoardMerge {
+    val calls = mutableListOf<String>()
+    val answered = CompletableDeferred<Unit>()
 
-/** Nothing on either side, so the question never comes up in these cases. */
-private object NoMerge : BoardMerge {
-    override suspend fun choice() = MergeChoice(accountBoards = 0, localBoards = 0)
-    override suspend fun keepEverything(fromThisPhone: String) = Unit
-    override suspend fun useAccountBoards() = Unit
-}
-
-private class FakeAppPreferences : AppPreferences {
-    private var backUp = true
-
-    override fun themeChoice(): ThemeChoice = ThemeChoice.SYSTEM
-    override fun setThemeChoice(choice: ThemeChoice) = Unit
-    override fun languageTag(): String? = null
-    override fun setLanguageTag(tag: String?) = Unit
-    override fun lastKnownCredits(): Int? = null
-    override fun setLastKnownCredits(credits: Int?) = Unit
-    override fun lastKnownStoredBytes(): Long = 0L
-    override fun setLastKnownStoredBytes(bytes: Long) = Unit
-
-    override fun lastKnownPendingReports(): Int? = null
-
-    override fun setLastKnownPendingReports(reports: Int?) = Unit
-
-    override fun lastKnownTrashCount(): Int = 0
-
-    override fun setLastKnownTrashCount(count: Int) = Unit
-    override fun hiddenListIds(): Set<String> = emptySet()
-    override fun hiddenLists(): List<HiddenEntry> = emptyList()
-    override fun hideList(publishedId: String, title: String) = Unit
-    override fun unhideList(publishedId: String) = Unit
-    override fun hiddenAuthorUids(): Set<String> = emptySet()
-    override fun hiddenAuthors(): List<HiddenEntry> = emptyList()
-    override fun hideAuthor(authorUid: String, name: String) = Unit
-    override fun unhideAuthor(authorUid: String) = Unit
-    override fun signInOfferAnswered(): Boolean = false
-    override fun markSignInOfferAnswered() = Unit
-
-    private var asPictures = false
-
-    override fun boardsAsPictures(): Boolean = asPictures
-
-    override fun setBoardsAsPictures(asPictures: Boolean) {
-        this.asPictures = asPictures
+    override fun hold() {
+        calls += "hold"
     }
 
-    override fun backUpBoards(): Boolean = backUp
+    override suspend fun guestBoards(): Int = guestBoards
 
-    override fun setBackUpBoards(backUp: Boolean) {
-        this.backUp = backUp
+    override suspend fun moveIn(fromThisPhone: String?) {
+        calls += "moveIn:$fromThisPhone"
+        answered.complete(Unit)
     }
 
-    override fun picturesOnWifiOnly(): Boolean = true
-
-    override fun setPicturesOnWifiOnly(wifiOnly: Boolean) = Unit
-
-    override fun lastSyncedAtMs(): Long? = null
-
-    override fun setLastSyncedAtMs(atMs: Long?) = Unit
-
-    override fun conflictsSeen(): Set<String> = emptySet()
-
-    override fun markConflictSeen(listUid: String) = Unit
+    override suspend fun keepHere() {
+        calls += "keepHere"
+        answered.complete(Unit)
+    }
 }
 
 /** Ending an account is its own test; here it must simply exist. */

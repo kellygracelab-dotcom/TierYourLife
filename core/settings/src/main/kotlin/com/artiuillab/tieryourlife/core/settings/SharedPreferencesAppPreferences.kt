@@ -113,11 +113,22 @@ class SharedPreferencesAppPreferences @Inject constructor(
         prefs.edit { putBoolean(KEY_BOARDS_AS_PICTURES, asPictures) }
     }
 
-    override fun backUpBoards(): Boolean = prefs.getBoolean(KEY_BACK_UP_BOARDS, true)
+    override fun backUpBoards(account: String): Boolean = prefs.getBoolean(backUpKey(account), true)
 
-    override fun setBackUpBoards(backUp: Boolean) {
-        prefs.edit { putBoolean(KEY_BACK_UP_BOARDS, backUp) }
+    override fun setBackUpBoards(account: String, backUp: Boolean) {
+        prefs.edit { putBoolean(backUpKey(account), backUp) }
     }
+
+    override fun settleBackUpChoice(account: String?) {
+        if (!prefs.contains(KEY_BACK_UP_BOARDS)) return
+        val choice = prefs.getBoolean(KEY_BACK_UP_BOARDS, true)
+        prefs.edit {
+            if (account != null && !prefs.contains(backUpKey(account))) putBoolean(backUpKey(account), choice)
+            remove(KEY_BACK_UP_BOARDS)
+        }
+    }
+
+    private fun backUpKey(account: String) = "$KEY_BACK_UP_BOARDS:$account"
 
     override fun signInOfferAnswered(): Boolean = prefs.getBoolean(KEY_SIGN_IN_OFFER_ANSWERED, false)
 
