@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
@@ -44,14 +44,15 @@ private const val SCRIM_ALPHA = 0.55f
 
 @Composable
 internal fun BoardTile(
-    list: TierList,
+    list: TierListSummary,
     onClick: () -> Unit,
     onLongClick: () -> Unit = {},
     selectionMode: Boolean = false,
     selected: Boolean = false,
     onToggleFavourite: (() -> Unit)? = null,
 ) {
-    val ranked = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
+    val ranked = list.rankedCount
+    val art = list.art()
 
     Column(
         modifier = Modifier
@@ -70,15 +71,8 @@ internal fun BoardTile(
     ) {
         Box(Modifier.fillMaxWidth().aspectRatio(ART_RATIO), contentAlignment = Alignment.TopEnd) {
             ListArt(
-                coverImageUrl = list.coverImageUrl,
-                // A local photograph is drawn as it is on the board; only
-                // publishing needs a picture to have travelled.
-                previewImages = list.coverImageUrls.ifEmpty {
-                    list.tiers
-                        .flatMap { tier -> tier.items }
-                        .mapNotNull { item -> item.imageUrl }
-                        .take(PREVIEW_IMAGES)
-                },
+                coverImageUrl = art.coverImageUrl,
+                previewImages = art.previewImages,
                 tierColors = list.tiers.filterNot { it.isPool }.map { it.colorLight }.take(TIER_COLOURS),
                 modifier = Modifier.fillMaxWidth().aspectRatio(ART_RATIO),
             )
@@ -127,6 +121,5 @@ internal fun BoardTile(
 /** Three to four across on a phone, the same shape the feed's cards have. */
 internal val TILE_MIN_WIDTH = 150.dp
 
-private const val ART_RATIO = 1.35f
-private const val PREVIEW_IMAGES = 6
+internal const val ART_RATIO = 1.35f
 private const val TIER_COLOURS = 5

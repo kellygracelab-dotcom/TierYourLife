@@ -8,6 +8,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedFreshness
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CachedFeed
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import timber.log.Timber
@@ -19,19 +21,26 @@ class RoomCommunityFeedCache @Inject constructor(
     private val dao: FeedCacheDao,
 ) : CommunityFeedCache {
 
-    override suspend fun read(key: String): CachedFeed? = runSuspendCatching {
+    // Off the main thread: a feed's twenty cards are parsed here while the person is swiping to it.
+    override suspend fun read(key: String): CachedFeed? = withContext(Dispatchers.Default) {
+        runSuspendCatching { readNow(key) }.onFailure { Timber.w(it, "Reading a kept feed failed") }.getOrNull()
+    }
+
+    private suspend fun readNow(key: String): CachedFeed? {
         val now = System.currentTimeMillis()
-        val row = dao.get(key) ?: return@runSuspendCatching null
+        val row = dao.get(key) ?: return null
         dao.touch(key, now)
-        CachedFeed(page = decodePage(row.json), fetchedAtMillis = row.fetchedAt)
-    }.onFailure { Timber.w(it, "Reading a kept feed failed") }.getOrNull()
+        return CachedFeed(page = decodePage(row.json), fetchedAtMillis = row.fetchedAt)
+    }
 
     override suspend fun write(key: String, page: CommunityPage, fetchedAtMillis: Long) {
-        runSuspendCatching {
-            val now = System.currentTimeMillis()
-            dao.put(FeedCacheEntity(key = key, json = encodePage(page), fetchedAt = fetchedAtMillis, openedAt = now))
-            dao.dropOpenedBefore(now - FeedFreshness.KEEP_UNOPENED_MILLIS)
-        }.onFailure { Timber.w(it, "Keeping a feed failed") }
+        withContext(Dispatchers.Default) {
+            runSuspendCatching {
+                val now = System.currentTimeMillis()
+                dao.put(FeedCacheEntity(key = key, json = encodePage(page), fetchedAt = fetchedAtMillis, openedAt = now))
+                dao.dropOpenedBefore(now - FeedFreshness.KEEP_UNOPENED_MILLIS)
+            }.onFailure { Timber.w(it, "Keeping a feed failed") }
+        }
     }
 }
 

@@ -1,6 +1,8 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.cover
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsUiState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -56,9 +58,9 @@ class CoverPlanTest {
         assertEquals(5L, toggledRow(open = 3L, tapped = 5L))
     }
 
-    private val films = TierList(1, "Films", emptyList())
-    private val games = TierList(2, "Games", emptyList())
-    private val coffee = TierList(3, "Coffee", emptyList())
+    private val films = TierList(1, "Films", emptyList()).summary()
+    private val games = TierList(2, "Games", emptyList()).summary()
+    private val coffee = TierList(3, "Coffee", emptyList()).summary()
 
     @Test
     fun theNextList_isTheOneBelowInTheCoversOrder() {
@@ -88,6 +90,6 @@ class CoverPlanTest {
 
     @Test
     fun beforeTheListsAreRead_thereAreNone() {
-        assertEquals(emptyList<TierList>(), coverOrder(TierListsUiState.Loading))
+        assertEquals(emptyList<TierListSummary>(), coverOrder(TierListsUiState.Loading))
     }
 }

@@ -47,6 +47,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.HomeTab
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsUiState
@@ -103,7 +104,7 @@ class EveryScreenInEveryLanguageTest {
 
         "home-lists" -> TierListsScreenContent(
             state = TierListsUiState.Success(
-                lists = listOf(bigBoard(), smallBoard()),
+                lists = listOf(bigBoard(), smallBoard()).map { it.summary() },
                 totalListCount = 2,
                 rankedCount = 2,
             ),

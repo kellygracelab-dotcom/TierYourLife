@@ -196,12 +196,37 @@ class TierListsViewModelTest {
             viewModel.updateSearchQuery("piz")
         }
 
+        // The query shows at once and the boards follow it from another thread.
+        val typed = viewModel.state.value as TierListsUiState.Success
+        assertEquals(HomeMode.Searching("piz"), typed.mode)
         val state = viewModel.state.firstWithin {
-            it is TierListsUiState.Success && (it.mode as? HomeMode.Searching)?.query == "piz"
+            it is TierListsUiState.Success && it.lists.map { list -> list.title } == listOf("Pizza in Lisbon")
         } as TierListsUiState.Success
 
-        assertEquals(listOf("Pizza in Lisbon"), state.lists.map { it.title })
+        assertEquals(HomeMode.Searching("piz"), state.mode)
         assertEquals(2, state.totalListCount)
+    }
+
+    @Test
+    fun aBurstOfKeystrokes_endsOnTheBoardsTheLastOneAsksFor() = runBlocking {
+        val repository = FakeTierRepository(
+            initial = (1L..200L).map { id -> fakeList(id = id, title = if (id == 7L) "Sushi tour" else "Pizza $id") },
+        )
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
+        viewModel.loadTierLists()
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
+
+        withContext(Dispatchers.Main) {
+            viewModel.enterSearch()
+            listOf("p", "pi", "piz", "pizz", "s", "su").forEach(viewModel::updateSearchQuery)
+        }
+        val state = viewModel.state.firstWithin {
+            it is TierListsUiState.Success && it.lists.map { list -> list.id } == listOf(7L)
+        } as TierListsUiState.Success
+        withContext(Dispatchers.Main) { yield() }
+
+        assertEquals(HomeMode.Searching("su"), state.mode)
+        assertEquals(listOf(7L), (viewModel.state.value as TierListsUiState.Success).lists.map { it.id })
     }
 
     @Test

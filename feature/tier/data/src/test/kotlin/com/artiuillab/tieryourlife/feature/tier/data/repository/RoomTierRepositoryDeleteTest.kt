@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.data.repository
 
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.DeletedTierListRow
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierCountRow
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
@@ -224,6 +225,10 @@ private class RecordingTierDao : TierDao {
 
     override suspend fun cardImageUrls(owner: String?, limit: Int): List<String> = emptyList()
 
+    override suspend fun getTierCounts(owner: String?): List<TierCountRow> = emptyList()
+
+    override suspend fun getPreviewImages(tierListId: Long, limit: Int): List<String> = emptyList()
+
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) = Unit
 
     override suspend fun setRankingOf(id: Long, listId: String?) = Unit
@@ -258,6 +263,8 @@ private class RecordingTierDao : TierDao {
     override suspend fun getAllTierLists(owner: String?): List<TierListEntity> = emptyList()
     override suspend fun getAllTierListsWithTiers(owner: String?): List<TierListWithTiers> = emptyList()
     override suspend fun getTierListWithTiers(id: Long, owner: String?): TierListWithTiers? = null
+    override suspend fun getPublishedTierListsWithTiers(owner: String?): List<TierListWithTiers> = emptyList()
+    override suspend fun getTierListWithTiersPublishedAs(publishedId: String, owner: String?): TierListWithTiers? = null
     override suspend fun restoreTierLists(ids: List<Long>) = Unit
     override suspend fun updateTierListDisplayMode(id: Long, displayMode: String) = Unit
     override suspend fun updateTierListTitle(id: Long, title: String) = Unit

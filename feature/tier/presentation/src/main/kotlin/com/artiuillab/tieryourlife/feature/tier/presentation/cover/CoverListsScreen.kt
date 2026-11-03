@@ -33,7 +33,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.CoverHeader
 import com.artiuillab.tieryourlife.core.theme.ui.CoverIconButton
 import com.artiuillab.tieryourlife.core.theme.ui.CoverType
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
@@ -44,7 +44,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
  */
 @Composable
 fun CoverListsScreen(
-    lists: List<TierList>,
+    lists: List<TierListSummary>,
     lastOpenedId: Long?,
     onOpen: (Long) -> Unit,
     onCommunity: () -> Unit,
@@ -82,7 +82,7 @@ fun CoverListsScreen(
 }
 
 @Composable
-private fun CoverListRow(list: TierList, selected: Boolean, onClick: () -> Unit) {
+private fun CoverListRow(list: TierListSummary, selected: Boolean, onClick: () -> Unit) {
     val colors = coverColors
     val title = if (selected) colors.onSelected else MaterialTheme.colorScheme.onSurface
     val meta = if (selected) colors.onSelected else MaterialTheme.colorScheme.onSurfaceVariant
@@ -108,7 +108,7 @@ private fun CoverListRow(list: TierList, selected: Boolean, onClick: () -> Unit)
 
 /** The list's own cover, or the stripes of its tiers when it has no pictures. */
 @Composable
-internal fun CoverThumbnail(list: TierList) {
+internal fun CoverThumbnail(list: TierListSummary) {
     ListArt(
         coverImageUrl = list.coverImageUrl,
         previewImages = list.coverImageUrls,
@@ -119,9 +119,9 @@ internal fun CoverThumbnail(list: TierList) {
 
 /** "28 ranked · 6 in pool", "21 ranked", "34 ranked · saved". */
 @Composable
-private fun listMeta(list: TierList): String {
-    val ranked = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
-    val inPool = list.tiers.filter { it.isPool }.sumOf { it.items.size }
+private fun listMeta(list: TierListSummary): String {
+    val ranked = list.rankedCount
+    val inPool = list.poolCount
     return listOfNotNull(
         pluralStringResource(ThemeR.plurals.tier_lists_ranked_count, ranked, ranked),
         if (inPool > 0) pluralStringResource(BoardR.plurals.tier_lists_in_pool_count, inPool, inPool) else null,

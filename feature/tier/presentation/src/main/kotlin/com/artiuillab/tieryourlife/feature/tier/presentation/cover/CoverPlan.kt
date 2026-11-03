@@ -1,6 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.cover
 
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsUiState
 
 internal const val COVER_CARD_WIDTH_DP = 36
@@ -29,13 +29,13 @@ internal fun coverRowPlan(cards: Int, perLine: Int, open: Boolean): CoverRowPlan
 internal fun toggledRow(open: Long?, tapped: Long): Long? = if (open == tapped) null else tapped
 
 /** The list after [currentId] in the order the cover shows them, or null at the end or when it is gone. */
-internal fun nextListAfter(lists: List<TierList>, currentId: Long): TierList? {
+internal fun nextListAfter(lists: List<TierListSummary>, currentId: Long): TierListSummary? {
     val at = lists.indexOfFirst { it.id == currentId }
     return if (at < 0) null else lists.getOrNull(at + 1)
 }
 
 /** Your lists in the main screen's order: the starred ones first when they stand apart, then the rest. */
-internal fun coverOrder(state: TierListsUiState): List<TierList> {
+internal fun coverOrder(state: TierListsUiState): List<TierListSummary> {
     val success = state as? TierListsUiState.Success ?: return emptyList()
     return (success.favourites + success.lists).distinctBy { it.id }
 }

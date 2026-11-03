@@ -14,9 +14,11 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -339,5 +341,56 @@ class RoomTierRepositoryTest {
         val copied = requireNotNull(repository.getTierListById(copyId)).tiers.single { it.isPool }
         assertEquals(listOf("© Jane Doe, CC BY", null), pool.items.map { it.credit })
         assertEquals(listOf("© Jane Doe, CC BY", null), copied.items.map { it.credit })
+    }
+
+    @Test
+    fun the_board_published_as_an_id_is_found_without_the_others_and_never_from_the_trash() = runBlocking {
+        val films = repository.createTierList("Films", CAPTIONS)
+        val games = repository.createTierList("Games", CAPTIONS)
+        val trashed = repository.createTierList("Old films", CAPTIONS)
+        repository.createTierList("Private", CAPTIONS)
+        repository.setPublished(films, "pub-films", null)
+        repository.setPublished(games, "pub-games", "stale")
+        repository.setPublished(trashed, "pub-old", null)
+        repository.deleteTierLists(listOf(trashed))
+
+        assertEquals(films, repository.boardPublishedAs("pub-films")?.id)
+        assertNull(repository.boardPublishedAs("pub-old"))
+        assertNull(repository.boardPublishedAs("pub-nobody"))
+        val standing = repository.publishedStanding()
+        assertEquals(setOf("pub-films", "pub-games"), standing.canUpdate)
+        assertEquals(setOf("pub-games"), standing.knownBehind)
+        assertTrue(repository.isKnownBehind(requireNotNull(repository.getTierListById(games))))
+        assertFalse(repository.isKnownBehind(requireNotNull(repository.getTierListById(films))))
+    }
+
+    @Test
+    fun summaries_say_what_the_whole_boards_say_without_reading_their_cards() = runBlocking {
+        val films = repository.createTierList("Films", CAPTIONS)
+        val filmsTiers = dao.getAllTiersByTierListId(films)
+        val best = filmsTiers.first { !it.isPool }.id
+        repeat(8) { index ->
+            dao.insertTierItem(TierItemEntity(tierId = best, position = index, title = "Film $index", imageUrl = "https://example.com/$index.jpg"))
+        }
+        dao.insertTierItem(TierItemEntity(tierId = best, position = 8, title = "No picture", imageUrl = null))
+        dao.insertTierItem(TierItemEntity(tierId = best, position = 9, title = "Gone", imageUrl = "https://example.com/gone.jpg", deletedAt = 1L))
+        repository.addItemToPool(films, "Pooled", imageUrl = "https://example.com/pool.jpg")
+        val collage = repository.createTierList("Collage", CAPTIONS)
+        repository.addItemToPool(collage, "Card", imageUrl = "https://example.com/card.jpg")
+        repository.setCover(collage, listOf("https://example.com/a.jpg", "https://example.com/b.jpg"))
+        repository.setFavouritedAt(collage, 7L)
+        val trashed = repository.createTierList("Trashed", CAPTIONS)
+        repository.deleteTierLists(listOf(trashed))
+        dao.insertTierList(TierListEntity(title = "Someone else's", ownerUid = "someone-else"))
+
+        val summaries = repository.getTierListSummaries()
+
+        assertEquals(repository.getAllTierLists().map { it.summary() }, summaries)
+        assertEquals(listOf("Films", "Collage"), summaries.map { it.title })
+        val filmsSummary = summaries.first { it.id == films }
+        assertEquals(9, filmsSummary.rankedCount)
+        assertEquals(1, filmsSummary.poolCount)
+        assertEquals((0 until 6).map { "https://example.com/$it.jpg" }, filmsSummary.previewImages)
+        assertEquals(emptyList<String>(), summaries.first { it.id == collage }.previewImages)
     }
 }

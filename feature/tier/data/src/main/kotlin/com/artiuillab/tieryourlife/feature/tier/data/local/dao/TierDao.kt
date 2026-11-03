@@ -221,9 +221,48 @@ interface TierDao {
     @Query("SELECT * FROM active_tier_lists WHERE ownerUid IS :owner ORDER BY id ASC")
     suspend fun getAllTierListsWithTiers(owner: String?): List<TierListWithTiers>
 
+    @Query(
+        """
+        SELECT t.id, t.tierListId, t.position, t.colorLight, t.colorDark, t.isPool,
+            (SELECT COUNT(*) FROM tier_items i WHERE i.tierId = t.id AND i.deletedAt IS NULL) AS cards
+        FROM tiers t JOIN tier_lists l ON t.tierListId = l.id
+        WHERE l.deletedAt IS NULL AND l.ownerUid IS :owner
+        ORDER BY t.tierListId, t.position
+        """,
+    )
+    suspend fun getTierCounts(owner: String?): List<TierCountRow>
+
+    @Query(
+        """
+        SELECT i.imageUrl FROM tier_items i JOIN tiers t ON i.tierId = t.id
+        WHERE t.tierListId = :tierListId AND i.deletedAt IS NULL AND i.imageUrl IS NOT NULL
+        ORDER BY t.position, i.position
+        LIMIT :limit
+        """,
+    )
+    suspend fun getPreviewImages(tierListId: Long, limit: Int): List<String>
+
+    /** A board under a collage draws the collage, so its cards' pictures are not looked for. */
+    @Transaction
+    suspend fun getSummaryRows(owner: String?, previewLimit: Int): SummaryRows {
+        val boards = getAllTierLists(owner)
+        val previews = boards
+            .filter { it.coverImageUrls.isNullOrBlank() }
+            .associate { board -> board.id to getPreviewImages(board.id, previewLimit) }
+        return SummaryRows(boards = boards, tiers = getTierCounts(owner), previews = previews)
+    }
+
     @Transaction
     @Query("SELECT * FROM active_tier_lists WHERE id = :id AND ownerUid IS :owner")
     suspend fun getTierListWithTiers(id: Long, owner: String?): TierListWithTiers?
+
+    @Transaction
+    @Query("SELECT * FROM active_tier_lists WHERE publishedId IS NOT NULL AND ownerUid IS :owner ORDER BY id ASC")
+    suspend fun getPublishedTierListsWithTiers(owner: String?): List<TierListWithTiers>
+
+    @Transaction
+    @Query("SELECT * FROM active_tier_lists WHERE publishedId = :publishedId AND ownerUid IS :owner ORDER BY id ASC LIMIT 1")
+    suspend fun getTierListWithTiersPublishedAs(publishedId: String, owner: String?): TierListWithTiers?
 
     @Query("DELETE FROM tier_lists WHERE id = :id")
     suspend fun deleteTierListById(id: Long): Int

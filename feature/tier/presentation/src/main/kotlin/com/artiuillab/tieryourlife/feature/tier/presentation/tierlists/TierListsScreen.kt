@@ -75,7 +75,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.rememberArrival
 import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardControlsRow
@@ -86,6 +86,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeHeader
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlyFooter
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlySignInCard
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.PrefetchTilesAhead
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.RestoringPictures
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchResultRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SelectionTopBar
@@ -157,6 +158,7 @@ fun TierListsScreen(
         onToggleFavourite = viewModel::toggleFavourite,
         userMessages = viewModel.userMessages,
         tabs = tabs,
+        picturesOnWifiOnly = viewModel::picturesOnWifiOnly,
     )
 }
 
@@ -185,6 +187,8 @@ fun TierListsScreenContent(
     onToggleFavourite: (Long) -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
     tabs: @Composable () -> Unit = {},
+    /** Null draws without fetching any pictures ahead, as a test or a preview should. */
+    picturesOnWifiOnly: (() -> Boolean)? = null,
 ) {
     val success = state as? TierListsUiState.Success
     val mode = success?.mode ?: HomeMode.Browsing
@@ -203,6 +207,10 @@ fun TierListsScreenContent(
     val hasRail = currentWindowShape.hasRail
     // Out here, so closing a search finds the boards where they were left.
     val boardsScroll = rememberLazyGridState()
+    if (picturesOnWifiOnly != null && asPictures && mode == HomeMode.Browsing) {
+        val tiles = remember(favourites, lists) { favourites.map { starredKey(it.id) to it } + lists.map { it.id to it } }
+        PrefetchTilesAhead(boardsScroll, tiles, picturesOnWifiOnly)
+    }
 
     BackHandler(enabled = mode !is HomeMode.Browsing) {
         when (mode) {
@@ -434,14 +442,14 @@ fun TierListsScreenContent(
 private fun HomeContent(
     top: @Composable () -> Unit,
     scroll: LazyGridState,
-    lists: List<TierList>,
+    lists: List<TierListSummary>,
     asPictures: Boolean,
-    favourites: List<TierList>,
+    favourites: List<TierListSummary>,
     grouped: Boolean,
     onToggleFavourite: (Long) -> Unit,
     mode: HomeMode,
     localOnly: LocalOnly,
-    conflict: TierList?,
+    conflict: TierListSummary?,
     onTierListClick: (Long) -> Unit,
     onLongPressCard: (Long) -> Unit,
     onToggleSelected: (Long) -> Unit,
@@ -588,12 +596,12 @@ private fun BoardTiles(
     top: @Composable () -> Unit,
     scroll: LazyGridState = rememberLazyGridState(),
     aboveKeyboard: Boolean = false,
-    lists: List<TierList>,
-    favourites: List<TierList>,
+    lists: List<TierListSummary>,
+    favourites: List<TierListSummary>,
     grouped: Boolean,
     onToggleFavourite: (Long) -> Unit,
     here: LocalOnly.Here?,
-    conflict: TierList?,
+    conflict: TierListSummary?,
     isSelecting: Boolean,
     selectedIds: Set<Long>,
     onTierListClick: (Long) -> Unit,
@@ -660,7 +668,7 @@ private fun BoardTiles(
 
 @Composable
 private fun SearchResults(
-    lists: List<TierList>,
+    lists: List<TierListSummary>,
     query: String,
     asPictures: Boolean,
     onTierListClick: (Long) -> Unit,
@@ -818,7 +826,7 @@ private fun GroupHeading(@StringRes labelRes: Int, testTag: String) {
 
 @Composable
 private fun BoardRow(
-    list: TierList,
+    list: TierListSummary,
     isSelecting: Boolean,
     isSelected: Boolean,
     onTierListClick: (Long) -> Unit,

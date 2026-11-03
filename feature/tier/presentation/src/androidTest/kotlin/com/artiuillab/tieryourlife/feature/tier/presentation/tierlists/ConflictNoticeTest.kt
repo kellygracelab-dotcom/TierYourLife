@@ -11,6 +11,8 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -82,7 +84,7 @@ class ConflictNoticeTest {
         board(2, "Sci-fi films", editedAt = yesterday, arrivedFrom = "Pixel 7", hasTwin = true),
     )
 
-    private fun setScreen(lists: List<TierList>) {
+    private fun setScreen(lists: List<TierListSummary>) {
         dismissed.clear()
         composeRule.setContent {
             TierYourLifeTheme {
@@ -121,7 +123,7 @@ class ConflictNoticeTest {
         arrivedFrom = arrivedFrom,
         editedAt = editedAt,
         hasTwin = hasTwin,
-    )
+    ).summary()
 
     private fun ago(atMs: Long, here: Boolean): String {
         val context = InstrumentationRegistry.getInstrumentation().targetContext

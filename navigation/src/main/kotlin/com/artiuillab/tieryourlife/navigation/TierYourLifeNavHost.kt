@@ -3,11 +3,12 @@ package com.artiuillab.tieryourlife.navigation
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.EaseInOutCubic
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraphBuilder
@@ -206,24 +209,48 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController, openLis
     }
 }
 
-private const val PUSH_MILLIS = 260
-private const val POP_MILLIS = 340
+// Claude Design, 03.11: shared axis X where the old screen never fades. Every
+// frame draws over one solid screen, so the darker frame of two translucent
+// ones cannot happen.
+private const val PUSH_MILLIS = 300
+private const val PUSH_FADE_MILLIS = 200
+private const val POP_MILLIS = 250
+private const val POP_FADE_MILLIS = 150
+private const val TOP_LEVEL_FADE_MILLIS = 150
+private const val GESTURE_SCALE = 0.92f
+private val AXIS_SHIFT = 30.dp
+
+private val Emphasized = CubicBezierEasing(0.2f, 0f, 0f, 1f)
+private val EmphasizedDecelerate = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
+private val EmphasizedAccelerate = CubicBezierEasing(0.3f, 0f, 0.8f, 0.15f)
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.betweenTopLevels(): Boolean =
     isTopLevel(initialState) && isTopLevel(targetState)
 
 private fun isTopLevel(entry: NavBackStackEntry): Boolean = railDestinationFor(entry.destination.route, false) != null
 
-/** The next screen slides in whole over the one that stays put. Nothing fades: two translucent screens over a dark window made a frame darker than either, which read as a flash. */
-private fun pushIn(): EnterTransition =
-    slideInHorizontally(tween(PUSH_MILLIS, easing = FastOutSlowInEasing)) { width -> width }
+private fun pushIn(shift: Int): EnterTransition =
+    slideInHorizontally(tween(PUSH_MILLIS, easing = EmphasizedDecelerate)) { shift } +
+        fadeIn(tween(PUSH_FADE_MILLIS, easing = LinearEasing))
 
-/** Kept exactly as it is for the whole push, and only then let go. */
+private fun pushAside(shift: Int): ExitTransition =
+    slideOutHorizontally(tween(PUSH_MILLIS, easing = Emphasized)) { -shift }
+
+private fun comeBack(shift: Int): EnterTransition =
+    slideInHorizontally(tween(POP_MILLIS, easing = EmphasizedDecelerate)) { -shift }
+
+private fun popOut(shift: Int): ExitTransition =
+    slideOutHorizontally(tween(POP_MILLIS, easing = EmphasizedAccelerate)) { shift } +
+        fadeOut(tween(POP_FADE_MILLIS, easing = LinearEasing))
+
+/** Under the finger the screen also shrinks a little, a card lifted off the one behind. */
+private fun popOutUnderFinger(shift: Int): ExitTransition =
+    popOut(shift) + scaleOut(tween(POP_MILLIS, easing = EmphasizedAccelerate), targetScale = GESTURE_SCALE)
+
+/** Siblings at the top level don't move: the new one fades up over the old, which stays whole until it is gone. */
+private fun topLevelIn(): EnterTransition = fadeIn(tween(TOP_LEVEL_FADE_MILLIS, easing = LinearEasing))
+
 private fun holdBeneath(millis: Int): ExitTransition = fadeOut(tween(millis), targetAlpha = 1f)
-
-/** Longer than the push and eased at both ends: a quick exit read as the screen being yanked away. */
-private fun popOut(): ExitTransition =
-    slideOutHorizontally(tween(POP_MILLIS, easing = EaseInOutCubic)) { width -> width }
 
 /** Top-level destinations replace each other rather than piling up. */
 private fun NavHostController.navigateToHome(community: Boolean, makeBoard: Boolean = false) {
@@ -246,17 +273,16 @@ private fun NavContent(
         toBoard = { id -> navController.navigateToTierDetail(id) },
         toList = { route -> navController.navigateToCommunityList(route) },
     )
-    // One set of rules for every screen: the next one slides in a little and
-    // fades up over the one that stays beneath; back is the same, shorter.
-    // Siblings at the top level only fade: nothing is above or below them.
+    val shift = with(LocalDensity.current) { AXIS_SHIFT.roundToPx() }
     NavHost(
         navController = navController,
         startDestination = Route.TierLists(),
-        enterTransition = { if (betweenTopLevels()) fadeIn(tween(PUSH_MILLIS)) else pushIn() },
-        exitTransition = { if (betweenTopLevels()) fadeOut(tween(PUSH_MILLIS)) else holdBeneath(PUSH_MILLIS) },
-        // The screen underneath is already whole; it has nothing to animate.
-        popEnterTransition = { if (betweenTopLevels()) fadeIn(tween(POP_MILLIS)) else EnterTransition.None },
-        popExitTransition = { if (betweenTopLevels()) fadeOut(tween(POP_MILLIS)) else popOut() },
+        enterTransition = { if (betweenTopLevels()) topLevelIn() else pushIn(shift) },
+        exitTransition = { if (betweenTopLevels()) holdBeneath(TOP_LEVEL_FADE_MILLIS) else pushAside(shift) },
+        popEnterTransition = { if (betweenTopLevels()) topLevelIn() else comeBack(shift) },
+        popExitTransition = { if (betweenTopLevels()) holdBeneath(TOP_LEVEL_FADE_MILLIS) else popOut(shift) },
+        predictivePopEnterTransition = { if (betweenTopLevels()) topLevelIn() else comeBack(shift) },
+        predictivePopExitTransition = { if (betweenTopLevels()) holdBeneath(TOP_LEVEL_FADE_MILLIS) else popOutUnderFinger(shift) },
     ) {
         homeScreen(navController, openList)
         tierDetailScreen(

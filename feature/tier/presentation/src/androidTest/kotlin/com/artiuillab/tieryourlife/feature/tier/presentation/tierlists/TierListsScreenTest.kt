@@ -32,6 +32,8 @@ import com.artiuillab.tieryourlife.core.theme.ui.OnResumeEffect
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTabs
 import org.junit.Assert.assertEquals
@@ -525,7 +527,7 @@ class TierListsScreenTest {
     }
 
     private fun setLiveScreen(
-        initialLists: List<TierList>,
+        initialLists: List<TierListSummary>,
         onTierListClick: (Long) -> Unit = {},
     ) {
         composeRule.setContent {
@@ -537,7 +539,7 @@ class TierListsScreenTest {
             } else {
                 lists
             }
-            val rankedCount = lists.sumOf { list -> list.tiers.filterNot { it.isPool }.sumOf { it.items.size } }
+            val rankedCount = lists.sumOf { it.rankedCount }
 
             TierYourLifeTheme {
                 TierListsScreenContent(
@@ -572,8 +574,8 @@ class TierListsScreenTest {
         }
     }
 
-    private fun successState(lists: List<TierList>, mode: HomeMode = HomeMode.Browsing): TierListsUiState.Success {
-        val rankedCount = lists.sumOf { list -> list.tiers.filterNot { it.isPool }.sumOf { it.items.size } }
+    private fun successState(lists: List<TierListSummary>, mode: HomeMode = HomeMode.Browsing): TierListsUiState.Success {
+        val rankedCount = lists.sumOf { it.rankedCount }
         return TierListsUiState.Success(lists, lists.size, rankedCount, mode)
     }
 
@@ -597,7 +599,7 @@ class TierListsScreenTest {
         InstrumentationRegistry.getInstrumentation().targetContext.resources
             .getQuantityString(resourceId, count, count)
 
-    private fun initialLists(): List<TierList> = listOf(
+    private fun initialLists(): List<TierListSummary> = listOf(
         tierList(1L, "Sci-fi films", intArrayOf(2, 2, 1, 1, 1, 6)),
         tierList(2L, "Every A24 film", intArrayOf(3, 3, 3, 2, 1, 4)),
     )
@@ -608,7 +610,7 @@ private class ManualLifecycleOwner : LifecycleOwner {
     override val lifecycle: Lifecycle get() = registry
 }
 
-private fun tierList(id: Long, title: String, counts: IntArray): TierList = TierList(
+private fun tierList(id: Long, title: String, counts: IntArray): TierListSummary = TierList(
     id = id,
     title = title,
     tiers = listOf("S", "A", "B", "C", "D", "Pool").mapIndexed { index, label ->
@@ -627,4 +629,4 @@ private fun tierList(id: Long, title: String, counts: IntArray): TierList = Tier
             isPool = label == "Pool",
         )
     },
-)
+).summary()
