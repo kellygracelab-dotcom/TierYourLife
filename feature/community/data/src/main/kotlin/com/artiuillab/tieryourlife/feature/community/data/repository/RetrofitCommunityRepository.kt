@@ -39,6 +39,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSection
 import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.ListGone
+import com.artiuillab.tieryourlife.feature.community.domain.model.ListTranslations
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
@@ -450,6 +451,7 @@ internal fun PublishedListSummaryDto.toSummary(me: String? = null) = PublishedLi
     mine = isOwnList(mine, authorUid, me),
     tierCounts = tierCounts,
     viewerFollowsAuthor = viewerFollowsAuthor,
+    names = names,
 )
 
 /** Old lists stored the word "null" as a cover; only a web address is a picture. */
@@ -476,6 +478,7 @@ internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
         mine = isOwnList(mine, authorUid, me),
         tierCounts = tierCounts,
         viewerFollowsAuthor = viewerFollowsAuthor,
+        names = names,
     ),
     tiers = tiers.mapIndexed { index, tier ->
         Tier(
@@ -493,6 +496,7 @@ internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
     // Null on snapshots published before this was remembered: "arrangement
     // unknown", not "ranked nothing".
     arrangement = items.map { it.tierIndex },
+    translations = ListTranslations(translations),
 )
 
 /**
@@ -591,6 +595,7 @@ internal fun PublishedListSummary.toDto() = PublishedListSummaryDto(
     mine = mine,
     tierCounts = tierCounts,
     viewerFollowsAuthor = viewerFollowsAuthor,
+    names = names,
 )
 
 /** An opened list back as the server sent it, so a kept one is read by the same mapping. */
@@ -618,4 +623,6 @@ internal fun PublishedList.toDto() = PublishedListDto(
     mine = summary.mine,
     tierCounts = summary.tierCounts,
     viewerFollowsAuthor = summary.viewerFollowsAuthor,
+    names = summary.names,
+    translations = translations.byLocale,
 )

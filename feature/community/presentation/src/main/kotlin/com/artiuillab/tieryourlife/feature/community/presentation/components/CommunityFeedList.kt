@@ -338,7 +338,7 @@ private fun CommunityCard(
                     .padding(horizontal = 10.dp, vertical = 8.dp),
             ) {
                 Text(
-                    text = summary.title,
+                    text = summary.shownTitle(),
                     style = MaterialTheme.typography.titleSmall,
                     color = Color.White,
                     maxLines = 2,

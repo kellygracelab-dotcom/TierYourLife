@@ -81,6 +81,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.navigation.Com
 import com.artiuillab.tieryourlife.feature.community.presentation.section.FoundTopicTiles
 import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingSectionSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingTopicSheet
+import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSectionNames
 import com.artiuillab.tieryourlife.feature.tier.board.components.ArtPictures
 import com.artiuillab.tieryourlife.feature.tier.board.components.PrefetchArt
@@ -159,6 +160,7 @@ fun CommunityHomeScreen(
         following.refreshHidden()
     }
     val hasRail = currentWindowShape.hasRail
+    val languageTag = currentLanguageTag()
     CompositionLocalProvider(LocalOwnFace provides face) {
         CommunityHomeContent(
             explore = exploreState,
@@ -197,7 +199,7 @@ fun CommunityHomeScreen(
                 onWithdrawProposal = following::withdrawProposal,
             ),
             destinations = CommunityDestinations(
-                onOpenList = { onOpenList(CommunityRoute.CommunityList.of(it)) },
+                onOpenList = { onOpenList(CommunityRoute.CommunityList.of(it, languageTag)) },
                 onOpenAuthor = onAuthorClick,
                 onSettings = onSettingsClick.takeUnless { hasRail },
                 onManageFollowing = onManageFollowing,

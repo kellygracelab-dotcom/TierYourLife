@@ -38,6 +38,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.CoverHeader
 import com.artiuillab.tieryourlife.core.theme.ui.CoverType
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.presentation.R
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownTitle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CloudOffIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.countText
@@ -102,7 +103,7 @@ private fun CoverRow(summary: PublishedListSummary, onClick: () -> Unit) {
                 .clip(RoundedCornerShape(6.dp)),
         )
         Column(Modifier.weight(1f)) {
-            Text(summary.title, style = CoverType.SectionRowTitle, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(summary.shownTitle(), style = CoverType.SectionRowTitle, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(meta, style = CoverType.RowMeta, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }

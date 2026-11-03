@@ -28,6 +28,8 @@ data class PublishedListSummaryDto(
     val tierCounts: List<Int> = emptyList(),
     /** Only to a signed-in reader, and only on a named list. */
     val viewerFollowsAuthor: Boolean? = null,
+    /** The title in other languages, by locale; only a house list has any. */
+    val names: Map<String, String> = emptyMap(),
 )
 
 @Serializable
@@ -117,6 +119,9 @@ data class PublishedListDto(
     val mine: Boolean = false,
     val tierCounts: List<Int> = emptyList(),
     val viewerFollowsAuthor: Boolean? = null,
+    val names: Map<String, String> = emptyMap(),
+    /** Per locale, each text of the list as written mapped to how it reads there. */
+    val translations: Map<String, Map<String, String>> = emptyMap(),
 )
 
 @Serializable

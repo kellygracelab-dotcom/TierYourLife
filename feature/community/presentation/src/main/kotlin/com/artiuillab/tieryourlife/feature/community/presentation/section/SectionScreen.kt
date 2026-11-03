@@ -79,6 +79,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.feedIt
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.homeLayoutFor
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.rememberSkeletonAlpha
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.common.label
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSectionNames
 import kotlinx.coroutines.flow.Flow
@@ -103,6 +104,7 @@ fun SectionScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { viewModel.open() }
+    val languageTag = currentLanguageTag()
     SectionScreenContent(
         state = state,
         onBack = onBack,
@@ -121,7 +123,7 @@ fun SectionScreen(
             onSelectSort = viewModel::selectSort,
             onToggleSectionFollow = viewModel::toggleSectionFollow,
         ),
-        onOpenList = { onOpenList(CommunityRoute.CommunityList.of(it)) },
+        onOpenList = { onOpenList(CommunityRoute.CommunityList.of(it, languageTag)) },
         onOpenAuthor = onAuthorClick,
         notices = viewModel.notices,
     )

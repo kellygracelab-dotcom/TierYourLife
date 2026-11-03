@@ -43,6 +43,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListS
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
 import com.artiuillab.tieryourlife.feature.community.presentation.components.LocalOwnFace
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownTitle
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 
 /** Spec type sizes the M3 scale has no name for. */
@@ -102,7 +103,7 @@ internal fun FeedCard(
             }
             // Always two lines tall, so the footer sits at the same height on every card.
             Text(
-                text = summary.title,
+                text = summary.shownTitle(),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurface,
                 minLines = 2,

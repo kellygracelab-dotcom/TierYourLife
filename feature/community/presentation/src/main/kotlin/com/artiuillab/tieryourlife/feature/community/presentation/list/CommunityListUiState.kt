@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
+import com.artiuillab.tieryourlife.feature.community.domain.model.ListTranslations
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
@@ -82,6 +83,8 @@ sealed interface CommunityListUiState {
          * blank cards where the real ones will stand, nothing to move or save yet.
          */
         val arriving: Boolean = false,
+        /** A house list's texts in the readers' languages; the boards above stay as written. */
+        val translations: ListTranslations = ListTranslations(),
     ) : CommunityListUiState {
         /** What the board area is drawing right now. */
         val shown: TierList get() = if (showing == Showing.Theirs) theirs else mine

@@ -36,6 +36,8 @@ data class PublishedListSummary(
     val tierCounts: List<Int> = emptyList(),
     /** Whether the signed-in reader follows the author; null when the server did not say. */
     val viewerFollowsAuthor: Boolean? = null,
+    /** The title in other languages, by locale; read through [titleIn]. */
+    val names: Map<String, String> = emptyMap(),
 ) {
     /** Shown without its author, and leading to no profile. */
     val editorial: Boolean get() = EditorialAuthors.isEditorial(authorUid, anonymous)
@@ -63,6 +65,8 @@ data class PublishedList(
      * ranked nothing.
      */
     val arrangement: List<Int?> = emptyList(),
+    /** A house list's title, tiers and cards in the readers' languages. */
+    val translations: ListTranslations = ListTranslations(),
 )
 
 /** A list a copy was changed from: named on the copy's page, and a tap away. Its author is empty when the original is anonymous. */

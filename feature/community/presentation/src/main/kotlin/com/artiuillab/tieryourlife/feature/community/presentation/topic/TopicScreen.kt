@@ -54,8 +54,10 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Com
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownTitle
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
@@ -109,6 +111,7 @@ fun TopicScreenContent(
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
+    val languageTag = currentLanguageTag()
     var reportFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var reportedFrom by remember { mutableStateOf<PublishedListSummary?>(null) }
     // How many times "not this topic" was said; each one gets a word back, since nothing on screen changes.
@@ -138,7 +141,7 @@ fun TopicScreenContent(
                         feed = state.feed,
                         category = null,
                         onSelectCategory = {},
-                        onOpen = { onOpenList(CommunityRoute.CommunityList.of(it)) },
+                        onOpen = { onOpenList(CommunityRoute.CommunityList.of(it, languageTag)) },
                         onRetry = onRetry,
                         onOpenAuthor = { uid ->
                             val summary = (state.feed as? CommunityFeed.Ready)?.lists?.firstOrNull { it.authorUid == uid }
@@ -154,7 +157,7 @@ fun TopicScreenContent(
 
         actionsFor?.let { summary ->
             ListActionsSheet(
-                title = summary.title,
+                title = summary.shownTitle(),
                 authorName = summary.authorName.takeUnless { summary.editorial },
                 authorPhotoUrl = summary.authorPhotoUrl,
                 onDismiss = { actionsFor = null },

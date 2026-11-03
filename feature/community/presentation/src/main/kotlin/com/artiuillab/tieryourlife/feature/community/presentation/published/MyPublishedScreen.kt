@@ -52,7 +52,9 @@ import com.artiuillab.tieryourlife.core.theme.ui.CoverIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AnonymousFace
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownTitle
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
@@ -88,6 +90,7 @@ fun MyPublishedScreenContent(
     onRetry: () -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
+    val languageTag = currentLanguageTag()
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         ActionFailedSnackbar(userMessages)
         Column(Modifier.fillMaxSize().testTag(MyPublishedTestTags.SCREEN)) {
@@ -134,7 +137,7 @@ fun MyPublishedScreenContent(
                                             busy = state.removing != null || state.updating != null,
                                             canUpdate = summary.id in state.canUpdate,
                                             behind = summary.id in state.behind,
-                                            onOpen = { onOpen(CommunityRoute.CommunityList.of(summary)) },
+                                            onOpen = { onOpen(CommunityRoute.CommunityList.of(summary, languageTag)) },
                                             onUpdate = { onUpdate(summary.id) },
                                             onTakeDown = { onTakeDown(summary.id) },
                                         )
@@ -194,7 +197,7 @@ private fun PublishedRow(
             .padding(16.dp),
     ) {
         Text(
-            text = summary.title,
+            text = summary.shownTitle(),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 2,
