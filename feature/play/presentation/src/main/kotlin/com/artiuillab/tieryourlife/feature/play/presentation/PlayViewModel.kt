@@ -76,12 +76,23 @@ class PlayViewModel @Inject constructor(
         get() = _state.value.stage
         set(value) = _state.update { it.copy(stage = value) }
 
-    /** The board on screen now; the screen hands it in each time it changes, and a game that came with it is read. */
+    /**
+     * The board on screen now; the screen hands it in each time it changes, and
+     * what the picker opens with is read then, so it rises as it will stay.
+     */
     fun offer(request: PlayRequest) {
         val before = this.request
         this.request = request
         val news = before?.key != request.key || before.board.play != request.board.play
-        if (news && session == null) viewModelScope.launch { stored = taken(request) }
+        if (news && session == null) {
+            viewModelScope.launch {
+                if (lastKind == null) {
+                    val remembered = games.lastKind()
+                    if (lastKind == null) lastKind = remembered
+                }
+                stored = taken(request)
+            }
+        }
     }
 
     /** Reads whether a game of [key] is put down, for the dot on the button. */
@@ -112,6 +123,7 @@ class PlayViewModel @Inject constructor(
                 kind = shownKind,
                 page = if (tooMany) PickerPage.Cards else PickerPage.Games,
                 cardsFirst = tooMany,
+                resume = stored?.let { offerFor(it, request.board) },
                 intoMine = request.intoMine,
             ),
         )
