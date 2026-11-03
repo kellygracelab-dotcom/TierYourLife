@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.board.components.drag
 
+import android.view.ViewConfiguration
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.drag
@@ -11,6 +13,30 @@ import androidx.compose.ui.input.pointer.positionChange
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.math.abs
 
+/** Which ways the cards around a card scroll: a finger moving that way is scrolling them, not lifting the card. */
+enum class TileScroll {
+    /** A grid or a wrapping row on the board: sideways lifts at once, and so does a short hold. */
+    UpAndDown,
+
+    /** The pool's strip under the board: up or down lifts at once, and so does a hold as long as the system's. */
+    Sideways,
+
+    /** A sideways strip on a board that scrolls up and down: only a hold as long as the system's lifts. */
+    BothWays,
+}
+
+internal fun TileScroll.liftAxis(): Orientation? = when (this) {
+    TileScroll.UpAndDown -> Orientation.Horizontal
+    TileScroll.Sideways -> Orientation.Vertical
+    TileScroll.BothWays -> null
+}
+
+/** Where a move can lift the card the hold is a quick one; inside a scrolling strip it waits as long as the system's own. */
+internal fun TileScroll.holdMillis(): Long = when (this) {
+    TileScroll.UpAndDown -> DRAG_LONG_PRESS_TIMEOUT_MILLIS
+    TileScroll.Sideways, TileScroll.BothWays -> ViewConfiguration.getLongPressTimeout().toLong()
+}
+
 /** How the finger that landed on a card made up its mind. */
 private sealed interface Press {
     data class Lift(val at: Offset) : Press
@@ -19,13 +45,14 @@ private sealed interface Press {
 }
 
 /**
- * A drag that answers the finger at once. A finger that moves sideways lifts
- * the card straight away; one that moves up or down is scrolling the board
- * and is left alone; one that stays put lifts the card after the long-press
- * timeout. The stock long-press drag made every drag wait, and cancelled the
- * ones that started moving early.
+ * A drag that answers the finger at once. A finger that moves along [liftAxis]
+ * lifts the card straight away; one that moves the other way is scrolling and
+ * is left alone; one that stays put lifts the card after [holdMillis]. With no
+ * [liftAxis] every move is scrolling and only the hold lifts.
  */
 suspend fun PointerInputScope.detectTileDrag(
+    liftAxis: Orientation?,
+    holdMillis: Long,
     onDragStart: (Offset) -> Unit,
     onDrag: (PointerInputChange, Offset) -> Unit,
     onDragEnd: () -> Unit,
@@ -34,13 +61,15 @@ suspend fun PointerInputScope.detectTileDrag(
     val down = awaitFirstDown(requireUnconsumed = false)
     val slop = viewConfiguration.touchSlop
     var travelled = Offset.Zero
-    val decided = withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) {
+    val decided = withTimeoutOrNull(holdMillis) {
         while (true) {
             val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: return@withTimeoutOrNull Press.NotOurs
             if (!change.pressed || change.isConsumed) return@withTimeoutOrNull Press.NotOurs
             travelled += change.positionChange()
             if (travelled.getDistance() > slop) {
-                return@withTimeoutOrNull if (abs(travelled.x) > abs(travelled.y)) Press.Lift(change.position) else Press.NotOurs
+                if (!travelled.leansTowards(liftAxis)) return@withTimeoutOrNull Press.NotOurs
+                change.consume()
+                return@withTimeoutOrNull Press.Lift(change.position)
             }
         }
         @Suppress("UNREACHABLE_CODE")
@@ -54,6 +83,12 @@ suspend fun PointerInputScope.detectTileDrag(
         change.consume()
     }
     if (finished) onDragEnd() else onDragCancel()
+}
+
+private fun Offset.leansTowards(axis: Orientation?): Boolean = when (axis) {
+    Orientation.Horizontal -> abs(x) > abs(y)
+    Orientation.Vertical -> abs(y) > abs(x)
+    null -> false
 }
 
 /**

@@ -16,12 +16,20 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class TierDetailTileDragTest : TierDetailScreenTestBase() {
 
+    // A card in a wrapping row on a board that scrolls up and down. The pool's
+    // sideways strip goes the other way round; TileLiftTest covers it.
+    private fun boardWithARankedCard() = listOf(
+        tier(id = 1, label = "S", items = listOf(item(10, "Dune"))),
+        tier(id = 2, label = "A", items = emptyList()),
+        tier(id = 6, label = "Pool", items = List(6) { tierItem(it) }, isPool = true),
+    ).asTierList()
+
     // The finger does not have to wait: moving sideways lifts the card at once.
     @Test
     fun aSidewaysMove_liftsTheCardWithoutWaiting() {
         var moved: Triple<Long, Long, Int>? = null
-        setScreen(TierDetailUiState.Success(defaultList()), onMoveItem = { id, tier, pos -> moved = Triple(id, tier, pos) })
-        val sourceTag = TierDetailTestTags.tile(1)
+        setScreen(TierDetailUiState.Success(boardWithARankedCard()), onMoveItem = { id, tier, pos -> moved = Triple(id, tier, pos) })
+        val sourceTag = TierDetailTestTags.tile(10)
         val target = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(2)).fetchSemanticsNode().boundsInRoot
         val sourceBounds = composeRule.onNodeWithTag(sourceTag).fetchSemanticsNode().boundsInRoot
         val start = Offset(sourceBounds.width / 2f, sourceBounds.height / 2f)
@@ -44,8 +52,8 @@ class TierDetailTileDragTest : TierDetailScreenTestBase() {
     @Test
     fun aVerticalMove_doesNotLiftTheCard() {
         var moves = 0
-        setScreen(TierDetailUiState.Success(defaultList()), onMoveItem = { _, _, _ -> moves++ })
-        val sourceTag = TierDetailTestTags.tile(1)
+        setScreen(TierDetailUiState.Success(boardWithARankedCard()), onMoveItem = { _, _, _ -> moves++ })
+        val sourceTag = TierDetailTestTags.tile(10)
         val sourceBounds = composeRule.onNodeWithTag(sourceTag).fetchSemanticsNode().boundsInRoot
         val start = Offset(sourceBounds.width / 2f, sourceBounds.height / 2f)
 

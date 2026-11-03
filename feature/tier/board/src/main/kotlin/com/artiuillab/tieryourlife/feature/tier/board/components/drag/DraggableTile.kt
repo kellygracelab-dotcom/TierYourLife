@@ -56,6 +56,7 @@ fun DraggableTile(
     onDoubleTap: (itemId: Long) -> Unit = {},
     /** True while the row draws the card's slot elsewhere: the lifted card's own place then takes no room. */
     collapseWhileLifted: Boolean = false,
+    scroll: TileScroll = TileScroll.UpAndDown,
 ) {
     var rootPosition by remember { mutableStateOf(Offset.Zero) }
     var sizePx by remember { mutableStateOf(Offset.Zero) }
@@ -80,8 +81,10 @@ fun DraggableTile(
                     sizePx = Offset(coordinates.size.width.toFloat(), coordinates.size.height.toFloat())
                     onPositioned(coordinates.boundsInRoot())
                 }
-                .pointerInput(item.id, sourceTierId) {
+                .pointerInput(item.id, sourceTierId, scroll) {
                     detectTileDrag(
+                        liftAxis = scroll.liftAxis(),
+                        holdMillis = scroll.holdMillis(),
                         onDragStart = { offsetInTile ->
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             dragController.beginDrag(
