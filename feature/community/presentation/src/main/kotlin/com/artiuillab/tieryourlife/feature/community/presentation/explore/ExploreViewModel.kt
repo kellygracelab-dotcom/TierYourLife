@@ -76,6 +76,8 @@ class ExploreViewModel @Inject constructor(
         community.feed(sort = FeedSort.Popular, after = after)
     }
 
+    val picturesOnWifiOnly: () -> Boolean = preferences::picturesOnWifiOnly
+
     private val query = MutableStateFlow<String?>(null)
     private val results = MutableStateFlow(SearchResults())
     private var searchJob: Job? = null

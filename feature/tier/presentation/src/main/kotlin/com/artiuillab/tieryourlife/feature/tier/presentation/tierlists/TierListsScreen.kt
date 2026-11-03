@@ -86,6 +86,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeHeader
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlyFooter
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlySignInCard
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.PrefetchTilesAhead
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.RestoringPictures
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchResultRow
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SelectionTopBar
@@ -157,6 +158,7 @@ fun TierListsScreen(
         onToggleFavourite = viewModel::toggleFavourite,
         userMessages = viewModel.userMessages,
         tabs = tabs,
+        picturesOnWifiOnly = viewModel::picturesOnWifiOnly,
     )
 }
 
@@ -185,6 +187,8 @@ fun TierListsScreenContent(
     onToggleFavourite: (Long) -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
     tabs: @Composable () -> Unit = {},
+    /** Null draws without fetching any pictures ahead, as a test or a preview should. */
+    picturesOnWifiOnly: (() -> Boolean)? = null,
 ) {
     val success = state as? TierListsUiState.Success
     val mode = success?.mode ?: HomeMode.Browsing
@@ -203,6 +207,10 @@ fun TierListsScreenContent(
     val hasRail = currentWindowShape.hasRail
     // Out here, so closing a search finds the boards where they were left.
     val boardsScroll = rememberLazyGridState()
+    if (picturesOnWifiOnly != null && asPictures && mode == HomeMode.Browsing) {
+        val tiles = remember(favourites, lists) { favourites.map { starredKey(it.id) to it } + lists.map { it.id to it } }
+        PrefetchTilesAhead(boardsScroll, tiles, picturesOnWifiOnly)
+    }
 
     BackHandler(enabled = mode !is HomeMode.Browsing) {
         when (mode) {

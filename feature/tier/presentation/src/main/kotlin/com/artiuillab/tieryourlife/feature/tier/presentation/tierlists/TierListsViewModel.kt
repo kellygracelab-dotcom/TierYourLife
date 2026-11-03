@@ -248,6 +248,8 @@ class TierListsViewModel @Inject constructor(
         }
     }
 
+    fun picturesOnWifiOnly(): Boolean = preferences.picturesOnWifiOnly()
+
     fun toggleBoardsAsPictures() {
         preferences.setBoardsAsPictures(!preferences.boardsAsPictures())
         emitSuccess()

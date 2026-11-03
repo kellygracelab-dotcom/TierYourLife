@@ -52,9 +52,7 @@ internal fun BoardTile(
     onToggleFavourite: (() -> Unit)? = null,
 ) {
     val ranked = list.rankedCount
-    // A local photograph is drawn as it is on the board; only publishing needs
-    // a picture to have travelled.
-    val previewImages = list.coverImageUrls.ifEmpty { list.previewImages }
+    val art = list.art()
 
     Column(
         modifier = Modifier
@@ -73,8 +71,8 @@ internal fun BoardTile(
     ) {
         Box(Modifier.fillMaxWidth().aspectRatio(ART_RATIO), contentAlignment = Alignment.TopEnd) {
             ListArt(
-                coverImageUrl = list.coverImageUrl,
-                previewImages = previewImages,
+                coverImageUrl = art.coverImageUrl,
+                previewImages = art.previewImages,
                 tierColors = list.tiers.filterNot { it.isPool }.map { it.colorLight }.take(TIER_COLOURS),
                 modifier = Modifier.fillMaxWidth().aspectRatio(ART_RATIO),
             )
@@ -123,5 +121,5 @@ internal fun BoardTile(
 /** Three to four across on a phone, the same shape the feed's cards have. */
 internal val TILE_MIN_WIDTH = 150.dp
 
-private const val ART_RATIO = 1.35f
+internal const val ART_RATIO = 1.35f
 private const val TIER_COLOURS = 5
