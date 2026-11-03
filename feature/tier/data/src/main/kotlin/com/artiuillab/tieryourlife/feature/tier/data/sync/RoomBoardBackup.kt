@@ -46,8 +46,8 @@ class RoomBoardBackup @Inject constructor(
 
     /**
      * Off means gone: every board becomes a marker and every picture leaves
-     * the sent record, so turning it back on sends everything again. Nothing
-     * local is touched. The switch goes off only once the copy is gone: off
+     * the sent record. Nothing local is touched, and turning it back on sends
+     * everything again: with the records gone, a marker is written over. The switch goes off only once the copy is gone: off
      * stops every sync, so nothing would ever finish a delete left halfway.
      * Only the signed-in account's rows: the rest are other accounts' boards.
      */

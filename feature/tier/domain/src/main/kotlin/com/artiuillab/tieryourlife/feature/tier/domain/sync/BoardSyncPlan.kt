@@ -46,8 +46,19 @@ sealed interface SyncStep {
     /** Changed in both places. The order is the content, so nothing merges: the account's copy arrives as a second board. */
     data class KeepBoth(override val uid: String, val basedOn: Int) : SyncStep
 
-    /** Thrown away somewhere else. Let it go here too. */
+    /**
+     * Thrown away somewhere else after this account and this phone agreed on
+     * it. Let it go here too: into the trash first, out of it only if it was
+     * already there.
+     */
     data class DiscardLocal(override val uid: String) : SyncStep
+
+    /**
+     * The account holds only a marker for a board this phone has never agreed
+     * on with it: switched off and on again, or kept by another account before.
+     * The board goes up over the marker rather than being taken for a delete.
+     */
+    data class Revive(override val uid: String, val basedOn: Int) : SyncStep
 
     /** Thrown away here. Tell the account, so the other phone lets go as well. */
     data class Forget(override val uid: String) : SyncStep
@@ -101,8 +112,11 @@ private fun stepFor(local: LocalBoard, remote: RemoteBoard?, synced: SyncedBoard
     }
     if (remote.deleted) {
         // Thrown away on another phone. Keeping it here would make emptying the
-        // trash something that only holds on the phone you did it on.
-        return SyncStep.DiscardLocal(local.uid)
+        // trash something that only holds on the phone you did it on. Without a
+        // record of agreeing, the marker says nothing about this board: backup
+        // switched off leaves one for every board, and reading those as deletes
+        // emptied the library the moment it was switched back on.
+        return if (synced != null) SyncStep.DiscardLocal(local.uid) else SyncStep.Revive(local.uid, basedOn = remote.revision)
     }
 
     // Asked first: a database restored from a system backup has every board

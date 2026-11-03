@@ -338,7 +338,7 @@ class BoardSyncEngineTest {
         throwAway(uid, signedInAs = "bob")
         engine(account = ann, api = annBoards).sync()
 
-        assertTrue(uid in annBoards.server)
+        assertEquals(false, annBoards.server[uid]?.deleted)
         assertNotNull("back from Ann's account", dao.boardByUid(uid))
     }
 
@@ -351,7 +351,7 @@ class BoardSyncEngineTest {
         throwAway(uid, signedInAs = "ann")
         engine(account = ann, api = annBoards).sync()
 
-        assertFalse(uid in annBoards.server)
+        assertEquals(true, annBoards.server[uid]?.deleted)
     }
 
     @Test
@@ -368,9 +368,10 @@ class BoardSyncEngineTest {
         assertEquals(listOf(1), dao.syncRecordsOf("bob").map { it.revision })
     }
 
-    // Bob's account let go of a board they share; that is Bob's delete, not Ann's.
+    // Bob's account let go of a board this phone never agreed on with Bob: a
+    // marker he holds says nothing about the board here.
     @Test
-    fun aBoardDiscardedForAnotherAccount_comesBackForTheFirst() = runBlocking {
+    fun aMarkerInAnotherAccount_neverTakesTheBoardAway() = runBlocking {
         val uid = givenLocalBoard("Films")
         val annBoards = FakeBoards()
         engine(account = ann, api = annBoards).sync()
@@ -378,11 +379,59 @@ class BoardSyncEngineTest {
         bobBoards.server[uid] = theirBoard(uid, title = "Films", revision = 2).copy(deleted = true)
 
         engine(account = bob, api = bobBoards).sync()
-        assertNull(dao.boardByUid(uid))
         engine(account = ann, api = annBoards).sync()
 
-        assertTrue(uid in annBoards.server)
-        assertNotNull(dao.boardByUid(uid))
+        assertNull(dao.boardByUid(uid)!!.deletedAt)
+        assertEquals(false, annBoards.server[uid]?.deleted)
+    }
+
+    // The owner's library emptied this way: off left a marker for every board,
+    // and on again read each one as a delete.
+    @Test
+    fun backupOffAndOnAgain_keepsEveryBoard_andSendsThemBackUp() = runBlocking {
+        val films = givenLocalBoard("Films")
+        val games = givenLocalBoard("Games")
+        val preferences = FakeAppPreferences()
+        val accounts = FakeAccountRepository(initial = ann)
+        engine(preferences = preferences, accounts = accounts).sync()
+        val backup = RoomBoardBackup(preferences, dao, images, boards, accounts)
+
+        assertTrue(backup.stopAndDelete())
+        assertEquals(listOf(true, true), listOf(films, games).map { boards.server.getValue(it).deleted })
+        backup.start()
+        engine(preferences = preferences, accounts = accounts).sync()
+
+        listOf(films, games).forEach { uid ->
+            assertNull("$uid still in use here", dao.boardByUid(uid)!!.deletedAt)
+            assertEquals("$uid back in the account", false, boards.server.getValue(uid).deleted)
+            assertEquals(1, dao.syncRecordsOf("ann").count { it.listUid == uid })
+        }
+        assertEquals(listOf(2, 2), boards.kept.drop(2).map { it.second.basedOn })
+    }
+
+    @Test
+    fun aBoardThrownAwayElsewhere_goesToTheTrashHereFirst() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        engine().sync()
+        boards.server[uid] = boards.server.getValue(uid).copy(revision = 2, deleted = true)
+
+        engine().sync()
+
+        assertNotNull(dao.boardByUid(uid)!!.deletedAt)
+        assertTrue(dao.allSyncRecords().none { it.listUid == uid })
+    }
+
+    @Test
+    fun aBoardAlreadyInTheTrash_leavesForGood_whenThrownAwayElsewhere() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        engine().sync()
+        database.tierDao().markTierListsDeleted(listOf(dao.boardByUid(uid)!!.id), deletedAt = 1)
+        engine().sync()
+        boards.server[uid] = boards.server.getValue(uid).let { it.copy(revision = it.revision + 1, deleted = true) }
+
+        engine().sync()
+
+        assertNull(dao.boardByUid(uid))
     }
 
     @Test
@@ -410,7 +459,7 @@ class BoardSyncEngineTest {
 
         engine(account = ann, api = annBoards).sync()
 
-        assertTrue("not read as a delete", "gone" in annBoards.server)
+        assertEquals("not read as a delete", false, annBoards.server["gone"]?.deleted)
         assertEquals(1, dao.boardsInUse().count { it.uid == uid })
         assertTrue(dao.syncRecordsOf(BoardSyncEntity.UNCLAIMED).isEmpty())
         assertEquals(setOf(uid, "gone"), dao.syncRecordsOf("ann").map { it.listUid }.toSet())
@@ -425,7 +474,7 @@ class BoardSyncEngineTest {
         throwAway(uid, signedInAs = "bob", alone = true)
         engine(account = ann, api = annBoards).sync()
 
-        assertTrue(uid in annBoards.server)
+        assertEquals(false, annBoards.server[uid]?.deleted)
     }
 
     private suspend fun throwAway(uid: String, signedInAs: String, alone: Boolean = false) {
@@ -510,8 +559,9 @@ class BoardSyncEngineTest {
             return Response.success(KeptBoardRevisionDto(uid, revision))
         }
 
+        // As the proxy: a marker, not nothing, so the other phone hears of it.
         override suspend fun forget(uid: String) {
-            server.remove(uid)
+            server[uid]?.let { stored -> server[uid] = stored.copy(revision = stored.revision + 1, deleted = true) }
         }
     }
 

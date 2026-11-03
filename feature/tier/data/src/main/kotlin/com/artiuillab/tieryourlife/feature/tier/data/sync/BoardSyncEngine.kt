@@ -192,6 +192,7 @@ class BoardSyncEngine @Inject constructor(
         when (step) {
             is SyncStep.Create -> send(account, step.uid, basedOn = null)
             is SyncStep.Update -> send(account, step.uid, basedOn = step.basedOn)
+            is SyncStep.Revive -> send(account, step.uid, basedOn = step.basedOn)
             is SyncStep.KeepBoth -> {
                 // Theirs comes down first, so it is safe here even if the
                 // write below never happens.
@@ -200,16 +201,28 @@ class BoardSyncEngine @Inject constructor(
             }
             is SyncStep.Restore -> takeOver(account, api.board(step.uid))
             is SyncStep.Adopt -> adopt(account, api.board(step.uid))
-            is SyncStep.DiscardLocal -> {
-                dao.deleteBoardByUid(step.uid)
-                dao.forgetEverywhere(step.uid)
-            }
+            is SyncStep.DiscardLocal -> discard(step.uid)
             is SyncStep.Forget -> {
                 api.forget(step.uid)
                 dao.forget(account, step.uid)
             }
             is SyncStep.Remember -> remember(account, step.uid, step.revision, fingerprints.getValue(step.uid))
         }
+    }
+
+    /**
+     * Gone elsewhere. A board in use here goes to the trash, where it can still
+     * be had back; only one already there leaves for good. Restoring it later
+     * sends it up again, since the record of agreeing goes either way.
+     */
+    private suspend fun discard(uid: String) {
+        val board = dao.boardByUid(uid)
+        if (board != null && board.deletedAt == null) {
+            dao.trashBoard(uid, System.currentTimeMillis())
+        } else {
+            dao.deleteBoardByUid(uid)
+        }
+        dao.forgetEverywhere(uid)
     }
 
     /**

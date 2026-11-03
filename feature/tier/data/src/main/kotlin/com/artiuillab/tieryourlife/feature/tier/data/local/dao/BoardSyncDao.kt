@@ -115,6 +115,9 @@ interface BoardSyncDao {
     @Query("DELETE FROM tier_lists WHERE uid = :uid")
     suspend fun deleteBoardByUid(uid: String)
 
+    @Query("UPDATE tier_lists SET deletedAt = :deletedAt WHERE uid = :uid")
+    suspend fun trashBoard(uid: String, deletedAt: Long)
+
     /** A board arriving for the first time, under the uid the account keeps it as. */
     @Transaction
     suspend fun addBoard(board: TierListEntity, tiers: List<IncomingTier>) {
