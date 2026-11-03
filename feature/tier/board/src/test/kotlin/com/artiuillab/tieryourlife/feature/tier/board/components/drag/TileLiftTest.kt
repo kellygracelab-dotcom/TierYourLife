@@ -184,6 +184,6 @@ class TileLiftTest {
         const val RANKED_FIRST = 100L
         const val POOL_FIRST = 200L
         const val PAUSE_LONGER_THAN_THE_OLD_HOLD = 150L
-        const val HOLD = 700L
+        const val HOLD = 250L
     }
 }

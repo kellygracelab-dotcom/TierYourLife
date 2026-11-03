@@ -1,6 +1,5 @@
 package com.artiuillab.tieryourlife.feature.tier.board.components.drag
 
-import android.view.ViewConfiguration
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -18,10 +17,10 @@ enum class TileScroll {
     /** A grid or a wrapping row on the board: sideways lifts at once, and so does a short hold. */
     UpAndDown,
 
-    /** The pool's strip under the board: up or down lifts at once, and so does a hold as long as the system's. */
+    /** The pool's strip under the board: up or down lifts at once, and so does a short hold. */
     Sideways,
 
-    /** A sideways strip on a board that scrolls up and down: only a hold as long as the system's lifts. */
+    /** A sideways strip on a board that scrolls up and down: only a short hold lifts. */
     BothWays,
 }
 
@@ -31,11 +30,17 @@ internal fun TileScroll.liftAxis(): Orientation? = when (this) {
     TileScroll.BothWays -> null
 }
 
-/** Where a move can lift the card the hold is a quick one; inside a scrolling strip it waits as long as the system's own. */
+/**
+ * Inside a sideways strip the hold waits long enough for a swipe that starts
+ * slowly to leave the touch slop first; the system's long press (half a second)
+ * felt like the card was stuck.
+ */
 internal fun TileScroll.holdMillis(): Long = when (this) {
     TileScroll.UpAndDown -> DRAG_LONG_PRESS_TIMEOUT_MILLIS
-    TileScroll.Sideways, TileScroll.BothWays -> ViewConfiguration.getLongPressTimeout().toLong()
+    TileScroll.Sideways, TileScroll.BothWays -> STRIP_HOLD_MILLIS
 }
+
+private const val STRIP_HOLD_MILLIS = 200L
 
 /** How the finger that landed on a card made up its mind. */
 private sealed interface Press {
