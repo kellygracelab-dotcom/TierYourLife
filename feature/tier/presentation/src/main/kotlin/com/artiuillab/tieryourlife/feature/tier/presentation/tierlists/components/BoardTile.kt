@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +53,17 @@ internal fun BoardTile(
     onToggleFavourite: (() -> Unit)? = null,
 ) {
     val ranked = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
+    // A local photograph is drawn as it is on the board; only publishing needs
+    // a picture to have travelled. Taken lazily: a board can hold hundreds of cards.
+    val previewImages = remember(list) {
+        list.coverImageUrls.ifEmpty {
+            list.tiers.asSequence()
+                .flatMap { tier -> tier.items }
+                .mapNotNull { item -> item.imageUrl }
+                .take(PREVIEW_IMAGES)
+                .toList()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -71,14 +83,7 @@ internal fun BoardTile(
         Box(Modifier.fillMaxWidth().aspectRatio(ART_RATIO), contentAlignment = Alignment.TopEnd) {
             ListArt(
                 coverImageUrl = list.coverImageUrl,
-                // A local photograph is drawn as it is on the board; only
-                // publishing needs a picture to have travelled.
-                previewImages = list.coverImageUrls.ifEmpty {
-                    list.tiers
-                        .flatMap { tier -> tier.items }
-                        .mapNotNull { item -> item.imageUrl }
-                        .take(PREVIEW_IMAGES)
-                },
+                previewImages = previewImages,
                 tierColors = list.tiers.filterNot { it.isPool }.map { it.colorLight }.take(TIER_COLOURS),
                 modifier = Modifier.fillMaxWidth().aspectRatio(ART_RATIO),
             )
