@@ -39,11 +39,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -79,8 +81,10 @@ import com.artiuillab.tieryourlife.feature.community.presentation.section.FoundT
 import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingSectionSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingTopicSheet
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSectionNames
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
@@ -299,8 +303,18 @@ private fun HomeBody(
     var waitingSection by rememberSaveable { mutableStateOf<String?>(null) }
     val searching = explore.query != null
 
-    LaunchedEffect(Unit) { exploreFeed.onOpen() }
-    LaunchedEffect(pager.currentPage) { if (pager.currentPage == 1) followingFeed.onOpen() }
+    // Following is one swipe away: asked for at once, and drawn off screen once
+    // the screen has come in and nothing moves, so the first swipe finds it
+    // ready instead of composing it, and its answer, under the finger.
+    var drawnAhead by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) {
+        exploreFeed.onOpen()
+        followingFeed.onOpen()
+        delay(DRAW_AHEAD_AFTER_MILLIS)
+        snapshotFlow { pager.isScrollInProgress }.first { !it }
+        drawnAhead = 1
+    }
+    LaunchedEffect(pager.settledPage) { if (pager.settledPage == 1) followingFeed.onOpen() }
     BackHandler(enabled = searching, onBack = exploreCalls.onExitSearch)
 
     val currentPane = if (pager.currentPage == 0) explore.feed else following.feed
@@ -349,7 +363,7 @@ private fun HomeBody(
                     if (layout != HomeLayout.CompactHeight) SubTabs(pager.currentPage, selectTab, inset = layout != HomeLayout.Portrait)
                     OfflineStrip(currentPane.offlineSinceMillis, if (pager.currentPage == 0) explore.nowMillis else following.nowMillis, currentPane.retrying, currentFeed.onRetry)
                     Box(Modifier.fillMaxSize()) {
-                        HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), key = { it }) { page ->
+                        HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), beyondViewportPageCount = drawnAhead, key = { it }) { page ->
                             if (page == 0) {
                                 ExploreTab(
                                     state = explore,
@@ -422,6 +436,9 @@ private fun HomeBody(
         },
     )
 }
+
+/** Past the slide or fade that brought Community in, which is not the moment for a second tab's worth of work. */
+private const val DRAW_AHEAD_AFTER_MILLIS = 500L
 
 @Composable
 private fun WaitingSheets(topic: Topic?, section: Section?, onWithdraw: (String) -> Unit, onClose: () -> Unit) {
@@ -568,7 +585,7 @@ private fun SearchResultsGrid(
     sections: List<Section> = emptyList(),
     onOpenSection: (String) -> Unit = {},
 ) {
-    val alpha = rememberSkeletonAlpha()
+    val alpha = rememberSkeletonAlpha(running = results.loading)
     val found = matchingSections(sections, query)
     val full: androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope.() -> androidx.compose.foundation.lazy.grid.GridItemSpan =
         { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }

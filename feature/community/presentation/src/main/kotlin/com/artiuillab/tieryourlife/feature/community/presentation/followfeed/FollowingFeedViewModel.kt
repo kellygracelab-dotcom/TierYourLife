@@ -23,6 +23,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPa
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ListMenuActions
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.toCommunityNotice
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
@@ -131,16 +132,22 @@ class FollowingFeedViewModel @Inject constructor(
         feed.open()
     }
 
+    private var followingJob: Job? = null
+
+    /** Asked once at a time: the tab is opened ahead of the swipe and again on arrival, a moment apart. */
     private fun loadFollowing() {
-        viewModelScope.launch {
-            community.following()
-                .onSuccess { following.value = it }
-                .onFailure { Timber.i(it, "Reading who and what is followed failed") }
-        }
-        viewModelScope.launch {
-            community.myTopics()
-                .onSuccess { mine -> waiting.value = mine.filter { it.status == TopicStatus.Pending } }
-                .onFailure { Timber.i(it, "Reading this person's topics failed") }
+        if (followingJob?.isActive == true) return
+        followingJob = viewModelScope.launch {
+            launch {
+                community.following()
+                    .onSuccess { following.value = it }
+                    .onFailure { Timber.i(it, "Reading who and what is followed failed") }
+            }
+            launch {
+                community.myTopics()
+                    .onSuccess { mine -> waiting.value = mine.filter { it.status == TopicStatus.Pending } }
+                    .onFailure { Timber.i(it, "Reading this person's topics failed") }
+            }
         }
     }
 

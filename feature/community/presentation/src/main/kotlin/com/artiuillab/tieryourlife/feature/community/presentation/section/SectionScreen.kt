@@ -216,7 +216,7 @@ private fun SectionFeed(
 ) {
     val grid = rememberLazyGridState()
     val scope = rememberCoroutineScope()
-    val alpha = rememberSkeletonAlpha()
+    val alpha = rememberSkeletonAlpha(running = state.feed.phase == FeedPhase.Loading)
     ScrolledDownWatcher(grid, feed.onScrolledDown)
     NearEndWatcher(grid, state.feed.lists.size, feed.onLoadMore)
     Column(Modifier.fillMaxSize()) {
@@ -267,7 +267,7 @@ private fun sideOf(layout: HomeLayout) = if (layout == HomeLayout.Wide) 24.dp el
 private fun LazyGridScope.sectionBody(
     state: SectionUiState,
     layout: HomeLayout,
-    alpha: Float,
+    alpha: () -> Float,
     feed: FeedCallbacks,
     calls: SectionCallbacks,
     cards: CardActions,

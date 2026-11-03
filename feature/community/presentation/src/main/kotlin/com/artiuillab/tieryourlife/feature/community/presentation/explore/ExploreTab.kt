@@ -144,7 +144,7 @@ internal fun ExploreTab(
     onLoadMore: () -> Unit,
     onScrolledDown: (Boolean) -> Unit,
 ) {
-    val skeletonAlpha = rememberSkeletonAlpha()
+    val skeletonAlpha = rememberSkeletonAlpha(running = state.feed.phase == FeedPhase.Loading)
     ScrolledDownWatcher(gridState, onScrolledDown)
     NearEndWatcher(gridState, state.feed.lists.size, onLoadMore)
     PullToRefreshBox(isRefreshing = state.feed.refreshing, onRefresh = onRefresh, modifier = Modifier.fillMaxSize()) {
@@ -187,13 +187,13 @@ private fun feedSpacing(layout: HomeLayout) = if (layout == HomeLayout.Wide) 16.
 internal fun LazyGridScope.feedItems(
     pane: FeedPane,
     layout: HomeLayout,
-    skeletonAlpha: Float,
+    skeletonAlpha: () -> Float,
     cards: CardActions,
     onRetry: () -> Unit,
     reasonFor: @Composable (PublishedListSummary) -> String?,
 ) {
     when (pane.phase) {
-        FeedPhase.Loading -> items(count = SKELETONS, key = { "skeleton-$it" }) {
+        FeedPhase.Loading -> items(count = SKELETONS, key = { "skeleton-$it" }, contentType = { FeedContent.Skeleton }) {
             SkeletonCard(skeletonAlpha, coverHeight = layout.coverHeight)
         }
 
@@ -202,8 +202,9 @@ internal fun LazyGridScope.feedItems(
         }
 
         FeedPhase.Ready -> {
+            // Typed, so a card scrolled away is reused for the next card rather than for a heading.
             pane.lists.forEach { summary ->
-                item(key = summary.id) {
+                item(key = summary.id, contentType = FeedContent.Card) {
                     val hidden = pane.justHidden[summary.id]
                     if (hidden != null) {
                         HiddenCard(reported = hidden)
@@ -223,6 +224,8 @@ internal fun LazyGridScope.feedItems(
 }
 
 private const val SKELETONS = 6
+
+private enum class FeedContent { Skeleton, Card }
 
 /** Tells the loader whether the person has moved off the top, so a fresh answer waits behind the pill. */
 @Composable

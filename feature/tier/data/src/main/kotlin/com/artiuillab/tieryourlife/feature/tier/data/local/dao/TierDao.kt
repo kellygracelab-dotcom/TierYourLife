@@ -225,6 +225,14 @@ interface TierDao {
     @Query("SELECT * FROM active_tier_lists WHERE id = :id AND ownerUid IS :owner")
     suspend fun getTierListWithTiers(id: Long, owner: String?): TierListWithTiers?
 
+    @Transaction
+    @Query("SELECT * FROM active_tier_lists WHERE publishedId IS NOT NULL AND ownerUid IS :owner ORDER BY id ASC")
+    suspend fun getPublishedTierListsWithTiers(owner: String?): List<TierListWithTiers>
+
+    @Transaction
+    @Query("SELECT * FROM active_tier_lists WHERE publishedId = :publishedId AND ownerUid IS :owner ORDER BY id ASC LIMIT 1")
+    suspend fun getTierListWithTiersPublishedAs(publishedId: String, owner: String?): TierListWithTiers?
+
     @Query("DELETE FROM tier_lists WHERE id = :id")
     suspend fun deleteTierListById(id: Long): Int
 

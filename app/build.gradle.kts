@@ -89,6 +89,15 @@ android {
     }
 }
 
+// The same as every other Compose module (build-logic AndroidComposeConventionPlugin).
+val composeStability = rootProject.layout.projectDirectory.file("config/compose/stability.conf")
+composeCompiler {
+    stabilityConfigurationFiles.add(composeStability)
+}
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    inputs.file(composeStability).withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("composeStability")
+}
+
 dependencies {
     implementation(projects.core.logging)
     implementation(projects.core.settings)
