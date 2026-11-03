@@ -11,6 +11,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -148,7 +149,7 @@ class LocalOnlyTest {
                 items = listOf(TierItem(id = id * 100, title = "Arrival", imageUrl = null)),
             ),
         ),
-    )
+    ).summary()
 
     private fun string(resourceId: Int): String =
         InstrumentationRegistry.getInstrumentation().targetContext.getString(resourceId)

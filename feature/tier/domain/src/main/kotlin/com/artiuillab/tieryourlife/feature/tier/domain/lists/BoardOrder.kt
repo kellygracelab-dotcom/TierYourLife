@@ -1,6 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.lists
 
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 
 /** Order and filters for somebody's own boards. Pure, so the rules are argued with in a unit test. */
 object BoardOrder {
@@ -11,7 +11,7 @@ object BoardOrder {
      * way, so a filter never reshuffles what stays on screen.
      */
     fun arrange(
-        lists: List<TierList>,
+        lists: List<TierListSummary>,
         sort: BoardSort,
         filters: BoardFilters = BoardFilters(),
     ): BoardArrangement {
@@ -34,11 +34,11 @@ object BoardOrder {
 }
 
 data class BoardArrangement(
-    val favourites: List<TierList> = emptyList(),
-    val rest: List<TierList> = emptyList(),
+    val favourites: List<TierListSummary> = emptyList(),
+    val rest: List<TierListSummary> = emptyList(),
 ) {
     /** Everything, in order, for the places that do not draw the groups apart. */
-    val all: List<TierList> get() = favourites + rest
+    val all: List<TierListSummary> get() = favourites + rest
 }
 
 enum class BoardSort {
@@ -47,10 +47,10 @@ enum class BoardSort {
     ;
 
     /** By last touch, then by id: a board made before the time was recorded still has to sit somewhere. */
-    internal val comparator: Comparator<TierList>
+    internal val comparator: Comparator<TierListSummary>
         get() = when (this) {
-            Newest -> compareByDescending<TierList> { it.editedAt ?: 0L }.thenByDescending { it.id }
-            Oldest -> compareBy<TierList> { it.editedAt ?: 0L }.thenBy { it.id }
+            Newest -> compareByDescending<TierListSummary> { it.editedAt ?: 0L }.thenByDescending { it.id }
+            Oldest -> compareBy<TierListSummary> { it.editedAt ?: 0L }.thenBy { it.id }
         }
 }
 
@@ -62,7 +62,7 @@ data class BoardFilters(
 ) {
     val any: Boolean get() = category != null || published != null
 
-    internal fun keeps(list: TierList): Boolean {
+    internal fun keeps(list: TierListSummary): Boolean {
         if (category != null && list.category != category) return false
         return when (published) {
             null -> true

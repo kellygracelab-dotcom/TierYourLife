@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,12 +14,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
-import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierSummary
 @Composable
-fun TierRibbon(tiers: List<Tier>) {
+fun TierRibbon(tiers: List<TierSummary>) {
     val rankedTiers = tiers.filterNot { it.isPool }
     val pool = tiers.firstOrNull { it.isPool }
-    val total = tiers.sumOf { it.items.size }
+    val total = tiers.sumOf { it.cards }
     val media = TierYourLifeMedia.current
     Row(
         modifier = Modifier
@@ -36,11 +35,11 @@ fun TierRibbon(tiers: List<Tier>) {
                     .background(media.unrankedRibbon),
             )
         } else {
-            rankedTiers.filter { it.items.isNotEmpty() }.forEachIndexed { index, tier ->
+            rankedTiers.filter { it.cards > 0 }.forEachIndexed { index, tier ->
                 val band = tierRowColors(tier.colorLight, tier.colorDark).band
                 Box(
                     Modifier
-                        .weight(tier.items.size.toFloat())
+                        .weight(tier.cards.toFloat())
                         .height(8.dp)
                         .clip(
                             if (index == 0) RoundedCornerShape(
@@ -51,10 +50,10 @@ fun TierRibbon(tiers: List<Tier>) {
                         .background(band),
                 )
             }
-            if (pool != null && pool.items.isNotEmpty()) {
+            if (pool != null && pool.cards > 0) {
                 Box(
                     Modifier
-                        .weight(pool.items.size.toFloat())
+                        .weight(pool.cards.toFloat())
                         .height(8.dp)
                         .clip(RoundedCornerShape(topEnd = 4.dp, bottomEnd = 4.dp))
                         .background(media.unrankedRibbon),

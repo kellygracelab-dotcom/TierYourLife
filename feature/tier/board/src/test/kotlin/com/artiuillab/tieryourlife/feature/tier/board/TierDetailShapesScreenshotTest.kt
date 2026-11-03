@@ -20,6 +20,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
@@ -53,7 +54,7 @@ class TierDetailShapesScreenshotTest {
             CompositionLocalProvider(LocalWindowShape provides shape) {
                 TierYourLifeTheme(darkTheme = dark) {
                     TierDetailScreenContent(
-                        allLists = allLists,
+                        allLists = allLists.map { it.summary() },
                         state = TierDetailUiState.Success(previewTierList),
                         readOnly = readOnly,
                         onReaderMoreClick = if (readOnly) ({}) else null,

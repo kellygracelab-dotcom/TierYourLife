@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.data.repository
 
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.DeletedTierListRow
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierCountRow
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
@@ -223,6 +224,10 @@ private class RecordingTierDao : TierDao {
     override suspend fun countBoards(owner: String?): Int = 0
 
     override suspend fun cardImageUrls(owner: String?, limit: Int): List<String> = emptyList()
+
+    override suspend fun getTierCounts(owner: String?): List<TierCountRow> = emptyList()
+
+    override suspend fun getPreviewImages(tierListId: Long, limit: Int): List<String> = emptyList()
 
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) = Unit
 

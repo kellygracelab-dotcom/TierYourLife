@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.LocalPinnableContainer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.ItemTile
@@ -72,6 +73,15 @@ fun DraggableTile(
         onDispose { dragController.unregisterTileBounds(item.id) }
     }
 
+    // A lifted card keeps its row composed while autoscroll carries the row
+    // off screen: the gesture lives in this tile and would end with it.
+    val lifted = dragController.draggedPayload?.itemId == item.id
+    val pinnable = LocalPinnableContainer.current
+    DisposableEffect(lifted, pinnable) {
+        val handle = if (lifted) pinnable?.pin() else null
+        onDispose { handle?.release() }
+    }
+
     CompositionLocalProvider(LocalViewConfiguration provides dragViewConfiguration) {
         Box(
             modifier = modifier
@@ -79,7 +89,7 @@ fun DraggableTile(
                 .onGloballyPositioned { coordinates ->
                     rootPosition = coordinates.positionInRoot()
                     sizePx = Offset(coordinates.size.width.toFloat(), coordinates.size.height.toFloat())
-                    onPositioned(coordinates.boundsInRoot())
+                    onPositioned(Rect(rootPosition, coordinates.size.toSize()))
                 }
                 .pointerInput(item.id, sourceTierId, scroll) {
                     detectTileDrag(

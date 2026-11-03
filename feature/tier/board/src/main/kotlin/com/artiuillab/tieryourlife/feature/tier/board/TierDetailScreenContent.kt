@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -97,6 +97,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.share.shareBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -122,8 +123,10 @@ private fun autoScrollSpeedPx(pointerY: Float, top: Float, bottom: Float, edgePx
 
 @Composable
 fun TierDetailScreenContent(
-    allLists: List<TierList> = emptyList(),
+    allLists: List<TierListSummary> = emptyList(),
     onOpenList: (Long) -> Unit = {},
+    /** Asked once the window has room for the column of boards beside this one: [allLists] is read for it only then. */
+    onBoardsBesideWanted: () -> Unit = {},
     state: TierDetailUiState,
     actions: TierDetailActions = TierDetailActions(),
     addedItemIds: List<Long> = emptyList(),
@@ -150,10 +153,12 @@ fun TierDetailScreenContent(
     // Beside the board once there is room. Held back on a short window too: a
     // phone in landscape is wide enough for the column and too short for the board.
     BoxWithConstraints(Modifier.fillMaxSize()) {
-        val showsIndex = !readOnly &&
+        val roomForIndex = !readOnly &&
             currentWindowShape.holdsTwoPanes &&
-            maxHeight >= INDEX_NEEDS_HEIGHT &&
-            allLists.size > 1
+            maxHeight >= INDEX_NEEDS_HEIGHT
+        val wantBoardsBeside by rememberUpdatedState(onBoardsBesideWanted)
+        LaunchedEffect(roomForIndex) { if (roomForIndex) wantBoardsBeside() }
+        val showsIndex = roomForIndex && allLists.size > 1
 
         Row(Modifier.fillMaxSize()) {
             if (showsIndex) {
@@ -581,7 +586,7 @@ private fun TierScreenBody(
                         verticalArrangement = Arrangement.spacedBy(LocalTierRowDensity.current.rowGap),
                     ) {
 
-                        items(displayedTiers, key = { it.id }) { tier ->
+                        itemsIndexed(displayedTiers, key = { _, tier -> tier.id }) { index, tier ->
 
                             val itemModifier = when (tier.id) {
 
@@ -636,6 +641,8 @@ private fun TierScreenBody(
                                 onDoubleTap = { itemId -> chooserItemId = itemId },
                                 onEditTier = { tierId -> editingTierId = tierId },
                                 poolHasCards = pool?.items?.isNotEmpty() == true,
+                                listState = tierListState,
+                                itemIndex = index,
                             )
                         }
 

@@ -26,6 +26,8 @@ class TierYourLifeApplication : Application(), SingletonImageLoader.Factory {
     lateinit var communityWarmUp: CommunityWarmUp
 
     override fun onCreate() {
+        // Before super, which is where Hilt builds the singletons.
+        MainThreadChecks.install()
         super.onCreate()
         AppCheckInstaller.install(this)
         Logging.install(debug = BuildConfig.DEBUG)

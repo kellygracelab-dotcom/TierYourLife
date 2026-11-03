@@ -20,6 +20,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,7 +54,7 @@ class TierDetailViewModel @Inject constructor(
     private var board: TierDetailUiState
         get() = _screen.value.board
         set(value) = _screen.update { it.copy(board = value) }
-    private var allLists: List<TierList>
+    private var allLists: List<TierListSummary>
         get() = _screen.value.allLists
         set(value) = _screen.update { it.copy(allLists = value) }
     private var publishing: Boolean
@@ -92,13 +93,11 @@ class TierDetailViewModel @Inject constructor(
     /** Offered where somebody stands after changing the board. The same act as publishing, over the same id, so the link keeps working. */
     fun updatePublished() = setPublic(true)
 
-    private fun refreshPublishedStanding() {
+    private fun refreshPublishedStanding(list: TierList) {
         viewModelScope.launch {
-            val standing = runSuspendCatching { repository.publishedStanding() }
+            publishedIsBehind = runSuspendCatching { repository.isKnownBehind(list) }
                 .onFailure { Timber.w(it, "Comparing the published copy failed") }
                 .getOrNull() ?: return@launch
-            val id = (board as? TierDetailUiState.Success)?.list?.publishedId
-            publishedIsBehind = id != null && id in standing.knownBehind
         }
     }
 
@@ -197,10 +196,23 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
+    private var boardsBesideWanted = false
+
     fun loadTierList() {
         viewModelScope.launch { reloadTierList() }
+        if (boardsBesideWanted) loadBoardsBeside()
+    }
+
+    /** A phone never shows the column, so it never reads it. */
+    fun wantBoardsBeside() {
+        if (boardsBesideWanted) return
+        boardsBesideWanted = true
+        loadBoardsBeside()
+    }
+
+    private fun loadBoardsBeside() {
         viewModelScope.launch {
-            runSuspendCatching { repository.getAllTierLists() }
+            runSuspendCatching { repository.getTierListSummaries() }
                 .onSuccess { lists -> allLists = lists }
                 .onFailure { Timber.w(it, "Reading the lists beside this board failed") }
         }
@@ -381,10 +393,18 @@ class TierDetailViewModel @Inject constructor(
         if (settled) publishError = null
     }
 
+    private var changesInFlight = 0
+
+    /** Read back once the last of a burst lands: a read between two moves would put the second card back for a frame. */
     private fun mutate(operation: String, block: suspend () -> Unit) {
+        changesInFlight++
         viewModelScope.launch {
-            messages.guard(operation) { block() }
-            reloadTierList()
+            try {
+                messages.guard(operation) { block() }
+            } finally {
+                changesInFlight--
+            }
+            if (changesInFlight == 0) reloadTierList()
         }
     }
 
@@ -392,9 +412,10 @@ class TierDetailViewModel @Inject constructor(
         val hasVisibleList = board is TierDetailUiState.Success
         try {
             val list = repository.getTierListById(tierListId)
+            if (changesInFlight > 0) return
             board = if (list != null) {
                 dropSettledPublishError(list)
-                if (list.publishedId != null) refreshPublishedStanding()
+                if (list.publishedId != null) refreshPublishedStanding(list)
                 TierDetailUiState.Success(list)
             } else {
                 TierDetailUiState.Error

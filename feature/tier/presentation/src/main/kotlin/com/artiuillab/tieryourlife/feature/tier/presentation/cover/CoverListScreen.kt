@@ -61,6 +61,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
@@ -72,7 +73,7 @@ import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 @Composable
 fun CoverListScreen(
     list: TierList,
-    next: TierList?,
+    next: TierListSummary?,
     onBack: () -> Unit,
     onRankOnMain: (tierId: Long?) -> Unit,
     onCardOnMain: (item: TierItem, tierId: Long) -> Unit,
@@ -267,7 +268,7 @@ private fun MoreTile(tierId: Long, more: Int, onClick: () -> Unit) {
 }
 
 @Composable
-private fun EndOfList(next: TierList?, onRankOnMain: () -> Unit, onNext: (Long) -> Unit) {
+private fun EndOfList(next: TierListSummary?, onRankOnMain: () -> Unit, onNext: (Long) -> Unit) {
     Column(Modifier.fillMaxWidth().padding(start = ROW_SIDE, end = ROW_SIDE, top = 6.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         FilledTonalButton(
             onClick = onRankOnMain,
@@ -281,7 +282,7 @@ private fun EndOfList(next: TierList?, onRankOnMain: () -> Unit, onNext: (Long) 
 }
 
 @Composable
-private fun NextListCard(next: TierList, onClick: () -> Unit) {
+private fun NextListCard(next: TierListSummary, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

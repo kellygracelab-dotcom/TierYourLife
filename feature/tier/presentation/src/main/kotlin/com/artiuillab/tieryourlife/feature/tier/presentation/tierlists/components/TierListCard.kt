@@ -39,7 +39,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.ChevronIcon
 import com.artiuillab.tieryourlife.core.theme.ui.DragIcon
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 import com.artiuillab.tieryourlife.feature.tier.board.components.TierRibbon
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
@@ -61,15 +61,15 @@ private fun editedLine(arrivedFrom: String?, editedAt: Long): String {
 
 @Composable
 internal fun TierListCard(
-    list: TierList,
+    list: TierListSummary,
     onClick: () -> Unit,
     onLongClick: () -> Unit = {},
     selectionMode: Boolean = false,
     selected: Boolean = false,
     onToggleFavourite: (() -> Unit)? = null,
 ) {
-    val ranked = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
-    val inPool = list.tiers.firstOrNull { it.isPool }?.items?.size ?: 0
+    val ranked = list.rankedCount
+    val inPool = list.poolCount
     val rankedText = pluralStringResource(ThemeR.plurals.tier_lists_ranked_count, ranked, ranked)
     val inPoolText = pluralStringResource(BoardR.plurals.tier_lists_in_pool_count, inPool, inPool)
     Column(

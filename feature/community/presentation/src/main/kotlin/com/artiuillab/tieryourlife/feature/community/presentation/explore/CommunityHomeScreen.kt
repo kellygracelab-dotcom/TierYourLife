@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -81,6 +82,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.section.FoundT
 import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingSectionSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingTopicSheet
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSectionNames
+import com.artiuillab.tieryourlife.feature.tier.board.components.ArtPictures
+import com.artiuillab.tieryourlife.feature.tier.board.components.PrefetchArt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -205,6 +208,7 @@ fun CommunityHomeScreen(
             tabs = tabs,
             notices = remember(explore, following) { merge(explore.notices, following.notices) },
             onUndoUnfollow = explore::follow,
+            picturesOnWifiOnly = explore.picturesOnWifiOnly,
         )
     }
 }
@@ -222,6 +226,8 @@ fun CommunityHomeContent(
     notices: Flow<CommunityNotice> = emptyFlow(),
     onUndoUnfollow: (String) -> Unit = {},
     startOnFollowing: Boolean = false,
+    /** Null draws without fetching any covers ahead, as a test or a preview should. */
+    picturesOnWifiOnly: (() -> Boolean)? = null,
 ) {
     val snackbar = remember { SnackbarHostState() }
     NoticeSnackbars(notices, snackbar, exploreFeed, onUndoUnfollow)
@@ -233,11 +239,33 @@ fun CommunityHomeContent(
                 CoverCommunityGrid(onBack = null, sections = explore.sections, onOpenSection = destinations.onOpenSection)
             } else {
                 HomeBody(explore, following, layout, exploreFeed, followingFeed, exploreCalls, destinations, tabs, startOnFollowing)
+                if (picturesOnWifiOnly != null) {
+                    PrefetchCovers(explore.feed, following.feed, layout, constraints.maxWidth / layout.feedColumns, picturesOnWifiOnly)
+                }
             }
             SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
         }
     }
 }
+
+/**
+ * The first cards of both feeds, the one on screen and the one a tab away.
+ * A column's whole share of the window is never narrower than its card, and
+ * Coil reuses a picture decoded larger.
+ */
+@Composable
+private fun PrefetchCovers(explore: FeedPane, following: FeedPane, layout: HomeLayout, cardWidth: Int, picturesOnWifiOnly: () -> Boolean) {
+    val coverHeight = with(LocalDensity.current) { layout.coverHeight.roundToPx() }
+    val arts = remember(explore, following) {
+        (explore.kept() + following.kept()).map { ArtPictures(it.coverImageUrl, it.previewImages) }
+    }
+    PrefetchArt(arts, cardWidth, coverHeight, picturesOnWifiOnly)
+}
+
+private fun FeedPane.kept() =
+    if (phase == FeedPhase.Ready) lists.filterNot { it.id in justHidden }.take(PREFETCHED_CARDS) else emptyList()
+
+private const val PREFETCHED_CARDS = 6
 
 @Composable
 private fun NoticeSnackbars(

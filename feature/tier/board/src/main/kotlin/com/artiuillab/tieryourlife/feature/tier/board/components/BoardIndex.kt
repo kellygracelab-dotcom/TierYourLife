@@ -35,7 +35,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.ColumnAlignedTopBar
 import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 val BOARD_INDEX_WIDTH: Dp = 360.dp
@@ -47,7 +47,7 @@ val BOARD_INDEX_WIDTH: Dp = 360.dp
  */
 @Composable
 fun BoardIndex(
-    lists: List<TierList>,
+    lists: List<TierListSummary>,
     selectedId: Long,
     onSelect: (Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -94,9 +94,9 @@ fun BoardIndex(
 }
 
 @Composable
-private fun IndexRow(list: TierList, selected: Boolean, onSelect: () -> Unit) {
-    val ranked = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
-    val inPool = list.tiers.firstOrNull { it.isPool }?.items?.size ?: 0
+private fun IndexRow(list: TierListSummary, selected: Boolean, onSelect: () -> Unit) {
+    val ranked = list.rankedCount
+    val inPool = list.poolCount
 
     Surface(
         modifier = Modifier

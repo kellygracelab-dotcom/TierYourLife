@@ -8,8 +8,8 @@ import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -93,6 +94,9 @@ fun TierRow(
     onEditTier: (tierId: Long) -> Unit = {},
     /** Whether the pool has anything to drop here; an empty row says where it would go only then. */
     poolHasCards: Boolean = false,
+    /** The board's list this row is item [itemIndex] of: a wrapping row then composes only the cards on screen. */
+    listState: LazyListState? = null,
+    itemIndex: Int = 0,
 ) {
     val colors = tierRowColors(tier.colorLight, tier.colorDark)
     val rowDensity = LocalTierRowDensity.current
@@ -133,7 +137,8 @@ fun TierRow(
     val density = LocalDensity.current
     val slotHeightPx = with(density) { (rowDensity.occupiedHeight + rowDensity.rowGap).toPx() }
 
-    Box(modifier.fillMaxWidth()) {
+    BoxWithConstraints(modifier.fillMaxWidth()) {
+        val rowWidthPx = constraints.maxWidth
         val bandWidth = rowDensity.bandWidth
         Row(
             modifier = Modifier
@@ -267,48 +272,40 @@ fun TierRow(
             // Where the lifted card would land, drawn while it hovers: the
             // row's own cards make room for it, and its old place takes none.
             val slot = if (isHovered) dragController.hoverIndex else null
-            val liftedId = dragController.draggedPayload?.itemId
             val showHint = tier.items.isEmpty() && slot == null && rowDensity.emptyHint && poolHasCards
-            FlowRow(
+            val cardsWidthPx = with(density) { rowWidthPx - bandWidth.roundToPx() - rowDensity.padding.roundToPx() * 2 }
+            WrappedCards(
+                tier = tier,
+                rowDensity = rowDensity,
+                widthPx = cardsWidthPx,
+                dragController = dragController,
+                onMoveItem = onMoveItem,
+                onDeleteItem = onDeleteItem,
+                onDoubleTap = onDoubleTap,
+                listState = listState,
+                itemIndex = itemIndex,
+                hint = if (showHint) {
+                    {
+                        Text(
+                            text = stringResource(R.string.tier_detail_drop_items_here),
+                            modifier = Modifier
+                                .heightIn(min = rowDensity.tileHeight)
+                                .padding(start = 9.dp)
+                                .wrapContentHeight(Alignment.CenterVertically),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        )
+                    }
+                } else {
+                    null
+                },
+                slotContent = { DropSlot(rowDensity) },
                 modifier = Modifier
                     .weight(1f)
                     .padding(rowDensity.padding)
                     .heightIn(min = rowDensity.tileHeight)
                     .testTag(TierDetailTestTags.tierItems(tier.id)),
-                horizontalArrangement = Arrangement.spacedBy(rowDensity.gap),
-                verticalArrangement = Arrangement.spacedBy(rowDensity.gap),
-                itemVerticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (showHint) {
-                    Text(
-                        text = stringResource(R.string.tier_detail_drop_items_here),
-                        modifier = Modifier
-                            .heightIn(min = rowDensity.tileHeight)
-                            .padding(start = 9.dp)
-                            .wrapContentHeight(Alignment.CenterVertically),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                    )
-                }
-                var placed = 0
-                tier.items.forEachIndexed { index, item ->
-                    if (item.id != liftedId && slot == placed) DropSlot(rowDensity)
-                    DraggableTile(
-                        item = item,
-                        sourceTierId = tier.id,
-                        width = rowDensity.tileWidth,
-                        height = rowDensity.tileHeight,
-                        dragController = dragController,
-                        onMoveItem = onMoveItem,
-                        onDeleteItem = onDeleteItem,
-                        onPositioned = { bounds -> dragController.registerTileBounds(tier.id, item.id, index, bounds) },
-                        onDoubleTap = onDoubleTap,
-                        collapseWhileLifted = slot != null,
-                    )
-                    if (item.id != liftedId) placed++
-                }
-                if (slot != null && slot >= placed) DropSlot(rowDensity)
-            }
+            )
         }
         }
     }

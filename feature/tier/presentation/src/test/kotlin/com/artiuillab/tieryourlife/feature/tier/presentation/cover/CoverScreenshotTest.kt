@@ -20,6 +20,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.CoverSurface
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.SystemBarBands
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.fakeSystemBars
 import com.github.takahirom.roborazzi.RoborazziOptions
@@ -118,11 +119,11 @@ class CoverScreenshotTest {
     }
 
     private fun yourLists(dark: Boolean) = show(dark) {
-        CoverListsScreen(lists = lists, lastOpenedId = ps2.id, onOpen = {}, onCommunity = {}, onOpenMain = {})
+        CoverListsScreen(lists = lists.map { it.summary() }, lastOpenedId = ps2.id, onOpen = {}, onCommunity = {}, onOpenMain = {})
     }
 
     private fun aList(dark: Boolean) = show(dark) {
-        CoverListScreen(list = a24, next = ps2, onBack = {}, onRankOnMain = {}, onCardOnMain = { _, _ -> }, onNext = {})
+        CoverListScreen(list = a24, next = ps2.summary(), onBack = {}, onRankOnMain = {}, onCardOnMain = { _, _ -> }, onNext = {})
     }
 
     @Test

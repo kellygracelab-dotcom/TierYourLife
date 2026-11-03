@@ -130,7 +130,7 @@ class MyPublishedViewModel @Inject constructor(
     }
 
     private suspend fun forgetLocally(publishedId: String) {
-        val mine = runSuspendCatching { tiers.getAllTierLists() }
+        val mine = runSuspendCatching { tiers.getTierListSummaries() }
             .onFailure { Timber.w(it, "Reading boards to forget $publishedId failed") }
             .getOrNull().orEmpty()
         mine.firstOrNull { it.publishedId == publishedId }

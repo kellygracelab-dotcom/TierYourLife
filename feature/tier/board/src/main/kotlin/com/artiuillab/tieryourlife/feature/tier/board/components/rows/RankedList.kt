@@ -16,9 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -248,13 +246,12 @@ fun RankedPoolSection(
         }
 
         if (expanded) {
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .heightIn(max = 320.dp)
-                    .verticalScroll(rememberScrollState())
                     .testTag(TierDetailTestTags.RANKED_POOL_ITEMS),
             ) {
-                pool.items.forEachIndexed { index, item ->
+                itemsIndexed(pool.items, key = { _, item -> item.id }) { index, item ->
                     PoolItemRow(item = item, onSelect = onSelect)
                     if (index < pool.items.lastIndex) {
                         HorizontalDivider(

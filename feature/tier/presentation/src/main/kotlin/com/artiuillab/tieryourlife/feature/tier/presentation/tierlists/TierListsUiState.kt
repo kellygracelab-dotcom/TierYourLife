@@ -2,21 +2,21 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 
 sealed interface TierListsUiState {
     data object Loading : TierListsUiState
 
     data class Success(
-        val lists: List<TierList>,
+        val lists: List<TierListSummary>,
         val totalListCount: Int,
         val rankedCount: Int,
         val mode: HomeMode = HomeMode.Browsing,
         /** Your own boards drawn as pictures rather than as rows. */
         val asPictures: Boolean = false,
         /** Starred boards, already in the order they belong in. */
-        val favourites: List<TierList> = emptyList(),
+        val favourites: List<TierListSummary> = emptyList(),
         /** True when the two groups are drawn apart, with a heading each. */
         val grouped: Boolean = false,
         val boardSort: BoardSort = BoardSort.Newest,
@@ -26,7 +26,7 @@ sealed interface TierListsUiState {
         val localOnly: LocalOnly = LocalOnly.Unknown,
         val restoringPictures: PictureRestore.Progress = PictureRestore.Progress.Idle,
         /** The board whose two versions have not been mentioned yet, if there is one. */
-        val conflict: TierList? = null,
+        val conflict: TierListSummary? = null,
     ) : TierListsUiState
 
     data object Error : TierListsUiState

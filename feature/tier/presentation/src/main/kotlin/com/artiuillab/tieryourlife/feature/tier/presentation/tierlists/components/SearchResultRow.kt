@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronIcon
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
@@ -37,9 +37,9 @@ import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
  * and the star of the full card wait for the board itself.
  */
 @Composable
-internal fun SearchResultRow(list: TierList, onClick: () -> Unit) {
-    val ranked = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
-    val inPool = list.tiers.firstOrNull { it.isPool }?.items?.size ?: 0
+internal fun SearchResultRow(list: TierListSummary, onClick: () -> Unit) {
+    val ranked = list.rankedCount
+    val inPool = list.poolCount
     val inPoolText = pluralStringResource(BoardR.plurals.tier_lists_in_pool_count, inPool, inPool)
     Row(
         modifier = Modifier

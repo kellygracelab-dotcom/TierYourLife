@@ -7,13 +7,21 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
+import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 
 interface TierRepository {
 
     suspend fun getTierListById(id: Long): TierList?
 
     suspend fun getAllTierLists(): List<TierList>
+
+    /**
+     * Every board as a list of boards shows it, without its cards: what a
+     * screen of boards reads, where [getAllTierLists] would read every card.
+     */
+    suspend fun getTierListSummaries(): List<TierListSummary> = getAllTierLists().map { it.summary() }
 
     /** [captions] label the five default tiers, best first. */
     suspend fun createTierList(title: String, captions: List<String>): Long
@@ -43,6 +51,10 @@ interface TierRepository {
      * must not mean "do not offer".
      */
     suspend fun publishedStanding(): PublishedStanding
+
+    /** [publishedStanding]'s knownBehind for one board already read, without reading the others. */
+    suspend fun isKnownBehind(board: TierList): Boolean =
+        board.publishedId?.let { it in publishedStanding().knownBehind } ?: false
 
     /** The board this published copy came from, if this phone still has it. */
     suspend fun boardPublishedAs(publishedId: String): TierList?

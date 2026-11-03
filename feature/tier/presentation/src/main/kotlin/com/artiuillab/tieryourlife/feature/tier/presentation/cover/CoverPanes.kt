@@ -50,13 +50,18 @@ fun CoverListPane(
     onBack: () -> Unit,
     onOpenList: (Long) -> Unit,
     onHandOff: (CoverHandOffSubject) -> Unit,
+    boardModel: CoverBoardViewModel = hiltViewModel(),
 ) {
     val order = coverOrder(state)
-    val list = order.firstOrNull { it.id == listId }
-    if (list == null) {
+    val summary = order.firstOrNull { it.id == listId }
+    if (summary == null) {
         if (state !is TierListsUiState.Loading) LaunchedEffect(listId) { onBack() }
         return
     }
+    // Read again whenever its summary changes: the phone may have edited it.
+    LaunchedEffect(summary) { boardModel.load(listId) }
+    val read by boardModel.board.collectAsStateWithLifecycle()
+    val list = read?.takeIf { it.id == listId } ?: return
     CoverListScreen(
         list = list,
         next = nextListAfter(order, listId),
