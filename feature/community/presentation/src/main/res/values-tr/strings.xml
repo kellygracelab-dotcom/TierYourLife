@@ -226,7 +226,7 @@
     <string name="all_sections_propose">Bölüm öner</string>
     <string name="community_anonymous">Anonim</string>
     <string name="community_your_list">Senin listen</string>
-    <string name="community_your_list_anonymous">Senin listen · anonim</string>
+    <string name="community_your_list_anonymous">Senin listen, anonim olarak yayınlandı</string>
     <string name="community_based_on_nameless">“%1$s” temel alınarak</string>
     <string name="propose_intro">Her öneriye bir moderatör bakar. O zamana kadar listelerin aşağıda seçtiğin bölümde kalır.</string>
     <string name="propose_send">Öner</string>

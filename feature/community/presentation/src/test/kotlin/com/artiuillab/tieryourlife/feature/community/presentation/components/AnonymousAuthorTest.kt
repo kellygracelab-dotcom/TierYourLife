@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.components
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
@@ -59,8 +60,9 @@ class AnonymousAuthorTest {
             }
         }
 
-        composeRule.onNodeWithText("Your list · anonymous").assertExists()
-        composeRule.onNodeWithText("D").assertExists()
+        composeRule.onNodeWithContentDescription("Your list, published anonymously").assertExists()
+        composeRule.onNodeWithText("Your list · anonymous").assertDoesNotExist()
+        composeRule.onNodeWithTag(ExploreTestTags.cardAuthor("l-1"), useUnmergedTree = true).assertExists()
     }
 
     @Test

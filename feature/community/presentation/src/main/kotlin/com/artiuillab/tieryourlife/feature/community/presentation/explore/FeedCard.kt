@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,12 +30,15 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.artiuillab.tieryourlife.core.theme.ui.VisibilityIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
@@ -44,7 +46,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Loc
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 
 /** Spec type sizes the M3 scale has no name for. */
-internal val CardTitleStyle = TextStyle(fontSize = 14.sp, lineHeight = 18.sp, fontWeight = FontWeight.Medium)
 internal val MetaStyle = TextStyle(fontSize = 11.sp, lineHeight = 14.sp)
 internal val CaptionStyle = TextStyle(fontSize = 11.sp, lineHeight = 15.sp)
 internal val Body13Style = TextStyle(fontSize = 13.sp, lineHeight = 18.sp)
@@ -99,60 +100,84 @@ internal fun FeedCard(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
+            // Always two lines tall, so the footer sits at the same height on every card.
             Text(
                 text = summary.title,
-                modifier = Modifier.heightIn(min = 36.dp),
-                style = CardTitleStyle,
+                style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurface,
+                minLines = 2,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
-            CardAuthor(summary)
-            Text(
-                text = cardMeta(summary),
-                modifier = Modifier.padding(top = 4.dp),
-                style = MetaStyle,
-                color = MaterialTheme.colorScheme.outline,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Spacer(Modifier.height(8.dp))
+            CardFooter(summary)
         }
     }
 }
 
 /**
- * Whose it is, at a glance: the reader's own with their face and "Your list",
- * marked when it went out without their name; somebody else's with theirs;
- * and no row at all for one out without its author's name or the app's own.
+ * One row: whose it is, then how many cards at the end. The reader's own says
+ * "Your list" with their face, with an eye crossed out when it went out
+ * without their name; somebody else's shows theirs; one out without its
+ * author's name, or the app's own, has only the count.
  */
 @Composable
-private fun CardAuthor(summary: PublishedListSummary) {
+private fun CardFooter(summary: PublishedListSummary) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(20.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        CardAuthor(summary, Modifier.weight(1f))
+        Text(
+            text = cardMeta(summary),
+            modifier = Modifier.padding(start = 6.dp),
+            style = MetaStyle,
+            color = MaterialTheme.colorScheme.outline,
+            maxLines = 1,
+        )
+    }
+}
+
+@Composable
+private fun CardAuthor(summary: PublishedListSummary, modifier: Modifier) {
     val own = LocalOwnFace.current
     val (photoUrl, name, text) = when {
         summary.mine -> Triple(
             own?.photoUrl ?: summary.authorPhotoUrl,
             own?.name ?: summary.authorName,
-            stringResource(if (summary.anonymous) R.string.community_your_list_anonymous else R.string.community_your_list),
+            stringResource(R.string.community_your_list),
         )
-        summary.editorial -> return
+        summary.editorial -> {
+            Spacer(modifier)
+            return
+        }
         else -> Triple(summary.authorPhotoUrl, summary.authorName, summary.authorName)
     }
+    val anonymouslyMine = summary.mine && summary.anonymous
+    val described = stringResource(R.string.community_your_list_anonymous)
     Row(
-        Modifier
-            .padding(top = 8.dp)
-            .heightIn(min = 24.dp)
-            .testTag(ExploreTestTags.cardAuthor(summary.id)),
+        modifier
+            .testTag(ExploreTestTags.cardAuthor(summary.id))
+            .then(if (anonymouslyMine) Modifier.clearAndSetSemantics { contentDescription = described } else Modifier),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         AuthorFace(photoUrl = photoUrl, name = name, size = 20.dp)
         Text(
             text = text,
+            modifier = Modifier
+                .padding(start = 6.dp)
+                .weight(1f, fill = false),
             style = MetaStyle,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+        if (anonymouslyMine) {
+            Spacer(Modifier.width(4.dp))
+            VisibilityIcon(14.dp, MaterialTheme.colorScheme.outline, off = true)
+        }
     }
 }
 
@@ -222,13 +247,15 @@ internal fun SkeletonCard(alpha: Float, modifier: Modifier = Modifier, coverHeig
                 .height(coverHeight)
                 .background(block),
         )
-        Column(
-            Modifier.padding(start = 12.dp, end = 12.dp, top = 10.dp, bottom = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(7.dp),
-        ) {
-            Bar(Modifier.fillMaxWidth(0.85f).height(13.dp))
-            Bar(Modifier.fillMaxWidth(0.5f).height(13.dp))
-            Row(Modifier.padding(top = 3.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.padding(start = 12.dp, end = 12.dp, top = 10.dp, bottom = 12.dp)) {
+            Box(Modifier.height(20.dp), contentAlignment = Alignment.CenterStart) {
+                Bar(Modifier.fillMaxWidth(0.85f).height(13.dp))
+            }
+            Box(Modifier.height(20.dp), contentAlignment = Alignment.CenterStart) {
+                Bar(Modifier.fillMaxWidth(0.5f).height(13.dp))
+            }
+            Spacer(Modifier.height(8.dp))
+            Row(Modifier.fillMaxWidth().height(20.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     Modifier
                         .size(20.dp)
@@ -237,8 +264,9 @@ internal fun SkeletonCard(alpha: Float, modifier: Modifier = Modifier, coverHeig
                 )
                 Spacer(Modifier.width(6.dp))
                 Bar(Modifier.width(56.dp).height(10.dp))
+                Spacer(Modifier.weight(1f))
+                Bar(Modifier.width(44.dp).height(10.dp))
             }
-            Bar(Modifier.width(110.dp).height(10.dp))
         }
     }
 }
