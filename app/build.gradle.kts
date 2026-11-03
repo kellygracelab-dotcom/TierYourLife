@@ -56,9 +56,6 @@ android {
             signingConfig = signingConfigs.findByName("upload")
             isMinifyEnabled = true
             isShrinkResources = true
-            optimization {
-                enable = false
-            }
             // Release stacks arrive obfuscated without it.
             configure<com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension> {
                 mappingFileUploadEnabled = true
