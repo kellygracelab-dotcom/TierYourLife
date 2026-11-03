@@ -52,6 +52,10 @@ interface TierRepository {
      */
     suspend fun publishedStanding(): PublishedStanding
 
+    /** [publishedStanding]'s knownBehind for one board already read, without reading the others. */
+    suspend fun isKnownBehind(board: TierList): Boolean =
+        board.publishedId?.let { it in publishedStanding().knownBehind } ?: false
+
     /** The board this published copy came from, if this phone still has it. */
     suspend fun boardPublishedAs(publishedId: String): TierList?
 

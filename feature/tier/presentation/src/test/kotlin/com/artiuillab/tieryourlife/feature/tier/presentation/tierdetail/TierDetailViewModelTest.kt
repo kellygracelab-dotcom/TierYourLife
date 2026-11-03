@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
@@ -26,10 +27,14 @@ import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.yield
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -555,6 +560,26 @@ class TierDetailViewModelTest {
     }
 
     @Test
+    fun movesInQuickSuccession_keepEveryCardWhereItWasDropped_andReadTheBoardBackOnce() = runBlocking {
+        val repository = FakeTierRepository(rankedListWithCards())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+        val readsAtOpen = repository.boardReads.value
+
+        withContext(Dispatchers.Main) {
+            viewModel.moveItem(100, toTierId = 30, toPosition = 0)
+            viewModel.moveItem(101, toTierId = 30, toPosition = 1)
+        }
+        repository.releaseMoves()
+        repository.boardReads.firstWithin { it > readsAtOpen }
+        repeat(3) { withContext(Dispatchers.Main) { yield() } }
+
+        assertEquals(listOf(100L, 101L), viewModel.screen.value.board.itemIds(30L))
+        assertEquals(listOf(102L), viewModel.screen.value.board.itemIds(10L))
+        assertEquals(readsAtOpen + 1, repository.boardReads.value)
+    }
+
+    @Test
     fun opening_aBoard_readsOnlyThatBoard_andTheLibraryOnlyWhenTheColumnBesideItShows() = runBlocking {
         val repository = FakeTierRepository(rankedListWithCards())
         val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
@@ -707,7 +732,10 @@ private class FakeTierRepository(
     var readsAreHeld = false
     private val heldRead = CompletableDeferred<Unit>()
 
+    val boardReads = MutableStateFlow(0)
+
     override suspend fun getTierListById(id: Long): TierList? {
+        boardReads.update { it + 1 }
         if (readsAreHeld) heldRead.await()
         return list
     }
@@ -744,7 +772,16 @@ private class FakeTierRepository(
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) = unsupported()
     override suspend fun renameTierList(id: Long, title: String) = unsupported()
     override suspend fun addItemsToPool(tierListId: Long, items: List<PoolItemDraft>) = unsupported()
-    override suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) = unsupported()
+    private val movesGate = CompletableDeferred<Unit>()
+
+    fun releaseMoves() {
+        movesGate.complete(Unit)
+    }
+
+    override suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
+        movesGate.await()
+        list = list.withItemMoved(itemId, toTierId, toPosition)
+    }
     override suspend fun addTier(
         tierListId: Long,
         label: String,

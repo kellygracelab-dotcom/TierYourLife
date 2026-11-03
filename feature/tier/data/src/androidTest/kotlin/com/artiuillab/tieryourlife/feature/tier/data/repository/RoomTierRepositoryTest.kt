@@ -18,6 +18,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -359,6 +360,8 @@ class RoomTierRepositoryTest {
         val standing = repository.publishedStanding()
         assertEquals(setOf("pub-films", "pub-games"), standing.canUpdate)
         assertEquals(setOf("pub-games"), standing.knownBehind)
+        assertTrue(repository.isKnownBehind(requireNotNull(repository.getTierListById(games))))
+        assertFalse(repository.isKnownBehind(requireNotNull(repository.getTierListById(films))))
     }
 
     @Test

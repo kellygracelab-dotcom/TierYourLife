@@ -93,13 +93,11 @@ class TierDetailViewModel @Inject constructor(
     /** Offered where somebody stands after changing the board. The same act as publishing, over the same id, so the link keeps working. */
     fun updatePublished() = setPublic(true)
 
-    private fun refreshPublishedStanding() {
+    private fun refreshPublishedStanding(list: TierList) {
         viewModelScope.launch {
-            val standing = runSuspendCatching { repository.publishedStanding() }
+            publishedIsBehind = runSuspendCatching { repository.isKnownBehind(list) }
                 .onFailure { Timber.w(it, "Comparing the published copy failed") }
                 .getOrNull() ?: return@launch
-            val id = (board as? TierDetailUiState.Success)?.list?.publishedId
-            publishedIsBehind = id != null && id in standing.knownBehind
         }
     }
 
@@ -395,10 +393,18 @@ class TierDetailViewModel @Inject constructor(
         if (settled) publishError = null
     }
 
+    private var changesInFlight = 0
+
+    /** Read back once the last of a burst lands: a read between two moves would put the second card back for a frame. */
     private fun mutate(operation: String, block: suspend () -> Unit) {
+        changesInFlight++
         viewModelScope.launch {
-            messages.guard(operation) { block() }
-            reloadTierList()
+            try {
+                messages.guard(operation) { block() }
+            } finally {
+                changesInFlight--
+            }
+            if (changesInFlight == 0) reloadTierList()
         }
     }
 
@@ -406,9 +412,10 @@ class TierDetailViewModel @Inject constructor(
         val hasVisibleList = board is TierDetailUiState.Success
         try {
             val list = repository.getTierListById(tierListId)
+            if (changesInFlight > 0) return
             board = if (list != null) {
                 dropSettledPublishError(list)
-                if (list.publishedId != null) refreshPublishedStanding()
+                if (list.publishedId != null) refreshPublishedStanding(list)
                 TierDetailUiState.Success(list)
             } else {
                 TierDetailUiState.Error

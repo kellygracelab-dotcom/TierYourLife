@@ -98,13 +98,16 @@ class RoomTierRepository internal constructor(
     private fun standingOf(published: List<TierList>): PublishedStanding {
         return PublishedStanding(
             canUpdate = published.mapNotNull { it.publishedId }.toSet(),
-            knownBehind = published
-                .filter { board -> board.publishedFingerprint != null }
-                .filter { board -> PublishFingerprint.of(board, imageStore::pictureIdOf) != board.publishedFingerprint }
-                .mapNotNull { board -> board.publishedId }
-                .toSet(),
+            knownBehind = published.filter(::isBehind).mapNotNull { board -> board.publishedId }.toSet(),
         )
     }
+
+    private fun isBehind(board: TierList): Boolean =
+        board.publishedFingerprint != null &&
+            PublishFingerprint.of(board, imageStore::pictureIdOf) != board.publishedFingerprint
+
+    override suspend fun isKnownBehind(board: TierList): Boolean =
+        board.publishedId != null && withContext(Dispatchers.Default) { isBehind(board) }
 
     override suspend fun boardPublishedAs(publishedId: String): TierList? {
         val row = dao.getTierListWithTiersPublishedAs(publishedId, owner()) ?: return null
