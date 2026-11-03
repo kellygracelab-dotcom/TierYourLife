@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListS
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownTitle
 
 /**
  * A card's long-press menu and what follows from it: the existing sheet with
@@ -29,7 +30,7 @@ internal fun FeedListMenus(
 
     target?.takeUnless { it.mine && it.editorial }?.let { summary ->
         ListActionsSheet(
-            title = summary.title,
+            title = summary.shownTitle(),
             authorName = summary.authorName.takeUnless { summary.editorial },
             authorPhotoUrl = summary.authorPhotoUrl,
             onDismiss = onDismiss,

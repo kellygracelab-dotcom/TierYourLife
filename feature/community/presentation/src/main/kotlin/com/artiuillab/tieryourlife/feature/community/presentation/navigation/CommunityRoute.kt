@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.navigation
 import androidx.lifecycle.SavedStateHandle
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.domain.model.titleIn
 import com.artiuillab.tieryourlife.feature.community.presentation.list.ListPreview
 import kotlinx.serialization.Serializable
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic as TopicModel
@@ -61,9 +62,10 @@ sealed interface CommunityRoute {
         }
 
         companion object {
-            fun of(summary: PublishedListSummary) = CommunityList(
+            /** [languageTag] is the app's, so the title the card showed is the one the page opens with. */
+            fun of(summary: PublishedListSummary, languageTag: String = "") = CommunityList(
                 publishedId = summary.id,
-                title = summary.title,
+                title = summary.titleIn(languageTag),
                 // A list that stands without an author has no name to show.
                 authorName = summary.authorName.takeUnless { summary.editorial },
                 itemCount = summary.itemCount,

@@ -63,6 +63,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Rep
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
+import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.NoPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
@@ -88,7 +89,9 @@ fun CommunityListScreen(
     onOpenMyPublished: () -> Unit = {},
     viewModel: CommunityListViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val written by viewModel.state.collectAsStateWithLifecycle()
+    val languageTag = currentLanguageTag()
+    val state = remember(written, languageTag) { written.readIn(languageTag) }
     var playOpen by rememberSaveable { mutableStateOf(false) }
     // Their own list is played on their own board, not here; blank cards are not played at all.
     val playRequest = (state as? CommunityListUiState.Success)?.takeUnless { it.own || it.arriving }?.let { loaded ->
@@ -99,7 +102,7 @@ fun CommunityListScreen(
         state = state,
         onBack = onBack,
         onMoveItem = viewModel::moveItem,
-        onSave = viewModel::saveToMyLists,
+        onSave = { which -> viewModel.saveToMyLists(which, languageTag) },
         onRetry = viewModel::load,
         preview = viewModel.preview,
         onOpenSaved = onOpenSaved,

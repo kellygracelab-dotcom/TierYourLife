@@ -54,8 +54,10 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Com
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownTitle
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -105,6 +107,7 @@ fun AuthorScreenContent(
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     var authorActionsVisible by remember { mutableStateOf(false) }
+    val languageTag = currentLanguageTag()
     var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var reportFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var reportedFrom by remember { mutableStateOf<PublishedListSummary?>(null) }
@@ -160,7 +163,7 @@ fun AuthorScreenContent(
                                     feed = CommunityFeed.Ready(state.lists),
                                     category = null,
                                     onSelectCategory = {},
-                                    onOpen = { onOpenList(CommunityRoute.CommunityList.of(it)) },
+                                    onOpen = { onOpenList(CommunityRoute.CommunityList.of(it, languageTag)) },
                                     onRetry = onRetry,
                                     // Their own profile: nothing to hide or report, and nowhere else to go.
                                     onLongPress = { summary -> actionsFor = summary.takeUnless { it.mine } },
@@ -194,7 +197,7 @@ fun AuthorScreenContent(
 
         actionsFor?.let { summary ->
             ListActionsSheet(
-                title = summary.title,
+                title = summary.shownTitle(),
                 authorName = summary.authorName,
                 authorPhotoUrl = summary.authorPhotoUrl,
                 onDismiss = { actionsFor = null },

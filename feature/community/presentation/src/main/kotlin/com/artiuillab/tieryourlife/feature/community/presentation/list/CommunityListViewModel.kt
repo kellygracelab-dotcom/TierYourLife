@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.ListGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.readIn
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.OpenedLists
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListRoute
@@ -243,6 +244,7 @@ class CommunityListViewModel @Inject constructor(
             ownBoardId = before?.ownBoardId,
             trashedBoardId = before?.trashedBoardId,
             ownBoardLookedUp = before?.ownBoardLookedUp == true,
+            translations = answer.translations,
         )
     }
 
@@ -297,13 +299,16 @@ class CommunityListViewModel @Inject constructor(
             if (current !is CommunityListUiState.Success || current.arriving) {
                 current
             } else {
-                current.copy(mine = board, showing = Showing.Mine, arranged = true)
+                current.copy(mine = board.inWordsOf(current.mine, current.list), showing = Showing.Mine, arranged = true)
             }
         }
     }
 
-    /** The copy's id lands in the state; the screen then offers to open it rather than leaving on its own. */
-    fun saveToMyLists(which: Showing) {
+    /**
+     * The copy's id lands in the state; the screen then offers to open it rather than leaving on its own.
+     * It becomes the reader's own board, so it keeps the words they read it in, [languageTag]'s.
+     */
+    fun saveToMyLists(which: Showing, languageTag: String = "") {
         val current = _state.value as? CommunityListUiState.Success ?: return
         if (current.own || current.arriving) return
         if (current.saving || current.savedId != null) return
@@ -314,7 +319,7 @@ class CommunityListViewModel @Inject constructor(
             val saved = messages.guard("Saving a community list") {
                 // The reader's choice, asked for at the moment of saving: keeping
                 // the author's ranking is a reason to save, not a mistake to correct.
-                val keeping = if (which == Showing.Theirs) current.theirs else current.mine
+                val keeping = (if (which == Showing.Theirs) current.theirs else current.mine).readIn(current.translations.wordsIn(languageTag))
                 newId = tiers.createFromTemplate(
                     title = keeping.title,
                     authorName = current.authorName,
