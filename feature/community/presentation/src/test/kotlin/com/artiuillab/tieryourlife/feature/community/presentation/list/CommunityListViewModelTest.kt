@@ -402,16 +402,27 @@ class CommunityListViewModelTest {
         assertEquals(0, community.opens)
     }
 
+    // Opened by id alone, it is only known to be theirs once the server says so: until then the page waits, and it is never drawn.
     @Test
-    fun myOwnAnonymousList_openedByIdAlone_opensMyBoard_onceTheServerSaysItIsMine() = runBlocking {
+    fun myOwnAnonymousList_openedByIdAlone_opensMyBoard_withoutEverDrawingThePage() = runBlocking {
         val community = TestCommunity(summary = { it.copy(authorUid = "", authorName = "", anonymous = true, mine = true) })
         val viewModel = viewModel(community = community, tiers = RecordingTierRepository(boards = listOf(myBoard)))
 
         assertEquals(ListNotice.OpenBoard(12), nextNotice(viewModel))
-        val state = lookedUp(viewModel)
-        assertTrue(state.own)
-        assertEquals(null, state.ownBoardAction)
+        assertEquals(1, community.opens)
+        assertEquals(CommunityListUiState.Loading, viewModel.state.value)
         assertEquals(0, community.followStateAsked)
+    }
+
+    @Test
+    fun myOwnList_keptFromALastVisit_opensMyBoard_withoutDrawingTheKeptCopy() = runBlocking {
+        val kept = published.copy(summary = published.summary.copy(mine = true))
+        val community = ownCommunity()
+        val viewModel = viewModel(community = community, tiers = RecordingTierRepository(boards = listOf(myBoard)), openedLists = FakeOpenedLists(kept))
+
+        assertEquals(ListNotice.OpenBoard(12), nextNotice(viewModel))
+        assertEquals(0, community.opens)
+        assertEquals(CommunityListUiState.Loading, viewModel.state.value)
     }
 
     @Test

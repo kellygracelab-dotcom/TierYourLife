@@ -150,17 +150,17 @@ class CommunityListViewModel @Inject constructor(
      * The copy kept from the last visit is drawn first, when nothing real is
      * on screen yet, and the server is asked behind it. Quietly: no
      * placeholder in between. Whatever real page is on screen stays when the
-     * server cannot be reached; a list that is gone is forgotten.
+     * server cannot be reached; a list that is gone is forgotten. Their own
+     * list whose board is here is never drawn: the board opens instead.
      */
     private suspend fun open(quietly: Boolean) {
-        if ((_state.value as? CommunityListUiState.Success)?.arriving != false) {
-            openedLists.read(publishedId)?.let { kept -> present(kept, fromServer = false) }
-        }
+        if (!showKept()) return
         if (!quietly && _state.value !is CommunityListUiState.Success) _state.value = CommunityListUiState.Loading
         val tapsBefore = followTaps
         community.open(publishedId).fold(
             onSuccess = { answer ->
                 openedLists.keep(answer)
+                if (givesWayToBoard(answer)) return
                 val loaded = present(answer, fromServer = true, followTapped = followTaps != tapsBefore)
                 if (loaded.own) {
                     ownList.find()
@@ -175,6 +175,17 @@ class CommunityListViewModel @Inject constructor(
             },
         )
     }
+
+    /** The copy kept from the last visit, while nothing real is on screen; false when the board opened instead. */
+    private suspend fun showKept(): Boolean {
+        if ((_state.value as? CommunityListUiState.Success)?.arriving == false) return true
+        val kept = openedLists.read(publishedId) ?: return true
+        if (givesWayToBoard(kept)) return false
+        present(kept, fromServer = false)
+        return true
+    }
+
+    private suspend fun givesWayToBoard(list: PublishedList): Boolean = list.summary.mine && ownList.openBoardIfHere()
 
     /**
      * The answer on screen. The same board as the one already there, by the
