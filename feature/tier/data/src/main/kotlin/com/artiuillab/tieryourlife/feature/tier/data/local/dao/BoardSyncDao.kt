@@ -11,6 +11,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.PictureSyncEnt
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
+import java.util.UUID
 
 /** One tier and the cards in it, as they arrive from the account. */
 data class IncomingTier(val tier: TierEntity, val items: List<TierItemEntity>)
@@ -132,10 +133,25 @@ interface BoardSyncDao {
         writeContents(board.id, tiers)
     }
 
+    /**
+     * A uid another board here already holds is replaced: the account keeps
+     * uids per board, so the same game started on the site and on the phone
+     * arrives under the uid it already has here.
+     */
     suspend fun writeContents(boardId: Long, tiers: List<IncomingTier>) {
         tiers.forEach { incoming ->
-            val tierId = insertTier(incoming.tier.copy(id = 0, tierListId = boardId))
-            incoming.items.forEach { item -> insertItem(item.copy(id = 0, tierId = tierId)) }
+            val tier = incoming.tier.let { if (tierUidTaken(it.uid)) it.copy(uid = UUID.randomUUID().toString()) else it }
+            val tierId = insertTier(tier.copy(id = 0, tierListId = boardId))
+            incoming.items.forEach { item ->
+                val uid = if (itemUidTaken(item.uid)) UUID.randomUUID().toString() else item.uid
+                insertItem(item.copy(id = 0, tierId = tierId, uid = uid))
+            }
         }
     }
+
+    @Query("SELECT EXISTS(SELECT 1 FROM tiers WHERE uid = :uid)")
+    suspend fun tierUidTaken(uid: String): Boolean
+
+    @Query("SELECT EXISTS(SELECT 1 FROM tier_items WHERE uid = :uid)")
+    suspend fun itemUidTaken(uid: String): Boolean
 }

@@ -141,6 +141,24 @@ class BoardSyncEngineTest {
         assertEquals(4, dao.allSyncRecords().single { it.listUid == "remote-1" }.revision)
     }
 
+    // Seen on a phone: a board started on the site held a game whose uid a
+    // board here already had, and it never arrived.
+    @Test
+    fun aBoardWhoseCardsShareUidsWithOneHere_stillArrives() = runBlocking {
+        boards.server["remote-1"] = theirBoard("remote-1", title = "Games", revision = 4)
+        engine().sync()
+        boards.server["remote-2"] = theirBoard("remote-1", title = "More games", revision = 1).copy(uid = "remote-2")
+
+        val report = engine().sync()
+
+        assertEquals(0, report.refused)
+        val first = dao.itemsOf(dao.boardByUid("remote-1")!!.id).single()
+        val second = dao.itemsOf(dao.boardByUid("remote-2")!!.id).single()
+        assertEquals("remote-1-item", first.uid)
+        assertEquals("Doom", second.title)
+        assertTrue(second.uid != first.uid)
+    }
+
     // A board written down as anything but what is stored here goes straight
     // back up, and to the site that is a change it did not make.
     @Test
