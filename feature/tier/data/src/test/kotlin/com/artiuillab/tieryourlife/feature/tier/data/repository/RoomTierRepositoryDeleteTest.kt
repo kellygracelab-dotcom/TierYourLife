@@ -258,6 +258,8 @@ private class RecordingTierDao : TierDao {
     override suspend fun getAllTierLists(owner: String?): List<TierListEntity> = emptyList()
     override suspend fun getAllTierListsWithTiers(owner: String?): List<TierListWithTiers> = emptyList()
     override suspend fun getTierListWithTiers(id: Long, owner: String?): TierListWithTiers? = null
+    override suspend fun getPublishedTierListsWithTiers(owner: String?): List<TierListWithTiers> = emptyList()
+    override suspend fun getTierListWithTiersPublishedAs(publishedId: String, owner: String?): TierListWithTiers? = null
     override suspend fun restoreTierLists(ids: List<Long>) = Unit
     override suspend fun updateTierListDisplayMode(id: Long, displayMode: String) = Unit
     override suspend fun updateTierListTitle(id: Long, title: String) = Unit

@@ -340,4 +340,23 @@ class RoomTierRepositoryTest {
         assertEquals(listOf("© Jane Doe, CC BY", null), pool.items.map { it.credit })
         assertEquals(listOf("© Jane Doe, CC BY", null), copied.items.map { it.credit })
     }
+
+    @Test
+    fun the_board_published_as_an_id_is_found_without_the_others_and_never_from_the_trash() = runBlocking {
+        val films = repository.createTierList("Films", CAPTIONS)
+        val games = repository.createTierList("Games", CAPTIONS)
+        val trashed = repository.createTierList("Old films", CAPTIONS)
+        repository.createTierList("Private", CAPTIONS)
+        repository.setPublished(films, "pub-films", null)
+        repository.setPublished(games, "pub-games", "stale")
+        repository.setPublished(trashed, "pub-old", null)
+        repository.deleteTierLists(listOf(trashed))
+
+        assertEquals(films, repository.boardPublishedAs("pub-films")?.id)
+        assertNull(repository.boardPublishedAs("pub-old"))
+        assertNull(repository.boardPublishedAs("pub-nobody"))
+        val standing = repository.publishedStanding()
+        assertEquals(setOf("pub-films", "pub-games"), standing.canUpdate)
+        assertEquals(setOf("pub-games"), standing.knownBehind)
+    }
 }

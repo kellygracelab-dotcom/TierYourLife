@@ -19,6 +19,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PublishFingerprint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -35,12 +37,15 @@ class RoomTierRepository internal constructor(
     @Inject constructor(dao: TierDao, imageStore: TierImageStore, ownership: BoardOwnership) :
         this(dao, imageStore, ownership::current, System::currentTimeMillis)
 
+    // Mapped off the main thread: a library is every card of every board, and the callers are view models.
     override suspend fun getTierListById(id: Long): TierList? {
-        return dao.getTierListWithTiers(id, owner())?.toDomain()
+        val row = dao.getTierListWithTiers(id, owner()) ?: return null
+        return withContext(Dispatchers.Default) { row.toDomain() }
     }
 
     override suspend fun getAllTierLists(): List<TierList> {
-        return dao.getAllTierListsWithTiers(owner()).map { it.toDomain() }
+        val rows = dao.getAllTierListsWithTiers(owner())
+        return withContext(Dispatchers.Default) { rows.map { it.toDomain() } }
     }
 
     override suspend fun createTierList(title: String, captions: List<String>): Long {
@@ -79,9 +84,11 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun publishedStanding(): PublishedStanding {
-        val published = dao.getAllTierListsWithTiers(owner())
-            .map { it.toDomain() }
-            .filter { board -> board.publishedId != null }
+        val rows = dao.getPublishedTierListsWithTiers(owner())
+        return withContext(Dispatchers.Default) { standingOf(rows.map { it.toDomain() }) }
+    }
+
+    private fun standingOf(published: List<TierList>): PublishedStanding {
         return PublishedStanding(
             canUpdate = published.mapNotNull { it.publishedId }.toSet(),
             knownBehind = published
@@ -92,10 +99,10 @@ class RoomTierRepository internal constructor(
         )
     }
 
-    override suspend fun boardPublishedAs(publishedId: String): TierList? =
-        dao.getAllTierListsWithTiers(owner())
-            .map { it.toDomain() }
-            .firstOrNull { board -> board.publishedId == publishedId }
+    override suspend fun boardPublishedAs(publishedId: String): TierList? {
+        val row = dao.getTierListWithTiersPublishedAs(publishedId, owner()) ?: return null
+        return withContext(Dispatchers.Default) { row.toDomain() }
+    }
 
     override suspend fun setFavouritedAt(id: Long, at: Long?) {
         dao.setFavouritedAt(id, at)
