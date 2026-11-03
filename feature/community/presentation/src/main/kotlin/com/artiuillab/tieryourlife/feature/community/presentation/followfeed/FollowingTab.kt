@@ -111,7 +111,7 @@ internal fun FollowingTab(
     onLoadMore: () -> Unit,
     onScrolledDown: (Boolean) -> Unit,
 ) {
-    val skeletonAlpha = rememberSkeletonAlpha()
+    val skeletonAlpha = rememberSkeletonAlpha(running = state.feed.phase == FeedPhase.Loading)
     ScrolledDownWatcher(gridState, onScrolledDown)
     NearEndWatcher(gridState, state.feed.lists.size, onLoadMore)
     PullToRefreshBox(isRefreshing = state.feed.refreshing, onRefresh = onRefresh, modifier = Modifier.fillMaxSize()) {

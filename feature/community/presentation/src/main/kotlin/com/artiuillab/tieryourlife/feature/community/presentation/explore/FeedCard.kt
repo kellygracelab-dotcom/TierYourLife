@@ -24,11 +24,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -184,11 +184,16 @@ internal fun HiddenCard(reported: Boolean, modifier: Modifier = Modifier) {
     }
 }
 
-/** One pulse for a whole screen, so every skeleton breathes together (§0.3). */
+/**
+ * One pulse for a whole screen, so every skeleton breathes together (§0.3).
+ * Read while drawing, never while composing: read in a composition it redrew
+ * the whole tab every frame, and kept doing so long after the lists had come.
+ */
 @Composable
-internal fun rememberSkeletonAlpha(): Float {
+internal fun rememberSkeletonAlpha(running: Boolean): () -> Float {
+    if (!running) return Still
     val transition = rememberInfiniteTransition(label = "skeleton")
-    val alpha by transition.animateFloat(
+    val alpha = transition.animateFloat(
         initialValue = 1f,
         targetValue = 1f,
         animationSpec = InfiniteRepeatableSpec(
@@ -202,18 +207,23 @@ internal fun rememberSkeletonAlpha(): Float {
         ),
         label = "skeleton alpha",
     )
-    return alpha
+    return remember(alpha) { { alpha.value } }
 }
+
+private val Still: () -> Float = { 1f }
 
 /** A card not arrived yet (§1.5): its real size, in blocks, no shimmer and no spinner. */
 @Composable
-internal fun SkeletonCard(alpha: Float, modifier: Modifier = Modifier, coverHeight: Dp = CoverHeights.Phone) {
+internal fun SkeletonCard(alpha: () -> Float, modifier: Modifier = Modifier, coverHeight: Dp = CoverHeights.Phone) {
     val block = MaterialTheme.colorScheme.surfaceContainerHighest
     Column(
         modifier
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .alpha(alpha)
+            .graphicsLayer {
+                this.alpha = alpha()
+                clip = true
+            }
             .testTag(ExploreTestTags.SKELETON),
     ) {
         Box(

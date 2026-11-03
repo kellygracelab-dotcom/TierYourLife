@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -58,7 +59,7 @@ internal fun CoverSection(
     onLoadMore: () -> Unit,
 ) {
     val list = rememberLazyListState()
-    val alpha = rememberSkeletonAlpha()
+    val alpha = rememberSkeletonAlpha(running = state.feed.lists.isEmpty() && state.feed.phase != FeedPhase.Failed)
     val rows = state.feed.lists
     val nearEnd by remember { derivedStateOf { (list.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) >= list.layoutInfo.totalItemsCount - NEAR_END } }
     LaunchedEffect(nearEnd, rows.size) { if (nearEnd && rows.isNotEmpty() && state.feed.canLoadMore) onLoadMore() }
@@ -108,11 +109,12 @@ private fun CoverRow(summary: PublishedListSummary, onClick: () -> Unit) {
 }
 
 @Composable
-private fun CoverSkeletonRow(alpha: Float) {
-    val tone = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = alpha)
+private fun CoverSkeletonRow(alpha: () -> Float) {
+    val tone = MaterialTheme.colorScheme.surfaceContainerHighest
     Row(
         Modifier
             .fillMaxWidth()
+            .graphicsLayer { this.alpha = alpha() }
             .height(56.dp)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,

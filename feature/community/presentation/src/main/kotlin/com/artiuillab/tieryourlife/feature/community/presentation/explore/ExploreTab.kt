@@ -144,7 +144,7 @@ internal fun ExploreTab(
     onLoadMore: () -> Unit,
     onScrolledDown: (Boolean) -> Unit,
 ) {
-    val skeletonAlpha = rememberSkeletonAlpha()
+    val skeletonAlpha = rememberSkeletonAlpha(running = state.feed.phase == FeedPhase.Loading)
     ScrolledDownWatcher(gridState, onScrolledDown)
     NearEndWatcher(gridState, state.feed.lists.size, onLoadMore)
     PullToRefreshBox(isRefreshing = state.feed.refreshing, onRefresh = onRefresh, modifier = Modifier.fillMaxSize()) {
@@ -187,7 +187,7 @@ private fun feedSpacing(layout: HomeLayout) = if (layout == HomeLayout.Wide) 16.
 internal fun LazyGridScope.feedItems(
     pane: FeedPane,
     layout: HomeLayout,
-    skeletonAlpha: Float,
+    skeletonAlpha: () -> Float,
     cards: CardActions,
     onRetry: () -> Unit,
     reasonFor: @Composable (PublishedListSummary) -> String?,

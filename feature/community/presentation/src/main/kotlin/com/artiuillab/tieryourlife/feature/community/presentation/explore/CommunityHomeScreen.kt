@@ -568,7 +568,7 @@ private fun SearchResultsGrid(
     sections: List<Section> = emptyList(),
     onOpenSection: (String) -> Unit = {},
 ) {
-    val alpha = rememberSkeletonAlpha()
+    val alpha = rememberSkeletonAlpha(running = results.loading)
     val found = matchingSections(sections, query)
     val full: androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope.() -> androidx.compose.foundation.lazy.grid.GridItemSpan =
         { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }
