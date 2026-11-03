@@ -246,7 +246,7 @@
     <string name="all_sections_propose">اقترح قسمًا</string>
     <string name="community_anonymous">مجهول</string>
     <string name="community_your_list">قائمتك</string>
-    <string name="community_your_list_anonymous">قائمتك · مجهولة</string>
+    <string name="community_your_list_anonymous">قائمتك، منشورة دون اسمك</string>
     <string name="community_based_on_nameless">مبني على «%1$s»</string>
     <string name="propose_intro">يراجع مشرف كل اقتراح. حتى ذلك الحين تبقى قوائمك في القسم الذي تختاره أدناه.</string>
     <string name="propose_send">اقتراح</string>

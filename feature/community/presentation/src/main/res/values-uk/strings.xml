@@ -236,7 +236,7 @@
     <string name="all_sections_propose">Запропонувати розділ</string>
     <string name="community_anonymous">Анонімно</string>
     <string name="community_your_list">Ваш список</string>
-    <string name="community_your_list_anonymous">Ваш список · анонімно</string>
+    <string name="community_your_list_anonymous">Ваш список, опубліковано анонімно</string>
     <string name="community_based_on_nameless">За мотивами «%1$s»</string>
     <string name="propose_intro">Модератор переглядає кожну пропозицію. Доти ваші списки лишаються в розділі, який ви оберете нижче.</string>
     <string name="propose_send">Запропонувати</string>

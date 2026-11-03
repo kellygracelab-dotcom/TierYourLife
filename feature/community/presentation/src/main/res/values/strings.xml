@@ -226,7 +226,7 @@
     <string name="all_sections_propose">Propose a section</string>
     <string name="community_anonymous">Anonymous</string>
     <string name="community_your_list">Your list</string>
-    <string name="community_your_list_anonymous">Your list · anonymous</string>
+    <string name="community_your_list_anonymous">Your list, published anonymously</string>
     <string name="community_based_on_nameless">Based on “%1$s”</string>
     <string name="propose_intro">A moderator looks at every proposal. Until then your lists stay in the section you pick below.</string>
     <string name="propose_send">Propose</string>

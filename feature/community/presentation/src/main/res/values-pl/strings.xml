@@ -236,7 +236,7 @@
     <string name="all_sections_propose">Zaproponuj dział</string>
     <string name="community_anonymous">Anonimowo</string>
     <string name="community_your_list">Twoja lista</string>
-    <string name="community_your_list_anonymous">Twoja lista · anonimowo</string>
+    <string name="community_your_list_anonymous">Twoja lista, opublikowana anonimowo</string>
     <string name="community_based_on_nameless">Na podstawie „%1$s”</string>
     <string name="propose_intro">Moderator sprawdza każdą propozycję. Do tego czasu twoje listy zostają w dziale wybranym poniżej.</string>
     <string name="propose_send">Zaproponuj</string>

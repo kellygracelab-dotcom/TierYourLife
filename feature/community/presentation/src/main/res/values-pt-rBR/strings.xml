@@ -231,7 +231,7 @@
     <string name="all_sections_propose">Propor uma seção</string>
     <string name="community_anonymous">Anônimo</string>
     <string name="community_your_list">Sua lista</string>
-    <string name="community_your_list_anonymous">Sua lista · anônima</string>
+    <string name="community_your_list_anonymous">Sua lista, publicada de forma anônima</string>
     <string name="community_based_on_nameless">Baseada em “%1$s”</string>
     <string name="propose_intro">Um moderador analisa cada proposta. Até lá, suas listas ficam na seção que você escolher abaixo.</string>
     <string name="propose_send">Propor</string>
