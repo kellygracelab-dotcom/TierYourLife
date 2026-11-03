@@ -20,6 +20,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,7 +54,7 @@ class TierDetailViewModel @Inject constructor(
     private var board: TierDetailUiState
         get() = _screen.value.board
         set(value) = _screen.update { it.copy(board = value) }
-    private var allLists: List<TierList>
+    private var allLists: List<TierListSummary>
         get() = _screen.value.allLists
         set(value) = _screen.update { it.copy(allLists = value) }
     private var publishing: Boolean
@@ -197,10 +198,23 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
+    private var boardsBesideWanted = false
+
     fun loadTierList() {
         viewModelScope.launch { reloadTierList() }
+        if (boardsBesideWanted) loadBoardsBeside()
+    }
+
+    /** A phone never shows the column, so it never reads it. */
+    fun wantBoardsBeside() {
+        if (boardsBesideWanted) return
+        boardsBesideWanted = true
+        loadBoardsBeside()
+    }
+
+    private fun loadBoardsBeside() {
         viewModelScope.launch {
-            runSuspendCatching { repository.getAllTierLists() }
+            runSuspendCatching { repository.getTierListSummaries() }
                 .onSuccess { lists -> allLists = lists }
                 .onFailure { Timber.w(it, "Reading the lists beside this board failed") }
         }

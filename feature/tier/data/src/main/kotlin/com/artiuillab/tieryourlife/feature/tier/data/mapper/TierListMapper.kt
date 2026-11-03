@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.mapper
 
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.SummaryRows
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWithTiers
@@ -9,6 +10,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierSummary
 
 internal fun TierListEntity.toDomain(): TierList = TierList(
     id = id,
@@ -57,6 +60,29 @@ internal fun TierListWithTiers.toDomain(): TierList = TierList(
     favouritedAt = tierList.favouritedAt,
     play = tierList.play,
 )
+
+internal fun SummaryRows.toSummaries(): List<TierListSummary> {
+    val tiersByBoard = tiers.groupBy { it.tierListId }
+    return boards.map { board ->
+        TierListSummary(
+            id = board.id,
+            title = board.title,
+            tiers = tiersByBoard[board.id].orEmpty()
+                .sortedBy { it.position }
+                .map { TierSummary(it.id, it.colorLight, it.colorDark, it.isPool, it.cards) },
+            previewImages = previews[board.id].orEmpty(),
+            publishedId = board.publishedId,
+            rankingOf = board.rankingOf,
+            category = board.category,
+            authorName = board.authorName,
+            coverImageUrl = board.coverImageUrl,
+            coverImageUrls = board.coverImageUrls.toCoverImageUrls(),
+            arrivedFrom = board.arrivedFrom,
+            editedAt = board.editedAt,
+            favouritedAt = board.favouritedAt,
+        )
+    }
+}
 
 private fun String.toDisplayMode(): TierListDisplayMode =
     TierListDisplayMode.entries.firstOrNull { it.name == this } ?: TierListDisplayMode.WRAP

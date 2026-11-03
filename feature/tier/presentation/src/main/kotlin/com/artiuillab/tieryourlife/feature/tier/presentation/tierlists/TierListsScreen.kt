@@ -75,7 +75,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.rememberArrival
 import com.artiuillab.tieryourlife.feature.tier.board.common.labelRes
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardControlsRow
@@ -434,14 +434,14 @@ fun TierListsScreenContent(
 private fun HomeContent(
     top: @Composable () -> Unit,
     scroll: LazyGridState,
-    lists: List<TierList>,
+    lists: List<TierListSummary>,
     asPictures: Boolean,
-    favourites: List<TierList>,
+    favourites: List<TierListSummary>,
     grouped: Boolean,
     onToggleFavourite: (Long) -> Unit,
     mode: HomeMode,
     localOnly: LocalOnly,
-    conflict: TierList?,
+    conflict: TierListSummary?,
     onTierListClick: (Long) -> Unit,
     onLongPressCard: (Long) -> Unit,
     onToggleSelected: (Long) -> Unit,
@@ -588,12 +588,12 @@ private fun BoardTiles(
     top: @Composable () -> Unit,
     scroll: LazyGridState = rememberLazyGridState(),
     aboveKeyboard: Boolean = false,
-    lists: List<TierList>,
-    favourites: List<TierList>,
+    lists: List<TierListSummary>,
+    favourites: List<TierListSummary>,
     grouped: Boolean,
     onToggleFavourite: (Long) -> Unit,
     here: LocalOnly.Here?,
-    conflict: TierList?,
+    conflict: TierListSummary?,
     isSelecting: Boolean,
     selectedIds: Set<Long>,
     onTierListClick: (Long) -> Unit,
@@ -660,7 +660,7 @@ private fun BoardTiles(
 
 @Composable
 private fun SearchResults(
-    lists: List<TierList>,
+    lists: List<TierListSummary>,
     query: String,
     asPictures: Boolean,
     onTierListClick: (Long) -> Unit,
@@ -818,7 +818,7 @@ private fun GroupHeading(@StringRes labelRes: Int, testTag: String) {
 
 @Composable
 private fun BoardRow(
-    list: TierList,
+    list: TierListSummary,
     isSelecting: Boolean,
     isSelected: Boolean,
     onTierListClick: (Long) -> Unit,

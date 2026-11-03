@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -358,5 +359,35 @@ class RoomTierRepositoryTest {
         val standing = repository.publishedStanding()
         assertEquals(setOf("pub-films", "pub-games"), standing.canUpdate)
         assertEquals(setOf("pub-games"), standing.knownBehind)
+    }
+
+    @Test
+    fun summaries_say_what_the_whole_boards_say_without_reading_their_cards() = runBlocking {
+        val films = repository.createTierList("Films", CAPTIONS)
+        val filmsTiers = dao.getAllTiersByTierListId(films)
+        val best = filmsTiers.first { !it.isPool }.id
+        repeat(8) { index ->
+            dao.insertTierItem(TierItemEntity(tierId = best, position = index, title = "Film $index", imageUrl = "https://example.com/$index.jpg"))
+        }
+        dao.insertTierItem(TierItemEntity(tierId = best, position = 8, title = "No picture", imageUrl = null))
+        dao.insertTierItem(TierItemEntity(tierId = best, position = 9, title = "Gone", imageUrl = "https://example.com/gone.jpg", deletedAt = 1L))
+        repository.addItemToPool(films, "Pooled", imageUrl = "https://example.com/pool.jpg")
+        val collage = repository.createTierList("Collage", CAPTIONS)
+        repository.addItemToPool(collage, "Card", imageUrl = "https://example.com/card.jpg")
+        repository.setCover(collage, listOf("https://example.com/a.jpg", "https://example.com/b.jpg"))
+        repository.setFavouritedAt(collage, 7L)
+        val trashed = repository.createTierList("Trashed", CAPTIONS)
+        repository.deleteTierLists(listOf(trashed))
+        dao.insertTierList(TierListEntity(title = "Someone else's", ownerUid = "someone-else"))
+
+        val summaries = repository.getTierListSummaries()
+
+        assertEquals(repository.getAllTierLists().map { it.summary() }, summaries)
+        assertEquals(listOf("Films", "Collage"), summaries.map { it.title })
+        val filmsSummary = summaries.first { it.id == films }
+        assertEquals(9, filmsSummary.rankedCount)
+        assertEquals(1, filmsSummary.poolCount)
+        assertEquals((0 until 6).map { "https://example.com/$it.jpg" }, filmsSummary.previewImages)
+        assertEquals(emptyList<String>(), summaries.first { it.id == collage }.previewImages)
     }
 }

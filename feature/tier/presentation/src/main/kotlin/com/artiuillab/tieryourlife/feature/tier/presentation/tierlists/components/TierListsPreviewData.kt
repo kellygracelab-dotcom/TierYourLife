@@ -3,6 +3,8 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.componen
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
+import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 
 private val previewProfiles = listOf(
     intArrayOf(2, 2, 1, 1, 1, 6),
@@ -11,7 +13,7 @@ private val previewProfiles = listOf(
     intArrayOf(0, 1, 2, 3, 2, 5),
 )
 
-internal val previewTierLists = listOf(
+private val previewBoards = listOf(
     TierList(1, "Sci-fi films", previewTiers(2, 2, 1, 1, 1, 6)),
     TierList(2, "Every A24 film", previewTiers(3, 3, 3, 2, 1, 4)),
 ) + (3..15).map { listNumber ->
@@ -29,6 +31,8 @@ internal val previewTierLists = listOf(
         ),
     )
 }
+
+internal val previewTierLists: List<TierListSummary> = previewBoards.map { it.summary() }
 
 private fun previewTiers(s: Int, a: Int, b: Int, c: Int, d: Int, pool: Int): List<Tier> = listOf(
     previewTier("S", "#B03A32", "#F1948C", s),

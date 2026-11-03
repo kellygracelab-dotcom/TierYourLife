@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toEntity
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toRemoved
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toStoredCoverImageUrls
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.toSummaries
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -15,6 +16,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
@@ -46,6 +48,11 @@ class RoomTierRepository internal constructor(
     override suspend fun getAllTierLists(): List<TierList> {
         val rows = dao.getAllTierListsWithTiers(owner())
         return withContext(Dispatchers.Default) { rows.map { it.toDomain() } }
+    }
+
+    override suspend fun getTierListSummaries(): List<TierListSummary> {
+        val rows = dao.getSummaryRows(owner(), TierListSummary.PREVIEW_IMAGES)
+        return withContext(Dispatchers.Default) { rows.toSummaries() }
     }
 
     override suspend fun createTierList(title: String, captions: List<String>): Long {

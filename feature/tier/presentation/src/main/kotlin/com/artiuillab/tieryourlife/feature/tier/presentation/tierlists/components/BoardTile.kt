@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
@@ -45,25 +44,17 @@ private const val SCRIM_ALPHA = 0.55f
 
 @Composable
 internal fun BoardTile(
-    list: TierList,
+    list: TierListSummary,
     onClick: () -> Unit,
     onLongClick: () -> Unit = {},
     selectionMode: Boolean = false,
     selected: Boolean = false,
     onToggleFavourite: (() -> Unit)? = null,
 ) {
-    val ranked = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
+    val ranked = list.rankedCount
     // A local photograph is drawn as it is on the board; only publishing needs
-    // a picture to have travelled. Taken lazily: a board can hold hundreds of cards.
-    val previewImages = remember(list) {
-        list.coverImageUrls.ifEmpty {
-            list.tiers.asSequence()
-                .flatMap { tier -> tier.items }
-                .mapNotNull { item -> item.imageUrl }
-                .take(PREVIEW_IMAGES)
-                .toList()
-        }
-    }
+    // a picture to have travelled.
+    val previewImages = list.coverImageUrls.ifEmpty { list.previewImages }
 
     Column(
         modifier = Modifier
@@ -133,5 +124,4 @@ internal fun BoardTile(
 internal val TILE_MIN_WIDTH = 150.dp
 
 private const val ART_RATIO = 1.35f
-private const val PREVIEW_IMAGES = 6
 private const val TIER_COLOURS = 5

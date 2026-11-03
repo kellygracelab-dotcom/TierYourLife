@@ -52,6 +52,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.HomeTab
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsUiState
@@ -117,10 +118,10 @@ class ReadmeScreenshotTest {
     private fun Screen(name: String): Unit = when (name) {
         "home" -> TierListsScreenContent(
             state = TierListsUiState.Success(
-                lists = listOf(ramenBoard(), albumBoard()),
+                lists = listOf(ramenBoard(), albumBoard()).map { it.summary() },
                 // Starred, and it has to say so: the star on the card is drawn
                 // from the board, not from which list it arrived in.
-                favourites = listOf(filmBoard().copy(favouritedAt = 1)),
+                favourites = listOf(filmBoard().copy(favouritedAt = 1).summary()),
                 grouped = true,
                 totalListCount = 3,
                 rankedCount = 2,

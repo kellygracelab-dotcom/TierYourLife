@@ -2,13 +2,17 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 
 /** Everything the board screen draws, as one value. */
 data class TierDetailScreenState(
     val board: TierDetailUiState = TierDetailUiState.Loading,
-    /** For the column beside this board on a wide window. Read here: the list screen is not on the stack when this one is. */
-    val allLists: List<TierList> = emptyList(),
+    /**
+     * For the column beside this board on a wide window, read only once the
+     * window has room for it. Read here: the list screen is not on the stack
+     * when this one is.
+     */
+    val allLists: List<TierListSummary> = emptyList(),
     val signedIn: Boolean = false,
     val publish: PublishState = PublishState(),
 )

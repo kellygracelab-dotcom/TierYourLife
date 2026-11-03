@@ -13,7 +13,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Community
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardOrder
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.BoardOwner
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
@@ -51,7 +51,7 @@ class TierListsViewModel @Inject constructor(
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
 
-    private var lastLoadedLists: List<TierList> = emptyList()
+    private var lastLoadedLists: List<TierListSummary> = emptyList()
 
     private var mode: HomeMode = HomeMode.Browsing
     private var boardSort: BoardSort = BoardSort.Newest
@@ -103,7 +103,7 @@ class TierListsViewModel @Inject constructor(
     }
 
     /** Answered once: a card that keeps returning is one people dismiss unread. */
-    private fun seenConflict(list: TierList): Boolean = conflictsSeen.contains(list.title)
+    private fun seenConflict(list: TierListSummary): Boolean = conflictsSeen.contains(list.title)
 
     fun dismissConflictNotice(title: String) {
         preferences.markConflictSeen(title)
@@ -145,7 +145,7 @@ class TierListsViewModel @Inject constructor(
         }
 
         try {
-            lastLoadedLists = repository.getAllTierLists()
+            lastLoadedLists = repository.getTierListSummaries()
             emitSuccess()
             keepBoards()
         } catch (e: CancellationException) {
@@ -159,7 +159,7 @@ class TierListsViewModel @Inject constructor(
     }
 
     /** Paired on screen, not in the database: the pair ends the moment either is deleted. */
-    private fun withTwins(lists: List<TierList>): List<TierList> {
+    private fun withTwins(lists: List<TierListSummary>): List<TierListSummary> {
         val byTitle = lists.groupBy { it.title.removeSuffix(" ${it.arrivedFrom.orEmpty()}").trim() }
         return lists.map { list ->
             val twins = byTitle[list.title.removeSuffix(" ${list.arrivedFrom.orEmpty()}").trim()].orEmpty()
@@ -179,9 +179,7 @@ class TierListsViewModel @Inject constructor(
         // nothing is pinned above an answer.
         val grouped = BoardOrder.shouldGroup(arranged, narrowed = query != null || boardFilters.any)
         val paired = if (grouped) arranged.rest else arranged.all
-        val rankedCount = lastLoadedLists.sumOf { list ->
-            list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
-        }
+        val rankedCount = lastLoadedLists.sumOf { it.rankedCount }
         _state.value = TierListsUiState.Success(
             lists = paired,
             favourites = if (grouped) arranged.favourites else emptyList(),

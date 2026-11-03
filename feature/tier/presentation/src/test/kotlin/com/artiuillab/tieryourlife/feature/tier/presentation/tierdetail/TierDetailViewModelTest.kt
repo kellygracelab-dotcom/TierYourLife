@@ -18,7 +18,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
+import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import kotlinx.coroutines.CompletableDeferred
@@ -552,6 +554,24 @@ class TierDetailViewModelTest {
         assertTrue(repository.restoredItems.isEmpty())
     }
 
+    @Test
+    fun opening_aBoard_readsOnlyThatBoard_andTheLibraryOnlyWhenTheColumnBesideItShows() = runBlocking {
+        val repository = FakeTierRepository(rankedListWithCards())
+        val viewModel = TierDetailViewModel(repository, FakeCommunityRepositoryForDetail(), FakeAccountRepository(), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+        viewModel.loadTierList()
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+
+        assertEquals(0, repository.summaryReads)
+
+        viewModel.wantBoardsBeside()
+        viewModel.wantBoardsBeside()
+        val beside = viewModel.screen.firstWithin { it.allLists.isNotEmpty() }.allLists
+
+        assertEquals(listOf(rankedListWithCards().summary()), beside)
+        assertEquals(1, repository.summaryReads)
+    }
+
     private fun TierDetailUiState.itemIds(tierId: Long): List<Long>? =
         (this as? TierDetailUiState.Success)?.list?.tiers?.firstOrNull { it.id == tierId }?.items?.map { it.id }
 
@@ -709,6 +729,14 @@ private class FakeTierRepository(
 
     override suspend fun attachImageToItem(itemId: Long, sourceUri: String) {
         attachedSources += sourceUri
+    }
+
+    var summaryReads = 0
+        private set
+
+    override suspend fun getTierListSummaries(): List<TierListSummary> {
+        summaryReads++
+        return listOf(list.summary())
     }
 
     override suspend fun getAllTierLists(): List<TierList> = unsupported()

@@ -1,7 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.lists
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -15,7 +15,7 @@ class BoardOrderTest {
         favouritedAt: Long? = null,
         category: String? = null,
         publishedId: String? = null,
-    ) = TierList(
+    ) = TierListSummary(
         id = id,
         title = "Board $id",
         tiers = emptyList(),
@@ -25,7 +25,7 @@ class BoardOrderTest {
         publishedId = publishedId,
     )
 
-    private fun ids(lists: List<TierList>) = lists.map { it.id }
+    private fun ids(lists: List<TierListSummary>) = lists.map { it.id }
 
     @Test
     fun `newest first means most recently touched first`() {

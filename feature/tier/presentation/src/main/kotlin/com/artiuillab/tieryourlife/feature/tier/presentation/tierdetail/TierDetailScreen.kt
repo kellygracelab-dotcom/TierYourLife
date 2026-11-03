@@ -79,6 +79,7 @@ fun TierDetailScreen(
         state = state,
         allLists = screen.allLists,
         onOpenList = onOpenList,
+        onBoardsBesideWanted = viewModel::wantBoardsBeside,
         addedItemIds = addedItemIds,
         userMessages = viewModel.userMessages,
         belowTopBar = credit,
