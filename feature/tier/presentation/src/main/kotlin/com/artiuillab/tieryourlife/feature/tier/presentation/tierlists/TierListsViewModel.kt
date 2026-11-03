@@ -21,6 +21,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.publishedByAnotherAccount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -72,7 +74,7 @@ class TierListsViewModel @Inject constructor(
         viewModelScope.launch {
             pictures.restoring.collect { progress ->
                 restoringPictures = progress
-                if (_state.value is TierListsUiState.Success) emitSuccess()
+                if (loaded) emitSuccess()
             }
         }
         viewModelScope.launch {
@@ -80,7 +82,7 @@ class TierListsViewModel @Inject constructor(
                 account = current
                 // Redraws a screen that is already up. Emitting before the first
                 // database read finished turned "loading" into "no boards".
-                if (_state.value is TierListsUiState.Success) emitSuccess()
+                if (loaded) emitSuccess()
             }
         }
         // Another identity's boards are other boards: what is on screen is
@@ -103,8 +105,6 @@ class TierListsViewModel @Inject constructor(
     }
 
     /** Answered once: a card that keeps returning is one people dismiss unread. */
-    private fun seenConflict(list: TierListSummary): Boolean = conflictsSeen.contains(list.title)
-
     fun dismissConflictNotice(title: String) {
         preferences.markConflictSeen(title)
         conflictsSeen = conflictsSeen + title
@@ -146,7 +146,8 @@ class TierListsViewModel @Inject constructor(
 
         try {
             lastLoadedLists = repository.getTierListSummaries()
-            emitSuccess()
+            loaded = true
+            emitSuccess().join()
             keepBoards()
         } catch (e: CancellationException) {
             throw e
@@ -167,33 +168,54 @@ class TierListsViewModel @Inject constructor(
         }
     }
 
-    private fun emitSuccess() {
+    private var loaded = false
+    private var arranging: Job? = null
+
+    /**
+     * Sorting and pairing every board runs off the main thread, and a newer
+     * redraw cancels an older one, so a burst of keystrokes draws only the last.
+     */
+    private fun emitSuccess(): Job {
+        val lists = lastLoadedLists
+        val mode = mode
+        val sort = boardSort
+        val filters = boardFilters
+        val asPictures = preferences.boardsAsPictures()
+        val localOnly = whereTheseLive()
+        val restoring = restoringPictures
+        val seen = conflictsSeen
+        arranging?.cancel()
+        return viewModelScope.launch {
+            val shown = withContext(Dispatchers.Default) { arrange(lists, mode, sort, filters, seen) }
+            _state.value = shown.copy(asPictures = asPictures, localOnly = localOnly, restoringPictures = restoring)
+        }.also { arranging = it }
+    }
+
+    private fun arrange(
+        lists: List<TierListSummary>,
+        mode: HomeMode,
+        sort: BoardSort,
+        filters: BoardFilters,
+        conflictsSeen: Set<String>,
+    ): TierListsUiState.Success {
         val query = (mode as? HomeMode.Searching)?.query
-        val matching = if (query != null) {
-            lastLoadedLists.filter { it.title.contains(query, ignoreCase = true) }
-        } else {
-            lastLoadedLists
-        }
-        val arranged = BoardOrder.arrange(withTwins(matching), boardSort, boardFilters)
+        val matching = if (query != null) lists.filter { it.title.contains(query, ignoreCase = true) } else lists
+        val arranged = BoardOrder.arrange(withTwins(matching), sort, filters)
         // A search or a filter makes the screen an answer to a question, and
         // nothing is pinned above an answer.
-        val grouped = BoardOrder.shouldGroup(arranged, narrowed = query != null || boardFilters.any)
+        val grouped = BoardOrder.shouldGroup(arranged, narrowed = query != null || filters.any)
         val paired = if (grouped) arranged.rest else arranged.all
-        val rankedCount = lastLoadedLists.sumOf { it.rankedCount }
-        _state.value = TierListsUiState.Success(
+        return TierListsUiState.Success(
             lists = paired,
+            conflict = paired.firstOrNull { it.hasTwin && it.arrivedFrom != null && it.title !in conflictsSeen },
             favourites = if (grouped) arranged.favourites else emptyList(),
             grouped = grouped,
-            boardSort = boardSort,
-            boardFilters = boardFilters,
-            filedUnder = lastLoadedLists.mapNotNull { it.category }.distinct().sorted(),
-            totalListCount = lastLoadedLists.size,
-            rankedCount = rankedCount,
+            boardSort = sort,
+            boardFilters = filters,
+            filedUnder = lists.mapNotNull { it.category }.distinct().sorted(),
+            totalListCount = lists.size,
+            rankedCount = lists.sumOf { it.rankedCount },
             mode = mode,
-            asPictures = preferences.boardsAsPictures(),
-            localOnly = whereTheseLive(),
-            restoringPictures = restoringPictures,
-            conflict = paired.firstOrNull { it.hasTwin && it.arrivedFrom != null && !seenConflict(it) },
         )
     }
 
@@ -231,11 +253,12 @@ class TierListsViewModel @Inject constructor(
         emitSuccess()
     }
 
+    /** The search field reads its text from here, so the mode shows at once and the boards follow. */
     private fun setMode(newMode: HomeMode) {
         mode = newMode
-        if (_state.value is TierListsUiState.Success) {
-            emitSuccess()
-        }
+        val shown = _state.value as? TierListsUiState.Success ?: return
+        _state.value = shown.copy(mode = newMode)
+        emitSuccess()
     }
 
     fun enterSearch() = setMode(HomeMode.Searching(""))
