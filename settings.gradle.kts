@@ -24,6 +24,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "TierYourLife"
 include(":app")
+include(":baselineprofile")
 include(":core:logging")
 include(":core:network")
 include(":core:settings")

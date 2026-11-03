@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.BoardLayoutMemory
@@ -40,8 +42,12 @@ fun AppRoot(
         // or on a cover screen, the navigation bar moves to an edge nothing
         // padded for. Horizontal only, so nothing is padded twice; on an
         // upright phone this measures zero.
+        // Test tags double as resource ids so UiAutomator, which drives the
+        // baseline profile journeys, finds what the Compose tests find.
         BoxWithConstraints(
-            Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            Modifier
+                .semantics { testTagsAsResourceId = true }
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
             // Measured once, after the insets: the width a layout can use is
             // what is left over. A cover screen and half a phone in split view

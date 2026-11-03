@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- The journeys read button labels from the app's own resources. -->
+    <queries>
+        <package android:name="com.artiuillab.tieryourlife" />
+    </queries>
+</manifest>
