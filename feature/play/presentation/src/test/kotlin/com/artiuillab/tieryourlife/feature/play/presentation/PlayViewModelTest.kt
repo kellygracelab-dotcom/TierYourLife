@@ -7,6 +7,7 @@ import com.artiuillab.tieryourlife.feature.play.domain.GameKind
 import com.artiuillab.tieryourlife.feature.play.domain.GameSpec
 import com.artiuillab.tieryourlife.feature.play.domain.Outcome
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
+import com.artiuillab.tieryourlife.feature.play.domain.SavedGames
 import com.artiuillab.tieryourlife.feature.play.domain.estimatedDuels
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import kotlinx.coroutines.delay
@@ -38,6 +39,20 @@ class PlayViewModelTest {
 
         val picker = viewModel.state.firstWithin { picker(it)?.kind == GameKind.Hill }.let(::picker)
         assertEquals(PickerPage.Games, picker?.page)
+    }
+
+    // Read while the board is on screen, so the sheet rises with them rather than changing as it rises.
+    @Test
+    fun thePicker_opensWithTheSavedGameAndTheLastKind_alreadyInIt() = runBlocking {
+        val saved = savedGame(GameKind.Swiss, (1L..6L).toList(), answered = 2)
+        val viewModel = viewModel(games = SlowSavedGames(FakeSavedGames(mapOf(KEY to saved), last = GameKind.Hill)))
+        viewModel.state.firstWithin { KEY in it.saved }
+
+        viewModel.open()
+
+        val picker = picker(viewModel.state.value)!!
+        assertEquals(GameKind.Hill, picker.kind)
+        assertEquals(2, picker.resume?.played)
     }
 
     @Test
@@ -352,13 +367,26 @@ class PlayViewModelTest {
     }
 
     private fun viewModel(
-        games: FakeSavedGames = FakeSavedGames(),
+        games: SavedGames = FakeSavedGames(),
         boards: MovingTierRepository = MovingTierRepository(unranked),
         request: PlayRequest = PlayRequest.ownBoard(unranked),
     ) = PlayViewModel(games, boards).apply {
         clock = { NOW }
         seeds = { 7 }
         offer(request)
+    }
+
+    /** A store that takes a moment to answer, as the file does on a phone. */
+    private class SlowSavedGames(private val games: SavedGames) : SavedGames by games {
+        override suspend fun load(key: String): SavedGame? {
+            delay(50)
+            return games.load(key)
+        }
+
+        override suspend fun lastKind(): GameKind? {
+            delay(50)
+            return games.lastKind()
+        }
     }
 
     private fun savedGame(kind: GameKind, ids: List<Long>, answered: Int) = SavedGame(

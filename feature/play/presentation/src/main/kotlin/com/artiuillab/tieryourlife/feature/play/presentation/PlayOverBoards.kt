@@ -11,8 +11,11 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
@@ -76,24 +79,10 @@ internal fun PlayLayer(
     }
 
     val stage = state.stage
+    val picker = pickerOver(stage)
     Box(Modifier.fillMaxSize()) {
         when (stage) {
-            PlayStage.Closed -> Unit
-            is PlayStage.Picking -> PickerSheet(
-                picker = stage.picker,
-                actions = PickerActions(
-                    onChoose = viewModel.picker::choose,
-                    onShowCards = viewModel.picker::showCards,
-                    onShowGames = viewModel.picker::showGames,
-                    onToggle = viewModel.picker::toggle,
-                    onToggleEverything = viewModel.picker::toggleEverything,
-                    onKeepInTier = viewModel.picker::keepInTier,
-                    onDismiss = viewModel.picker::dismiss,
-                    onStart = viewModel.picker::start,
-                    onResume = viewModel.picker::resume,
-                    onStartAgain = viewModel.picker::startAgain,
-                ),
-            )
+            PlayStage.Closed, is PlayStage.Picking -> Unit
             is PlayStage.Dueling -> {
                 FullScreenTask()
                 BackHandler(onBack = viewModel.duel::quit)
@@ -120,6 +109,23 @@ internal fun PlayLayer(
                 )
             }
         }
+        if (picker != null) {
+            PickerSheet(
+                picker = picker,
+                actions = PickerActions(
+                    onChoose = viewModel.picker::choose,
+                    onShowCards = viewModel.picker::showCards,
+                    onShowGames = viewModel.picker::showGames,
+                    onToggle = viewModel.picker::toggle,
+                    onToggleEverything = viewModel.picker::toggleEverything,
+                    onKeepInTier = viewModel.picker::keepInTier,
+                    onDismiss = viewModel.picker::dismiss,
+                    onStart = viewModel.picker::start,
+                    onResume = viewModel.picker::resume,
+                    onStartAgain = viewModel.picker::startAgain,
+                ),
+            )
+        }
         DeletedItemSnackbarHost(
             hostState = snackbar,
             modifier = Modifier
@@ -130,6 +136,25 @@ internal fun PlayLayer(
         )
     }
 }
+
+/**
+ * The picker, and for a moment longer once a game starts. The sheet and its
+ * scrim are a window of their own; gone in the frame the game is first drawn,
+ * the window can leave the screen before the game reaches it, and the bare
+ * board blinks between the two. Held until the game has been drawn under it.
+ */
+@Composable
+private fun pickerOver(stage: PlayStage): Picker? {
+    var before by remember { mutableStateOf(stage) }
+    val covering = stage is PlayStage.Dueling || stage is PlayStage.Finished
+    LaunchedEffect(stage) {
+        if (covering && before is PlayStage.Picking) repeat(FRAMES_UNDER_THE_SHEET) { withFrameNanos { } }
+        before = stage
+    }
+    return (stage as? PlayStage.Picking)?.picker ?: (before as? PlayStage.Picking)?.picker?.takeIf { covering }
+}
+
+private const val FRAMES_UNDER_THE_SHEET = 2
 
 private fun noticeText(notice: PlayNotice, resources: android.content.res.Resources): Pair<String, String?> = when (notice) {
     is PlayNotice.GameSaved ->
