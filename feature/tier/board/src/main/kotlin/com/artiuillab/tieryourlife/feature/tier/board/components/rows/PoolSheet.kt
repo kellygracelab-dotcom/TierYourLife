@@ -64,6 +64,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.common.dashedBorder
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.DraggableTile
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDragController
+import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TileScroll
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -280,6 +281,7 @@ private fun PoolCards(
                 onMoveItem = onMoveItem,
                 onDeleteItem = onDeleteItem,
                 onDoubleTap = onDoubleTap,
+                scroll = TileScroll.Sideways,
             )
         }
     }

@@ -67,6 +67,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.drag.DraggableT
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.ShortLongPressViewConfiguration
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDropOutcome
+import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TileScroll
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
@@ -258,6 +259,7 @@ fun TierRow(
                         onMoveItem = onMoveItem,
                         onDeleteItem = onDeleteItem,
                         onDoubleTap = onDoubleTap,
+                        scroll = TileScroll.BothWays,
                     )
                 }
             }
