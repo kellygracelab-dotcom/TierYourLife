@@ -39,25 +39,17 @@
     </plurals>
     <string name="account_reason_devices">ボードは新しい端末にもついてきます。</string>
     <string name="account_reason_publish">リストの公開にはアカウントが必要です。</string>
-    <string name="account_backup_label">ボードをバックアップ</string>
-    <string name="account_backup_sub">%1$sとその画像。設定でオフにできます。</string>
-    <string name="account_sign_out_body_1">ボードはこの端末にもアカウントにも残ります。ログアウト後の変更は同期されません。</string>
+    <string name="account_sign_out_body_1">ボードは%1$sとこの端末に残り、再びログインするまで非表示になります。ログアウト中は、アカウントなしで作ったボードだけが表示されます。</string>
     <string name="account_sign_out_body_2">クレジットと購入はここで待っています。</string>
     <plurals name="account_board_count">
         <item quantity="other">%1$d 件のボード</item>
     </plurals>
-    <string name="merge_title">このアカウントは以前に使っています</string>
-    <string name="merge_body">すでに%1$sがあります。この端末にはアカウントなしで作った%2$sがあります。</string>
-    <string name="merge_keep_title">すべて残す</string>
-    <string name="merge_keep_sub">%1$sすべて。同じ名前が二つあれば、この端末側に「（この端末から）」が付きます。</string>
-    <string name="merge_remote_title">アカウントのボードだけ使う</string>
-    <string name="merge_remote_sub">この端末の%1$sはごみ箱に入ります。30日間は復元できます。</string>
-    <string name="merge_footnote">どちらを選んでも何も削除されません。</string>
-    <string name="merge_recommended">推奨</string>
-    <string name="merge_action_continue">続ける</string>
+    <string name="merge_title">アカウントなしで作ったボード</string>
+    <string name="merge_body">この端末には、アカウントなしで作った%1$sがあります。%2$sに移しますか？</string>
+    <string name="merge_footnote">端末に残したボードは、ログアウト中に表示されます。どちらを選んでも何も削除されません。</string>
     <string name="merge_name_suffix">（この端末から）</string>
     <string name="account_sign_out_title">ログアウトしますか？</string>
-    <string name="account_sign_out_helper">ボードはこの端末にもアカウントにも残ります。ログアウト後の変更は同期されません。 クレジットと購入はここで待っています。</string>
+    <string name="account_sign_out_helper">ボードはアカウントとこの端末に残り、再びログインするまで非表示になります。クレジットと購入はここで待っています。</string>
     <string name="account_action_delete">アカウントを削除</string>
     <string name="account_delete_title">アカウントを削除しますか？</string>
     <string name="account_delete_body">アカウントが削除され、ボードの控え、公開したもの、それに使われた画像もなくなります。元に戻すことはできません。</string>
@@ -69,4 +61,7 @@
     <string name="account_face_position_use">これを使う</string>
     <string name="account_face_position_failed">ここでは画像を表示できません。このままでも使えます。</string>
     <string name="account_face_position_frame">円に収める画像</string>
+    <string name="merge_action_move_in">%1$sに移す</string>
+    <string name="merge_action_keep_here">この端末だけに残す</string>
+    <string name="merge_account_fallback">Googleアカウント</string>
 </resources>

@@ -35,53 +35,16 @@ class AccountScreenContentTest {
     private var signOuts = 0
     private val names = mutableListOf<String>()
 
-    private val backUpChanges = mutableListOf<Boolean>()
     private var positioningCancelled = 0
     private val confirmedCrops = mutableListOf<FaceCrop?>()
 
-    @Test
-    fun theOfferSaysWhatItWouldBeKeeping() {
-        setContent(AccountUiState(account = Account.Guest, boardCount = 3))
-
-        composeRule.onNodeWithTag(AccountTestTags.BACK_UP_BOARDS).assertIsDisplayed()
-        composeRule.onNodeWithText(
-            string(
-                R.string.account_backup_sub,
-                plural(R.plurals.account_board_count, 3),
-            ),
-        ).assertIsDisplayed()
-    }
-
-    // Answered here, before anything has gone up. Turning it off later is a
-    // different question, because by then there is a copy to delete.
-    @Test
-    fun turningTheOfferOff_reachesTheCaller() {
-        setContent(AccountUiState(account = Account.Guest, backUpBoards = true))
-
-        composeRule.onNodeWithTag(AccountTestTags.BACK_UP_BOARDS).performClick()
-
-        composeRule.runOnIdle { assertEquals(listOf(false), backUpChanges) }
-    }
-
-    @Test
-    fun signedIn_neverSeesTheOffer() {
-        setContent(AccountUiState(account = Account.SignedIn("someone@example.com", null)))
-
-        composeRule.onNodeWithTag(AccountTestTags.BACK_UP_BOARDS).assertDoesNotExist()
-    }
-
     private fun string(resourceId: Int, vararg formatArgs: Any): String =
         InstrumentationRegistry.getInstrumentation().targetContext.getString(resourceId, *formatArgs)
-
-    private fun plural(resourceId: Int, count: Int): String =
-        InstrumentationRegistry.getInstrumentation().targetContext.resources
-            .getQuantityString(resourceId, count, count)
 
     private fun setContent(state: AccountUiState) {
         closed = 0
         signInRequests = 0
         signOuts = 0
-        backUpChanges.clear()
         names.clear()
         positioningCancelled = 0
         confirmedCrops.clear()
@@ -93,7 +56,6 @@ class AccountScreenContentTest {
                     onSignIn = { signInRequests++ },
                     onSignOut = { signOuts++ },
                     onSetName = { names += it },
-                    onBackUpBoardsChange = { backUpChanges += it },
                     onCancelPositioning = { positioningCancelled++ },
                     onConfirmPosition = { confirmedCrops += it },
                 )
@@ -213,7 +175,7 @@ class AccountScreenContentTest {
 
         composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT).performScrollTo().performClick()
 
-        composeRule.onNodeWithText(string(R.string.account_sign_out_body_1)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.account_sign_out_body_1, "someone@example.com")).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.account_sign_out_body_2)).assertIsDisplayed()
     }
 

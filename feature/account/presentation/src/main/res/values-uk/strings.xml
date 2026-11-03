@@ -45,9 +45,7 @@
     </plurals>
     <string name="account_reason_devices">Дошки переїдуть за вами на новий телефон.</string>
     <string name="account_reason_publish">Щоб опублікувати список, потрібен обліковий запис.</string>
-    <string name="account_backup_label">Зберігати копію дошок</string>
-    <string name="account_backup_sub">%1$s та їхні картинки. Вимкнути можна в налаштуваннях.</string>
-    <string name="account_sign_out_body_1">Дошки залишаться і на телефоні, і в обліковому записі. Зміни після виходу туди не потраплять.</string>
+    <string name="account_sign_out_body_1">Дошки залишаться в обліковому записі %1$s і на цьому телефоні, приховані, доки ви знову не ввійдете. Без входу ви бачитимете лише дошки, зроблені без облікового запису.</string>
     <string name="account_sign_out_body_2">Кредити та покупки чекатимуть на вас тут.</string>
     <plurals name="account_board_count">
         <item quantity="one">%1$d дошка</item>
@@ -55,18 +53,12 @@
         <item quantity="many">%1$d дошок</item>
         <item quantity="other">%1$d дошки</item>
     </plurals>
-    <string name="merge_title">Ви вже користувалися цим обліковим записом</string>
-    <string name="merge_body">У ньому вже є %1$s. На цьому телефоні — %2$s, зроблені без облікового запису.</string>
-    <string name="merge_keep_title">Залишити все</string>
-    <string name="merge_keep_sub">Усі %1$s. Якщо дві називаються однаково, до місцевої додасться «(з цього телефона)».</string>
-    <string name="merge_remote_title">Лише дошки з облікового запису</string>
-    <string name="merge_remote_sub">%1$s з цього телефона підуть у кошик. Їх можна повернути протягом 30 днів.</string>
-    <string name="merge_footnote">Нічого не видаляється в жодному разі.</string>
-    <string name="merge_recommended">Рекомендовано</string>
-    <string name="merge_action_continue">Продовжити</string>
+    <string name="merge_title">Дошки без облікового запису</string>
+    <string name="merge_body">На цьому телефоні є дошки, зроблені без облікового запису (%1$s). Перенести їх в обліковий запис %2$s?</string>
+    <string name="merge_footnote">Залишені на телефоні, вони видні, коли ви не ввійшли. Нічого не видаляється в жодному разі.</string>
     <string name="merge_name_suffix">(з цього телефона)</string>
     <string name="account_sign_out_title">Вийти?</string>
-    <string name="account_sign_out_helper">Дошки залишаться і на телефоні, і в обліковому записі. Зміни після виходу туди не потраплять. Кредити та покупки чекатимуть на вас тут.</string>
+    <string name="account_sign_out_helper">Дошки залишаться в обліковому записі й на телефоні, приховані до наступного входу. Кредити та покупки чекатимуть на вас тут.</string>
     <string name="account_action_delete">Видалити акаунт</string>
     <string name="account_delete_title">Видалити акаунт?</string>
     <string name="account_delete_body">Акаунт зникне, а разом з ним копія ваших дошок, усе опубліковане та зображення до нього. Скасувати це неможливо.</string>
@@ -78,4 +70,7 @@
     <string name="account_face_position_use">Готово</string>
     <string name="account_face_position_failed">Картинку не вдалося показати тут. Її все одно можна поставити як є.</string>
     <string name="account_face_position_frame">Картинка, яку треба розташувати в колі</string>
+    <string name="merge_action_move_in">Перенести в обліковий запис %1$s</string>
+    <string name="merge_action_keep_here">Залишити лише на цьому телефоні</string>
+    <string name="merge_account_fallback">Google</string>
 </resources>

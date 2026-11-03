@@ -1,26 +1,26 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.sync
 
 /**
- * What to do when somebody signs into an account that already has boards.
- * Only a question when both sides hold something: two sets of work, neither
- * disposable.
+ * What becomes of the boards made without an account when somebody signs in.
+ * A first sign-in, which turns the guest into the account, takes them without
+ * a word; signing into an account used before asks, since they may not be that
+ * account's to have. Another account's boards are never part of the question.
  */
-data class MergeChoice(val accountBoards: Int, val localBoards: Int) {
-
-    /** Nothing to ask when only one side has anything. */
-    val needed: Boolean get() = accountBoards > 0 && localBoards > 0
-
-    val total: Int get() = accountBoards + localBoards
-}
-
 interface BoardMerge {
 
-    /** Null when the account could not be read: unknown is not empty, and empty would merge without asking. */
-    suspend fun choice(): MergeChoice?
+    /** Before signing in: nothing syncs from then until [moveIn] or [keepHere], so nothing goes up before the question is settled. */
+    fun hold()
 
-    /** Both survive; boards from this phone sharing a name with one in the account are renamed. */
-    suspend fun keepEverything(fromThisPhone: String)
+    /** Boards made without an account, the trash left out. */
+    suspend fun guestBoards(): Int
 
-    /** The account's boards are the ones in use; this phone's go to the trash, so "nothing is deleted either way" stays true. */
-    suspend fun useAccountBoards()
+    /**
+     * They become the signed-in account's and go up with its next sync. Those
+     * sharing a name with one already in it get [fromThisPhone] added; null
+     * for an account too new to hold any.
+     */
+    suspend fun moveIn(fromThisPhone: String?)
+
+    /** They stay this phone's own, shown whenever nobody is signed in. */
+    suspend fun keepHere()
 }

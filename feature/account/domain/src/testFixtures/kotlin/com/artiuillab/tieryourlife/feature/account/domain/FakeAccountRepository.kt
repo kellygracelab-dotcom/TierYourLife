@@ -23,7 +23,7 @@ open class FakeAccountRepository(
 
     override suspend fun signInWithGoogle(idToken: String): SignInOutcome {
         tokens += idToken
-        if (outcome is SignInOutcome.Success) {
+        if (outcome is SignInOutcome.Success || outcome is SignInOutcome.SignedInToExistingAccount) {
             accounts.value = Account.SignedIn(email = SIGNED_IN_EMAIL, photoUrl = null)
         }
         return outcome

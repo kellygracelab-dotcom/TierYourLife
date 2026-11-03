@@ -44,7 +44,7 @@
     </plurals>
     <string name="settings_backup_label">Meine Boards sichern</string>
     <string name="settings_backup_note">Deine Fotos und erzeugten Karten liegen in deinem Konto, wo nur du sie siehst. Beim Veröffentlichen werden die Bilder in den Feed kopiert, wo alle sie sehen.</string>
-    <string name="settings_backup_off_body">Deine Boards bleiben auf diesem Telefon. Die Kopie in deinem Konto wird gelöscht, und ein neues Telefon fängt leer an.</string>
+    <string name="settings_backup_off_body">Auf diesem Telefon wird nichts gelöscht: Deine Boards bleiben hier. Die Kopie in deinem Konto wird gelöscht, und ein neues Telefon fängt leer an. Schaltest du es wieder ein, werden sie erneut hochgeladen.</string>
     <string name="settings_backup_off_cancel">Abbrechen</string>
     <string name="settings_backup_off_confirm">Beenden und löschen</string>
     <string name="settings_backup_off_title">Sicherung beenden?</string>

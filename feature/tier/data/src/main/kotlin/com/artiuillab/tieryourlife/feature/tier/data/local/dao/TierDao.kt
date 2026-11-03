@@ -63,8 +63,11 @@ interface TierDao {
         tiers: List<NewTemplateTier>,
         items: List<NewPoolItem>,
         takenFrom: String?,
+        owner: String?,
     ): Long {
-        val tierListId = insertTierList(TierListEntity(title = title, authorName = authorName, takenFrom = takenFrom))
+        val tierListId = insertTierList(
+            TierListEntity(title = title, authorName = authorName, takenFrom = takenFrom, ownerUid = owner),
+        )
 
         tiers.forEachIndexed { index, tier ->
             val tierId = insertTier(
@@ -105,11 +108,12 @@ interface TierDao {
         credit = item.credit,
     )
 
-    @Query("SELECT COUNT(*) FROM tier_lists WHERE publishedId IS NOT NULL AND deletedAt IS NULL")
-    suspend fun countPublishedLists(): Int
+    // `IS`, not `=`: null is an owner too, the boards made without an account.
+    @Query("SELECT COUNT(*) FROM tier_lists WHERE publishedId IS NOT NULL AND deletedAt IS NULL AND ownerUid IS :owner")
+    suspend fun countPublishedLists(owner: String?): Int
 
-    @Query("SELECT COUNT(*) FROM tier_lists WHERE deletedAt IS NULL")
-    suspend fun countBoards(): Int
+    @Query("SELECT COUNT(*) FROM tier_lists WHERE deletedAt IS NULL AND ownerUid IS :owner")
+    suspend fun countBoards(owner: String?): Int
 
     @Query(
         """
@@ -120,6 +124,7 @@ interface TierDao {
             AND i.imageUrl IS NOT NULL
             AND i.deletedAt IS NULL
             AND l.deletedAt IS NULL
+            AND l.ownerUid IS :owner
         LIMIT :limit
         """,
     )
@@ -128,7 +133,7 @@ interface TierDao {
      * Gallery photographs are excluded on purpose -- a face is public, and a
      * personal photograph should not first become public there.
      */
-    suspend fun cardImageUrls(limit: Int): List<String>
+    suspend fun cardImageUrls(owner: String?, limit: Int): List<String>
 
     // Both together, always: an id without the fingerprint that goes with it
     // would claim the published copy is behind the moment anybody looked.
@@ -164,8 +169,8 @@ interface TierDao {
     // The captions come from the caller: they are shown to the reader, so they
     // belong to a screen's resources and follow the language it is drawn in.
     @Transaction
-    suspend fun createTierListWithDefaultTier(title: String, captions: List<String>): Long {
-        val tierListId = insertTierList(TierListEntity(title = title))
+    suspend fun createTierListWithDefaultTier(title: String, captions: List<String>, owner: String?): Long {
+        val tierListId = insertTierList(TierListEntity(title = title, ownerUid = owner))
 
         val defaultTiers = listOf(
             TierEntity(
@@ -209,16 +214,16 @@ interface TierDao {
     @Query("SELECT * FROM active_tier_lists WHERE id = :id")
     suspend fun getTierListById(id: Long): TierListEntity?
 
-    @Query("SELECT * FROM active_tier_lists ORDER BY id ASC")
-    suspend fun getAllTierLists(): List<TierListEntity>
+    @Query("SELECT * FROM active_tier_lists WHERE ownerUid IS :owner ORDER BY id ASC")
+    suspend fun getAllTierLists(owner: String?): List<TierListEntity>
 
     @Transaction
-    @Query("SELECT * FROM active_tier_lists ORDER BY id ASC")
-    suspend fun getAllTierListsWithTiers(): List<TierListWithTiers>
+    @Query("SELECT * FROM active_tier_lists WHERE ownerUid IS :owner ORDER BY id ASC")
+    suspend fun getAllTierListsWithTiers(owner: String?): List<TierListWithTiers>
 
     @Transaction
-    @Query("SELECT * FROM active_tier_lists WHERE id = :id")
-    suspend fun getTierListWithTiers(id: Long): TierListWithTiers?
+    @Query("SELECT * FROM active_tier_lists WHERE id = :id AND ownerUid IS :owner")
+    suspend fun getTierListWithTiers(id: Long, owner: String?): TierListWithTiers?
 
     @Query("DELETE FROM tier_lists WHERE id = :id")
     suspend fun deleteTierListById(id: Long): Int
@@ -242,29 +247,30 @@ interface TierDao {
                 JOIN tiers t ON i.tierId = t.id
                 WHERE t.tierListId = l.id AND i.deletedAt IS NULL) AS itemCount
         FROM tier_lists l
-        WHERE l.deletedAt IS NOT NULL
+        WHERE l.deletedAt IS NOT NULL AND l.ownerUid IS :owner
         ORDER BY l.deletedAt DESC
         """,
     )
-    suspend fun getDeletedTierLists(): List<DeletedTierListRow>
+    suspend fun getDeletedTierLists(owner: String?): List<DeletedTierListRow>
 
     /**
-     * [account] is who is signed in, or null for nobody. Only that account
-     * keeps its record of the boards going, so only it hears of the delete:
-     * any other would have its copy taken out on its next sign-in.
+     * [owner] is whose trash it is: who is signed in, or null for nobody. Only
+     * that account keeps its record of the boards going, so only it hears of
+     * the delete: any other would have its copy taken out on its next sign-in.
+     * Another owner's trash is not theirs to empty.
      */
     @Transaction
-    suspend fun emptyTrash(account: String?, keepingListIds: Set<Long> = emptySet()) {
+    suspend fun emptyTrash(owner: String?, keepingListIds: Set<Long> = emptySet()) {
         if (keepingListIds.isEmpty()) {
-            forgetTrashedBoardsInOtherAccounts(account)
-            deleteAllTrashedTierLists()
+            forgetTrashedBoardsInOtherAccounts(owner)
+            deleteAllTrashedTierLists(owner)
         } else {
-            getDeletedTierLists()
+            getDeletedTierLists(owner)
                 .filterNot { it.id in keepingListIds }
-                .forEach { deleteTierListPermanently(it.id, account) }
+                .forEach { deleteTierListPermanently(it.id, owner) }
         }
         // Cards an older phone or the web once trashed: the trash no longer shows them, so this is their way out.
-        deleteAllTrashedTierItems()
+        deleteAllTrashedTierItems(owner)
     }
 
     /** As [emptyTrash], for one board. */
@@ -277,11 +283,11 @@ interface TierDao {
     @Query(
         """
         DELETE FROM board_sync
-        WHERE listUid IN (SELECT uid FROM tier_lists WHERE deletedAt IS NOT NULL)
-            AND (:account IS NULL OR account != :account)
+        WHERE listUid IN (SELECT uid FROM tier_lists WHERE deletedAt IS NOT NULL AND ownerUid IS :owner)
+            AND (:owner IS NULL OR account != :owner)
         """,
     )
-    suspend fun forgetTrashedBoardsInOtherAccounts(account: String?)
+    suspend fun forgetTrashedBoardsInOtherAccounts(owner: String?)
 
     @Query(
         """
@@ -292,11 +298,17 @@ interface TierDao {
     )
     suspend fun forgetBoardInOtherAccounts(id: Long, account: String?)
 
-    @Query("DELETE FROM tier_lists WHERE deletedAt IS NOT NULL")
-    suspend fun deleteAllTrashedTierLists()
+    @Query("DELETE FROM tier_lists WHERE deletedAt IS NOT NULL AND ownerUid IS :owner")
+    suspend fun deleteAllTrashedTierLists(owner: String?)
 
-    @Query("DELETE FROM tier_items WHERE deletedAt IS NOT NULL")
-    suspend fun deleteAllTrashedTierItems()
+    @Query(
+        """
+        DELETE FROM tier_items
+        WHERE deletedAt IS NOT NULL
+            AND tierId IN (SELECT t.id FROM tiers t JOIN tier_lists l ON t.tierListId = l.id WHERE l.ownerUid IS :owner)
+        """,
+    )
+    suspend fun deleteAllTrashedTierItems(owner: String?)
 
     @Insert
     suspend fun insertTier(tier: TierEntity): Long

@@ -48,7 +48,7 @@
     </plurals>
     <string name="settings_backup_label">Хранить копию досок</string>
     <string name="settings_backup_note">Ваши фото и сгенерированные карточки едут в ваш аккаунт, где их видите только вы. Публикация копирует картинки списка в ленту, где их видят все.</string>
-    <string name="settings_backup_off_body">Доски останутся на этом телефоне. Копия в аккаунте будет удалена, и новый телефон начнёт с пустого.</string>
+    <string name="settings_backup_off_body">С телефона ничего не удаляется: доски останутся здесь. Копия в аккаунте будет удалена, и новый телефон начнёт с пустого. Если включить снова, они загрузятся заново.</string>
     <string name="settings_backup_off_cancel">Отмена</string>
     <string name="settings_backup_off_confirm">Удалить копию</string>
     <string name="settings_backup_off_title">Перестать хранить копию?</string>

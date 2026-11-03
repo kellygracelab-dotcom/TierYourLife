@@ -16,6 +16,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.BoardOwner
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
@@ -26,7 +27,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -54,7 +58,7 @@ class TierListsViewModelTest {
                 fakeList(id = 2, title = "Another list", editedAt = 1),
             ),
         )
-        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
 
         viewModel.loadTierLists()
         val state = viewModel.state.firstWithin { it is TierListsUiState.Success } as TierListsUiState.Success
@@ -67,7 +71,7 @@ class TierListsViewModelTest {
     @Test
     fun loadTierLists_onAnEmptyRepository_staysEmpty_andCreatesNothing() = runBlocking {
         val repository = FakeTierRepository(initial = emptyList())
-        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
 
         viewModel.loadTierLists()
         val state = viewModel.state.firstWithin { it is TierListsUiState.Success } as TierListsUiState.Success
@@ -79,7 +83,7 @@ class TierListsViewModelTest {
     @Test
     fun secondLoad_afterARenameOnTheRepository_showsTheNewTitle() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))
-        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -95,6 +99,24 @@ class TierListsViewModelTest {
     }
 
     @Test
+    fun anotherIdentity_showsItsOwnBoards_withoutBeingAsked() = runBlocking {
+        val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Ann's films")))
+        val owner = MovingOwner()
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, owner)
+        viewModel.loadTierLists()
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
+
+        repository.renameTierList(1, "Bob's games")
+        withTimeout(5_000) { owner.changes.subscriptionCount.first { it > 0 } }
+        owner.changes.emit(Unit)
+
+        viewModel.state.firstWithin {
+            it is TierListsUiState.Success && it.lists.singleOrNull()?.title == "Bob's games"
+        }
+        Unit
+    }
+
+    @Test
     fun secondLoad_afterADeletionOnTheRepository_dropsTheDeletedList() = runBlocking {
         val repository = FakeTierRepository(
             initial = listOf(
@@ -102,7 +124,7 @@ class TierListsViewModelTest {
                 fakeList(id = 2, title = "Gets deleted"),
             ),
         )
-        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -120,7 +142,7 @@ class TierListsViewModelTest {
     @Test
     fun firstLoad_passesThroughLoadingState() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Existing")))
-        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
 
         val collected = recordStates(viewModel)
 
@@ -135,7 +157,7 @@ class TierListsViewModelTest {
     @Test
     fun secondLoad_neverShowsLoading_andReplacesTheListInOneStep() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Old title")))
-        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -162,7 +184,7 @@ class TierListsViewModelTest {
         val repository = FakeTierRepository(
             initial = listOf(fakeList(id = 1, title = "Pizza in Lisbon"), fakeList(id = 2, title = "Sushi tour")),
         )
-        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -192,7 +214,7 @@ class TierListsViewModelTest {
                 fakeList(id = 4, title = "Tacos").copy(category = "street-food"),
             ),
         )
-        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
 
         viewModel.loadTierLists()
         val loaded = viewModel.state.firstWithin { it is TierListsUiState.Success } as TierListsUiState.Success
@@ -207,7 +229,7 @@ class TierListsViewModelTest {
     @Test
     fun exitSearch_returnsToBrowsingWithEveryListVisibleAgain() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Pizza in Lisbon")))
-        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -228,7 +250,7 @@ class TierListsViewModelTest {
     @Test
     fun toggleSelection_deselectingTheLastId_returnsToBrowsingMode() = runBlocking {
         val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Only list")))
-        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -251,7 +273,7 @@ class TierListsViewModelTest {
         val repository = FakeTierRepository(
             initial = listOf(fakeList(id = 1, title = "Keeps existing"), fakeList(id = 2, title = "Gets deleted")),
         )
-        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
 
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
@@ -280,7 +302,7 @@ class TierListsViewModelTest {
             initial = listOf(fakeList(id = 1, title = "Films", publishedId = "published-1")),
         )
         val community = TestCommunity()
-        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
 
@@ -298,7 +320,7 @@ class TierListsViewModelTest {
             initial = listOf(fakeList(id = 1, title = "Films", publishedId = "published-1")),
         )
         val community = TestCommunity(unpublishResult = Result.failure(IllegalStateException()))
-        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, community, FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
 
@@ -319,7 +341,7 @@ class TierListsViewModelTest {
         val community = TestCommunity(unpublishResult = Result.failure(IllegalStateException("403")))
         val preferences = FakeAppPreferences().apply { setPublishedOwners(mapOf("published-1" to "uid-a")) }
         val accounts = FakeAccountRepository(Account.SignedIn(email = "b@example.com", photoUrl = null, uid = "uid-b"))
-        val viewModel = TierListsViewModel(repository, community, preferences, accounts, NoBoardSync, NoPictureRestore)
+        val viewModel = TierListsViewModel(repository, community, preferences, accounts, NoBoardSync, NoPictureRestore, NoOwnerChange)
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success }
 
@@ -471,6 +493,15 @@ private class TestCommunity(
 /** A guest has nowhere to sync to, so every case here would report the same thing. */
 private object NoBoardSync : BoardSync {
     override suspend fun sync(): SyncReport = SyncReport(signedIn = false)
+}
+
+/** The same identity throughout, so the boards on screen are always the same library's. */
+private object NoOwnerChange : BoardOwner {
+    override val changes: Flow<Unit> = emptyFlow()
+}
+
+private class MovingOwner : BoardOwner {
+    override val changes = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 }
 
 /** Nothing is arriving on this phone, which is what the list screen sees almost always. */

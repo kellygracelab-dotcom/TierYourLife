@@ -461,6 +461,73 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    // Whose each board is cannot be known in SQL: every one is marked to be
+    // settled on the first run, and nothing else about it changes.
+    @Test
+    fun migration16To17_keepsEveryBoardAndRecord_withItsOwnerStillToSettle() {
+        helper.createDatabase(TEST_DB, 16).apply {
+            listOf(1 to "Films", 2 to "Games", 3 to "Books").forEach { (id, title) ->
+                execSQL(
+                    "INSERT INTO tier_lists (id, title, deletedAt, displayMode, publishedId, publishedFingerprint, " +
+                        "authorName, category, coverImageUrl, coverImageUrls, topicId, topicName, newTopicName, " +
+                        "takenFrom, rankingOf, uid, arrivedFrom, editedAt, favouritedAt, anonymous, play) " +
+                        "VALUES ($id, '$title', ${if (id == 3) "7" else "NULL"}, 'WRAP', NULL, NULL, NULL, NULL, " +
+                        "NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'board-$id', NULL, 5, NULL, 0, NULL)",
+                )
+            }
+            execSQL(
+                "INSERT INTO tiers (id, tierListId, position, label, colorLight, colorDark, isPool, caption, uid) " +
+                    "VALUES (1, 1, 0, 'S', '#B03A32', '#F1948C', 0, NULL, 'tier-1')",
+            )
+            execSQL(
+                "INSERT INTO tier_items (id, tierId, position, title, imageUrl, source, deletedAt, uid, credit) " +
+                    "VALUES (1, 1, 0, 'Alien', NULL, 'MANUAL', NULL, 'card-1', NULL)",
+            )
+            // Films agreed with one account, Games with two, Books with none.
+            execSQL("INSERT INTO board_sync VALUES ('ann', 'board-1', 3, 'print-1', 9)")
+            execSQL("INSERT INTO board_sync VALUES ('ann', 'board-2', 1, 'print-2', 4)")
+            execSQL("INSERT INTO board_sync VALUES ('bob', 'board-2', 2, 'print-2', 8)")
+            execSQL("INSERT INTO picture_sync VALUES ('pic-1', 6)")
+            close()
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 17, true, MIGRATION_16_17)
+
+        migratedDb.query("SELECT uid, title, ownerUid, deletedAt, editedAt FROM tier_lists ORDER BY id").use {
+            val rows = generateSequence { if (it.moveToNext()) it else null }.map { row ->
+                listOf(row.getString(0), row.getString(1), row.getString(2), row.getString(3), row.getLong(4))
+            }.toList()
+            assertEquals(
+                listOf(
+                    listOf("board-1", "Films", "?", null, 5L),
+                    listOf("board-2", "Games", "?", null, 5L),
+                    listOf("board-3", "Books", "?", "7", 5L),
+                ),
+                rows,
+            )
+        }
+        migratedDb.query("SELECT uid, ownerUid FROM active_tier_lists ORDER BY id").use {
+            assertEquals(2, it.count)
+            check(it.moveToFirst())
+            assertEquals("?", it.getString(1))
+        }
+        migratedDb.query("SELECT account, listUid, revision FROM board_sync ORDER BY account, listUid").use {
+            val rows = generateSequence { if (it.moveToNext()) it else null }
+                .map { row -> "${row.getString(0)}/${row.getString(1)}@${row.getInt(2)}" }
+                .toList()
+            assertEquals(listOf("ann/board-1@3", "ann/board-2@1", "bob/board-2@2"), rows)
+        }
+        migratedDb.query("SELECT COUNT(*) FROM tier_items WHERE uid = 'card-1'").use {
+            check(it.moveToFirst())
+            assertEquals(1, it.getInt(0))
+        }
+        // Which account holds each picture was never written down: they are sent again, per account.
+        migratedDb.query("SELECT COUNT(*) FROM picture_sync").use {
+            check(it.moveToFirst())
+            assertEquals(0, it.getInt(0))
+        }
+    }
+
     private fun editedAt(db: androidx.sqlite.db.SupportSQLiteDatabase): Long =
         db.query("SELECT editedAt FROM tier_lists WHERE id = 1").use {
             check(it.moveToFirst())

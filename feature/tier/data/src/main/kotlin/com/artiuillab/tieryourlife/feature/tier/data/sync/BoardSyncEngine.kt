@@ -20,6 +20,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequest
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
+import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.LocalBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.RemoteBoard
@@ -55,6 +56,7 @@ class BoardSyncEngine @Inject constructor(
     private val preferences: AppPreferences,
     private val deviceName: DeviceName,
     private val community: CommunityRepository,
+    private val ownership: BoardOwnership,
 ) : BoardSync {
 
     private val running = Mutex()
@@ -66,13 +68,18 @@ class BoardSyncEngine @Inject constructor(
      */
     override suspend fun sync(): SyncReport = running.withLock { run() }
 
+    /**
+     * Only the signed-in account's own boards: another account's, or the ones
+     * made without one, are never sent, whoever is signed in. Nothing while a
+     * sign-in waits on the question of what becomes of the latter.
+     */
     private suspend fun run(): SyncReport {
-        val account = signedInAs()
-        if (account.isNullOrBlank() || !preferences.backUpBoards()) {
+        val account = ownership.current()
+        if (account.isNullOrBlank() || ownership.holding || !preferences.backUpBoards(account)) {
             return SyncReport(signedIn = false)
         }
 
-        val local = dao.allBoards()
+        val local = dao.boardsOf(account)
         val fingerprints = local.associate { board -> board.uid to fingerprintOf(board) }
         val remote = readIndex()
         claimUnclaimed(account, fingerprints, remote)
@@ -84,7 +91,7 @@ class BoardSyncEngine @Inject constructor(
 
         // Pictures before boards, so no board ever names a picture the other
         // phone cannot fetch yet.
-        runSuspendCatching { pictures.push() }
+        runSuspendCatching { pictures.push(account) }
             .onFailure { failure -> Timber.w(failure, "Pictures did not go up") }
 
         var carried = 0
@@ -102,7 +109,7 @@ class BoardSyncEngine @Inject constructor(
                     Timber.w(failure, "Board sync: %s did not go through", step.uid)
                 }
         }
-        runSuspendCatching { pictures.pull(wantedPictures()) }
+        runSuspendCatching { pictures.pull(account, wantedPictures(account)) }
             .onFailure { failure -> Timber.w(failure, "Pictures did not come down") }
 
         runSuspendCatching { forgetWhatIsNoLongerPublished() }
@@ -126,7 +133,7 @@ class BoardSyncEngine @Inject constructor(
      */
     private suspend fun forgetWhatIsNoLongerPublished() {
         val account = signedInAs() ?: return
-        val claimed = dao.allBoards().mapNotNullTo(mutableSetOf()) { it.publishedId }
+        val claimed = dao.boardsOf(account).mapNotNullTo(mutableSetOf()) { it.publishedId }
         val theirs = if (claimed.isEmpty()) {
             emptySet()
         } else {
@@ -141,7 +148,7 @@ class BoardSyncEngine @Inject constructor(
         )
         if (reconciled.forget.isNotEmpty()) {
             Timber.i("%d published list(s) are no longer in the account", reconciled.forget.size)
-            dao.forgetPublished(reconciled.forget.toList())
+            dao.forgetPublished(account, reconciled.forget.toList())
         }
         preferences.setPublishedOwners(reconciled.owners)
         preferences.setLastPublishingAccount(account)
@@ -154,15 +161,17 @@ class BoardSyncEngine @Inject constructor(
         fingerprints: Map<String, String>,
         remote: Map<String, RemoteBoard>,
     ) {
-        val unclaimed = dao.syncRecordsOf(BoardSyncEntity.UNCLAIMED)
+        // Rows for another owner's boards wait for that owner's first run.
+        val othersBoards = dao.allBoards().filter { it.ownerUid != account }.mapTo(mutableSetOf()) { it.uid }
+        val unclaimed = dao.syncRecordsOf(BoardSyncEntity.UNCLAIMED).filterNot { it.listUid in othersBoards }
         if (unclaimed.isEmpty()) return
         val claimed = claimable(unclaimed, fingerprints, remote)
-        dao.claim(claimed.map { it.copy(account = account) })
+        dao.claim(considered = unclaimed.map { it.listUid }, claimed = claimed.map { it.copy(account = account) })
         Timber.i("Claimed %d of %d unclaimed sync record(s)", claimed.size, unclaimed.size)
     }
 
     /** Read from the database each run, so a download that failed last week is tried again. */
-    private suspend fun wantedPictures(): Map<String, String> = dao.allBoards()
+    private suspend fun wantedPictures(account: String): Map<String, String> = dao.boardsOf(account)
         .flatMap { board -> dao.itemsOf(board.id) }
         .mapNotNull { item ->
             val pictureId = images.pictureIdOf(item.imageUrl) ?: return@mapNotNull null
@@ -278,6 +287,7 @@ class BoardSyncEngine @Inject constructor(
      * out, a silent overwrite they cannot.
      */
     private suspend fun adopt(account: String, incoming: KeptBoardDto, asCopy: Boolean = false) {
+        if (!asCopy && dao.boardByUid(incoming.uid) != null) return adoptBesideAnotherOwners(account, incoming)
         val uid = if (asCopy) UUID.randomUUID().toString() else incoming.uid
         dao.addBoard(
             board = incoming.toEntity(id = 0, uid = uid).copy(
@@ -286,6 +296,7 @@ class BoardSyncEngine @Inject constructor(
                 // A copy is not the published list; two boards pointing at one
                 // published id would fight over it on the next publish.
                 publishedId = if (asCopy) null else incoming.publishedId,
+                ownerUid = account,
             ),
             // Renamed: every uid is unique and the original board still holds them.
             tiers = incoming.tiers(images::pathFor, renamed = asCopy),
@@ -294,6 +305,26 @@ class BoardSyncEngine @Inject constructor(
 
         val stored = dao.boardByUid(uid) ?: return
         remember(account, uid, incoming.revision, fingerprintOf(stored))
+    }
+
+    /**
+     * The uid is another owner's board here, which happens when one account's
+     * boards were once sent into another. This account's copy comes down under
+     * a new uid, and the record left for the old one makes the next run tell
+     * the account it is gone from here; the new uid goes up in its place.
+     */
+    private suspend fun adoptBesideAnotherOwners(account: String, incoming: KeptBoardDto) {
+        dao.addBoardRemembering(
+            board = incoming.toEntity(id = 0, uid = UUID.randomUUID().toString()).copy(publishedId = null, ownerUid = account),
+            tiers = incoming.tiers(images::pathFor, renamed = true),
+            record = BoardSyncEntity(
+                account = account,
+                listUid = incoming.uid,
+                revision = incoming.revision,
+                fingerprint = incoming.fingerprint.orEmpty(),
+                syncedAt = System.currentTimeMillis(),
+            ),
+        )
     }
 
     private suspend fun remember(account: String, uid: String, revision: Int, fingerprint: String) {
@@ -387,6 +418,7 @@ internal fun TierListEntity.keepingLocalFieldsOf(here: TierListEntity) = copy(
     rankingOf = here.rankingOf,
     arrivedFrom = here.arrivedFrom,
     favouritedAt = here.favouritedAt,
+    ownerUid = here.ownerUid,
 )
 
 internal fun KeptBoardDto.toEntity(id: Long, uid: String) = TierListEntity(

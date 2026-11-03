@@ -54,10 +54,13 @@ class FakeAppPreferences(
         this.asPictures = asPictures
     }
 
-    override fun backUpBoards(): Boolean = backUpBoards
+    /** Per account, as the real one; [backUpBoards] is what an account nobody has set yet reads. */
+    private val backUpByAccount = mutableMapOf<String, Boolean>()
 
-    override fun setBackUpBoards(backUp: Boolean) {
-        backUpBoards = backUp
+    override fun backUpBoards(account: String): Boolean = backUpByAccount[account] ?: backUpBoards
+
+    override fun setBackUpBoards(account: String, backUp: Boolean) {
+        backUpByAccount[account] = backUp
     }
 
     override fun signInOfferAnswered(): Boolean = offerAnswered

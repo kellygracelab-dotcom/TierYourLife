@@ -43,27 +43,19 @@
     </plurals>
     <string name="account_reason_devices">Vos tableaux vous suivent sur un nouveau téléphone.</string>
     <string name="account_reason_publish">Publier une liste demande un compte.</string>
-    <string name="account_backup_label">Sauvegarder mes tableaux</string>
-    <string name="account_backup_sub">%1$s et leurs images. Vous pouvez désactiver ça dans les réglages.</string>
-    <string name="account_sign_out_body_1">Vos tableaux restent sur ce téléphone et dans votre compte. Les modifications faites après la déconnexion ne seront pas synchronisées.</string>
+    <string name="account_sign_out_body_1">Vos tableaux restent dans le compte %1$s et sur ce téléphone, masqués jusqu’à ce que vous vous reconnectiez. Déconnecté, vous ne verrez que les tableaux créés sans compte.</string>
     <string name="account_sign_out_body_2">Les crédits et les achats vous attendent ici.</string>
     <plurals name="account_board_count">
         <item quantity="one">%1$d tableau</item>
         <item quantity="many">%1$d tableaux</item>
         <item quantity="other">%1$d tableaux</item>
     </plurals>
-    <string name="merge_title">Vous avez déjà utilisé ce compte</string>
-    <string name="merge_body">Il contient déjà %1$s. Ce téléphone a %2$s créés sans compte.</string>
-    <string name="merge_keep_title">Tout garder</string>
-    <string name="merge_keep_sub">Les %1$s. Si deux portent le même nom, le tableau local reçoit « (de ce téléphone) ».</string>
-    <string name="merge_remote_title">Utiliser seulement les tableaux du compte</string>
-    <string name="merge_remote_sub">%1$s de ce téléphone vont à la corbeille. Vous pouvez les restaurer pendant 30 jours.</string>
-    <string name="merge_footnote">Rien n’est supprimé dans les deux cas.</string>
-    <string name="merge_recommended">Recommandé</string>
-    <string name="merge_action_continue">Continuer</string>
+    <string name="merge_title">Tableaux créés sans compte</string>
+    <string name="merge_body">Ce téléphone a %1$s créés sans compte. Les déplacer dans le compte %2$s ?</string>
+    <string name="merge_footnote">Gardés sur ce téléphone, ils s’affichent dès que vous êtes déconnecté. Rien n’est supprimé dans les deux cas.</string>
     <string name="merge_name_suffix">(de ce téléphone)</string>
     <string name="account_sign_out_title">Se déconnecter ?</string>
-    <string name="account_sign_out_helper">Vos tableaux restent sur ce téléphone et dans votre compte. Les modifications faites après la déconnexion ne seront pas synchronisées. Les crédits et les achats vous attendent ici.</string>
+    <string name="account_sign_out_helper">Vos tableaux restent dans votre compte et sur ce téléphone, masqués jusqu’à votre prochaine connexion. Les crédits et les achats vous attendent ici.</string>
     <string name="account_action_delete">Supprimer le compte</string>
     <string name="account_delete_title">Supprimer ce compte ?</string>
     <string name="account_delete_body">Le compte disparaît, et avec lui la copie de vos tableaux, tout ce que vous avez publié et les images associées. C’est irréversible.</string>
@@ -75,4 +67,7 @@
     <string name="account_face_position_use">Utiliser</string>
     <string name="account_face_position_failed">L’image ne peut pas s’afficher ici. Elle peut quand même être utilisée telle quelle.</string>
     <string name="account_face_position_frame">L’image à placer dans le cercle</string>
+    <string name="merge_action_move_in">Les déplacer dans le compte %1$s</string>
+    <string name="merge_action_keep_here">Les garder seulement sur ce téléphone</string>
+    <string name="merge_account_fallback">Google</string>
 </resources>

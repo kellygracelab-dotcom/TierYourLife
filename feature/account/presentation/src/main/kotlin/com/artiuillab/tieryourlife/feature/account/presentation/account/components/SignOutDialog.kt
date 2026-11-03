@@ -20,7 +20,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountT
  * two fears: losing the work, and losing what was paid for.
  */
 @Composable
-internal fun SignOutDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+internal fun SignOutDialog(email: String?, onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = Modifier.testTag(AccountTestTags.SIGN_OUT_DIALOG),
@@ -28,7 +28,7 @@ internal fun SignOutDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         text = {
             Column {
                 Text(
-                    text = stringResource(R.string.account_sign_out_body_1),
+                    text = stringResource(R.string.account_sign_out_body_1, email ?: stringResource(R.string.merge_account_fallback)),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

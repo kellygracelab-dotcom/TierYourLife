@@ -52,7 +52,7 @@
     </plurals>
     <string name="settings_backup_label">احتفظ بنسخة من لوحاتي</string>
     <string name="settings_backup_note">تنتقل صورك وبطاقاتك المُولّدة إلى حسابك، ولا يراها سواك. والنشر ينسخ صور القائمة إلى المجتمع حيث يراها الجميع.</string>
-    <string name="settings_backup_off_body">تبقى لوحاتك على هذا الهاتف. تُحذف النسخة في حسابك، وسيبدأ الهاتف الجديد فارغًا.</string>
+    <string name="settings_backup_off_body">لا يُحذف شيء من هذا الهاتف: تبقى لوحاتك هنا. تُحذف النسخة في حسابك، وسيبدأ الهاتف الجديد فارغًا. أعد تشغيله فتُرفع من جديد.</string>
     <string name="settings_backup_off_cancel">إلغاء</string>
     <string name="settings_backup_off_confirm">إيقاف وحذف</string>
     <string name="settings_backup_off_title">إيقاف النسخ الاحتياطي؟</string>

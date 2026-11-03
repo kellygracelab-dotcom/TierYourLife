@@ -42,7 +42,7 @@
     </plurals>
     <string name="settings_backup_label">ボードをバックアップ</string>
     <string name="settings_backup_note">写真と生成カードはあなたのアカウントに保存され、見られるのはあなただけです。公開すると画像はフィードに複製され、誰でも見られます。</string>
-    <string name="settings_backup_off_body">ボードはこの端末に残ります。アカウント内のコピーは削除され、新しい端末は空の状態から始まります。</string>
+    <string name="settings_backup_off_body">この端末からは何も削除されません。ボードはここに残ります。アカウント内のコピーは削除され、新しい端末は空の状態から始まります。もう一度オンにすると、再びアップロードされます。</string>
     <string name="settings_backup_off_cancel">キャンセル</string>
     <string name="settings_backup_off_confirm">停止して削除</string>
     <string name="settings_backup_off_title">バックアップを停止しますか？</string>

@@ -3,7 +3,6 @@ package com.artiuillab.tieryourlife.feature.account.presentation.account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
-import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
@@ -17,11 +16,14 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Community
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -33,14 +35,13 @@ class AccountViewModel @Inject constructor(
     private val credits: GenerationCredits,
     private val ownLists: OwnLists,
     private val community: CommunityRepository,
-    private val preferences: AppPreferences,
     private val merge: BoardMerge,
     private val erasure: AccountErasure,
     private val facePhotos: FacePhotos,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
-        AccountUiState(credits = credits.lastKnown(), backUpBoards = preferences.backUpBoards()),
+        AccountUiState(credits = credits.lastKnown()),
     )
     val state: StateFlow<AccountUiState> = _state.asStateFlow()
 
@@ -54,15 +55,8 @@ class AccountViewModel @Inject constructor(
                 _state.update { it.copy(account = account, pendingFace = it.pendingFace.takeIf { account is Account.SignedIn }) }
                 refreshCredits()
                 refreshOwnLists()
-                _state.update { it.copy(boardCount = ownLists.boardCount()) }
             }
         }
-    }
-
-    /** Answered before signing in, so nothing has gone up yet. Turning it off later is asked in Settings, where the copy exists. */
-    fun setBackUpBoards(backUp: Boolean) {
-        preferences.setBackUpBoards(backUp)
-        _state.update { it.copy(backUpBoards = backUp) }
     }
 
     /** [pickAccount] opens Google's sheet; the screen owns it because the sheet needs the activity. */
@@ -125,56 +119,62 @@ class AccountViewModel @Inject constructor(
     }
 
     private suspend fun completeSignIn(idToken: String) {
-        val notice = when (val outcome = repository.signInWithGoogle(idToken)) {
-            SignInOutcome.Success -> null
-            is SignInOutcome.SignedInToExistingAccount ->
-                if (outcome.creditsCarriedOver) null else AccountNotice.SignedInToExistingAccount
-            SignInOutcome.Failed -> AccountNotice.SignInFailed
-            SignInOutcome.Cancelled -> null
-            SignInOutcome.NoGoogleAccount -> AccountNotice.NoGoogleAccount
+        merge.hold()
+        try {
+            val outcome = repository.signInWithGoogle(idToken)
+            val notice = when (outcome) {
+                SignInOutcome.Success -> null
+                is SignInOutcome.SignedInToExistingAccount ->
+                    if (outcome.creditsCarriedOver) null else AccountNotice.SignedInToExistingAccount
+                SignInOutcome.Failed -> AccountNotice.SignInFailed
+                SignInOutcome.Cancelled -> null
+                SignInOutcome.NoGoogleAccount -> AccountNotice.NoGoogleAccount
+            }
+            finish(notice)
+            refreshCredits()
+            settleGuestBoards(outcome)
+        } catch (e: CancellationException) {
+            // Left half-way, so nobody will be asked: syncing must not stay stopped for an answer.
+            withContext(NonCancellable) { merge.keepHere() }
+            throw e
         }
-        finish(notice)
-        refreshCredits()
-        askAboutMergeIfNeeded()
     }
 
     /**
-     * Asked only when both sides hold something; an empty account takes this
-     * phone's boards silently. An account that cannot be read is not taken for
-     * an empty one: signing in is undone and can be tried again, rather than
-     * merging two libraries nobody was asked about.
+     * A guest turned into the account is the same person, so their boards go
+     * with them unasked. An account used before may be somebody else's, or
+     * the same person's other library: asked, and only if this phone has
+     * boards made without an account. Another account's boards never come
+     * into it; they stay hidden on this phone.
      */
-    private suspend fun askAboutMergeIfNeeded() {
-        if (!preferences.backUpBoards()) return
-        val choice = merge.choice() ?: run {
-            repository.signOut()
-            finish(AccountNotice.SignInFailed)
-            return
-        }
-        if (choice.needed) {
-            _state.update { it.copy(merge = choice, mergeKeep = MergeKeep.Everything) }
-        }
-    }
-
-    fun setMergeKeep(keep: MergeKeep) {
-        _state.update { it.copy(mergeKeep = keep) }
-    }
-
-    fun applyMerge(fromThisPhone: String) {
-        val keep = _state.value.mergeKeep
-        _state.update { it.copy(merge = null) }
-        viewModelScope.launch {
-            when (keep) {
-                MergeKeep.Everything -> merge.keepEverything(fromThisPhone)
-                MergeKeep.AccountOnly -> merge.useAccountBoards()
+    private suspend fun settleGuestBoards(outcome: SignInOutcome) {
+        val signedIn = repository.current() as? Account.SignedIn
+        when {
+            signedIn == null -> merge.keepHere()
+            outcome is SignInOutcome.Success -> merge.moveIn(fromThisPhone = null)
+            outcome is SignInOutcome.SignedInToExistingAccount -> {
+                val boards = runSuspendCatching { merge.guestBoards() }
+                    .onFailure { Timber.w(it, "Could not count the boards made without an account") }
+                    .getOrDefault(0)
+                if (boards > 0) {
+                    _state.update { it.copy(merge = GuestBoardsQuestion(boards = boards, into = signedIn.email)) }
+                } else {
+                    merge.keepHere()
+                }
             }
+            else -> merge.keepHere()
         }
     }
 
-    /** Closing the question leaves them signed out with nothing written. */
-    fun abandonMerge() {
+    fun moveGuestBoardsIn(fromThisPhone: String) {
         _state.update { it.copy(merge = null) }
-        signOut()
+        viewModelScope.launch { merge.moveIn(fromThisPhone) }
+    }
+
+    /** Closing the question is this answer too: nothing moves, nothing is lost. */
+    fun keepGuestBoardsHere() {
+        _state.update { it.copy(merge = null) }
+        viewModelScope.launch { merge.keepHere() }
     }
 
     private fun finish(notice: AccountNotice?) {

@@ -44,7 +44,7 @@
     </plurals>
     <string name="settings_backup_label">Back up my boards</string>
     <string name="settings_backup_note">Your photos and generated cards go to your account, where only you can see them. Publishing a list copies its pictures into the feed, where anyone can.</string>
-    <string name="settings_backup_off_body">Your boards stay on this phone. The copy in your account is deleted, and a new phone will start empty.</string>
+    <string name="settings_backup_off_body">Nothing on this phone is deleted: your boards stay here. The copy in your account is deleted, and a new phone will start empty. Turn it back on and they go up again.</string>
     <string name="settings_backup_off_cancel">Cancel</string>
     <string name="settings_backup_off_confirm">Stop and delete</string>
     <string name="settings_backup_off_title">Stop backing up?</string>

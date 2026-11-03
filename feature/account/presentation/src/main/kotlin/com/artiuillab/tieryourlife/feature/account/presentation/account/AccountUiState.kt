@@ -2,7 +2,6 @@ package com.artiuillab.tieryourlife.feature.account.presentation.account
 
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
-import com.artiuillab.tieryourlife.feature.tier.domain.sync.MergeChoice
 
 data class AccountUiState(
     val account: Account = Account.Unknown,
@@ -11,9 +10,6 @@ data class AccountUiState(
     /** Generations left, or null where nothing is counted. */
     val credits: Int? = null,
     val publicListCount: Int = 0,
-    /** Boards on this phone, so the offer can say what it would be keeping. */
-    val boardCount: Int = 0,
-    val backUpBoards: Boolean = true,
     /** Card pictures the reader can wear as a face. */
     val faceChoices: List<String> = emptyList(),
     /** True while a picture of their own is being made into a face. */
@@ -27,10 +23,10 @@ data class AccountUiState(
     val deleting: Boolean = false,
     /**
      * Set only while the question is open: somebody has signed into an account
-     * that already holds boards, and nothing has been written either way yet.
+     * used before while this phone has boards made without one, and nothing
+     * has been moved or sent yet.
      */
-    val merge: MergeChoice? = null,
-    val mergeKeep: MergeKeep = MergeKeep.Everything,
+    val merge: GuestBoardsQuestion? = null,
 ) {
     /**
      * The face to draw: the one just chosen, from the moment it is chosen and
@@ -50,8 +46,8 @@ data class PendingFace(val shown: String?, val crop: FaceCrop? = null)
 
 data class FaceToPosition(val sourceUri: String, val fromGallery: Boolean)
 
-/** Which set of boards is in use afterwards. Neither answer deletes anything. */
-enum class MergeKeep { Everything, AccountOnly }
+/** [boards] made without an account, and the account they could move [into], by its address. */
+data class GuestBoardsQuestion(val boards: Int, val into: String?)
 
 enum class AccountNotice {
     SignInFailed,

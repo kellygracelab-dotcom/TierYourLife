@@ -30,19 +30,19 @@ class PictureSync @Inject constructor(
     override val restoring: StateFlow<PictureRestore.Progress> = _restoring.asStateFlow()
 
     /** A picture that will not go stays unrecorded, so the next run tries again; recording it would lose it quietly. */
-    suspend fun push() {
+    suspend fun push(account: String) {
         // Pictures cost data allowance; boards are text and go regardless.
         if (preferences.picturesOnWifiOnly() && !connection.unmetered()) {
             Timber.d("Pictures are waiting for Wi-Fi")
             return
         }
-        val sent = dao.sentPictureIds().toSet()
-        val here = dao.allImageUrls().mapNotNull(images::pictureIdOf).distinct()
+        val sent = dao.sentPictureIds(account).toSet()
+        val here = dao.imageUrlsOf(account).mapNotNull(images::pictureIdOf).distinct()
 
         here.filterNot { it in sent }.forEach { pictureId ->
             val bytes = images.read(pictureId) ?: return@forEach
             if (vault.put(pictureId, bytes)) {
-                dao.rememberPicture(PictureSyncEntity(pictureId, System.currentTimeMillis()))
+                dao.rememberPicture(PictureSyncEntity(account, pictureId, System.currentTimeMillis()))
             } else {
                 Timber.d("Picture %s did not go up; it will be tried again", pictureId)
             }
@@ -54,14 +54,14 @@ class PictureSync @Inject constructor(
      * pressed, and blank tiles in the feed would be a failure with no visible
      * reason. Answers with what is up.
      */
-    suspend fun sendNow(pictureIds: List<String>): Set<String> {
+    suspend fun sendNow(account: String, pictureIds: List<String>): Set<String> {
         if (pictureIds.isEmpty()) return emptySet()
-        val sent = dao.sentPictureIds().toSet().toMutableSet()
+        val sent = dao.sentPictureIds(account).toMutableSet()
 
         pictureIds.filterNot { it in sent }.forEach { pictureId ->
             val bytes = images.read(pictureId) ?: return@forEach
             if (vault.put(pictureId, bytes)) {
-                dao.rememberPicture(PictureSyncEntity(pictureId, System.currentTimeMillis()))
+                dao.rememberPicture(PictureSyncEntity(account, pictureId, System.currentTimeMillis()))
                 sent += pictureId
             } else {
                 Timber.d("Picture %s did not go up before publishing", pictureId)
@@ -74,7 +74,7 @@ class PictureSync @Inject constructor(
      * What a new phone looks like: boards arrive in one request, pictures take
      * as long as they take, and until then a tile shows its title.
      */
-    suspend fun pull(wanted: Map<String, String>) {
+    suspend fun pull(account: String, wanted: Map<String, String>) {
         if (preferences.picturesOnWifiOnly() && !connection.unmetered()) {
             _restoring.value = PictureRestore.Progress.Idle
             return
@@ -94,7 +94,7 @@ class PictureSync @Inject constructor(
                 if (bytes != null) {
                     dao.setItemImage(itemUid, images.write(pictureId, bytes))
                     // Already up there, so it never needs sending back.
-                    dao.rememberPicture(PictureSyncEntity(pictureId, System.currentTimeMillis()))
+                    dao.rememberPicture(PictureSyncEntity(account, pictureId, System.currentTimeMillis()))
                 }
                 done++
                 _restoring.value = PictureRestore.Progress(done = done, total = missing.size)

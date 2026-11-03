@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardOrder
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.BoardOwner
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
@@ -40,6 +41,7 @@ class TierListsViewModel @Inject constructor(
     private val accounts: AccountRepository,
     private val boardSync: BoardSync,
     private val pictures: PictureRestore,
+    private val owner: BoardOwner,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<TierListsUiState>(TierListsUiState.Loading)
@@ -79,14 +81,20 @@ class TierListsViewModel @Inject constructor(
                 // Redraws a screen that is already up. Emitting before the first
                 // database read finished turned "loading" into "no boards".
                 if (_state.value is TierListsUiState.Success) emitSuccess()
-                if (current is Account.SignedIn) keepBoards()
             }
+        }
+        // Another identity's boards are other boards: what is on screen is
+        // read again, and the sync that follows the read is that identity's.
+        viewModelScope.launch {
+            owner.changes.collect { loadTierListsInternal() }
         }
     }
 
     /** Cancelled mid-run is fine: the next run recomputes from the same lists. */
     private fun keepBoards() {
-        if (account !is Account.SignedIn || !preferences.backUpBoards()) return
+        // Asked afresh: a change of identity can reach this before the field above hears of it.
+        val signedIn = accounts.current() as? Account.SignedIn ?: return
+        if (!preferences.backUpBoards(signedIn.recordKey)) return
         if (syncJob?.isActive == true) return
         syncJob = viewModelScope.launch {
             runSuspendCatching { boardSync.sync() }

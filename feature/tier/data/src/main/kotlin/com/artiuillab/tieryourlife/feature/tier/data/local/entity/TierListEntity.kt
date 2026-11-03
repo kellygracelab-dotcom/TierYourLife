@@ -8,7 +8,7 @@ import java.util.UUID
 
 @Entity(
     tableName = "tier_lists",
-    indices = [Index(value = ["uid"], unique = true)],
+    indices = [Index(value = ["uid"], unique = true), Index("ownerUid")],
 )
 data class TierListEntity(
     @PrimaryKey(autoGenerate = true)
@@ -61,4 +61,15 @@ data class TierListEntity(
      * a board as it is written and would otherwise lose the game.
      */
     val play: String? = null,
-)
+    /**
+     * Whose board it is, by `Account.SignedIn.recordKey`; null for this phone's
+     * own, made without an account. [UNSETTLED] on a board from before boards
+     * had owners, until the first read after the upgrade works out whose.
+     */
+    val ownerUid: String? = null,
+) {
+    companion object {
+        /** Not a uid any account can have. */
+        const val UNSETTLED = "?"
+    }
+}

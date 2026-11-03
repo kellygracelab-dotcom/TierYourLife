@@ -46,7 +46,7 @@
     </plurals>
     <string name="settings_backup_label">Guardar copia de mis tableros</string>
     <string name="settings_backup_note">Tus fotos y tarjetas generadas van a tu cuenta, donde solo tú las ves. Publicar copia las imágenes al feed, donde las ve cualquiera.</string>
-    <string name="settings_backup_off_body">Tus tableros siguen en este teléfono. La copia de tu cuenta se elimina, y un teléfono nuevo empezará vacío.</string>
+    <string name="settings_backup_off_body">No se elimina nada de este teléfono: tus tableros siguen aquí. La copia de tu cuenta se elimina, y un teléfono nuevo empezará vacío. Si vuelves a activarlo, se suben de nuevo.</string>
     <string name="settings_backup_off_cancel">Cancelar</string>
     <string name="settings_backup_off_confirm">Detener y eliminar</string>
     <string name="settings_backup_off_title">¿Dejar de guardar copia?</string>
