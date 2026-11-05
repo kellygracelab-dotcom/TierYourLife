@@ -11,9 +11,9 @@
     <string name="play_game_swiss">Проигравшие остаются</string>
     <string name="play_game_hill">Царь горы</string>
     <string name="play_game_bracket">Сетка</string>
-    <string name="play_game_swiss_line">Каждый играет в каждом раунде. Дольше, зато лучше всего заполняет тиры.</string>
-    <string name="play_game_hill_line">Победитель остаётся и встречает следующую карточку. Быстро; тиры получаются примерными.</string>
-    <string name="play_game_bracket_line">Играют пары, победители идут дальше, пока не останется один. Быстро; тиры получаются примерными.</string>
+    <string name="play_game_swiss_line">Каждый играет в каждом раунде. Дольше, зато лучше всего заполняет уровни.</string>
+    <string name="play_game_hill_line">Победитель остаётся и встречает следующую карточку. Быстро; уровни получаются примерными.</string>
+    <string name="play_game_bracket_line">Играют пары, победители идут дальше, пока не останется один. Быстро; уровни получаются примерными.</string>
     <plurals name="play_estimate_duels">
         <item quantity="one">%1$d дуэль</item>
         <item quantity="few">%1$d дуэли</item>

@@ -13,11 +13,11 @@
     <string name="action_add_to_list">Add to list</string>
     <string name="action_regenerate">Regenerate</string>
     <string name="ai_added">Added</string>
-    <string name="ai_error_title">Couldn\'t generate that image</string>
+    <string name="ai_error_title">Couldn’t generate that image</string>
     <string name="ai_error_body">Check your connection, or try a different description.</string>
     <string name="ai_name_title">Name this card</string>
     <string name="ai_name_body">Goes into the pool. You can drag it into a tier afterwards.</string>
-    <string name="ai_name_photo_note">The generated image becomes the card\'s photo.</string>
+    <string name="ai_name_photo_note">The generated image becomes the card’s photo.</string>
     <string name="ai_name_field">Name</string>
     <string name="action_add">Add</string>
     <string name="action_cancel">Cancel</string>

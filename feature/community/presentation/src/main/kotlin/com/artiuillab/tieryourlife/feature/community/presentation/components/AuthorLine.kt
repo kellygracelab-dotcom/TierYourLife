@@ -46,7 +46,7 @@ internal fun AuthorLine(
     ) {
         AuthorFace(photoUrl = photoUrl, name = name, size = 24.dp)
         Text(
-            text = stringResource(R.string.community_by_author, name),
+            text = stringResource(R.string.community_by_author, shownName(name)),
             modifier = Modifier
                 .weight(1f)
                 .clickable(onClick = onOpenAuthor),

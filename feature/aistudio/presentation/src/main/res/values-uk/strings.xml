@@ -14,7 +14,7 @@
     <string name="action_regenerate">Згенерувати знову</string>
     <string name="ai_added">Додано</string>
     <string name="ai_error_title">Не вдалося згенерувати зображення</string>
-    <string name="ai_error_body">Перевірте з\'єднання або спробуйте інший опис.</string>
+    <string name="ai_error_body">Перевірте зʼєднання або спробуйте інший опис.</string>
     <string name="ai_name_title">Назвіть картку</string>
     <string name="ai_name_body">Потрапляє в пул. Потім можна перетягнути її на рівень.</string>
     <string name="ai_name_photo_note">Згенероване зображення стане фото картки.</string>

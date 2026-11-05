@@ -21,7 +21,7 @@
     </plurals>
     <string name="snack_action_failed">Modification non enregistrée</string>
     <string name="tier_detail_content_description_back">Retour</string>
-    <string name="tier_detail_content_description_more">Plus d\'options</string>
+    <string name="tier_detail_content_description_more">Plus d’options</string>
     <plurals name="tier_lists_count">
         <item quantity="one">%d liste</item>
         <item quantity="many">%d listes</item>

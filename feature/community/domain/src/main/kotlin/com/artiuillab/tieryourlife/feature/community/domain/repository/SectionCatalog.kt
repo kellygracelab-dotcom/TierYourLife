@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.community.domain.repository
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposal
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
 import kotlinx.coroutines.flow.StateFlow
 
 /** The sections every screen names and draws from, kept on the phone between runs. */
@@ -23,8 +24,11 @@ interface SectionCatalog {
     /** Sends a proposal; once the server has it, it waits first on this person's screens. Fails with [com.artiuillab.tieryourlife.feature.community.domain.model.ProposalRefused]. */
     suspend fun propose(proposal: SectionProposal): Result<Section>
 
-    /** Withdraws a waiting proposal, or dismisses the notice of a declined or merged one. */
-    suspend fun withdraw(id: String): Result<Unit>
+    /**
+     * Withdraws a waiting proposal, or dismisses the notice of a declined or merged one.
+     * Null when it went as asked; otherwise what a moderator had made of it first, and the sections are read again.
+     */
+    suspend fun withdraw(id: String): Result<SectionStatus?>
 }
 
 /** Where the last answer lives between runs of the app. */

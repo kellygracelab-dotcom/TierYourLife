@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownName
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.TopicQueueTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.TopicQueueUiState
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
@@ -162,7 +163,7 @@ private fun PendingTopicCard(
             overflow = TextOverflow.Ellipsis,
         )
         Text(
-            text = stringResource(R.string.moderation_topic_proposed_by, pending.proposerName),
+            text = stringResource(R.string.moderation_topic_proposed_by, shownName(pending.proposerName)),
             modifier = Modifier.padding(top = 4.dp),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

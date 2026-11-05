@@ -10,7 +10,7 @@
     <string name="category_other">Autre</string>
     <string name="category_people">Personnes</string>
     <string name="category_sport">Sport</string>
-    <string name="cd_ai_chip">Générer une image avec l\'IA</string>
+    <string name="cd_ai_chip">Générer une image avec l’IA</string>
     <string name="list_settings_category">Catégorie</string>
     <string name="list_settings_category_none">Pas encore choisie</string>
     <string name="list_settings_cover">Couverture</string>
@@ -18,12 +18,12 @@
     <string name="list_settings_cover_set">Choisie</string>
     <string name="list_settings_topic">Thème</string>
     <string name="list_settings_topic_none">Aucun</string>
-    <string name="list_settings_topic_waiting">%1$s · en attente d\'approbation</string>
+    <string name="list_settings_topic_waiting">%1$s · en attente d’approbation</string>
     <string name="list_settings_public_too_many_topics">Trois de vos thèmes attendent déjà un modérateur. Publiez sans nouveau thème ou patientez.</string>
     <string name="list_settings_public">Publique</string>
     <string name="list_settings_public_banned_forever">La modération a retiré l’une de vos listes, et vous ne pouvez plus publier.</string>
     <string name="list_settings_public_banned_until">La modération a retiré l’une de vos listes. Vous pourrez publier à nouveau le %1$s.</string>
-    <string name="list_settings_public_body">N\'importe qui peut ouvrir cette liste et la classer à sa façon.</string>
+    <string name="list_settings_public_body">N’importe qui peut ouvrir cette liste et la classer à sa façon.</string>
     <string name="list_settings_public_failed">Impossible de publier cette liste. Réessayez.</string>
     <string name="list_settings_public_images">À la publication, les images de la liste partent avec elle, y compris vos photos et les images générées. Chacune est vérifiée avant.</string>
     <string name="list_settings_public_needs_account">Connectez-vous avec Google pour publier. Lire et enregistrer celles des autres ne demande aucun compte.</string>
@@ -32,9 +32,9 @@
     <string name="list_settings_public_picture_refused">Une de vos photos ne peut pas figurer dans le fil public. Retirez-la ou gardez la liste privée.</string>
     <string name="list_settings_public_too_large">Cette liste est trop grande pour être publiée : 2000 cartes et 20 rangs au maximum.</string>
     <string name="list_settings_public_too_many">Vous avez publié le maximum de listes autorisé. Retirez-en une pour faire de la place.</string>
-    <string name="list_settings_public_unverified">Google Play n\'a pas pu confirmer cette installation, donc rien ne peut être publié depuis celle-ci.</string>
+    <string name="list_settings_public_unverified">Google Play n’a pas pu confirmer cette installation, donc rien ne peut être publié depuis celle-ci.</string>
     <string name="list_settings_share">Partager en image</string>
-    <string name="list_settings_share_sub">Une image de ce tableau, avec un lien vers l\'app</string>
+    <string name="list_settings_share_sub">Une image de ce tableau, avec un lien vers l’app</string>
     <string name="list_settings_see_in_community">Voir dans la Communauté</string>
     <string name="list_settings_see_in_community_sub">Telle que les autres la voient, avec leurs classements et le lien</string>
     <string name="list_settings_update_published">Version publiée</string>
@@ -96,7 +96,7 @@
         <item quantity="many">%1$d classés · du meilleur au pire</item>
         <item quantity="other">%1$d classés · du meilleur au pire</item>
     </plurals>
-    <string name="tier_detail_ranked_header_empty">Rien de classé pour l\'instant</string>
+    <string name="tier_detail_ranked_header_empty">Rien de classé pour l’instant</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
         <item quantity="one">Réservoir, %1$d non classé. Déplier.</item>
         <item quantity="many">Réservoir, %1$d non classé. Déplier.</item>
@@ -128,13 +128,13 @@
     <string name="tier_editor_theme_light">Clair</string>
     <string name="tier_editor_title">Modifier le rang</string>
     <string name="tier_list_settings_display_section">Affichage</string>
-    <string name="tier_list_settings_display_section_caption">Comment les rangs s\'affichent dans cette liste. Les autres listes ne sont pas concernées.</string>
+    <string name="tier_list_settings_display_section_caption">Comment les rangs s’affichent dans cette liste. Les autres listes ne sont pas concernées.</string>
     <string name="tier_list_settings_mode_ranked">Liste classée</string>
     <string name="tier_list_settings_mode_ranked_sub">Une colonne, du meilleur au pire, sans rangs</string>
     <string name="tier_list_settings_mode_strip">Bande unique</string>
     <string name="tier_list_settings_mode_strip_sub">Une ligne par rang, défilement latéral</string>
     <string name="tier_list_settings_mode_wrapped">Lignes avec retour</string>
-    <string name="tier_list_settings_mode_wrapped_sub">Chaque élément visible, les lignes s\'agrandissent</string>
+    <string name="tier_list_settings_mode_wrapped_sub">Chaque élément visible, les lignes s’agrandissent</string>
     <string name="tier_list_settings_new_tier_title">Nouveau rang</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="one">%d rang</item>

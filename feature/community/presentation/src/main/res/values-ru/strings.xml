@@ -9,7 +9,7 @@
     <string name="community_day_today">Сегодня</string>
     <string name="community_day_yesterday">Вчера</string>
     <string name="community_following_nobody">Вы пока ни на кого не подписаны.</string>
-    <string name="community_author_unnamed">Автор</string>
+    <string name="community_author_unnamed">Кто-то</string>
     <string name="author_failed">Не удалось открыть профиль.</string>
     <string name="author_no_public_lists">Публичных списков нет</string>
     <string name="author_no_public_lists_body">Копии, которые вы уже сохранили, ваши и никуда не денутся.</string>
@@ -166,7 +166,6 @@
     <string name="explore_tab_explore">Обзор</string>
     <string name="explore_tab_following">Подписки</string>
     <string name="explore_title_community">Сообщество</string>
-    <string name="explore_popular_this_week">Популярное за неделю</string>
     <string name="explore_follow_section">Подписаться на «%1$s»</string>
     <string name="explore_unfollow_section">Отписаться от «%1$s»</string>
     <string name="explore_open_section">Открыть «%1$s»</string>
@@ -276,6 +275,9 @@
     <string name="section_proposal_dismiss">Закрыть</string>
     <string name="section_proposal_declined">«%1$s» не добавили как раздел. Ваши списки остаются в разделе «%2$s».</string>
     <string name="section_proposal_merged">«%1$s» объединён с разделом «%2$s».</string>
+    <string name="section_withdraw_already_declined">Модераторы уже отклонили «%1$s».</string>
+    <string name="section_withdraw_already_merged">«%1$s» уже объединили с другим разделом.</string>
+    <string name="section_withdraw_already_approved">«%1$s» тем временем одобрили. Теперь это раздел.</string>
     <string name="section_moves_to">Перейдёт в «%1$s», как только его одобрят</string>
     <plurals name="propose_waiting_count">
         <item quantity="one">Ждёт %1$d из %2$d ваших предложений.</item>

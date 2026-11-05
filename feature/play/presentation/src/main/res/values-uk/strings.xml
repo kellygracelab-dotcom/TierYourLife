@@ -11,9 +11,9 @@
     <string name="play_game_swiss">Програвші лишаються</string>
     <string name="play_game_hill">Цар гори</string>
     <string name="play_game_bracket">Сітка</string>
-    <string name="play_game_swiss_line">Кожен грає в кожному раунді. Довше, зате найкраще заповнює тири.</string>
-    <string name="play_game_hill_line">Переможець лишається й зустрічає наступну картку. Швидко; тири виходять приблизні.</string>
-    <string name="play_game_bracket_line">Грають пари, переможці йдуть далі, доки не лишиться один. Швидко; тири виходять приблизні.</string>
+    <string name="play_game_swiss_line">Кожен грає в кожному раунді. Довше, зате найкраще заповнює рівні.</string>
+    <string name="play_game_hill_line">Переможець лишається й зустрічає наступну картку. Швидко; рівні виходять приблизні.</string>
+    <string name="play_game_bracket_line">Грають пари, переможці йдуть далі, доки не лишиться один. Швидко; рівні виходять приблизні.</string>
     <plurals name="play_estimate_duels">
         <item quantity="one">%1$d дуель</item>
         <item quantity="few">%1$d дуелі</item>

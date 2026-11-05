@@ -124,7 +124,7 @@ class OwnListPageTest {
         show(mineAnonymous.copy(ownBoardLookedUp = true), own = OwnListCallbacks(onGetBack = { gotBack += Unit }))
 
         composeRule.onNodeWithTag(CommunityListTestTags.YOUR_LIST).assertExists()
-        composeRule.onNodeWithText("Anonymous · only you see it's yours").assertExists()
+        composeRule.onNodeWithText("Anonymous · only you see it’s yours").assertExists()
         composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.GET_BACK_BOARD).performClick()
 

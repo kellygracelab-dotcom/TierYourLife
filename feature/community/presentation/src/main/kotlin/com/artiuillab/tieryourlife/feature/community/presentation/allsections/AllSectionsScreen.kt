@@ -357,6 +357,7 @@ private fun AllSectionsNotices(notices: Flow<CommunityNotice>, snackbar: Snackba
 
                 CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.getString(R.string.explore_follow_failed))
                 CommunityNotice.ActionFailed -> snackbar.showSnackbar(resources.getString(ThemeR.string.snack_action_failed))
+                is CommunityNotice.AlreadyDecided -> snackbar.showSnackbar(resources.getString(notice.words, notice.name))
                 is CommunityNotice.RefreshFailed -> Unit
             }
         }

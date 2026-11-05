@@ -55,6 +55,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownName
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CardActions
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.DashedSquare
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ExploreTestTags
@@ -224,7 +225,7 @@ internal fun FollowedStrip(following: Following, waiting: List<Topic>, actions: 
             }
             following.authors.forEach { author ->
                 item(key = "p-${author.uid}") {
-                    StripItem(author.name, "p-${author.uid}", { actions.onOpenAuthor(author) }) {
+                    StripItem(shownName(author.name), "p-${author.uid}", { actions.onOpenAuthor(author) }) {
                         AuthorFace(photoUrl = author.photoUrl, name = author.name, size = StripVisual)
                     }
                 }

@@ -92,7 +92,7 @@ fun ListActionsSheet(
             }
             if (onOpenAuthor != null && authorName != null) {
                 ActionRow(
-                    text = stringResource(R.string.community_action_view_author, authorName),
+                    text = stringResource(R.string.community_action_view_author, shownName(authorName)),
                     testTag = CommunityTestTags.ACTION_VIEW_AUTHOR,
                     onClick = onOpenAuthor,
                     icon = { size, tint -> PersonIcon(size, tint) },
@@ -177,7 +177,7 @@ private fun SheetHead(title: String, authorName: String?, authorPhotoUrl: String
             )
             if (authorName != null) {
                 Text(
-                    text = stringResource(R.string.community_by_author, authorName),
+                    text = stringResource(R.string.community_by_author, shownName(authorName)),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,

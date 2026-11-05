@@ -86,11 +86,11 @@
     </plurals>
     <string name="action_remove">Remove</string>
     <string name="remove_dialog_title">Remove permanently?</string>
-    <string name="remove_dialog_body_list">%1$s and its %2$s will be deleted from this device. This can\'t be undone.</string>
+    <string name="remove_dialog_body_list">%1$s and its %2$s will be deleted from this device. This can’t be undone.</string>
     <string name="menu_empty_trash">Empty trash</string>
     <string name="action_empty_trash">Empty trash</string>
     <string name="empty_trash_dialog_title">Empty the trash?</string>
-    <string name="empty_trash_dialog_body">%1$s will be deleted from this device. This can\'t be undone.</string>
+    <string name="empty_trash_dialog_body">%1$s will be deleted from this device. This can’t be undone.</string>
     <plurals name="trash_entry_count">
         <item quantity="one">%1$d entry</item>
         <item quantity="other">%1$d entries</item>
@@ -171,13 +171,13 @@
     <string name="topic_picker_merged">Folded into another topic</string>
     <string name="topic_picker_suggestion">Looks like “%1$s”</string>
     <string name="topic_picker_new_waits">%1$s · will wait for approval</string>
-    <string name="cover_picker_status_automatic">Nothing chosen: up to six of the list\'s own pictures</string>
+    <string name="cover_picker_status_automatic">Nothing chosen: up to six of the list’s own pictures</string>
     <string name="cover_picker_status_one">One picture, the whole cover</string>
     <plurals name="cover_picker_status_collage">
         <item quantity="one">%1$d of %2$d chosen, a collage</item>
         <item quantity="other">%1$d of %2$d chosen, a collage</item>
     </plurals>
-    <string name="cover_picker_no_cards">None of this list\'s cards have a picture yet.</string>
+    <string name="cover_picker_no_cards">None of this list’s cards have a picture yet.</string>
     <string name="cover_picker_gallery">Choose from gallery</string>
     <string name="cover_picker_gallery_note">A gallery picture is the whole cover and travels with the list when you publish it.</string>
     <string name="tier_detail_ranking_of">Your ranking of a list by %1$s</string>

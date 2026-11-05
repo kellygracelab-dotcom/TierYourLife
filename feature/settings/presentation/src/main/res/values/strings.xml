@@ -59,7 +59,7 @@
     <string name="settings_hidden">Hidden</string>
     <string name="settings_hidden_sub">Lists and people you stopped seeing</string>
     <string name="settings_language">Language</string>
-    <string name="settings_language_caption">Changes the app\'s own text. Names you typed stay as they are.</string>
+    <string name="settings_language_caption">Changes the app’s own text. Names you typed stay as they are.</string>
     <string name="settings_moderation">Reports</string>
     <string name="settings_moderation_none">Nothing waiting</string>
     <string name="settings_privacy">Privacy policy</string>
@@ -73,7 +73,7 @@
         <item quantity="one">Exported 1 list</item>
         <item quantity="other">Exported %1$d lists</item>
     </plurals>
-    <string name="snack_export_failed">Couldn\'t save the file</string>
+    <string name="snack_export_failed">Couldn’t save the file</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_light">Light</string>
     <string name="theme_system">System</string>

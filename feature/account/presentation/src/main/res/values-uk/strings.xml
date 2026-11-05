@@ -1,7 +1,7 @@
 <resources>
     <string name="account_signed_in">Вхід виконано</string>
     <string name="account_sign_in_title">Збережіть свою роботу</string>
-    <string name="account_optional">Обліковий запис необов\'язковий. Без нього застосунок працює так само.</string>
+    <string name="account_optional">Обліковий запис необовʼязковий. Без нього застосунок працює так само.</string>
     <string name="account_reason_purchases">Кредити та покупки повернуться на будь-якому пристрої.</string>
     <string name="account_credits_note">Відновлено з вашого облікового запису</string>
     <string name="account_action_sign_in_google">Увійти через Google</string>

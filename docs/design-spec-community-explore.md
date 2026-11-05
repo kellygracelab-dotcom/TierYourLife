@@ -154,7 +154,7 @@ Top to bottom:
 - Community sub-tabs (1.2), h48, Explore selected.
 - One LazyVerticalGrid(GridCells.Fixed(2)) holding everything below:
   - Tiles: content padding 16 top / 16 sides, 10 dp spacing both ways. Each tile fills its column (about 173 wide) at height 96. Order: Anime, Film & TV, Games, Music, Books, Food, Sport, People. Then **Other** spanning both columns (GridItemSpan(2)) at height 56, with no "new" line and the label vertically centred.
-  - Heading (span 2): **Popular this week**, titleMedium onSurface, padding 22 top / 16 sides / 10 bottom.
+  - Heading (span 2): **Popular**, titleMedium onSurface, padding 22 top / 16 sides / 10 bottom.
   - Feed: cards (1.4), 12 dp spacing, padding 0 16 16. Paging with page size 20 and prefetch distance 6; the next page's covers are prefetched with Coil enqueue.
 - Nav handle.
 
@@ -179,7 +179,7 @@ Taps: tile → Section page (§3); card → community list; search → Community
 ### 2.4 Explore: first open, no cache
 
 - Bars, tabs and tiles paint on the first frame (bundled). The "new" lines are hidden until counts arrive.
-- Under Popular this week: 6 skeleton cards (1.5).
+- Under Popular: 6 skeleton cards (1.5).
 - When data arrives each skeleton is replaced in place with a 150 ms cross-fade; covers fade in as they load; tile "new" lines fade in when their counts arrive.
 - No spinner anywhere.
 
@@ -328,7 +328,7 @@ Shell: status bar 24; NavigationRail 80 dp at the start on surface (FAB New list
 
 - One bar, h48, 1 dp outlineVariant divider, scrolls away with enterAlways. Padding 20 start / 4 end: **Community** (20/28 400 onSurface) · 12 dp gap · inline SecondaryTabRow Explore · Following (each tab hugs its label, 16 dp padding, indicator inset 12) · spacer · search.
 - Tiles: one horizontal LazyRow, padding 12 top / 16 sides, 10 dp spacing, tiles 160 × 88, all 9 in the usual order.
-- Heading **Popular this week**, padding 16 top / 16 sides / 8 bottom.
+- Heading **Popular**, padding 16 top / 16 sides / 8 bottom.
 - Feed: 4 columns, cover 96, spacing 12, padding 0 16 16.
 
 ### 6.2 Community list (someone else's list, ranking a copy)
@@ -358,7 +358,7 @@ Shell: status bar 24; NavigationRail 80 dp at the start on surface (FAB New list
 ### 7.1 Explore, 1280 × 800
 
 - Rail 80. Top bar h64, padding 24 start / 12 end: **Community** (titleLarge) · spacer · search. Sub-tabs inline under it, padding start 12, 1 dp divider.
-- Content max width 1080, centred, padding 20 top / 24 sides: tiles in a row of 5 (Anime, Film & TV, Games, Music, Books) then 4 (Food, Sport, People, Other), height 112, 12 dp spacing, Other without "new" line; heading **Popular this week**, padding 26 top / 12 bottom; feed 4 columns, cover 140, spacing 16.
+- Content max width 1080, centred, padding 20 top / 24 sides: tiles in a row of 5 (Anime, Film & TV, Games, Music, Books) then 4 (Food, Sport, People, Other), height 112, 12 dp spacing, Other without "new" line; heading **Popular**, padding 26 top / 12 bottom; feed 4 columns, cover 140, spacing 16.
 
 ### 7.2–7.5 List screens on tablets
 

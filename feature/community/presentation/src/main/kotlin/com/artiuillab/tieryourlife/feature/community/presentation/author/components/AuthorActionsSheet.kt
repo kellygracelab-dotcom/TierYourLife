@@ -28,6 +28,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.author.AuthorTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.author.ModeratorAction
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownName
 
 /**
  * What a reader can do about a person rather than a list. Reporting is not
@@ -65,7 +66,7 @@ fun AuthorActionsSheet(
                 AuthorFace(photoUrl = photoUrl, name = name, size = 32.dp)
                 Spacer(Modifier.width(12.dp))
                 Text(
-                    text = name,
+                    text = shownName(name),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
@@ -95,7 +96,7 @@ fun AuthorActionsSheet(
                                 ModeratorAction.Make -> R.string.author_make_moderator
                                 ModeratorAction.Remove -> R.string.author_remove_moderator
                             },
-                            name,
+                            shownName(name),
                         ),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -115,7 +116,7 @@ fun AuthorActionsSheet(
                 HideIcon(20.dp, MaterialTheme.colorScheme.onSurface)
                 Spacer(Modifier.width(16.dp))
                 Text(
-                    text = stringResource(R.string.community_action_hide_author, name),
+                    text = stringResource(R.string.community_action_hide_author, shownName(name)),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,

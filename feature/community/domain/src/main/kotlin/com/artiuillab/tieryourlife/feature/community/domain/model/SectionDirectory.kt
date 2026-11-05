@@ -34,6 +34,10 @@ data class SectionDirectory(
     /** A proposal withdrawn, or a notice dismissed. */
     fun withoutProposal(id: String): SectionDirectory = copy(sections = sections.filterNot { it.id == id && it.mine })
 
+    /** A proposal approved before it could be withdrawn: a section now, until the next answer says more. */
+    fun withApproved(id: String): SectionDirectory =
+        copy(sections = sections.map { if (it.id == id && it.mine) it.copy(status = SectionStatus.Approved) else it })
+
     /** Whether the counts are the server's rather than the zeros the app starts with. */
     val counted: Boolean get() = fetchedAtMillis != null
 

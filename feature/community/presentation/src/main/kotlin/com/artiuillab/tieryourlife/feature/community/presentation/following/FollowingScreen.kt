@@ -60,6 +60,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownName
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.DashedSquare
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowSize
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowToggle
@@ -244,7 +245,7 @@ private fun LazyListScope.peopleBlock(
         ManageRow(
             key = key,
             // An author whose lists are all gone keeps the follow and loses the name.
-            headline = person.name.ifEmpty { stringResource(R.string.community_author_unnamed) },
+            headline = shownName(person.name),
             supporting = null,
             following = key !in state.stopped,
             onOpen = { onOpen(person.uid, person.name, person.photoUrl) },

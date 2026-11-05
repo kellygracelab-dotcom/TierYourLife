@@ -10,7 +10,7 @@
     <string name="export_tier_plain">%1$s</string>
     <string name="export_tier_with_caption">%1$s — %2$s</string>
     <string name="export_unranked_heading">Non classé</string>
-    <string name="hidden_empty_body">Les listes et les personnes que vous masquez dans la communauté attendent ici, au cas où vous changeriez d\'avis.</string>
+    <string name="hidden_empty_body">Les listes et les personnes que vous masquez dans la communauté attendent ici, au cas où vous changeriez d’avis.</string>
     <string name="hidden_empty_title">Tout est visible</string>
     <string name="hidden_lists">LISTES</string>
     <string name="hidden_people">PERSONNES</string>
@@ -36,7 +36,7 @@
     </plurals>
     <string name="settings_account">Compte</string>
     <string name="settings_account_offer_action">Se connecter</string>
-    <string name="settings_account_offer_body">L\'application fonctionne entièrement sans compte.</string>
+    <string name="settings_account_offer_body">L’application fonctionne entièrement sans compte.</string>
     <string name="settings_account_offer_title">Gardez vos crédits</string>
     <string name="settings_account_signed_in">Connecté</string>
     <plurals name="settings_account_signed_in_credits">
@@ -61,7 +61,7 @@
     <string name="settings_hidden">Masqué</string>
     <string name="settings_hidden_sub">Listes et personnes que vous ne voyez plus</string>
     <string name="settings_language">Langue</string>
-    <string name="settings_language_caption">Modifie uniquement le texte de l\'application. Les noms que vous avez saisis restent inchangés.</string>
+    <string name="settings_language_caption">Modifie uniquement le texte de l’application. Les noms que vous avez saisis restent inchangés.</string>
     <string name="settings_moderation">Signalements</string>
     <string name="settings_moderation_none">Rien en attente</string>
     <string name="settings_privacy">Politique de confidentialité</string>
@@ -76,7 +76,7 @@
         <item quantity="many">%1$d listes exportées</item>
         <item quantity="other">%1$d listes exportées</item>
     </plurals>
-    <string name="snack_export_failed">Impossible d\'enregistrer le fichier</string>
+    <string name="snack_export_failed">Impossible d’enregistrer le fichier</string>
     <string name="theme_dark">Sombre</string>
     <string name="theme_light">Clair</string>
     <string name="theme_system">Système</string>
