@@ -34,6 +34,7 @@ internal fun TierListEntity.toDomain(): TierList = TierList(
     editedAt = editedAt,
     favouritedAt = favouritedAt,
     play = play,
+    uid = uid,
 )
 
 internal fun TierListWithTiers.toDomain(): TierList = TierList(
@@ -59,6 +60,7 @@ internal fun TierListWithTiers.toDomain(): TierList = TierList(
     editedAt = tierList.editedAt,
     favouritedAt = tierList.favouritedAt,
     play = tierList.play,
+    uid = tierList.uid,
 )
 
 internal fun SummaryRows.toSummaries(): List<TierListSummary> {

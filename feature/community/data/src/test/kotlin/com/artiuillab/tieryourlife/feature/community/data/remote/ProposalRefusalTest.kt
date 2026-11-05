@@ -1,10 +1,13 @@
 package com.artiuillab.tieryourlife.feature.community.data.remote
 
+import com.artiuillab.tieryourlife.core.network.networkJson
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ProposalAllowanceDto
 import com.artiuillab.tieryourlife.feature.community.domain.model.PictureProblem
 import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalError
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 import retrofit2.HttpException
 import retrofit2.Response
@@ -57,5 +60,30 @@ class ProposalRefusalTest {
     fun anythingElse_isAFailureWorthTryingAgain() {
         assertEquals(ProposalError.Failed, refusal(500, "<html>").proposalError())
         assertEquals(ProposalError.Failed, IOException("offline").proposalError())
+    }
+
+    private fun allowance(json: String) = networkJson.decodeFromString(ProposalAllowanceDto.serializer(), json).refusalError()
+
+    @Test
+    fun theCheckAhead_namesTheSameTwoLimits_andRoomToProposeIsNoRefusal() {
+        assertEquals(
+            ProposalError.TooManyPending,
+            allowance("""{"pending":3,"maxPending":3,"proposalsToday":3,"maxPerDay":10,"refusal":"TOO_MANY_PENDING"}"""),
+        )
+        assertEquals(
+            ProposalError.TooManyToday,
+            allowance("""{"pending":0,"maxPending":3,"proposalsToday":10,"maxPerDay":10,"refusal":"TOO_MANY_PROPOSALS"}"""),
+        )
+        assertNull(allowance("""{"pending":1,"maxPending":3,"proposalsToday":1,"maxPerDay":10,"refusal":null}"""))
+    }
+
+    @Test
+    fun aRefusalTheAppHasNoWordsFor_isLeftToTheProposalItself() {
+        assertNull(allowance("""{"refusal":"SOMETHING_NEW"}"""))
+    }
+
+    @Test
+    fun aGuestAsking_isToldToSignIn() {
+        assertEquals(ProposalError.NotSignedIn, refusal(403, """{"error":"x","code":"NOT_SIGNED_IN"}""").proposalError())
     }
 }

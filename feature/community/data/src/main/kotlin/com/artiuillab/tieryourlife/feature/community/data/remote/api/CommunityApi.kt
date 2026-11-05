@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModerationQ
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModeratorsDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.MoveListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PendingTopicsDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ProposalAllowanceDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedFeedDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIdDto
@@ -74,6 +75,9 @@ interface CommunityApi {
 
     @GET("lists/sections/{id}")
     suspend fun section(@Path("id") id: String): JsonObject
+
+    @GET("lists/sections/proposals")
+    suspend fun proposalAllowance(): ProposalAllowanceDto
 
     @POST("lists/sections/proposals")
     suspend fun proposeSection(@Body request: SectionProposalDto): JsonObject

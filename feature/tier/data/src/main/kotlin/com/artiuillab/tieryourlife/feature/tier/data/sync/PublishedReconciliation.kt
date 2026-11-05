@@ -28,3 +28,18 @@ internal fun reconcilePublished(
     val forget = claimed.filterTo(mutableSetOf()) { id -> id !in inAccount && (known[id] ?: account) == account }
     return PublishedReconciliation(forget = forget, owners = known - forget)
 }
+
+/**
+ * Boards that lost track of their list, by board uid, and the list each gets
+ * back: a publish the server finished but whose answer never arrived. Only a
+ * list no board here claims, and only one per board.
+ */
+internal fun relinkPublished(
+    unlinked: Set<String>,
+    inAccount: Map<String, String?>,
+    claimed: Set<String>,
+): Map<String, String> = inAccount.entries
+    .mapNotNull { (id, boardUid) -> boardUid?.takeIf { it in unlinked && id !in claimed }?.let { it to id } }
+    .groupBy({ it.first }, { it.second })
+    .filterValues { it.size == 1 }
+    .mapValues { it.value.single() }

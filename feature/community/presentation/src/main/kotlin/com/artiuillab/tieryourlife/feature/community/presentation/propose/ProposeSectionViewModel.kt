@@ -193,6 +193,16 @@ class ProposeSectionViewModel @Inject constructor(
         if (!now.canPropose) return
         form.update { it.copy(sending = true, error = null) }
         viewModelScope.launch {
+            // Asked first, so a proposal the server would turn away sends no picture. A check that
+            // could not answer stops nothing: the proposal itself still says.
+            val refusal = community.proposalRefusal().fold(
+                onSuccess = { it },
+                onFailure = { failure -> (failure as? ProposalRefused)?.error?.takeUnless { it == ProposalError.Failed } },
+            )
+            if (refusal != null) {
+                refused(refusal)
+                return@launch
+            }
             val result = pictures.upload(picture.uri, now.frame.crop(picture.size)).mapCatching { pictureId ->
                 catalog.propose(SectionProposal(now.name.trim(), now.icon, pictureId, now.fileUnder)).getOrThrow()
             }

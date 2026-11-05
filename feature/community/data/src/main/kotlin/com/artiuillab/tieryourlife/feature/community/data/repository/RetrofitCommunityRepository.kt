@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModerationR
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.MoveListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PendingTopicDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIdDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedItemDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListSummaryDto
@@ -28,6 +29,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.isAppUnverified
 import com.artiuillab.tieryourlife.feature.community.data.remote.proposalError
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
 import com.artiuillab.tieryourlife.feature.community.data.remote.rankingRefusal
+import com.artiuillab.tieryourlife.feature.community.data.remote.refusalError
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
@@ -43,6 +45,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ListTranslatio
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
+import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalError
 import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
@@ -171,6 +174,15 @@ class RetrofitCommunityRepository @Inject constructor(
         }
     }
 
+    override suspend fun proposalRefusal(): Result<ProposalError?> = try {
+        Result.success(api.proposalAllowance().refusalError())
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Timber.w(e, "Asking whether a proposal would be taken failed")
+        Result.failure(ProposalRefused(e.proposalError()))
+    }
+
     override suspend fun proposeSection(proposal: SectionProposal): Result<Section> = try {
         val request = SectionProposalDto(name = proposal.name.trim(), icon = proposal.icon, pictureId = proposal.pictureId, fileUnder = proposal.fileUnder)
         Result.success(sectionFrom(api.proposeSection(request), me).copy(mine = true))
@@ -286,14 +298,8 @@ class RetrofitCommunityRepository @Inject constructor(
         val request = list.toRequest(pictures, up)
         val existing = list.publishedId
         val answer = if (existing == null) api.publish(request) else api.republish(existing, request)
-        Result.success(
-            Published(
-                id = answer.id,
-                fingerprint = PublishFingerprint.of(list, pictures::pictureIdOf),
-                topicId = answer.topicId,
-                ranking = answer.ranking,
-            ),
-        )
+        if (answer.existing) Timber.i("The server had this board out already, as %s", answer.id)
+        Result.success(answer.toPublished(PublishFingerprint.of(list, pictures::pictureIdOf)))
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
@@ -386,6 +392,10 @@ private fun Throwable.asPublishError(): PublishError = when {
 /** Not found is an answer about the list, not about the network: it is gone. */
 internal fun HttpException.goneIfMissing(): Exception = if (code() == HTTP_NOT_FOUND) ListGone() else this
 
+/** A list this board already had out comes back as one just made would: the board takes its id either way. */
+internal fun PublishedIdDto.toPublished(fingerprint: String) = Published(id = id, fingerprint = fingerprint, topicId = topicId, ranking = ranking)
+
+private const val MAX_BOARD_UID = 100
 private const val TOO_MANY_PENDING_TOPICS = "TOO_MANY_PENDING_TOPICS"
 private const val TOPIC_UNAVAILABLE = "TOPIC_UNAVAILABLE"
 private const val BAD_NAME = "BAD_NAME"
@@ -452,6 +462,7 @@ internal fun PublishedListSummaryDto.toSummary(me: String? = null) = PublishedLi
     tierCounts = tierCounts,
     viewerFollowsAuthor = viewerFollowsAuthor,
     names = names,
+    boardUid = boardUid?.takeIf { it.isNotBlank() },
 )
 
 /** Old lists stored the word "null" as a cover; only a web address is a picture. */
@@ -517,6 +528,8 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
     topicId = topicId,
     // A name the server has not seen yet; once it has, the id above is what travels.
     newTopic = newTopicName?.takeIf { topicId == null },
+    noTopic = topicId == null && newTopicName == null,
+    boardUid = uid.trim().takeIf { it.length in 1..MAX_BOARD_UID },
     takenFrom = takenFrom,
     anonymous = anonymous,
     tiers = tiers.filterNot { it.isPool }.map {
@@ -596,6 +609,7 @@ internal fun PublishedListSummary.toDto() = PublishedListSummaryDto(
     tierCounts = tierCounts,
     viewerFollowsAuthor = viewerFollowsAuthor,
     names = names,
+    boardUid = boardUid,
 )
 
 /** An opened list back as the server sent it, so a kept one is read by the same mapping. */

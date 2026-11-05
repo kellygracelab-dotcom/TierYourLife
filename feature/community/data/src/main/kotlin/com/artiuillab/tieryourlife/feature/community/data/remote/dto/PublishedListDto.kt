@@ -30,6 +30,8 @@ data class PublishedListSummaryDto(
     val viewerFollowsAuthor: Boolean? = null,
     /** The title in other languages, by locale; only a house list has any. */
     val names: Map<String, String> = emptyMap(),
+    /** From `GET lists/mine`: the uid of the board it was published from, on lists published since the server kept it. */
+    val boardUid: String? = null,
 )
 
 @Serializable
@@ -137,6 +139,10 @@ data class PublishListRequestDto(
     /** One or the other: a topic the server knows, or a name it has not seen. */
     val topicId: String? = null,
     val newTopic: String? = null,
+    /** Sent only as true, and never beside either of the two above: without it the server keeps the topic the list had. */
+    val noTopic: Boolean = false,
+    /** The board's own uid: publishing the same board again answers the list the first publish made. */
+    val boardUid: String? = null,
     /** The published list the cards were taken from; the server decides whether this is a ranking of it. */
     val takenFrom: String? = null,
     /**
@@ -154,6 +160,8 @@ data class PublishedIdDto(
     val topicId: String? = null,
     /** True when the server kept it as a ranking of [id] rather than as a list. */
     val ranking: Boolean = false,
+    /** True when this board was out already: [id] is the list an earlier publish made, and nothing new was. */
+    val existing: Boolean = false,
 )
 
 @Serializable

@@ -85,6 +85,13 @@ interface BoardSyncDao {
     @Query("UPDATE tier_lists SET publishedId = NULL WHERE publishedId IN (:goneIds) AND ownerUid = :owner")
     suspend fun forgetPublished(owner: String, goneIds: List<String>)
 
+    /** As [forgetPublished], leaves editedAt alone; only a board that claims nothing takes the id. */
+    @Query(
+        "UPDATE tier_lists SET publishedId = :publishedId " +
+            "WHERE uid = :uid AND ownerUid = :owner AND publishedId IS NULL AND rankingOf IS NULL AND deletedAt IS NULL",
+    )
+    suspend fun relinkPublished(owner: String, uid: String, publishedId: String)
+
     @Query("UPDATE tier_lists SET title = :title WHERE uid = :uid")
     suspend fun renameBoard(uid: String, title: String)
 
