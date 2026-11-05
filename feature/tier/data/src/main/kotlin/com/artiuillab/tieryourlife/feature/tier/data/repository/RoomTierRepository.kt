@@ -3,7 +3,9 @@ package com.artiuillab.tieryourlife.feature.tier.data.repository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewPoolItem
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewTemplateTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.toCoverImageUrls
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toEntity
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toRemoved
@@ -228,11 +230,15 @@ class RoomTierRepository internal constructor(
         val item = dao.getTierItemById(id) ?: return null
         val tier = dao.getTierById(item.tierId) ?: return null
         dao.removeTierItem(item)
-        return item.toRemoved(tier.tierListId)
+        val coverBefore = takePictureOffCover(tier.tierListId, item.imageUrl)
+        return item.toRemoved(tier.tierListId).copy(coverBefore = coverBefore)
     }
 
     override suspend fun restoreTierItem(removed: RemovedTierItem) {
         dao.putBackTierItem(removed.toEntity(), removed.tierListId)
+        val coverBefore = removed.coverBefore ?: return
+        val board = dao.getTierListById(removed.tierListId) ?: return
+        if (board.coverPictures() == coverBefore - removed.imageUrl) setCover(removed.tierListId, coverBefore)
     }
 
     override suspend fun forgetRemovedTierItem(removed: RemovedTierItem) {
@@ -245,8 +251,10 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun deleteTierItemPermanently(id: Long) {
+        val tierListId = dao.getTierItemById(id)?.let { dao.getTierById(it.tierId) }?.tierListId
         val imagePath = dao.getTierItemImageById(id)
         dao.deleteTierItemById(id)
+        if (tierListId != null) takePictureOffCover(tierListId, imagePath)
         if (imagePath != null) {
             letGoOfPicture(imagePath)
         }
@@ -260,6 +268,26 @@ class RoomTierRepository internal constructor(
     // A card with a deletedAt from an older phone or the web stays hidden and unlisted until the trash is emptied.
     override suspend fun getTrashEntries(): List<TrashEntry> =
         dao.getDeletedTierLists(owner()).map { it.toDomain() }
+
+    /**
+     * A card's picture leaves the cover with the last card on the board showing it, so it is not
+     * published after the card is gone. The cover as it was comes back, for Undo; null where it stayed.
+     */
+    private suspend fun takePictureOffCover(tierListId: Long, picture: String?): List<String>? {
+        picture ?: return null
+        val board = dao.getTierListById(tierListId) ?: return null
+        val cover = board.coverPictures()
+        if (picture !in cover) return null
+        val stillShown = dao.getAllTiersByTierListId(tierListId).any { tier ->
+            dao.getAllTierItemsByTierId(tier.id).any { it.imageUrl == picture }
+        }
+        if (stillShown) return null
+        setCover(tierListId, cover - picture)
+        return cover
+    }
+
+    private fun TierListEntity.coverPictures(): List<String> =
+        coverImageUrls.toCoverImageUrls().ifEmpty { listOfNotNull(coverImageUrl) }
 
     /** A board copied from another shares its pictures: the file goes only with the last card showing it. */
     private suspend fun letGoOfPicture(path: String) {

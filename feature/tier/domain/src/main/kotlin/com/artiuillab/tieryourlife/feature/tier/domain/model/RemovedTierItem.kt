@@ -11,4 +11,6 @@ data class RemovedTierItem(
     val imageUrl: String?,
     val source: TierItemSource,
     val credit: String? = null,
+    /** The board's cover before this card took its picture off it; null where the cover did not change. */
+    val coverBefore: List<String>? = null,
 )

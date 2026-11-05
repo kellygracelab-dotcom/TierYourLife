@@ -14,6 +14,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.ByteArrayInputStream
@@ -114,6 +115,69 @@ class RoomTierRepositoryDeleteTest {
         assertTrue(shared.exists())
     }
 
+    @Test
+    fun `a deleted card takes its picture off the cover, and Undo puts it back`() = runBlocking {
+        val dao = boardWithThreeCards()
+        dao.lists[LIST] = dao.lists.getValue(LIST).copy(coverImageUrl = MOON_PICTURE)
+        val repository = RoomTierRepository(dao, imageStore) { 0L }
+
+        val removed = requireNotNull(repository.deleteTierItem(MOON))
+        assertNull(dao.lists.getValue(LIST).coverImageUrl)
+
+        repository.restoreTierItem(removed)
+        assertEquals(MOON_PICTURE, dao.lists.getValue(LIST).coverImageUrl)
+    }
+
+    @Test
+    fun `a deleted card's picture leaves a collage, and the rest of it stays`() = runBlocking {
+        val dao = boardWithThreeCards()
+        dao.lists[LIST] = dao.lists.getValue(LIST).copy(coverImageUrls = listOf(MOON_PICTURE, "https://a", "https://b").joinToString("\n"))
+        val repository = RoomTierRepository(dao, imageStore) { 0L }
+
+        repository.deleteTierItem(MOON)
+
+        assertEquals("https://a\nhttps://b", dao.lists.getValue(LIST).coverImageUrls)
+        assertNull(dao.lists.getValue(LIST).coverImageUrl)
+    }
+
+    @Test
+    fun `the cover keeps a picture another card still shows, or one found elsewhere`() = runBlocking {
+        val dao = boardWithThreeCards(alienImage = MOON_PICTURE)
+        dao.lists[LIST] = dao.lists.getValue(LIST).copy(coverImageUrl = MOON_PICTURE)
+        val repository = RoomTierRepository(dao, imageStore) { 0L }
+
+        assertNull(requireNotNull(repository.deleteTierItem(MOON)).coverBefore)
+        assertEquals(MOON_PICTURE, dao.lists.getValue(LIST).coverImageUrl)
+
+        dao.lists[LIST] = dao.lists.getValue(LIST).copy(coverImageUrl = "https://found/elsewhere.jpg")
+        repository.deleteTierItem(ALIEN)
+        assertEquals("https://found/elsewhere.jpg", dao.lists.getValue(LIST).coverImageUrl)
+    }
+
+    @Test
+    fun `Undo leaves a cover chosen since the card went`() = runBlocking {
+        val dao = boardWithThreeCards()
+        dao.lists[LIST] = dao.lists.getValue(LIST).copy(coverImageUrl = MOON_PICTURE)
+        val repository = RoomTierRepository(dao, imageStore) { 0L }
+        val removed = requireNotNull(repository.deleteTierItem(MOON))
+
+        repository.setCover(LIST, listOf("https://new/cover.jpg"))
+        repository.restoreTierItem(removed)
+
+        assertEquals("https://new/cover.jpg", dao.lists.getValue(LIST).coverImageUrl)
+    }
+
+    @Test
+    fun `cards removed together for good take their pictures off the cover too`() = runBlocking {
+        val dao = boardWithThreeCards()
+        dao.lists[LIST] = dao.lists.getValue(LIST).copy(coverImageUrl = MOON_PICTURE)
+        val repository = RoomTierRepository(dao, imageStore) { 0L }
+
+        listOf(ARRIVAL, MOON).forEach { repository.deleteTierItemPermanently(it) }
+
+        assertNull(dao.lists.getValue(LIST).coverImageUrl)
+    }
+
     // An older phone or the web's older data may still carry a trashed card.
     @Test
     fun `the trash lists only lists, never a card trashed elsewhere`() = runBlocking {
@@ -200,6 +264,7 @@ class RoomTierRepositoryDeleteTest {
         const val ARRIVAL = 100L
         const val MOON = 101L
         const val ALIEN = 102L
+        const val MOON_PICTURE = "/pictures/moon.jpg"
     }
 }
 
@@ -217,7 +282,9 @@ private class RecordingTierDao : TierDao {
     override suspend fun setAnonymous(id: Long, anonymous: Boolean) = Unit
     override suspend fun setPlay(id: Long, play: String?) = Unit
 
-    override suspend fun setCover(id: Long, coverImageUrl: String?, coverImageUrls: String?) = Unit
+    override suspend fun setCover(id: Long, coverImageUrl: String?, coverImageUrls: String?) {
+        lists.computeIfPresent(id) { _, list -> list.copy(coverImageUrl = coverImageUrl, coverImageUrls = coverImageUrls) }
+    }
 
     override suspend fun countPublishedLists(owner: String?): Int = 0
 
