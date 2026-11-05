@@ -23,8 +23,17 @@ data class PlayRequest(
     companion object {
         fun ownBoard(board: TierList) = PlayRequest(board = board, key = "board:${board.id}")
 
-        fun someoneElses(publishedId: String, shown: TierList, mine: TierList) =
-            PlayRequest(board = shown, key = "list:$publishedId", applyTo = mine)
+        /**
+         * Kept for [version] of the list alone: published again, its cards are numbered afresh,
+         * and a game of the old one would hold answers about other cards.
+         */
+        fun someoneElses(publishedId: String, version: Long, shown: TierList, mine: TierList) =
+            PlayRequest(board = shown, key = "list:$publishedId$VERSION_MARK$version", applyTo = mine)
+
+        /** Whether two keys are of the same board or list, whatever the version. */
+        fun sameBoard(key: String, other: String): Boolean = key.substringBefore(VERSION_MARK) == other.substringBefore(VERSION_MARK)
+
+        private const val VERSION_MARK = '@'
     }
 }
 

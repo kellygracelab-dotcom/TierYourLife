@@ -240,6 +240,7 @@ class CommunityListViewModel @Inject constructor(
             anonymous = answer.summary.anonymous,
             fromBoard = route.fromBoard,
             listId = publishedId,
+            version = answer.summary.updatedAtMillis,
             signedIn = accounts.current() is Account.SignedIn,
             ownBoardId = before?.ownBoardId,
             trashedBoardId = before?.trashedBoardId,

@@ -74,6 +74,8 @@ sealed interface CommunityListUiState {
         /** Their own list, asked for from its board: changed and taken down there, so not here. */
         val fromBoard: Boolean = false,
         val listId: String = "",
+        /** When its author last published it: a game of it is kept for this version alone. */
+        val version: Long = 0,
         /** Signed in with an account: only then can their ranking be shown to others. */
         val signedIn: Boolean = false,
         /** Their ranking on its way to the server. */

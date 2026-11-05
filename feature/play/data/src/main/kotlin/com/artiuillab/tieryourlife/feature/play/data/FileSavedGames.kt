@@ -38,6 +38,8 @@ class FileSavedGames(
 
     override suspend fun discard(key: String) = change { it.copy(games = it.games - key) }
 
+    override suspend fun keys(): Set<String> = lock.withLock { current() }.games.keys
+
     override suspend fun lastKind(): GameKind? = lock.withLock { current() }.last?.let(::kindNamed)
 
     override suspend fun rememberKind(kind: GameKind) = change { it.copy(last = kind.name) }

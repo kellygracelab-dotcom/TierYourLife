@@ -18,6 +18,8 @@ class FakeSavedGames(
         games.remove(key)
     }
 
+    override suspend fun keys(): Set<String> = games.keys.toSet()
+
     override suspend fun lastKind(): GameKind? = last
 
     override suspend fun rememberKind(kind: GameKind) {
