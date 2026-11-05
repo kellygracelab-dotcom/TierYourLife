@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.ListGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -262,6 +263,7 @@ class ListFirstFrameTest {
         savedStateHandle = handleOf(route),
         accounts = FakeAccountRepository(),
         openedLists = kept,
+        afterSignIn = FollowAfterSignIn(FakeAccountRepository()),
     ).also { made += it }
 }
 

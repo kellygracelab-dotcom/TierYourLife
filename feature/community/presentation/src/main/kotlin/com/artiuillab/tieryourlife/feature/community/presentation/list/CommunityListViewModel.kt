@@ -16,6 +16,10 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.readIn
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.OpenedLists
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowTarget
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.GuestFollows
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -44,6 +48,7 @@ class CommunityListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val accounts: AccountRepository,
     private val openedLists: OpenedLists,
+    afterSignIn: FollowAfterSignIn,
 ) : ViewModel() {
 
     private val route = savedStateHandle.communityListRoute()
@@ -92,11 +97,15 @@ class CommunityListViewModel @Inject constructor(
     /** Taps on Follow so far: an answer asked for before the latest one does not get to undo it. */
     private var followTaps = 0
 
+    private val guest = GuestFollows(afterSignIn, viewModelScope)
+
     init {
         viewModelScope.launch {
             if (route.mine && ownList.openBoardIfHere()) return@launch
             open(quietly = false)
         }
+        viewModelScope.launch { guest.signInRequests.collect { told.send(ListNotice.SignInToFollow) } }
+        guest.afterSignIn({ it == authorTarget() }) { setFollowing(FollowState(following = true)) }
         viewModelScope.launch {
             accounts.account.collect { account ->
                 _state.update { current ->
@@ -120,11 +129,21 @@ class CommunityListViewModel @Inject constructor(
         }
     }
 
-    /** Shown before the server answers, put back if it refuses. */
+    private fun authorTarget(): FollowTarget? =
+        (_state.value as? CommunityListUiState.Success)?.authorUid?.takeIf { it.isNotEmpty() }?.let(FollowTarget::Author)
+
+    /** Shown before the server answers, put back, and said, if it refuses. */
     fun toggleFollow() {
         val current = _state.value as? CommunityListUiState.Success ?: return
         val was = current.follow ?: return
-        val now = FollowState(following = !was.following)
+        val target = authorTarget() ?: return
+        if (!was.following && !guest.mayFollow(target)) return
+        setFollowing(FollowState(following = !was.following))
+    }
+
+    private fun setFollowing(now: FollowState) {
+        val current = _state.value as? CommunityListUiState.Success ?: return
+        val was = current.follow
         followTaps++
         _state.update { (it as CommunityListUiState.Success).copy(follow = now) }
 
@@ -139,6 +158,7 @@ class CommunityListViewModel @Inject constructor(
                 _state.update { state ->
                     if (state is CommunityListUiState.Success) state.copy(follow = was) else state
                 }
+                told.send(ListNotice.FollowRefused(FollowRefusal.of(now.following, error)))
             }
         }
     }

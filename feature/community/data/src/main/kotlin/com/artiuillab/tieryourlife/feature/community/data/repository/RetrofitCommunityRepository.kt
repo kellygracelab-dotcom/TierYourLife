@@ -61,6 +61,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.SectionNameChe
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposal
 import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
+import com.artiuillab.tieryourlife.feature.community.domain.model.TooManyFollowed
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.model.isOwnList
@@ -118,7 +119,7 @@ class RetrofitCommunityRepository @Inject constructor(
     }
 
     override suspend fun follow(authorUid: String): Result<Unit> = attempt("Following an author") {
-        api.follow(authorUid)
+        refusedOverTheLimit { api.follow(authorUid) }
     }
 
     override suspend fun unfollow(authorUid: String): Result<Unit> = attempt("Unfollowing an author") {
@@ -158,7 +159,7 @@ class RetrofitCommunityRepository @Inject constructor(
     }
 
     override suspend fun followSection(id: String): Result<Unit> = attempt("Following a section") {
-        api.followSection(id)
+        refusedOverTheLimit { api.followSection(id) }
     }
 
     override suspend fun unfollowSection(id: String): Result<Unit> = attempt("Unfollowing a section") {
@@ -207,7 +208,9 @@ class RetrofitCommunityRepository @Inject constructor(
 
     override suspend fun topic(id: String): Result<Topic> = attempt("Reading a topic") { api.topic(id).toDomain() }
 
-    override suspend fun followTopic(id: String): Result<Unit> = attempt("Following a topic") { api.followTopic(id) }
+    override suspend fun followTopic(id: String): Result<Unit> = attempt("Following a topic") {
+        refusedOverTheLimit { api.followTopic(id) }
+    }
 
     override suspend fun unfollowTopic(id: String): Result<Unit> = attempt("Unfollowing a topic") { api.unfollowTopic(id) }
 
@@ -374,6 +377,13 @@ private inline fun <T> attempt(what: String, block: () -> T): Result<T> =
         },
     )
 
+/** A follow over the limit as its own failure, which a screen names; any other refusal as it came. */
+internal suspend fun <T> refusedOverTheLimit(block: suspend () -> T): T = try {
+    block()
+} catch (refused: HttpException) {
+    throw if (refused.code() == HTTP_CONFLICT && refused.proxyCode() == TOO_MANY_FOLLOWING) TooManyFollowed() else refused
+}
+
 private fun Throwable.asPublishError(): PublishError = when {
     isAppUnverified() -> PublishError.NotVerified
     this is HttpException -> when (code()) {
@@ -397,6 +407,7 @@ internal fun PublishedIdDto.toPublished(fingerprint: String) = Published(id = id
 
 private const val MAX_BOARD_UID = 100
 private const val TOO_MANY_PENDING_TOPICS = "TOO_MANY_PENDING_TOPICS"
+private const val TOO_MANY_FOLLOWING = "TOO_MANY_FOLLOWING"
 private const val TOPIC_UNAVAILABLE = "TOPIC_UNAVAILABLE"
 private const val BAD_NAME = "BAD_NAME"
 private const val HTTP_BAD_REQUEST = 400

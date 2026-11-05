@@ -15,6 +15,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ListTranslatio
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedCard
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -80,6 +81,7 @@ class HouseListInTheReadersLanguageTest {
             savedStateHandle = SavedStateHandle(mapOf("publishedId" to ghibli.summary.id)),
             accounts = FakeAccountRepository(),
             openedLists = FakeOpenedLists(),
+            afterSignIn = FollowAfterSignIn(FakeAccountRepository()),
         )
         compose.setContent {
             TierYourLifeTheme { CommunityListScreen(onBack = {}, onOpenSaved = {}, onAuthorClick = { _, _, _ -> }, viewModel = viewModel) }

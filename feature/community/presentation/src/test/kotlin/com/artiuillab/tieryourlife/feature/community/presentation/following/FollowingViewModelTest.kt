@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
@@ -90,7 +91,7 @@ class FollowingViewModelTest {
 
         viewModel.toggle(FollowKeys.topic("t1"))
 
-        assertEquals(ManageNotice.Failed, withTimeout(5_000) { viewModel.notices.first() })
+        assertEquals(ManageNotice.Failed(FollowRefusal.Unfollow), withTimeout(5_000) { viewModel.notices.first() })
         viewModel.state.firstWithin { (it as? FollowingUiState.Ready)?.stopped?.isEmpty() == true }
         Unit
     }

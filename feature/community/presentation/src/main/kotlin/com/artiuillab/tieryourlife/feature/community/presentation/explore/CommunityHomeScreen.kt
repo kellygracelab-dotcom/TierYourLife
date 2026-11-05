@@ -73,6 +73,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.matchesSearch
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.LocalOwnFace
 import com.artiuillab.tieryourlife.feature.community.presentation.components.OwnFaceViewModel
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.SignInToFollow
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenceFor
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingActions
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedViewModel
@@ -148,11 +150,13 @@ fun CommunityHomeScreen(
     onOpenTopic: (CommunityRoute.Topic) -> Unit = {},
     tabs: @Composable () -> Unit = {},
     onOpenAllSections: () -> Unit = {},
+    onSignIn: () -> Unit = {},
     explore: ExploreViewModel = hiltViewModel(),
     following: FollowingFeedViewModel = hiltViewModel(),
     ownFace: OwnFaceViewModel = hiltViewModel(),
 ) {
     val exploreState by explore.state.collectAsStateWithLifecycle()
+    SignInToFollow(explore.signInRequests, onSignIn)
     val followingState by following.state.collectAsStateWithLifecycle()
     val face by ownFace.face.collectAsStateWithLifecycle()
     OnResumeEffect {
@@ -291,7 +295,7 @@ private fun NoticeSnackbars(
                     if (result == SnackbarResult.ActionPerformed) exploreFeed.onRefresh()
                 }
 
-                CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.getString(R.string.explore_follow_failed))
+                is CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.sentenceFor(notice.refusal))
                 is CommunityNotice.NowFollowing -> snackbar.showSnackbar(
                     resources.getString(R.string.explore_now_following, nameOf(notice.sectionId)),
                 )

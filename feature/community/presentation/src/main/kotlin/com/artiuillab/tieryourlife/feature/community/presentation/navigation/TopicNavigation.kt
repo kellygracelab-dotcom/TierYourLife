@@ -9,9 +9,10 @@ fun NavGraphBuilder.topicScreen(
     onBack: () -> Unit,
     onOpenList: (CommunityRoute.CommunityList) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
+    onSignIn: () -> Unit = {},
 ) {
     composable<CommunityRoute.Topic> {
-        TopicScreen(onBack = onBack, onOpenList = onOpenList, onAuthorClick = onAuthorClick)
+        TopicScreen(onBack = onBack, onOpenList = onOpenList, onAuthorClick = onAuthorClick, onSignIn = onSignIn)
     }
 }
 

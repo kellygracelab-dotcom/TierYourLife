@@ -19,7 +19,10 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
+import com.artiuillab.tieryourlife.feature.community.domain.model.TooManyFollowed
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -588,6 +591,46 @@ class CommunityListViewModelTest {
         assertEquals(listOf(listOf(listOf(1), emptyList())), community.shownRows)
     }
 
+    @Test
+    fun aGuestsFollow_opensTheSignIn_andTheSignInFollows() = runBlocking {
+        val accounts = FakeAccountRepository()
+        val viewModel = viewModel(accounts = accounts)
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.follow != null }
+
+        viewModel.toggleFollow()
+
+        assertEquals(ListNotice.SignInToFollow, nextNotice(viewModel))
+        assertEquals(false, (viewModel.state.value as CommunityListUiState.Success).follow?.following)
+        accounts.accounts.value = FakeAccountRepository.signedIn
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.follow?.following == true }
+        Unit
+    }
+
+    @Test
+    fun aRefusedFollow_saysWhy() = runBlocking {
+        val community = object : FakeCommunityRepository() {
+            override suspend fun open(id: String): Result<PublishedList> = Result.success(published)
+
+            override suspend fun follow(authorUid: String): Result<Unit> = Result.failure(TooManyFollowed())
+        }
+        val viewModel = viewModel(community = community, accounts = signedIn)
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.follow != null }
+
+        viewModel.toggleFollow()
+
+        assertEquals(ListNotice.FollowRefused(FollowRefusal.TooMany), nextNotice(viewModel))
+    }
+
+    @Test
+    fun theListsVersion_isWhenItWasLastPublished() = runBlocking {
+        val community = TestCommunity(summary = { it.copy(updatedAtMillis = 1_234L) })
+        val viewModel = viewModel(community = community)
+
+        val state = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+
+        assertEquals(1_234L, state.version)
+    }
+
     private fun viewModel(
         community: CommunityRepository = TestCommunity(),
         tiers: RecordingTierRepository = RecordingTierRepository(),
@@ -602,6 +645,7 @@ class CommunityListViewModelTest {
         savedStateHandle = handle,
         accounts = accounts,
         openedLists = openedLists,
+        afterSignIn = FollowAfterSignIn(accounts),
     ).also { made += it }
 
     private val signedIn = FakeAccountRepository(Account.SignedIn(email = "ann@example.com", photoUrl = null))

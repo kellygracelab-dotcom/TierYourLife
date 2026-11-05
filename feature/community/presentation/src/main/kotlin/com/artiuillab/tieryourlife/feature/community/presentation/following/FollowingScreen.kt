@@ -64,6 +64,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.Dashed
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowSize
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowToggle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScheduleIcon
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenceFor
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.TopicSquare
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.section.lookOf
@@ -177,7 +178,7 @@ private fun ManageSnackbars(notices: Flow<ManageNotice>, snackbar: SnackbarHostS
                     if (result == SnackbarResult.ActionPerformed) onToggle(notice.key)
                 }
 
-                ManageNotice.Failed -> snackbar.showSnackbar(resources.getString(ThemeR.string.snack_action_failed))
+                is ManageNotice.Failed -> snackbar.showSnackbar(resources.sentenceFor(notice.refusal))
             }
         }
     }

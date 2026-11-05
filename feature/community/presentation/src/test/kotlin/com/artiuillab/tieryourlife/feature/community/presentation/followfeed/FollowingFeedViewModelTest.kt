@@ -23,6 +23,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.summary
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -153,7 +154,7 @@ class FollowingFeedViewModelTest {
             viewModel.followPicked()
         }
 
-        assertEquals(CommunityNotice.FollowFailed, withTimeout(5_000) { viewModel.notices.first() })
+        assertEquals(CommunityNotice.FollowFailed(FollowRefusal.Follow), withTimeout(5_000) { viewModel.notices.first() })
         val after = viewModel.state.firstWithin { !it.followingPicked }
         assertEquals(setOf(ListCategory.Sport.id), after.picked)
         assertTrue(after.followsNothing)

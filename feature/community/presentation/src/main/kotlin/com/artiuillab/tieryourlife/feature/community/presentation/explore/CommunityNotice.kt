@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -11,7 +12,7 @@ import timber.log.Timber
 /** What a Community screen says in its snackbar. */
 sealed interface CommunityNotice {
     data class RefreshFailed(val showingFromMillis: Long) : CommunityNotice
-    data object FollowFailed : CommunityNotice
+    data class FollowFailed(val refusal: FollowRefusal) : CommunityNotice
 
     /** [sectionId] is named on screen, where the words are. */
     data class NowFollowing(val sectionId: String) : CommunityNotice

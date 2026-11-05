@@ -5,6 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowTarget
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.GuestFollows
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -41,7 +45,13 @@ private const val SEARCHABLE_FROM = 20
 @HiltViewModel
 class AllSectionsViewModel @Inject constructor(
     private val catalog: SectionCatalog,
+    afterSignIn: FollowAfterSignIn,
 ) : ViewModel() {
+
+    private val guest = GuestFollows(afterSignIn, viewModelScope)
+
+    /** A guest's Follow opens the sign-in; signing in follows. */
+    val signInRequests: Flow<Unit> = guest.signInRequests
 
     private val sort = MutableStateFlow(SectionSort.MostLists)
     private val query = MutableStateFlow("")
@@ -65,6 +75,7 @@ class AllSectionsViewModel @Inject constructor(
     val proposed: Flow<Unit> = sent.receiveAsFlow()
 
     init {
+        guest.afterSignIn({ it is FollowTarget.Section }) { setFollowing((it as FollowTarget.Section).id, true) }
         viewModelScope.launch {
             var seen: Set<String>? = null
             catalog.directory.map { directory -> directory.waiting.map { it.id }.toSet() }.distinctUntilChanged().collect { waiting ->
@@ -93,7 +104,9 @@ class AllSectionsViewModel @Inject constructor(
         query.value = typed
     }
 
-    fun follow(sectionId: String) = setFollowing(sectionId, true)
+    fun follow(sectionId: String) {
+        if (guest.mayFollow(FollowTarget.Section(sectionId))) setFollowing(sectionId, true)
+    }
 
     fun unfollow(sectionId: String) = setFollowing(sectionId, false)
 
@@ -101,7 +114,7 @@ class AllSectionsViewModel @Inject constructor(
         viewModelScope.launch {
             catalog.setFollowing(sectionId, now).fold(
                 onSuccess = { notes.send(if (now) CommunityNotice.NowFollowing(sectionId) else CommunityNotice.Unfollowed(sectionId)) },
-                onFailure = { notes.send(CommunityNotice.FollowFailed) },
+                onFailure = { notes.send(CommunityNotice.FollowFailed(FollowRefusal.of(now, it))) },
             )
         }
     }

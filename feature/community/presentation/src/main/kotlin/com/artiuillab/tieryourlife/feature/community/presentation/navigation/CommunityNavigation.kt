@@ -19,7 +19,7 @@ fun NavGraphBuilder.communityListScreen(
     onOpenList: (String) -> Unit = {},
     /** Play over the list; its result fills Mine. */
     play: BoardPlay = NoPlay,
-    /** A guest asked to show their ranking: the account screen, and back to the list after. */
+    /** A guest asked to show their ranking or to follow: the account screen, and back to the list after. */
     onSignIn: () -> Unit = {},
     /** On their own list: all their public ones. */
     onOpenMyPublished: () -> Unit = {},
@@ -50,9 +50,11 @@ fun NavController.navigateToCommunityList(publishedId: String) {
 fun NavGraphBuilder.authorScreen(
     onBack: () -> Unit,
     onOpenList: (CommunityRoute.CommunityList) -> Unit,
+    /** A guest tapped Follow: the account screen, and the follow once they are in. */
+    onSignIn: () -> Unit = {},
 ) {
     composable<CommunityRoute.Author> {
-        AuthorScreen(onBack = onBack, onOpenList = onOpenList)
+        AuthorScreen(onBack = onBack, onOpenList = onOpenList, onSignIn = onSignIn)
     }
 }
 

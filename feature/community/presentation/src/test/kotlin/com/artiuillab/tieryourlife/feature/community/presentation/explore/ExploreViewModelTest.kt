@@ -19,6 +19,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CachedFeed
 import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.signedInFollows
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -102,6 +104,7 @@ class ExploreViewModelTest {
         FakeAppPreferences(),
         clock,
         sectionCatalogFor(community, FakeSectionStore(kept), clock),
+        signedInFollows(),
     ).also { made += it }
 
     @Test
@@ -147,7 +150,7 @@ class ExploreViewModelTest {
         viewModel.follow(ListCategory.Food.id)
         withTimeout(5_000) { community.followed.await() }
 
-        assertEquals(CommunityNotice.FollowFailed, withTimeout(5_000) { viewModel.notices.first() })
+        assertEquals(CommunityNotice.FollowFailed(FollowRefusal.Follow), withTimeout(5_000) { viewModel.notices.first() })
         viewModel.state.firstWithin { state -> !state.sections.first { it.id == ListCategory.Food.id }.following }
         Unit
     }

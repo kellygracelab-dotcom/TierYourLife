@@ -22,6 +22,10 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedLo
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPane
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ListMenuActions
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.toCommunityNotice
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowTarget
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.GuestFollows
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.sectionRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -88,6 +92,7 @@ class SectionViewModel @Inject constructor(
     private val clock: CommunityClock,
     private val sortMemory: SectionSortMemory,
     private val catalog: SectionCatalog,
+    afterSignIn: FollowAfterSignIn,
 ) : ViewModel() {
 
     private val route = savedStateHandle.sectionRoute()
@@ -97,6 +102,12 @@ class SectionViewModel @Inject constructor(
     val section: String get() = sectionId.value
 
     private val notes = Channel<CommunityNotice>(Channel.BUFFERED)
+
+    private val guest = GuestFollows(afterSignIn, viewModelScope)
+
+    /** A guest's Follow opens the sign-in; signing in follows. */
+    val signInRequests: Flow<Unit> = guest.signInRequests
+
     private val menu = ListMenuActions(preferences, community, viewModelScope) { notes.send(CommunityNotice.ActionFailed) }
 
     private val topics = MutableStateFlow<List<Topic>?>(null)
@@ -136,6 +147,7 @@ class SectionViewModel @Inject constructor(
 
     init {
         viewModelScope.launch { network.available.collect { feed.onNetworkBack() } }
+        guest.afterSignIn({ it == FollowTarget.Section(section) }) { setFollowing(section, true) }
         // A link to a section that was merged away opens the one it became, as soon as that is known.
         viewModelScope.launch {
             catalog.directory.map { it.resolve(route.sectionId) }.distinctUntilChanged().collect { id ->
@@ -201,10 +213,15 @@ class SectionViewModel @Inject constructor(
     fun toggleSectionFollow() {
         val id = section
         val now = catalog.directory.value.find(id)?.following != true
+        if (now && !guest.mayFollow(FollowTarget.Section(id))) return
+        setFollowing(id, now)
+    }
+
+    private fun setFollowing(id: String, now: Boolean) {
         viewModelScope.launch {
             catalog.setFollowing(id, now).fold(
                 onSuccess = { if (!now) notes.send(CommunityNotice.Unfollowed(id)) },
-                onFailure = { notes.send(CommunityNotice.FollowFailed) },
+                onFailure = { notes.send(CommunityNotice.FollowFailed(FollowRefusal.of(now, it))) },
             )
         }
     }

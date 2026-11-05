@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -56,6 +57,9 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Rep
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.shownTitle
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.SignInToFollow
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenceFor
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
@@ -76,9 +80,11 @@ fun TopicScreen(
     onBack: () -> Unit,
     onOpenList: (CommunityRoute.CommunityList) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
+    onSignIn: () -> Unit = {},
     viewModel: TopicViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    SignInToFollow(viewModel.signInRequests, onSignIn)
     TopicScreenContent(
         state = state,
         onBack = onBack,
@@ -92,6 +98,7 @@ fun TopicScreen(
         onReport = viewModel::report,
         onNotThisTopic = viewModel::notThisTopic,
         userMessages = viewModel.userMessages,
+        followRefusals = viewModel.followRefusals,
     )
 }
 
@@ -109,6 +116,7 @@ fun TopicScreenContent(
     onReport: (PublishedListSummary, ReportReason, String?) -> Unit = { _, _, _ -> },
     onNotThisTopic: (PublishedListSummary) -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
+    followRefusals: Flow<FollowRefusal> = emptyFlow(),
 ) {
     var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     val languageTag = currentLanguageTag()
@@ -120,6 +128,10 @@ fun TopicScreenContent(
     val toldMessage = stringResource(R.string.topic_not_this_sent)
     LaunchedEffect(told) {
         if (told > 0) snackbar.showSnackbar(toldMessage)
+    }
+    val resources = LocalResources.current
+    LaunchedEffect(followRefusals) {
+        followRefusals.collect { snackbar.showSnackbar(resources.sentenceFor(it)) }
     }
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {

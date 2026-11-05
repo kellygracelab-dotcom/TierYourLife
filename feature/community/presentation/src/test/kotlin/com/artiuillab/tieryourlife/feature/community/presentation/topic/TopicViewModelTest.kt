@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
@@ -12,10 +13,14 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.signedInFollows
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -133,6 +138,24 @@ class TopicViewModelTest {
 
         val back = viewModel.state.firstWithin { it.topic?.following == false }
         assertEquals(pokemon, back.topic)
+        assertEquals(FollowRefusal.Follow, withTimeout(WAIT_MILLIS) { viewModel.followRefusals.first() })
+    }
+
+    @Test
+    fun aGuestsFollow_asksForASignIn_andTheSignInFollows() = runBlocking {
+        val accounts = FakeAccountRepository()
+        val community = TopicFake()
+        val viewModel = topicFor(community, afterSignIn = FollowAfterSignIn(accounts))
+        viewModel.state.firstWithin { it.topic != null }
+
+        viewModel.toggleFollow()
+
+        withTimeout(WAIT_MILLIS) { viewModel.signInRequests.first() }
+        assertFalse(viewModel.state.value.topic!!.following)
+        accounts.accounts.value = FakeAccountRepository.signedIn
+        assertEquals("t1", withTimeout(WAIT_MILLIS) { community.followAsked.await() })
+        viewModel.state.firstWithin { it.topic?.following == true }
+        Unit
     }
 
     // The list is fine, it is just not of this topic: a moderator moves it, nothing disappears.
@@ -148,9 +171,14 @@ class TopicViewModelTest {
         assertEquals(listOf("a"), (viewModel.state.value.feed as CommunityFeed.Ready).lists.map { it.id })
     }
 
-    private fun topicFor(community: TopicFake, preferences: FakeAppPreferences = FakeAppPreferences()) = TopicViewModel(
+    private fun topicFor(
+        community: TopicFake,
+        preferences: FakeAppPreferences = FakeAppPreferences(),
+        afterSignIn: FollowAfterSignIn = signedInFollows(),
+    ) = TopicViewModel(
         community = community,
         preferences = preferences,
+        afterSignIn = afterSignIn,
         savedStateHandle = SavedStateHandle(mapOf("topicId" to "t1", "name" to "Pokémon", "section" to "games")),
     )
 

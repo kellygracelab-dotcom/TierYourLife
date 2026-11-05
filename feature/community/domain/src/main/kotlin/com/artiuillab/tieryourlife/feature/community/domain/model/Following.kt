@@ -46,3 +46,9 @@ data class Following(
     val topics: List<Topic>,
     val sections: List<FollowedSection> = emptyList(),
 )
+
+/** As many people, topics or sections as one account may follow, each kind counted on its own. */
+const val MAX_FOLLOWING = 200
+
+/** One more follow of a kind already at [MAX_FOLLOWING], refused. */
+class TooManyFollowed : Exception("Following too many")

@@ -60,6 +60,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Aut
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenceFor
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
@@ -482,6 +483,8 @@ private fun ListSnackbar(
             when (notice) {
                 ListNotice.TakenDown -> leave()
                 is ListNotice.OpenBoard -> openBoard(notice.boardId)
+                ListNotice.SignInToFollow -> signIn()
+                is ListNotice.FollowRefused -> host.showSnackbar(resources.sentenceFor(notice.refusal))
                 is ListNotice.StartedFromTheirs -> {
                     host.currentSnackbarData?.dismiss()
                     val answer = host.showSnackbar(

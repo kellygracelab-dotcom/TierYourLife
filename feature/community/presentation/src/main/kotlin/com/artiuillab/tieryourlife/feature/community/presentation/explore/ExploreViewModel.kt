@@ -16,6 +16,10 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Community
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityNetwork
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowTarget
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.GuestFollows
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -66,6 +70,7 @@ class ExploreViewModel @Inject constructor(
     preferences: AppPreferences,
     private val clock: CommunityClock,
     private val catalog: SectionCatalog,
+    afterSignIn: FollowAfterSignIn,
 ) : ViewModel() {
 
     private val notes = Channel<CommunityNotice>(Channel.BUFFERED)
@@ -92,12 +97,18 @@ class ExploreViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, ExploreUiState())
 
+    private val guest = GuestFollows(afterSignIn, viewModelScope)
+
+    /** A guest's Follow opens the sign-in; signing in follows. */
+    val signInRequests: Flow<Unit> = guest.signInRequests
+
     val notices: Flow<CommunityNotice> = merge(
         notes.receiveAsFlow(),
         feed.notices.map { notice -> notice.toCommunityNotice() },
     )
 
     init {
+        guest.afterSignIn({ it is FollowTarget.Section }) { setFollowing((it as FollowTarget.Section).id, true) }
         viewModelScope.launch {
             network.available.collect {
                 feed.onNetworkBack()
@@ -117,7 +128,9 @@ class ExploreViewModel @Inject constructor(
         viewModelScope.launch { catalog.refresh() }
     }
 
-    fun follow(sectionId: String) = setFollowing(sectionId, true)
+    fun follow(sectionId: String) {
+        if (guest.mayFollow(FollowTarget.Section(sectionId))) setFollowing(sectionId, true)
+    }
 
     fun unfollow(sectionId: String) = setFollowing(sectionId, false)
 
@@ -125,7 +138,7 @@ class ExploreViewModel @Inject constructor(
         viewModelScope.launch {
             catalog.setFollowing(sectionId, now).fold(
                 onSuccess = { notes.send(if (now) CommunityNotice.NowFollowing(sectionId) else CommunityNotice.Unfollowed(sectionId)) },
-                onFailure = { notes.send(CommunityNotice.FollowFailed) },
+                onFailure = { notes.send(CommunityNotice.FollowFailed(FollowRefusal.of(now, it))) },
             )
         }
     }
