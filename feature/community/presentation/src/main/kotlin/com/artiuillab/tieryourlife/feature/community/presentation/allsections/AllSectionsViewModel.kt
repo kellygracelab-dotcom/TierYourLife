@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.withdrawTelling
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowTarget
@@ -88,7 +89,7 @@ class AllSectionsViewModel @Inject constructor(
     /** Withdraws a waiting proposal, or dismisses the notice of a declined or merged one. */
     fun withdraw(sectionId: String) {
         viewModelScope.launch {
-            catalog.withdraw(sectionId).onFailure { notes.send(CommunityNotice.ActionFailed) }
+            catalog.withdrawTelling(sectionId, notes::send)
         }
     }
 

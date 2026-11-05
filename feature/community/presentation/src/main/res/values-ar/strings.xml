@@ -9,7 +9,7 @@
     <string name="community_day_today">اليوم</string>
     <string name="community_day_yesterday">أمس</string>
     <string name="community_following_nobody">لا تتابع أحداً بعد.</string>
-    <string name="community_author_unnamed">المؤلف</string>
+    <string name="community_author_unnamed">شخص ما</string>
     <string name="author_failed">تعذّر فتح هذا الملف الشخصي.</string>
     <string name="author_no_public_lists">لا توجد قوائم عامة</string>
     <string name="author_no_public_lists_body">النسخ التي حفظتها بالفعل ملكك وتبقى في مكانها.</string>
@@ -170,7 +170,6 @@
     <string name="explore_tab_explore">استكشاف</string>
     <string name="explore_tab_following">المتابَعة</string>
     <string name="explore_title_community">المجتمع</string>
-    <string name="explore_popular_this_week">الأكثر رواجًا هذا الأسبوع</string>
     <string name="explore_follow_section">متابعة %1$s</string>
     <string name="explore_unfollow_section">إلغاء متابعة %1$s</string>
     <string name="explore_open_section">فتح %1$s</string>
@@ -288,6 +287,9 @@
     <string name="section_proposal_dismiss">إخفاء</string>
     <string name="section_proposal_declined">لم تتم إضافة «%1$s» كقسم. تبقى قوائمك في %2$s.</string>
     <string name="section_proposal_merged">تم دمج «%1$s» في %2$s.</string>
+    <string name="section_withdraw_already_declined">كان المشرفون قد رفضوا «%1$s» بالفعل.</string>
+    <string name="section_withdraw_already_merged">كان «%1$s» قد دُمج بالفعل في قسم آخر.</string>
+    <string name="section_withdraw_already_approved">تمت الموافقة على «%1$s» في هذه الأثناء. صار قسمًا الآن.</string>
     <string name="section_moves_to">سينتقل إلى %1$s بعد الموافقة عليه</string>
     <plurals name="propose_waiting_count">
         <item quantity="zero">لديك %1$d من %2$d اقتراحات قيد الانتظار.</item>

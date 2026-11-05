@@ -208,6 +208,28 @@ class TierListsViewModelTest {
     }
 
     @Test
+    fun search_ignoresAccentsAndTurkishI_fromOneLetter() = runBlocking {
+        val repository = FakeTierRepository(
+            initial = listOf(fakeList(id = 1, title = "Pokémon"), fakeList(id = 2, title = "Kısa filmler"), fakeList(id = 3, title = "Sushi")),
+        )
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
+        viewModel.loadTierLists()
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
+
+        suspend fun search(query: String, finds: List<Long>) {
+            withContext(Dispatchers.Main) { viewModel.updateSearchQuery(query) }
+            viewModel.state.firstWithin {
+                it is TierListsUiState.Success && it.mode == HomeMode.Searching(query) && it.lists.map { list -> list.id } == finds
+            }
+        }
+
+        withContext(Dispatchers.Main) { viewModel.enterSearch() }
+        search("pokemon", finds = listOf(1L))
+        search("KISA", finds = listOf(2L))
+        search("u", finds = listOf(3L))
+    }
+
+    @Test
     fun aBurstOfKeystrokes_endsOnTheBoardsTheLastOneAsksFor() = runBlocking {
         val repository = FakeTierRepository(
             initial = (1L..200L).map { id -> fakeList(id = id, title = if (id == 7L) "Sushi tour" else "Pizza $id") },

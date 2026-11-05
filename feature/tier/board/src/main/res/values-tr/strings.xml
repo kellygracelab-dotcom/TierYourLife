@@ -60,7 +60,7 @@
     <string name="manual_dialog_title">Öğe ekle</string>
     <string name="my_published_action_update">Güncelle</string>
     <string name="my_published_behind">Yayımlanan sürüm bu panonun gerisinde.</string>
-    <string name="share_caption">%1$s — TierYourLife\'ta sıralandı\n%2$s</string>
+    <string name="share_caption">%1$s — TierYourLife’ta sıralandı\n%2$s</string>
     <string name="share_footer">TierYourLife ile yapıldı</string>
     <string name="tier_detail_add">Ekle</string>
     <plurals name="tier_detail_collapsed_item_count">

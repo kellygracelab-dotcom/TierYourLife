@@ -20,6 +20,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposa
 import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
+import com.artiuillab.tieryourlife.feature.community.domain.model.Withdrawal
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 interface CommunityRepository {
@@ -84,7 +85,7 @@ interface CommunityRepository {
     suspend fun proposeSection(proposal: SectionProposal): Result<Section>
 
     /** Withdraws a waiting proposal, or puts away the notice of a declined or merged one. */
-    suspend fun withdrawProposal(id: String): Result<Unit>
+    suspend fun withdrawProposal(id: String): Result<Withdrawal>
 
     /** Fails for a guest, like following an author. */
     suspend fun followTopic(id: String): Result<Unit>

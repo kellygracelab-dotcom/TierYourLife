@@ -9,7 +9,7 @@
     <string name="community_day_today">Heute</string>
     <string name="community_day_yesterday">Gestern</string>
     <string name="community_following_nobody">Du folgst noch niemandem.</string>
-    <string name="community_author_unnamed">Autor</string>
+    <string name="community_author_unnamed">Jemand</string>
     <string name="author_failed">Dieses Profil konnte nicht geladen werden.</string>
     <string name="author_no_public_lists">Keine öffentlichen Listen</string>
     <string name="author_no_public_lists_body">Kopien, die du bereits gespeichert hast, gehören dir und bleiben, wo sie sind.</string>
@@ -162,7 +162,6 @@
     <string name="explore_tab_explore">Entdecken</string>
     <string name="explore_tab_following">Gefolgt</string>
     <string name="explore_title_community">Community</string>
-    <string name="explore_popular_this_week">Beliebt diese Woche</string>
     <string name="explore_follow_section">%1$s folgen</string>
     <string name="explore_unfollow_section">%1$s entfolgen</string>
     <string name="explore_open_section">%1$s öffnen</string>
@@ -268,6 +267,9 @@
     <string name="section_proposal_dismiss">Ausblenden</string>
     <string name="section_proposal_declined">„%1$s“ wurde nicht als Bereich aufgenommen. Deine Listen bleiben in %2$s.</string>
     <string name="section_proposal_merged">„%1$s“ wurde mit %2$s zusammengeführt.</string>
+    <string name="section_withdraw_already_declined">Die Moderation hatte „%1$s“ schon abgelehnt.</string>
+    <string name="section_withdraw_already_merged">„%1$s“ wurde schon mit einem anderen Bereich zusammengelegt.</string>
+    <string name="section_withdraw_already_approved">„%1$s“ wurde inzwischen angenommen. Es ist jetzt ein Bereich.</string>
     <string name="section_moves_to">Zieht nach %1$s, sobald er angenommen ist</string>
     <plurals name="propose_waiting_count">
         <item quantity="one">%1$d von %2$d Vorschlägen wartet.</item>

@@ -62,7 +62,7 @@ internal fun AuthorPill(
             AuthorFace(photoUrl = photoUrl, name = name, size = FACE_SIZE)
             Spacer(Modifier.width(8.dp))
             Text(
-                text = name,
+                text = shownName(name),
                 modifier = Modifier.widthIn(max = 180.dp),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurface,

@@ -54,6 +54,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Com
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownName
 import com.artiuillab.tieryourlife.feature.community.presentation.components.shownTitle
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
@@ -294,7 +295,7 @@ private fun Header(state: AuthorUiState.Ready, onToggleFollow: () -> Unit) {
         AuthorFace(photoUrl = state.photoUrl, name = state.name, size = PORTRAIT_SIZE)
         Spacer(Modifier.height(12.dp))
         Text(
-            text = state.name,
+            text = shownName(state.name),
             modifier = Modifier.testTag(AuthorTestTags.NAME),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface,

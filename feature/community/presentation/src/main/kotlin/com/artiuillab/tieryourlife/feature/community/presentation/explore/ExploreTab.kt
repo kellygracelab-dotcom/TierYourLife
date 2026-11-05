@@ -165,7 +165,7 @@ internal fun ExploreTab(
                 }
                 item(key = "heading", span = { GridItemSpan(maxLineSpan) }) {
                     Text(
-                        text = stringResource(R.string.explore_popular_this_week),
+                        text = stringResource(R.string.feed_sort_popular),
                         modifier = Modifier
                             .padding(top = if (layout == HomeLayout.CompactHeight) 4.dp else 10.dp)
                             .testTag(ExploreTestTags.HEADING),

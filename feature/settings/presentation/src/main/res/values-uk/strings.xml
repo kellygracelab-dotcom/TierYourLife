@@ -54,7 +54,7 @@
     <string name="settings_backup_off_title">Припинити зберігати копію?</string>
     <string name="settings_backup_pictures_label">Картинки лише через Wi-Fi</string>
     <string name="settings_backup_pictures_sub">%1$s у вашому обліковому записі</string>
-    <string name="settings_backup_stuck">Копії немає з %1$s. Перевірте з’єднання.</string>
+    <string name="settings_backup_stuck">Копії немає з %1$s. Перевірте зʼєднання.</string>
     <string name="settings_backup_sub">Тіри, картки та підписи</string>
     <string name="settings_export">Експорт даних</string>
     <string name="settings_export_sub">Зберегти читабельну копію кожного списку</string>

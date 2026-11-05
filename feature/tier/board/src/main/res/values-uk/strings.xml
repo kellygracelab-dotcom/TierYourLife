@@ -30,7 +30,7 @@
     <string name="list_settings_public_needs_items">Додайте хоча б одну картку, перш ніж публікувати список.</string>
     <string name="list_settings_public_offline">Немає зʼєднання. Спробуйте ще раз, коли мережа повернеться.</string>
     <string name="list_settings_public_picture_refused">Одне з ваших фото не може бути в загальній стрічці. Приберіть його або залиште список особистим.</string>
-    <string name="list_settings_public_too_large">Список завеликий для публікації: не більше 2000 карток і 20 тирів.</string>
+    <string name="list_settings_public_too_large">Список завеликий для публікації: не більше 2000 карток і 20 рівнів.</string>
     <string name="list_settings_public_too_many">Опубліковано максимальну кількість списків. Зніміть один з публікації, щоб звільнити місце.</string>
     <string name="list_settings_public_unverified">Google Play не підтвердив це встановлення, тому публікувати з нього не можна.</string>
     <string name="list_settings_share">Поділитися картинкою</string>
@@ -52,7 +52,7 @@
     <string name="manual_dialog_field_name">Назва</string>
     <string name="manual_dialog_photo_frame_chosen">Фото вибрано. Натисніть «Замінити фото», щоб змінити.</string>
     <string name="manual_dialog_photo_frame_empty">Фото не вибрано</string>
-    <string name="manual_dialog_photo_optional">Фото не обов\'язкове.</string>
+    <string name="manual_dialog_photo_optional">Фото не обовʼязкове.</string>
     <plurals name="manual_dialog_photos_chosen">
         <item quantity="one">вибрано %1$d фото</item>
         <item quantity="few">вибрано %1$d фото</item>
@@ -158,7 +158,7 @@
         <item quantity="many">%d у пулі</item>
         <item quantity="other">%d у пулі</item>
     </plurals>
-    <string name="list_settings_public_topic_unavailable">Ця тема більше недоступна: її об’єднали, відхилили або вона чужа. Тему зі списку знято; оберіть іншу або публікуйте без неї.</string>
+    <string name="list_settings_public_topic_unavailable">Ця тема більше недоступна: її обʼєднали, відхилили або вона чужа. Тему зі списку знято; оберіть іншу або публікуйте без неї.</string>
     <string name="list_settings_public_ranking_body">Опублікована як ваше ранжування списку %1$s; другого списку в стрічці немає.</string>
     <string name="tier_detail_add_card">Додати картку</string>
     <string name="tier_detail_pool_count">Пул · %1$d</string>
@@ -169,7 +169,7 @@
     <string name="tier_detail_content_description_play">Грати</string>
     <string name="tier_detail_play_needs_cards">Для гри потрібно щонайменше 3 картки</string>
     <string name="list_settings_anonymous">Публікувати анонімно</string>
-    <string name="list_settings_anonymous_body">Ваше ім’я та фото не показуються біля списку. Він і далі ваш: лише ви можете його змінити чи видалити.</string>
+    <string name="list_settings_anonymous_body">Ваше імʼя та фото не показуються біля списку. Він і далі ваш: лише ви можете його змінити чи видалити.</string>
     <string name="list_settings_propose_section">Запропонувати розділ</string>
     <string name="list_settings_category_waiting">Очікує на модератора</string>
     <string name="list_settings_moves_to">Перейде в «%1$s», щойно його схвалять</string>

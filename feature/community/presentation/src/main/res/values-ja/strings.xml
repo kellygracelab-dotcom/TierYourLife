@@ -9,7 +9,7 @@
     <string name="community_day_today">今日</string>
     <string name="community_day_yesterday">昨日</string>
     <string name="community_following_nobody">まだ誰もフォローしていません。</string>
-    <string name="community_author_unnamed">作者</string>
+    <string name="community_author_unnamed">だれか</string>
     <string name="author_failed">このプロフィールを開けませんでした。</string>
     <string name="author_no_public_lists">公開リストはありません</string>
     <string name="author_no_public_lists_body">すでに保存したコピーはあなたのもので、そのまま残ります。</string>
@@ -160,7 +160,6 @@
     <string name="explore_tab_explore">見つける</string>
     <string name="explore_tab_following">フォロー中</string>
     <string name="explore_title_community">コミュニティ</string>
-    <string name="explore_popular_this_week">今週の人気</string>
     <string name="explore_follow_section">%1$sをフォロー</string>
     <string name="explore_unfollow_section">%1$sのフォローを解除</string>
     <string name="explore_open_section">%1$sを開く</string>
@@ -263,6 +262,9 @@
     <string name="section_proposal_dismiss">閉じる</string>
     <string name="section_proposal_declined">「%1$s」はセクションとして追加されませんでした。リストは「%2$s」に残ります。</string>
     <string name="section_proposal_merged">「%1$s」は「%2$s」に統合されました。</string>
+    <string name="section_withdraw_already_declined">「%1$s」はすでにモデレーターに却下されていました。</string>
+    <string name="section_withdraw_already_merged">「%1$s」はすでに別のセクションに統合されていました。</string>
+    <string name="section_withdraw_already_approved">「%1$s」はその間に承認され、セクションになりました。</string>
     <string name="section_moves_to">承認されると「%1$s」に移ります</string>
     <plurals name="propose_waiting_count">
         <item quantity="other">%2$d件中%1$d件の提案が確認待ちです。</item>

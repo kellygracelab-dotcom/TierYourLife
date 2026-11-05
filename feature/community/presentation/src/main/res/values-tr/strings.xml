@@ -9,7 +9,7 @@
     <string name="community_day_today">Bugün</string>
     <string name="community_day_yesterday">Dün</string>
     <string name="community_following_nobody">Henüz kimseyi takip etmiyorsunuz.</string>
-    <string name="community_author_unnamed">Yazar</string>
+    <string name="community_author_unnamed">Biri</string>
     <string name="author_failed">Bu profil açılamadı.</string>
     <string name="author_no_public_lists">Herkese açık liste yok</string>
     <string name="author_no_public_lists_body">Zaten kaydettiğiniz kopyalar sizindir ve yerinde kalır.</string>
@@ -61,7 +61,7 @@
     <string name="home_community_failed">Topluluk yüklenemedi</string>
     <string name="home_community_failed_body">Bağlantını kontrol et.</string>
     <string name="home_community_unverified">Bu kopya doğrulanamadı</string>
-    <string name="home_community_unverified_body">Google Play, topluluk açılmadan önce kurulumu doğrular. Play\'den kurduysanız genellikle kendiliğinden geçer.</string>
+    <string name="home_community_unverified_body">Google Play, topluluk açılmadan önce kurulumu doğrular. Play’den kurduysanız genellikle kendiliğinden geçer.</string>
     <string name="home_following_empty">Takip ettiklerinizin %1$s kategorisinde panosu yok.</string>
     <string name="home_following_empty_all">Takip ettikleriniz henüz bir şey yayımlamadı.</string>
     <string name="home_following_nobody">Kimseyi takip etmiyorsunuz</string>
@@ -162,7 +162,6 @@
     <string name="explore_tab_explore">Keşfet</string>
     <string name="explore_tab_following">Takip</string>
     <string name="explore_title_community">Topluluk</string>
-    <string name="explore_popular_this_week">Bu haftanın popülerleri</string>
     <string name="explore_follow_section">%1$s bölümünü takip et</string>
     <string name="explore_unfollow_section">%1$s takibini bırak</string>
     <string name="explore_open_section">%1$s bölümünü aç</string>
@@ -268,6 +267,9 @@
     <string name="section_proposal_dismiss">Kapat</string>
     <string name="section_proposal_declined">“%1$s” bölüm olarak eklenmedi. Listelerin %2$s bölümünde kalıyor.</string>
     <string name="section_proposal_merged">“%1$s”, %2$s ile birleştirildi.</string>
+    <string name="section_withdraw_already_declined">Moderatörler “%1$s” önerisini zaten reddetmişti.</string>
+    <string name="section_withdraw_already_merged">“%1$s” zaten başka bir bölümle birleştirilmişti.</string>
+    <string name="section_withdraw_already_approved">“%1$s” bu arada onaylandı. Artık bir bölüm.</string>
     <string name="section_moves_to">Onaylanınca %1$s bölümüne taşınacak</string>
     <plurals name="propose_waiting_count">
         <item quantity="one">%2$d önerinden %1$d tanesi bekliyor.</item>

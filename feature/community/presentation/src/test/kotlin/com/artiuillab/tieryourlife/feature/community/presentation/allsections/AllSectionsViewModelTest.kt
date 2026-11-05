@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposal
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
+import com.artiuillab.tieryourlife.feature.community.domain.model.Withdrawal
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
@@ -73,7 +74,11 @@ class AllSectionsViewModelTest {
         assertTrue(AllSectionsUiState(sections = twenty + cars).searchable)
     }
 
-    private class Community(val followFails: Boolean = false, val withdrawFails: Boolean = false) : FakeCommunityRepository() {
+    private class Community(
+        val followFails: Boolean = false,
+        val withdrawFails: Boolean = false,
+        val withdrawal: Withdrawal = Withdrawal.Withdrawn,
+    ) : FakeCommunityRepository() {
         var reads = 0
 
         override suspend fun sections(): Result<List<Section>> {
@@ -87,8 +92,8 @@ class AllSectionsViewModelTest {
         override suspend fun proposeSection(proposal: SectionProposal): Result<Section> =
             Result.success(Section(id = "street-food", name = proposal.name, status = SectionStatus.Pending, fileUnder = proposal.fileUnder))
 
-        override suspend fun withdrawProposal(id: String): Result<Unit> =
-            if (withdrawFails) Result.failure(IOException("offline")) else Result.success(Unit)
+        override suspend fun withdrawProposal(id: String): Result<Withdrawal> =
+            if (withdrawFails) Result.failure(IOException("offline")) else Result.success(withdrawal)
     }
 
     private val made = mutableListOf<AllSectionsViewModel>()
@@ -187,6 +192,28 @@ class AllSectionsViewModelTest {
 
         assertEquals(CommunityNotice.ActionFailed, withTimeout(5_000) { viewModel.notices.first() })
         assertEquals(listOf(waitingOne.id), viewModel.state.value.waiting.map { it.id })
+    }
+
+    @Test
+    fun aProposalDecidedBeforeItWasWithdrawn_saysHow_andWaitsNoLonger() = runBlocking {
+        for (status in listOf(SectionStatus.Approved, SectionStatus.Declined, SectionStatus.Merged)) {
+            val community = Community(withdrawal = if (status == SectionStatus.Approved) Withdrawal.Settled(status) else Withdrawal.Dismissed(status))
+            val viewModel = viewModel(community, keptWith(waitingOne))
+            viewModel.state.firstWithin { it.waiting.isNotEmpty() }
+
+            viewModel.withdraw(waitingOne.id)
+
+            assertEquals(CommunityNotice.AlreadyDecided("Street food", status), withTimeout(5_000) { viewModel.notices.first() })
+            assertTrue(viewModel.state.firstWithin { it.waiting.isEmpty() }.waiting.isEmpty())
+            assertEquals("the sections are read again", 1, community.reads)
+        }
+    }
+
+    @Test
+    fun eachDecision_hasItsOwnWords() {
+        val words = listOf(SectionStatus.Approved, SectionStatus.Declined, SectionStatus.Merged).map { CommunityNotice.AlreadyDecided("Kites", it).words }
+
+        assertEquals(3, words.toSet().size)
     }
 
     @Test

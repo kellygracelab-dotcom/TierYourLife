@@ -28,6 +28,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownName
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.Day
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.components.dayOf
 import java.time.LocalDate
@@ -73,7 +74,7 @@ internal fun RankingsSheet(
         LazyColumn(state = listState, modifier = Modifier.weight(1f, fill = false)) {
             item(key = "author") {
                 RankingRow(
-                    name = state.authorName,
+                    name = shownName(state.authorName),
                     photoUrl = state.authorPhotoUrl,
                     note = stringResource(R.string.community_ranking_author),
                     selected = state.chosenRanking == null,
@@ -83,7 +84,7 @@ internal fun RankingsSheet(
             }
             items(state.rankings, key = { it.uid }) { ranking ->
                 RankingRow(
-                    name = if (ranking.mine) stringResource(R.string.community_ranking_you) else ranking.authorName,
+                    name = if (ranking.mine) stringResource(R.string.community_ranking_you) else shownName(ranking.authorName),
                     photoUrl = ranking.authorPhotoUrl,
                     note = whenPlaced(ranking.updatedAtMillis),
                     selected = state.chosenRanking?.uid == ranking.uid,

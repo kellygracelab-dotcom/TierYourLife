@@ -201,7 +201,7 @@ private fun SectionNotices(
 
                 is CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.sentenceFor(notice.refusal))
                 CommunityNotice.ActionFailed -> snackbar.showSnackbar(resources.getString(ThemeR.string.snack_action_failed))
-                is CommunityNotice.NowFollowing -> Unit
+                is CommunityNotice.NowFollowing, is CommunityNotice.AlreadyDecided -> Unit
             }
         }
     }

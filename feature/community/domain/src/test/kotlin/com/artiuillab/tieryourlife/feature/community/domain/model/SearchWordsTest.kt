@@ -35,6 +35,24 @@ class SearchWordsTest {
     }
 
     @Test
+    fun `a title holds what was typed without its accents, from one letter on`() {
+        assertTrue(SearchWords.holds("Pokémon cards", "pokemon"))
+        assertTrue(SearchWords.holds("Pokemon cards", "Poké"))
+        assertTrue(SearchWords.holds("Ёлки", "елк"))
+        assertTrue(SearchWords.holds("Sushi tour", "r"))
+        assertTrue(SearchWords.holds("Sushi tour", " tour "))
+        assertFalse(SearchWords.holds("Sushi tour", "pizza"))
+    }
+
+    @Test
+    fun `turkish dotted and dotless i find each other`() {
+        assertTrue(SearchWords.holds("Istanbul", "ıstanbul"))
+        assertTrue(SearchWords.holds("İzmir", "izmir"))
+        assertTrue(SearchWords.holds("ılık", "ILIK"))
+        assertTrue(SearchWords.holds("kısa", "kisa"))
+    }
+
+    @Test
     fun `the id stands in for a section with no name yet`() {
         assertTrue(Section(id = "board_games").matchesSearch("board"))
     }

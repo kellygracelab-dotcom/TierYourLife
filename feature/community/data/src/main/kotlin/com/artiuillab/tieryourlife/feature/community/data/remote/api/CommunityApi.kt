@@ -29,7 +29,9 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicMergeR
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicNameRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicSectionRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicsDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.WithdrawalDto
 import kotlinx.serialization.json.JsonObject
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -83,7 +85,7 @@ interface CommunityApi {
     suspend fun proposeSection(@Body request: SectionProposalDto): JsonObject
 
     @DELETE("lists/sections/proposals/{id}")
-    suspend fun withdrawProposal(@Path("id") id: String)
+    suspend fun withdrawProposal(@Path("id") id: String): Response<WithdrawalDto>
 
     @POST("lists/sections/{id}/follow")
     suspend fun followSection(@Path("id") id: String): SectionFollowDto

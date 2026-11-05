@@ -30,6 +30,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.proposalError
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
 import com.artiuillab.tieryourlife.feature.community.data.remote.rankingRefusal
 import com.artiuillab.tieryourlife.feature.community.data.remote.refusalError
+import com.artiuillab.tieryourlife.feature.community.data.remote.toWithdrawal
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
@@ -64,6 +65,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAutho
 import com.artiuillab.tieryourlife.feature.community.domain.model.TooManyFollowed
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
+import com.artiuillab.tieryourlife.feature.community.domain.model.Withdrawal
 import com.artiuillab.tieryourlife.feature.community.domain.model.isOwnList
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
@@ -194,8 +196,8 @@ class RetrofitCommunityRepository @Inject constructor(
         Result.failure(ProposalRefused(e.proposalError()))
     }
 
-    override suspend fun withdrawProposal(id: String): Result<Unit> = attempt("Withdrawing a proposal") {
-        api.withdrawProposal(id)
+    override suspend fun withdrawProposal(id: String): Result<Withdrawal> = attempt("Withdrawing a proposal") {
+        api.withdrawProposal(id).toWithdrawal()
     }
 
     override suspend fun topics(query: String?, section: String?): Result<List<Topic>> =

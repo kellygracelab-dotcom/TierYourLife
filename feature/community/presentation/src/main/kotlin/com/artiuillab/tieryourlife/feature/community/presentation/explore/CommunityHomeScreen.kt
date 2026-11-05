@@ -310,6 +310,7 @@ private fun NoticeSnackbars(
                 }
 
                 CommunityNotice.ActionFailed -> snackbar.showSnackbar(resources.getString(ThemeR.string.snack_action_failed))
+                is CommunityNotice.AlreadyDecided -> snackbar.showSnackbar(resources.getString(notice.words, notice.name))
             }
         }
     }

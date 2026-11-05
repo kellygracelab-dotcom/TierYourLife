@@ -4,6 +4,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposal
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
+import com.artiuillab.tieryourlife.feature.community.domain.model.Withdrawal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -98,11 +100,21 @@ class KeptSectionCatalog(
             keep()
         }
 
-    override suspend fun withdraw(id: String): Result<Unit> =
-        community.withdrawProposal(id).onSuccess {
-            state.update { it.withoutProposal(id) }
+    override suspend fun withdraw(id: String): Result<SectionStatus?> {
+        val waited = state.value.find(id)?.waiting == true
+        return community.withdrawProposal(id).map { answer ->
+            // A notice put away was asked for; a waiting proposal found already decided was not.
+            val decided = when (answer) {
+                Withdrawal.Withdrawn -> null
+                is Withdrawal.Dismissed -> answer.status.takeIf { waited }
+                is Withdrawal.Settled -> answer.status
+            }
+            state.update { if (decided == SectionStatus.Approved) it.withApproved(id) else it.withoutProposal(id) }
             keep()
+            if (decided != null) refresh(force = true)
+            decided
         }
+    }
 
     private suspend fun keep() = store.write(state.value)
 

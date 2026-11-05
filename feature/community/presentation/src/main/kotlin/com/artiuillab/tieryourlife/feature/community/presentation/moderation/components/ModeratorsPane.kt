@@ -33,6 +33,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownName
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.ModeratorsUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.TopicQueueTestTags
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
@@ -127,7 +128,7 @@ private fun ModeratorRow(moderator: Moderator, busy: Boolean, onRemove: () -> Un
         AuthorFace(photoUrl = moderator.photoUrl, name = moderator.name.ifEmpty { null }, size = FACE_SIZE)
         Column(Modifier.weight(1f)) {
             Text(
-                text = moderator.name.ifEmpty { stringResource(R.string.community_author_unnamed) },
+                text = shownName(moderator.name),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,

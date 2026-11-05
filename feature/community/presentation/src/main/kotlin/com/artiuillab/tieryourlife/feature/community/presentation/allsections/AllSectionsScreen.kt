@@ -361,6 +361,7 @@ private fun AllSectionsNotices(notices: Flow<CommunityNotice>, snackbar: Snackba
 
                 is CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.sentenceFor(notice.refusal))
                 CommunityNotice.ActionFailed -> snackbar.showSnackbar(resources.getString(ThemeR.string.snack_action_failed))
+                is CommunityNotice.AlreadyDecided -> snackbar.showSnackbar(resources.getString(notice.words, notice.name))
                 is CommunityNotice.RefreshFailed -> Unit
             }
         }

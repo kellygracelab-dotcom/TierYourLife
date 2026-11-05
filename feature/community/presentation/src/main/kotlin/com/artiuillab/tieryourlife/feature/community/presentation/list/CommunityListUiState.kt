@@ -107,7 +107,7 @@ sealed interface CommunityListUiState {
         }
 
         /** Whose placing the left half shows, by name; null when it has none to give. */
-        val theirsName: String? get() = chosenRanking?.authorName ?: authorName.takeUnless { editorial || it.isBlank() }
+        val theirsName: String? get() = (chosenRanking?.authorName ?: authorName.takeUnless { editorial })?.takeUnless { it.isBlank() }
 
         /** Two halves to switch between and to choose from on saving: the author's placing, or a reader's chosen into its place. */
         val twoHalves: Boolean get() = !own && (knowsTheirs || chosenRanking != null)

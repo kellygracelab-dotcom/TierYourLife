@@ -9,7 +9,7 @@
     <string name="community_day_today">Hoy</string>
     <string name="community_day_yesterday">Ayer</string>
     <string name="community_following_nobody">Aún no sigues a nadie.</string>
-    <string name="community_author_unnamed">Autor</string>
+    <string name="community_author_unnamed">Alguien</string>
     <string name="author_failed">No se pudo abrir este perfil.</string>
     <string name="author_no_public_lists">Sin listas públicas</string>
     <string name="author_no_public_lists_body">Las copias que ya guardaste son tuyas y se quedan donde están.</string>
@@ -164,7 +164,6 @@
     <string name="explore_tab_explore">Explorar</string>
     <string name="explore_tab_following">Siguiendo</string>
     <string name="explore_title_community">Comunidad</string>
-    <string name="explore_popular_this_week">Popular esta semana</string>
     <string name="explore_follow_section">Seguir %1$s</string>
     <string name="explore_unfollow_section">Dejar de seguir %1$s</string>
     <string name="explore_open_section">Abrir %1$s</string>
@@ -273,6 +272,9 @@
     <string name="section_proposal_dismiss">Descartar</string>
     <string name="section_proposal_declined">«%1$s» no se añadió como sección. Tus listas siguen en %2$s.</string>
     <string name="section_proposal_merged">«%1$s» se fusionó con %2$s.</string>
+    <string name="section_withdraw_already_declined">Los moderadores ya habían rechazado «%1$s».</string>
+    <string name="section_withdraw_already_merged">«%1$s» ya se había fusionado con otra sección.</string>
+    <string name="section_withdraw_already_approved">«%1$s» se aprobó mientras tanto. Ya es una sección.</string>
     <string name="section_moves_to">Pasará a %1$s cuando se apruebe</string>
     <plurals name="propose_waiting_count">
         <item quantity="one">Tienes %1$d de %2$d propuestas en espera.</item>

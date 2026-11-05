@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.community.domain.model.SearchWords
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardOrder
@@ -199,7 +200,7 @@ class TierListsViewModel @Inject constructor(
         conflictsSeen: Set<String>,
     ): TierListsUiState.Success {
         val query = (mode as? HomeMode.Searching)?.query
-        val matching = if (query != null) lists.filter { it.title.contains(query, ignoreCase = true) } else lists
+        val matching = if (query != null) lists.filter { SearchWords.holds(it.title, query) } else lists
         val arranged = BoardOrder.arrange(withTwins(matching), sort, filters)
         // A search or a filter makes the screen an answer to a question, and
         // nothing is pinned above an answer.
