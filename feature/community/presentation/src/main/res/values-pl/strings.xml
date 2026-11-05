@@ -9,7 +9,7 @@
     <string name="community_day_today">Dzisiaj</string>
     <string name="community_day_yesterday">Wczoraj</string>
     <string name="community_following_nobody">Nie obserwujesz jeszcze nikogo.</string>
-    <string name="community_author_unnamed">Autor</string>
+    <string name="community_author_unnamed">Ktoś</string>
     <string name="author_failed">Nie udało się otworzyć tego profilu.</string>
     <string name="author_no_public_lists">Brak list publicznych</string>
     <string name="author_no_public_lists_body">Kopie, które już zapisałeś, są twoje i zostają na miejscu.</string>
@@ -166,7 +166,6 @@
     <string name="explore_tab_explore">Odkrywaj</string>
     <string name="explore_tab_following">Obserwowane</string>
     <string name="explore_title_community">Społeczność</string>
-    <string name="explore_popular_this_week">Popularne w tym tygodniu</string>
     <string name="explore_follow_section">Obserwuj: %1$s</string>
     <string name="explore_unfollow_section">Przestań obserwować: %1$s</string>
     <string name="explore_open_section">Otwórz: %1$s</string>
@@ -276,6 +275,9 @@
     <string name="section_proposal_dismiss">Odrzuć</string>
     <string name="section_proposal_declined">„%1$s” nie został dodany jako dział. Twoje listy zostają w dziale %2$s.</string>
     <string name="section_proposal_merged">„%1$s” połączono z działem %2$s.</string>
+    <string name="section_withdraw_already_declined">Moderatorzy już odrzucili „%1$s”.</string>
+    <string name="section_withdraw_already_merged">„%1$s” został już połączony z innym działem.</string>
+    <string name="section_withdraw_already_approved">„%1$s” został w międzyczasie zatwierdzony. To teraz dział.</string>
     <string name="section_moves_to">Trafi do działu %1$s, gdy zostanie zatwierdzony</string>
     <plurals name="propose_waiting_count">
         <item quantity="one">Czeka %1$d z %2$d twoich propozycji.</item>

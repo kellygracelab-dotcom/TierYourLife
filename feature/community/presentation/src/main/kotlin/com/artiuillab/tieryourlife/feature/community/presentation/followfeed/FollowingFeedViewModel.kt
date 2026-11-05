@@ -22,6 +22,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedLo
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPane
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ListMenuActions
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.toCommunityNotice
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.withdrawTelling
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -186,7 +187,7 @@ class FollowingFeedViewModel @Inject constructor(
 
     /** Withdraws a waiting proposal, or dismisses the notice of a declined or merged one. */
     fun withdrawProposal(sectionId: String) {
-        viewModelScope.launch { catalog.withdraw(sectionId).onFailure { notes.send(CommunityNotice.ActionFailed) } }
+        viewModelScope.launch { catalog.withdrawTelling(sectionId, notes::send) }
     }
 
     fun hideList(summary: PublishedListSummary) = menu.hideList(feed, summary)

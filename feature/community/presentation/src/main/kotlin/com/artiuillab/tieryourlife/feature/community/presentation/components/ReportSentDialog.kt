@@ -26,7 +26,7 @@ fun ReportSentDialog(
         confirmButton = {
             if (authorName != null) {
                 TextButton(onClick = onHideAuthor) {
-                    Text(stringResource(R.string.report_hide_author, authorName))
+                    Text(stringResource(R.string.report_hide_author, shownName(authorName)))
                 }
             } else {
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done)) }

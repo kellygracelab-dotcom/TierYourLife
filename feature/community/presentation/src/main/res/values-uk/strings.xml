@@ -9,7 +9,7 @@
     <string name="community_day_today">Сьогодні</string>
     <string name="community_day_yesterday">Вчора</string>
     <string name="community_following_nobody">Ви поки ні на кого не підписані.</string>
-    <string name="community_author_unnamed">Автор</string>
+    <string name="community_author_unnamed">Хтось</string>
     <string name="author_failed">Не вдалося відкрити профіль.</string>
     <string name="author_no_public_lists">Публічних списків немає</string>
     <string name="author_no_public_lists_body">Копії, які ви вже зберегли, ваші й нікуди не подінуться.</string>
@@ -59,15 +59,15 @@
     <string name="feed_source_everyone">Усі</string>
     <string name="feed_source_following">Підписки</string>
     <string name="home_community_empty">Поки нічого не опубліковано</string>
-    <string name="home_community_empty_body">Тут з’являються списки, які люди зробили публічними.</string>
+    <string name="home_community_empty_body">Тут зʼявляються списки, які люди зробили публічними.</string>
     <string name="home_community_failed">Не вдалося завантажити спільноту</string>
-    <string name="home_community_failed_body">Перевірте з\'єднання.</string>
+    <string name="home_community_failed_body">Перевірте зʼєднання.</string>
     <string name="home_community_unverified">Цю копію не вдалося перевірити</string>
     <string name="home_community_unverified_body">Google Play підтверджує встановлення, перш ніж відкрити спільноту. Якщо застосунок із Play, зазвичай минає само.</string>
     <string name="home_following_empty">Ні в кого з ваших підписок немає дошок у категорії «%1$s».</string>
     <string name="home_following_empty_all">Ваші підписки поки нічого не опублікували.</string>
     <string name="home_following_nobody">Ви ні на кого не підписані</string>
-    <string name="home_following_nobody_body">Підпишіться — і нові дошки цих людей з’являтимуться тут першими.</string>
+    <string name="home_following_nobody_body">Підпишіться — і нові дошки цих людей зʼявлятимуться тут першими.</string>
     <string name="moderation_action_keep">Залишити</string>
     <string name="moderation_action_put_back">Повернути</string>
     <string name="moderation_action_take_down">Зняти</string>
@@ -94,7 +94,7 @@
     <string name="moderation_unblur">Показати обкладинки</string>
     <string name="moderation_undo">Скасувати</string>
     <string name="my_published_action_open">Відкрити</string>
-    <string name="my_published_empty_body">Списки, які ти зробиш публічними, з’являться тут.</string>
+    <string name="my_published_empty_body">Списки, які ти зробиш публічними, зʼявляться тут.</string>
     <string name="my_published_empty_title">Нічого не опубліковано</string>
     <string name="my_published_failed">Не вдалося завантажити твої публічні списки</string>
     <string name="my_published_subtitle">Усе, що є в тебе у спільноті, звідки б ти це не опублікував.</string>
@@ -137,9 +137,9 @@
     <string name="moderation_approve_consequence">Схвалення поміщає тему й усі її списки в обраний розділ.</string>
     <string name="moderation_approve">Схвалити</string>
     <string name="moderation_rename">Перейменувати</string>
-    <string name="moderation_merge">Об\'єднати</string>
+    <string name="moderation_merge">Обʼєднати</string>
     <string name="moderation_reject">Відхилити</string>
-    <string name="moderation_merge_into">Об\'єднати «%1$s» з…</string>
+    <string name="moderation_merge_into">Обʼєднати «%1$s» з…</string>
     <string name="moderation_merge_search_hint">Знайдіть тему, до якої це належить</string>
     <string name="moderation_rename_title">Перейменувати тему</string>
     <string name="moderation_rename_hint">Назва</string>
@@ -147,7 +147,7 @@
     <string name="moderation_appoint">Призначити</string>
     <string name="moderation_appoint_title">Призначити модератора</string>
     <string name="moderation_appoint_uid">Ідентифікатор акаунта</string>
-    <string name="moderation_appoint_name">Ім\'я (необов\'язково)</string>
+    <string name="moderation_appoint_name">Імʼя (необовʼязково)</string>
     <string name="moderation_remove_moderator">Зняти</string>
     <string name="author_make_moderator">Зробити %1$s модератором</string>
     <string name="author_remove_moderator">Зняти %1$s з модерації</string>
@@ -166,7 +166,6 @@
     <string name="explore_tab_explore">Огляд</string>
     <string name="explore_tab_following">Підписки</string>
     <string name="explore_title_community">Спільнота</string>
-    <string name="explore_popular_this_week">Популярне за тиждень</string>
     <string name="explore_follow_section">Підписатися на «%1$s»</string>
     <string name="explore_unfollow_section">Відписатися від «%1$s»</string>
     <string name="explore_open_section">Відкрити «%1$s»</string>
@@ -179,7 +178,7 @@
     <string name="explore_retry">Повторити</string>
     <string name="explore_refresh_failed">Не вдалося оновити. Показано списки від %1$s.</string>
     <string name="explore_failed_title">Не вдалося завантажити списки спільноти</string>
-    <string name="explore_failed_body">Перевірте з’єднання. Ваші списки зберігаються на цьому пристрої.</string>
+    <string name="explore_failed_body">Перевірте зʼєднання. Ваші списки зберігаються на цьому пристрої.</string>
     <string name="explore_try_again">Спробувати знову</string>
     <string name="explore_follow">Підписатися</string>
     <string name="explore_following">Ви підписані</string>
@@ -192,7 +191,7 @@
     <string name="section_sort_newest">Нові</string>
     <string name="section_share">Поділитися розділом</string>
     <string name="section_waiting_status">Чекає на модератора</string>
-    <string name="section_waiting_body">Модератор її перегляне. Ваші списки з’являться тут після схвалення, а поки вони в розділі «%1$s».</string>
+    <string name="section_waiting_body">Модератор її перегляне. Ваші списки зʼявляться тут після схвалення, а поки вони в розділі «%1$s».</string>
     <string name="section_waiting_only_you">Доти цю тему бачите лише ви.</string>
     <string name="section_ok">OK</string>
     <string name="section_share_text">%1$s у TierYourLife</string>
@@ -275,7 +274,10 @@
     <string name="section_proposal_withdraw">Відкликати</string>
     <string name="section_proposal_dismiss">Закрити</string>
     <string name="section_proposal_declined">«%1$s» не додали як розділ. Ваші списки лишаються в розділі «%2$s».</string>
-    <string name="section_proposal_merged">«%1$s» об’єднано з розділом «%2$s».</string>
+    <string name="section_proposal_merged">«%1$s» обʼєднано з розділом «%2$s».</string>
+    <string name="section_withdraw_already_declined">Модератори вже відхилили «%1$s».</string>
+    <string name="section_withdraw_already_merged">«%1$s» уже обʼєднали з іншим розділом.</string>
+    <string name="section_withdraw_already_approved">«%1$s» тим часом схвалили. Тепер це розділ.</string>
     <string name="section_moves_to">Перейде в «%1$s», щойно його схвалять</string>
     <plurals name="propose_waiting_count">
         <item quantity="one">Чекає %1$d з %2$d ваших пропозицій.</item>

@@ -65,3 +65,10 @@ data class FollowedSectionDto(val id: String)
 
 @Serializable
 data class SectionFollowDto(val following: Boolean = false)
+
+/** `DELETE lists/sections/proposals/{id}` answers 200 with this; a proxy before #73 answered 204 with nothing. */
+@Serializable
+data class WithdrawalDto(
+    val outcome: String? = null,
+    val status: String? = null,
+)

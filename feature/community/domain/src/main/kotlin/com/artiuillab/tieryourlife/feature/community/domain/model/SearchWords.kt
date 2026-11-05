@@ -25,6 +25,11 @@ object SearchWords {
         val held = names.flatMap(::of)
         return wanted.all { word -> held.any { it.startsWith(word) } }
     }
+
+    /** Whether [typed] is somewhere in [text], one letter being enough; ı reads as i here, as on the site. */
+    fun holds(text: String, typed: String): Boolean = loose(text).contains(loose(typed.trim()))
+
+    private fun loose(text: String): String = fold(text).replace('ı', 'i')
 }
 
 /** Whether what was typed names this section in any language, or by its id. */

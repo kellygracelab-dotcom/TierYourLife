@@ -43,6 +43,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListS
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
 import com.artiuillab.tieryourlife.feature.community.presentation.components.LocalOwnFace
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownName
 import com.artiuillab.tieryourlife.feature.community.presentation.components.shownTitle
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 
@@ -154,7 +155,7 @@ private fun CardAuthor(summary: PublishedListSummary, modifier: Modifier) {
             Spacer(modifier)
             return
         }
-        else -> Triple(summary.authorPhotoUrl, summary.authorName, summary.authorName)
+        else -> Triple(summary.authorPhotoUrl, summary.authorName, shownName(summary.authorName))
     }
     val anonymouslyMine = summary.mine && summary.anonymous
     val described = stringResource(R.string.community_your_list_anonymous)

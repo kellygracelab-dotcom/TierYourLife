@@ -35,7 +35,7 @@
     </plurals>
     <string name="play_board_changed">The cards changed since this game started.</string>
     <string name="play_start_again">Start again</string>
-    <string name="play_into_mine_note">The result goes into Mine. Theirs doesn\'t change.</string>
+    <string name="play_into_mine_note">The result goes into Mine. Theirs doesn’t change.</string>
     <string name="play_cancel">Cancel</string>
     <string name="play_start">Start</string>
     <string name="play_continue">Continue</string>
@@ -66,7 +66,7 @@
     <string name="play_refine_of">Refine · %1$d of %2$d</string>
     <string name="play_undo_pick">Undo last pick</string>
     <string name="play_skip">Skip</string>
-    <string name="play_skip_hint">Skip if you can\'t choose. Nothing is recorded.</string>
+    <string name="play_skip_hint">Skip if you can’t choose. Nothing is recorded.</string>
     <string name="play_pick">Pick %1$s</string>
     <string name="play_your_result">Your result</string>
     <plurals name="play_from_duels">

@@ -78,6 +78,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationRepo
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
+import com.artiuillab.tieryourlife.feature.community.presentation.components.shownName
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.components.ModeratorsPane
@@ -553,7 +554,7 @@ private fun ReportCard(
         ) {
             AuthorFace(photoUrl = report.authorPhotoUrl, name = report.authorName, size = 24.dp)
             Text(
-                text = report.authorName,
+                text = shownName(report.authorName),
                 modifier = Modifier.padding(start = 8.dp),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -1,7 +1,7 @@
 ﻿<resources>
     <string name="tier_lists_private">privé</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
-    <string name="tier_lists_card_nothing_ranked_yet">%1$s · rien de classé pour l\'instant</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · rien de classé pour l’instant</string>
     <string name="tier_lists_status_start_dragging">Glissez pour classer</string>
 
     <plurals name="search_results_count">
@@ -10,7 +10,7 @@
         <item quantity="other">%1$d listes</item>
     </plurals>
     <string name="search_no_results_title">Aucune liste nommée « %1$s »</string>
-    <string name="search_no_results_body">Essayez un mot plus court ou vérifiez l\'orthographe.</string>
+    <string name="search_no_results_body">Essayez un mot plus court ou vérifiez l’orthographe.</string>
 
     <plurals name="selection_count">
         <item quantity="one">%1$d sélectionné</item>
@@ -26,7 +26,7 @@
         <item quantity="other">%1$d listes supprimées</item>
     </plurals>
     <string name="action_undo">Annuler</string>
-    <string name="home_empty_title">Classez n\'importe quoi</string>
+    <string name="home_empty_title">Classez n’importe quoi</string>
     <string name="home_empty_body">Films, jeux, restaurants, albums — tout ce que vous voulez.</string>
     <string name="cd_new_list">Nouvelle liste</string>
     <string name="default_tier_list_title">Liste sans titre</string>
@@ -73,9 +73,9 @@
 
     <string name="trash_title">Corbeille</string>
     <string name="trash_load_error">Impossible de charger la corbeille.</string>
-    <string name="trash_subtitle">Les listes supprimées restent ici jusqu\'à ce que vous les retiriez.</string>
+    <string name="trash_subtitle">Les listes supprimées restent ici jusqu’à ce que vous les retiriez.</string>
     <string name="trash_row_list_meta">Liste · %1$s · supprimée %2$s</string>
-    <string name="trash_time_just_now">à l\'instant</string>
+    <string name="trash_time_just_now">à l’instant</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">il y a %1$d min</item>
         <item quantity="many">il y a %1$d min</item>
@@ -105,8 +105,8 @@
         <item quantity="other">%1$d entrées</item>
     </plurals>
     <string name="trash_empty_title">La corbeille est vide</string>
-    <string name="trash_empty_body">Les listes que vous supprimez apparaissent ici. Elles restent jusqu\'à ce que vous les retiriez.</string>
-    <string name="cd_more">Plus d\'options</string>
+    <string name="trash_empty_body">Les listes que vous supprimez apparaissent ici. Elles restent jusqu’à ce que vous les retiriez.</string>
+    <string name="cd_more">Plus d’options</string>
     <string name="cd_restore">Restaurer %1$s</string>
     <string name="cd_remove">Supprimer %1$s définitivement</string>
     <string name="cd_trash_back">Retour</string>
@@ -135,7 +135,7 @@
     <string name="lists_group_others">Tous les tableaux</string>
     <string name="lists_favourite_add">Ajouter aux favoris</string>
     <string name="lists_favourite_remove">Retirer des favoris</string>
-    <string name="snack_published_list_still_public">Conservée, pas supprimée : sa copie publique n\'a pas pu être retirée. Réessayez une fois en ligne.</string>
+    <string name="snack_published_list_still_public">Conservée, pas supprimée : sa copie publique n’a pas pu être retirée. Réessayez une fois en ligne.</string>
     <plurals name="board_count">
         <item quantity="one">%1$d tableau</item>
         <item quantity="many">%1$d tableaux</item>
@@ -162,7 +162,7 @@
     <string name="cover_picker_done">Terminé</string>
     <string name="cover_picker_reset">Réinitialiser</string>
     <string name="cover_picker_tab_cards">Vos cartes · %1$d</string>
-    <string name="cover_picker_tab_search">Recherche d\'images</string>
+    <string name="cover_picker_tab_search">Recherche d’images</string>
     <string name="topic_picker_title">Thème</string>
     <string name="topic_picker_done">Terminé</string>
     <string name="topic_picker_hint">Chercher ou nommer un thème</string>
@@ -175,21 +175,21 @@
         <item quantity="many">%1$d sur %2$d en attente.</item>
         <item quantity="other">%1$d sur %2$d en attente.</item>
     </plurals>
-    <string name="topic_picker_limit">Trois de vos thèmes attendent déjà. L\'un d\'eux doit être tranché d\'abord.</string>
+    <string name="topic_picker_limit">Trois de vos thèmes attendent déjà. L’un d’eux doit être tranché d’abord.</string>
     <string name="topic_picker_yours">Vos thèmes</string>
-    <string name="topic_picker_waiting">En attente d\'approbation</string>
+    <string name="topic_picker_waiting">En attente d’approbation</string>
     <string name="topic_picker_rejected">Refusé</string>
     <string name="topic_picker_merged">Fusionné dans un autre thème</string>
     <string name="topic_picker_suggestion">Ressemble à « %1$s »</string>
-    <string name="topic_picker_new_waits">%1$s · attendra l\'approbation</string>
-    <string name="cover_picker_status_automatic">Rien de choisi : jusqu\'à six images de la liste elle-même</string>
+    <string name="topic_picker_new_waits">%1$s · attendra l’approbation</string>
+    <string name="cover_picker_status_automatic">Rien de choisi : jusqu’à six images de la liste elle-même</string>
     <string name="cover_picker_status_one">Une image, toute la couverture</string>
     <plurals name="cover_picker_status_collage">
         <item quantity="one">%1$d sur %2$d choisies, un collage</item>
         <item quantity="many">%1$d sur %2$d choisies, un collage</item>
         <item quantity="other">%1$d sur %2$d choisies, un collage</item>
     </plurals>
-    <string name="cover_picker_no_cards">Aucune carte de cette liste n\'a encore d\'image.</string>
+    <string name="cover_picker_no_cards">Aucune carte de cette liste n’a encore d’image.</string>
     <string name="cover_picker_gallery">Choisir dans la galerie</string>
     <string name="cover_picker_gallery_note">Une image de la galerie devient toute la couverture et voyage avec la liste quand vous la publiez.</string>
     <string name="tier_detail_ranking_of">Votre classement d’une liste de %1$s</string>

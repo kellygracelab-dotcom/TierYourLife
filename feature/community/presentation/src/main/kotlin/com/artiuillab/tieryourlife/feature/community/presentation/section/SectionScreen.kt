@@ -197,7 +197,7 @@ private fun SectionNotices(
 
                 CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.getString(R.string.explore_follow_failed))
                 CommunityNotice.ActionFailed -> snackbar.showSnackbar(resources.getString(ThemeR.string.snack_action_failed))
-                is CommunityNotice.NowFollowing -> Unit
+                is CommunityNotice.NowFollowing, is CommunityNotice.AlreadyDecided -> Unit
             }
         }
     }
