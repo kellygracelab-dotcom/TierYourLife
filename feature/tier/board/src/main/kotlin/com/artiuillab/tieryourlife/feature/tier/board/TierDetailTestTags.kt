@@ -44,6 +44,8 @@ object TierDetailTestTags {
     const val TIER_EDITOR_SHEET = "tier_detail_tier_editor_sheet"
     const val TIER_EDITOR_LABEL_FIELD = "tier_detail_tier_editor_label_field"
     const val TIER_EDITOR_CAPTION_FIELD = "tier_detail_tier_editor_caption_field"
+    const val TIER_EDITOR_LABEL_COUNTER = "tier_detail_tier_editor_label_counter"
+    const val TIER_EDITOR_CAPTION_COUNTER = "tier_detail_tier_editor_caption_counter"
     const val TIER_EDITOR_CANCEL = "tier_detail_tier_editor_cancel"
     const val TIER_EDITOR_SAVE = "tier_detail_tier_editor_save"
     const val TIER_EDITOR_CUSTOM_SWATCH = "tier_detail_tier_editor_custom_swatch"

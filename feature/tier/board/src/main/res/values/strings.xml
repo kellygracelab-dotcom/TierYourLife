@@ -106,6 +106,7 @@
     <string name="tier_editor_add_title">Add tier</string>
     <string name="tier_editor_cancel">Cancel</string>
     <string name="tier_editor_caption_field">Caption</string>
+    <string name="tier_editor_counter" translatable="false">%1$d/%2$d</string>
     <string name="tier_editor_color_section_caption">Custom · set the light and dark colour separately</string>
     <string name="tier_editor_color_section_title">Colour</string>
     <string name="tier_editor_custom_color_description">Custom color</string>
