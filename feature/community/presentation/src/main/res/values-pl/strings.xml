@@ -173,6 +173,8 @@
     <string name="explore_unfollowed">Nie obserwujesz już: %1$s</string>
     <string name="explore_undo">Cofnij</string>
     <string name="explore_follow_failed">Nie udało się zaobserwować. Spróbuj ponownie.</string>
+    <string name="follow_unfollow_failed">Nie udało się przestać obserwować. Spróbuj ponownie.</string>
+    <string name="follow_too_many">Możesz obserwować najwyżej %1$d. Przestań obserwować coś innego, by zrobić miejsce.</string>
     <string name="explore_new_lists">Nowe listy</string>
     <string name="explore_offline">Offline · listy z %1$s</string>
     <string name="explore_retry">Ponów</string>

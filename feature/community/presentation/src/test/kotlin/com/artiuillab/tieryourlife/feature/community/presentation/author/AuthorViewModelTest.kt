@@ -4,15 +4,24 @@ import androidx.lifecycle.SavedStateHandle
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
+import com.artiuillab.tieryourlife.feature.community.domain.model.TooManyFollowed
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.signedInFollows
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.OwnerMemory
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
+import java.io.IOException
 
 class AuthorViewModelTest {
 
@@ -52,14 +61,60 @@ class AuthorViewModelTest {
         assertEquals(setOf("u1"), owner.moderators.value)
     }
 
+    @Test
+    fun aGuestsFollow_asksForASignIn_andTheSignInFollows() = runBlocking {
+        val accounts = FakeAccountRepository()
+        val community = FollowingFake()
+        val viewModel = authorFor(OwnerMemory(), community = community, afterSignIn = FollowAfterSignIn(accounts))
+        viewModel.state.firstWithin { (it as? AuthorUiState.Ready)?.follow != null }
+
+        viewModel.toggleFollow()
+
+        withTimeout(WAIT_MILLIS) { viewModel.signInRequests.first() }
+        assertEquals(false, (viewModel.state.value as AuthorUiState.Ready).follow?.following)
+        assertFalse(community.followed.isCompleted)
+
+        accounts.accounts.value = FakeAccountRepository.signedIn
+
+        assertEquals("u1", withTimeout(WAIT_MILLIS) { community.followed.await() })
+        viewModel.state.firstWithin { (it as? AuthorUiState.Ready)?.follow?.following == true }
+        Unit
+    }
+
+    @Test
+    fun aFollowOverTheLimit_saysSo_andGoesBack() = runBlocking {
+        val viewModel = authorFor(OwnerMemory(), community = FollowingFake(refusal = TooManyFollowed()))
+        viewModel.state.firstWithin { (it as? AuthorUiState.Ready)?.follow != null }
+
+        viewModel.toggleFollow()
+
+        assertEquals(FollowRefusal.TooMany, withTimeout(WAIT_MILLIS) { viewModel.followRefusals.first() })
+        viewModel.state.firstWithin { (it as? AuthorUiState.Ready)?.follow?.following == false }
+        Unit
+    }
+
+    @Test
+    fun aFailedUnfollow_saysItCouldNotUnfollow() = runBlocking {
+        val viewModel = authorFor(OwnerMemory(), community = FollowingFake(following = true, refusal = IOException("offline")))
+        viewModel.state.firstWithin { (it as? AuthorUiState.Ready)?.follow?.following == true }
+
+        viewModel.toggleFollow()
+
+        assertEquals(FollowRefusal.Unfollow, withTimeout(WAIT_MILLIS) { viewModel.followRefusals.first() })
+        viewModel.state.firstWithin { (it as? AuthorUiState.Ready)?.follow?.following == true }
+        Unit
+    }
+
     private fun authorFor(
         owner: OwnerMemory,
         uid: String = "u1",
         community: FakeCommunityRepository = FakeCommunityRepository(),
+        afterSignIn: FollowAfterSignIn = signedInFollows(),
     ) = AuthorViewModel(
         community = community,
         preferences = FakeAppPreferences(),
         owner = owner,
+        afterSignIn = afterSignIn,
         savedStateHandle = SavedStateHandle(mapOf("authorUid" to uid, "authorName" to "Ann")),
     )
 }
@@ -71,6 +126,19 @@ private class AppointingFake : FakeCommunityRepository() {
         appointed.complete(uid to name)
         return Result.success(Unit)
     }
+}
+
+private class FollowingFake(private val following: Boolean = false, private val refusal: Exception? = null) : FakeCommunityRepository() {
+    val followed = CompletableDeferred<String>()
+
+    override suspend fun followState(authorUid: String): Result<FollowState> = Result.success(FollowState(following))
+
+    override suspend fun follow(authorUid: String): Result<Unit> {
+        followed.complete(authorUid)
+        return refusal?.let { Result.failure(it) } ?: Result.success(Unit)
+    }
+
+    override suspend fun unfollow(authorUid: String): Result<Unit> = refusal?.let { Result.failure(it) } ?: Result.success(Unit)
 }
 
 private const val WAIT_MILLIS = 5_000L

@@ -48,6 +48,7 @@ class FileSavedGamesTest {
 
         assertNull(store().load("board:3"))
         assertEquals(1, store().load("list:abc")?.round)
+        assertEquals(setOf("list:abc"), store().keys())
     }
 
     @Test

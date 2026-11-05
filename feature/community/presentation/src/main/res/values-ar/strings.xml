@@ -177,6 +177,8 @@
     <string name="explore_unfollowed">ألغيت متابعة %1$s</string>
     <string name="explore_undo">تراجع</string>
     <string name="explore_follow_failed">تعذّرت المتابعة. حاول مرة أخرى.</string>
+    <string name="follow_unfollow_failed">تعذّر إلغاء المتابعة. حاول مرة أخرى.</string>
+    <string name="follow_too_many">يمكنك متابعة %1$d كحد أقصى. ألغِ متابعة واحد لتفسح المجال.</string>
     <string name="explore_new_lists">قوائم جديدة</string>
     <string name="explore_offline">غير متصل · قوائم من %1$s</string>
     <string name="explore_retry">إعادة المحاولة</string>

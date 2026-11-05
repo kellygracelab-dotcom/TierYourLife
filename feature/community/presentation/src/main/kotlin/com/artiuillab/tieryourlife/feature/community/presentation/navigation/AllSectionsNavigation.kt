@@ -11,9 +11,10 @@ fun NavGraphBuilder.allSectionsScreen(
     onBack: () -> Unit,
     onOpenSection: (CommunityRoute.Section) -> Unit,
     onProposeSection: (() -> Unit)? = null,
+    onSignIn: () -> Unit = {},
 ) {
     composable<CommunityRoute.AllSections> {
-        AllSectionsScreen(onBack = onBack, onOpenSection = onOpenSection, onProposeSection = onProposeSection)
+        AllSectionsScreen(onBack = onBack, onOpenSection = onOpenSection, onProposeSection = onProposeSection, onSignIn = onSignIn)
     }
 }
 

@@ -81,6 +81,8 @@ interface SavedGames {
 
     suspend fun discard(key: String)
 
+    suspend fun keys(): Set<String>
+
     /** The game last started on this device, which the picker offers first. */
     suspend fun lastKind(): GameKind?
 

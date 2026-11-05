@@ -169,6 +169,8 @@
     <string name="explore_unfollowed">Unfollowed %1$s</string>
     <string name="explore_undo">Undo</string>
     <string name="explore_follow_failed">Couldn’t follow. Try again.</string>
+    <string name="follow_unfollow_failed">Couldn’t unfollow. Try again.</string>
+    <string name="follow_too_many">You can follow up to %1$d. Unfollow one to make room.</string>
     <string name="explore_new_lists">New lists</string>
     <string name="explore_offline">Offline · showing lists from %1$s</string>
     <string name="explore_retry">Retry</string>

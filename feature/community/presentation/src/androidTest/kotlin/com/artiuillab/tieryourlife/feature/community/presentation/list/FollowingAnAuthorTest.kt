@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -136,9 +137,10 @@ class FollowingAnAuthorTest {
         community = community,
         tiers = tiers,
         preferences = FakeAppPreferences(),
-        accounts = FakeAccountRepository(),
+        accounts = FakeAccountRepository(FakeAccountRepository.signedIn),
         savedStateHandle = SavedStateHandle(mapOf("publishedId" to "abc")),
         openedLists = FakeOpenedLists(),
+        afterSignIn = FollowAfterSignIn(FakeAccountRepository(FakeAccountRepository.signedIn)),
     )
 }
 

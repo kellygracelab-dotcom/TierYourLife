@@ -75,15 +75,39 @@ class BoardGameSyncTest {
     fun aGameOnSomeoneElsesList_staysOnThisPhone() = runBlocking {
         val games = FakeSavedGames()
         val repository = MovingTierRepository(unranked)
-        val viewModel = viewModel(games, repository, PlayRequest.someoneElses("abc", unranked.copy(id = 0), unranked.copy(id = 0)))
+        val viewModel = viewModel(games, repository, PlayRequest.someoneElses("abc", version = 7, unranked.copy(id = 0), unranked.copy(id = 0)))
         viewModel.open()
         viewModel.picker.start()
 
         viewModel.duel.pick(first = true)
 
-        eventually { "list:abc" in games.games }
+        eventually { "list:abc@7" in games.games }
         assertTrue(repository.plays.isEmpty())
-        assertEquals(false, games.games.getValue("list:abc").onBoard)
+        assertEquals(false, games.games.getValue("list:abc@7").onBoard)
+    }
+
+    @Test
+    fun aGameOfAnOlderVersionOfTheList_isNotOffered_andGoes() = runBlocking {
+        val older = saved(answers = 2, onBoard = false)
+        val games = FakeSavedGames(mapOf("list:abc@6" to older, "list:abc" to older, "list:abcd@6" to older, KEY to older))
+        val repository = MovingTierRepository(unranked)
+        val viewModel = viewModel(games, repository, PlayRequest.someoneElses("abc", version = 7, unranked.copy(id = 0), unranked.copy(id = 0)))
+        viewModel.open()
+
+        eventually { "list:abc@6" !in games.games && "list:abc" !in games.games }
+        assertNull(picker(viewModel.state.value)?.resume)
+        assertEquals(setOf("list:abcd@6", KEY), games.games.keys)
+    }
+
+    @Test
+    fun aGameOfTheSameVersion_isOffered() = runBlocking {
+        val games = FakeSavedGames(mapOf("list:abc@7" to saved(answers = 2, onBoard = false)))
+        val repository = MovingTierRepository(unranked)
+        val viewModel = viewModel(games, repository, PlayRequest.someoneElses("abc", version = 7, unranked.copy(id = 0), unranked.copy(id = 0)))
+        viewModel.open()
+
+        val offer = viewModel.state.firstWithin { picker(it)?.resume != null }.let { picker(it)!!.resume!! }
+        assertEquals(2, offer.played)
     }
 
     @Test

@@ -11,15 +11,21 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowTarget
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.GuestFollows
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.OwnerMemory
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.authorRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -60,13 +66,22 @@ class AuthorViewModel @Inject constructor(
     private val community: CommunityRepository,
     private val preferences: AppPreferences,
     private val owner: OwnerMemory,
+    afterSignIn: FollowAfterSignIn,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
 
+    private val refusals = Channel<FollowRefusal>(Channel.BUFFERED)
+    val followRefusals: Flow<FollowRefusal> = refusals.receiveAsFlow()
+
     private val route = savedStateHandle.authorRoute()
+    private val target = FollowTarget.Author(route.authorUid)
+    private val guest = GuestFollows(afterSignIn, viewModelScope)
+
+    /** A guest's Follow opens the sign-in; signing in follows. */
+    val signInRequests: Flow<Unit> = guest.signInRequests
 
     private val _state = MutableStateFlow<AuthorUiState>(AuthorUiState.Loading)
     val state: StateFlow<AuthorUiState> = _state.asStateFlow()
@@ -90,6 +105,7 @@ class AuthorViewModel @Inject constructor(
         } else {
             load()
             loadFollowState()
+            guest.afterSignIn({ it == target }) { setFollowing(FollowState(following = true)) }
         }
     }
 
@@ -104,12 +120,17 @@ class AuthorViewModel @Inject constructor(
         }
     }
 
-    /** Answers before the server does, and goes back if the request fails. */
+    /** Answers before the server does, and goes back, saying so, if the request fails. */
     fun toggleFollow() {
         val current = _state.value as? AuthorUiState.Ready ?: return
         val was = current.follow ?: return
-        val now = FollowState(following = !was.following)
-        _state.update { (it as AuthorUiState.Ready).copy(follow = now) }
+        if (!was.following && !guest.mayFollow(target)) return
+        setFollowing(FollowState(following = !was.following))
+    }
+
+    private fun setFollowing(now: FollowState) {
+        val was = (_state.value as? AuthorUiState.Ready)?.follow
+        _state.update { if (it is AuthorUiState.Ready) it.copy(follow = now) else it }
 
         viewModelScope.launch {
             val result = if (now.following) {
@@ -122,6 +143,7 @@ class AuthorViewModel @Inject constructor(
                 _state.update { current2 ->
                     if (current2 is AuthorUiState.Ready) current2.copy(follow = was) else current2
                 }
+                refusals.send(FollowRefusal.of(now.following, error))
             }
         }
     }

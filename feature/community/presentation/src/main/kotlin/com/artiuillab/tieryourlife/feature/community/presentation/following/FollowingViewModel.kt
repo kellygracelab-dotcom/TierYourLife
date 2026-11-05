@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -53,7 +54,7 @@ object FollowKeys {
 sealed interface ManageNotice {
     /** With Undo, which follows again. */
     data class Stopped(val name: String, val key: String) : ManageNotice
-    data object Failed : ManageNotice
+    data class Failed(val refusal: FollowRefusal) : ManageNotice
 }
 
 @HiltViewModel
@@ -109,7 +110,7 @@ class FollowingViewModel @Inject constructor(
                 onFailure = { error ->
                     Timber.w(error, "Changing a follow failed")
                     flip(key, stopped = !stopping)
-                    notes.send(ManageNotice.Failed)
+                    notes.send(ManageNotice.Failed(FollowRefusal.of(following = !stopping, error)))
                 },
             )
         }

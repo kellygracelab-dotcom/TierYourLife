@@ -23,6 +23,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPa
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ListMenuActions
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.toCommunityNotice
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.withdrawTelling
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -168,10 +169,9 @@ class FollowingFeedViewModel @Inject constructor(
         if (chosen.isEmpty() || followingPicked.value) return
         followingPicked.value = true
         viewModelScope.launch {
-            val followed = chosen
-                .map { id -> async { id.takeIf { catalog.setFollowing(id, now = true).isSuccess } } }
-                .awaitAll()
-                .filterNotNull()
+            val answers = chosen.map { id -> async { id to catalog.setFollowing(id, now = true) } }.awaitAll()
+            val followed = answers.filter { it.second.isSuccess }.map { it.first }
+            val refused = answers.firstNotNullOfOrNull { it.second.exceptionOrNull() }
             if (followed.isNotEmpty()) {
                 following.update { now ->
                     val base = now ?: Following(emptyList(), emptyList())
@@ -181,7 +181,7 @@ class FollowingFeedViewModel @Inject constructor(
             }
             picked.value = chosen - followed.toSet()
             followingPicked.value = false
-            if (followed.size < chosen.size) notes.send(CommunityNotice.FollowFailed)
+            if (refused != null) notes.send(CommunityNotice.FollowFailed(FollowRefusal.of(following = true, refused)))
         }
     }
 

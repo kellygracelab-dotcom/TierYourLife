@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityNetwork
@@ -19,6 +20,9 @@ import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.summary
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.signedInFollows
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
@@ -97,6 +101,7 @@ class SectionViewModelTest {
         community: FakeCommunityRepository,
         memory: SectionSortMemory = SectionSortMemory(),
         sectionId: String = "games",
+        afterSignIn: FollowAfterSignIn = signedInFollows(),
     ) = SectionViewModel(
         savedStateHandle = SavedStateHandle(mapOf("sectionId" to sectionId)),
         community = community,
@@ -106,7 +111,49 @@ class SectionViewModelTest {
         clock = FakeCommunityClock(),
         sortMemory = memory,
         catalog = sectionCatalogFor(community),
+        afterSignIn = afterSignIn,
     ).also { made += it }
+
+    @Test
+    fun aGuestsFollow_asksForASignIn_andTheSignInFollows() = runBlocking {
+        val accounts = FakeAccountRepository()
+        val followed = CompletableDeferred<String>()
+        val community = object : Community() {
+            override suspend fun followSection(section: String): Result<Unit> {
+                followed.complete(section)
+                return Result.success(Unit)
+            }
+        }
+        val viewModel = viewModel(community, afterSignIn = FollowAfterSignIn(accounts))
+        viewModel.open()
+        viewModel.state.firstWithin { it.stats != null }
+
+        viewModel.toggleSectionFollow()
+
+        withTimeout(5_000) { viewModel.signInRequests.first() }
+        assertFalse(followed.isCompleted)
+        accounts.accounts.value = FakeAccountRepository.signedIn
+        assertEquals(ListCategory.Games.id, withTimeout(5_000) { followed.await() })
+        viewModel.state.firstWithin { it.stats?.following == true }
+        Unit
+    }
+
+    @Test
+    fun aFailedUnfollow_saysItCouldNotUnfollow() = runBlocking {
+        val community = object : Community() {
+            override suspend fun sections(): Result<List<Section>> =
+                Result.success(Section.BUILT_IN.map { it.copy(listCount = 812, following = it.id == ListCategory.Games.id) })
+
+            override suspend fun unfollowSection(id: String): Result<Unit> = Result.failure(IOException("offline"))
+        }
+        val viewModel = viewModel(community)
+        viewModel.open()
+        viewModel.state.firstWithin { it.stats?.following == true }
+
+        viewModel.toggleSectionFollow()
+
+        assertEquals(CommunityNotice.FollowFailed(FollowRefusal.Unfollow), withTimeout(5_000) { viewModel.notices.first() })
+    }
 
     @Test
     fun theSectionOpens_withItsCounts_andItsTopicsMostFollowedFirst() = runBlocking {
@@ -163,7 +210,7 @@ class SectionViewModelTest {
         viewModel.state.firstWithin { it.stats?.following == true }
 
         community.refusal.complete(Unit)
-        assertEquals(CommunityNotice.FollowFailed, withTimeout(5_000) { viewModel.notices.first() })
+        assertEquals(CommunityNotice.FollowFailed(FollowRefusal.Follow), withTimeout(5_000) { viewModel.notices.first() })
         viewModel.state.firstWithin { it.stats?.following == false }
         Unit
     }

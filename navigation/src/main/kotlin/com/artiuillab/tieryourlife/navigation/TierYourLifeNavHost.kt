@@ -203,6 +203,7 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController, openLis
                     onOpenTopic = { route -> navController.navigateToTopic(route) },
                     tabs = tabs,
                     onOpenAllSections = { navController.navigateToAllSections() },
+                    onSignIn = { navController.navigateToAccount() },
                 )
             },
         )
@@ -349,17 +350,20 @@ private fun NavContent(
         authorScreen(
             onBack = { navController.popBackStack() },
             onOpenList = openList,
+            onSignIn = { navController.navigateToAccount() },
         )
         sectionScreen(
             onBack = { navController.popBackStack() },
             onOpenList = openList,
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
             onOpenTopic = { route -> navController.navigateToTopic(route) },
+            onSignIn = { navController.navigateToAccount() },
         )
         allSectionsScreen(
             onBack = { navController.popBackStack() },
             onOpenSection = { route -> navController.navigateToSection(route) },
             onProposeSection = { navController.navigateToProposeSection() },
+            onSignIn = { navController.navigateToAccount() },
         )
         proposeSectionScreen(
             onClose = { navController.popBackStack() },
@@ -383,6 +387,7 @@ private fun NavContent(
             onBack = { navController.popBackStack() },
             onOpenList = openList,
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
+            onSignIn = { navController.navigateToAccount() },
         )
         communityListScreen(
             onBack = { navController.popBackStack() },

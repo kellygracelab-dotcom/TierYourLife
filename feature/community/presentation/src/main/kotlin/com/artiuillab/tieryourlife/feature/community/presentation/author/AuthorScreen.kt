@@ -57,6 +57,9 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Rep
 import com.artiuillab.tieryourlife.feature.community.presentation.components.shownName
 import com.artiuillab.tieryourlife.feature.community.presentation.components.shownTitle
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusalSnackbar
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.SignInToFollow
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -70,9 +73,11 @@ private val PORTRAIT_SIZE = 80.dp
 fun AuthorScreen(
     onBack: () -> Unit,
     onOpenList: (CommunityRoute.CommunityList) -> Unit,
+    onSignIn: () -> Unit = {},
     viewModel: AuthorViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    SignInToFollow(viewModel.signInRequests, onSignIn)
     val moderatorAction by viewModel.moderatorAction.collectAsStateWithLifecycle()
     AuthorScreenContent(
         state = state,
@@ -89,6 +94,7 @@ fun AuthorScreen(
         onReport = viewModel::report,
         onToggleFollow = viewModel::toggleFollow,
         userMessages = viewModel.userMessages,
+        followRefusals = viewModel.followRefusals,
     )
 }
 
@@ -106,6 +112,7 @@ fun AuthorScreenContent(
     moderatorAction: ModeratorAction? = null,
     onToggleModerator: () -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
+    followRefusals: Flow<FollowRefusal> = emptyFlow(),
 ) {
     var authorActionsVisible by remember { mutableStateOf(false) }
     val languageTag = currentLanguageTag()
@@ -177,6 +184,7 @@ fun AuthorScreenContent(
                 }
             }
         }
+        FollowRefusalSnackbar(followRefusals)
 
         val ready = state as? AuthorUiState.Ready
         if (ready != null && authorActionsVisible) {

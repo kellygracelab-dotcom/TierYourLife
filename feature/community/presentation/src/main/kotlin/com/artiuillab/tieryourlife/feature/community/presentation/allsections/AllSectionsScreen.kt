@@ -64,6 +64,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.Sectio
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.WideContentMax
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.countText
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.homeLayoutFor
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.SignInToFollow
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenceFor
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.community.presentation.section.ProposalNotices
 import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingSectionSheet
@@ -109,9 +111,11 @@ fun AllSectionsScreen(
     onBack: () -> Unit,
     onOpenSection: (CommunityRoute.Section) -> Unit,
     onProposeSection: (() -> Unit)? = null,
+    onSignIn: () -> Unit = {},
     viewModel: AllSectionsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    SignInToFollow(viewModel.signInRequests, onSignIn)
     LaunchedEffect(Unit) { viewModel.open() }
     AllSectionsContent(
         state = state,
@@ -355,7 +359,7 @@ private fun AllSectionsNotices(notices: Flow<CommunityNotice>, snackbar: Snackba
                     if (result == SnackbarResult.ActionPerformed) onFollowAgain(notice.sectionId)
                 }
 
-                CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.getString(R.string.explore_follow_failed))
+                is CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.sentenceFor(notice.refusal))
                 CommunityNotice.ActionFailed -> snackbar.showSnackbar(resources.getString(ThemeR.string.snack_action_failed))
                 is CommunityNotice.AlreadyDecided -> snackbar.showSnackbar(resources.getString(notice.words, notice.name))
                 is CommunityNotice.RefreshFailed -> Unit

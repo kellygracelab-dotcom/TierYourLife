@@ -28,11 +28,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
@@ -44,7 +42,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.BAND_CAPTION_PADDING
-import com.artiuillab.tieryourlife.feature.tier.board.components.rows.CAPTION_HIDDEN_FONT_SCALE
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.BandText
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TIER_BAND_WIDTH
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 
@@ -82,6 +80,8 @@ fun TierEditorSheetContent(
         )
     }
     val isLabelValid = label.isNotBlank()
+    val labelCounter = counterFor(label, TIER_LABEL_MAX_LENGTH, TIER_LABEL_COUNTER_FROM, TierDetailTestTags.TIER_EDITOR_LABEL_COUNTER)
+    val captionCounter = counterFor(caption, TIER_CAPTION_MAX_LENGTH, TIER_CAPTION_COUNTER_FROM, TierDetailTestTags.TIER_EDITOR_CAPTION_COUNTER)
 
     Column(Modifier.testTag(TierDetailTestTags.TIER_EDITOR_SHEET)) {
             Text(
@@ -103,8 +103,9 @@ fun TierEditorSheetContent(
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedTextField(
                         value = label,
-                        onValueChange = { label = it },
+                        onValueChange = { label = it.take(TIER_LABEL_MAX_LENGTH) },
                         label = { Text(stringResource(R.string.tier_editor_label_field)) },
+                        supportingText = labelCounter,
                         singleLine = true,
                         modifier = Modifier
                             .width(104.dp)
@@ -112,8 +113,9 @@ fun TierEditorSheetContent(
                     )
                     OutlinedTextField(
                         value = caption,
-                        onValueChange = { caption = it },
+                        onValueChange = { caption = it.take(TIER_CAPTION_MAX_LENGTH) },
                         label = { Text(stringResource(R.string.tier_editor_caption_field)) },
+                        supportingText = captionCounter,
                         singleLine = true,
                         modifier = Modifier
                             .weight(1f)
@@ -192,6 +194,27 @@ fun TierEditorSheetContent(
         }
     }
 
+/** As long as the server keeps a tier's name and caption; longer is cut there, so it is not taken here. */
+const val TIER_LABEL_MAX_LENGTH = 80
+const val TIER_CAPTION_MAX_LENGTH = 60
+private const val TIER_LABEL_COUNTER_FROM = 70
+private const val TIER_CAPTION_COUNTER_FROM = 50
+private val PREVIEW_ROW_HEIGHT = 72.dp
+
+/** "72/80" under a field once it nears its limit, and nothing before. */
+private fun counterFor(text: String, max: Int, from: Int, tag: String): (@Composable () -> Unit)? =
+    if (text.length < from) {
+        null
+    } else {
+        {
+            Text(
+                text = stringResource(R.string.tier_editor_counter, text.length, max),
+                modifier = Modifier.fillMaxWidth().testTag(tag),
+                textAlign = TextAlign.End,
+            )
+        }
+    }
+
 @Composable
 private fun LivePreviewRow(
     label: String,
@@ -252,7 +275,7 @@ private fun LivePreviewCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(72.dp)
+                    .height(PREVIEW_ROW_HEIGHT)
                     .clip(RoundedCornerShape(12.dp))
                     .background(colors.rowTint),
             ) {
@@ -265,17 +288,15 @@ private fun LivePreviewCard(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    Text(text = label, style = TierYourLifeType.current.tierBandLetter, color = colors.onBand)
-                    if (caption != null && LocalDensity.current.fontScale < CAPTION_HIDDEN_FONT_SCALE) {
-                        Text(
-                            text = caption,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            textAlign = TextAlign.Center,
-                            style = TierYourLifeType.current.tierBandCaption,
-                            color = colors.onBand.copy(alpha = 0.7f),
-                        )
-                    }
+                    BandText(
+                        label = label,
+                        caption = caption,
+                        labelStyle = TierYourLifeType.current.tierBandLetter,
+                        captionStyle = TierYourLifeType.current.tierBandCaption,
+                        color = colors.onBand,
+                        width = TIER_BAND_WIDTH - BAND_CAPTION_PADDING * 2,
+                        height = PREVIEW_ROW_HEIGHT - BAND_CAPTION_PADDING * 2,
+                    )
                 }
                 Spacer(Modifier.weight(1f))
             }

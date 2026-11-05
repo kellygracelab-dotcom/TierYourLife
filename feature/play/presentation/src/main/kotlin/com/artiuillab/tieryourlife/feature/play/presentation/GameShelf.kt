@@ -47,9 +47,11 @@ internal class GameShelf(
 
     /**
      * The game put down for [request]'s board: the board's copy when it is the
-     * newer, the file's otherwise. A month-old one goes without a word, from both.
+     * newer, the file's otherwise. A month-old one goes without a word, from both,
+     * and so does one of an older version of the list.
      */
     suspend fun take(request: PlayRequest): SavedGame? {
+        games.keys().filter { it != request.key && PlayRequest.sameBoard(it, request.key) }.forEach { games.discard(it) }
         val inFile = games.load(request.key)
         val board = if (request.intoMine) null else runSuspendCatching { boards.getTierListById(request.board.id) }.getOrNull()
         val game = latestGame(onBoard = board?.let(::gameOn), inFile = inFile)

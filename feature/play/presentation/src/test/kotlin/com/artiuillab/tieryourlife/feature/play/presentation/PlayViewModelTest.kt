@@ -284,7 +284,7 @@ class PlayViewModelTest {
         val theirs = board(1L to listOf(1L, 2L, 3L), 2L to listOf(4L, 5L, 6L), POOL to emptyList(), id = 0)
         val mine = board(1L to emptyList(), 2L to emptyList(), POOL to (1L..6L).toList(), id = 0)
         val repository = MovingTierRepository(unranked)
-        val viewModel = viewModel(boards = repository, request = PlayRequest.someoneElses("abc", theirs, mine))
+        val viewModel = viewModel(boards = repository, request = PlayRequest.someoneElses("abc", version = 1, theirs, mine))
         viewModel.open()
         assertTrue(picker(viewModel.state.value)!!.intoMine)
         viewModel.picker.start()

@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import kotlinx.coroutines.CoroutineScope
@@ -23,6 +24,11 @@ sealed interface ListNotice {
 
     /** Their own list with its board on this phone: the board is where it changes, so the page gives way to it. */
     data class OpenBoard(val boardId: Long) : ListNotice
+
+    /** A guest tapped Follow: the sign-in opens, and the follow waits for it. */
+    data object SignInToFollow : ListNotice
+
+    data class FollowRefused(val refusal: FollowRefusal) : ListNotice
 }
 
 /**

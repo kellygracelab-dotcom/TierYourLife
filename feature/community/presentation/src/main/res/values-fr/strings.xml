@@ -171,6 +171,8 @@
     <string name="explore_unfollowed">Vous ne suivez plus %1$s</string>
     <string name="explore_undo">Annuler</string>
     <string name="explore_follow_failed">Impossible de suivre. Réessayez.</string>
+    <string name="follow_unfollow_failed">Impossible de se désabonner. Réessayez.</string>
+    <string name="follow_too_many">Vous suivez déjà le maximum (%1$d). Désabonnez-vous d’abord de l’un d’eux.</string>
     <string name="explore_new_lists">Nouvelles listes</string>
     <string name="explore_offline">Hors ligne · listes de %1$s</string>
     <string name="explore_retry">Réessayer</string>

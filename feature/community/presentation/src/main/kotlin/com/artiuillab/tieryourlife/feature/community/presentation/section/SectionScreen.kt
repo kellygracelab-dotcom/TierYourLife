@@ -78,6 +78,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.edgeTo
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.feedItems
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.homeLayoutFor
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.rememberSkeletonAlpha
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.SignInToFollow
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenceFor
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.common.label
@@ -100,9 +102,11 @@ fun SectionScreen(
     onOpenList: (CommunityRoute.CommunityList) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onOpenTopic: (CommunityRoute.Topic) -> Unit = {},
+    onSignIn: () -> Unit = {},
     viewModel: SectionViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    SignInToFollow(viewModel.signInRequests, onSignIn)
     LaunchedEffect(Unit) { viewModel.open() }
     val languageTag = currentLanguageTag()
     SectionScreenContent(
@@ -195,7 +199,7 @@ private fun SectionNotices(
                     if (result == SnackbarResult.ActionPerformed) onFollowAgain()
                 }
 
-                CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.getString(R.string.explore_follow_failed))
+                is CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.sentenceFor(notice.refusal))
                 CommunityNotice.ActionFailed -> snackbar.showSnackbar(resources.getString(ThemeR.string.snack_action_failed))
                 is CommunityNotice.NowFollowing, is CommunityNotice.AlreadyDecided -> Unit
             }

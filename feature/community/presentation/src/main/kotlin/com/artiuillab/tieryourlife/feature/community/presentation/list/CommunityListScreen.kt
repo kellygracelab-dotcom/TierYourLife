@@ -60,6 +60,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.Aut
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ListActionsSheet
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportDialog
 import com.artiuillab.tieryourlife.feature.community.presentation.components.ReportSentDialog
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenceFor
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
@@ -95,7 +96,9 @@ fun CommunityListScreen(
     var playOpen by rememberSaveable { mutableStateOf(false) }
     // Their own list is played on their own board, not here; blank cards are not played at all.
     val playRequest = (state as? CommunityListUiState.Success)?.takeUnless { it.own || it.arriving }?.let { loaded ->
-        remember(loaded.shown, loaded.mine) { PlayRequest.someoneElses(viewModel.publishedId, shown = loaded.shown, mine = loaded.mine) }
+        remember(loaded.shown, loaded.mine, loaded.version) {
+            PlayRequest.someoneElses(viewModel.publishedId, loaded.version, shown = loaded.shown, mine = loaded.mine)
+        }
     }
 
     CommunityListScreenContent(
@@ -480,6 +483,8 @@ private fun ListSnackbar(
             when (notice) {
                 ListNotice.TakenDown -> leave()
                 is ListNotice.OpenBoard -> openBoard(notice.boardId)
+                ListNotice.SignInToFollow -> signIn()
+                is ListNotice.FollowRefused -> host.showSnackbar(resources.sentenceFor(notice.refusal))
                 is ListNotice.StartedFromTheirs -> {
                     host.currentSnackbarData?.dismiss()
                     val answer = host.showSnackbar(

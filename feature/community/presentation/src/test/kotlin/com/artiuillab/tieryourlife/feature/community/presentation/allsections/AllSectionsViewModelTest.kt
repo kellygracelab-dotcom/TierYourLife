@@ -13,6 +13,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Withdrawal
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.signedInFollows
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
@@ -103,7 +105,7 @@ class AllSectionsViewModelTest {
 
     private fun viewModel(community: Community, store: FakeSectionStore = FakeSectionStore()) = viewModel(sectionCatalogFor(community, store))
 
-    private fun viewModel(catalog: SectionCatalog) = AllSectionsViewModel(catalog).also { made += it }
+    private fun viewModel(catalog: SectionCatalog) = AllSectionsViewModel(catalog, signedInFollows()).also { made += it }
 
     private fun keptWith(vararg mine: Section) = FakeSectionStore(SectionDirectory(sections = Section.BUILT_IN + mine, fetchedAtMillis = 1L))
 
@@ -151,7 +153,7 @@ class AllSectionsViewModelTest {
 
         viewModel.follow("cars")
 
-        assertEquals(CommunityNotice.FollowFailed, withTimeout(5_000) { viewModel.notices.first() })
+        assertEquals(CommunityNotice.FollowFailed(FollowRefusal.Follow), withTimeout(5_000) { viewModel.notices.first() })
         viewModel.state.firstWithin { s -> !s.sections.first { it.id == "cars" }.following }
         Unit
     }

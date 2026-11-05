@@ -13,13 +13,19 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowTarget
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.GuestFollows
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.topicRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -29,6 +35,7 @@ import javax.inject.Inject
 class TopicViewModel @Inject constructor(
     private val community: CommunityRepository,
     private val preferences: AppPreferences,
+    afterSignIn: FollowAfterSignIn,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -36,6 +43,15 @@ class TopicViewModel @Inject constructor(
 
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
+
+    private val refusals = Channel<FollowRefusal>(Channel.BUFFERED)
+    val followRefusals: Flow<FollowRefusal> = refusals.receiveAsFlow()
+
+    private val target = FollowTarget.Topic(route.topicId)
+    private val guest = GuestFollows(afterSignIn, viewModelScope)
+
+    /** A guest's Follow opens the sign-in; signing in follows. */
+    val signInRequests: Flow<Unit> = guest.signInRequests
 
     private val _state = MutableStateFlow(
         TopicUiState(name = route.name.orEmpty(), section = route.section),
@@ -49,6 +65,7 @@ class TopicViewModel @Inject constructor(
     init {
         loadTopic()
         load()
+        guest.afterSignIn({ it == target }) { setFollowing(true) }
     }
 
     private fun loadTopic() {
@@ -127,18 +144,23 @@ class TopicViewModel @Inject constructor(
         load()
     }
 
-    /** Answers before the server does, and goes back if the request fails. */
+    /** Answers before the server does, and goes back, saying so, if the request fails. */
     fun toggleFollow() {
         val was = _state.value.topic ?: return
         if (was.status != TopicStatus.Approved) return
-        val now = was.copy(following = !was.following)
-        _state.update { it.copy(topic = now) }
+        if (!was.following && !guest.mayFollow(target)) return
+        setFollowing(!was.following)
+    }
+
+    private fun setFollowing(now: Boolean) {
+        val was = _state.value.topic
+        _state.update { it.copy(topic = was?.copy(following = now)) }
         viewModelScope.launch {
-            val result = if (now.following) community.followTopic(route.topicId) else community.unfollowTopic(route.topicId)
+            val result = if (now) community.followTopic(route.topicId) else community.unfollowTopic(route.topicId)
             result.onFailure { error ->
                 Timber.w(error, "Following a topic failed")
                 _state.update { it.copy(topic = was) }
-                messages.send(UserMessage.ActionFailed)
+                refusals.send(FollowRefusal.of(now, error))
             }
         }
     }

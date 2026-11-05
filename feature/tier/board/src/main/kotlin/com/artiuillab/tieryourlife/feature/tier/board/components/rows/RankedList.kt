@@ -146,13 +146,16 @@ private fun RankedItemRow(entry: RankedEntry, onSelect: (itemId: Long) -> Unit) 
     }
 }
 
+/** A long name gives way to the card's title: the row is about the card. */
+private val TIER_BADGE_MAX_WIDTH = 96.dp
+
 @Composable
 private fun TierBadge(tier: Tier) {
     val colors = tierRowColors(tier.colorLight, tier.colorDark)
     Box(
         modifier = Modifier
             .height(24.dp)
-            .widthIn(min = 24.dp)
+            .widthIn(min = 24.dp, max = TIER_BADGE_MAX_WIDTH)
             .clip(RoundedCornerShape(6.dp))
             .background(colors.band)
             .padding(horizontal = 6.dp),
@@ -162,6 +165,8 @@ private fun TierBadge(tier: Tier) {
             text = tier.label,
             style = MaterialTheme.typography.labelMedium,
             color = colors.onBand,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

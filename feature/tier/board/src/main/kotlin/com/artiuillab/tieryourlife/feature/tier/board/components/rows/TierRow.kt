@@ -51,8 +51,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
@@ -76,6 +74,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 /** Every band on every board: a caption lives inside this width, it never widens it. */
 val TIER_BAND_WIDTH = 64.dp
 val BAND_CAPTION_PADDING = 6.dp
+private val BAND_VERTICAL_PADDING = 10.dp
 
 const val CAPTION_HIDDEN_FONT_SCALE = 1.5f
 
@@ -122,7 +121,8 @@ fun TierRow(
         onDispose { if (strip) dragController.unregisterItemsRow(tier.id) }
     }
 
-    val rowHeightModifier = if (collapsed || displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
+    val fixedHeight = collapsed || displayMode == TierListDisplayMode.HORIZONTAL_SCROLL
+    val rowHeightModifier = if (fixedHeight) {
         Modifier.height(rowDensity.occupiedHeight)
     } else {
         Modifier.height(IntrinsicSize.Min)
@@ -203,31 +203,23 @@ fun TierRow(
                             Modifier
                         },
                     )
-                    .padding(horizontal = BAND_CAPTION_PADDING, vertical = 10.dp),
+                    .padding(horizontal = BAND_CAPTION_PADDING, vertical = BAND_VERTICAL_PADDING),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                Text(
-                    text = tier.label,
-                    style = TierYourLifeType.current.tierBandLetter.merge(
+                BandText(
+                    label = tier.label,
+                    caption = tier.caption,
+                    labelStyle = TierYourLifeType.current.tierBandLetter.merge(
                         TextStyle(fontSize = rowDensity.letterSize, lineHeight = rowDensity.letterLineHeight),
                     ),
+                    captionStyle = TierYourLifeType.current.tierBandCaption.merge(
+                        TextStyle(fontSize = rowDensity.captionSize, lineHeight = rowDensity.captionLineHeight),
+                    ),
                     color = colors.onBand,
+                    width = bandWidth - BAND_CAPTION_PADDING * 2,
+                    height = if (fixedHeight) rowDensity.occupiedHeight - BAND_VERTICAL_PADDING * 2 else null,
                 )
-                tier.caption?.let { caption ->
-                    if (LocalDensity.current.fontScale < CAPTION_HIDDEN_FONT_SCALE) {
-                        Text(
-                            text = caption,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            textAlign = TextAlign.Center,
-                            style = TierYourLifeType.current.tierBandCaption.merge(
-                                TextStyle(fontSize = rowDensity.captionSize, lineHeight = rowDensity.captionLineHeight),
-                            ),
-                            color = colors.onBand.copy(alpha = 0.7f),
-                        )
-                    }
-                }
             }
         }
 
