@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.community.data.remote
 
 import com.artiuillab.tieryourlife.core.network.networkJson
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ProposalAllowanceDto
 import com.artiuillab.tieryourlife.feature.community.domain.model.PictureProblem
 import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalError
 import kotlinx.serialization.Serializable
@@ -30,8 +31,8 @@ fun Throwable.proposalError(): ProposalError {
         "BAD_ICON" -> ProposalError.BadIcon
         "BAD_FILE_UNDER" -> ProposalError.BadFileUnder
         "BAD_PICTURE" -> ProposalError.BadPicture(PictureProblem.fromId(body.why ?: body.detail))
-        "TOO_MANY_PENDING" -> ProposalError.TooManyPending
-        "TOO_MANY_PROPOSALS" -> ProposalError.TooManyToday
+        TOO_MANY_PENDING -> ProposalError.TooManyPending
+        TOO_MANY_PROPOSALS -> ProposalError.TooManyToday
         "BANNED" -> ProposalError.Banned(body.until)
         "NOT_SIGNED_IN" -> ProposalError.NotSignedIn
         else -> when (response.code()) {
@@ -42,5 +43,14 @@ fun Throwable.proposalError(): ProposalError {
     }
 }
 
+/** What `GET lists/sections/proposals` says a proposal would meet; a code it may add later is left for the proposal to answer. */
+fun ProposalAllowanceDto.refusalError(): ProposalError? = when (refusal) {
+    TOO_MANY_PENDING -> ProposalError.TooManyPending
+    TOO_MANY_PROPOSALS -> ProposalError.TooManyToday
+    else -> null
+}
+
+private const val TOO_MANY_PENDING = "TOO_MANY_PENDING"
+private const val TOO_MANY_PROPOSALS = "TOO_MANY_PROPOSALS"
 private const val HTTP_FORBIDDEN = 403
 private const val HTTP_TOO_MANY = 429

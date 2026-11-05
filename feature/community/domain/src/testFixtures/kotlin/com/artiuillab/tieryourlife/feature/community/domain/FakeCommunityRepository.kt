@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
+import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
@@ -65,6 +66,8 @@ open class FakeCommunityRepository : CommunityRepository {
     override suspend fun unfollowSection(id: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun checkSectionName(name: String): Result<SectionNameCheck> = Result.success(SectionNameCheck.Free)
+
+    override suspend fun proposalRefusal(): Result<ProposalError?> = Result.success(null)
 
     override suspend fun proposeSection(proposal: SectionProposal): Result<Section> = notSetUp("proposeSection")
 

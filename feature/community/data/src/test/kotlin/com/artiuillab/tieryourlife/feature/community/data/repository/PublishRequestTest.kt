@@ -2,10 +2,13 @@ package com.artiuillab.tieryourlife.feature.community.data.repository
 
 import com.artiuillab.tieryourlife.core.network.networkJson
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIdDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedItemDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListSummaryDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTierDto
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
+import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -17,6 +20,7 @@ import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /** What leaves the phone when a board is published, and what a published list becomes on the way back. */
@@ -221,5 +225,68 @@ class PublishRequestTest {
         val fresh = board.copy(newTopicName = "Oscars 2025").toRequest(Pictures, uploaded = emptySet())
         assertNull(fresh.topicId)
         assertEquals("Oscars 2025", fresh.newTopic)
+    }
+
+    private fun body(list: TierList) = networkJson.parseToJsonElement(
+        networkJson.encodeToString(PublishListRequestDto.serializer(), list.toRequest(Pictures, uploaded = emptySet())),
+    ).jsonObject
+
+    // Without it the server brings the old topic back whenever the section stays the same.
+    @Test
+    fun `a board with no topic says so, and sends neither a topic nor a name`() {
+        val none = body(board.copy(publishedId = "p1"))
+
+        assertEquals(JsonPrimitive(true), none["noTopic"])
+        assertFalse("topicId" in none)
+        assertFalse("newTopic" in none)
+    }
+
+    @Test
+    fun `a board with a topic, known or new, sends no noTopic at all`() {
+        val known = body(board.copy(topicId = "t1", topicName = "Oscars"))
+        val fresh = body(board.copy(newTopicName = "Oscars 2025"))
+
+        assertEquals(JsonPrimitive("t1"), known["topicId"])
+        assertFalse("noTopic" in known)
+        assertEquals(JsonPrimitive("Oscars 2025"), fresh["newTopic"])
+        assertFalse("noTopic" in fresh)
+    }
+
+    @Test
+    fun `the board's uid goes with every publish, trimmed`() {
+        assertEquals(JsonPrimitive("b-123"), body(board.copy(uid = " b-123 "))["boardUid"])
+        assertEquals(JsonPrimitive("b-123"), body(board.copy(uid = "b-123", publishedId = "p1"))["boardUid"])
+    }
+
+    @Test
+    fun `a uid the server would refuse is left out rather than sent`() {
+        assertFalse("boardUid" in body(board.copy(uid = " ")))
+        assertFalse("boardUid" in body(board.copy(uid = "x".repeat(101))))
+        assertEquals(JsonPrimitive("x".repeat(100)), body(board.copy(uid = "x".repeat(100)))["boardUid"])
+    }
+
+    // 200 with existing: the list an interrupted publish made. The board takes its id as it would a new one's.
+    @Test
+    fun `a list the server had out already links the board like a new one`() {
+        val existing = networkJson.decodeFromString(PublishedIdDto.serializer(), """{"id":"p7","topicId":"t1","existing":true}""")
+        val made = networkJson.decodeFromString(PublishedIdDto.serializer(), """{"id":"p7","topicId":"t1"}""")
+
+        assertTrue(existing.existing)
+        assertFalse(made.existing)
+        assertEquals(Published(id = "p7", fingerprint = "f", topicId = "t1"), existing.toPublished("f"))
+        assertEquals(made.toPublished("f"), existing.toPublished("f"))
+    }
+
+    @Test
+    fun `the board a list of mine was published from comes back with it`() {
+        val mine = networkJson.decodeFromString(
+            PublishedListSummaryDto.serializer(),
+            """{"id":"p1","title":"T","authorName":"A","itemCount":1,"boardUid":"b-123"}""",
+        )
+        val older = networkJson.decodeFromString(PublishedListSummaryDto.serializer(), """{"id":"p2","title":"T","authorName":"A","itemCount":1}""")
+
+        assertEquals("b-123", mine.toSummary().boardUid)
+        assertEquals("b-123", mine.toSummary().toDto().toSummary().boardUid)
+        assertNull(older.toSummary().boardUid)
     }
 }

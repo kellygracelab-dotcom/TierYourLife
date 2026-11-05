@@ -38,6 +38,8 @@ data class PublishedListSummary(
     val viewerFollowsAuthor: Boolean? = null,
     /** The title in other languages, by locale; read through [titleIn]. */
     val names: Map<String, String> = emptyMap(),
+    /** On the author's own list: the board it was published from, when the server kept that. */
+    val boardUid: String? = null,
 ) {
     /** Shown without its author, and leading to no profile. */
     val editorial: Boolean get() = EditorialAuthors.isEditorial(authorUid, anonymous)

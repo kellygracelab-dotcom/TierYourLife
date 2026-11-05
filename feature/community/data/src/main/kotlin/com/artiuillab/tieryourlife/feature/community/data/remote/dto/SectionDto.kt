@@ -46,6 +46,16 @@ data class SectionNameCheckDto(val free: Boolean = false, val id: String? = null
 @Serializable
 data class SectionProposalDto(val name: String, val icon: String, val pictureId: String, val fileUnder: String)
 
+/** `GET lists/sections/proposals`: whether one more proposal would be taken now. [refusal] is the code a proposal would get. */
+@Serializable
+data class ProposalAllowanceDto(
+    val pending: Int = 0,
+    val maxPending: Int = 0,
+    val proposalsToday: Int = 0,
+    val maxPerDay: Int = 0,
+    val refusal: String? = null,
+)
+
 /** The body of `410 MERGED`. */
 @Serializable
 data class SectionMergedDto(val mergedInto: String? = null)

@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Following
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
+import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
@@ -71,6 +72,13 @@ interface CommunityRepository {
 
     /** Whether a name is free for a new section, as the server compares names. */
     suspend fun checkSectionName(name: String): Result<SectionNameCheck>
+
+    /**
+     * Asked before a proposal's picture goes up: null when one more proposal
+     * would be taken now, else the refusal it would meet. Fails as
+     * [com.artiuillab.tieryourlife.feature.community.domain.model.ProposalRefused] when the server refuses to say.
+     */
+    suspend fun proposalRefusal(): Result<ProposalError?>
 
     /** The new section, waiting. Refusals come as [com.artiuillab.tieryourlife.feature.community.domain.model.ProposalRefused]. */
     suspend fun proposeSection(proposal: SectionProposal): Result<Section>

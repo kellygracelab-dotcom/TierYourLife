@@ -83,11 +83,13 @@ class TierListMapperTest {
         val item = TierItemEntity(id = 4, tierId = 3, position = 0, title = "Dune", imageUrl = null, uid = "i-1")
 
         val board = TierListWithTiers(
-            tierList = TierListEntity(id = 1, title = "Films", play = game),
+            tierList = TierListEntity(id = 1, title = "Films", play = game, uid = "b-1"),
             tiers = listOf(TierWithItems(tier = tier, items = listOf(item))),
         ).toDomain()
 
         assertEquals(game, board.play)
+        assertEquals("b-1", board.uid)
+        assertEquals("b-1", TierListEntity(id = 1, title = "Films", uid = "b-1").toDomain().uid)
         assertEquals("t-s", board.tiers.single().uid)
         assertEquals("i-1", board.tiers.single().items.single().uid)
         assertEquals(game, TierListEntity(id = 1, title = "Films", play = game).toDomain().play)

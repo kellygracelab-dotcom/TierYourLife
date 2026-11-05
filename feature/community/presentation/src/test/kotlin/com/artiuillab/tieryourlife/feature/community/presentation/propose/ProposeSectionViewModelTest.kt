@@ -42,9 +42,12 @@ class ProposeSectionViewModelTest {
     private class Community(
         val nameAnswer: Result<SectionNameCheck> = Result.success(SectionNameCheck.Free),
         val proposeAnswer: (SectionProposal) -> Result<Section> = { Result.success(pending(it)) },
+        val roomAnswer: Result<ProposalError?> = Result.success(null),
     ) : FakeCommunityRepository() {
         val checked = mutableListOf<String>()
         val proposed = mutableListOf<SectionProposal>()
+
+        override suspend fun proposalRefusal(): Result<ProposalError?> = roomAnswer
 
         override suspend fun checkSectionName(name: String): Result<SectionNameCheck> {
             synchronized(checked) { checked += name }
@@ -316,6 +319,50 @@ class ProposeSectionViewModelTest {
 
         assertEquals(ProposalError.NotSignedIn, viewModel.state.firstWithin { it.error != null }.error)
         assertTrue(community.proposed.isEmpty())
+    }
+
+    private fun checkedAheadWith(answer: Result<ProposalError?>) = runBlocking {
+        val community = Community(roomAnswer = answer)
+        val pictures = FakeSectionPictures(size = Result.success(PictureSize(2000, 1250)))
+        val viewModel = viewModel(community, pictures = pictures)
+        ready(viewModel)
+        viewModel.propose()
+        Triple(viewModel.state.firstWithin { !it.sending && it.error != null }, community, pictures)
+    }
+
+    @Test
+    fun aLimitReachedAlready_isShownAsTheProposalWouldBe_andNoPictureGoesUp() {
+        listOf(ProposalError.TooManyPending, ProposalError.TooManyToday).forEach { limit ->
+            val (state, community, pictures) = checkedAheadWith(Result.success(limit))
+
+            assertEquals(limit, state.error)
+            assertEquals("content://picture", state.picture?.uri)
+            assertTrue(pictures.uploads.isEmpty())
+            assertTrue(community.proposed.isEmpty())
+        }
+    }
+
+    @Test
+    fun aGuestTurnedAwayByTheCheck_sendsNoPicture() {
+        val (state, community, pictures) = checkedAheadWith(Result.failure(ProposalRefused(ProposalError.NotSignedIn)))
+
+        assertEquals(ProposalError.NotSignedIn, state.error)
+        assertTrue(pictures.uploads.isEmpty())
+        assertTrue(community.proposed.isEmpty())
+    }
+
+    @Test
+    fun aCheckThatCouldNotAnswer_stopsNothing() = runBlocking {
+        val community = Community(roomAnswer = Result.failure(ProposalRefused(ProposalError.Failed)))
+        val pictures = FakeSectionPictures(size = Result.success(PictureSize(2000, 1250)))
+        val viewModel = viewModel(community, pictures = pictures)
+        ready(viewModel)
+
+        viewModel.propose()
+
+        withTimeout(5_000) { viewModel.proposed.first() }
+        assertEquals(1, pictures.uploads.size)
+        assertEquals(1, community.proposed.size)
     }
 
     private companion object {

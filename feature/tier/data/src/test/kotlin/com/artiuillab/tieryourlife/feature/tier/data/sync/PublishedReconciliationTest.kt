@@ -85,4 +85,26 @@ class PublishedReconciliationTest {
 
         assertEquals(emptyMap<String, String>(), reconciled.owners)
     }
+
+    // The publish went through and its answer did not: the account names the board, so the board gets its list back.
+    @Test
+    fun aBoardThatLostItsList_getsItBack_byItsUid() {
+        val relinked = relinkPublished(
+            unlinked = setOf("board-1"),
+            inAccount = mapOf("p1" to "board-1", "p2" to "board-2", "p3" to null),
+            claimed = setOf("p2"),
+        )
+
+        assertEquals(mapOf("board-1" to "p1"), relinked)
+    }
+
+    @Test
+    fun aListAnotherBoardClaims_isLeftWithIt() {
+        assertEquals(emptyMap<String, String>(), relinkPublished(setOf("board-1"), mapOf("p1" to "board-1"), claimed = setOf("p1")))
+    }
+
+    @Test
+    fun twoListsNamingOneBoard_relinkNeither() {
+        assertEquals(emptyMap<String, String>(), relinkPublished(setOf("board-1"), mapOf("p1" to "board-1", "p2" to "board-1"), emptySet()))
+    }
 }

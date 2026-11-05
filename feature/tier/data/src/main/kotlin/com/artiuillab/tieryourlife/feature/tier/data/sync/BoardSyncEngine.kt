@@ -133,11 +133,21 @@ class BoardSyncEngine @Inject constructor(
      */
     private suspend fun forgetWhatIsNoLongerPublished() {
         val account = signedInAs() ?: return
-        val claimed = dao.boardsOf(account).mapNotNullTo(mutableSetOf()) { it.publishedId }
-        val theirs = if (claimed.isEmpty()) {
-            emptySet()
+        val boards = dao.boardsOf(account)
+        val claimed = boards.mapNotNullTo(mutableSetOf()) { it.publishedId }
+        // A board was ever published only with a section chosen.
+        val unlinked = boards
+            .filter { it.publishedId == null && it.rankingOf == null && it.deletedAt == null && it.category != null }
+            .mapTo(mutableSetOf()) { it.uid }
+        val mine = if (claimed.isEmpty() && unlinked.isEmpty()) {
+            emptyMap()
         } else {
-            community.myPublished().getOrElse { return }.mapTo(mutableSetOf()) { it.id }
+            community.myPublished().getOrElse { return }.associate { it.id to it.boardUid }
+        }
+        val theirs = mine.keys
+        relinkPublished(unlinked, mine, claimed).forEach { (uid, publishedId) ->
+            Timber.i("A board that lost its published list has it back")
+            dao.relinkPublished(account, uid, publishedId)
         }
         val reconciled = reconcilePublished(
             claimed = claimed,
