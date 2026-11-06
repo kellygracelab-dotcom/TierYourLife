@@ -31,8 +31,10 @@ subprojects {
     }
 }
 
+// :e2e is left out: the floor measures what the unit tests prove, and a run
+// against the emulators must not lift it.
 dependencies {
-    subprojects.forEach { kover(dependencies.project(mapOf("path" to it.path))) }
+    subprojects.filterNot { it.path == ":e2e" }.forEach { kover(dependencies.project(mapOf("path" to it.path))) }
 }
 
 // One device, one test run at a time. With parallel builds on, Gradle starts
