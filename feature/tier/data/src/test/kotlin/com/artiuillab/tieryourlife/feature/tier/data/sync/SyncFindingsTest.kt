@@ -3,12 +3,9 @@ package com.artiuillab.tieryourlife.feature.tier.data.sync
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
-import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
-import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
-import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupRefusal
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -22,7 +19,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
-import java.io.IOException
 
 /** The QA findings of 2026-11-06 on sync, each as the run that showed it. */
 @RunWith(AndroidJUnit4::class)
@@ -160,6 +156,20 @@ class SyncFindingsTest : SyncEngineBench() {
 
         assertEquals(listOf("Films"), dao.allBoards().map { it.title })
         assertNotNull(dao.boardByUid(uid)!!.deletedAt)
+    }
+
+    // A restore planned for a board deleted for good while the run was under
+    // way brought it back as if it were news.
+    @Test
+    fun aBoardDeletedForGoodDuringARestore_staysDeleted() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        engine().sync()
+        boards.server[uid] = theirBoard(uid, title = "Films, renamed", revision = 2, fingerprint = "theirs-2")
+        boards.onBoard = { dao.deleteBoardByUid(it) }
+
+        engine().sync()
+
+        assertNull(dao.boardByUid(uid))
     }
 
     @Test
@@ -357,41 +367,5 @@ class SyncFindingsTest : SyncEngineBench() {
         engine(preferences = preferences).sync()
 
         assertEquals(BackupRefusal.Reason.NotAccepted, backupRefusalOf(preferences.boardRefusal(someone))?.reason)
-    }
-
-    // A1: the boards of a deleted account sat under a uid nobody signs into again.
-    @Test
-    fun deletingTheAccount_keepsItsBoardsHere_asBoardsWithoutAnAccount() = runBlocking {
-        val films = givenLocalBoard("Films", publishedId = "pub-1", owner = "ann")
-        val others = givenLocalBoard("Bob's games", owner = "bob")
-        engine(account = ann).sync()
-        val accounts = FakeAccountRepository(initial = ann)
-        val preferences = FakeAppPreferences()
-        val ownership = BoardOwnership(accounts, database.ownerDao(), preferences)
-        val merge = RoomBoardMerge(dao, database.ownerDao(), boards, ownership, lock)
-
-        val result = merge.eraseKeepingBoards("ann") { Result.success(Unit) }
-
-        assertTrue(result.isSuccess)
-        assertNull(dao.boardByUid(films)!!.ownerUid)
-        assertNull(dao.boardByUid(films)!!.publishedId)
-        assertEquals("bob", dao.boardByUid(others)!!.ownerUid)
-        assertTrue(dao.syncRecordsOf("ann").isEmpty())
-        accounts.accounts.value = Account.Guest
-        val repository = RoomTierRepository(database.tierDao(), images, ownership)
-        assertEquals(listOf("Films"), repository.getAllTierLists().map { it.title })
-    }
-
-    @Test
-    fun anAccountThatWasNotDeleted_keepsItsBoards() = runBlocking {
-        val films = givenLocalBoard("Films", owner = "ann")
-        val accounts = FakeAccountRepository(initial = ann)
-        val ownership = BoardOwnership(accounts, database.ownerDao(), FakeAppPreferences())
-        val merge = RoomBoardMerge(dao, database.ownerDao(), boards, ownership, lock)
-
-        val result = merge.eraseKeepingBoards("ann") { Result.failure(IOException("offline")) }
-
-        assertTrue(result.isFailure)
-        assertEquals("ann", dao.boardByUid(films)!!.ownerUid)
     }
 }

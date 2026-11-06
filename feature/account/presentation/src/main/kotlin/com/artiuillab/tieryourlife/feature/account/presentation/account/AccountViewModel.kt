@@ -89,7 +89,7 @@ class AccountViewModel @Inject constructor(
 
     fun signOut() {
         viewModelScope.launch {
-            repository.signOut()
+            merge.signOutSettlingErase { repository.signOut() }
             preferences.forgetThePerson()
             _state.update { it.copy(notice = null) }
         }
@@ -106,9 +106,8 @@ class AccountViewModel @Inject constructor(
         val account = (repository.current() as? Account.SignedIn)?.recordKey ?: return
         _state.update { it.copy(deleting = true, notice = null) }
         viewModelScope.launch {
-            merge.eraseKeepingBoards(account) { erasure.erase() }.fold(
+            merge.eraseKeepingBoards(account, erase = { erasure.erase() }, signOut = { repository.signOut() }).fold(
                 onSuccess = {
-                    repository.signOut()
                     preferences.forgetThePerson()
                     _state.update { it.copy(deleting = false) }
                 },

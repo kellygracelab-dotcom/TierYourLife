@@ -268,6 +268,20 @@ class AccountViewModelTest {
         assertEquals(Account.Guest, state.account)
     }
 
+    // Signed out, an account whose erase never answered could no longer be asked about.
+    @Test
+    fun signOut_settlesAnUnansweredEraseFirst() = runBlocking {
+        val repository = FakeAccountRepository(initial = Account.SignedIn(email = "someone@example.com", photoUrl = null))
+        val merge = RecordingMerge(guestBoards = 0)
+        val viewModel = viewModel(repository, merge = merge)
+        viewModel.state.firstWithin { it.account is Account.SignedIn }
+
+        viewModel.signOut()
+        viewModel.state.firstWithin { it.account == Account.Guest }
+
+        assertEquals(listOf("settledBeforeSigningOut"), merge.calls)
+    }
+
     @Test
     fun signOut_leavesNothingOfThePersonForTheNextOne() = runBlocking {
         val repository = FakeAccountRepository(
@@ -591,10 +605,20 @@ private class RecordingMerge(private val guestBoards: Int) : BoardMerge {
         answered.complete(Unit)
     }
 
-    override suspend fun eraseKeepingBoards(account: String, erase: suspend () -> Result<Unit>): Result<Unit> {
+    override suspend fun eraseKeepingBoards(account: String, erase: suspend () -> Result<Unit>, signOut: suspend () -> Unit): Result<Unit> {
         calls += "erase:$account"
-        return erase().onSuccess { calls += "keptBoardsOf:$account" }
+        return erase().onSuccess {
+            calls += "keptBoardsOf:$account"
+            signOut()
+        }
     }
+
+    override suspend fun signOutSettlingErase(signOut: suspend () -> Unit) {
+        calls += "settledBeforeSigningOut"
+        signOut()
+    }
+
+    override suspend fun settleUnansweredErase() = Unit
 }
 
 /** Ending an account is its own test; here it must simply exist. */

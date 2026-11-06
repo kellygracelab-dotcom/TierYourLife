@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,12 +21,16 @@ import javax.inject.Singleton
 class SyncOnReconnect @Inject constructor(
     private val connection: Connection,
     private val boardSync: BoardSync,
+    private val merge: BoardMerge,
 ) {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     fun start() {
         scope.launch {
+            // Before any sync: one would run as an account that may be gone.
+            runSuspendCatching { merge.settleUnansweredErase() }
+                .onFailure { Timber.w(it, "Could not settle an unanswered erase") }
             connection.available.collect {
                 runSuspendCatching { boardSync.sync() }.onFailure { failure ->
                     // A dropped connection is ordinary here; anything else is a bug nobody would see.

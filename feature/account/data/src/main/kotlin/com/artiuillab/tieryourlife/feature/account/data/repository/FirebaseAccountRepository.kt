@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.account.domain.repository.GuestCredits
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -137,6 +138,18 @@ class FirebaseAccountRepository @Inject constructor(
         }
     }
 
+    override suspend fun currentAccountExists(): Boolean? {
+        val user = auth.currentUser ?: return null
+        return try {
+            user.reload().await()
+            true
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            existenceAfter(e)
+        }
+    }
+
     override suspend fun signOut() {
         auth.signOut()
         runSuspendCatching { auth.signInAnonymously().await() }
@@ -190,3 +203,9 @@ private fun FirebaseUser?.toAccount(): Account = when {
  */
 internal fun outcomeWithoutAGuest(isNewUser: Boolean?): SignInOutcome =
     if (isNewUser == true) SignInOutcome.Success else SignInOutcome.SignedInToExistingAccount(guestCreditsLost = false)
+
+/** Only a server that no longer knows the user means gone; disabled, or no answer, tells nothing. */
+internal fun existenceAfter(reloadFailure: Exception): Boolean? =
+    if ((reloadFailure as? FirebaseAuthInvalidUserException)?.errorCode == USER_NOT_FOUND) false else null
+
+private const val USER_NOT_FOUND = "ERROR_USER_NOT_FOUND"

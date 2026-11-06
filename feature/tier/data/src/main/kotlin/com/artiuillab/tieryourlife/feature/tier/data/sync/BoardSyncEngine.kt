@@ -354,7 +354,8 @@ class BoardSyncEngine @Inject constructor(
      */
     private suspend fun takeOver(account: String, incoming: KeptBoardDto, planned: String?) {
         if (incoming.deleted) return trashHere(account, incoming.uid, incoming.revision, planned)
-        val existing = dao.boardByUid(incoming.uid) ?: return adopt(account, incoming)
+        // Gone since the plan: deleted for good here, and the next run forgets it.
+        val existing = dao.boardByUid(incoming.uid) ?: return if (planned == null) adopt(account, incoming) else Unit
         dao.together {
             val now = dao.boardByUid(incoming.uid) ?: return@together
             if (planned != null && fingerprintOf(now) != planned) {

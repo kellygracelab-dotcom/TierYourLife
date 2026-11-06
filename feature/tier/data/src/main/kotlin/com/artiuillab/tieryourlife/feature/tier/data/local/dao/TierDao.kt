@@ -414,9 +414,20 @@ interface TierDao {
         colorLight: String,
         colorDark: String,
     ): Long {
-        val tiers = getAllTiersByTierListId(tierListId)
-        val rankedCount = tiers.count { !it.isPool }
+        val rankedCount = getAllTiersByTierListId(tierListId).count { !it.isPool }
         if (rankedCount >= TierList.MAX_RANKED_TIERS) return NO_ROW
+        return insertRankedTier(tierListId, label, caption, colorLight, colorDark)
+    }
+
+    /** Last among the ranked tiers, above the pool, whatever the cap. */
+    suspend fun insertRankedTier(
+        tierListId: Long,
+        label: String,
+        caption: String?,
+        colorLight: String,
+        colorDark: String,
+    ): Long {
+        val rankedCount = getAllTiersByTierListId(tierListId).count { !it.isPool }
         shiftTiersFrom(tierListId, rankedCount)
 
         return insertTier(
@@ -443,7 +454,8 @@ interface TierDao {
     ): Long {
         if (getTierListById(tierListId) == null) return 0
 
-        val tierId = addTier(tierListId, label, caption, colorLight, colorDark)
+        // Not held to the cap: an undo brings back what was there.
+        val tierId = insertRankedTier(tierListId, label, caption, colorLight, colorDark)
         val rankedIds = getAllTiersByTierListId(tierListId)
             .filterNot { it.isPool }
             .map { it.id }

@@ -11,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -59,5 +60,19 @@ class TierLimitTest {
 
         assertEquals(TierDao.NO_ROW, added)
         assertEquals(TierList.MAX_RANKED_TIERS + 1, dao.getAllTiersByTierListId(board).size)
+    }
+
+    // Undoing a tier delete on a board filled back up to the cap lost the tier without a word.
+    @Test
+    fun undoingATierDelete_bringsItBackWhateverTheCap() = runBlocking {
+        val board = boardWith(TierList.MAX_RANKED_TIERS)
+
+        val restored = dao.restoreTier(board, "Brought back", null, "#222222", "#DDDDDD", position = 0, itemIds = emptyList())
+
+        assertNotEquals(TierDao.NO_ROW, restored)
+        val tiers = dao.getAllTiersByTierListId(board)
+        assertEquals(TierList.MAX_RANKED_TIERS + 2, tiers.size)
+        assertEquals("Brought back", tiers.filterNot { it.isPool }.minBy { it.position }.label)
+        assertTrue(tiers.maxBy { it.position }.isPool)
     }
 }

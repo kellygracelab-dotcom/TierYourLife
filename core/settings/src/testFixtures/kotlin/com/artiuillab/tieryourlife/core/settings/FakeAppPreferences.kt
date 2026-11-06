@@ -91,6 +91,14 @@ class FakeAppPreferences(
 
     override fun boardRefusal(account: String): String? = refusals[account]
 
+    private var erasure: String? = null
+
+    override fun erasureUnderWay(): String? = erasure
+
+    override fun setErasureUnderWay(mark: String?) {
+        erasure = mark
+    }
+
     override fun setBoardRefusal(account: String, refusal: String?) {
         if (refusal == null) refusals.remove(account) else refusals[account] = refusal
     }

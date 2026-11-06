@@ -47,8 +47,11 @@ interface OwnerDao {
     @Query("UPDATE tier_lists SET ownerUid = :owner WHERE ownerUid IS NULL")
     suspend fun moveGuestBoardsTo(owner: String): Int
 
-    /** Its published lists went with the account, so no board here is one any more. */
-    @Query("UPDATE tier_lists SET ownerUid = NULL, publishedId = NULL, publishedFingerprint = NULL WHERE ownerUid = :owner")
+    /** Its published lists and rankings went with the account, so no board here is out as one any more. */
+    @Query(
+        "UPDATE tier_lists SET ownerUid = NULL, publishedId = NULL, publishedFingerprint = NULL, rankingOf = NULL " +
+            "WHERE ownerUid = :owner",
+    )
     suspend fun makeGuestBoards(owner: String): Int
 
     @Query("DELETE FROM board_sync WHERE account = :account")

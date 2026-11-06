@@ -43,6 +43,11 @@ open class FakeAccountRepository(
         accounts.value = Account.Guest
     }
 
+    /** What the server would say of the signed-in account. */
+    var exists: Boolean? = true
+
+    override suspend fun currentAccountExists(): Boolean? = exists
+
     companion object {
         const val SIGNED_IN_EMAIL = "someone@example.com"
         val signedIn: Account = Account.SignedIn(email = SIGNED_IN_EMAIL, photoUrl = null)

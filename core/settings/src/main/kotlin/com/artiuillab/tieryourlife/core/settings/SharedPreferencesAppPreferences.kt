@@ -19,6 +19,7 @@ private const val KEY_PICTURES_ON_WIFI_ONLY = "pictures_on_wifi_only"
 private const val KEY_LAST_SYNCED_AT = "last_synced_at"
 private const val KEY_CONFLICTS_SEEN = "conflicts_seen"
 private const val KEY_BOARD_REFUSAL = "board_refusal"
+private const val KEY_ERASURE_UNDER_WAY = "erasure_under_way"
 private const val KEY_LAST_KNOWN_REPORTS = "last_known_reports"
 private const val KEY_LAST_KNOWN_TRASH = "last_known_trash"
 private const val KEY_LAST_KNOWN_STORED_BYTES = "last_known_stored_bytes"
@@ -170,6 +171,15 @@ class SharedPreferencesAppPreferences @Inject constructor(
     override fun setBoardRefusal(account: String, refusal: String?) {
         prefs.edit {
             if (refusal == null) remove("$KEY_BOARD_REFUSAL:$account") else putString("$KEY_BOARD_REFUSAL:$account", refusal)
+        }
+    }
+
+    override fun erasureUnderWay(): String? = prefs.getString(KEY_ERASURE_UNDER_WAY, null)
+
+    override fun setErasureUnderWay(mark: String?) {
+        // Committed, not applied: the request this guards may be the last thing the process does.
+        prefs.edit(commit = true) {
+            if (mark == null) remove(KEY_ERASURE_UNDER_WAY) else putString(KEY_ERASURE_UNDER_WAY, mark)
         }
     }
 

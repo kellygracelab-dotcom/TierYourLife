@@ -94,6 +94,12 @@ interface AppPreferences {
 
     fun setBoardRefusal(account: String, refusal: String?)
 
+    /** An account asked to be deleted with no answer yet that it was, as the boards' side wrote it down. */
+    fun erasureUnderWay(): String?
+
+    /** Written before the request leaves, so a reply lost or a phone killed meanwhile still finds it. */
+    fun setErasureUnderWay(mark: String?)
+
     /** By uid rather than one flag: a second conflict months later is news again. */
     fun conflictsSeen(): Set<String>
 
