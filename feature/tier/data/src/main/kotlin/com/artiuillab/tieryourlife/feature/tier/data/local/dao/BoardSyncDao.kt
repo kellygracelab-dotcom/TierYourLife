@@ -11,6 +11,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.PictureSyncEnt
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.PublishFingerprint
 import java.util.UUID
 
 /** One tier and the cards in it, as they arrive from the account. */
@@ -81,9 +82,13 @@ interface BoardSyncDao {
     @Query("UPDATE tier_lists SET publishedId = NULL WHERE publishedId IN (:goneIds) AND ownerUid = :owner")
     suspend fun forgetPublished(owner: String, goneIds: List<String>)
 
-    /** As [forgetPublished], leaves editedAt alone; only a board that claims nothing takes the id. */
+    /**
+     * As [forgetPublished], leaves editedAt alone; only a board that claims
+     * nothing takes the id. What the list holds is not known, so the board
+     * shows as behind it until the next Update says otherwise.
+     */
     @Query(
-        "UPDATE tier_lists SET publishedId = :publishedId " +
+        "UPDATE tier_lists SET publishedId = :publishedId, publishedFingerprint = '${PublishFingerprint.UNKNOWN}' " +
             "WHERE uid = :uid AND ownerUid = :owner AND publishedId IS NULL AND rankingOf IS NULL AND deletedAt IS NULL",
     )
     suspend fun relinkPublished(owner: String, uid: String, publishedId: String)

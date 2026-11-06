@@ -12,6 +12,9 @@ import java.security.MessageDigest
  */
 object PublishFingerprint {
 
+    /** Of a list whose content this phone never saw sent; no digest is ever this, so the board reads as behind. */
+    const val UNKNOWN = "unknown"
+
     fun of(list: TierList, pictureIdOf: (String?) -> String?): String {
         val digest = MessageDigest.getInstance("SHA-256")
         fun eat(value: String?) {
