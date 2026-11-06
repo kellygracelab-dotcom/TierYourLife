@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.first
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
+import java.net.HttpURLConnection
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -141,7 +142,8 @@ class RoomBoardMerge internal constructor(
 private fun signedInAs(account: Account): String? = (account as? Account.SignedIn)?.recordKey
 
 /** A 4xx is the server's answer that nothing was done; a 5xx may have come from halfway through. */
-private fun Throwable?.isRefusal(): Boolean = this is HttpException && code() in 400..499
+private fun Throwable?.isRefusal(): Boolean =
+    this is HttpException && code() in HttpURLConnection.HTTP_BAD_REQUEST until HttpURLConnection.HTTP_INTERNAL_ERROR
 
 internal data class ErasureMark(val account: String, val atMs: Long) {
     fun encoded(): String = "$account$ERASURE_SEPARATOR$atMs"

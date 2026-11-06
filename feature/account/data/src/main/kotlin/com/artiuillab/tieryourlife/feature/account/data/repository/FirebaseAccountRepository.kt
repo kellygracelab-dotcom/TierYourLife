@@ -146,7 +146,7 @@ class FirebaseAccountRepository @Inject constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            existenceAfter(e)
+            existenceAfter((e as? FirebaseAuthInvalidUserException)?.errorCode)
         }
     }
 
@@ -204,8 +204,7 @@ private fun FirebaseUser?.toAccount(): Account = when {
 internal fun outcomeWithoutAGuest(isNewUser: Boolean?): SignInOutcome =
     if (isNewUser == true) SignInOutcome.Success else SignInOutcome.SignedInToExistingAccount(guestCreditsLost = false)
 
-/** Only a server that no longer knows the user means gone; disabled, or no answer, tells nothing. */
-internal fun existenceAfter(reloadFailure: Exception): Boolean? =
-    if ((reloadFailure as? FirebaseAuthInvalidUserException)?.errorCode == USER_NOT_FOUND) false else null
+/** [invalidUserCode]: of a reload refused for the user. Only a server that no longer knows them means gone; disabled, or no answer, tells nothing. */
+internal fun existenceAfter(invalidUserCode: String?): Boolean? = if (invalidUserCode == USER_NOT_FOUND) false else null
 
 private const val USER_NOT_FOUND = "ERROR_USER_NOT_FOUND"
