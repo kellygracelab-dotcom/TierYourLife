@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rail_lists">Списки</string>
+    <string name="rail_community">Сообщество</string>
+    <string name="rail_settings">Настройки</string>
+</resources>

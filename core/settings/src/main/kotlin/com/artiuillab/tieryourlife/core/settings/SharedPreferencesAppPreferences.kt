@@ -49,6 +49,20 @@ class SharedPreferencesAppPreferences @Inject constructor(
         prefs.edit { putString(KEY_LANGUAGE_TAG, tag) }
     }
 
+    override fun forgetThePerson() {
+        prefs.edit {
+            remove(KEY_HIDDEN_LISTS)
+            remove(KEY_HIDDEN_AUTHORS)
+            remove(KEY_LAST_SYNCED_AT)
+            remove(KEY_LAST_KNOWN_STORED_BYTES)
+            remove(KEY_LAST_KNOWN_CREDITS)
+            remove(KEY_LAST_KNOWN_REPORTS)
+            remove(KEY_LAST_KNOWN_TRASH)
+            remove(KEY_CONFLICTS_SEEN)
+            prefs.all.keys.filter { it.startsWith("$KEY_BOARD_REFUSAL:") }.forEach(::remove)
+        }
+    }
+
     override fun lastKnownCredits(): Int? =
         prefs.getInt(KEY_LAST_KNOWN_CREDITS, -1).takeIf { it >= 0 }
 

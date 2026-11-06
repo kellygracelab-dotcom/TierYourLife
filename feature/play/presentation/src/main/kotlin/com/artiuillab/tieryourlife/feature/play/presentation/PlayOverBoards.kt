@@ -166,6 +166,8 @@ private fun noticeText(notice: PlayNotice, resources: android.content.res.Resour
     PlayNotice.ResultDiscarded ->
         resources.getString(R.string.play_snack_result_discarded) to resources.getString(R.string.play_snack_undo)
     PlayNotice.Failed -> resources.getString(ThemeR.string.snack_action_failed) to null
+    PlayNotice.NotSaved -> resources.getString(R.string.play_snack_not_saved) to null
+    PlayNotice.ListUpdated -> resources.getString(R.string.play_snack_list_updated) to null
 }
 
 private fun act(notice: PlayNotice, viewModel: PlayViewModel) {
@@ -173,6 +175,6 @@ private fun act(notice: PlayNotice, viewModel: PlayViewModel) {
         is PlayNotice.GameSaved -> viewModel.notices.discardSaved()
         is PlayNotice.BoardArranged -> viewModel.notices.undoArrange()
         PlayNotice.SavedGameDiscarded, PlayNotice.ResultDiscarded -> viewModel.notices.undoDiscard()
-        PlayNotice.Failed -> Unit
+        PlayNotice.Failed, PlayNotice.NotSaved, PlayNotice.ListUpdated -> Unit
     }
 }

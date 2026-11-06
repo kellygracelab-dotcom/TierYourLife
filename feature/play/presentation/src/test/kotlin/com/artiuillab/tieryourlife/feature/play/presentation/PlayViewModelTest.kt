@@ -186,7 +186,7 @@ class PlayViewModelTest {
 
     @Test
     fun aMonthOldGame_goesWithoutAWord() = runBlocking {
-        val saved = savedGame(GameKind.Swiss, (1L..6L).toList(), answered = 2).copy(startedAt = NOW - 31 * DAY)
+        val saved = savedGame(GameKind.Swiss, (1L..6L).toList(), answered = 2).copy(startedAt = NOW - 40 * DAY, touchedAt = NOW - 31 * DAY)
         val games = FakeSavedGames(mapOf(KEY to saved))
         val viewModel = viewModel(games = games)
 
@@ -194,6 +194,30 @@ class PlayViewModelTest {
 
         eventually { KEY !in games.games }
         assertNull(picker(viewModel.state.value)?.resume)
+    }
+
+    @Test
+    fun aGameStartedLongAgo_butPlayedYesterday_isStillOffered() = runBlocking {
+        val saved = savedGame(GameKind.Swiss, (1L..6L).toList(), answered = 2).copy(startedAt = NOW - 40 * DAY, touchedAt = NOW - DAY)
+        val viewModel = viewModel(games = FakeSavedGames(mapOf(KEY to saved)))
+
+        viewModel.open()
+
+        assertEquals(2, viewModel.state.firstWithin { picker(it)?.resume != null }.let { picker(it)!!.resume!!.played })
+    }
+
+    @Test
+    fun eachAnswer_isWhatTheMonthCountsFrom() = runBlocking {
+        val games = FakeSavedGames()
+        val viewModel = viewModel(games = games)
+        viewModel.open()
+        viewModel.picker.start()
+        viewModel.clock = { NOW + DAY }
+
+        viewModel.duel.pick(first = true)
+
+        eventually { games.games[KEY]?.touchedAt == NOW + DAY }
+        assertEquals(NOW, games.games.getValue(KEY).startedAt)
     }
 
     @Test

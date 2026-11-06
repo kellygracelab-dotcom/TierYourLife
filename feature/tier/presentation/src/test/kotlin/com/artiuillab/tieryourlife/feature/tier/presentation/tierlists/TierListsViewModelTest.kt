@@ -141,6 +141,25 @@ class TierListsViewModelTest {
     }
 
     @Test
+    fun whatARunLeavesInTheDatabase_isShownWhenTheRunEnds() = runBlocking<Unit> {
+        val accounts = FakeAccountRepository(Account.SignedIn(email = "a@example.com", photoUrl = null, uid = "uid-a"))
+        val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Before")))
+        val sync = object : BoardSync {
+            override suspend fun sync(): SyncReport {
+                repository.renameTierList(1, "Came from the account")
+                return SyncReport(signedIn = true)
+            }
+        }
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), accounts, sync, NoPictureRestore, NoOwnerChange)
+
+        viewModel.loadTierLists()
+
+        viewModel.state.firstWithin {
+            it is TierListsUiState.Success && it.lists.singleOrNull()?.title == "Came from the account"
+        }
+    }
+
+    @Test
     fun secondLoad_afterADeletionOnTheRepository_dropsTheDeletedList() = runBlocking {
         val repository = FakeTierRepository(
             initial = listOf(

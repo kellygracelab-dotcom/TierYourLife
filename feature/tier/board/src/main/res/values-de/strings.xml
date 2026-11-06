@@ -62,6 +62,7 @@
     <string name="my_published_behind">Die veröffentlichte Fassung ist älter als dieses Board.</string>
     <string name="share_caption">%1$s — eingeordnet in TierYourLife\n%2$s</string>
     <string name="share_footer">Erstellt mit TierYourLife</string>
+    <string name="share_failed">Das Bild konnte nicht geteilt werden</string>
     <string name="tier_detail_add">Hinzufügen</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d Element</item>
@@ -140,7 +141,7 @@
         <item quantity="other">%d im Pool</item>
     </plurals>
     <string name="list_settings_public_topic_unavailable">Dieses Thema ist nicht mehr offen: zusammengelegt, abgelehnt oder nicht deins. Die Liste hat jetzt kein Thema; wähle ein anderes oder veröffentliche ohne.</string>
-    <string name="list_settings_public_ranking_body">Draußen als deine Reihung der Liste von %1$s; im Feed erscheint keine zweite Liste.</string>
+    <string name="list_settings_public_ranking_body">Draußen als deine Rangliste der Liste von %1$s; im Feed erscheint keine zweite Liste.</string>
     <string name="tier_detail_add_card">Karte hinzufügen</string>
     <string name="tier_detail_pool_count">Pool · %1$d</string>
     <string name="tier_detail_drop_items_here">Karten hier ablegen</string>
@@ -151,7 +152,7 @@
     <string name="tier_detail_play_needs_cards">Zum Spielen braucht es mindestens 3 Karten</string>
     <string name="list_settings_anonymous">Anonym veröffentlichen</string>
     <string name="list_settings_anonymous_body">Dein Name und dein Bild werden bei der Liste nicht gezeigt. Sie gehört weiter dir: Nur du kannst sie bearbeiten oder löschen.</string>
-    <string name="list_settings_propose_section">Bereich vorschlagen</string>
+    <string name="list_settings_propose_section">Rubrik vorschlagen</string>
     <string name="list_settings_category_waiting">Wartet auf einen Moderator</string>
-    <string name="list_settings_moves_to">Zieht nach %1$s, sobald er angenommen ist</string>
+    <string name="list_settings_moves_to">Zieht nach %1$s, sobald sie angenommen ist</string>
 </resources>

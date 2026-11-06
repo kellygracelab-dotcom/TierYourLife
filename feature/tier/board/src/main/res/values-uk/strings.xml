@@ -66,6 +66,7 @@
     <string name="my_published_behind">Опублікована версія відстала від вашої дошки.</string>
     <string name="share_caption">%1$s — розкладено в TierYourLife\n%2$s</string>
     <string name="share_footer">Зроблено в TierYourLife</string>
+    <string name="share_failed">Не вдалося поділитися картинкою</string>
     <string name="tier_detail_add">Додати</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d елемент</item>
@@ -160,7 +161,7 @@
         <item quantity="other">%d у пулі</item>
     </plurals>
     <string name="list_settings_public_topic_unavailable">Ця тема більше недоступна: її обʼєднали, відхилили або вона чужа. Тему зі списку знято; оберіть іншу або публікуйте без неї.</string>
-    <string name="list_settings_public_ranking_body">Опублікована як ваше ранжування списку %1$s; другого списку в стрічці немає.</string>
+    <string name="list_settings_public_ranking_body">Опублікована як ваш рейтинг списку %1$s; другого списку в стрічці немає.</string>
     <string name="tier_detail_add_card">Додати картку</string>
     <string name="tier_detail_pool_count">Пул · %1$d</string>
     <string name="tier_detail_drop_items_here">Перетягніть сюди</string>

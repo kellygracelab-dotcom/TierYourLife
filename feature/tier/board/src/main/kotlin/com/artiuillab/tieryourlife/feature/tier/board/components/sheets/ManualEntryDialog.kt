@@ -41,6 +41,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.artiuillab.tieryourlife.core.settings.takeWhole
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.ClearIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ImagePlaceholderIcon
@@ -66,7 +67,7 @@ fun ManualEntryDialog(
 
     ManualEntryDialogContent(
         title = title,
-        onTitleChange = { title = it.take(CARD_TITLE_MAX_LENGTH) },
+        onTitleChange = { title = it.takeWhole(CARD_TITLE_MAX_LENGTH) },
         photoUris = photoUris,
         onChoosePhotoClick = {
             pickPhotos.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))

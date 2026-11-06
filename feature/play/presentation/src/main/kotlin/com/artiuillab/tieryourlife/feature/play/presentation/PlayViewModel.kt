@@ -165,7 +165,8 @@ class PlayViewModel @Inject constructor(
             val saved = stored ?: return
             val ready = saved.resumeOn(request.board.cardsIn(saved.scope).map { it.id }) as? Resumption.Ready ?: return
             val next = Session(request.key, request.board, ready.game, own = !request.intoMine)
-            if (ready.game == saved) show(next) else record(next)
+            // Nothing answered is left: what is put down stays as it is until something is.
+            if (ready.game == saved || ready.game.history.isEmpty()) show(next) else record(next)
         }
 
         /** A hill or bracket whose cards changed: the same game over the cards there are now. */
@@ -193,11 +194,16 @@ class PlayViewModel @Inject constructor(
             session = null
             close()
             viewModelScope.launch {
-                if (persist(current)) {
-                    stored = current.game
-                    quitted = current
-                    val played = progress(current.game.spec, current.game.history).played
-                    say(PlayNotice.GameSaved(played, totalOf(current.game)))
+                if (outdated(current)) return@launch
+                when (persist(current)) {
+                    Shelved.Kept -> {
+                        stored = current.game
+                        quitted = current
+                        val played = progress(current.game.spec, current.game.history).played
+                        say(PlayNotice.GameSaved(played, totalOf(current.game)))
+                    }
+                    Shelved.Lost -> say(PlayNotice.NotSaved)
+                    Shelved.NothingToKeep -> Unit
                 }
             }
         }
@@ -218,13 +224,17 @@ class PlayViewModel @Inject constructor(
             session = null
             close()
             viewModelScope.launch {
+                if (outdated(current)) return@launch
                 val into = request.applyTo
                 val after = if (into != null) intoMine(into, placement) else ontoBoard(request.board, placement)
-                forget(current)
-                if (after != null) {
-                    _events.send(PlayEvent.Arranged(after))
-                    say(PlayNotice.BoardArranged(shown.duels))
+                if (after == null) {
+                    // Still put down, finished: Resume brings the result back to apply again.
+                    stored = current.game
+                    return@launch
                 }
+                forget(current)
+                _events.send(PlayEvent.Arranged(after))
+                say(PlayNotice.BoardArranged(shown.duels))
             }
         }
 
@@ -240,6 +250,13 @@ class PlayViewModel @Inject constructor(
             val current = session ?: return
             val request = request ?: return
             session = null
+            if (current.key != request.key) {
+                stored = null
+                stage = PlayStage.Closed
+                open()
+                viewModelScope.launch { outdated(current) }
+                return
+            }
             stored = current.game.takeIf { it.history.isNotEmpty() }
             val groups = groupsOf(request.board)
             val scope = current.game.scope
@@ -303,14 +320,9 @@ class PlayViewModel @Inject constructor(
                     _events.send(PlayEvent.Arranged(undo.before))
                     return@launch
                 }
-                val done = runSuspendCatching {
-                    val now = boards.getTierListById(undo.before.id) ?: return@launch
-                    val target = now.restoredTo(undo.before)
-                    movesBetween(now, target).forEach { boards.moveItem(it.itemId, it.tierId, it.position) }
-                    target
-                }.onFailure { Timber.w(it, "Undoing an arrangement failed") }
-                if (done.isFailure) say(PlayNotice.Failed)
-                _events.send(PlayEvent.Arranged(done.getOrDefault(undo.before)))
+                val done = restore(undo.before)
+                if (done == null) say(PlayNotice.Failed)
+                _events.send(PlayEvent.Arranged(done ?: undo.before))
             }
         }
     }
@@ -348,22 +360,37 @@ class PlayViewModel @Inject constructor(
         return mine.arrangedBy(placement)
     }
 
-    /** Through the board's own moves, one card at a time, on the board as it is now rather than as it was. */
+    /**
+     * Through the board's own moves, one card at a time, on the board as it is
+     * now rather than as it was. Moves that landed before one failed are taken
+     * back, so the board is never left half arranged.
+     */
     private suspend fun ontoBoard(board: TierList, placement: Map<Long, List<Long>>): TierList? {
-        val done = runSuspendCatching {
-            val before = boards.getTierListById(board.id) ?: return null
-            val after = before.arrangedBy(placement)
-            movesBetween(before, after).forEach { boards.moveItem(it.itemId, it.tierId, it.position) }
-            arranged = Arrangement(before, own = true)
-            after
-        }.onFailure { Timber.w(it, "Arranging a board from a game failed") }
-        if (done.isFailure) {
-            say(PlayNotice.Failed)
-            // Some moves may have landed: the board reads itself again either way.
-            _events.send(PlayEvent.Arranged(board))
+        val before = runSuspendCatching { boards.getTierListById(board.id) }.getOrNull()
+        val done = before?.let {
+            runSuspendCatching {
+                val after = before.arrangedBy(placement)
+                movesBetween(before, after).forEach { boards.moveItem(it.itemId, it.tierId, it.position) }
+                after
+            }.onFailure { Timber.w(it, "Arranging a board from a game failed") }.getOrNull()
         }
-        return done.getOrNull()
+        if (before != null && done != null) {
+            arranged = Arrangement(before, own = true)
+            return done
+        }
+        val back = before?.let { restore(it) } ?: board
+        say(PlayNotice.Failed)
+        _events.send(PlayEvent.Arranged(back))
+        return null
     }
+
+    /** Every card back where [before] had it, on the board as it is now; null when that failed. */
+    private suspend fun restore(before: TierList): TierList? = runSuspendCatching {
+        val now = boards.getTierListById(before.id) ?: return null
+        val target = now.restoredTo(before)
+        movesBetween(now, target).forEach { boards.moveItem(it.itemId, it.tierId, it.position) }
+        target
+    }.onFailure { Timber.w(it, "Putting the board back failed") }.getOrNull()
 
     private fun show(next: Session) {
         session = next
@@ -375,9 +402,22 @@ class PlayViewModel @Inject constructor(
         viewModelScope.launch { persist(next) }
     }
 
-    /** Returns whether a game is kept: one with nothing answered is not. */
-    private suspend fun persist(current: Session): Boolean =
-        shelf.put(current).also { kept -> markSaved(current.key, kept) }
+    private suspend fun persist(current: Session): Shelved =
+        shelf.put(current).also { shelved -> markSaved(current.key, shelved == Shelved.Kept) }
+
+    /**
+     * Someone else's list published again while [ended] was played: its
+     * answers are about the old version's cards, which the new one numbers
+     * afresh, so it is neither kept nor applied. Returns whether that was so.
+     */
+    private suspend fun outdated(ended: Session): Boolean {
+        val request = request ?: return false
+        if (ended.key == request.key) return false
+        forget(ended)
+        if (ended.game.history.isNotEmpty()) say(PlayNotice.ListUpdated)
+        stored = taken(request)
+        return true
+    }
 
     private suspend fun forget(gone: Session) {
         shelf.clear(gone)

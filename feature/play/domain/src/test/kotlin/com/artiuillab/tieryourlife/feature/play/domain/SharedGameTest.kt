@@ -142,14 +142,16 @@ class SharedGameTest {
     }
 
     @Test
-    fun theNewerCopyIsOffered_byStartThenAnswers() {
+    fun theNewerCopyIsOffered_byStartThenAnswers_theBoardsOnATie() {
         val inFile = exampleOnThisPhone
         val longerOnBoard = inFile.copy(history = inFile.history + Outcome(0, 2, winner = 2), onBoard = true)
         val olderOnBoard = inFile.copy(startedAt = inFile.startedAt - 1, onBoard = true)
 
         assertEquals(longerOnBoard, latestGame(onBoard = longerOnBoard, inFile = inFile))
         assertEquals(inFile, latestGame(onBoard = olderOnBoard, inFile = inFile))
-        assertEquals(inFile, latestGame(onBoard = inFile.copy(onBoard = true), inFile = inFile))
+        // On a tie the board's copy, whose cards were found by uid on the rows there are now.
+        val sameOnBoard = inFile.copy(ids = listOf(21, 22, 23, 24), onBoard = true)
+        assertEquals(sameOnBoard, latestGame(onBoard = sameOnBoard, inFile = inFile))
         assertEquals(olderOnBoard, latestGame(onBoard = olderOnBoard, inFile = null))
     }
 

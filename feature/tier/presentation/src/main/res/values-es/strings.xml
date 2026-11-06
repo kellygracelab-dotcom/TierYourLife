@@ -44,7 +44,7 @@
     <string name="item_search_field_label">Buscar</string>
     <string name="item_search_close_content_description">Cerrar búsqueda</string>
     <string name="item_search_clear_content_description">Borrar búsqueda</string>
-    <string name="item_search_source_caption">Se añaden al montón de %1$s</string>
+    <string name="item_search_source_caption">Se añaden a la reserva de %1$s</string>
     <string name="item_search_min_query">Escribe al menos dos letras para buscar.</string>
     <string name="item_search_empty_title">No se encontró nada para \"%1$s\"</string>
     <string name="item_search_error_title">No se pudieron cargar los resultados</string>
@@ -132,7 +132,7 @@
     <string name="lists_filter_private">Privadas</string>
     <string name="lists_filter_clear">Borrar todo</string>
     <string name="lists_group_favourites">Favoritas</string>
-    <string name="lists_group_others">Todas las listas</string>
+    <string name="lists_group_others">Todos los tableros</string>
     <string name="lists_favourite_add">Añadir a favoritas</string>
     <string name="lists_favourite_remove">Quitar de favoritas</string>
     <string name="snack_published_list_still_public">Se conservó en vez de borrarse: no se pudo retirar su copia pública. Inténtalo de nuevo cuando estés en línea.</string>

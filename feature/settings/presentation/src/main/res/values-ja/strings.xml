@@ -61,7 +61,7 @@
     <string name="settings_hidden_sub">表示しなくしたリストと人</string>
     <string name="settings_language">言語</string>
     <string name="settings_language_caption">アプリ自体のテキストのみが変わります。あなたが入力した名前はそのまま残ります。</string>
-    <string name="settings_moderation">報告</string>
+    <string name="settings_moderation">通報</string>
     <string name="settings_moderation_none">待ちはありません</string>
     <string name="settings_privacy">プライバシーポリシー</string>
     <string name="settings_theme">テーマ</string>

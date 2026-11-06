@@ -162,3 +162,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
 }
+
+// Debug-signed with the debug App Check provider: Play must never be offered it.
+tasks.matching { it.name == "bundleFast" }.configureEach {
+    doFirst { throw GradleException("The fast build is for sideloading; Play gets bundleRelease.") }
+}

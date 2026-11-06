@@ -1,6 +1,8 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account
 
+import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.settings.Features
+import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
@@ -18,9 +20,11 @@ import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -264,6 +268,23 @@ class AccountViewModelTest {
         assertEquals(Account.Guest, state.account)
     }
 
+    @Test
+    fun signOut_leavesNothingOfThePersonForTheNextOne() = runBlocking {
+        val repository = FakeAccountRepository(
+            initial = Account.SignedIn(email = "someone@example.com", photoUrl = null),
+        )
+        val preferences = FakeAppPreferences()
+        preferences.hideList("list-1", "Seen by the last person")
+        preferences.hideAuthor("author-1", "The last person's block")
+        val viewModel = viewModel(repository, preferences = preferences)
+        viewModel.state.firstWithin { it.account is Account.SignedIn }
+
+        viewModel.signOut()
+        withTimeout(5_000) { while (preferences.hiddenLists().isNotEmpty()) delay(10) }
+
+        assertEquals(emptyList<HiddenEntry>(), preferences.hiddenAuthors())
+    }
+
     // The account has to be gone before the identity that asked is given up,
     // or a failure leaves somebody unable to sign back in or try again.
     @Test
@@ -484,9 +505,10 @@ class AccountViewModelTest {
         merge: BoardMerge = RecordingMerge(guestBoards = 0),
         community: FakeCommunityRepository = FakeCommunityForAccount(),
         facePhotos: FacePhotos = FakeFacePhotos(),
+        preferences: FakeAppPreferences = FakeAppPreferences(),
     ): AccountViewModel {
         picker = credential
-        return AccountViewModel(repository, credits, publishedLists, community, merge, erasure, facePhotos)
+        return AccountViewModel(repository, credits, publishedLists, community, merge, erasure, facePhotos, preferences)
     }
 }
 

@@ -66,6 +66,7 @@
     <string name="my_published_behind">Opublikowana wersja jest starsza niż ta lista.</string>
     <string name="share_caption">%1$s — ułożone w TierYourLife\n%2$s</string>
     <string name="share_footer">Zrobione w TierYourLife</string>
+    <string name="share_failed">Nie udało się udostępnić obrazu</string>
     <string name="tier_detail_add">Dodaj</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d element</item>

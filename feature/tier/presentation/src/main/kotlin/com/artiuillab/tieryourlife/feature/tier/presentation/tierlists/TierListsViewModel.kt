@@ -111,8 +111,17 @@ class TierListsViewModel @Inject constructor(
                 syncAgain = false
                 runSuspendCatching { boardSync.sync() }
                     .onFailure { failure -> Timber.w(failure, "Keeping boards did not finish") }
+                showWhatTheRunLeft()
             } while (syncAgain && wantsBoardsKept())
         }
+    }
+
+    /** The run may have brought boards in or sent some to the trash: the screen shows the database again. */
+    private suspend fun showWhatTheRunLeft() = loadMutex.withLock {
+        val now = runSuspendCatching { repository.getTierListSummaries() }.getOrNull() ?: return@withLock
+        if (now == lastLoadedLists) return@withLock
+        lastLoadedLists = now
+        emitSuccess()
     }
 
     // Asked afresh: a change of identity can reach this before the field above hears of it.

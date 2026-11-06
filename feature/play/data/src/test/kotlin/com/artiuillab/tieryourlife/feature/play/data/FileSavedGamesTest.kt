@@ -7,7 +7,9 @@ import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -27,6 +29,9 @@ class FileSavedGamesTest {
         scope = listOf(5, -1),
         keepTier = false,
         onBoard = true,
+        uids = listOf("a", "b", "c", "d"),
+        scopeUids = listOf("t-5", "t-1"),
+        touchedAt = 1_700_000_500_000,
     )
 
     private fun store(file: File = File(folder.root, "play/saved-games.json")) = FileSavedGames(file, Dispatchers.Unconfined)
@@ -76,7 +81,20 @@ class FileSavedGamesTest {
             )
         }
 
-        assertEquals(false, store(file).load("board:3")?.onBoard)
+        val older = store(file).load("board:3")
+        assertEquals(false, older?.onBoard)
+        assertNull(older?.uids)
+        assertEquals(5L, older?.touchedAt)
+    }
+
+    @Test
+    fun aGameThatCouldNotBeWritten_saysSo_andIsNotTakenAsKept() = runBlocking {
+        val notAFolder = folder.newFile("taken")
+        val games = store(File(notAFolder, "saved-games.json"))
+
+        assertFalse(games.save("board:3", game))
+        assertNull(games.load("board:3"))
+        assertTrue(store().save("board:3", game))
     }
 
     @Test
