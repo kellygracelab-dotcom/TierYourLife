@@ -116,6 +116,30 @@ class TierListsViewModelTest {
         Unit
     }
 
+    // Seen on the site first: a fresh phone's first sync, started before the
+    // sign-in settled, came back with nothing, and the run asked for meanwhile
+    // was dropped, so the account's boards waited for some later edit.
+    @Test
+    fun aSyncAskedForDuringARun_runsOnceThatRunEnds() = runBlocking<Unit> {
+        val accounts = FakeAccountRepository(Account.SignedIn(email = "a@example.com", photoUrl = null, uid = "uid-a"))
+        val sync = HeldSync()
+        val owner = MovingOwner()
+        val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Before")))
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), accounts, sync, NoPictureRestore, owner)
+        viewModel.loadTierLists()
+        withTimeout(5_000) { sync.runs.first { it == 1 } }
+
+        repository.renameTierList(1, "After")
+        withTimeout(5_000) { owner.changes.subscriptionCount.first { it > 0 } }
+        owner.changes.emit(Unit)
+        viewModel.state.firstWithin { it is TierListsUiState.Success && it.lists.singleOrNull()?.title == "After" }
+        // Behind the load that asked for a sync, on the same one thread.
+        withContext(Dispatchers.Main) { }
+        sync.release.complete(Unit)
+
+        withTimeout(5_000) { sync.runs.first { it == 2 } }
+    }
+
     @Test
     fun secondLoad_afterADeletionOnTheRepository_dropsTheDeletedList() = runBlocking {
         val repository = FakeTierRepository(
@@ -540,6 +564,18 @@ private class TestCommunity(
 /** A guest has nowhere to sync to, so every case here would report the same thing. */
 private object NoBoardSync : BoardSync {
     override suspend fun sync(): SyncReport = SyncReport(signedIn = false)
+}
+
+/** The first run waits for [release]; every later one ends at once. */
+private class HeldSync : BoardSync {
+    val runs = MutableStateFlow(0)
+    val release = CompletableDeferred<Unit>()
+
+    override suspend fun sync(): SyncReport {
+        runs.value += 1
+        if (runs.value == 1) release.await()
+        return SyncReport(signedIn = true)
+    }
 }
 
 /** The same identity throughout, so the boards on screen are always the same library's. */

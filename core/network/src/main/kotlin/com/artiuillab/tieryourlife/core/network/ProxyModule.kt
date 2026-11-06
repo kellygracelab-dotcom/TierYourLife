@@ -41,9 +41,12 @@ object ProxyModule {
     @ProxyRetrofit
     @Provides
     @Singleton
-    fun provideProxyRetrofit(@ProxyOkHttp client: OkHttpClient): Retrofit =
+    fun provideProxyRetrofit(@ProxyOkHttp client: OkHttpClient): Retrofit = proxyRetrofit(ProxyAddress.resolve(), client)
+
+    /** The end-to-end tests build the same one over the emulators' address. */
+    fun proxyRetrofit(baseUrl: String, client: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl(ProxyAddress.resolve())
+            .baseUrl(baseUrl)
             .client(client)
             .addConverterFactory(networkJson.asConverterFactory(JSON_MEDIA_TYPE.toMediaType()))
             .build()

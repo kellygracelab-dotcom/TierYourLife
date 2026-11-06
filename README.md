@@ -182,6 +182,27 @@ preview that ran away from the finger in Arabic, a sync fingerprint that hashed 
 phones would never agree they held the same board — and a CI script that reported every red run
 green, which is why "green" here means the log was read, not the badge.
 
+### End-to-end, against the proxy
+
+`:e2e` runs the app's real network layer against the proxy's own code in the Firebase emulators:
+the Retrofit services, DTOs, JSON and error mapping, publishing, and sync between two phones on
+one account, conflicts included. Only App Check (not asked for there) and the ID token (from the
+Auth emulator) are swapped. The proxy's [CONTRACT.md](https://github.com/kellygracelab-dotcom/tieryourlife-proxy/blob/main/CONTRACT.md)
+is the API both clients follow; its E2E section describes the emulators. CI runs this as its own job.
+
+```sh
+git clone https://github.com/kellygracelab-dotcom/tieryourlife-proxy ../tieryourlife-proxy
+npm --prefix ../tieryourlife-proxy/functions ci
+npm --prefix ../tieryourlife-proxy/functions run emulators:e2e:exec -- "cd \"$PWD\" && ./gradlew :e2e:testDebugUnitTest -Pe2e"
+```
+
+It needs Java 11+, Node 22 and `firebase-tools`; no login or keys. Without `-Pe2e` the tests are
+compiled and skipped, so `./gradlew test` never needs the emulators. With another suite already on
+the standard ports, pass the emulators a copy of `firebase.json` with other ports (`--config`), give
+the run its own `TEMP`/`TMP`, and set `E2E_FUNCTIONS_URL` to the functions address
+(`http://127.0.0.1:<port>/demo-tieryourlife/europe-west1`); the Auth address comes from
+`FIREBASE_AUTH_EMULATOR_HOST`, which the emulators set.
+
 ## How this was built
 
 AI agents were part of the workflow, and the commit history reflects that. The division of
