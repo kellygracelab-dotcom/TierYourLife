@@ -28,6 +28,12 @@ data class TierList(
     val topicName: String? = null,
     /** A topic the author named that the server has not seen yet; sent with the next publish and replaced by what comes back. */
     val newTopicName: String? = null,
+    /**
+     * The author took the topic off, and the list out there may still have
+     * one. Only this says "no topic" out loud: a board that simply knows of
+     * none leaves the list's topic as it is, a moderator's included.
+     */
+    val topicTakenOff: Boolean = false,
     /** The published list this board was taken from: publishing the same cards answers that list rather than making a second. */
     val takenFrom: String? = null,
     /** Set while this board is out as this person's ranking of [takenFrom]; [publishedId] stays null then. */

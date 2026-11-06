@@ -8,9 +8,13 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
 import com.artiuillab.tieryourlife.feature.community.domain.model.Withdrawal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -20,12 +24,15 @@ import kotlinx.coroutines.sync.withLock
  * The sections as this phone last heard of them (docs/sections-api.md §6):
  * what was kept is drawn first, so tiles do not jump, and the list is read
  * again when Community opens and the last answer is older than ten minutes.
+ * What somebody follows and proposed is theirs: when [person] (who is signed
+ * in, by uid) changes, the directory starts over and is read again for them.
  */
 class KeptSectionCatalog(
     private val community: CommunityRepository,
     private val store: SectionStore,
     private val clock: CommunityClock,
     private val scope: CoroutineScope,
+    person: Flow<String?> = emptyFlow(),
 ) : SectionCatalog {
 
     private val state = MutableStateFlow(SectionDirectory())
@@ -37,6 +44,15 @@ class KeptSectionCatalog(
     /** An answer that came first wins over what was kept from an older one. */
     private val kept: Job = scope.launch {
         store.read()?.let { found -> state.update { now -> if (now.counted) now else found } }
+    }
+
+    init {
+        scope.launch {
+            person.distinctUntilChanged().drop(1).collect { uid ->
+                reading.withLock { state.value = SectionDirectory() }
+                if (uid != null) refresh(force = true)
+            }
+        }
     }
 
     override suspend fun refresh(force: Boolean): Result<Unit> {

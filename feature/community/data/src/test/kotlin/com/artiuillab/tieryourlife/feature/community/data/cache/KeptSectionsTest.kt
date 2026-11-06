@@ -40,6 +40,16 @@ class KeptSectionsTest {
     }
 
     @Test
+    fun `what one person follows and proposed is nothing kept for the next`() {
+        val waiting = Section(id = "kites", name = "Kites", mine = true, following = true)
+        val kept = encodeSections(SectionDirectory(sections = listOf(cars, waiting), fetchedAtMillis = 3L), keptBy = "uid-a")
+
+        assertEquals(listOf("cars", "kites"), decodeSections(kept, 3L, me = "uid-a")?.sections?.map { it.id })
+        assertNull(decodeSections(kept, 3L, me = "uid-b"))
+        assertNull(decodeSections(kept, 3L, me = null))
+    }
+
+    @Test
     fun `a kept list with nothing in it is nothing kept`() {
         assertNull(decodeSections("""{"sections":[]}""", 1L))
     }

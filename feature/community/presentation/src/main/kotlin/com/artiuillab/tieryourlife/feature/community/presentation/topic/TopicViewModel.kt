@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
+import com.artiuillab.tieryourlife.feature.community.domain.model.PageGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
@@ -133,6 +134,8 @@ class TopicViewModel @Inject constructor(
                         val now = current.feed as? CommunityFeed.Ready ?: return@update current
                         current.copy(feed = now.copy(loadingMore = false))
                     }
+                    // Asking again from that cursor would only be refused again.
+                    if (error is PageGone) load()
                 },
             )
         }

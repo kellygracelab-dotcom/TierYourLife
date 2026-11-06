@@ -308,4 +308,9 @@
     <string name="community_action_undo">Cofnij</string>
     <string name="community_picture_credits">Autorzy zdjęć</string>
     <string name="community_picture_credit_line">%1$s — %2$s</string>
+    <string name="community_ranking_list_changed">Autor zmienił tę listę, odkąd rozmieściłeś jej karty. Rozmieść je ponownie, aby pokazać swój ranking.</string>
+    <string name="community_ranking_banned">Moderator usunął jedną z twoich list, więc na razie nie możesz pokazywać rankingów.</string>
+    <string name="moderation_not_taken_down">Nie usunięto: lista nadal jest publiczna. Spróbuj ponownie.</string>
+    <string name="moderation_not_kept">Nie udało się zostawić listy: zgłoszenia są nadal otwarte. Spróbuj ponownie.</string>
+    <string name="moderation_not_moved">Nie przeniesiono: lista jest tam, gdzie była. Spróbuj ponownie.</string>
 </resources>

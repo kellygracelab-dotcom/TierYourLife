@@ -8,6 +8,10 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirecto
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
 import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
@@ -50,6 +54,35 @@ class KeptSectionCatalogTest {
             followed += id to now
             return if (followFails) Result.failure(IOException("offline")) else Result.success(Unit)
         }
+    }
+
+    // What A follows and proposed must not be what B sees, for the ten minutes a copy stays fresh.
+    @Test
+    fun somebodyElseSigningIn_startsTheSectionsOverAndReadsThemForThem() = runBlocking {
+        val person = MutableStateFlow<String?>("uid-a")
+        val community = Community(answer = Result.success(listOf(cars.copy(following = true))))
+        val catalog = KeptSectionCatalog(community, FakeSectionStore(), clock, CoroutineScope(SupervisorJob() + Dispatchers.Unconfined), person)
+        catalog.refresh()
+        assertTrue(catalog.directory.value.sections.single().following)
+
+        community.answer = Result.success(listOf(cars))
+        person.value = "uid-b"
+
+        assertEquals(2, community.reads)
+        assertEquals(listOf(cars), catalog.directory.value.sections)
+    }
+
+    @Test
+    fun signingOutToNobody_dropsWhatWasTheirs_withoutAsking() = runBlocking {
+        val person = MutableStateFlow<String?>("uid-a")
+        val community = Community(answer = Result.success(listOf(cars.copy(following = true))))
+        val catalog = KeptSectionCatalog(community, FakeSectionStore(), clock, CoroutineScope(SupervisorJob() + Dispatchers.Unconfined), person)
+        catalog.refresh()
+
+        person.value = null
+
+        assertEquals(1, community.reads)
+        assertEquals(SectionDirectory(), catalog.directory.value)
     }
 
     @Test

@@ -14,3 +14,6 @@ data class CommunityPage(
      */
     val followingNobody: Boolean = false,
 )
+
+/** The list or ranking a cursor named went meanwhile: paging starts again from the top. */
+class PageGone : Exception("The page after that cursor is gone")

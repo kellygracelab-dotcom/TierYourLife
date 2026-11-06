@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.explore
 
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedFreshness
+import com.artiuillab.tieryourlife.feature.community.domain.model.PageGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
@@ -76,9 +77,26 @@ class FeedLoader(
     private var readKept = false
     private var refreshJob: Job? = null
     private var moreJob: Job? = null
+    private var readFor: String? = cache.reader()
 
-    /** On every arrival: the kept page first, then the server when that is missing, old, or last failed. */
+    /**
+     * On every arrival: the kept page first, then the server when that is
+     * missing, old, or last failed. Somebody else signed in meanwhile starts
+     * from nothing: what is on screen was the last person's.
+     */
     fun open() {
+        val reader = cache.reader()
+        if (reader != readFor) {
+            readFor = reader
+            readKept = false
+            refreshJob?.cancel()
+            moreJob?.cancel()
+            shown = emptyList()
+            cursor = null
+            fetchedAt = null
+            held = null
+            _pane.value = FeedPane()
+        }
         scope.launch {
             if (!readKept) {
                 readKept = true
@@ -147,9 +165,17 @@ class FeedLoader(
                 onFailure = { error ->
                     Timber.w(error, "Loading another page of %s failed", key)
                     _pane.update { it.copy(loadingMore = false) }
+                    if (error is PageGone) startOver()
                 },
             )
         }
+    }
+
+    /** Asking again from that cursor would only be refused again: the first page replaces what is on screen. */
+    private fun startOver() {
+        cursor = null
+        refreshJob?.cancel()
+        refresh(pulled = true)
     }
 
     /** What is hidden changed: the lists on screen are filtered again, with the note where a card went. */

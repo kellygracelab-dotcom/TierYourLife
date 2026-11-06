@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.feature.community.data.repository.toDomain
 import com.artiuillab.tieryourlife.feature.community.data.repository.toDto
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionStore
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import timber.log.Timber
@@ -20,19 +21,21 @@ import javax.inject.Singleton
 @Singleton
 class RoomSectionStore @Inject constructor(
     private val dao: FeedCacheDao,
+    private val auth: FirebaseAuth,
 ) : SectionStore {
+
+    private val me: String? get() = auth.currentUser?.uid
 
     override suspend fun read(): SectionDirectory? = runSuspendCatching {
         val row = dao.get(KEY) ?: return@runSuspendCatching null
-        dao.touch(KEY, System.currentTimeMillis())
-        decodeSections(row.json, row.fetchedAt)
+        decodeSections(row.json, row.fetchedAt, me)?.also { dao.touch(KEY, System.currentTimeMillis()) }
     }.onFailure { Timber.w(it, "Reading the kept sections failed") }.getOrNull()
 
     override suspend fun write(directory: SectionDirectory) {
         val fetchedAt = directory.fetchedAtMillis ?: return
         runSuspendCatching {
             val now = System.currentTimeMillis()
-            dao.put(FeedCacheEntity(key = KEY, json = encodeSections(directory), fetchedAt = fetchedAt, openedAt = now))
+            dao.put(FeedCacheEntity(key = KEY, json = encodeSections(directory, keptBy = me), fetchedAt = fetchedAt, openedAt = now))
         }.onFailure { Timber.w(it, "Keeping the sections failed") }
     }
 
@@ -44,6 +47,8 @@ class RoomSectionStore @Inject constructor(
 
 @Serializable
 internal data class KeptSections(
+    /** Whose answer it was: what they follow and what they proposed are theirs alone. */
+    val keptBy: String? = null,
     val sections: List<SectionDto> = emptyList(),
     val extra: List<SectionDto> = emptyList(),
     val merged: Map<String, String> = emptyMap(),
@@ -57,9 +62,10 @@ private val keptJson = Json {
 }
 
 /** Ids nobody had heard of are not kept: by the next run one of them may have been approved. */
-internal fun encodeSections(directory: SectionDirectory): String = keptJson.encodeToString(
+internal fun encodeSections(directory: SectionDirectory, keptBy: String? = null): String = keptJson.encodeToString(
     KeptSections.serializer(),
     KeptSections(
+        keptBy = keptBy,
         sections = directory.sections.map { it.toDto() },
         extra = directory.extra.values.map { it.toDto() },
         merged = directory.merged,
@@ -67,9 +73,10 @@ internal fun encodeSections(directory: SectionDirectory): String = keptJson.enco
     ),
 )
 
-internal fun decodeSections(json: String, fetchedAtMillis: Long): SectionDirectory? {
+/** Somebody else's answer reads as nothing kept. */
+internal fun decodeSections(json: String, fetchedAtMillis: Long, me: String? = null): SectionDirectory? {
     val kept = keptJson.decodeFromString(KeptSections.serializer(), json)
-    if (kept.sections.isEmpty()) return null
+    if (kept.sections.isEmpty() || kept.keptBy != me) return null
     return SectionDirectory(
         sections = kept.sections.map { it.toDomain().copy(mine = it.id in kept.mine) },
         extra = kept.extra.map { it.toDomain() }.associateBy { it.id },

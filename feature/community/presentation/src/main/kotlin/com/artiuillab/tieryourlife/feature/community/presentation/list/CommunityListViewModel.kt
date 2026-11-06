@@ -221,7 +221,7 @@ class CommunityListViewModel @Inject constructor(
             shownUpdatedAt == answer.summary.updatedAtMillis &&
             before.list == fresh.list
         rankings.opened(answer, fromServer, sameBoard)
-        ownList.opened(answer.summary)
+        ownList.opened(answer)
         shownUpdatedAt = answer.summary.updatedAtMillis
         val shown = if (sameBoard) fresh.keepingWhatTheReaderDid(before) else fresh
         _state.value = shown

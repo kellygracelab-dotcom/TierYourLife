@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -126,8 +127,9 @@ class TierDetailViewModel @Inject constructor(
             result.fold(
                 onSuccess = { published -> recordPublished(list, published) },
                 onFailure = { failure ->
-                    publishError = (failure as? PublishRefused)?.error ?: PublishError.Unknown
+                    publishError = publishErrorOf(failure, public)
                     if (publishError == PublishError.TopicUnavailable) forgetTopic()
+                    if (publishError == PublishError.ListGone) forgetPublished()
                 },
             )
             publishing = false
@@ -153,9 +155,13 @@ class TierDetailViewModel @Inject constructor(
             repository.setPublished(tierListId, published?.takeUnless { it.ranking }?.id, published?.fingerprint)
             repository.setRankingOf(tierListId, published?.takeIf { it.ranking }?.id)
             // The server named the topic: a name that waited is a topic now, though maybe one still waiting.
-            published?.topicId?.let { topicId ->
+            val topicId = published?.topicId
+            if (topicId != null) {
                 waiting = waitingName(list, topicId)
-                repository.setTopic(tierListId, topicId, list.topicName ?: list.newTopicName, waiting)
+                repository.setTopic(tierListId, topicId, published?.topicName ?: list.topicName ?: list.newTopicName, waiting)
+            } else if (published != null && list.topicTakenOff) {
+                // Said once and done: from now on no topic here leaves the list's as it is.
+                repository.setTopic(tierListId, null, null, null)
             }
         }
         // Reading the list back would land after publicPending clears
@@ -359,10 +365,15 @@ class TierDetailViewModel @Inject constructor(
             )
             val topicId = published?.topicId
             board = TierDetailUiState.Success(
-                if (topicId == null) {
-                    out
-                } else {
-                    out.copy(topicId = topicId, topicName = list.topicName ?: list.newTopicName, newTopicName = waiting)
+                when {
+                    topicId != null -> out.copy(
+                        topicId = topicId,
+                        topicName = list.topicName ?: list.newTopicName ?: published?.topicName,
+                        newTopicName = waiting,
+                        topicTakenOff = false,
+                    )
+                    published != null -> out.copy(topicTakenOff = false)
+                    else -> out
                 },
             )
         }
@@ -373,6 +384,17 @@ class TierDetailViewModel @Inject constructor(
         val proposed = list.newTopicName?.takeIf { list.topicId == null } ?: return null
         val settled = community.topic(topicId).map { it.status != TopicStatus.Pending }.getOrDefault(false)
         return proposed.takeUnless { settled }
+    }
+
+    /** The list it was out as is not there to replace: the board is private again, and Public makes a new one. */
+    private fun forgetPublished() {
+        viewModelScope.launch {
+            val recorded = messages.guard("Forgetting a list that is gone") { repository.setPublished(tierListId, null, null) }
+            val current = board
+            if (recorded && current is TierDetailUiState.Success) {
+                board = TierDetailUiState.Success(current.list.copy(publishedId = null, publishedFingerprint = null))
+            }
+        }
     }
 
     /** A topic the server will not take any more is no topic: the next attempt goes without it. */
@@ -431,4 +453,12 @@ class TierDetailViewModel @Inject constructor(
             }
         }
     }
+}
+
+/** Taking a list down fails in words of its own: "could not publish" would say the opposite of what was asked. */
+internal fun publishErrorOf(failure: Throwable, public: Boolean): PublishError = when {
+    failure is PublishRefused -> failure.error
+    public -> PublishError.Unknown
+    failure is IOException -> PublishError.Offline
+    else -> PublishError.NotTakenDown
 }

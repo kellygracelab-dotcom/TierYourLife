@@ -308,4 +308,9 @@
     <string name="community_action_undo">Скасувати</string>
     <string name="community_picture_credits">Автори зображень</string>
     <string name="community_picture_credit_line">%1$s — %2$s</string>
+    <string name="community_ranking_list_changed">Автор змінив цей список, поки ви розставляли картки. Розставте їх заново, щоб показати своє ранжування.</string>
+    <string name="community_ranking_banned">Модератор зняв один з ваших списків, тому поки ви не можете показувати ранжування.</string>
+    <string name="moderation_not_taken_down">Не знято: список досі публічний. Спробуйте ще раз.</string>
+    <string name="moderation_not_kept">Не вдалося залишити список: скарги досі відкриті. Спробуйте ще раз.</string>
+    <string name="moderation_not_moved">Не переміщено: список залишився на місці. Спробуйте ще раз.</string>
 </resources>

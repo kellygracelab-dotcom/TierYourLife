@@ -24,7 +24,7 @@ data class BanNotice(val untilMillis: Long?)
 fun Throwable.banNotice(): BanNotice? {
     val response = (this as? HttpException)?.response() ?: return null
     if (response.code() != HTTP_FORBIDDEN) return null
-    val body = response.errorBody()?.string().orEmpty()
+    val body = errorText()
     val notice = runCatching { networkJson.decodeFromString<BanNoticeDto>(body) }.getOrNull() ?: return null
     return if (notice.code == BANNED) BanNotice(notice.until) else null
 }

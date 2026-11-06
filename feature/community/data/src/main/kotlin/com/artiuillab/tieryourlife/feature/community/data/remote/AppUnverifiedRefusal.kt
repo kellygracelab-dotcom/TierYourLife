@@ -22,6 +22,6 @@ private data class RefusalDto(@SerialName("code") val code: String? = null)
 fun Throwable.isAppUnverified(): Boolean {
     val response = (this as? HttpException)?.response() ?: return false
     if (response.code() != HTTP_UNAUTHORIZED) return false
-    val body = response.errorBody()?.string().orEmpty()
+    val body = errorText()
     return runCatching { networkJson.decodeFromString<RefusalDto>(body).code }.getOrNull() == APP_UNVERIFIED
 }

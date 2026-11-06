@@ -13,6 +13,12 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierSummary
 
+/**
+ * Kept in the topic id's column, which no server id is ever empty in: the
+ * author took the topic off and the server has not been told yet.
+ */
+internal const val TOPIC_TAKEN_OFF = ""
+
 internal fun TierListEntity.toDomain(): TierList = TierList(
     id = id,
     title = title,
@@ -25,7 +31,8 @@ internal fun TierListEntity.toDomain(): TierList = TierList(
     anonymous = anonymous,
     coverImageUrl = coverImageUrl,
     coverImageUrls = coverImageUrls.toCoverImageUrls(),
-    topicId = topicId,
+    topicId = topicId.takeUnless { it == TOPIC_TAKEN_OFF },
+    topicTakenOff = topicId == TOPIC_TAKEN_OFF,
     topicName = topicName,
     newTopicName = newTopicName,
     takenFrom = takenFrom,
@@ -51,7 +58,8 @@ internal fun TierListWithTiers.toDomain(): TierList = TierList(
     anonymous = tierList.anonymous,
     coverImageUrl = tierList.coverImageUrl,
     coverImageUrls = tierList.coverImageUrls.toCoverImageUrls(),
-    topicId = tierList.topicId,
+    topicId = tierList.topicId.takeUnless { it == TOPIC_TAKEN_OFF },
+    topicTakenOff = tierList.topicId == TOPIC_TAKEN_OFF,
     topicName = tierList.topicName,
     newTopicName = tierList.newTopicName,
     takenFrom = tierList.takenFrom,

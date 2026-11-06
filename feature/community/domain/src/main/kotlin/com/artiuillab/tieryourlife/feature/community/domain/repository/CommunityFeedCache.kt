@@ -12,6 +12,9 @@ interface CommunityFeedCache {
     suspend fun read(key: String): CachedFeed?
 
     suspend fun write(key: String, page: CommunityPage, fetchedAtMillis: Long)
+
+    /** Who is reading now: whatever was put on screen for somebody else is not for them. */
+    fun reader(): String? = null
 }
 
 /** The time, asked for rather than read, so a test can say when it is. */

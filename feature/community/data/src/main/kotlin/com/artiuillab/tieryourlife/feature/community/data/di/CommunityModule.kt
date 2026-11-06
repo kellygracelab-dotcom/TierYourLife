@@ -21,6 +21,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.OpenedLis
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionPictures
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionStore
+import com.google.firebase.auth.FirebaseAuth
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -30,6 +31,9 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
@@ -86,7 +90,18 @@ abstract class CommunityModule {
         /** One for the whole app, with a scope of its own: a lookup started on one screen outlives it. */
         @Provides
         @Singleton
-        fun provideSectionCatalog(community: CommunityRepository, store: SectionStore, clock: CommunityClock): SectionCatalog =
-            KeptSectionCatalog(community, store, clock, CoroutineScope(SupervisorJob() + Dispatchers.IO))
+        fun provideSectionCatalog(
+            community: CommunityRepository,
+            store: SectionStore,
+            clock: CommunityClock,
+            auth: FirebaseAuth,
+        ): SectionCatalog =
+            KeptSectionCatalog(community, store, clock, CoroutineScope(SupervisorJob() + Dispatchers.IO), person = auth.uids())
+
+        private fun FirebaseAuth.uids(): Flow<String?> = callbackFlow {
+            val listener = FirebaseAuth.AuthStateListener { trySend(it.currentUser?.uid) }
+            addAuthStateListener(listener)
+            awaitClose { removeAuthStateListener(listener) }
+        }
     }
 }

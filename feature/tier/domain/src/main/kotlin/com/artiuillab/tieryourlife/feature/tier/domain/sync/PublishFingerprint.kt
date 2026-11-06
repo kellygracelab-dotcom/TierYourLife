@@ -6,8 +6,9 @@ import java.security.MessageDigest
 /**
  * Sibling to [BoardFingerprint], separate on purpose: that one asks "have two
  * phones the same board", this one "is the copy in the feed still what this
- * board says". Covers exactly what `toRequest` sends; the display mode never
- * travels, so changing it does not leave the copy behind.
+ * board says". Covers what `toRequest` sends; the display mode never
+ * travels, so changing it does not leave the copy behind. The topic counts by
+ * name, which stays the same while the server turns a new name into an id.
  */
 object PublishFingerprint {
 
@@ -35,9 +36,18 @@ object PublishFingerprint {
         list.tiers.flatMap { it.items }.forEach { item ->
             eat(item.title)
             eat(picture(item.imageUrl, pictureIdOf))
+            // A mark no eaten value starts with, and only when there is one: older copies keep their fingerprint.
+            item.credit?.let { credit ->
+                digest.update(CREDIT.toByteArray())
+                eat(credit)
+            }
         }
         // Only when true, last: every copy published before this keeps its fingerprint, and is not suddenly behind.
         if (list.anonymous) eat(ANONYMOUS)
+        (list.topicName ?: list.newTopicName)?.let { topic ->
+            digest.update(TOPIC.toByteArray())
+            eat(topic)
+        }
 
         return digest.digest().joinToString("") { byte -> "%02x".format(byte) }
     }
@@ -50,4 +60,8 @@ object PublishFingerprint {
     private const val NOTHING = "~|"
 
     private const val ANONYMOUS = "anonymous"
+
+    // Neither a digit nor "~": nothing [eat] writes begins like these.
+    private const val CREDIT = "&"
+    private const val TOPIC = "#"
 }

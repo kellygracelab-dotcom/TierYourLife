@@ -2,7 +2,6 @@ package com.artiuillab.tieryourlife.feature.community.data.repository
 
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.feature.community.data.remote.api.CommunityApi
-import com.artiuillab.tieryourlife.feature.community.data.remote.banNotice
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.AppointModeratorRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.BasedOnDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModerationReportDto
@@ -45,10 +44,10 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ListGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.ListTranslations
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
+import com.artiuillab.tieryourlife.feature.community.domain.model.PageGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalError
 import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalRefused
-import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -79,7 +78,6 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CancellationException
 import retrofit2.HttpException
 import timber.log.Timber
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -301,16 +299,22 @@ class RetrofitCommunityRepository @Inject constructor(
         // publishing is a button somebody pressed.
         val up = pictures.sendNow(list.ownPictureIds(pictures))
         val request = list.toRequest(pictures, up)
-        val existing = list.publishedId
-        val answer = if (existing == null) api.publish(request) else api.republish(existing, request)
-        if (answer.existing) Timber.i("The server had this board out already, as %s", answer.id)
-        Result.success(answer.toPublished(PublishFingerprint.of(list, pictures::pictureIdOf)))
+        val answer = sendOut(list.publishedId, request, api::publish, api::republish)
+        val learned = list.topicToLearn(answer)?.let { id -> nameOfTopic(id) }
+        val recorded = if (learned == null) list else list.copy(topicName = learned)
+        Result.success(answer.toPublished(PublishFingerprint.of(recorded, pictures::pictureIdOf)).copy(topicName = learned))
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
         Timber.w(e, "Publishing failed")
         Result.failure(PublishRefused(e.asPublishError()))
     }
+
+    /** Null when it cannot be read: the board then holds the id alone, as before. */
+    private suspend fun nameOfTopic(id: String): String? = runSuspendCatching { api.topic(id).name }
+        .onFailure { Timber.i(it, "Not naming topic %s", id) }
+        .getOrNull()
+        ?.takeIf { it.isNotBlank() }
 
     override suspend fun unpublish(publishedId: String): Result<Unit> = attempt("Taking a list back down") {
         api.unpublish(publishedId)
@@ -376,7 +380,13 @@ private inline fun <T> attempt(what: String, block: () -> T): Result<T> =
             Timber.w(failure, "%s failed", what)
             // Named here rather than at each screen: every caller of this file
             // gets the same refusal, and none of them can read an HTTP body.
-            Result.failure(if (failure.isAppUnverified()) AppUnverified() else failure)
+            Result.failure(
+                when {
+                    failure.isAppUnverified() -> AppUnverified()
+                    failure.isCursorGone() -> PageGone()
+                    else -> failure
+                },
+            )
         },
     )
 
@@ -387,21 +397,6 @@ internal suspend fun <T> refusedOverTheLimit(block: suspend () -> T): T = try {
     throw if (refused.code() == HTTP_CONFLICT && refused.proxyCode() == TOO_MANY_FOLLOWING) TooManyFollowed() else refused
 }
 
-private fun Throwable.asPublishError(): PublishError = when {
-    isAppUnverified() -> PublishError.NotVerified
-    this is HttpException -> when (code()) {
-        HTTP_FORBIDDEN -> banNotice()?.let { PublishError.Banned(it.untilMillis) } ?: PublishError.NotSignedIn
-        HTTP_CONFLICT -> if (proxyCode() == TOO_MANY_PENDING_TOPICS) PublishError.TooManyPendingTopics else PublishError.TooManyLists
-        HTTP_BAD_REQUEST -> if (proxyCode() == TOPIC_UNAVAILABLE) PublishError.TopicUnavailable else PublishError.Unknown
-        HTTP_TOO_LARGE -> PublishError.TooLarge
-        HTTP_UNPROCESSABLE -> PublishError.PictureRefused
-        else -> PublishError.Unknown
-    }
-
-    this is IOException -> PublishError.Offline
-    else -> PublishError.Unknown
-}
-
 /** Not found is an answer about the list, not about the network: it is gone. */
 internal fun HttpException.goneIfMissing(): Exception = if (code() == HTTP_NOT_FOUND) ListGone() else this
 
@@ -409,16 +404,10 @@ internal fun HttpException.goneIfMissing(): Exception = if (code() == HTTP_NOT_F
 internal fun PublishedIdDto.toPublished(fingerprint: String) = Published(id = id, fingerprint = fingerprint, topicId = topicId, ranking = ranking)
 
 private const val MAX_BOARD_UID = 100
-private const val TOO_MANY_PENDING_TOPICS = "TOO_MANY_PENDING_TOPICS"
 private const val TOO_MANY_FOLLOWING = "TOO_MANY_FOLLOWING"
-private const val TOPIC_UNAVAILABLE = "TOPIC_UNAVAILABLE"
 private const val BAD_NAME = "BAD_NAME"
-private const val HTTP_BAD_REQUEST = 400
-private const val HTTP_FORBIDDEN = 403
 private const val HTTP_NOT_FOUND = 404
-private const val HTTP_CONFLICT = 409
-private const val HTTP_TOO_LARGE = 413
-private const val HTTP_UNPROCESSABLE = 422
+internal const val HTTP_CONFLICT = 409
 
 /** The built-ins' ids and the slugs the server makes (`street-food`, `s-k3f9x2ab`). */
 private val SECTION_ID = Regex("^[a-z0-9][a-z0-9_-]{1,39}$")
@@ -529,20 +518,22 @@ internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
  * gallery photo is a file whose name is the only part worth sending.
  */
 private fun TierList.ownPictureIds(images: OwnPictures): List<String> =
-    (tiers.flatMap { tier -> tier.items.map { it.imageUrl } } + coverImageUrl)
-        .mapNotNull(images::pictureIdOf)
+    tiers.flatMap { tier -> tier.items.map { it.imageUrl } }
+        .mapNotNull { url -> images.pictureIdOf(url) ?: privatePictureIdOf(url) }
+        .plus(listOfNotNull(coverPictureIdOf(images)))
         .distinct()
 
 internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = PublishListRequestDto(
     title = title,
     category = category ?: ListCategory.Other.id,
-    coverImageUrl = coverImageUrl?.takeIf { it.startsWith("https://") },
-    coverPictureId = images.pictureIdOf(coverImageUrl)?.takeIf { it in uploaded },
-    coverImageUrls = coverImageUrls.filter { it.startsWith("https://") },
+    coverImageUrl = webPictureOf(coverImageUrl),
+    coverPictureId = coverPictureIdOf(images)?.takeIf { it in uploaded },
+    coverImageUrls = coverImageUrls.mapNotNull(::webPictureOf),
     topicId = topicId,
     // A name the server has not seen yet; once it has, the id above is what travels.
     newTopic = newTopicName?.takeIf { topicId == null },
-    noTopic = topicId == null && newTopicName == null,
+    // Only when the author took it off: no topic on this board may be a moderator's on the list.
+    noTopic = topicTakenOff && topicId == null && newTopicName == null,
     boardUid = uid.trim().takeIf { it.length in 1..MAX_BOARD_UID },
     takenFrom = takenFrom,
     anonymous = anonymous,
@@ -559,8 +550,8 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
             tier.items.map { item ->
                 PublishedItemDto(
                     title = item.title,
-                    imageUrl = item.imageUrl?.takeIf { it.startsWith("https://") },
-                    pictureId = images.pictureIdOf(item.imageUrl)?.takeIf { it in uploaded },
+                    imageUrl = webPictureOf(item.imageUrl),
+                    pictureId = (images.pictureIdOf(item.imageUrl) ?: privatePictureIdOf(item.imageUrl))?.takeIf { it in uploaded },
                     tierIndex = where,
                     credit = item.credit,
                 )

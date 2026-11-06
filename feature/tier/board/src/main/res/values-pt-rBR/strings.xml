@@ -163,4 +163,7 @@
     <string name="list_settings_propose_section">Propor uma seção</string>
     <string name="list_settings_category_waiting">Aguardando um moderador</string>
     <string name="list_settings_moves_to">Vai para %1$s quando for aprovada</string>
+    <string name="list_settings_public_gone">Esta lista não está mais na comunidade: foi removida, apagada ou publicada por outra conta. Ative Pública para publicá-la de novo.</string>
+    <string name="list_settings_public_section_unavailable">A seção desta lista não aceita mais listas. Escolha outra seção e publique de novo.</string>
+    <string name="list_settings_unpublish_failed">Não foi possível retirar esta lista; ela continua pública. Tente de novo.</string>
 </resources>

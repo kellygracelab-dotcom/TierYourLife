@@ -44,6 +44,43 @@ class PublishFingerprintTest {
         assertEquals(sha256("1:T|~|~|9:anonymous|"), print(bare.copy(anonymous = true)))
     }
 
+    // The topic travels with every publish: choosing another leaves the copy out there behind.
+    @Test
+    fun choosingAnotherTopic_orNone_showsUp() {
+        val filed = board().copy(topicId = "t1", topicName = "Oscars")
+
+        assertNotEquals(print(filed), print(board().copy(topicId = "t2", topicName = "Cannes")))
+        assertNotEquals(print(filed), print(board()))
+        assertNotEquals(print(board()), print(board().copy(newTopicName = "Festivals")))
+    }
+
+    // Publishing turns a new name into an id; the board recorded that way is the copy it sent.
+    @Test
+    fun aNewTopicTheServerGaveAnId_looksTheSame() {
+        val named = board().copy(newTopicName = "Festivals")
+        val recorded = board().copy(topicId = "t9", topicName = "Festivals", newTopicName = "Festivals")
+
+        assertEquals(print(named), print(recorded))
+        assertEquals(print(named), print(board().copy(topicId = "t9", topicName = "Festivals")))
+    }
+
+    @Test
+    fun changingACardsCredit_showsUp() {
+        val credited = board().copy(tiers = board().tiers.map { tier -> tier.copy(items = tier.items.map { it.copy(credit = "© Jane Doe") }) })
+        val otherCredit = board().copy(tiers = board().tiers.map { tier -> tier.copy(items = tier.items.map { it.copy(credit = "© John Roe") }) })
+
+        assertNotEquals(print(board()), print(credited))
+        assertNotEquals(print(credited), print(otherCredit))
+    }
+
+    // A board with no topic and no credits was published before either counted, and stays as it was.
+    @Test
+    fun aListWithoutTopicOrCredits_keepsTheFingerprintItHadBefore() {
+        val bare = TierList(id = 1, title = "T", tiers = emptyList())
+
+        assertEquals(sha256("1:T|~|~|"), print(bare.copy(topicTakenOff = true)))
+    }
+
     @Test
     fun changingTheCover_showsUp() {
         assertNotEquals(print(board()), print(board(cover = "https://example.test/other.jpg")))
