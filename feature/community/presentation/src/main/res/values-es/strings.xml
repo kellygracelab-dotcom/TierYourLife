@@ -66,11 +66,11 @@
     <string name="home_following_empty">Nadie a quien sigues tiene un tablero en %1$s.</string>
     <string name="home_following_empty_all">Nadie a quien sigues ha publicado nada todavía.</string>
     <string name="home_following_nobody">No sigues a nadie</string>
-    <string name="home_following_nobody_body">Sigue a alguien y sus nuevos tableros aparecerán aquí primero.</string>
+    <string name="home_following_nobody_body">Sigue a alguien y sus nuevas listas aparecerán aquí primero.</string>
     <string name="moderation_action_keep">Dejar</string>
     <string name="moderation_action_put_back">Restaurar</string>
     <string name="moderation_action_take_down">Retirar</string>
-    <string name="moderation_already_kept">Ya se mantuvo una vez, así que los reportes ya no la ocultan.</string>
+    <string name="moderation_already_kept">Ya se mantuvo una vez, así que las denuncias ya no la ocultan.</string>
     <string name="moderation_blur">Difuminar portadas</string>
     <string name="moderation_consequence">Retirarla no toca la copia propia del autor.</string>
     <string name="moderation_cover_none">Sin portada</string>
@@ -80,14 +80,14 @@
     <string name="moderation_hidden_pill">Oculta mientras espera</string>
     <string name="moderation_reason_and_count">%1$s · %2$s</string>
     <plurals name="moderation_report_count">
-        <item quantity="one">%1$d reporte</item>
-        <item quantity="many">%1$d reportes</item>
-        <item quantity="other">%1$d reportes</item>
+        <item quantity="one">%1$d denuncia</item>
+        <item quantity="many">%1$d denuncias</item>
+        <item quantity="other">%1$d denuncias</item>
     </plurals>
     <string name="moderation_take_down_body">La lista desaparece para siempre. Sus tableros siguen en su teléfono.</string>
     <string name="moderation_take_down_title">Retirarla</string>
     <string name="moderation_take_down_with">Retirar · %1$s</string>
-    <string name="moderation_taken_down">Retirada</string>
+    <string name="moderation_taken_down">Publicación retirada</string>
     <string name="moderation_title">Denuncias</string>
     <string name="moderation_unblur">Mostrar portadas</string>
     <string name="moderation_undo">Deshacer</string>
@@ -98,7 +98,7 @@
     <string name="my_published_subtitle">Todo lo que tienes en la comunidad, desde donde sea que lo publicaste.</string>
     <string name="my_published_title">Tus listas públicas</string>
     <string name="report_action_send">Denunciar</string>
-    <string name="report_by_hand">Una persona lee cada reporte. Si se acumulan, la lista se oculta hasta entonces.</string>
+    <string name="report_by_hand">Una persona lee cada denuncia. Si se acumulan, la lista se oculta hasta entonces.</string>
     <string name="report_hide_author">Ocultar también todo de %1$s</string>
     <string name="report_note_label">Algo que añadir (opcional)</string>
     <string name="report_reason_hate">Odio o acoso</string>
@@ -107,7 +107,7 @@
     <string name="report_reason_sexual">Contenido sexual</string>
     <string name="report_reason_spam">Spam o publicidad</string>
     <string name="report_reason_violence">Violencia o contenido perturbador</string>
-    <string name="report_sent_body">Una persona revisa los reportes. Hasta entonces otros pueden seguir viéndola.</string>
+    <string name="report_sent_body">Una persona revisa las denuncias. Hasta entonces otros pueden seguir viéndola.</string>
     <string name="report_sent_title">Denunciada y oculta para ti</string>
     <string name="report_title">Denunciar esta lista</string>
     <string name="community_your_topics">Tus temas</string>
@@ -153,13 +153,13 @@
     <string name="moderation_action_move">Mover…</string>
     <string name="moderation_moderators_unavailable">No se pudo leer la lista de moderadores.</string>
     <string name="community_rankings_title">Clasificaciones</string>
-    <string name="community_rankings_body">Las mismas cartas, colocadas a la manera de alguien. Elige de quién mostrar las filas.</string>
+    <string name="community_rankings_body">Las mismas tarjetas, colocadas a la manera de alguien. Elige de quién mostrar las filas.</string>
     <string name="community_ranking_author">Autor de la lista</string>
     <string name="community_ranking_you">Tú</string>
     <string name="community_ranking_withdraw">Retirar</string>
     <string name="community_action_rankings">Clasificaciones · %1$d</string>
     <string name="community_rank_it_yourself">Ordénala tú</string>
-    <string name="community_drag_any_card">Arrastra una carta</string>
+    <string name="community_drag_any_card">Arrastra una tarjeta</string>
     <string name="community_based_on">Basada en «%1$s» de %2$s</string>
     <string name="explore_tab_explore">Explorar</string>
     <string name="explore_tab_following">Siguiendo</string>
@@ -209,9 +209,9 @@
     <string name="manage_people">Personas · %1$d</string>
     <string name="manage_waiting_supporting">En %1$s · esperando moderación</string>
     <plurals name="explore_cards">
-        <item quantity="one">%1$s carta</item>
-        <item quantity="many">%1$s cartas</item>
-        <item quantity="other">%1$s cartas</item>
+        <item quantity="one">%1$s tarjeta</item>
+        <item quantity="many">%1$s tarjetas</item>
+        <item quantity="other">%1$s tarjetas</item>
     </plurals>
     <string name="community_save_short">Guardar</string>
     <plurals name="moderation_open_count">

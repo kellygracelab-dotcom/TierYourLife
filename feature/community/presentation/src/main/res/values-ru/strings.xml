@@ -42,7 +42,7 @@
     <string name="community_open_failed">Не удалось открыть этот список</string>
     <string name="community_rank_it_your_way">Разложите его как захотите.</string>
     <string name="community_save_to_my_lists">Сохранить себе</string>
-    <string name="community_save_which_title">Какое ранжирование сохранить?</string>
+    <string name="community_save_which_title">Какой рейтинг сохранить?</string>
     <string name="community_save_which_body">Копия в любом случае ваша. Переразложить можно в любой момент.</string>
     <string name="community_save_theirs">Как у автора</string>
     <string name="community_save_mine">Как у меня</string>
@@ -67,7 +67,7 @@
     <string name="home_following_empty">Ни у кого из ваших подписок нет досок в категории «%1$s».</string>
     <string name="home_following_empty_all">Ваши подписки пока ничего не опубликовали.</string>
     <string name="home_following_nobody">Вы ни на кого не подписаны</string>
-    <string name="home_following_nobody_body">Подпишитесь — и новые доски этих людей будут появляться здесь первыми.</string>
+    <string name="home_following_nobody_body">Подпишитесь — и новые списки этих людей будут появляться здесь первыми.</string>
     <string name="moderation_action_keep">Оставить</string>
     <string name="moderation_action_put_back">Вернуть</string>
     <string name="moderation_action_take_down">Снять</string>
@@ -154,12 +154,12 @@
     <string name="home_following_empty_topics">Из тем, на которые вы подписаны, пока ничего нет.</string>
     <string name="moderation_action_move">Переместить…</string>
     <string name="moderation_moderators_unavailable">Не удалось прочитать список модераторов.</string>
-    <string name="community_rankings_title">Ранжирования</string>
+    <string name="community_rankings_title">Рейтинги</string>
     <string name="community_rankings_body">Те же карточки, расставленные по-своему. Выберите, чьи ряды показать.</string>
     <string name="community_ranking_author">Автор списка</string>
     <string name="community_ranking_you">Вы</string>
     <string name="community_ranking_withdraw">Снять</string>
-    <string name="community_action_rankings">Ранжирования · %1$d</string>
+    <string name="community_action_rankings">Рейтинги · %1$d</string>
     <string name="community_rank_it_yourself">Разложите сами</string>
     <string name="community_drag_any_card">Перетащите карточку</string>
     <string name="community_based_on">По мотивам «%1$s» от %2$s</string>
@@ -273,7 +273,7 @@
     <string name="propose_too_many_title">Три предложения уже ждут</string>
     <string name="propose_too_many_body">Вы сможете предложить ещё, как только модератор посмотрит одно из них.</string>
     <string name="section_waiting_pill">Ожидает</string>
-    <string name="section_proposal_withdraw">Отозвать</string>
+    <string name="section_proposal_withdraw">Снять</string>
     <string name="section_proposal_dismiss">Закрыть</string>
     <string name="section_proposal_declined">«%1$s» не добавили как раздел. Ваши списки остаются в разделе «%2$s».</string>
     <string name="section_proposal_merged">«%1$s» объединён с разделом «%2$s».</string>
@@ -287,9 +287,9 @@
         <item quantity="many">Ждут %1$d из %2$d ваших предложений.</item>
         <item quantity="other">Ждут %1$d из %2$d ваших предложений.</item>
     </plurals>
-    <string name="community_show_my_ranking">Показать моё ранжирование другим</string>
-    <string name="community_sign_in_to_show_ranking">Войдите, чтобы показать своё ранжирование</string>
-    <string name="community_ranking_shown">Ваше ранжирование теперь среди ранжирований списка</string>
+    <string name="community_show_my_ranking">Показать мой рейтинг другим</string>
+    <string name="community_sign_in_to_show_ranking">Войдите, чтобы показать свой рейтинг</string>
+    <string name="community_ranking_shown">Ваш рейтинг теперь среди рейтингов списка</string>
     <string name="community_action_sign_in">Войти</string>
     <string name="community_your_list_badge">Ваш список</string>
     <string name="community_own_published">Опубликован</string>

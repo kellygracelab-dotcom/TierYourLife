@@ -182,11 +182,11 @@
     <string name="list_settings_public_topic_unavailable">هذا الموضوع لم يعد متاحًا: دُمج أو رُفض أو يخص شخصًا آخر. لم يعد للقائمة موضوع؛ اختر موضوعًا آخر أو انشر بدونه.</string>
     <string name="list_settings_public_ranking_body">منشورة كترتيبك لقائمة %1$s؛ لا تظهر قائمة ثانية في الخلاصة.</string>
     <string name="tier_detail_add_card">أضف بطاقة</string>
-    <string name="tier_detail_pool_count">المجموعة · %1$d</string>
+    <string name="tier_detail_pool_count">المجمّع · %1$d</string>
     <string name="tier_detail_drop_items_here">أفلت العناصر هنا</string>
     <string name="tier_detail_drop_to_delete">أفلت للحذف</string>
     <string name="tier_detail_drop_unrank_column">أفلت على البطاقات أدناه لإلغاء الترتيب</string>
-    <string name="tier_detail_drop_unrank_dock">أفلت على المجموعة لإلغاء الترتيب</string>
+    <string name="tier_detail_drop_unrank_dock">أفلت على المجمّع لإلغاء الترتيب</string>
     <string name="tier_detail_content_description_play">العب</string>
     <string name="tier_detail_play_needs_cards">يتطلب اللعب 3 بطاقات على الأقل</string>
     <string name="list_settings_anonymous">النشر دون اسم</string>

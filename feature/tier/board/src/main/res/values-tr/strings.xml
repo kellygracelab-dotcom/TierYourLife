@@ -29,7 +29,7 @@
     <string name="list_settings_public_needs_account">Yayımlamak için Google ile oturum aç. Başkalarınınkini okumak ve kaydetmek hesap istemez.</string>
     <string name="list_settings_public_needs_items">Listeyi yayımlamadan önce en az bir kart ekleyin.</string>
     <string name="list_settings_public_offline">Bağlantı yok. Çevrimiçi olduğunuzda yeniden deneyin.</string>
-    <string name="list_settings_public_picture_refused">Fotoğraflarınızdan biri herkese açık akışta yer alamaz. Kaldırın ya da listeyi özel tutun.</string>
+    <string name="list_settings_public_picture_refused">Fotoğraflarınızdan biri herkese açık akışta yer alamaz. Silin ya da listeyi özel tutun.</string>
     <string name="list_settings_public_too_large">Bu liste yayımlanamayacak kadar büyük: en fazla 2000 kart ve 20 kademe.</string>
     <string name="list_settings_public_too_many">İzin verilen en fazla sayıda listeyi yayımladınız. Yer açmak için birini yayından kaldırın.</string>
     <string name="list_settings_public_unverified">Google Play bu kurulumu doğrulayamadı, bu yüzden buradan hiçbir şey yayınlanamaz.</string>
@@ -55,7 +55,7 @@
         <item quantity="one">%1$d fotoğraf seçildi</item>
         <item quantity="other">%1$d fotoğraf seçildi</item>
     </plurals>
-    <string name="manual_dialog_remove_photo">Fotoğrafı kaldır</string>
+    <string name="manual_dialog_remove_photo">Fotoğrafı sil</string>
     <string name="manual_dialog_replace_photo">Fotoğrafı değiştir</string>
     <string name="manual_dialog_title">Öğe ekle</string>
     <string name="my_published_action_update">Güncelle</string>
@@ -70,7 +70,7 @@
     </plurals>
     <string name="tier_detail_content_description_edit_title">Liste adını düzenle</string>
     <string name="tier_detail_content_description_manual_add">Öğeyi elle ekle</string>
-    <string name="tier_detail_item_removed">%1$s kaldırıldı</string>
+    <string name="tier_detail_item_removed">%1$s silindi</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d öğe havuza eklendi</item>
         <item quantity="other">%1$d öğe havuza eklendi</item>
@@ -79,7 +79,7 @@
     <string name="tier_detail_move_sheet_pool_subtitle">Sıralanmadı, listede kalır</string>
     <string name="tier_detail_move_sheet_pool_title">Havuza geri gönder</string>
     <string name="tier_detail_move_sheet_remove_subtitle">Hemen ardından geri alınabilir</string>
-    <string name="tier_detail_move_sheet_remove_title">Listeden kaldır</string>
+    <string name="tier_detail_move_sheet_remove_title">Listeden sil</string>
     <string name="tier_detail_move_sheet_subtitle">Bir seviyeye taşı</string>
     <string name="tier_detail_move_sheet_photo_credit">Fotoğraf: %1$s</string>
     <string name="tier_detail_not_found">Liste bulunamadı.</string>
@@ -102,8 +102,8 @@
     </plurals>
     <string name="tier_detail_ranked_row_description">%1$d. sıra, %2$s, seviye %3$s.</string>
     <string name="tier_detail_snackbar_undo">Geri al</string>
-    <string name="tier_detail_tier_removed">%1$s seviyesi kaldırıldı</string>
-    <string name="tier_detail_trash_target_label">Kaldır</string>
+    <string name="tier_detail_tier_removed">%1$s seviyesi silindi</string>
+    <string name="tier_detail_trash_target_label">Sil</string>
     <string name="tier_editor_add_title">Seviye ekle</string>
     <string name="tier_editor_cancel">İptal</string>
     <string name="tier_editor_caption_field">Alt yazı</string>

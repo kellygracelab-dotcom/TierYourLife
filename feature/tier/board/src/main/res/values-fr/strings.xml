@@ -45,7 +45,7 @@
         <item quantity="many">Ajouter %1$d éléments</item>
         <item quantity="other">Ajouter %1$d éléments</item>
     </plurals>
-    <string name="manual_dialog_body">Va dans le réservoir. Vous pourrez ensuite le glisser vers un rang.</string>
+    <string name="manual_dialog_body">Va dans la réserve. Vous pourrez ensuite le glisser vers un rang.</string>
     <string name="manual_dialog_cancel">Annuler</string>
     <string name="manual_dialog_choose_photo">Choisir une photo</string>
     <string name="manual_dialog_field_name">Nom</string>
@@ -75,22 +75,22 @@
     <string name="tier_detail_content_description_manual_add">Ajouter un élément manuellement</string>
     <string name="tier_detail_item_removed">%1$s a été retiré</string>
     <plurals name="tier_detail_items_added_to_pool">
-        <item quantity="one">%1$d élément ajouté au réservoir</item>
-        <item quantity="many">%1$d éléments ajoutés au réservoir</item>
-        <item quantity="other">%1$d éléments ajoutés au réservoir</item>
+        <item quantity="one">%1$d élément ajouté à la réserve</item>
+        <item quantity="many">%1$d éléments ajoutés à la réserve</item>
+        <item quantity="other">%1$d éléments ajoutés à la réserve</item>
     </plurals>
     <string name="tier_detail_move_sheet_current_tier">Actuellement ici</string>
     <string name="tier_detail_move_sheet_pool_subtitle">Non classé, reste dans la liste</string>
-    <string name="tier_detail_move_sheet_pool_title">Remettre dans le réservoir</string>
+    <string name="tier_detail_move_sheet_pool_title">Remettre dans la réserve</string>
     <string name="tier_detail_move_sheet_remove_subtitle">Annulable juste après</string>
     <string name="tier_detail_move_sheet_remove_title">Retirer de la liste</string>
     <string name="tier_detail_move_sheet_subtitle">Déplacer vers un rang</string>
     <string name="tier_detail_move_sheet_photo_credit">Photo : %1$s</string>
     <string name="tier_detail_not_found">Liste introuvable.</string>
     <plurals name="tier_detail_pool_unranked_count">
-        <item quantity="one">Réservoir · %d non classé</item>
-        <item quantity="many">Réservoir · %d non classé</item>
-        <item quantity="other">Réservoir · %d non classé</item>
+        <item quantity="one">Réserve · %d non classé</item>
+        <item quantity="many">Réserve · %d non classé</item>
+        <item quantity="other">Réserve · %d non classé</item>
     </plurals>
     <plurals name="tier_detail_ranked_header">
         <item quantity="one">%1$d classé · du meilleur au pire</item>
@@ -99,14 +99,14 @@
     </plurals>
     <string name="tier_detail_ranked_header_empty">Rien de classé pour l’instant</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
-        <item quantity="one">Réservoir, %1$d non classé. Déplier.</item>
-        <item quantity="many">Réservoir, %1$d non classé. Déplier.</item>
-        <item quantity="other">Réservoir, %1$d non classé. Déplier.</item>
+        <item quantity="one">Réserve, %1$d non classé. Déplier.</item>
+        <item quantity="many">Réserve, %1$d non classé. Déplier.</item>
+        <item quantity="other">Réserve, %1$d non classé. Déplier.</item>
     </plurals>
     <plurals name="tier_detail_ranked_pool_expanded_description">
-        <item quantity="one">Réservoir, %1$d non classé. Replier.</item>
-        <item quantity="many">Réservoir, %1$d non classé. Replier.</item>
-        <item quantity="other">Réservoir, %1$d non classé. Replier.</item>
+        <item quantity="one">Réserve, %1$d non classé. Replier.</item>
+        <item quantity="many">Réserve, %1$d non classé. Replier.</item>
+        <item quantity="other">Réserve, %1$d non classé. Replier.</item>
     </plurals>
     <string name="tier_detail_ranked_row_description">Place %1$d, %2$s, rang %3$s.</string>
     <string name="tier_detail_snackbar_undo">Annuler</string>
@@ -145,9 +145,9 @@
     <string name="tier_list_settings_title">Paramètres de la liste</string>
     <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
     <plurals name="tier_lists_in_pool_count">
-        <item quantity="one">%d dans le réservoir</item>
-        <item quantity="many">%d dans le réservoir</item>
-        <item quantity="other">%d dans le réservoir</item>
+        <item quantity="one">%d dans la réserve</item>
+        <item quantity="many">%d dans la réserve</item>
+        <item quantity="other">%d dans la réserve</item>
     </plurals>
     <string name="list_settings_public_topic_unavailable">Ce thème n’est plus ouvert : fusionné, refusé ou à quelqu’un d’autre. La liste n’a plus de thème ; choisissez-en un autre ou publiez sans.</string>
     <string name="list_settings_public_ranking_body">Publiée comme votre classement de la liste de %1$s ; aucune seconde liste n’apparaît dans le fil.</string>
@@ -161,7 +161,7 @@
     <string name="tier_detail_play_needs_cards">Il faut au moins 3 cartes pour jouer</string>
     <string name="list_settings_anonymous">Publier anonymement</string>
     <string name="list_settings_anonymous_body">Votre nom et votre photo ne sont pas affichés avec la liste. Elle reste à vous : vous seul pouvez la modifier ou la supprimer.</string>
-    <string name="list_settings_propose_section">Proposer une section</string>
+    <string name="list_settings_propose_section">Proposer une rubrique</string>
     <string name="list_settings_category_waiting">En attente d’un modérateur</string>
     <string name="list_settings_moves_to">Passera dans %1$s une fois approuvée</string>
 </resources>

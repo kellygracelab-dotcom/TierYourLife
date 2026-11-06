@@ -121,10 +121,10 @@
     <string name="play_snack_game_saved">Гру збережено · %1$d з %2$d</string>
     <string name="play_snack_discard">Видалити</string>
     <plurals name="play_snack_arranged">
-        <item quantity="one">Список розставлено за підсумками %1$d дуелі</item>
-        <item quantity="few">Список розставлено за підсумками %1$d дуелей</item>
-        <item quantity="many">Список розставлено за підсумками %1$d дуелей</item>
-        <item quantity="other">Список розставлено за підсумками %1$d дуелі</item>
+        <item quantity="one">Дошку розставлено за підсумками %1$d дуелі</item>
+        <item quantity="few">Дошку розставлено за підсумками %1$d дуелей</item>
+        <item quantity="many">Дошку розставлено за підсумками %1$d дуелей</item>
+        <item quantity="other">Дошку розставлено за підсумками %1$d дуелі</item>
     </plurals>
     <string name="play_snack_saved_discarded">Збережену гру видалено</string>
     <string name="play_snack_result_discarded">Результат відкинуто</string>
