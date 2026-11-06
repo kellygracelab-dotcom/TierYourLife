@@ -293,6 +293,10 @@ private object OnWifiAlways : AppPreferences, Connection {
     override fun erasureUnderWay(): String? = null
 
     override fun setErasureUnderWay(mark: String?) = Unit
+
+    override fun lastSignedIn(): String? = null
+
+    override fun setLastSignedIn(account: String?) = Unit
     override fun conflictsSeen(): Set<String> = emptySet()
     override fun markConflictSeen(listUid: String) = Unit
 }

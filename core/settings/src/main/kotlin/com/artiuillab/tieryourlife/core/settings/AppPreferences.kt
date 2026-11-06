@@ -100,6 +100,14 @@ interface AppPreferences {
     /** Written before the request leaves, so a reply lost or a phone killed meanwhile still finds it. */
     fun setErasureUnderWay(mark: String?)
 
+    /**
+     * The `recordKey` of whoever was signed in, until they sign out by choice.
+     * Still there with nobody signed in, the session was ended for them.
+     */
+    fun lastSignedIn(): String?
+
+    fun setLastSignedIn(account: String?)
+
     /** By uid rather than one flag: a second conflict months later is news again. */
     fun conflictsSeen(): Set<String>
 

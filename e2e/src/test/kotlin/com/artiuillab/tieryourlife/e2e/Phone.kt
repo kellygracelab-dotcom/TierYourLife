@@ -70,7 +70,7 @@ class Phone(identity: Identity) : Closeable {
 
     val boardsApi = NetworkModule.provideBoardsApi(retrofit)
     private val images = TierImageStore(context)
-    val ownership = BoardOwnership(accounts, database.ownerDao(), preferences)
+    val ownership = BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences)
     private val pictures = PictureSync(database.boardSyncDao(), images, PicturesStayHere, preferences, Metered)
 
     val boards = RoomTierRepository(database.tierDao(), images, ownership)

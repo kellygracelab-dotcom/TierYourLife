@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.repository
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.GuestBoardsDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.OwnerDao
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.BoardOwner
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,7 @@ import javax.inject.Singleton
 class BoardOwnership @Inject constructor(
     private val accounts: AccountRepository,
     private val dao: OwnerDao,
+    private val guests: GuestBoardsDao,
     private val preferences: AppPreferences,
 ) : BoardOwner {
 
@@ -70,7 +72,7 @@ class BoardOwnership @Inject constructor(
     suspend fun release(moveGuestBoardsIn: Boolean) {
         val owner = current()
         if (moveGuestBoardsIn && owner != null) {
-            val count = dao.moveGuestBoardsTo(owner)
+            val count = guests.moveGuestBoardsTo(owner)
             Timber.i("Moved %d board(s) made without an account into the account", count)
         }
         holding = false
@@ -80,6 +82,15 @@ class BoardOwnership @Inject constructor(
     /** Boards changed hands outside a sign-in. */
     fun announceMove() {
         moved.tryEmit(Unit)
+    }
+
+    /** The boards [account] left behind when its session was ended for it are its own again. */
+    suspend fun reclaim(account: String) {
+        val count = guests.reclaimHeldBoards(account)
+        if (count > 0) {
+            Timber.i("%d board(s) are back with the account they were synced with", count)
+            moved.tryEmit(Unit)
+        }
     }
 
     private suspend fun settle() {

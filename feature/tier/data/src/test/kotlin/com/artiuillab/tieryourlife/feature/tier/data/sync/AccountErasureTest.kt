@@ -37,8 +37,9 @@ class AccountErasureTest : SyncEngineBench() {
     private fun merge() = RoomBoardMerge(
         dao,
         database.ownerDao(),
+        database.guestBoardsDao(),
         boards,
-        BoardOwnership(accounts, database.ownerDao(), preferences),
+        BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences),
         lock,
         preferences,
         accounts,
@@ -69,7 +70,7 @@ class AccountErasureTest : SyncEngineBench() {
         assertTrue(dao.syncRecordsOf("ann").isEmpty())
         assertEquals(Account.Guest, accounts.current())
         assertNull(preferences.erasureUnderWay())
-        val repository = RoomTierRepository(database.tierDao(), images, BoardOwnership(accounts, database.ownerDao(), preferences))
+        val repository = RoomTierRepository(database.tierDao(), images, BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences))
         assertEquals(listOf("Films", "My take on Bob's games"), repository.getAllTierLists().map { it.title }.sorted())
     }
 

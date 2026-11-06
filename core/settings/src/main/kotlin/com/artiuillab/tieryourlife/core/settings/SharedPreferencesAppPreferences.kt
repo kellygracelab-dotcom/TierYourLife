@@ -20,6 +20,7 @@ private const val KEY_LAST_SYNCED_AT = "last_synced_at"
 private const val KEY_CONFLICTS_SEEN = "conflicts_seen"
 private const val KEY_BOARD_REFUSAL = "board_refusal"
 private const val KEY_ERASURE_UNDER_WAY = "erasure_under_way"
+private const val KEY_LAST_SIGNED_IN = "last_signed_in"
 private const val KEY_LAST_KNOWN_REPORTS = "last_known_reports"
 private const val KEY_LAST_KNOWN_TRASH = "last_known_trash"
 private const val KEY_LAST_KNOWN_STORED_BYTES = "last_known_stored_bytes"
@@ -180,6 +181,15 @@ class SharedPreferencesAppPreferences @Inject constructor(
         // Committed, not applied: the request this guards may be the last thing the process does.
         prefs.edit(commit = true) {
             if (mark == null) remove(KEY_ERASURE_UNDER_WAY) else putString(KEY_ERASURE_UNDER_WAY, mark)
+        }
+    }
+
+    override fun lastSignedIn(): String? = prefs.getString(KEY_LAST_SIGNED_IN, null)
+
+    override fun setLastSignedIn(account: String?) {
+        // Committed: a sign-out by choice clears it just before the process may end.
+        prefs.edit(commit = true) {
+            if (account == null) remove(KEY_LAST_SIGNED_IN) else putString(KEY_LAST_SIGNED_IN, account)
         }
     }
 

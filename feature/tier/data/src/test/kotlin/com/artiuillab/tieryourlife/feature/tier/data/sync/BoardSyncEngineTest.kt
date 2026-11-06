@@ -306,7 +306,7 @@ class BoardSyncEngineTest : SyncEngineBench() {
         val uid = givenLocalBoard("Films", owner = null)
         val accounts = FakeAccountRepository(initial = ann)
         val preferences = FakeAppPreferences()
-        val ownership = BoardOwnership(accounts, database.ownerDao(), preferences)
+        val ownership = BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences)
 
         engine(accounts = accounts, preferences = preferences, ownership = ownership).sync()
         assertTrue(boards.kept.isEmpty())
@@ -323,7 +323,7 @@ class BoardSyncEngineTest : SyncEngineBench() {
         val uid = givenLocalBoard("Films", owner = null)
         val accounts = FakeAccountRepository(initial = ann)
         val preferences = FakeAppPreferences()
-        val ownership = BoardOwnership(accounts, database.ownerDao(), preferences)
+        val ownership = BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences)
 
         ownership.release(moveGuestBoardsIn = false)
         engine(accounts = accounts, preferences = preferences, ownership = ownership).sync()
@@ -338,7 +338,7 @@ class BoardSyncEngineTest : SyncEngineBench() {
         givenLocalBoard("Films", owner = "ann")
         val accounts = FakeAccountRepository(initial = ann)
         val preferences = FakeAppPreferences()
-        val ownership = BoardOwnership(accounts, database.ownerDao(), preferences)
+        val ownership = BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences)
         ownership.hold()
 
         val report = engine(accounts = accounts, preferences = preferences, ownership = ownership).sync()
@@ -356,7 +356,7 @@ class BoardSyncEngineTest : SyncEngineBench() {
         val repository = RoomTierRepository(
             database.tierDao(),
             images,
-            BoardOwnership(accounts, database.ownerDao(), FakeAppPreferences()),
+            BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), FakeAppPreferences()),
         )
         suspend fun titles() = repository.getAllTierLists().map { it.title }
 

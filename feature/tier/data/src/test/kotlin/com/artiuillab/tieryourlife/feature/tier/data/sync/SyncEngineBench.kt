@@ -68,7 +68,7 @@ abstract class SyncEngineBench {
         accounts: FakeAccountRepository = FakeAccountRepository(initial = account),
         vault: Pictures = NoPictures,
         connection: Connection = Metered,
-        ownership: BoardOwnership = BoardOwnership(accounts, database.ownerDao(), preferences),
+        ownership: BoardOwnership = BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences),
     ): BoardSyncEngine {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         return BoardSyncEngine(

@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.core.settings.ThePerson
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.GuestBoardsDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.OwnerDao
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
@@ -24,6 +25,7 @@ internal const val ERASE_ANSWERS_WITHIN_MS = 60L * 60 * 1000
 class RoomBoardMerge internal constructor(
     private val dao: BoardSyncDao,
     private val owners: OwnerDao,
+    private val guests: GuestBoardsDao,
     private val api: BoardsApi,
     private val ownership: BoardOwnership,
     private val lock: SyncLock,
@@ -36,17 +38,22 @@ class RoomBoardMerge internal constructor(
     @Inject constructor(
         dao: BoardSyncDao,
         owners: OwnerDao,
+        guests: GuestBoardsDao,
         api: BoardsApi,
         ownership: BoardOwnership,
         lock: SyncLock,
         preferences: AppPreferences,
         accounts: AccountRepository,
         thePerson: ThePerson,
-    ) : this(dao, owners, api, ownership, lock, preferences, accounts, thePerson, System::currentTimeMillis)
+    ) : this(dao, owners, guests, api, ownership, lock, preferences, accounts, thePerson, System::currentTimeMillis)
 
     override fun hold() = ownership.hold()
 
-    override suspend fun guestBoards(): Int = owners.guestBoardsInUse().size
+    /** Not the boards held for the account signed into: they are its own again first. */
+    override suspend fun guestBoards(): Int {
+        ownership.current()?.let { ownership.reclaim(it) }
+        return guests.guestBoardsInUse().size
+    }
 
     override suspend fun moveIn(fromThisPhone: String?) {
         if (fromThisPhone != null) renameClashes(fromThisPhone)
@@ -65,6 +72,7 @@ class RoomBoardMerge internal constructor(
         when {
             result.isSuccess || accounts.currentAccountExists() == false -> {
                 keepBoardsOf(account)
+                preferences.setLastSignedIn(null)
                 signOut()
                 Result.success(Unit)
             }
@@ -90,6 +98,7 @@ class RoomBoardMerge internal constructor(
                 preferences.setErasureUnderWay(null)
             }
         }
+        preferences.setLastSignedIn(null)
         signOut()
     }
 
@@ -106,6 +115,7 @@ class RoomBoardMerge internal constructor(
         when (accounts.currentAccountExists()) {
             false -> {
                 keepBoardsOf(mark.account)
+                preferences.setLastSignedIn(null)
                 accounts.signOut()
                 thePerson.forget()
             }
@@ -117,6 +127,7 @@ class RoomBoardMerge internal constructor(
     private suspend fun keepBoardsOf(account: String) {
         val kept = owners.keepBoardsOfDeleted(account)
         preferences.setErasureUnderWay(null)
+        if (preferences.lastSignedIn() == account) preferences.setLastSignedIn(null)
         Timber.i("Kept %d board(s) of the deleted account on this phone", kept)
         ownership.announceMove()
     }
@@ -138,7 +149,7 @@ class RoomBoardMerge internal constructor(
             return
         }
 
-        owners.guestBoardsInUse()
+        guests.guestBoardsInUse()
             .filter { board -> board.title in theirs }
             .forEach { board -> dao.renameBoard(board.uid, withSuffix(board.title, fromThisPhone)) }
     }

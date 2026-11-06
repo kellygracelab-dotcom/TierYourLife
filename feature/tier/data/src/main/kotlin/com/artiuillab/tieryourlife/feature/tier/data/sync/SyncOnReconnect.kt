@@ -22,6 +22,7 @@ class SyncOnReconnect @Inject constructor(
     private val connection: Connection,
     private val boardSync: BoardSync,
     private val merge: BoardMerge,
+    private val session: LostSession,
 ) {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -31,6 +32,8 @@ class SyncOnReconnect @Inject constructor(
             // Before any sync: one would run as an account that may be gone.
             runSuspendCatching { merge.settleUnansweredErase() }
                 .onFailure { Timber.w(it, "Could not settle an unanswered erase") }
+            // After the erase: an account it settled is not a session lost.
+            launch { session.watch() }
             connection.available.collect {
                 runSuspendCatching { boardSync.sync() }.onFailure { failure ->
                     // A dropped connection is ordinary here; anything else is a bug nobody would see.

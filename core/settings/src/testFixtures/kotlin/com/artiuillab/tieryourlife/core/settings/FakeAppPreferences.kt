@@ -99,6 +99,14 @@ class FakeAppPreferences(
         erasure = mark
     }
 
+    private var signedInLast: String? = null
+
+    override fun lastSignedIn(): String? = signedInLast
+
+    override fun setLastSignedIn(account: String?) {
+        signedInLast = account
+    }
+
     override fun setBoardRefusal(account: String, refusal: String?) {
         if (refusal == null) refusals.remove(account) else refusals[account] = refusal
     }

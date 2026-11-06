@@ -86,6 +86,8 @@ class BoardSyncEngine @Inject constructor(
             return SyncReport(signedIn = false)
         }
 
+        // A record without its board would be planned as a delete in the account.
+        ownership.reclaim(account)
         val local = dao.boardsOf(account)
         val fingerprints = local.associate { board -> board.uid to fingerprintOf(board) }
         val remote = readIndex()
