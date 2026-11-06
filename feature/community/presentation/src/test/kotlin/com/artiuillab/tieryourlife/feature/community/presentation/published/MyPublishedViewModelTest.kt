@@ -5,14 +5,18 @@ import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 
@@ -108,6 +112,31 @@ class MyPublishedViewModelTest {
         assertEquals(setOf("b"), left.behind)
     }
 
+    @Test
+    fun anUpdateHeldForAModerator_saysItWaits() = runBlocking {
+        val board = TierList(id = 7, title = "A list", tiers = emptyList(), publishedId = "a")
+        val community = FakePublishedRepository(listOf(mine("a")), publishResult = Result.success(Published("a", "sent", underReview = true)))
+        val viewModel = MyPublishedViewModel(community, RecordingTierRepository(boards = listOf(board)))
+        viewModel.state.firstWithin { it is MyPublishedUiState.Ready }
+
+        viewModel.update("a")
+
+        assertEquals(UserMessage.PublishedUnderReview, withTimeout(WAIT_MILLIS) { viewModel.userMessages.first() })
+    }
+
+    @Test
+    fun anUpdateThatIsNotHeld_saysNothing() = runBlocking {
+        val board = TierList(id = 7, title = "A list", tiers = emptyList(), publishedId = "a")
+        val community = FakePublishedRepository(listOf(mine("a")), publishResult = Result.success(Published("a", "sent")))
+        val viewModel = MyPublishedViewModel(community, RecordingTierRepository(boards = listOf(board)))
+        viewModel.state.firstWithin { it is MyPublishedUiState.Ready }
+
+        viewModel.update("a")
+        viewModel.state.firstWithin { (it as? MyPublishedUiState.Ready)?.updating == null }
+
+        assertNull(withTimeoutOrNull(QUIET_MILLIS) { viewModel.userMessages.first() })
+    }
+
     private fun mine(id: String) = PublishedListSummary(
         id = id,
         title = "A list",
@@ -122,8 +151,11 @@ class MyPublishedViewModelTest {
 private class FakePublishedRepository(
     private val mine: List<PublishedListSummary>,
     private val takeDownFails: Boolean = false,
+    private val publishResult: Result<Published> = Result.success(Published("x", "sent")),
 ) : FakeCommunityRepository() {
     val takenDown = mutableListOf<String>()
+
+    override suspend fun publish(list: TierList): Result<Published> = publishResult
 
     override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(mine)
 
@@ -135,3 +167,4 @@ private class FakePublishedRepository(
 }
 
 private const val WAIT_MILLIS = 5_000L
+private const val QUIET_MILLIS = 300L

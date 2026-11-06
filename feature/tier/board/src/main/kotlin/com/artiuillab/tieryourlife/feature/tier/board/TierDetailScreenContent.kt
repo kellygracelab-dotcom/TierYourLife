@@ -380,10 +380,16 @@ private fun TierScreenBody(
     val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
     val publishedAsRankingMessage = stringResource(ThemeR.string.snack_published_as_ranking)
 
+    val underReviewMessage = stringResource(ThemeR.string.snack_published_under_review)
+
     LaunchedEffect(Unit) {
         userMessages.collect { message ->
             snackbarHostState.showSnackbar(
-                if (message == UserMessage.PublishedAsRanking) publishedAsRankingMessage else actionFailedMessage,
+                when (message) {
+                    UserMessage.PublishedAsRanking -> publishedAsRankingMessage
+                    UserMessage.PublishedUnderReview -> underReviewMessage
+                    else -> actionFailedMessage
+                },
             )
         }
     }

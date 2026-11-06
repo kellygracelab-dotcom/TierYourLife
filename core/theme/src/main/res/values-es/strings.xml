@@ -34,4 +34,5 @@
     </plurals>
     <string name="tier_lists_title">Tus listas</string>
     <string name="snack_published_as_ranking">Publicada como tu ranking de esa lista. En el feed no aparece una segunda lista.</string>
+    <string name="snack_published_under_review">Guardada. Espera a un moderador antes de que otros puedan verla.</string>
 </resources>

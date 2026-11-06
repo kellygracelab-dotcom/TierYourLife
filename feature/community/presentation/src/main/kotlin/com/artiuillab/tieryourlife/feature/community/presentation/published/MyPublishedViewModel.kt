@@ -130,6 +130,7 @@ class MyPublishedViewModel @Inject constructor(
                         .onFailure { Timber.w(it, "Recording the update of $publishedId failed") }
                     // Sent, so it is neither behind nor unknown any more.
                     _state.value = shown.copy(updating = null, behind = shown.behind - publishedId)
+                    if (published.underReview) messages.send(UserMessage.PublishedUnderReview)
                 },
                 onFailure = { error ->
                     Timber.w(error, "Updating $publishedId failed")

@@ -38,4 +38,5 @@
     </plurals>
     <string name="tier_lists_title">Ваші списки</string>
     <string name="snack_published_as_ranking">Опублікована як ваш рейтинг того списку. Другого списку в стрічці не зʼявиться.</string>
+    <string name="snack_published_under_review">Збережено. Список чекає на модератора, перш ніж його побачать інші.</string>
 </resources>
