@@ -62,6 +62,7 @@
     <string name="my_published_behind">Yayımlanan sürüm bu panonun gerisinde.</string>
     <string name="share_caption">%1$s — TierYourLife’ta sıralandı\n%2$s</string>
     <string name="share_footer">TierYourLife ile yapıldı</string>
+    <string name="share_failed">Resim paylaşılamadı</string>
     <string name="tier_detail_add">Ekle</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d öğe</item>
@@ -149,7 +150,7 @@
     <string name="tier_detail_content_description_play">Oyna</string>
     <string name="tier_detail_play_needs_cards">Oynamak için en az 3 kart gerekir</string>
     <string name="list_settings_anonymous">Anonim olarak yayınla</string>
-    <string name="list_settings_anonymous_body">Adın ve fotoğrafın listeyle birlikte gösterilmez. Liste yine senindir: yalnızca sen düzenleyebilir veya silebilirsin.</string>
+    <string name="list_settings_anonymous_body">Adınız ve fotoğrafınız listeyle birlikte gösterilmez. Liste yine sizindir: yalnızca siz düzenleyebilir veya silebilirsiniz.</string>
     <string name="list_settings_propose_section">Bölüm öner</string>
     <string name="list_settings_category_waiting">Moderatör bekleniyor</string>
     <string name="list_settings_moves_to">Onaylanınca %1$s bölümüne taşınacak</string>

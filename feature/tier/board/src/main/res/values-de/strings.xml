@@ -62,6 +62,7 @@
     <string name="my_published_behind">Die veröffentlichte Fassung ist älter als dieses Board.</string>
     <string name="share_caption">%1$s — eingeordnet in TierYourLife\n%2$s</string>
     <string name="share_footer">Erstellt mit TierYourLife</string>
+    <string name="share_failed">Das Bild konnte nicht geteilt werden</string>
     <string name="tier_detail_add">Hinzufügen</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d Element</item>

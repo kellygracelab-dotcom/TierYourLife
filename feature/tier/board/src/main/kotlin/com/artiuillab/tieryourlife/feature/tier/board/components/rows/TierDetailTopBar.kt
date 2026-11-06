@@ -55,7 +55,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.play.PLAY_MIN_CARDS
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
-private const val TITLE_MAX_LENGTH = 60
+private const val TITLE_MAX_LENGTH = 80
 
 @Composable
 fun TierScreenTopBar(
@@ -229,7 +229,8 @@ private fun EditableListTitle(
         BasicTextField(
             value = fieldValue,
             onValueChange = { newValue ->
-                if (newValue.text.length <= TITLE_MAX_LENGTH) fieldValue = newValue
+                val shrinking = newValue.text.length < fieldValue.text.length
+                if (shrinking || newValue.text.length <= TITLE_MAX_LENGTH) fieldValue = newValue
             },
             modifier = modifier
                 .focusRequester(focusRequester)

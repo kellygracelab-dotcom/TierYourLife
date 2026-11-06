@@ -59,7 +59,7 @@
     <string name="settings_hidden">Gizlenenler</string>
     <string name="settings_hidden_sub">Artık görmediğiniz listeler ve kişiler</string>
     <string name="settings_language">Dil</string>
-    <string name="settings_language_caption">Yalnızca uygulamanın kendi metnini değiştirir. Senin yazdığın adlar olduğu gibi kalır.</string>
+    <string name="settings_language_caption">Yalnızca uygulamanın kendi metnini değiştirir. Sizin yazdığınız adlar olduğu gibi kalır.</string>
     <string name="settings_moderation">Bildirimler</string>
     <string name="settings_moderation_none">Bekleyen yok</string>
     <string name="settings_privacy">Gizlilik politikası</string>

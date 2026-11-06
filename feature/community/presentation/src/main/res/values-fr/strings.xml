@@ -231,8 +231,8 @@
     <string name="all_sections_find">Trouver une section</string>
     <string name="all_sections_propose">Proposer une section</string>
     <string name="community_anonymous">Anonyme</string>
-    <string name="community_your_list">Ta liste</string>
-    <string name="community_your_list_anonymous">Ta liste, publiée anonymement</string>
+    <string name="community_your_list">Votre liste</string>
+    <string name="community_your_list_anonymous">Votre liste, publiée anonymement</string>
     <string name="community_based_on_nameless">D’après « %1$s »</string>
     <string name="propose_intro">Un modérateur examine chaque proposition. D’ici là, vos listes restent dans la section choisie ci-dessous.</string>
     <string name="propose_send">Proposer</string>

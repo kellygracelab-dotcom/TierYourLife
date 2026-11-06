@@ -66,6 +66,7 @@
     <string name="my_published_behind">Опубликованная версия отстала от вашей доски.</string>
     <string name="share_caption">%1$s — расставлено в TierYourLife\n%2$s</string>
     <string name="share_footer">Сделано в TierYourLife</string>
+    <string name="share_failed">Не удалось поделиться картинкой</string>
     <string name="tier_detail_add">Добавить</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d элемент</item>

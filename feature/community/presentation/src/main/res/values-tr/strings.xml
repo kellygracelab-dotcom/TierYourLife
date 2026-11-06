@@ -226,8 +226,8 @@
     <string name="all_sections_find">Bölüm bul</string>
     <string name="all_sections_propose">Bölüm öner</string>
     <string name="community_anonymous">Anonim</string>
-    <string name="community_your_list">Senin listen</string>
-    <string name="community_your_list_anonymous">Senin listen, anonim olarak yayınlandı</string>
+    <string name="community_your_list">Sizin listeniz</string>
+    <string name="community_your_list_anonymous">Sizin listeniz, anonim olarak yayınlandı</string>
     <string name="community_based_on_nameless">“%1$s” temel alınarak</string>
     <string name="propose_intro">Her öneriye bir moderatör bakar. O zamana kadar listelerin aşağıda seçtiğin bölümde kalır.</string>
     <string name="propose_send">Öner</string>
@@ -258,7 +258,7 @@
     <string name="propose_error_banned_until">%1$s tarihine kadar bölüm öneremezsin.</string>
     <string name="propose_error_banned">Bölüm öneremezsin.</string>
     <string name="propose_sign_in_title">Bölüm önermek için giriş yap</string>
-    <string name="propose_sign_in_body">Öneriler bir hesaptan gelir; böylece bir moderatör sonucunu sana bildirebilir.</string>
+    <string name="propose_sign_in_body">Öneriler bir hesaptan gelir; böylece bir moderatör sonucunu size bildirebilir.</string>
     <string name="propose_sign_in">Giriş yap</string>
     <string name="propose_too_many_title">Üç öneri bekliyor</string>
     <string name="propose_too_many_body">Bir moderatör bunlardan birine baktıktan sonra yeni bir öneri yapabilirsin.</string>
@@ -279,9 +279,9 @@
     <string name="community_sign_in_to_show_ranking">Sıralamanı göstermek için giriş yap</string>
     <string name="community_ranking_shown">Sıralaman listenin sıralamaları arasında</string>
     <string name="community_action_sign_in">Giriş yap</string>
-    <string name="community_your_list_badge">Senin listen</string>
+    <string name="community_your_list_badge">Sizin listeniz</string>
     <string name="community_own_published">Yayında</string>
-    <string name="community_own_anonymous">Anonim · senin olduğunu yalnızca sen görüyorsun</string>
+    <string name="community_own_anonymous">Anonim · sizin olduğunuzu yalnızca siz görüyorsunuz</string>
     <string name="community_own_list_line">Ziyaretçiler bunu görür. Değişiklikler panonda yapılır.</string>
     <string name="community_restore_from_trash">Çöp kutusundan geri al</string>
     <string name="community_get_back_as_board">Pano olarak geri al</string>

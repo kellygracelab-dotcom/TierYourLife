@@ -52,7 +52,7 @@
     <string name="community_showing_mine">Моє</string>
     <string name="community_showing_theirs">Його</string>
     <string name="community_someone_elses">Чужий список. Розкладіть його як забажаєте.</string>
-    <string name="community_tile_hidden">Сховано в тебе</string>
+    <string name="community_tile_hidden">Сховано у вас</string>
     <string name="community_tile_reported">Скаргу надіслано. Людина подивиться.</string>
     <string name="feed_sort_popular">Популярні</string>
     <string name="feed_sort_recent">Нові</string>
@@ -94,11 +94,11 @@
     <string name="moderation_unblur">Показати обкладинки</string>
     <string name="moderation_undo">Скасувати</string>
     <string name="my_published_action_open">Відкрити</string>
-    <string name="my_published_empty_body">Списки, які ти зробиш публічними, зʼявляться тут.</string>
+    <string name="my_published_empty_body">Списки, які ви зробите публічними, зʼявляться тут.</string>
     <string name="my_published_empty_title">Нічого не опубліковано</string>
-    <string name="my_published_failed">Не вдалося завантажити твої публічні списки</string>
-    <string name="my_published_subtitle">Усе, що є в тебе у спільноті, звідки б ти це не опублікував.</string>
-    <string name="my_published_title">Твої публічні списки</string>
+    <string name="my_published_failed">Не вдалося завантажити ваші публічні списки</string>
+    <string name="my_published_subtitle">Усе, що є у вас у спільноті, звідки б ви це не опублікували.</string>
+    <string name="my_published_title">Ваші публічні списки</string>
     <string name="report_action_send">Поскаржитися</string>
     <string name="report_by_hand">Скарги читає людина. Якщо їх набереться, список сховається до рішення.</string>
     <string name="report_hide_author">Сховати взагалі все від %1$s</string>

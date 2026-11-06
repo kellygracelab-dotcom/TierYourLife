@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.settings.takeWhole
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.account.presentation.R
@@ -33,7 +34,7 @@ internal fun NicknameDialog(
     onDismiss: () -> Unit,
     onSave: (String) -> Unit,
 ) {
-    var name by remember { mutableStateOf(current.take(NICKNAME_MAX_LENGTH)) }
+    var name by remember { mutableStateOf(current.takeWhole(NICKNAME_MAX_LENGTH)) }
     val trimmed = name.trim()
 
     AlertDialog(

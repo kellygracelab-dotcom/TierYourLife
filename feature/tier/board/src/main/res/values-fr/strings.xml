@@ -64,6 +64,7 @@
     <string name="my_published_behind">La version publiée est en retard sur ce tableau.</string>
     <string name="share_caption">%1$s — classé dans TierYourLife\n%2$s</string>
     <string name="share_footer">Fait avec TierYourLife</string>
+    <string name="share_failed">Impossible de partager l’image</string>
     <string name="tier_detail_add">Ajouter</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d élément</item>

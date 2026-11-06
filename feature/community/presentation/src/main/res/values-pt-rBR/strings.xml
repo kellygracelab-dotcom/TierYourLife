@@ -152,12 +152,12 @@
     <string name="home_following_empty_topics">Ainda não há nada dos temas que você segue.</string>
     <string name="moderation_action_move">Mover…</string>
     <string name="moderation_moderators_unavailable">Não foi possível ler a lista de moderadores.</string>
-    <string name="community_rankings_title">Rankings</string>
+    <string name="community_rankings_title">Classificações</string>
     <string name="community_rankings_body">As mesmas cartas, colocadas do jeito de alguém. Escolha de quem mostrar as fileiras.</string>
     <string name="community_ranking_author">Autor da lista</string>
     <string name="community_ranking_you">Você</string>
     <string name="community_ranking_withdraw">Retirar</string>
-    <string name="community_action_rankings">Rankings · %1$d</string>
+    <string name="community_action_rankings">Classificações · %1$d</string>
     <string name="community_rank_it_yourself">Organize você mesmo</string>
     <string name="community_drag_any_card">Arraste um card</string>
     <string name="community_based_on">Baseada em “%1$s” de %2$s</string>

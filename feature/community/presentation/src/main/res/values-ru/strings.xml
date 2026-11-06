@@ -52,7 +52,7 @@
     <string name="community_showing_mine">Моя</string>
     <string name="community_showing_theirs">Его</string>
     <string name="community_someone_elses">Чужой список. Разложите его как захотите.</string>
-    <string name="community_tile_hidden">Скрыто у тебя</string>
+    <string name="community_tile_hidden">Скрыто у вас</string>
     <string name="community_tile_reported">Жалоба отправлена. Человек посмотрит.</string>
     <string name="feed_sort_popular">Популярные</string>
     <string name="feed_sort_recent">Новые</string>
@@ -94,11 +94,11 @@
     <string name="moderation_unblur">Показать обложки</string>
     <string name="moderation_undo">Отменить</string>
     <string name="my_published_action_open">Открыть</string>
-    <string name="my_published_empty_body">Списки, которые ты сделаешь публичными, появятся здесь.</string>
+    <string name="my_published_empty_body">Списки, которые вы сделаете публичными, появятся здесь.</string>
     <string name="my_published_empty_title">Ничего не опубликовано</string>
-    <string name="my_published_failed">Не удалось загрузить твои публичные списки</string>
-    <string name="my_published_subtitle">Всё, что у тебя есть в сообществе, откуда бы ты это ни опубликовал.</string>
-    <string name="my_published_title">Твои публичные списки</string>
+    <string name="my_published_failed">Не удалось загрузить ваши публичные списки</string>
+    <string name="my_published_subtitle">Всё, что у вас есть в сообществе, откуда бы вы это ни опубликовали.</string>
+    <string name="my_published_title">Ваши публичные списки</string>
     <string name="report_action_send">Пожаловаться</string>
     <string name="report_by_hand">Жалобы читает человек. Если их наберётся, список скроется до решения.</string>
     <string name="report_hide_author">Скрыть вообще всё от %1$s</string>

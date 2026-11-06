@@ -60,6 +60,7 @@
     <string name="my_published_behind">公開中の内容はこのボードより古いです。</string>
     <string name="share_caption">%1$s — TierYourLife でランク付け\n%2$s</string>
     <string name="share_footer">TierYourLife で作成</string>
+    <string name="share_failed">画像を共有できませんでした</string>
     <string name="tier_detail_add">追加</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="other">%1$d件</item>

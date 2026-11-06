@@ -64,6 +64,7 @@
     <string name="my_published_behind">La versión publicada está desactualizada.</string>
     <string name="share_caption">%1$s — ordenado en TierYourLife\n%2$s</string>
     <string name="share_footer">Hecho en TierYourLife</string>
+    <string name="share_failed">No se pudo compartir la imagen</string>
     <string name="tier_detail_add">Añadir</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d elemento</item>
