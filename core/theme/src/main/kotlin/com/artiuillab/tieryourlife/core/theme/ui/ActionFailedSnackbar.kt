@@ -15,13 +15,14 @@ import com.artiuillab.tieryourlife.core.theme.R
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import kotlinx.coroutines.flow.Flow
 
-/** "That did not work" at the bottom, for a screen whose view model only ever says that. Last child of a Box. */
+/** "That did not work" at the bottom, or that a list waits for a moderator, for a screen whose view model says no more. Last child of a Box. */
 @Composable
 fun ActionFailedSnackbar(messages: Flow<UserMessage>, modifier: Modifier = Modifier) {
     val hostState = remember { SnackbarHostState() }
     val failed = stringResource(R.string.snack_action_failed)
+    val underReview = stringResource(R.string.snack_published_under_review)
     LaunchedEffect(messages) {
-        messages.collect { hostState.showSnackbar(failed) }
+        messages.collect { hostState.showSnackbar(if (it == UserMessage.PublishedUnderReview) underReview else failed) }
     }
     SnackbarHost(
         hostState = hostState,
