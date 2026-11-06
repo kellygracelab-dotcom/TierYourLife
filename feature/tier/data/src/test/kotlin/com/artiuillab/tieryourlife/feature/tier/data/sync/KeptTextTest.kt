@@ -23,6 +23,13 @@ class KeptTextTest {
     }
 
     @Test
+    fun `a cut never leaves half of an emoji`() {
+        val cut = KeptText.clean("a".repeat(KeptText.CAPTION - 1) + "😀", KeptText.CAPTION)
+
+        assertEquals("a".repeat(KeptText.CAPTION - 1), cut)
+    }
+
+    @Test
     fun `nothing left is no text at all`() {
         assertNull(KeptText.clean(" \n ", KeptText.CAPTION))
     }

@@ -313,4 +313,5 @@
     <string name="moderation_not_taken_down">Не знято: список досі публічний. Спробуйте ще раз.</string>
     <string name="moderation_not_kept">Не вдалося залишити список: скарги досі відкриті. Спробуйте ще раз.</string>
     <string name="moderation_not_moved">Не переміщено: список залишився на місці. Спробуйте ще раз.</string>
+    <string name="moderation_moved_not_dismissed">Переміщено, але скарги лишилися відкритими. Відхиліть їх, щоб очистити чергу.</string>
 </resources>

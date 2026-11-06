@@ -157,6 +157,20 @@ class ModerationViewModelTest {
     }
 
     @Test
+    fun aMoveWhoseDismissFails_saysItMovedAndKeepsTheReports() = runBlocking {
+        val repository = FakeModerationRepository(twoAboutOneList(), dismissFails = true)
+        val viewModel = ModerationViewModel(repository)
+        viewModel.state.firstWithin { it is ModerationUiState.Ready }
+
+        viewModel.move("a", ListCategory.Food.id)
+
+        assertEquals(ModerationFailure.MovedNotDismissed, withTimeout(5_000) { viewModel.failed.first() })
+        val still = viewModel.state.firstWithin { it.isSettled() } as ModerationUiState.Ready
+        assertEquals(listOf("a" to ListCategory.Food.id), repository.moved)
+        assertEquals(listOf("a"), still.reports.map { it.listId })
+    }
+
+    @Test
     fun anActionThatGoesThrough_saysNothingFailed() = runBlocking {
         val viewModel = ModerationViewModel(FakeModerationRepository(twoAboutOneList() + about("b")))
         viewModel.state.firstWithin { it is ModerationUiState.Ready }
@@ -188,6 +202,7 @@ private class FakeModerationRepository(
     private val queue: List<ModerationReport>,
     private val readable: Boolean = true,
     private val actionsFail: Boolean = false,
+    private val dismissFails: Boolean = false,
 ) : FakeCommunityRepository() {
     val takenDown = mutableListOf<String>()
     val dismissed = mutableListOf<String>()
@@ -209,7 +224,7 @@ private class FakeModerationRepository(
     }
 
     override suspend fun dismissReports(publishedId: String): Result<Unit> {
-        if (actionsFail) return Result.failure(IllegalStateException("offline"))
+        if (actionsFail || dismissFails) return Result.failure(IllegalStateException("offline"))
         dismissed += publishedId
         return Result.success(Unit)
     }
