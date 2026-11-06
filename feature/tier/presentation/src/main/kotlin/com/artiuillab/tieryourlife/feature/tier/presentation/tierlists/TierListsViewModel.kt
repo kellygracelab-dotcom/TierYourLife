@@ -66,6 +66,7 @@ class TierListsViewModel @Inject constructor(
     private var conflictsSeen: Set<String> = emptySet()
     private var offerAnswered: Boolean = false
     private var syncJob: Job? = null
+    private var syncAgain = false
 
     private var restoringPictures: PictureRestore.Progress = PictureRestore.Progress.Idle
 
@@ -93,16 +94,31 @@ class TierListsViewModel @Inject constructor(
         }
     }
 
-    /** Cancelled mid-run is fine: the next run recomputes from the same lists. */
+    /**
+     * Cancelled mid-run is fine: the next run recomputes from the same lists.
+     * Asked for during a run, one more follows it: the run going may have been
+     * planned before a sign-in settled, and a fresh phone then got nothing
+     * until some later edit asked again.
+     */
     private fun keepBoards() {
-        // Asked afresh: a change of identity can reach this before the field above hears of it.
-        val signedIn = accounts.current() as? Account.SignedIn ?: return
-        if (!preferences.backUpBoards(signedIn.recordKey)) return
-        if (syncJob?.isActive == true) return
-        syncJob = viewModelScope.launch {
-            runSuspendCatching { boardSync.sync() }
-                .onFailure { failure -> Timber.w(failure, "Keeping boards did not finish") }
+        if (!wantsBoardsKept()) return
+        if (syncJob?.isActive == true) {
+            syncAgain = true
+            return
         }
+        syncJob = viewModelScope.launch {
+            do {
+                syncAgain = false
+                runSuspendCatching { boardSync.sync() }
+                    .onFailure { failure -> Timber.w(failure, "Keeping boards did not finish") }
+            } while (syncAgain && wantsBoardsKept())
+        }
+    }
+
+    // Asked afresh: a change of identity can reach this before the field above hears of it.
+    private fun wantsBoardsKept(): Boolean {
+        val signedIn = accounts.current() as? Account.SignedIn ?: return false
+        return preferences.backUpBoards(signedIn.recordKey)
     }
 
     /** Answered once: a card that keeps returning is one people dismiss unread. */

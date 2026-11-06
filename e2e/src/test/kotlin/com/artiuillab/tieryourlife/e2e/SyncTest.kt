@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -23,9 +24,11 @@ class SyncTest {
     private lateinit var first: Phone
     private lateinit var second: Phone
 
+    private lateinit var account: Identity
+
     @Before
     fun signInTwice() {
-        val account = Emulators.newAccount()
+        account = Emulators.newAccount()
         first = Phone(account)
         second = Phone(Emulators.signIn(account))
     }
@@ -61,6 +64,28 @@ class SyncTest {
         assertEquals("Albums, revised", changed.title)
         assertEquals(listOf("Kid A", "Mezzanine"), second.cardsIn(changed, "S"))
         assertEquals(listOf(200, 200), first.answersTo("PUT", "/boards/$uid").map { it.status })
+    }
+
+    // The site's e2e caught its own version of this: the first run on a new
+    // phone came while the sign-in was settling, and nothing came down until
+    // something changed there.
+    @Test
+    fun aPhoneSigningInWithNothingOfItsOwn_getsTheAccountsBoardsOnItsFirstSync() = runBlocking<Unit> {
+        val films = first.board(first.newBoard("Films")).uid
+        val games = first.board(first.newBoard("Games")).uid
+        first.sync.sync()
+
+        Phone(Emulators.signIn(account)).use { fresh ->
+            fresh.ownership.hold()
+            assertFalse(fresh.sync.sync().signedIn)
+            fresh.ownership.release(moveGuestBoardsIn = false)
+            val report = fresh.sync.sync()
+
+            assertEquals(2, report.carried)
+            assertEquals("Films", fresh.boardByUid(films)?.title)
+            assertEquals("Games", fresh.boardByUid(games)?.title)
+            assertTrue(fresh.answersTo("PUT", "/boards/$films").isEmpty())
+        }
     }
 
     @Test
