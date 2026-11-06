@@ -157,4 +157,6 @@
     <string name="play_snack_saved_discarded">تم تجاهل اللعبة المحفوظة</string>
     <string name="play_snack_result_discarded">تم تجاهل النتيجة</string>
     <string name="play_snack_undo">تراجع</string>
+    <string name="play_snack_not_saved">تعذّر حفظ اللعبة</string>
+    <string name="play_snack_list_updated">تم تحديث هذه القائمة أثناء اللعب، لذلك أُلغيت اللعبة</string>
 </resources>

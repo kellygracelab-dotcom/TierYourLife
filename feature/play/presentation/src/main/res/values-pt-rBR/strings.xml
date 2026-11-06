@@ -115,4 +115,6 @@
     <string name="play_snack_saved_discarded">Jogo salvo descartado</string>
     <string name="play_snack_result_discarded">Resultado descartado</string>
     <string name="play_snack_undo">Desfazer</string>
+    <string name="play_snack_not_saved">Não foi possível salvar o jogo</string>
+    <string name="play_snack_list_updated">A lista foi atualizada durante o jogo, então o jogo foi descartado</string>
 </resources>

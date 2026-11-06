@@ -101,4 +101,6 @@
     <string name="play_snack_saved_discarded">Kayıtlı oyun silindi</string>
     <string name="play_snack_result_discarded">Sonuç silindi</string>
     <string name="play_snack_undo">Geri al</string>
+    <string name="play_snack_not_saved">Oyun kaydedilemedi</string>
+    <string name="play_snack_list_updated">Liste oyun sırasında güncellendi, bu yüzden oyun silindi</string>
 </resources>

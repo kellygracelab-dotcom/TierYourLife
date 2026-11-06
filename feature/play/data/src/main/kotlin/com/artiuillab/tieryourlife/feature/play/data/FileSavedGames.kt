@@ -36,20 +36,22 @@ class FileSavedGames(
 
     override suspend fun save(key: String, game: SavedGame) = change { it.copy(games = it.games + (key to GameRecord.of(game))) }
 
-    override suspend fun discard(key: String) = change { it.copy(games = it.games - key) }
+    override suspend fun discard(key: String) {
+        change { it.copy(games = it.games - key) }
+    }
 
     override suspend fun keys(): Set<String> = lock.withLock { current() }.games.keys
 
     override suspend fun lastKind(): GameKind? = lock.withLock { current() }.last?.let(::kindNamed)
 
-    override suspend fun rememberKind(kind: GameKind) = change { it.copy(last = kind.name) }
+    override suspend fun rememberKind(kind: GameKind) {
+        change { it.copy(last = kind.name) }
+    }
 
-    private suspend fun change(edit: (Shelf) -> Shelf) {
-        lock.withLock {
-            val next = edit(current())
-            shelf = next
-            withContext(io) { write(next) }
-        }
+    /** What did not reach the file is not taken as done here either. */
+    private suspend fun change(edit: (Shelf) -> Shelf): Boolean = lock.withLock {
+        val next = edit(current())
+        withContext(io) { write(next) }.also { written -> if (written) shelf = next }
     }
 
     private suspend fun current(): Shelf = shelf ?: withContext(io) { read() }.also { shelf = it }
@@ -70,18 +72,18 @@ class FileSavedGames(
     }
 
     /** Written beside and moved over, so a phone switched off mid-write keeps the last whole file. */
-    private fun write(shelf: Shelf) {
-        try {
-            file.parentFile?.mkdirs()
-            val next = File(file.path + ".new")
-            next.writeText(json.encodeToString(Shelf.serializer(), shelf))
-            if (!next.renameTo(file)) {
-                next.copyTo(file, overwrite = true)
-                next.delete()
-            }
-        } catch (e: IOException) {
-            Timber.w(e, "Saving the game failed")
+    private fun write(shelf: Shelf): Boolean = try {
+        file.parentFile?.mkdirs()
+        val next = File(file.path + ".new")
+        next.writeText(json.encodeToString(Shelf.serializer(), shelf))
+        if (!next.renameTo(file)) {
+            next.copyTo(file, overwrite = true)
+            next.delete()
         }
+        true
+    } catch (e: IOException) {
+        Timber.w(e, "Saving the game failed")
+        false
     }
 
     private companion object {
@@ -108,6 +110,9 @@ private data class GameRecord(
     val scope: List<Long>? = null,
     val keepTier: Boolean = false,
     val onBoard: Boolean = false,
+    val uids: List<String>? = null,
+    val scopeUids: List<String>? = null,
+    val touchedAt: Long? = null,
 ) {
     /** Null for a record this version cannot read: a game from a newer one is dropped, not guessed at. */
     fun toGame(): SavedGame? {
@@ -128,6 +133,9 @@ private data class GameRecord(
             scope = scope,
             keepTier = keepTier,
             onBoard = onBoard,
+            uids = uids,
+            scopeUids = scopeUids,
+            touchedAt = touchedAt ?: startedAt,
         )
     }
 
@@ -144,6 +152,9 @@ private data class GameRecord(
             scope = game.scope,
             keepTier = game.keepTier,
             onBoard = game.onBoard,
+            uids = game.uids,
+            scopeUids = game.scopeUids,
+            touchedAt = game.touchedAt,
         )
     }
 }

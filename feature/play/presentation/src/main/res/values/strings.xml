@@ -101,4 +101,6 @@
     <string name="play_snack_saved_discarded">Saved game discarded</string>
     <string name="play_snack_result_discarded">Result discarded</string>
     <string name="play_snack_undo">Undo</string>
+    <string name="play_snack_not_saved">Couldn’t save the game</string>
+    <string name="play_snack_list_updated">This list was updated during the game, so the game was dropped</string>
 </resources>

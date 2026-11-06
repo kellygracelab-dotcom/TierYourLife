@@ -115,4 +115,6 @@
     <string name="play_snack_saved_discarded">Partie enregistrée supprimée</string>
     <string name="play_snack_result_discarded">Résultat abandonné</string>
     <string name="play_snack_undo">Annuler</string>
+    <string name="play_snack_not_saved">Impossible d’enregistrer la partie</string>
+    <string name="play_snack_list_updated">La liste a été mise à jour pendant la partie, la partie a donc été abandonnée</string>
 </resources>

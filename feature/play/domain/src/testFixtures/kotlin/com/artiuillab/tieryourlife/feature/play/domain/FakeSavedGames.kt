@@ -8,10 +8,14 @@ class FakeSavedGames(
 
     val games = games.toMutableMap()
 
+    /** False for a full or broken disk: nothing more is written. */
+    var writes = true
+
     override suspend fun load(key: String): SavedGame? = games[key]
 
-    override suspend fun save(key: String, game: SavedGame) {
-        games[key] = game
+    override suspend fun save(key: String, game: SavedGame): Boolean {
+        if (writes) games[key] = game
+        return writes
     }
 
     override suspend fun discard(key: String) {

@@ -22,13 +22,29 @@ data class SavedGame(
      * it. Once it has, a board without the game means the game ended elsewhere.
      */
     val onBoard: Boolean = false,
+    /**
+     * The uids of the cards in [ids] and of the tiers in [scope], when each has
+     * one: a sync that takes the account's board writes every row afresh, and
+     * these find the cards again.
+     */
+    val uids: List<String>? = null,
+    val scopeUids: List<String>? = null,
+    /** When this copy was last written. */
+    val touchedAt: Long = startedAt,
 )
 
 const val SAVED_GAME_DAYS = 30
 private const val DAY_MILLIS = 24 * 60 * 60 * 1000L
 
-/** Gone without a word after a month: nobody remembers which half of a game they were in by then. */
-fun SavedGame.isExpired(now: Long): Boolean = now - startedAt > SAVED_GAME_DAYS * DAY_MILLIS
+/** A month after its last write, as the account keeps it: nobody remembers which half of a game they were in by then. */
+fun SavedGame.isExpired(now: Long): Boolean = now - touchedAt > SAVED_GAME_DAYS * DAY_MILLIS
+
+/** This copy on the board's rows as they are now, found by [uids]; as it is when it kept none. */
+fun SavedGame.foundBy(itemId: (String) -> Long?, tierId: (String) -> Long?): SavedGame {
+    val cards = uids?.takeIf { it.size == ids.size } ?: return this
+    val tiers = scope?.let { kept -> scopeUids?.takeIf { it.size == kept.size }?.mapNotNull(tierId) ?: kept }
+    return copy(ids = cards.mapIndexed { at, uid -> itemId(uid) ?: (MISSING_CARD - at) }, scope = tiers)
+}
 
 /** What a saved game can be on the board as it is now. */
 sealed interface Resumption {
@@ -65,7 +81,7 @@ fun SavedGame.resumeOn(cards: List<Long>): Resumption {
     }
     val respec = spec.copy(count = order.size)
     return Resumption.Ready(
-        copy(spec = respec, ids = order, history = renumbered, round = progress(respec, renumbered).round),
+        copy(spec = respec, ids = order, history = renumbered, round = progress(respec, renumbered).round, uids = null, scopeUids = null),
         joined = joining.size,
     )
 }
@@ -77,7 +93,8 @@ fun SavedGame.resumeOn(cards: List<Long>): Resumption {
 interface SavedGames {
     suspend fun load(key: String): SavedGame?
 
-    suspend fun save(key: String, game: SavedGame)
+    /** Returns whether it was written. */
+    suspend fun save(key: String, game: SavedGame): Boolean
 
     suspend fun discard(key: String)
 

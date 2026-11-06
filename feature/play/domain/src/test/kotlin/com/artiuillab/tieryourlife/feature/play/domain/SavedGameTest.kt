@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.play.domain
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -21,6 +22,38 @@ class SavedGameTest {
         val saved = game(GameKind.Swiss, listOf(1, 2, 3))
         assertFalse(saved.isExpired(now = 30 * day))
         assertTrue(saved.isExpired(now = 30 * day + 1))
+    }
+
+    @Test
+    fun theMonth_runsFromTheLastWrite_notFromTheStart() {
+        val day = 24 * 60 * 60 * 1000L
+        val playedOn = game(GameKind.Swiss, listOf(1, 2, 3)).copy(touchedAt = 20 * day)
+
+        assertFalse(playedOn.isExpired(now = 45 * day))
+        assertTrue(playedOn.isExpired(now = 50 * day + 1))
+    }
+
+    @Test
+    fun aCopyThatKeptItsUids_findsItsCardsAndTiersOnRowsWrittenAfresh() {
+        val saved = game(GameKind.Swiss, listOf(10, 20, 30)).copy(
+            scope = listOf(5, 6),
+            uids = listOf("a", "b", "c"),
+            scopeUids = listOf("t-s", "t-a"),
+        )
+        val rows = mapOf("a" to 110L, "c" to 130L)
+
+        val found = saved.foundBy(rows::get, mapOf("t-s" to 50L)::get)
+
+        assertEquals(listOf(110L, -2L, 130L), found.ids)
+        assertEquals(listOf(50L), found.scope)
+        assertEquals(saved.history, found.history)
+    }
+
+    @Test
+    fun aCopyWithoutUids_staysAsItIs() {
+        val saved = game(GameKind.Hill, listOf(10, 20, 30)).copy(scope = listOf(5))
+
+        assertEquals(saved, saved.foundBy({ 1L }, { 1L }))
     }
 
     @Test
@@ -54,6 +87,17 @@ class SavedGameTest {
         assertEquals(3, resumed.game.spec.count)
         assertEquals(listOf(Outcome(1, 2, winner = 2)), resumed.game.history)
         assertEquals(0, resumed.joined)
+    }
+
+    @Test
+    fun swiss_renumbered_dropsTheUidsOfTheOldOrder() {
+        val saved = game(GameKind.Swiss, listOf(10, 20, 30), listOf(Outcome(0, 1, winner = 1)))
+            .copy(uids = listOf("a", "b", "c"), scopeUids = emptyList())
+
+        val resumed = saved.resumeOn(listOf(10, 30, 40)) as Resumption.Ready
+
+        assertNull(resumed.game.uids)
+        assertNull(resumed.game.scopeUids)
     }
 
     @Test

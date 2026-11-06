@@ -158,4 +158,10 @@ sealed interface PlayNotice {
     data object ResultDiscarded : PlayNotice
 
     data object Failed : PlayNotice
+
+    /** Neither the file nor the board took the game. */
+    data object NotSaved : PlayNotice
+
+    /** The list was published again while it was played, and the game went. */
+    data object ListUpdated : PlayNotice
 }
