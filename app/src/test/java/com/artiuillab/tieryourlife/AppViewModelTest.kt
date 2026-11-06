@@ -120,6 +120,10 @@ private class FakeAppPreferences(
 
     override fun setLastSignedIn(account: String?) = Unit
 
+    override fun heldBoards(): Map<String, Set<String>> = emptyMap()
+
+    override fun setHeldBoards(held: Map<String, Set<String>>) = Unit
+
     override fun conflictsSeen(): Set<String> = emptySet()
 
     override fun markConflictSeen(listUid: String) = Unit

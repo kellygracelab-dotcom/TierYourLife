@@ -37,7 +37,6 @@ class AccountErasureTest : SyncEngineBench() {
     private fun merge() = RoomBoardMerge(
         dao,
         database.ownerDao(),
-        database.guestBoardsDao(),
         boards,
         BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences),
         lock,

@@ -107,6 +107,14 @@ class FakeAppPreferences(
         signedInLast = account
     }
 
+    private var held: Map<String, Set<String>> = emptyMap()
+
+    override fun heldBoards(): Map<String, Set<String>> = held
+
+    override fun setHeldBoards(held: Map<String, Set<String>>) {
+        this.held = held.filterValues { it.isNotEmpty() }
+    }
+
     override fun setBoardRefusal(account: String, refusal: String?) {
         if (refusal == null) refusals.remove(account) else refusals[account] = refusal
     }

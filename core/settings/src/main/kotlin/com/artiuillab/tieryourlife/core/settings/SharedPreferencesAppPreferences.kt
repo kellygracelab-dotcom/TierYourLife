@@ -21,6 +21,8 @@ private const val KEY_CONFLICTS_SEEN = "conflicts_seen"
 private const val KEY_BOARD_REFUSAL = "board_refusal"
 private const val KEY_ERASURE_UNDER_WAY = "erasure_under_way"
 private const val KEY_LAST_SIGNED_IN = "last_signed_in"
+private const val KEY_HELD_BOARDS = "held_boards"
+private const val HELD_SEPARATOR = "\n"
 private const val KEY_LAST_KNOWN_REPORTS = "last_known_reports"
 private const val KEY_LAST_KNOWN_TRASH = "last_known_trash"
 private const val KEY_LAST_KNOWN_STORED_BYTES = "last_known_stored_bytes"
@@ -190,6 +192,20 @@ class SharedPreferencesAppPreferences @Inject constructor(
         // Committed: a sign-out by choice clears it just before the process may end.
         prefs.edit(commit = true) {
             if (account == null) remove(KEY_LAST_SIGNED_IN) else putString(KEY_LAST_SIGNED_IN, account)
+        }
+    }
+
+    override fun heldBoards(): Map<String, Set<String>> =
+        prefs.getStringSet(KEY_HELD_BOARDS, emptySet()).orEmpty()
+            .mapNotNull { entry -> entry.split(HELD_SEPARATOR, limit = 2).takeIf { it.size == 2 } }
+            .groupBy({ it[0] }, { it[1] })
+            .mapValues { (_, uids) -> uids.toSet() }
+
+    override fun setHeldBoards(held: Map<String, Set<String>>) {
+        val entries = held.flatMapTo(mutableSetOf()) { (account, uids) -> uids.map { "$account$HELD_SEPARATOR$it" } }
+        // Committed: written just before the boards are let go, and the only thing saying whose they were.
+        prefs.edit(commit = true) {
+            if (entries.isEmpty()) remove(KEY_HELD_BOARDS) else putStringSet(KEY_HELD_BOARDS, entries)
         }
     }
 

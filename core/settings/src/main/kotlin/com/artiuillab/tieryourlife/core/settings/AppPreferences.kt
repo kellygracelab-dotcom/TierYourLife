@@ -108,6 +108,14 @@ interface AppPreferences {
 
     fun setLastSignedIn(account: String?)
 
+    /**
+     * Board uids by the `recordKey` of the account whose session ended without
+     * a sign-out: only that account takes them back, and no other is handed them.
+     */
+    fun heldBoards(): Map<String, Set<String>>
+
+    fun setHeldBoards(held: Map<String, Set<String>>)
+
     /** By uid rather than one flag: a second conflict months later is news again. */
     fun conflictsSeen(): Set<String>
 

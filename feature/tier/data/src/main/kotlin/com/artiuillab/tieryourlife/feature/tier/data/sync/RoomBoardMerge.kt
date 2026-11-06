@@ -5,7 +5,6 @@ import com.artiuillab.tieryourlife.core.settings.ThePerson
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
-import com.artiuillab.tieryourlife.feature.tier.data.local.dao.GuestBoardsDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.OwnerDao
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
@@ -25,7 +24,6 @@ internal const val ERASE_ANSWERS_WITHIN_MS = 60L * 60 * 1000
 class RoomBoardMerge internal constructor(
     private val dao: BoardSyncDao,
     private val owners: OwnerDao,
-    private val guests: GuestBoardsDao,
     private val api: BoardsApi,
     private val ownership: BoardOwnership,
     private val lock: SyncLock,
@@ -38,24 +36,24 @@ class RoomBoardMerge internal constructor(
     @Inject constructor(
         dao: BoardSyncDao,
         owners: OwnerDao,
-        guests: GuestBoardsDao,
         api: BoardsApi,
         ownership: BoardOwnership,
         lock: SyncLock,
         preferences: AppPreferences,
         accounts: AccountRepository,
         thePerson: ThePerson,
-    ) : this(dao, owners, guests, api, ownership, lock, preferences, accounts, thePerson, System::currentTimeMillis)
+    ) : this(dao, owners, api, ownership, lock, preferences, accounts, thePerson, System::currentTimeMillis)
 
     override fun hold() = ownership.hold()
 
-    /** Not the boards held for the account signed into: they are its own again first. */
+    /** Not boards held for an account: the one signed into has them back first, and no other is asked about them. */
     override suspend fun guestBoards(): Int {
         ownership.current()?.let { ownership.reclaim(it) }
-        return guests.guestBoardsInUse().size
+        return ownership.guestBoardsInUse().size
     }
 
-    override suspend fun moveIn(fromThisPhone: String?) {
+    /** Under the lock, as holding a lost session's boards is: neither may land between the other's read and write. */
+    override suspend fun moveIn(fromThisPhone: String?) = lock.withLock {
         if (fromThisPhone != null) renameClashes(fromThisPhone)
         ownership.release(moveGuestBoardsIn = true)
     }
@@ -149,7 +147,7 @@ class RoomBoardMerge internal constructor(
             return
         }
 
-        guests.guestBoardsInUse()
+        ownership.guestBoardsInUse()
             .filter { board -> board.title in theirs }
             .forEach { board -> dao.renameBoard(board.uid, withSuffix(board.title, fromThisPhone)) }
     }

@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.GuestBoardsDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.OwnerDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.BoardOwner
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,6 +30,7 @@ class BoardOwnership @Inject constructor(
 
     private val moved = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private val settling = Mutex()
+    private val heldChanges = Mutex()
 
     @Volatile
     private var settled = false
@@ -72,7 +74,7 @@ class BoardOwnership @Inject constructor(
     suspend fun release(moveGuestBoardsIn: Boolean) {
         val owner = current()
         if (moveGuestBoardsIn && owner != null) {
-            val count = guests.moveGuestBoardsTo(owner)
+            val count = heldChanges.withLock { guests.moveGuestBoardsTo(owner, heldUids()) }
             Timber.i("Moved %d board(s) made without an account into the account", count)
         }
         holding = false
@@ -84,14 +86,42 @@ class BoardOwnership @Inject constructor(
         moved.tryEmit(Unit)
     }
 
-    /** The boards [account] left behind when its session was ended for it are its own again. */
+    /** Made without an account, trash left out; not the ones held for an account, which only it takes back. */
+    suspend fun guestBoardsInUse(): List<TierListEntity> {
+        val held = heldUids()
+        return guests.guestBoardsInUse().filterNot { it.uid in held }
+    }
+
+    /**
+     * [account]'s session ended without a sign-out: its boards become this
+     * phone's to show, but stay [account]'s to take back, with their records.
+     */
+    suspend fun holdFor(account: String): Int = heldChanges.withLock {
+        val boards = guests.boardsOwnedBy(account)
+        if (boards.isEmpty()) return@withLock 0
+        val held = preferences.heldBoards()
+        // Written first: let go with nothing saying whose they were, they would be anyone's.
+        preferences.setHeldBoards(held + (account to held[account].orEmpty() + boards))
+        guests.releaseBoardsOf(account)
+        boards.size
+    }
+
+    /** The boards held for [account] that are still here are its own again. */
     suspend fun reclaim(account: String) {
-        val count = guests.reclaimHeldBoards(account)
+        val count = heldChanges.withLock {
+            val held = preferences.heldBoards()
+            val boards = held[account] ?: return
+            val given = guests.giveBack(account, boards)
+            preferences.setHeldBoards(held - account)
+            given
+        }
         if (count > 0) {
-            Timber.i("%d board(s) are back with the account they were synced with", count)
+            Timber.i("%d board(s) are back with the account they were held for", count)
             moved.tryEmit(Unit)
         }
     }
+
+    private fun heldUids(): Set<String> = preferences.heldBoards().values.flatten().toSet()
 
     private suspend fun settle() {
         val account = accounts.current().takeUnless { it is Account.Unknown }

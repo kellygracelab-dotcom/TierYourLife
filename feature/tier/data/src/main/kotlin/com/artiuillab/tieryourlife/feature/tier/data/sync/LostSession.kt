@@ -4,7 +4,6 @@ import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.ThePerson
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
-import com.artiuillab.tieryourlife.feature.tier.data.local.dao.GuestBoardsDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.OwnerDao
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import timber.log.Timber
@@ -22,7 +21,6 @@ import javax.inject.Singleton
 class LostSession @Inject constructor(
     private val accounts: AccountRepository,
     private val owners: OwnerDao,
-    private val guests: GuestBoardsDao,
     private val ownership: BoardOwnership,
     private val lock: SyncLock,
     private val preferences: AppPreferences,
@@ -54,7 +52,7 @@ class LostSession @Inject constructor(
             preferences.setErasureUnderWay(null)
             Timber.i("Signed out with an erase unanswered; kept %d board(s) of the account", kept)
         } else {
-            val held = guests.holdBoardsOf(account)
+            val held = ownership.holdFor(account)
             Timber.i("The session ended without a sign-out; %d board(s) stay on this phone", held)
         }
         thePerson.forget()
