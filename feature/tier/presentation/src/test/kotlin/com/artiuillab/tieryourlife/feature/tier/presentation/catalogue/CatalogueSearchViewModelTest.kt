@@ -120,7 +120,10 @@ class CatalogueSearchViewModelTest {
 
     @Test
     fun aBoardInASection_searchesItsCatalogues_untilAnotherScopeIsPicked() = runBlocking {
-        val repository = FakeCatalogueSearchRepository(1 to page(ids = listOf(1), hasMore = false))
+        val repository = FakeCatalogueSearchRepository(
+            1 to page(ids = listOf(1), hasMore = false),
+            byScope = mapOf(PictureScope.Games to page(ids = listOf(2), hasMore = false)),
+        )
         val viewModel = viewModelWith(repository)
 
         withContext(Dispatchers.Main) {
@@ -129,7 +132,11 @@ class CatalogueSearchViewModelTest {
         }
         viewModel.state.firstWithin { it is CatalogueSearchUiState.Success }
         withContext(Dispatchers.Main) { viewModel.setScope(PictureScope.Games) }
-        viewModel.state.firstWithin { it is CatalogueSearchUiState.Success && repository.asked.size == 2 }
+        // Another film, not a second count: an answer equal to the first would
+        // not be emitted again, and a collector that missed Loading would wait forever.
+        viewModel.state.firstWithin {
+            it is CatalogueSearchUiState.Success && it.items.map { item -> item.id } == listOf("tmdb:2")
+        }
 
         assertEquals(listOf(PictureScope.Anime to false, PictureScope.Games to false), repository.asked)
         assertEquals(PictureScope.Games, viewModel.scope.value)
@@ -247,10 +254,14 @@ class CatalogueSearchViewModelTest {
     )
 }
 
-/** Without [quick], a quick search is answered like the whole one, with nothing left to add. */
+/**
+ * Without [quick], a quick search is answered like the whole one, with nothing left to add.
+ * A scope in [byScope] gets its own answer whatever the page.
+ */
 private class FakeCatalogueSearchRepository(
     vararg pages: Pair<Int, Result<CatalogueSearchPage>>,
     private val quick: Result<CatalogueSearchPage>? = null,
+    private val byScope: Map<PictureScope, Result<CatalogueSearchPage>> = emptyMap(),
 ) : CatalogueSearchRepository {
 
     private val pagesByNumber = pages.toMap()
@@ -276,6 +287,8 @@ private class FakeCatalogueSearchRepository(
             requestedPages += page
             asked += scope to everywhere
         }
-        return pagesByNumber[page] ?: Result.failure(IllegalStateException("page $page was not expected"))
+        return byScope[scope]
+            ?: pagesByNumber[page]
+            ?: Result.failure(IllegalStateException("page $page was not expected"))
     }
 }
