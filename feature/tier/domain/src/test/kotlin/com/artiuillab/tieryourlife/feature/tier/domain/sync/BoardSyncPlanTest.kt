@@ -102,10 +102,34 @@ class BoardSyncPlanTest {
     }
 
     @Test
-    fun `a board thrown away in the account goes here too`() {
-        val steps = planSync(local(), remote(deleted = true), synced())
+    fun `a board thrown away in the account goes to the trash here`() {
+        val steps = planSync(local(), remote(revision = 2, deleted = true), synced(revision = 1))
 
-        assertEquals(listOf(SyncStep.DiscardLocal(board)), steps)
+        assertEquals(listOf(SyncStep.TrashLocal(board, revision = 2)), steps)
+    }
+
+    // The trash step writes the marker's revision down. Forgetting the record
+    // instead read the marker as never agreed on next run, and the board went
+    // back up into the account the other phone had just emptied.
+    @Test
+    fun `a board already sent to the trash for a marker stays there`() {
+        val steps = planSync(local("trashed"), remote(revision = 2, deleted = true), synced(revision = 2, fingerprint = "trashed"))
+
+        assertEquals(emptyList<SyncStep>(), steps)
+    }
+
+    @Test
+    fun `an edit here outweighs a delete made elsewhere`() {
+        val steps = planSync(local("bbb"), remote(revision = 2, deleted = true), synced(revision = 1, fingerprint = "aaa"))
+
+        assertEquals(listOf(SyncStep.Revive(board, basedOn = 2)), steps)
+    }
+
+    @Test
+    fun `a board taken back out of the trash here goes back up`() {
+        val steps = planSync(local("restored"), remote(revision = 2, deleted = true), synced(revision = 2, fingerprint = "trashed"))
+
+        assertEquals(listOf(SyncStep.Revive(board, basedOn = 2)), steps)
     }
 
     // What emptied the library: backup off leaves a marker for every board and
@@ -143,13 +167,20 @@ class BoardSyncPlanTest {
         val agreed = planSync(local(), remote(revision = 2, deleted = true), synced(revision = 1))
         val neverAgreed = planSync(local(), remote(revision = 2, deleted = true), synced = emptyList())
 
-        assertEquals(listOf(SyncStep.DiscardLocal(board)), agreed)
+        assertEquals(listOf(SyncStep.TrashLocal(board, revision = 2)), agreed)
         assertEquals(listOf(SyncStep.Revive(board, basedOn = 2)), neverAgreed)
     }
 
     @Test
-    fun `a board already gone from both sides is left alone`() {
+    fun `a board already gone from both sides only loses its record`() {
         val steps = planSync(local = emptyList(), remote = remote(deleted = true), synced = synced())
+
+        assertEquals(listOf(SyncStep.DropRecord(board)), steps)
+    }
+
+    @Test
+    fun `a record for a board neither side has is left alone`() {
+        val steps = planSync(local = emptyList(), remote = emptyList(), synced = synced())
 
         assertEquals(emptyList<SyncStep>(), steps)
     }

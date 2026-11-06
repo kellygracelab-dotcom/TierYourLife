@@ -25,4 +25,7 @@ interface AccountRepository {
     /** The photo Google gave, whatever the user has chosen since. */
 
     suspend fun signOut()
+
+    /** Whether the signed-in account is still there, asked of the server; null when that cannot be told now. */
+    suspend fun currentAccountExists(): Boolean?
 }

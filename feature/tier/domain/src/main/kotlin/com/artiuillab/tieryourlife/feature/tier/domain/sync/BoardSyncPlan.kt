@@ -48,10 +48,11 @@ sealed interface SyncStep {
 
     /**
      * Thrown away somewhere else after this account and this phone agreed on
-     * it. Let it go here too: into the trash first, out of it only if it was
-     * already there.
+     * it, and not touched here since. Into this phone's trash, where it stays
+     * until somebody empties it; the record moves on to the marker's
+     * [revision], so the next run leaves it there instead of sending it back.
      */
-    data class DiscardLocal(override val uid: String) : SyncStep
+    data class TrashLocal(override val uid: String, val revision: Int) : SyncStep
 
     /**
      * The account holds only a marker for a board this phone has never agreed
@@ -62,6 +63,9 @@ sealed interface SyncStep {
 
     /** Thrown away here. Tell the account, so the other phone lets go as well. */
     data class Forget(override val uid: String) : SyncStep
+
+    /** Gone from both sides: only the record of agreeing is left, and nobody needs telling. */
+    data class DropRecord(override val uid: String) : SyncStep
 
     /** Already the same on both sides. Still a step: the phone must write down that they agree, or every run asks again. */
     data class Remember(override val uid: String, val revision: Int) : SyncStep
@@ -96,11 +100,9 @@ fun planSync(
     // Once here, no longer: emptied out of the trash on this phone. Nothing
     // else makes this shape.
     synced.forEach { record ->
-        val stillHere = record.uid in localUids
-        val alreadyGone = remoteByUid[record.uid]?.deleted ?: true
-        if (!stillHere && !alreadyGone) {
-            steps += SyncStep.Forget(record.uid)
-        }
+        if (record.uid in localUids) return@forEach
+        val there = remoteByUid[record.uid] ?: return@forEach
+        steps += if (there.deleted) SyncStep.DropRecord(record.uid) else SyncStep.Forget(record.uid)
     }
 
     return steps
@@ -111,12 +113,17 @@ private fun stepFor(local: LocalBoard, remote: RemoteBoard?, synced: SyncedBoard
         return SyncStep.Create(local.uid)
     }
     if (remote.deleted) {
-        // Thrown away on another phone. Keeping it here would make emptying the
-        // trash something that only holds on the phone you did it on. Without a
-        // record of agreeing, the marker says nothing about this board: backup
-        // switched off leaves one for every board, and reading those as deletes
-        // emptied the library the moment it was switched back on.
-        return if (synced != null) SyncStep.DiscardLocal(local.uid) else SyncStep.Revive(local.uid, basedOn = remote.revision)
+        // Without a record of agreeing, the marker says nothing about this
+        // board: backup switched off leaves one for every board, and reading
+        // those as deletes emptied the library the moment it was switched back
+        // on. An edit here since outweighs a delete made elsewhere. Otherwise
+        // it was thrown away on another phone: it goes to the trash here once
+        // and stays there until somebody empties it or takes it back out.
+        return when {
+            synced == null || local.fingerprint != synced.fingerprint -> SyncStep.Revive(local.uid, basedOn = remote.revision)
+            synced.revision != remote.revision -> SyncStep.TrashLocal(local.uid, revision = remote.revision)
+            else -> null
+        }
     }
 
     // Asked first: a database restored from a system backup has every board

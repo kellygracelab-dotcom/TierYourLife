@@ -108,6 +108,14 @@ private class FakeAppPreferences(
 
     override fun setLastSyncedAtMs(atMs: Long?) = Unit
 
+    override fun boardRefusal(account: String): String? = null
+
+    override fun setBoardRefusal(account: String, refusal: String?) = Unit
+
+    override fun erasureUnderWay(): String? = null
+
+    override fun setErasureUnderWay(mark: String?) = Unit
+
     override fun conflictsSeen(): Set<String> = emptySet()
 
     override fun markConflictSeen(listUid: String) = Unit

@@ -1,103 +1,30 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
-import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import com.artiuillab.tieryourlife.core.network.networkJson
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
-import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
-import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
-import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
-import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
-import com.artiuillab.tieryourlife.feature.tier.data.local.dao.IncomingTier
-import com.artiuillab.tieryourlife.feature.tier.data.local.database.TierDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.BoardSyncEntity
-import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
-import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
-import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
-import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
-import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.BoardConflictDto
-import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequestDto
-import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
-import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardIndexDto
-import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardRevisionDto
-import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardSummaryDto
-import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
-import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.ResponseBody.Companion.toResponseBody
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
-import retrofit2.Response
-import java.io.IOException
+import org.robolectric.annotation.Config
 
 /** What a sync run does with the steps the plan decides. */
 @RunWith(AndroidJUnit4::class)
-class BoardSyncEngineTest {
-
-    @get:Rule
-    val folder = TemporaryFolder()
-
-    private lateinit var database: TierDatabase
-    private lateinit var dao: BoardSyncDao
-    private lateinit var images: TierImageStore
-    private val boards = FakeBoards()
-
-    @Before
-    fun setUp() {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        database = Room.inMemoryDatabaseBuilder(context, TierDatabase::class.java).build()
-        dao = database.boardSyncDao()
-        images = TierImageStore(directory = folder.root, openSource = { null })
-    }
-
-    @After
-    fun tearDown() = database.close()
-
-    private fun engine(
-        account: Account = FakeAccountRepository.signedIn,
-        backUp: Boolean = true,
-        preferences: FakeAppPreferences = FakeAppPreferences(backUpBoards = backUp),
-        community: CommunityRepository = FakeCommunityRepository(),
-        api: BoardsApi = boards,
-        accounts: FakeAccountRepository = FakeAccountRepository(initial = account),
-        vault: Pictures = NoPictures,
-        connection: Connection = Metered,
-        ownership: BoardOwnership = BoardOwnership(accounts, database.ownerDao(), preferences),
-    ): BoardSyncEngine {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        return BoardSyncEngine(
-            dao = dao,
-            api = api,
-            accounts = accounts,
-            json = networkJson,
-            images = images,
-            pictures = PictureSync(dao, images, vault, preferences, connection),
-            preferences = preferences,
-            deviceName = DeviceName(context),
-            community = community,
-            ownership = ownership,
-        )
-    }
+@Config(sdk = [35])
+class BoardSyncEngineTest : SyncEngineBench() {
 
     @Test
     fun aGuest_sendsNothing() = runBlocking {
@@ -524,7 +451,7 @@ class BoardSyncEngineTest {
         val preferences = FakeAppPreferences()
         val accounts = FakeAccountRepository(initial = ann)
         engine(preferences = preferences, accounts = accounts).sync()
-        val backup = RoomBoardBackup(preferences, dao, images, boards, accounts)
+        val backup = RoomBoardBackup(preferences, dao, images, boards, accounts, lock)
 
         assertTrue(backup.stopAndDelete())
         assertEquals(listOf(true, true), listOf(films, games).map { boards.server.getValue(it).deleted })
@@ -540,7 +467,7 @@ class BoardSyncEngineTest {
     }
 
     @Test
-    fun aBoardThrownAwayElsewhere_goesToTheTrashHereFirst() = runBlocking {
+    fun aBoardThrownAwayElsewhere_goesToTheTrashHere_andTheRecordMovesOnToTheMarker() = runBlocking {
         val uid = givenLocalBoard("Films")
         engine().sync()
         boards.server[uid] = boards.server.getValue(uid).copy(revision = 2, deleted = true)
@@ -548,11 +475,13 @@ class BoardSyncEngineTest {
         engine().sync()
 
         assertNotNull(dao.boardByUid(uid)!!.deletedAt)
-        assertTrue(dao.allSyncRecords().none { it.listUid == uid })
+        assertEquals(2, dao.allSyncRecords().single { it.listUid == uid }.revision)
     }
 
+    // Only the person empties a trash: a delete made elsewhere never took a
+    // board out of this phone's for good.
     @Test
-    fun aBoardAlreadyInTheTrash_leavesForGood_whenThrownAwayElsewhere() = runBlocking {
+    fun aBoardAlreadyInTheTrash_staysThere_whenThrownAwayElsewhere() = runBlocking {
         val uid = givenLocalBoard("Films")
         engine().sync()
         database.tierDao().markTierListsDeleted(listOf(dao.boardByUid(uid)!!.id), deletedAt = 1)
@@ -560,8 +489,10 @@ class BoardSyncEngineTest {
         boards.server[uid] = boards.server.getValue(uid).let { it.copy(revision = it.revision + 1, deleted = true) }
 
         engine().sync()
+        engine().sync()
 
-        assertNull(dao.boardByUid(uid))
+        assertEquals(1L, dao.boardByUid(uid)!!.deletedAt)
+        assertEquals(true, boards.server.getValue(uid).deleted)
     }
 
     @Test
@@ -593,130 +524,5 @@ class BoardSyncEngineTest {
         assertEquals(1, dao.boardsOf("ann").count { it.uid == uid && it.deletedAt == null })
         assertTrue(dao.syncRecordsOf(BoardSyncEntity.UNCLAIMED).isEmpty())
         assertEquals(setOf(uid, "gone"), dao.syncRecordsOf("ann").map { it.listUid }.toSet())
-    }
-
-    private suspend fun throwAway(uid: String, signedInAs: String) {
-        val tiers = database.tierDao()
-        tiers.markTierListsDeleted(listOf(dao.boardByUid(uid)!!.id), deletedAt = 1)
-        tiers.emptyTrash(owner = signedInAs)
-    }
-
-    private class Publishing(private vararg val ids: String) : FakeCommunityRepository() {
-        override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(
-            ids.map { PublishedListSummary(id = it, title = it, authorUid = "", authorName = "", category = "other", itemCount = 1, updatedAtMillis = 0) },
-        )
-    }
-
-    private suspend fun givenLocalBoard(
-        title: String,
-        publishedId: String? = null,
-        credit: String? = null,
-        owner: String? = someone,
-    ): String {
-        val board = TierListEntity(title = title, publishedId = publishedId, ownerUid = owner)
-        dao.addBoard(
-            board,
-            listOf(
-                IncomingTier(
-                    tier = TierEntity(tierListId = 0, position = 0, label = "S", colorLight = "#111111", colorDark = "#EEEEEE"),
-                    items = listOf(TierItemEntity(tierId = 0, position = 0, title = "Alien", imageUrl = null, credit = credit)),
-                ),
-            ),
-        )
-        return board.uid
-    }
-
-    private suspend fun fingerprintOf(uid: String): String {
-        val board = dao.boardByUid(uid)!!
-        return BoardFingerprint.of(board, dao.tiersOf(board.id), dao.itemsOf(board.id), images::pictureIdOf)
-    }
-
-    private fun theirBoard(
-        uid: String,
-        title: String,
-        revision: Int,
-        fingerprint: String? = "theirs",
-        deviceName: String? = null,
-        pictureId: String? = null,
-    ) = KeptBoardDto(
-        uid = uid,
-        revision = revision,
-        fingerprint = fingerprint,
-        deviceName = deviceName,
-        title = title,
-        tiers = listOf(KeptTierDto(uid = "$uid-tier", position = 0, label = "S", colorLight = "#111111", colorDark = "#EEEEEE")),
-        items = listOf(KeptItemDto(uid = "$uid-item", pictureId = pictureId, tierUid = "$uid-tier", position = 0, title = "Doom")),
-    )
-
-    private class FakeBoards : BoardsApi {
-        val server = mutableMapOf<String, KeptBoardDto>()
-        val kept = mutableListOf<Pair<String, KeepBoardRequestDto>>()
-        var refuseNextWith: KeptBoardDto? = null
-        var keepFails = false
-        var refuseWithCode: Int? = null
-        var onKeep: () -> Unit = {}
-        var onIndex: suspend () -> Unit = {}
-
-        override suspend fun index(after: String?): KeptBoardIndexDto {
-            onIndex()
-            return KeptBoardIndexDto(
-                server.values.map { KeptBoardSummaryDto(it.uid, it.revision, it.deleted, it.fingerprint) },
-            )
-        }
-
-        override suspend fun board(uid: String): KeptBoardDto = server.getValue(uid)
-
-        override suspend fun keep(uid: String, request: KeepBoardRequestDto): Response<KeptBoardRevisionDto> {
-            if (keepFails) throw IOException("offline")
-            refuseWithCode?.let { code -> return Response.error(code, "".toResponseBody("application/json".toMediaType())) }
-            refuseNextWith?.let { theirs ->
-                refuseNextWith = null
-                val body = networkJson.encodeToString(BoardConflictDto.serializer(), BoardConflictDto(board = theirs))
-                return Response.error(HTTP_CONFLICT, body.toResponseBody("application/json".toMediaType()))
-            }
-            kept += uid to request
-            onKeep()
-            val revision = (server[uid]?.revision ?: 0) + 1
-            server[uid] = KeptBoardDto(uid = uid, revision = revision, fingerprint = request.fingerprint, title = request.title)
-            return Response.success(KeptBoardRevisionDto(uid, revision))
-        }
-
-        // As the proxy: a marker, not nothing, so the other phone hears of it.
-        override suspend fun forget(uid: String) {
-            server[uid]?.let { stored -> server[uid] = stored.copy(revision = stored.revision + 1, deleted = true) }
-        }
-    }
-
-    private object NoPictures : Pictures {
-        override suspend fun put(pictureId: String, bytes: ByteArray) = true
-
-        override suspend fun get(pictureId: String): ByteArray? = null
-    }
-
-    private class Holding(private val pictureId: String) : Pictures {
-        override suspend fun put(pictureId: String, bytes: ByteArray) = true
-
-        override suspend fun get(pictureId: String): ByteArray? = byteArrayOf(1, 2, 3).takeIf { pictureId == this.pictureId }
-    }
-
-    /** Pictures wait for Wi-Fi, which keeps them out of a test about boards. */
-    private object Metered : Connection {
-        override val available = emptyFlow<Unit>()
-
-        override fun unmetered() = false
-    }
-
-    private object Unmetered : Connection {
-        override val available = emptyFlow<Unit>()
-
-        override fun unmetered() = true
-    }
-
-    private companion object {
-        const val HTTP_CONFLICT = 409
-        const val OTHER_RUN_MS = 1_000L
-        val someone = (FakeAccountRepository.signedIn as Account.SignedIn).recordKey
-        val ann = Account.SignedIn(email = "ann@example.com", photoUrl = null, uid = "ann")
-        val bob = Account.SignedIn(email = "bob@example.com", photoUrl = null, uid = "bob")
     }
 }

@@ -34,4 +34,11 @@ dependencies {
     androidTestImplementation(testFixtures(projects.core.settings))
     androidTestImplementation(testFixtures(projects.feature.account.domain))
     androidTestImplementation(testFixtures(projects.feature.community.domain))
+    // The sync engine against a real Room on the JVM: every rule it follows
+    // checked on each build, not only where an emulator runs.
+    testImplementation(testFixtures(projects.core.settings))
+    testImplementation(testFixtures(projects.feature.account.domain))
+    testImplementation(testFixtures(projects.feature.community.domain))
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.junit)
 }

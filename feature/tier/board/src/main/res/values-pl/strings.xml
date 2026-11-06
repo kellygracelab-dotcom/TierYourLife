@@ -145,6 +145,7 @@
     <string name="tier_list_settings_mode_wrapped">Zawijane wiersze</string>
     <string name="tier_list_settings_mode_wrapped_sub">Widoczny każdy element, wiersze stają się wyższe</string>
     <string name="tier_list_settings_new_tier_title">Nowy poziom</string>
+    <string name="tier_list_settings_tier_limit">19 poziomów i pula: więcej się nie zmieści</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="one">%d poziom</item>
         <item quantity="few">%d poziomy</item>

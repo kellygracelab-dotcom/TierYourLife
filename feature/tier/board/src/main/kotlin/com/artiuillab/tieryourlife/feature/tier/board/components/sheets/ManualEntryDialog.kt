@@ -41,6 +41,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.artiuillab.tieryourlife.core.settings.takeWhole
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.ClearIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ImagePlaceholderIcon
@@ -48,6 +49,9 @@ import com.artiuillab.tieryourlife.core.theme.ui.PhotoLibraryIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.common.dashedBorder
+
+/** As long as the account keeps a card's name; longer is cut there, and then on every phone. */
+const val CARD_TITLE_MAX_LENGTH = 80
 
 @Composable
 fun ManualEntryDialog(
@@ -63,7 +67,7 @@ fun ManualEntryDialog(
 
     ManualEntryDialogContent(
         title = title,
-        onTitleChange = { title = it },
+        onTitleChange = { title = it.takeWhole(CARD_TITLE_MAX_LENGTH) },
         photoUris = photoUris,
         onChoosePhotoClick = {
             pickPhotos.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))

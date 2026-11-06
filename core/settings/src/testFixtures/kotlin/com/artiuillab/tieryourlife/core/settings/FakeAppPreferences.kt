@@ -12,6 +12,7 @@ class FakeAppPreferences(
     override fun forgetThePerson() {
         hiddenLists.clear()
         hiddenAuthors.clear()
+        refusals.clear()
     }
 
     override fun themeChoice(): ThemeChoice = ThemeChoice.SYSTEM
@@ -85,6 +86,22 @@ class FakeAppPreferences(
     override fun lastSyncedAtMs(): Long? = null
 
     override fun setLastSyncedAtMs(atMs: Long?) = Unit
+
+    private val refusals = mutableMapOf<String, String>()
+
+    override fun boardRefusal(account: String): String? = refusals[account]
+
+    private var erasure: String? = null
+
+    override fun erasureUnderWay(): String? = erasure
+
+    override fun setErasureUnderWay(mark: String?) {
+        erasure = mark
+    }
+
+    override fun setBoardRefusal(account: String, refusal: String?) {
+        if (refusal == null) refusals.remove(account) else refusals[account] = refusal
+    }
 
     override fun conflictsSeen(): Set<String> = emptySet()
 

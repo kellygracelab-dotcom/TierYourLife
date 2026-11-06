@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.settings.presentation.R
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsTestTags
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupSettings
 
 /**
@@ -54,9 +55,16 @@ internal fun BackupSection(
                 onCheckedChange = onPicturesOnWifiOnlyChange,
             )
         }
-        if (stuckSince != null) {
+        val refusal = settings.refusal?.takeIf { settings.on }
+        // A refusal first: it says which board and why, where a day's silence only guesses.
+        val trouble = when {
+            refusal != null -> stringResource(refusal.reason.message(), refusal.boardTitle)
+            stuckSince != null -> stringResource(R.string.settings_backup_stuck, stuckSince)
+            else -> null
+        }
+        if (trouble != null) {
             Text(
-                text = stringResource(R.string.settings_backup_stuck, stuckSince),
+                text = trouble,
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                     .testTag(SettingsTestTags.BACKUP_STUCK),
@@ -72,6 +80,12 @@ internal fun BackupSection(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
+}
+
+private fun BackupRefusal.Reason.message(): Int = when (this) {
+    BackupRefusal.Reason.TooLarge -> R.string.settings_backup_refused_too_large
+    BackupRefusal.Reason.TooManyBoards -> R.string.settings_backup_refused_too_many
+    BackupRefusal.Reason.NotAccepted -> R.string.settings_backup_refused_not_accepted
 }
 
 /** Asked only on the way off: "off" has to mean the copy is gone. */

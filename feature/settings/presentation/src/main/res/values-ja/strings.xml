@@ -42,12 +42,15 @@
     </plurals>
     <string name="settings_backup_label">ボードをバックアップ</string>
     <string name="settings_backup_note">写真と生成カードはあなたのアカウントに保存され、見られるのはあなただけです。公開すると画像はフィードに複製され、誰でも見られます。</string>
-    <string name="settings_backup_off_body">この端末からは何も削除されません。ボードはここに残ります。アカウント内のコピーは削除され、新しい端末は空の状態から始まります。もう一度オンにすると、再びアップロードされます。</string>
+    <string name="settings_backup_off_body">この端末からは何も削除されません。ボードはここに残ります。アカウント内のコピーは削除され、ほかの端末ではボードがゴミ箱に移り、新しい端末は空の状態から始まります。もう一度オンにすると、再びアップロードされます。</string>
     <string name="settings_backup_off_cancel">キャンセル</string>
     <string name="settings_backup_off_confirm">停止して削除</string>
     <string name="settings_backup_off_title">バックアップを停止しますか？</string>
     <string name="settings_backup_pictures_label">画像はWi-Fiのみ</string>
     <string name="settings_backup_pictures_sub">アカウント内 %1$s</string>
+    <string name="settings_backup_refused_not_accepted">「%1$s」はバックアップされていません。アカウントが受け付けない内容が含まれています。</string>
+    <string name="settings_backup_refused_too_large">「%1$s」はバックアップされていません。アカウントに保存できる大きさを超えています。カードをいくつか外してください。</string>
+    <string name="settings_backup_refused_too_many">「%1$s」はバックアップされていません。アカウントに保存できるボードは200個までです。不要なボードを削除してください。</string>
     <string name="settings_backup_stuck">%1$sからバックアップされていません。接続を確認してください。</string>
     <string name="settings_backup_sub">ティア、カード、説明</string>
     <string name="settings_export">データをエクスポート</string>

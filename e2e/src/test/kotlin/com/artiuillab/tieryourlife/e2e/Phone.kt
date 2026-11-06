@@ -24,6 +24,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.sync.DeviceName
 import com.artiuillab.tieryourlife.feature.tier.data.sync.OwnPicturesOnThisPhone
 import com.artiuillab.tieryourlife.feature.tier.data.sync.PictureSync
 import com.artiuillab.tieryourlife.feature.tier.data.sync.Pictures
+import com.artiuillab.tieryourlife.feature.tier.data.sync.SyncLock
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.google.firebase.FirebaseApp
@@ -89,6 +90,7 @@ class Phone(identity: Identity) : Closeable {
         deviceName = DeviceName(context),
         community = community,
         ownership = ownership,
+        lock = SyncLock(),
     )
 
     /** What the board screen's switch does: publish, then write the answer onto the board. */

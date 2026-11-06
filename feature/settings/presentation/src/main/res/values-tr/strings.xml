@@ -44,12 +44,15 @@
     </plurals>
     <string name="settings_backup_label">Panolarımın yedeğini al</string>
     <string name="settings_backup_note">Fotoğraflarınız ve üretilen kartlar hesabınıza gider, orada yalnızca siz görürsünüz. Yayımlamak, listenin görsellerini herkesin gördüğü akışa kopyalar.</string>
-    <string name="settings_backup_off_body">Bu telefondan hiçbir şey silinmez: panoların burada kalır. Hesabındaki kopya silinir ve yeni bir telefon boş başlar. Yeniden açarsan panolar tekrar yüklenir.</string>
+    <string name="settings_backup_off_body">Bu telefondan hiçbir şey silinmez: panoların burada kalır. Hesabındaki kopya silinir, diğer cihazlarında panolar çöp kutusuna taşınır ve yeni bir telefon boş başlar. Yeniden açarsan panolar tekrar yüklenir.</string>
     <string name="settings_backup_off_cancel">İptal</string>
     <string name="settings_backup_off_confirm">Durdur ve sil</string>
     <string name="settings_backup_off_title">Yedekleme durdurulsun mu?</string>
     <string name="settings_backup_pictures_label">Resimler yalnızca Wi-Fi’da</string>
     <string name="settings_backup_pictures_sub">Hesabında %1$s</string>
+    <string name="settings_backup_refused_not_accepted">“%1$s” yedeklenmiyor: hesap üzerindeki bir şeyi kabul etmiyor.</string>
+    <string name="settings_backup_refused_too_large">“%1$s” yedeklenmiyor: hesabın sakladığından büyük. Üzerinden birkaç kart kaldır.</string>
+    <string name="settings_backup_refused_too_many">“%1$s” yedeklenmiyor: hesap en fazla 200 pano saklar. Artık gerekmeyenleri sil.</string>
     <string name="settings_backup_stuck">%1$s tarihinden beri yedeklenmedi. Bağlantını kontrol et.</string>
     <string name="settings_backup_sub">Seviyeler, kartlar ve notlar</string>
     <string name="settings_export">Verileri dışa aktar</string>

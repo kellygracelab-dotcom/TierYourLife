@@ -12,6 +12,8 @@ data class BackupSettings(
     val storedBytes: Long,
     /** When the last run got through, or null if none ever has. */
     val lastSyncedAtMs: Long?,
+    /** A board the account keeps turning away, said at once: unlike a lost connection, waiting does not fix it. */
+    val refusal: BackupRefusal? = null,
 ) {
 
     /** A day: anything shorter catches a phone that was switched off overnight. */
@@ -20,6 +22,21 @@ data class BackupSettings(
 
     companion object {
         const val STUCK_AFTER_MS = 24 * 60 * 60 * 1000L
+    }
+}
+
+/** Turned away for what the board is, so sending it again changes nothing until the board changes. */
+data class BackupRefusal(val boardTitle: String, val reason: Reason) {
+
+    enum class Reason {
+        /** Over the account's size for one board: too many tiers, cards or bytes. */
+        TooLarge,
+
+        /** The account already keeps as many boards as it takes. */
+        TooManyBoards,
+
+        /** Something on it the account does not accept. */
+        NotAccepted,
     }
 }
 

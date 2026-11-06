@@ -137,6 +137,7 @@
     <string name="tier_list_settings_mode_wrapped">Filas que se ajustan</string>
     <string name="tier_list_settings_mode_wrapped_sub">Se ve cada elemento, las filas crecen</string>
     <string name="tier_list_settings_new_tier_title">Nuevo nivel</string>
+    <string name="tier_list_settings_tier_limit">19 niveles más la reserva: no caben más en un tablero</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="one">%d nivel</item>
         <item quantity="many">%d niveles</item>

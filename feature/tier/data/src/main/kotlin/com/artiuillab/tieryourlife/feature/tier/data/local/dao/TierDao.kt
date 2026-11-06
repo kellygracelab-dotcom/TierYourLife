@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWithTiers
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 @Dao
 interface TierDao {
@@ -414,6 +415,19 @@ interface TierDao {
         colorDark: String,
     ): Long {
         val rankedCount = getAllTiersByTierListId(tierListId).count { !it.isPool }
+        if (rankedCount >= TierList.MAX_RANKED_TIERS) return NO_ROW
+        return insertRankedTier(tierListId, label, caption, colorLight, colorDark)
+    }
+
+    /** Last among the ranked tiers, above the pool, whatever the cap. */
+    suspend fun insertRankedTier(
+        tierListId: Long,
+        label: String,
+        caption: String?,
+        colorLight: String,
+        colorDark: String,
+    ): Long {
+        val rankedCount = getAllTiersByTierListId(tierListId).count { !it.isPool }
         shiftTiersFrom(tierListId, rankedCount)
 
         return insertTier(
@@ -440,7 +454,8 @@ interface TierDao {
     ): Long {
         if (getTierListById(tierListId) == null) return 0
 
-        val tierId = addTier(tierListId, label, caption, colorLight, colorDark)
+        // Not held to the cap: an undo brings back what was there.
+        val tierId = insertRankedTier(tierListId, label, caption, colorLight, colorDark)
         val rankedIds = getAllTiersByTierListId(tierListId)
             .filterNot { it.isPool }
             .map { it.id }
@@ -541,5 +556,10 @@ interface TierDao {
 
             updateTierItemTierAndPosition(itemId, toTierId, clampedPosition)
         }
+    }
+
+    companion object {
+        /** What [addTier] answers on a board with no room for another tier. */
+        const val NO_ROW = -1L
     }
 }

@@ -23,4 +23,20 @@ interface BoardMerge {
 
     /** They stay this phone's own, shown whenever nobody is signed in. */
     suspend fun keepHere()
+
+    /**
+     * Deletes [account] with [erase] and signs out with [signOut], no sync
+     * running in between. Once it is gone, its boards on this phone, trash
+     * included, become boards made without an account: the account was where
+     * they were copied to, not where they lived, and its uid is never signed
+     * into again. Gone also when [erase] got no answer but the account is no
+     * longer there; still unknown, it is settled by [settleUnansweredErase].
+     */
+    suspend fun eraseKeepingBoards(account: String, erase: suspend () -> Result<Unit>, signOut: suspend () -> Unit): Result<Unit>
+
+    /** Signing out by choice: an erase still unanswered for this account is settled first, while it can still be asked about. */
+    suspend fun signOutSettlingErase(signOut: suspend () -> Unit)
+
+    /** At start: an erase that never answered is settled once the account can be asked about, or turns out signed out. */
+    suspend fun settleUnansweredErase()
 }
