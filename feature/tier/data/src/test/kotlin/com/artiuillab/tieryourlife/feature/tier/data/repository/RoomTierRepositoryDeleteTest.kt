@@ -220,6 +220,33 @@ class RoomTierRepositoryDeleteTest {
         assertEquals(setOf(LIST, STILL_PUBLIC), dao.lists.keys)
     }
 
+    // A gallery photo kept as the cover belongs to no card; it is still in use.
+    @Test
+    fun `a cover kept from the gallery outlives emptying the trash, and a picture nothing uses does not`() = runBlocking {
+        val dao = boardWithThreeCards()
+        val repository = RoomTierRepository(dao, imageStore) { 0L }
+        val cover = repository.keepPicture("content://media/picker/0/42")
+        val loose = imageStore.copyToInternalStorage("content://media/picker/0/43")
+        repository.setCover(LIST, listOf(cover))
+
+        repository.emptyTrash()
+
+        assertTrue(File(cover).exists())
+        assertFalse(File(loose).exists())
+        assertEquals(imagesDir.absoluteFile, File(cover).parentFile?.absoluteFile)
+    }
+
+    @Test
+    fun `taking a topic off is kept apart from never having had one`() = runBlocking {
+        val dao = boardWithThreeCards()
+        val repository = RoomTierRepository(dao, imageStore) { 0L }
+
+        repository.takeTopicOff(LIST)
+        repository.setTopic(LIST, "", "Nameless", null)
+
+        assertEquals(listOf<String?>("", null), dao.topicIds)
+    }
+
     @Test
     fun `emptying the trash leaves another account's trash where it is`() = runBlocking {
         val dao = boardWithThreeCards()
@@ -300,7 +327,11 @@ private class RecordingTierDao : TierDao {
 
     override suspend fun setRankingOf(id: Long, listId: String?) = Unit
 
-    override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) = Unit
+    val topicIds = mutableListOf<String?>()
+
+    override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) {
+        topicIds += topicId
+    }
 
     val markedListDeletes = mutableListOf<Pair<List<Long>, Long>>()
     val permanentlyDeletedListIds = mutableListOf<Long>()
@@ -395,6 +426,7 @@ private class RecordingTierDao : TierDao {
     override suspend fun updateTierItemImage(id: Long, imageUrl: String?) = update(id) { it.copy(imageUrl = imageUrl) }
     override suspend fun getTierItemImageById(id: Long): String? = items.firstOrNull { it.id == id }?.imageUrl
     override suspend fun getAllImageRefs(): List<String> = items.mapNotNull { it.imageUrl }
+    override suspend fun getAllCoverRefs(): List<String> = lists.values.mapNotNull { it.coverImageUrl }
 
     private fun update(id: Long, change: (TierItemEntity) -> TierItemEntity) {
         items.replaceAll { if (it.id == id) change(it) else it }

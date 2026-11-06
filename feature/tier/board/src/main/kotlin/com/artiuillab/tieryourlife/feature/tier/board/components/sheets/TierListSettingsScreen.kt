@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.board.components.sheets
 
+import android.content.res.Resources
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -80,6 +82,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import java.text.DateFormat
 import java.util.Date
+import java.util.Locale
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private val DisplayModeSelectedTintLight = Color(0xFFEDEBFA)
@@ -621,17 +624,20 @@ private fun AnonymousRow(anonymous: Boolean, enabled: Boolean, onSetAnonymous: (
 }
 
 @Composable
-private fun PublishError.message(): String = when (this) {
+private fun PublishError.message(): String = publishErrorText(this, LocalResources.current, LocalConfiguration.current.locales[0])
+
+/** The sentence for a refused publish, wherever it is said: here, or beside the list among the person's public ones. */
+fun publishErrorText(error: PublishError, resources: Resources, locale: Locale): String = when (error) {
     is PublishError.Banned -> {
-        val until = untilMillis
+        val until = error.untilMillis
         if (until == null) {
-            stringResource(R.string.list_settings_public_banned_forever)
+            resources.getString(R.string.list_settings_public_banned_forever)
         } else {
-            val date = DateFormat.getDateInstance(DateFormat.LONG, LocalConfiguration.current.locales[0]).format(Date(until))
-            stringResource(R.string.list_settings_public_banned_until, date)
+            val date = DateFormat.getDateInstance(DateFormat.LONG, locale).format(Date(until))
+            resources.getString(R.string.list_settings_public_banned_until, date)
         }
     }
-    else -> stringResource(messageRes())
+    else -> resources.getString(error.messageRes())
 }
 
 private fun PublishError.messageRes(): Int = when (this) {
@@ -641,6 +647,9 @@ private fun PublishError.messageRes(): Int = when (this) {
     PublishError.TooManyPendingTopics -> R.string.list_settings_public_too_many_topics
     PublishError.TopicUnavailable -> R.string.list_settings_public_topic_unavailable
     PublishError.TooLarge -> R.string.list_settings_public_too_large
+    PublishError.ListGone -> R.string.list_settings_public_gone
+    PublishError.SectionUnavailable -> R.string.list_settings_public_section_unavailable
+    PublishError.NotTakenDown -> R.string.list_settings_unpublish_failed
     PublishError.PictureRefused -> R.string.list_settings_public_picture_refused
     is PublishError.Banned -> R.string.list_settings_public_banned_forever
     PublishError.Offline -> R.string.list_settings_public_offline

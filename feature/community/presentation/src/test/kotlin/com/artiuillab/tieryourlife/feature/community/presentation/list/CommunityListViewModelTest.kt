@@ -10,26 +10,19 @@ import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.FakeOpenedLists
-import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
-import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefusal
-import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefused
-import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
-import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
 import com.artiuillab.tieryourlife.feature.community.domain.model.TooManyFollowed
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
-import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -41,23 +34,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-
-private val published = PublishedList(
-    summary = PublishedListSummary(
-        id = "abc",
-        title = "Every A24 film",
-        authorUid = "author-1",
-        authorName = "Olena M.",
-        category = ListCategory.FilmTv.id,
-        itemCount = 2,
-        updatedAtMillis = 0,
-    ),
-    tiers = listOf(
-        Tier(id = 0, label = "S", colorLight = "#B03A32", colorDark = "#F1948C", items = emptyList()),
-        Tier(id = 1, label = "A", colorLight = "#C06A25", colorDark = "#E9A867", items = emptyList()),
-    ),
-    items = listOf(TierItem(0, "Hereditary", null), TierItem(1, "Moonlight", "https://i/2.jpg", credit = "© Jane Doe, CC BY")),
-)
 
 class CommunityListViewModelTest {
 
@@ -393,8 +369,6 @@ class CommunityListViewModelTest {
     private fun route(mine: Boolean = false, fromBoard: Boolean = false) =
         SavedStateHandle(mapOf("publishedId" to "abc", "mine" to mine, "fromBoard" to fromBoard))
 
-    private suspend fun nextNotice(viewModel: CommunityListViewModel) = withTimeout(5_000) { viewModel.listNotices.first() }
-
     // Danylo tapped his own list and got a page of it with a button to the board: the board is where it changes, so it opens.
     @Test
     fun aCardThatSaysTheListIsMine_opensMyBoard_withoutAskingTheServer() = runBlocking {
@@ -473,9 +447,6 @@ class CommunityListViewModelTest {
         unpublishFails = unpublishFails,
         summary = { if (anonymous) it.copy(authorUid = "", authorName = "", anonymous = true, mine = true) else it.copy(mine = true) },
     )
-
-    private suspend fun lookedUp(viewModel: CommunityListViewModel) =
-        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.ownBoardLookedUp == true } as CommunityListUiState.Success
 
     private val trashed = TrashEntry.DeletedList(id = 5, title = "Every A24 film", itemCount = 2, deletedAtMillis = 0, publishedId = "abc")
 
@@ -650,14 +621,6 @@ class CommunityListViewModelTest {
 
     private val signedIn = FakeAccountRepository(Account.SignedIn(email = "ann@example.com", photoUrl = null))
 
-    /** Moonlight into S on the reader's own half: arranged, and ready to show. */
-    private suspend fun arranged(viewModel: CommunityListViewModel): CommunityListUiState.Success {
-        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
-        viewModel.show(Showing.Mine)
-        viewModel.moveItem(itemId = 1, toTierId = loaded.mine.tiers.first { !it.isPool }.id, toPosition = 0)
-        return viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.arranged == true } as CommunityListUiState.Success
-    }
-
     @Test
     fun showingMyRanking_sendsMineInTheListsOrder_andPutsMeFirstAsYou() = runBlocking {
         val community = TestCommunity()
@@ -762,93 +725,6 @@ class CommunityListViewModelTest {
 
         assertEquals(UserMessage.ActionFailed, withTimeout(5_000) { viewModel.userMessages.first() })
         assertTrue((viewModel.state.value as CommunityListUiState.Success).rankings.isEmpty())
-    }
-}
-
-private val myOldRanking = Ranking(
-    uid = "me",
-    authorName = "Ann",
-    authorPhotoUrl = null,
-    arrangement = listOf(0, 0),
-    tierLabels = listOf("S", "A"),
-    updatedAtMillis = 0,
-    mine = true,
-)
-
-private class TestCommunity(
-    private val rankings: List<Ranking> = emptyList(),
-    private val refusesWithdrawal: Boolean = false,
-    private val summary: (PublishedListSummary) -> PublishedListSummary = { it },
-    private val shownIsNew: Boolean = true,
-    private val showRefusal: RankingRefusal? = null,
-    private val arrangement: List<Int?> = emptyList(),
-    private val unpublishFails: Boolean = false,
-    private val holdOpen: Boolean = false,
-) : FakeCommunityRepository() {
-    val unpublished = mutableListOf<String>()
-
-    /** Lets a held open answer through. */
-    val openHeld = CompletableDeferred<Unit>()
-    var offline = false
-    var opens = 0
-
-    override suspend fun unpublish(publishedId: String): Result<Unit> {
-        if (unpublishFails) return Result.failure(IllegalStateException("offline"))
-        unpublished += publishedId
-        return Result.success(Unit)
-    }
-
-    val shownRankings = mutableListOf<Pair<List<Int?>, List<String>>>()
-    val shownRows = mutableListOf<List<List<Int>>>()
-
-    override suspend fun showMyRanking(
-        listId: String,
-        arrangement: List<Int?>,
-        rows: List<List<Int>>,
-        tierLabels: List<String>,
-    ): Result<ShownRanking> {
-        shownRankings += arrangement to tierLabels
-        shownRows += rows
-        showRefusal?.let { return Result.failure(RankingRefused(it)) }
-        val ranking = Ranking("me", "Ann", null, arrangement, tierLabels, updatedAtMillis = 1, mine = true, rows = rows)
-        return Result.success(ShownRanking(ranking, created = shownIsNew))
-    }
-    val withdrawn = mutableListOf<String>()
-    val reported = mutableListOf<String>()
-    var followStateAsked = 0
-
-    override suspend fun followState(authorUid: String): Result<FollowState> {
-        followStateAsked++
-        return Result.success(FollowState(following = false))
-    }
-
-    override suspend fun report(publishedId: String, reason: ReportReason, note: String?): Result<Unit> {
-        reported += publishedId
-        return Result.success(Unit)
-    }
-
-    /** Held until the test lets the refusal through. */
-    val refusal = CompletableDeferred<Unit>()
-
-    override suspend fun open(id: String): Result<PublishedList> {
-        opens++
-        if (holdOpen) openHeld.await()
-        if (offline) return Result.failure(IllegalStateException("offline"))
-        return Result.success(
-            published.copy(
-                summary = summary(published.summary.copy(rankingCount = rankings.size)),
-                arrangement = arrangement,
-            ),
-        )
-    }
-
-    override suspend fun rankings(listId: String, after: String?): Result<RankingsPage> = Result.success(RankingsPage(rankings, null))
-
-    override suspend fun withdrawRanking(listId: String): Result<Unit> {
-        withdrawn += listId
-        if (!refusesWithdrawal) return Result.success(Unit)
-        refusal.await()
-        return Result.failure(IllegalStateException("offline"))
     }
 }
 

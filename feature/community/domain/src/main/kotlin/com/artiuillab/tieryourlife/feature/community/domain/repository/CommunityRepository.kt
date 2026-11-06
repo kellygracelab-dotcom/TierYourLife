@@ -185,6 +185,8 @@ data class Published(
     val id: String,
     val fingerprint: String,
     val topicId: String? = null,
+    /** Named when the list sits in a topic the board did not know of, such as one a moderator moved it into. */
+    val topicName: String? = null,
     /** True when the server kept it as this person's ranking of [id] rather than as a list of its own. */
     val ranking: Boolean = false,
 )

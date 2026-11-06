@@ -16,6 +16,15 @@ sealed interface PublishError {
 
     data object TooLarge : PublishError
 
+    /** The list this board was out as is not there for this person any more: taken down, deleted, or another account's. */
+    data object ListGone : PublishError
+
+    /** The board's section takes no lists now: hidden, or gone. Choosing another is the way on. */
+    data object SectionUnavailable : PublishError
+
+    /** Taking the list down did not go through: it is still public. */
+    data object NotTakenDown : PublishError
+
     /** One of the photographs on the board may not go into a public feed. */
     data object PictureRefused : PublishError
 

@@ -175,4 +175,7 @@
     <string name="list_settings_propose_section">Запропонувати розділ</string>
     <string name="list_settings_category_waiting">Очікує на модератора</string>
     <string name="list_settings_moves_to">Перейде в «%1$s», щойно його схвалять</string>
+    <string name="list_settings_public_gone">Цього списку більше немає в спільноті: його зняли, видалили або опублікували з іншого акаунта. Увімкніть «Публічний», щоб опублікувати його знову.</string>
+    <string name="list_settings_public_section_unavailable">Розділ цього списку більше не приймає списки. Оберіть інший розділ і опублікуйте знову.</string>
+    <string name="list_settings_unpublish_failed">Не вдалося зняти список з публікації; він досі публічний. Спробуйте ще раз.</string>
 </resources>

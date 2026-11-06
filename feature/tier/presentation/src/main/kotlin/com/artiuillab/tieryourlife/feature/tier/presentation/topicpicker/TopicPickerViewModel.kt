@@ -45,6 +45,9 @@ class TopicPickerViewModel @Inject constructor(
 
     private var searchJob: Job? = null
 
+    /** The board named a topic when the picker opened, or had one taken off already. */
+    private var hadTopic = false
+
     init {
         // Each quietly: the picker stands without either answer.
         val mine = viewModelScope.async { community.myTopics() }
@@ -54,6 +57,7 @@ class TopicPickerViewModel @Inject constructor(
                 .getOrNull() ?: return@launch
             val topicId = list.topicId
             val newName = list.newTopicName
+            hadTopic = topicId != null || newName != null || list.topicTakenOff
             val chosen = when {
                 topicId != null -> TopicChoice.Known(
                     Topic(
@@ -153,7 +157,8 @@ class TopicPickerViewModel @Inject constructor(
             val chosen = _state.value.chosen
             val saved = messages.guard("Saving the topic") {
                 when (chosen) {
-                    TopicChoice.None -> repository.setTopic(tierListId, null, null, null)
+                    // Only a topic the board had is taken off out loud; a board that knew of none leaves the list's alone.
+                    TopicChoice.None -> if (hadTopic) repository.takeTopicOff(tierListId) else repository.setTopic(tierListId, null, null, null)
                     is TopicChoice.Known ->
                         repository.setTopic(tierListId, chosen.topic.id, chosen.topic.name, chosen.topic.name.takeIf { chosen.topic.pending })
                     is TopicChoice.New -> repository.setTopic(tierListId, null, null, chosen.name)

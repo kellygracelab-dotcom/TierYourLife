@@ -468,6 +468,8 @@ private fun ListSnackbar(
         rankingNotices.collect { notice ->
             when (notice) {
                 RankingNotice.Shown -> host.showSnackbar(resources.getString(R.string.community_ranking_shown))
+                RankingNotice.ListChanged -> host.showSnackbar(resources.getString(R.string.community_ranking_list_changed))
+                RankingNotice.Banned -> host.showSnackbar(resources.getString(R.string.community_ranking_banned))
                 RankingNotice.SignInFirst -> {
                     val answer = host.showSnackbar(
                         message = resources.getString(R.string.community_sign_in_to_show_ranking),

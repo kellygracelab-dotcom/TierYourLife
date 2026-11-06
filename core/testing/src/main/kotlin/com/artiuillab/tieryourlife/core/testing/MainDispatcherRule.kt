@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * One thread playing Android's main thread, so a view model runs on the JVM
@@ -14,16 +15,18 @@ import java.util.concurrent.Executors
  *
  * The thread outlives each test on purpose. A view model's last coroutine can
  * still be finishing when its test returns; taking Main away under it made
- * that coroutine fail inside whichever test ran next.
+ * that coroutine fail inside whichever test ran next. Main is set once for
+ * the same reason: setting it again while such a coroutine reads it throws.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainDispatcherRule : TestWatcher() {
 
     override fun starting(description: Description) {
-        Dispatchers.setMain(main)
+        if (installed.compareAndSet(false, true)) Dispatchers.setMain(main)
     }
 
     private companion object {
+        val installed = AtomicBoolean(false)
         val main = Executors.newSingleThreadExecutor { task ->
             Thread(task, "test-main").apply { isDaemon = true }
         }.asCoroutineDispatcher()

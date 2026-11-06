@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -19,14 +21,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -49,6 +58,7 @@ import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CoverIcon
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AnonymousFace
@@ -56,6 +66,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.sho
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
+import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.publishErrorText
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -77,6 +88,7 @@ fun MyPublishedScreen(
         onUpdate = viewModel::update,
         onRetry = viewModel::load,
         userMessages = viewModel.userMessages,
+        refusals = viewModel.refusals,
     )
 }
 
@@ -89,8 +101,15 @@ fun MyPublishedScreenContent(
     onUpdate: (String) -> Unit = {},
     onRetry: () -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
+    refusals: Flow<PublishError> = emptyFlow(),
 ) {
     val languageTag = currentLanguageTag()
+    val resources = LocalResources.current
+    val locale = LocalConfiguration.current.locales[0]
+    val refusalHost = remember { SnackbarHostState() }
+    LaunchedEffect(refusals) {
+        refusals.collect { refusal -> refusalHost.showSnackbar(publishErrorText(refusal, resources, locale), duration = SnackbarDuration.Long) }
+    }
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         Column(Modifier.fillMaxSize().testTag(MyPublishedTestTags.SCREEN)) {
             BarredScreen(
@@ -149,6 +168,7 @@ fun MyPublishedScreenContent(
             }
         }
         ActionFailedSnackbar(userMessages)
+        SnackbarHost(refusalHost, Modifier.fillMaxSize().wrapContentHeight(Alignment.Bottom).navigationBarsPadding())
     }
 }
 

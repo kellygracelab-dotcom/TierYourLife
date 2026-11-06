@@ -36,6 +36,18 @@ class KeptPageTest {
         assertEquals(page, decodePage(encodePage(page)))
     }
 
+    // Whose list is "Your list", who is followed: the next person on the phone must see none of it.
+    @Test
+    fun `a page kept for one person reads as nothing kept for anyone else`() {
+        val page = CommunityPage(lists = listOf(summary(1).copy(mine = true, anonymous = true)))
+        val kept = encodePage(page, keptBy = "uid-a")
+
+        assertEquals(page, decodePageFor(kept, me = "uid-a"))
+        assertNull(decodePageFor(kept, me = "uid-b"))
+        assertNull(decodePageFor(kept, me = null))
+        assertNull(decodePageFor(encodePage(page), me = "uid-a"))
+    }
+
     @Test
     fun `only the first twenty are kept, and then the cursor would skip, so it goes`() {
         val page = CommunityPage(lists = (1..25).map(::summary), nextCursor = "after-25")

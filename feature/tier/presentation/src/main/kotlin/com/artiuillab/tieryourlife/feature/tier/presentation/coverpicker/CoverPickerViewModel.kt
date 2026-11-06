@@ -83,11 +83,17 @@ class CoverPickerViewModel @Inject constructor(
         if (_state.value.saving) return
         _state.update { it.copy(saving = true) }
         viewModelScope.launch {
-            val saved = messages.guard("Saving the cover") { repository.setCover(tierListId, _state.value.chosen) }
+            val saved = messages.guard("Saving the cover") {
+                // The picker's address lasts as long as this process; a copy of our own lasts, and publishes.
+                val chosen = _state.value.chosen.map { picture -> if (fromGallery(picture)) repository.keepPicture(picture) else picture }
+                repository.setCover(tierListId, chosen)
+            }
             _state.update { it.copy(saving = false, saved = saved) }
         }
     }
 }
+
+private fun fromGallery(url: String): Boolean = url.startsWith("content://")
 
 /** A web address reaches the community as it is; a file on this phone only travels by being uploaded, which a collage does not do. */
 private fun travels(url: String): Boolean = url.startsWith("https://")

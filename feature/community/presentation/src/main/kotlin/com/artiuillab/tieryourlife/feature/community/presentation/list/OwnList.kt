@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
@@ -51,10 +52,12 @@ internal class OwnList(
     private val forget: suspend () -> Unit = {},
 ) {
     private var opened: PublishedListSummary? = null
+    private var cover: List<String> = emptyList()
     private var handedOver = false
 
-    fun opened(summary: PublishedListSummary) {
-        opened = summary
+    fun opened(answer: PublishedList) {
+        opened = answer.summary
+        cover = chosenCoverOf(answer)
     }
 
     /** Before the server is asked, for a list the card already called theirs. True when the board opens instead. */
@@ -95,7 +98,7 @@ internal class OwnList(
     /**
      * The list as it is out there, made a board again: owned rather than
      * taken, still known as this list so Update sends to the same link, and
-     * as named or nameless as it went out.
+     * as named or nameless, and under the same cover, as it went out.
      */
     fun getBack() = busy("Getting a published list back as a board") { current ->
         val list = current.list
@@ -108,6 +111,7 @@ internal class OwnList(
         tiers.setPublished(id, publishedId, null)
         tiers.setAnonymous(id, current.anonymous)
         current.section?.let { tiers.setCategory(id, it) }
+        if (cover.isNotEmpty()) tiers.setCover(id, cover)
         opened?.topicId?.let { topicId -> tiers.setTopic(id, topicId, opened?.topicName, null) }
         change { it.copy(ownBoardId = id) }
         handOver(id)
@@ -144,3 +148,18 @@ internal class OwnList(
         state.update { current -> if (current is CommunityListUiState.Success) block(current) else current }
     }
 }
+
+/**
+ * The cover its author chose, as the list went out: one picture, or a
+ * collage. With none chosen the server shows the first cards' art, so a
+ * collage that is exactly that was nobody's choice, and sending nothing
+ * again draws the same.
+ */
+internal fun chosenCoverOf(list: PublishedList): List<String> {
+    list.summary.coverImageUrl?.let { return listOf(it) }
+    val automatic = list.items.mapNotNull { it.imageUrl?.takeIf { url -> url.startsWith("https://") } }.take(AUTOMATIC_COVER_PICTURES)
+    return list.summary.previewImages.takeIf { it != automatic }.orEmpty()
+}
+
+/** As many cards' pictures as the server draws a cover from when nobody chose one. */
+private const val AUTOMATIC_COVER_PICTURES = 6
