@@ -365,6 +365,7 @@ fun TierListsScreenContent(
                             top = top,
                             scroll = boardsScroll,
                             lists = lists,
+                            boardCount = totalListCount,
                             asPictures = asPictures,
                             favourites = favourites,
                             grouped = grouped,
@@ -443,6 +444,8 @@ private fun HomeContent(
     top: @Composable () -> Unit,
     scroll: LazyGridState,
     lists: List<TierListSummary>,
+    /** Every board on the phone, starred or filtered out too: they all live only here. */
+    boardCount: Int,
     asPictures: Boolean,
     favourites: List<TierListSummary>,
     grouped: Boolean,
@@ -466,6 +469,7 @@ private fun HomeContent(
             top = top,
             scroll = scroll,
             lists = lists,
+            boardCount = boardCount,
             favourites = favourites,
             grouped = grouped,
             onToggleFavourite = onToggleFavourite,
@@ -501,7 +505,7 @@ private fun HomeContent(
             wide("local-only-card") {
                 Box(Modifier.widthIn(max = ContentWidth.Reading)) {
                     LocalOnlySignInCard(
-                        boardCount = lists.size,
+                        boardCount = boardCount,
                         onSignIn = onSignInClick,
                         onDismiss = onDismissSignInOffer,
                     )
@@ -541,7 +545,7 @@ private fun HomeContent(
         if (here != null) {
             wide("local-only-footer") {
                 Box(Modifier.widthIn(max = ContentWidth.Reading)) {
-                    LocalOnlyFooter(boardCount = lists.size)
+                    LocalOnlyFooter(boardCount = boardCount)
                 }
             }
         }
@@ -597,6 +601,7 @@ private fun BoardTiles(
     scroll: LazyGridState = rememberLazyGridState(),
     aboveKeyboard: Boolean = false,
     lists: List<TierListSummary>,
+    boardCount: Int = lists.size,
     favourites: List<TierListSummary>,
     grouped: Boolean,
     onToggleFavourite: (Long) -> Unit,
@@ -624,7 +629,7 @@ private fun BoardTiles(
         if (here?.offerSignIn == true && !isSelecting) {
             item(key = "local-only-card", span = { GridItemSpan(maxLineSpan) }) {
                 LocalOnlySignInCard(
-                    boardCount = lists.size,
+                    boardCount = boardCount,
                     onSignIn = onSignInClick,
                     onDismiss = onDismissSignInOffer,
                 )
@@ -660,7 +665,7 @@ private fun BoardTiles(
         }
         if (here != null) {
             item(key = "local-only-footer", span = { GridItemSpan(maxLineSpan) }) {
-                LocalOnlyFooter(boardCount = lists.size)
+                LocalOnlyFooter(boardCount = boardCount)
             }
         }
     }

@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.topicpicker
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -94,100 +95,102 @@ fun TopicPickerScreenContent(
     onCreate: () -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
-    Column(
+    Box(
         Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
             .testTag(TopicPickerTestTags.SCREEN),
     ) {
-        ActionFailedSnackbar(userMessages)
-        TopBar(onBack = onBack, onDone = onDone, enabled = !state.saving)
-        CenteredContent(ContentWidth.Reading, modifier = Modifier.fillMaxSize()) {
-            CurrentChoice(state.chosen)
-            OutlinedTextField(
-                value = state.query,
-                onValueChange = onQueryChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .testTag(TopicPickerTestTags.QUERY),
-                placeholder = { Text(stringResource(R.string.topic_picker_hint)) },
-                singleLine = true,
-            )
-            if (state.searching) {
-                LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
-            }
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .imePadding(),
-                contentPadding = systemBarsContentPadding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 8.dp),
-            ) {
-                val suggestion = state.suggestion
-                if (suggestion != null && !state.chosen.names(suggestion)) {
-                    item(key = "suggestion") {
+        Column(Modifier.fillMaxSize()) {
+            TopBar(onBack = onBack, onDone = onDone, enabled = !state.saving)
+            CenteredContent(ContentWidth.Reading, modifier = Modifier.fillMaxSize()) {
+                CurrentChoice(state.chosen)
+                OutlinedTextField(
+                    value = state.query,
+                    onValueChange = onQueryChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .testTag(TopicPickerTestTags.QUERY),
+                    placeholder = { Text(stringResource(R.string.topic_picker_hint)) },
+                    singleLine = true,
+                )
+                if (state.searching) {
+                    LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+                }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .imePadding(),
+                    contentPadding = systemBarsContentPadding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 8.dp),
+                ) {
+                    val suggestion = state.suggestion
+                    if (suggestion != null && !state.chosen.names(suggestion)) {
+                        item(key = "suggestion") {
+                            ChoiceRow(
+                                title = stringResource(R.string.topic_picker_suggestion, suggestion.name),
+                                subtitle = suggestion.sectionLine(),
+                                selected = false,
+                                onClick = { onChoose(suggestion) },
+                                testTag = TopicPickerTestTags.SUGGESTION,
+                            )
+                        }
+                    }
+                    item(key = "none") {
                         ChoiceRow(
-                            title = stringResource(R.string.topic_picker_suggestion, suggestion.name),
-                            subtitle = suggestion.sectionLine(),
-                            selected = false,
-                            onClick = { onChoose(suggestion) },
-                            testTag = TopicPickerTestTags.SUGGESTION,
+                            title = stringResource(R.string.topic_picker_none),
+                            subtitle = stringResource(R.string.topic_picker_none_sub),
+                            selected = state.chosen == TopicChoice.None,
+                            onClick = onChooseNone,
+                            testTag = TopicPickerTestTags.NONE,
                         )
                     }
-                }
-                item(key = "none") {
-                    ChoiceRow(
-                        title = stringResource(R.string.topic_picker_none),
-                        subtitle = stringResource(R.string.topic_picker_none_sub),
-                        selected = state.chosen == TopicChoice.None,
-                        onClick = onChooseNone,
-                        testTag = TopicPickerTestTags.NONE,
-                    )
-                }
-                val createName = state.createName
-                if (createName != null) {
-                    item(key = "create") {
-                        ChoiceRow(
-                            title = stringResource(R.string.topic_picker_create, createName),
-                            subtitle = if (state.canCreate) {
-                                stringResource(R.string.topic_picker_create_note) + " " +
-                                    pluralStringResource(R.plurals.topic_picker_pending_count, state.pendingCount, state.pendingCount, state.pendingLimit)
-                            } else {
-                                stringResource(R.string.topic_picker_limit)
-                            },
-                            selected = (state.chosen as? TopicChoice.New)?.name == createName,
-                            onClick = onCreate,
-                            enabled = state.canCreate,
-                            testTag = TopicPickerTestTags.CREATE,
-                        )
+                    val createName = state.createName
+                    if (createName != null) {
+                        item(key = "create") {
+                            ChoiceRow(
+                                title = stringResource(R.string.topic_picker_create, createName),
+                                subtitle = if (state.canCreate) {
+                                    stringResource(R.string.topic_picker_create_note) + " " +
+                                        pluralStringResource(R.plurals.topic_picker_pending_count, state.pendingCount, state.pendingCount, state.pendingLimit)
+                                } else {
+                                    stringResource(R.string.topic_picker_limit)
+                                },
+                                selected = (state.chosen as? TopicChoice.New)?.name == createName,
+                                onClick = onCreate,
+                                enabled = state.canCreate,
+                                testTag = TopicPickerTestTags.CREATE,
+                            )
+                        }
                     }
-                }
-                if (state.mine.isNotEmpty()) {
-                    item(key = "mine-header") { SectionHeader(stringResource(R.string.topic_picker_yours)) }
-                    items(state.mine, key = { "mine-" + it.id }) { topic ->
+                    if (state.mine.isNotEmpty()) {
+                        item(key = "mine-header") { SectionHeader(stringResource(R.string.topic_picker_yours)) }
+                        items(state.mine, key = { "mine-" + it.id }) { topic ->
+                            ChoiceRow(
+                                title = topic.name,
+                                subtitle = topic.standing(),
+                                selected = state.chosen.names(topic),
+                                // Turned down or folded away: nothing to file under any more.
+                                enabled = topic.status == TopicStatus.Approved || topic.pending,
+                                onClick = { onChoose(topic) },
+                                testTag = TopicPickerTestTags.topic(topic.id),
+                            )
+                        }
+                    }
+                    val others = state.results.filterNot { found -> state.mine.any { it.id == found.id } }
+                    items(others, key = { "found-" + it.id }) { topic ->
                         ChoiceRow(
                             title = topic.name,
-                            subtitle = topic.standing(),
+                            subtitle = topic.sectionLine(),
                             selected = state.chosen.names(topic),
-                            // Turned down or folded away: nothing to file under any more.
-                            enabled = topic.status == TopicStatus.Approved || topic.pending,
                             onClick = { onChoose(topic) },
                             testTag = TopicPickerTestTags.topic(topic.id),
                         )
                     }
                 }
-                val others = state.results.filterNot { found -> state.mine.any { it.id == found.id } }
-                items(others, key = { "found-" + it.id }) { topic ->
-                    ChoiceRow(
-                        title = topic.name,
-                        subtitle = topic.sectionLine(),
-                        selected = state.chosen.names(topic),
-                        onClick = { onChoose(topic) },
-                        testTag = TopicPickerTestTags.topic(topic.id),
-                    )
-                }
             }
         }
+        ActionFailedSnackbar(userMessages)
     }
 }
 

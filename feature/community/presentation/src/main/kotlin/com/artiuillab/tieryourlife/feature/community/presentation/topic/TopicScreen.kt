@@ -135,7 +135,6 @@ fun TopicScreenContent(
     }
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-        ActionFailedSnackbar(userMessages)
         Column(
             Modifier
                 .fillMaxSize()
@@ -166,6 +165,7 @@ fun TopicScreenContent(
                 }
             }
         }
+        ActionFailedSnackbar(userMessages)
 
         actionsFor?.let { summary ->
             ListActionsSheet(

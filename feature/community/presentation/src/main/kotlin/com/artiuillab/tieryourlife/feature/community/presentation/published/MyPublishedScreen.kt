@@ -92,7 +92,6 @@ fun MyPublishedScreenContent(
 ) {
     val languageTag = currentLanguageTag()
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-        ActionFailedSnackbar(userMessages)
         Column(Modifier.fillMaxSize().testTag(MyPublishedTestTags.SCREEN)) {
             BarredScreen(
                 bar = {
@@ -149,6 +148,7 @@ fun MyPublishedScreenContent(
                 }
             }
         }
+        ActionFailedSnackbar(userMessages)
     }
 }
 
