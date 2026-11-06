@@ -10,10 +10,10 @@ interface AppPreferences {
 
     fun setLanguageTag(tag: String?)
 
-    /** Shown while a fresh balance is fetched. The server stays the authority. */
     /** What the last person left on this phone about themselves: hidden lists and authors, sync time, counts. */
     fun forgetThePerson() = Unit
 
+    /** Shown while a fresh balance is fetched. The server stays the authority. */
     fun lastKnownCredits(): Int?
 
     fun setLastKnownCredits(credits: Int?)
