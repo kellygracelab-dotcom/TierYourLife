@@ -16,6 +16,8 @@ data class ModerationReport(
      * making somebody open the list to see it is making them decide blind.
      */
     val coverImageUrl: String? = null,
+    /** The list hides its author; a moderator gets no name, the owner still does. */
+    val anonymous: Boolean = false,
     /** Every reason given, newest first. As many as there were complaints. */
     val reasons: List<ReportReason>,
     /** What the people who complained wrote, verbatim. Newest first. */

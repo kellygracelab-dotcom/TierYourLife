@@ -10,6 +10,8 @@ data class ModerationReportDto(
     val authorUid: String? = null,
     val authorPhotoUrl: String? = null,
     val coverImageUrl: String? = null,
+    /** Absent from older proxies. */
+    val anonymous: Boolean = false,
     /** Newest first. One per person who complained. */
     val reasons: List<String> = emptyList(),
     val notes: List<String> = emptyList(),
