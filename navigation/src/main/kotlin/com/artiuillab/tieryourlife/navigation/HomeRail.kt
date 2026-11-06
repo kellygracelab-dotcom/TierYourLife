@@ -20,7 +20,6 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +35,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.artiuillab.tieryourlife.core.theme.ui.CardLabel
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -142,10 +143,11 @@ private fun RailItem(destination: RailDestination, selected: Boolean, onSelect: 
                 },
             )
         }
-        Text(
+        CardLabel(
             text = stringResource(destination.labelRes()),
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
+            maxLines = 2,
+            smallest = 9.sp,
             color = if (selected) {
                 MaterialTheme.colorScheme.onSurface
             } else {

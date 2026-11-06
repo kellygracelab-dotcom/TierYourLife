@@ -808,4 +808,5 @@ private fun ModerationFailure.message(): Int = when (this) {
     ModerationFailure.NotTakenDown -> R.string.moderation_not_taken_down
     ModerationFailure.NotKept -> R.string.moderation_not_kept
     ModerationFailure.NotMoved -> R.string.moderation_not_moved
+    ModerationFailure.MovedNotDismissed -> R.string.moderation_moved_not_dismissed
 }

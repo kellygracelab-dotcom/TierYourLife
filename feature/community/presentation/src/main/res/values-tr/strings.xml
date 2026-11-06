@@ -296,9 +296,10 @@
     <string name="community_action_undo">Geri al</string>
     <string name="community_picture_credits">Görsel kaynakları</string>
     <string name="community_picture_credit_line">%1$s — %2$s</string>
-    <string name="community_ranking_list_changed">Sen kartları yerleştirdikten sonra yazar bu listeyi değiştirdi. Sıralamanı göstermek için onları yeniden yerleştir.</string>
+    <string name="community_ranking_list_changed">Siz kartları yerleştirdikten sonra yazar bu listeyi değiştirdi. Sıralamanızı göstermek için onları yeniden yerleştirin.</string>
     <string name="community_ranking_banned">Bir moderatör listelerinden birini kaldırdı, bu yüzden şimdilik sıralama gösteremezsin.</string>
     <string name="moderation_not_taken_down">Kaldırılmadı: liste hâlâ herkese açık. Yeniden dene.</string>
     <string name="moderation_not_kept">Liste bırakılamadı: şikâyetler hâlâ açık. Yeniden dene.</string>
     <string name="moderation_not_moved">Taşınmadı: liste olduğu yerde. Yeniden dene.</string>
+    <string name="moderation_moved_not_dismissed">Taşındı, ancak bildirimleri hâlâ açık. Kuyruğu temizlemek için bunları reddedin.</string>
 </resources>

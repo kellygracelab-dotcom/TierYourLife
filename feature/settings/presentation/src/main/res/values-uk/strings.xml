@@ -59,7 +59,7 @@
     <string name="settings_backup_refused_too_many">«%1$s» не зберігається в обліковому записі: у ньому не більше 200 дошок. Видаліть непотрібні, щоб звільнити місце.</string>
     <string name="settings_backup_refused_too_many_tiers">«%1$s» не зберігається в обліковому записі: на дошці більше рівнів, ніж він зберігає, — 19 і пул. Приберіть один рівень.</string>
     <string name="settings_backup_stuck">Копії немає з %1$s. Перевірте зʼєднання.</string>
-    <string name="settings_backup_sub">Тіри, картки та підписи</string>
+    <string name="settings_backup_sub">Рівні, картки та підписи</string>
     <string name="settings_export">Експорт даних</string>
     <string name="settings_export_sub">Зберегти читабельну копію кожного списку</string>
     <string name="settings_group_appearance">Вигляд</string>

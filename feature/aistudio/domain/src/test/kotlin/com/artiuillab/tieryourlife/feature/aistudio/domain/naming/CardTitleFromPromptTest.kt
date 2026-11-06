@@ -102,6 +102,13 @@ class CardTitleFromPromptTest {
     }
 
     @Test
+    fun `a cut never leaves half of an emoji`() {
+        val result = cardTitleFromPrompt("x".repeat(39) + "😀" + "y".repeat(10))
+
+        assertEquals("X" + "x".repeat(38), result)
+    }
+
+    @Test
     fun `truncation and article removal combine and the result never exceeds 40 characters`() {
         val prompt = "the alpha bravo charlie delta echo foxtrot golf hotel india"
 

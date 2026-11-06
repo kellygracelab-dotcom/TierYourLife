@@ -164,6 +164,11 @@ dependencies {
 }
 
 // Debug-signed with the debug App Check provider: Play must never be offered it.
-tasks.matching { it.name == "bundleFast" }.configureEach {
-    doFirst { throw GradleException("The fast build is for sideloading; Play gets bundleRelease.") }
+// Checked when the graph is built, so it holds before any task runs, under --dry-run
+// and for packageFastBundle on its own, which makes the same AAB.
+val fastBundleTasks = setOf("bundleFast", "packageFastBundle", "signFastBundle")
+gradle.taskGraph.whenReady {
+    if (allTasks.any { it.project == project && it.name in fastBundleTasks }) {
+        throw GradleException("The fast build is for sideloading; Play gets bundleRelease.")
+    }
 }

@@ -44,7 +44,7 @@ data class PendingTakeDown(
 )
 
 /** What did not happen, said after the fact: "Taken down" was on screen before anything was sent. */
-enum class ModerationFailure { NotTakenDown, NotKept, NotMoved }
+enum class ModerationFailure { NotTakenDown, NotKept, NotMoved, MovedNotDismissed }
 
 @HiltViewModel
 class ModerationViewModel @Inject constructor(
@@ -154,7 +154,9 @@ class ModerationViewModel @Inject constructor(
     fun move(listId: String, category: String) {
         val shown = readyToAct() ?: return
         settle(listId, shown, ModerationFailure.NotMoved) {
-            community.moveList(listId, category, topicId = null).mapCatching { community.dismissReports(listId).getOrThrow() }
+            community.moveList(listId, category, topicId = null).mapCatching {
+                community.dismissReports(listId).getOrElse { throw MovedNotDismissed(it) }
+            }
         }
     }
 
@@ -181,12 +183,15 @@ class ModerationViewModel @Inject constructor(
                 onFailure = { error ->
                     Timber.w(error, "Settling reports about $listId failed")
                     _state.value = shown.copy(settling = null)
-                    failures.send(failure)
+                    failures.send(if (error is MovedNotDismissed) ModerationFailure.MovedNotDismissed else failure)
                 },
             )
         }
     }
 }
+
+/** The list is in its new section; only closing the complaints about it failed. */
+private class MovedNotDismissed(cause: Throwable) : Exception(cause)
 
 private fun List<ModerationReport>.putBack(pending: PendingTakeDown): List<ModerationReport> =
     toMutableList().apply { add(pending.position.coerceAtMost(size), pending.report) }

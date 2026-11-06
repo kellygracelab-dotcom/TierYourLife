@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
+import com.artiuillab.tieryourlife.core.settings.takeWhole
+
 /** Text as `/boards` keeps it. Anything else comes back changed on the next pull. */
 internal object KeptText {
 
@@ -19,7 +21,7 @@ internal object KeptText {
 
     /** Runs of whitespace as one space, trimmed, cut to [maxLength]; null when nothing is left. */
     fun clean(value: String, maxLength: Int): String? =
-        value.replace(whitespace, " ").trim(' ').takeIf { it.isNotEmpty() }?.take(maxLength)
+        value.replace(whitespace, " ").trim(' ').takeIf { it.isNotEmpty() }?.takeWhole(maxLength)
 
     /** A card's name as the account keeps it. */
     fun cardTitle(title: String, hasKeptPicture: Boolean): String =
