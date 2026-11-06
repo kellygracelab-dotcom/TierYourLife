@@ -6,9 +6,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 object BoardOrder {
 
     /**
-     * Starred first, then the rest, each in the chosen order. Whether the two
-     * are drawn apart is [shouldGroup]'s question; the order is the same either
-     * way, so a filter never reshuffles what stays on screen.
+     * Starred first, most recently starred on top, then the rest in the chosen
+     * order. That is the order under the two headings; whether they are drawn
+     * is [shouldGroup]'s question, and without them it is [ungrouped].
      */
     fun arrange(
         lists: List<TierListSummary>,
@@ -31,6 +31,14 @@ object BoardOrder {
      */
     fun shouldGroup(arrangement: BoardArrangement, narrowed: Boolean): Boolean =
         !narrowed && arrangement.favourites.isNotEmpty() && arrangement.rest.isNotEmpty()
+
+    /**
+     * One list with no heading is in the chosen order, starred or not: kept
+     * in starring order they sat on top as if they were the newest, and with
+     * every board starred Newest and Oldest showed the same thing.
+     */
+    fun ungrouped(arrangement: BoardArrangement, sort: BoardSort): List<TierListSummary> =
+        arrangement.all.sortedWith(sort.comparator)
 }
 
 data class BoardArrangement(

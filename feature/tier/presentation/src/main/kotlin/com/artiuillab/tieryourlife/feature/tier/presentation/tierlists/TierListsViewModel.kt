@@ -230,7 +230,7 @@ class TierListsViewModel @Inject constructor(
         // A search or a filter makes the screen an answer to a question, and
         // nothing is pinned above an answer.
         val grouped = BoardOrder.shouldGroup(arranged, narrowed = query != null || filters.any)
-        val paired = if (grouped) arranged.rest else arranged.all
+        val paired = if (grouped) arranged.rest else BoardOrder.ungrouped(arranged, sort)
         return TierListsUiState.Success(
             lists = paired,
             conflict = paired.firstOrNull { it.hasTwin && it.arrivedFrom != null && it.title !in conflictsSeen },

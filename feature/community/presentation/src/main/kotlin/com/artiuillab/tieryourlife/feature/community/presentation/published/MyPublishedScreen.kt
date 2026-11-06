@@ -111,8 +111,6 @@ fun MyPublishedScreenContent(
         refusals.collect { refusal -> refusalHost.showSnackbar(publishErrorText(refusal, resources, locale), duration = SnackbarDuration.Long) }
     }
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-        ActionFailedSnackbar(userMessages)
-        SnackbarHost(refusalHost, Modifier.fillMaxSize().wrapContentHeight(Alignment.Bottom).navigationBarsPadding())
         Column(Modifier.fillMaxSize().testTag(MyPublishedTestTags.SCREEN)) {
             BarredScreen(
                 bar = {
@@ -169,6 +167,8 @@ fun MyPublishedScreenContent(
                 }
             }
         }
+        ActionFailedSnackbar(userMessages)
+        SnackbarHost(refusalHost, Modifier.fillMaxSize().wrapContentHeight(Alignment.Bottom).navigationBarsPadding())
     }
 }
 

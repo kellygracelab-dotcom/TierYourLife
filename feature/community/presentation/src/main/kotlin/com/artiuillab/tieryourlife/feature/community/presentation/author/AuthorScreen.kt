@@ -121,7 +121,6 @@ fun AuthorScreenContent(
     var reportedFrom by remember { mutableStateOf<PublishedListSummary?>(null) }
 
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-        ActionFailedSnackbar(userMessages)
         Column(Modifier.fillMaxSize().testTag(AuthorTestTags.SCREEN)) {
             BarredScreen(
                 bar = {
@@ -184,6 +183,7 @@ fun AuthorScreenContent(
                 }
             }
         }
+        ActionFailedSnackbar(userMessages)
         FollowRefusalSnackbar(followRefusals)
 
         val ready = state as? AuthorUiState.Ready

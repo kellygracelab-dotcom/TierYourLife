@@ -34,7 +34,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -114,8 +114,8 @@ fun TierListSettingsScreenContent(
     /** The published list's own page, where readers' rankings and its link are; null while it is not out. */
     onSeeInCommunity: (() -> Unit)? = null,
 ) {
-    var tierEditorVisible by remember { mutableStateOf(false) }
-    var categorySheetVisible by remember { mutableStateOf(false) }
+    var tierEditorVisible by rememberSaveable { mutableStateOf(false) }
+    var categorySheetVisible by rememberSaveable { mutableStateOf(false) }
     val rankedTierCount = list.tiers.count { !it.isPool }
 
     Column(Modifier.fillMaxSize().testTag(TierDetailTestTags.LIST_SETTINGS_SCREEN)) {
