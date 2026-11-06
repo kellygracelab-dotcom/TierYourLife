@@ -78,7 +78,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationRepo
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
-import com.artiuillab.tieryourlife.feature.community.presentation.components.shownName
+import com.artiuillab.tieryourlife.feature.community.presentation.components.reportAuthorName
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.components.ModeratorsPane
@@ -259,6 +259,7 @@ fun ModerationScreenContent(
     takingDown?.let { report ->
         TakeDownSheet(
             authorName = report.authorName,
+            anonymous = report.anonymous,
             busy = (state as? ModerationUiState.Ready)?.settling != null,
             onTakeDown = { ban ->
                 takingDown = null
@@ -554,7 +555,7 @@ private fun ReportCard(
         ) {
             AuthorFace(photoUrl = report.authorPhotoUrl, name = report.authorName, size = 24.dp)
             Text(
-                text = shownName(report.authorName),
+                text = reportAuthorName(report.authorName, report.anonymous),
                 modifier = Modifier.padding(start = 8.dp),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

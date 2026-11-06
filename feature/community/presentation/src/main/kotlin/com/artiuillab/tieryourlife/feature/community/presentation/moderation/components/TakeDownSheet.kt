@@ -32,7 +32,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.community.presentation.components.shownName
+import com.artiuillab.tieryourlife.feature.community.presentation.components.reportAuthorName
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.ModerationTestTags
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
@@ -48,6 +48,7 @@ private val CHOICE_HEIGHT = 52.dp
 @Composable
 internal fun TakeDownSheet(
     authorName: String,
+    anonymous: Boolean,
     busy: Boolean,
     onTakeDown: (BanLength?) -> Unit,
     onDismiss: () -> Unit,
@@ -141,7 +142,7 @@ internal fun TakeDownSheet(
         AlertDialog(
             onDismissRequest = { askingForever = false },
             modifier = Modifier.testTag(ModerationTestTags.BAN_FOREVER_DIALOG),
-            title = { Text(stringResource(R.string.ban_forever_confirm_title, shownName(authorName))) },
+            title = { Text(stringResource(R.string.ban_forever_confirm_title, reportAuthorName(authorName, anonymous))) },
             // A decision without an end has to be readable in full.
             text = { Text(stringResource(R.string.ban_forever_confirm_body)) },
             confirmButton = {

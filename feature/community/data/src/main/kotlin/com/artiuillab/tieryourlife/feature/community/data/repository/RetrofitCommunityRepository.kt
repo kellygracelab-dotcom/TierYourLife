@@ -352,6 +352,7 @@ class RetrofitCommunityRepository @Inject constructor(
         authorUid = authorUid,
         authorPhotoUrl = authorPhotoUrl,
         coverImageUrl = coverImageUrl,
+        anonymous = anonymous,
         // A reason we do not recognise is still a complaint worth reading.
         reasons = reasons.map { given ->
             ReportReason.entries.firstOrNull { it.id == given } ?: ReportReason.Other
