@@ -129,4 +129,6 @@
     <string name="play_snack_saved_discarded">Сохранённая игра удалена</string>
     <string name="play_snack_result_discarded">Результат отброшен</string>
     <string name="play_snack_undo">Отменить</string>
+    <string name="play_snack_not_saved">Не удалось сохранить игру</string>
+    <string name="play_snack_list_updated">Список обновился во время игры, поэтому игра отброшена</string>
 </resources>

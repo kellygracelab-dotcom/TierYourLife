@@ -101,4 +101,6 @@
     <string name="play_snack_saved_discarded">Gespeichertes Spiel verworfen</string>
     <string name="play_snack_result_discarded">Ergebnis verworfen</string>
     <string name="play_snack_undo">Rückgängig</string>
+    <string name="play_snack_not_saved">Spiel konnte nicht gespeichert werden</string>
+    <string name="play_snack_list_updated">Die Liste wurde während des Spiels aktualisiert, daher wurde das Spiel verworfen</string>
 </resources>

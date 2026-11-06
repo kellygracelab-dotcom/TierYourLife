@@ -115,4 +115,6 @@
     <string name="play_snack_saved_discarded">Partida guardada descartada</string>
     <string name="play_snack_result_discarded">Resultado descartado</string>
     <string name="play_snack_undo">Deshacer</string>
+    <string name="play_snack_not_saved">No se pudo guardar la partida</string>
+    <string name="play_snack_list_updated">La lista se actualizó durante la partida, así que la partida se descartó</string>
 </resources>

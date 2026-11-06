@@ -129,4 +129,6 @@
     <string name="play_snack_saved_discarded">Zapisana gra odrzucona</string>
     <string name="play_snack_result_discarded">Wynik odrzucony</string>
     <string name="play_snack_undo">Cofnij</string>
+    <string name="play_snack_not_saved">Nie udało się zapisać gry</string>
+    <string name="play_snack_list_updated">Lista została zaktualizowana w trakcie gry, więc grę odrzucono</string>
 </resources>

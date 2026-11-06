@@ -129,4 +129,6 @@
     <string name="play_snack_saved_discarded">Збережену гру видалено</string>
     <string name="play_snack_result_discarded">Результат відкинуто</string>
     <string name="play_snack_undo">Скасувати</string>
+    <string name="play_snack_not_saved">Не вдалося зберегти гру</string>
+    <string name="play_snack_list_updated">Список оновився під час гри, тому гру відкинуто</string>
 </resources>

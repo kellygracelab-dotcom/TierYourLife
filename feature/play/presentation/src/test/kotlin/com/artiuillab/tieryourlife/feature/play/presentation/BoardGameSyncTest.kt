@@ -11,10 +11,12 @@ import com.artiuillab.tieryourlife.feature.play.domain.SharedGame
 import com.artiuillab.tieryourlife.feature.play.domain.SharedGameJson
 import com.artiuillab.tieryourlife.feature.play.domain.nextPair
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -198,17 +200,120 @@ class BoardGameSyncTest {
         assertEquals(1, offer.joined)
     }
 
+    // The account lets a game go a month after its last write, which the board does not say.
     @Test
-    fun aMonthOldGameOnTheBoard_isTakenOffIt() = runBlocking {
+    fun aGameStartedAMonthAgo_onTheBoard_isStillOffered() = runBlocking {
         val old = SharedGameJson.encode(SharedGameJson.decode(shared(answers = 2))!!.copy(startedAt = NOW - 31 * DAY))
         val repository = MovingTierRepository(unranked.copy(play = old))
         val viewModel = viewModel(FakeSavedGames(), repository)
 
         viewModel.open()
 
-        eventually { repository.board.play == null }
+        assertEquals(2, viewModel.state.firstWithin { picker(it)?.resume != null }.let { picker(it)!!.resume!!.played })
+        assertEquals(old, repository.board.play)
+    }
+
+    @Test
+    fun aGameLeftAMonthAgo_goesFromThisPhoneAndFromTheBoard() = runBlocking {
+        val left = saved(answers = 2, onBoard = true).copy(startedAt = NOW - 40 * DAY, touchedAt = NOW - 31 * DAY)
+        val onBoard = SharedGameJson.encode(SharedGameJson.decode(shared(answers = 2))!!.copy(startedAt = NOW - 40 * DAY))
+        val repository = MovingTierRepository(unranked.copy(play = onBoard))
+        val games = FakeSavedGames(mapOf(KEY to left))
+        val viewModel = viewModel(games, repository)
+
+        viewModel.open()
+
+        eventually { repository.board.play == null && KEY !in games.games }
         assertNull(picker(viewModel.state.value)?.resume)
     }
+
+    @Test
+    fun aGameLeftHereAMonthAgo_butPlayedOnElsewhere_staysOnTheBoard() = runBlocking {
+        val left = saved(answers = 2, onBoard = true).copy(touchedAt = NOW - 31 * DAY)
+        val repository = MovingTierRepository(unranked.copy(play = shared(answers = 3)))
+        val games = FakeSavedGames(mapOf(KEY to left))
+        val viewModel = viewModel(games, repository)
+
+        viewModel.open()
+
+        assertEquals(3, viewModel.state.firstWithin { picker(it)?.resume != null }.let { picker(it)!!.resume!!.played })
+        assertEquals(shared(answers = 3), repository.board.play)
+        assertTrue(KEY !in games.games)
+    }
+
+    @Test
+    fun aSyncThatWritesEveryRowAfresh_keepsTheGame_withEveryAnswer() = runBlocking {
+        GameKind.entries.forEach { kind ->
+            val games = FakeSavedGames()
+            val repository = MovingTierRepository(unranked)
+            val before = viewModel(games, repository)
+            before.open()
+            before.picker.choose(kind)
+            before.picker.start()
+            before.duel.pick(first = true)
+            before.duel.pick(first = false)
+            before.duel.quit()
+            eventually { games.games[KEY]?.history?.size == 2 && repository.board.play != null }
+            val play = repository.board.play
+            repository.board = renumbered(repository.board)
+
+            val after = viewModel(games, repository)
+            after.open()
+            val offer = after.state.firstWithin { picker(it)?.resume != null }.let { picker(it)!!.resume!! }
+            after.picker.resume()
+
+            assertEquals(kind.name, 2, offer.played)
+            assertFalse(kind.name, offer.changed)
+            assertEquals(kind.name, 3, (after.state.value.stage as PlayStage.Dueling).duel.number)
+            assertEquals(kind.name, play, repository.board.play)
+        }
+    }
+
+    @Test
+    fun aGameSavedBeforeItsUidsWereKept_takesTheBoardsCopy_afterSuchASync() = runBlocking {
+        val repository = MovingTierRepository(renumbered(unranked).copy(play = shared(answers = 2)))
+        val games = FakeSavedGames(mapOf(KEY to saved(answers = 2, onBoard = true)))
+        val viewModel = viewModel(games, repository)
+        viewModel.open()
+
+        val offer = viewModel.state.firstWithin { picker(it)?.resume != null }.let { picker(it)!!.resume!! }
+        viewModel.picker.resume()
+
+        assertEquals(0, offer.joined)
+        assertEquals(3, (viewModel.state.value.stage as PlayStage.Dueling).duel.number)
+    }
+
+    @Test
+    fun aResumeWithNoAnswerLeft_writesNothing_untilSomethingIsAnswered() = runBlocking {
+        val playedCardsGone = SharedGameJson.encode(
+            SharedGame(
+                spec,
+                ids = (1..6).map { "c$it" },
+                history = listOf(Outcome(0, 1, winner = 0), Outcome(2, 3, winner = 2)),
+                round = 1,
+                startedAt = NOW - DAY,
+            ),
+        )
+        val repository = MovingTierRepository(
+            board(1L to emptyList(), 2L to emptyList(), 3L to emptyList(), POOL to listOf(5L, 6L, 7L)).copy(play = playedCardsGone),
+        )
+        val viewModel = viewModel(FakeSavedGames(), repository)
+        viewModel.open()
+        viewModel.state.firstWithin { picker(it)?.resume != null }
+
+        viewModel.picker.resume()
+
+        assertEquals(1, (viewModel.state.value.stage as PlayStage.Dueling).duel.number)
+        delay(100)
+        assertTrue(repository.plays.isEmpty())
+        viewModel.duel.pick(first = true)
+        eventually { repository.board.play?.let(SharedGameJson::decode)?.ids == listOf("c5", "c6", "c7") }
+    }
+
+    /** The board as a sync that takes the account's copy leaves it: the same uids, every row numbered anew. */
+    private fun renumbered(board: TierList): TierList = board.copy(
+        tiers = board.tiers.map { tier -> tier.copy(id = tier.id + 100, items = tier.items.map { it.copy(id = it.id + 10) }) },
+    )
 
     private fun history(answers: Int): List<Outcome> {
         val history = mutableListOf<Outcome>()
