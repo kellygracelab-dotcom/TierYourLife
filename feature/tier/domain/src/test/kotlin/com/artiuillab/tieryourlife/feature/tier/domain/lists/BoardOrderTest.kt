@@ -167,6 +167,29 @@ class BoardOrderTest {
     }
 
     @Test
+    fun `with every board starred, oldest is newest upside down`() {
+        val lists = listOf(
+            board(1, editedAt = 100, favouritedAt = 30),
+            board(2, editedAt = 300, favouritedAt = 10),
+            board(3, editedAt = 200, favouritedAt = 20),
+        )
+
+        assertEquals(listOf(2L, 3L, 1L), ids(BoardOrder.ungrouped(BoardOrder.arrange(lists, BoardSort.Newest), BoardSort.Newest)))
+        assertEquals(listOf(1L, 3L, 2L), ids(BoardOrder.ungrouped(BoardOrder.arrange(lists, BoardSort.Oldest), BoardSort.Oldest)))
+    }
+
+    @Test
+    fun `under a filter a starred board takes its place in the chosen order`() {
+        val arranged = BoardOrder.arrange(
+            listOf(board(1, editedAt = 100, favouritedAt = 50, publishedId = "a"), board(2, editedAt = 300, publishedId = "b")),
+            BoardSort.Newest,
+            BoardFilters(published = PublishedFilter.Public),
+        )
+
+        assertEquals(listOf(2L, 1L), ids(BoardOrder.ungrouped(arranged, BoardSort.Newest)))
+    }
+
+    @Test
     fun `filters know whether any of them is on`() {
         assertFalse(BoardFilters().any)
         assertTrue(BoardFilters(category = ListCategory.Food.id).any)

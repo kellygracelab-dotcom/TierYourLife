@@ -217,7 +217,8 @@ fun TierRow(
                         TextStyle(fontSize = rowDensity.captionSize, lineHeight = rowDensity.captionLineHeight),
                     ),
                     color = colors.onBand,
-                    width = bandWidth - BAND_CAPTION_PADDING * 2,
+                    width = bandWidth,
+                    padding = BAND_CAPTION_PADDING,
                     height = if (fixedHeight) rowDensity.occupiedHeight - BAND_VERTICAL_PADDING * 2 else null,
                 )
             }

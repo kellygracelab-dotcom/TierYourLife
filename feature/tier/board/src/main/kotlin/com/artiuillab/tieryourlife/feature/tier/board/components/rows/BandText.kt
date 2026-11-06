@@ -24,8 +24,10 @@ private const val LABEL_STEP_SP = 1f
 
 /**
  * A band's name and caption. A letter stays as it always was; a name too long
- * for the band breaks between words and gets smaller until it fits [width],
- * and [height] too where the row does not grow.
+ * for the band breaks between words and gets smaller until it fits, and
+ * [height] too where the row does not grow. [width] is the band's own and
+ * [padding] what it keeps on each side: they round to pixels apart, as the
+ * layout rounds them, and one pixel short is enough to split a word.
  */
 @Composable
 internal fun BandText(
@@ -35,18 +37,19 @@ internal fun BandText(
     captionStyle: TextStyle,
     color: Color,
     width: Dp,
+    padding: Dp,
     height: Dp? = null,
 ) {
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
     val base = LocalTextStyle.current
     val shownCaption = caption?.takeIf { density.fontScale < CAPTION_HIDDEN_FONT_SCALE }
-    val fitted = remember(label, shownCaption, labelStyle, captionStyle, base, width, height, density) {
-        val widthPx = with(density) { width.roundToPx() }
+    val fitted = remember(label, shownCaption, labelStyle, captionStyle, base, width, padding, height, density) {
+        val widthPx = with(density) { width.roundToPx() - padding.roundToPx() * 2 }
         val captionPx = shownCaption?.let {
             measurer.measure(it, base.merge(captionStyle), TextOverflow.Ellipsis, maxLines = CAPTION_MAX_LINES, constraints = Constraints(maxWidth = widthPx)).size.height
         } ?: 0
-        val heightPx = height?.let { with(density) { it.roundToPx() } - captionPx }
+        val heightPx = height?.let { with(density) { it.toPx().toInt() } - captionPx }
         fittedBandLabel(measurer, label, base.merge(labelStyle), widthPx, heightPx)
     }
     Text(
