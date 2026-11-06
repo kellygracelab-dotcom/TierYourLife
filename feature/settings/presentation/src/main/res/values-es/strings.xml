@@ -55,6 +55,7 @@
     <string name="settings_backup_refused_not_accepted">«%1$s» no tiene copia: la cuenta no acepta algo que contiene.</string>
     <string name="settings_backup_refused_too_large">«%1$s» no tiene copia: es más grande de lo que guarda la cuenta. Quítale algunas tarjetas.</string>
     <string name="settings_backup_refused_too_many">«%1$s» no tiene copia: la cuenta guarda 200 tableros como máximo. Elimina los que ya no necesites.</string>
+    <string name="settings_backup_refused_too_many_tiers">«%1$s» no tiene copia: tiene más niveles de los que guarda la cuenta, 19 más la reserva. Quítale un nivel.</string>
     <string name="settings_backup_stuck">Sin copia desde %1$s. Revisa tu conexión.</string>
     <string name="settings_backup_sub">Niveles, tarjetas y notas</string>
     <string name="settings_export">Exportar datos</string>

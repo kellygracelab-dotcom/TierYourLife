@@ -29,8 +29,11 @@ data class BackupSettings(
 data class BackupRefusal(val boardTitle: String, val reason: Reason) {
 
     enum class Reason {
-        /** Over the account's size for one board: too many tiers, cards or bytes. */
+        /** Over the account's size for one board: too many cards or bytes. */
         TooLarge,
+
+        /** More tiers than the account keeps on a board, which only taking a tier off mends. */
+        TooManyTiers,
 
         /** The account already keeps as many boards as it takes. */
         TooManyBoards,

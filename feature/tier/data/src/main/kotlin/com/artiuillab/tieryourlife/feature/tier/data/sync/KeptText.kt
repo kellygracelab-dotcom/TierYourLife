@@ -10,8 +10,9 @@ internal object KeptText {
     const val CREDIT = 200
 
     /**
-     * Stands in for a card without a name, which `/boards` refuses although
-     * `/lists` takes one; the site shows these words for such a card too.
+     * The name of a card with neither a name nor a picture the account can
+     * keep, which `/boards` refuses; the site shows these words for such a
+     * card too. A card with a kept picture goes up nameless.
      */
     const val UNTITLED_CARD = "Untitled card"
 
@@ -21,4 +22,12 @@ internal object KeptText {
     /** Runs of whitespace as one space, trimmed, cut to [maxLength]; null when nothing is left. */
     fun clean(value: String, maxLength: Int): String? =
         value.replace(whitespace, " ").trim(' ').takeIf { it.isNotEmpty() }?.takeWhole(maxLength)
+
+    /** A card's name as the account keeps it. */
+    fun cardTitle(title: String, hasKeptPicture: Boolean): String =
+        clean(title, TITLE) ?: if (hasKeptPicture) "" else UNTITLED_CARD
+
+    /** A picture another device can fetch: one of ours by its id, or a web address. */
+    fun isKeptPicture(pictureId: String?, imageUrl: String?): Boolean =
+        pictureId != null || imageUrl?.trim()?.startsWith("https://", ignoreCase = true) == true
 }

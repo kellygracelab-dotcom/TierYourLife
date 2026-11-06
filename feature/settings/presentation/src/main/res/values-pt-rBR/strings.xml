@@ -55,6 +55,7 @@
     <string name="settings_backup_refused_not_accepted">“%1$s” está sem cópia: a conta não aceita algo que está nele.</string>
     <string name="settings_backup_refused_too_large">“%1$s” está sem cópia: é maior do que a conta guarda. Tire alguns cartões dele.</string>
     <string name="settings_backup_refused_too_many">“%1$s” está sem cópia: a conta guarda no máximo 200 quadros. Apague os que você não usa mais.</string>
+    <string name="settings_backup_refused_too_many_tiers">“%1$s” está sem cópia: tem mais níveis do que a conta guarda, 19 mais a reserva. Tire um nível dele.</string>
     <string name="settings_backup_stuck">Sem cópia desde %1$s. Verifique sua conexão.</string>
     <string name="settings_backup_sub">Níveis, cartões e legendas</string>
     <string name="settings_export">Exportar dados</string>

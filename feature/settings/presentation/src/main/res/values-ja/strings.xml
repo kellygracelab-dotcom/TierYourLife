@@ -51,6 +51,7 @@
     <string name="settings_backup_refused_not_accepted">「%1$s」はバックアップされていません。アカウントが受け付けない内容が含まれています。</string>
     <string name="settings_backup_refused_too_large">「%1$s」はバックアップされていません。アカウントに保存できる大きさを超えています。カードをいくつか外してください。</string>
     <string name="settings_backup_refused_too_many">「%1$s」はバックアップされていません。アカウントに保存できるボードは200個までです。不要なボードを削除してください。</string>
+    <string name="settings_backup_refused_too_many_tiers">「%1$s」はバックアップされていません。アカウントに保存できるティア数（プールのほかに19）を超えています。ティアを1つ減らしてください。</string>
     <string name="settings_backup_stuck">%1$sからバックアップされていません。接続を確認してください。</string>
     <string name="settings_backup_sub">ティア、カード、説明</string>
     <string name="settings_export">データをエクスポート</string>

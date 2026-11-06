@@ -59,8 +59,8 @@ class RoomBoardBackup @Inject constructor(
      * account's rows: the rest are other accounts' boards. Not while a run is
      * under way: it would send back up what was just deleted.
      */
-    override suspend fun stopAndDelete(): Boolean = lock.withLock {
-        val account = signedInAs() ?: return@withLock false
+    override suspend fun stopAndDelete(): Boolean = lock.ahead {
+        val account = signedInAs() ?: return@ahead false
         try {
             // The index too: a board another phone sent, not yet brought down
             // here, is part of the copy that a new phone would start with.

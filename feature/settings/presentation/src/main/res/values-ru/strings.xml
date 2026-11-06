@@ -57,6 +57,7 @@
     <string name="settings_backup_refused_not_accepted">«%1$s» не сохраняется в аккаунте: что-то на доске он не принимает.</string>
     <string name="settings_backup_refused_too_large">«%1$s» не сохраняется в аккаунте: доска больше, чем он хранит. Уберите с неё несколько карточек.</string>
     <string name="settings_backup_refused_too_many">«%1$s» не сохраняется в аккаунте: в нём не больше 200 досок. Удалите ненужные, чтобы освободить место.</string>
+    <string name="settings_backup_refused_too_many_tiers">«%1$s» не сохраняется в аккаунте: на доске больше уровней, чем он хранит, — 19 и пул. Уберите один уровень.</string>
     <string name="settings_backup_stuck">Нет копии с %1$s. Проверьте подключение.</string>
     <string name="settings_backup_sub">Уровни, карточки и подписи</string>
     <string name="settings_export">Экспорт данных</string>

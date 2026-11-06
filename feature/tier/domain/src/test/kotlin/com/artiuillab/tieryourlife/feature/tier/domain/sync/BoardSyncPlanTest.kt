@@ -125,6 +125,17 @@ class BoardSyncPlanTest {
         assertEquals(listOf(SyncStep.Revive(board, basedOn = 2)), steps)
     }
 
+    // A36: trashing it here changed the fingerprint, which read as an edit,
+    // and a board deleted for good elsewhere came back out of this trash.
+    @Test
+    fun `a board in the trash here stays deleted when it was deleted for good elsewhere`() {
+        val inTrash = listOf(LocalBoard(board, "trashed", inTrash = true))
+
+        val steps = planSync(inTrash, remote(revision = 2, deleted = true), synced(revision = 1, fingerprint = "aaa"))
+
+        assertEquals(listOf(SyncStep.TrashLocal(board, revision = 2)), steps)
+    }
+
     @Test
     fun `a board taken back out of the trash here goes back up`() {
         val steps = planSync(local("restored"), remote(revision = 2, deleted = true), synced(revision = 2, fingerprint = "trashed"))

@@ -40,6 +40,16 @@ class BackupRefusalTest {
             .assertTextEquals("“Films” isn’t backed up: it’s bigger than the account keeps. Take some cards off it.")
     }
 
+    // W5: an undo can take a board past the tiers the account keeps, and
+    // "take some cards off it" was no help.
+    @Test
+    fun aBoardWithTooManyTiers_isToldToLoseATier() {
+        show(settings(BackupRefusal("Films", BackupRefusal.Reason.TooManyTiers)))
+
+        composeRule.onNodeWithTag(SettingsTestTags.BACKUP_STUCK)
+            .assertTextEquals("“Films” isn’t backed up: it has more tiers than the account keeps, 19 plus the pool. Take a tier off it.")
+    }
+
     @Test
     fun aRefusal_isSaidInsteadOfBlamingTheConnection() {
         show(settings(BackupRefusal("Games", BackupRefusal.Reason.TooManyBoards)), stuckSince = "2 days ago")
