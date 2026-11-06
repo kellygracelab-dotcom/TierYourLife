@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -126,6 +127,7 @@ fun ModerationScreen(
         onAppointModerator = queues::appointModerator,
         onRemoveModerator = queues::removeModerator,
         userMessages = queues.userMessages,
+        failures = viewModel.failed,
     )
 }
 
@@ -154,6 +156,7 @@ fun ModerationScreenContent(
     onAppointModerator: (String, String) -> Unit = { _, _ -> },
     onRemoveModerator: (String) -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
+    failures: Flow<ModerationFailure> = emptyFlow(),
 ) {
     // Session-scoped: a queue that remembers which covers you uncovered leaks.
     var coversShown by rememberSaveable { mutableStateOf(true) }
@@ -170,6 +173,12 @@ fun ModerationScreenContent(
         if (pending == null) return@LaunchedEffect
         val result = snackbar.showSnackbar(takenDownMessage, actionLabel = undoLabel, duration = SnackbarDuration.Short)
         if (result == SnackbarResult.ActionPerformed) onUndoTakeDown() else onConfirmTakeDown()
+    }
+    val resources = LocalResources.current
+    LaunchedEffect(failures) {
+        failures.collect { failure ->
+            snackbar.showSnackbar(resources.getString(failure.message()), duration = SnackbarDuration.Long)
+        }
     }
 
     val queue = Queues(
@@ -793,4 +802,10 @@ private fun ModerationScreenPreview() = TierYourLifeTheme {
 @Composable
 private fun ModerationScreenEmptyPreview() = TierYourLifeTheme {
     ModerationScreenContent(state = ModerationUiState.Ready(emptyList()), onBack = {})
+}
+
+private fun ModerationFailure.message(): Int = when (this) {
+    ModerationFailure.NotTakenDown -> R.string.moderation_not_taken_down
+    ModerationFailure.NotKept -> R.string.moderation_not_kept
+    ModerationFailure.NotMoved -> R.string.moderation_not_moved
 }

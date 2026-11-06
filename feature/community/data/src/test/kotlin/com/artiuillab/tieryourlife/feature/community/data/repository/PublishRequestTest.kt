@@ -231,12 +231,22 @@ class PublishRequestTest {
         networkJson.encodeToString(PublishListRequestDto.serializer(), list.toRequest(Pictures, uploaded = emptySet())),
     ).jsonObject
 
-    // Without it the server brings the old topic back whenever the section stays the same.
+    // The author took it off: without noTopic the server would keep it while the section stays the same.
     @Test
-    fun `a board with no topic says so, and sends neither a topic nor a name`() {
+    fun `a topic the author took off is said to be off, and nothing else about topics goes`() {
+        val off = body(board.copy(publishedId = "p1", topicTakenOff = true))
+
+        assertEquals(JsonPrimitive(true), off["noTopic"])
+        assertFalse("topicId" in off)
+        assertFalse("newTopic" in off)
+    }
+
+    // A moderator may have moved the list into a topic since; a board that knows of none must not undo that.
+    @Test
+    fun `a board that knows of no topic says nothing about one`() {
         val none = body(board.copy(publishedId = "p1"))
 
-        assertEquals(JsonPrimitive(true), none["noTopic"])
+        assertFalse("noTopic" in none)
         assertFalse("topicId" in none)
         assertFalse("newTopic" in none)
     }
@@ -263,6 +273,50 @@ class PublishRequestTest {
         assertFalse("boardUid" in body(board.copy(uid = " ")))
         assertFalse("boardUid" in body(board.copy(uid = "x".repeat(101))))
         assertEquals(JsonPrimitive("x".repeat(100)), body(board.copy(uid = "x".repeat(100)))["boardUid"])
+    }
+
+    private val ownPhoto = "https://firebasestorage.googleapis.com/v0/b/app.appspot.com/o/users%2Fuid-anna%2Fpictures%2Fphoto-2?alt=media&token=t"
+
+    // The website keeps a cover from the person's own photo by its private address, which names their account.
+    @Test
+    fun `a cover the website chose from an own photo goes by name, never by its private address`() {
+        val request = board.copy(coverImageUrl = ownPhoto, coverImageUrls = listOf(ownPhoto)).toRequest(Pictures, uploaded = setOf("photo-2", "photo-3"))
+
+        assertNull(request.coverImageUrl)
+        assertEquals("photo-2", request.coverPictureId)
+        assertEquals(emptyList<String>(), request.coverImageUrls)
+    }
+
+    @Test
+    fun `a private cover whose card has left the board goes nowhere`() {
+        val request = board.copy(coverImageUrl = ownPhoto.replace("photo-2", "photo-9")).toRequest(Pictures, uploaded = setOf("photo-2", "photo-9"))
+
+        assertNull(request.coverImageUrl)
+        assertNull(request.coverPictureId)
+    }
+
+    @Test
+    fun `no private address travels in a collage or on a card`() {
+        val list = board.copy(
+            coverImageUrl = null,
+            coverImageUrls = listOf(poster, ownPhoto),
+            tiers = listOf(tier(10, "S", TierItem(1, "Holiday", ownPhoto))),
+        )
+
+        val body = networkJson.encodeToString(PublishListRequestDto.serializer(), list.toRequest(Pictures, uploaded = setOf("photo-2")))
+
+        assertFalse(body, body.contains("users%2F", ignoreCase = true))
+        assertTrue(body, body.contains(poster))
+        assertEquals("photo-2", list.toRequest(Pictures, uploaded = setOf("photo-2")).items.single().pictureId)
+    }
+
+    @Test
+    fun `a private address is known by its folder, whatever the case of its escapes`() {
+        assertTrue(isPrivatePicture(ownPhoto))
+        assertTrue(isPrivatePicture(ownPhoto.replace("%2F", "%2f")))
+        assertFalse(isPrivatePicture("https://firebasestorage.googleapis.com/v0/b/app.appspot.com/o/published%2Fp1%2Fphoto-2?alt=media"))
+        assertEquals("photo-2", privatePictureIdOf(ownPhoto.replace("%2F", "%2f")))
+        assertNull(privatePictureIdOf(poster))
     }
 
     // 200 with existing: the list an interrupted publish made. The board takes its id as it would a new one's.

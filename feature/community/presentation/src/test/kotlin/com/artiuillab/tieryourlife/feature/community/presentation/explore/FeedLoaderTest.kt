@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.explore
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
+import com.artiuillab.tieryourlife.feature.community.domain.model.PageGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CachedFeed
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -46,6 +47,81 @@ class FeedLoaderTest {
     ) { after ->
         asked += after
         answers.removeFirstOrNull() ?: Result.failure(IOException("nothing set up"))
+    }
+
+    // A's lists, "Your list" on A's anonymous ones included, must be gone before B sees the tab.
+    @Test
+    fun somebodyElseSignedInMeanwhile_startsFromNothingAndAsksForThem() = runTest {
+        val cache = object : FakeCommunityFeedCache() {
+            var who: String? = "uid-a"
+            private val keptFor = mutableMapOf<String, String?>()
+            override fun reader(): String? = who
+            override suspend fun read(key: String): CachedFeed? = super.read(key)?.takeIf { keptFor[key] == who }
+            override suspend fun write(key: String, page: CommunityPage, fetchedAtMillis: Long) {
+                keptFor[key] = who
+                super.write(key, page, fetchedAtMillis)
+            }
+        }
+        answers += Result.success(page("a-list"))
+        val loader = loader(cache)
+        loader.open()
+        advanceUntilIdle()
+
+        cache.who = "uid-b"
+        answers += Result.success(page("b-list"))
+        loader.open()
+
+        assertEquals(FeedPane(), loader.pane.value)
+        advanceUntilIdle()
+        assertEquals(listOf("b-list"), loader.pane.value.lists.map { it.id })
+        assertEquals(listOf<String?>(null, null), asked)
+    }
+
+    @Test
+    fun theSamePersonComingBack_keepsWhatIsOnScreen() = runTest {
+        answers += Result.success(page("a"))
+        val loader = loader()
+        loader.open()
+        advanceUntilIdle()
+
+        loader.open()
+        advanceUntilIdle()
+
+        assertEquals(listOf("a"), loader.pane.value.lists.map { it.id })
+        assertEquals(1, asked.size)
+    }
+
+    // 409 CURSOR_GONE: the last list on the page went; asking from that cursor again is refused again.
+    @Test
+    fun aPageThatIsGone_startsTheFeedAgainFromTheTop() = runTest {
+        answers += Result.success(page("a", "b", next = "b"))
+        val loader = loader()
+        loader.open()
+        advanceUntilIdle()
+
+        answers += Result.failure(PageGone())
+        answers += Result.success(page("c", "a", next = "a"))
+        loader.loadMore()
+        advanceUntilIdle()
+
+        assertEquals(listOf(null, "b", null), asked)
+        assertEquals(listOf("c", "a"), loader.pane.value.lists.map { it.id })
+        assertTrue(loader.pane.value.canLoadMore)
+    }
+
+    @Test
+    fun aPageThatFailsOtherwise_keepsItsCursorForTheNextTry() = runTest {
+        answers += Result.success(page("a", "b", next = "b"))
+        val loader = loader()
+        loader.open()
+        advanceUntilIdle()
+
+        answers += Result.failure(IOException("offline"))
+        loader.loadMore()
+        advanceUntilIdle()
+
+        assertEquals(listOf(null, "b"), asked)
+        assertEquals(listOf("a", "b"), loader.pane.value.lists.map { it.id })
     }
 
     @Test

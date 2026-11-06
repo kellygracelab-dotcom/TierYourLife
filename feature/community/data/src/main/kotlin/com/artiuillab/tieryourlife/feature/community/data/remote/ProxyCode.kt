@@ -8,14 +8,26 @@ import retrofit2.HttpException
 @Serializable
 private data class CodedRefusalDto(
     @SerialName("code") val code: String? = null,
+    @SerialName("detail") val detail: String? = null,
 )
 
 /**
  * The proxy names every refusal in its body, since one status answers several
  * of them. Null when the failure is not an HTTP one, or the body says nothing.
  */
-fun Throwable.proxyCode(): String? {
-    val response = (this as? HttpException)?.response() ?: return null
-    val body = response.errorBody()?.string().orEmpty()
-    return runCatching { networkJson.decodeFromString<CodedRefusalDto>(body) }.getOrNull()?.code
+fun Throwable.proxyCode(): String? = codedRefusal()?.code
+
+/** Which field a `400 INVALID` was about, such as "category". */
+fun Throwable.proxyDetail(): String? = codedRefusal()?.detail
+
+private fun Throwable.codedRefusal(): CodedRefusalDto? =
+    runCatching { networkJson.decodeFromString<CodedRefusalDto>(errorText()) }.getOrNull()
+
+/**
+ * The body of a refusal, read without using it up: one failure is asked
+ * about by more than one of these in turn.
+ */
+internal fun Throwable.errorText(): String {
+    val body = (this as? HttpException)?.response()?.errorBody() ?: return ""
+    return runCatching { body.source().peek().readUtf8() }.getOrDefault("")
 }

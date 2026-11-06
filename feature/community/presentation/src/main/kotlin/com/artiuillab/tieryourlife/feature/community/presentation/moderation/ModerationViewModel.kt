@@ -9,9 +9,12 @@ import com.artiuillab.tieryourlife.feature.community.presentation.list.Community
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -40,6 +43,9 @@ data class PendingTakeDown(
     val ban: BanLength?,
 )
 
+/** What did not happen, said after the fact: "Taken down" was on screen before anything was sent. */
+enum class ModerationFailure { NotTakenDown, NotKept, NotMoved }
+
 @HiltViewModel
 class ModerationViewModel @Inject constructor(
     private val community: CommunityRepository,
@@ -47,6 +53,9 @@ class ModerationViewModel @Inject constructor(
 
     private val _state = MutableStateFlow<ModerationUiState>(ModerationUiState.Loading)
     val state: StateFlow<ModerationUiState> = _state.asStateFlow()
+
+    private val failures = Channel<ModerationFailure>(Channel.BUFFERED)
+    val failed: Flow<ModerationFailure> = failures.receiveAsFlow()
 
     /** For the pane beside the queue: a complaint takes the list out of the feed, so the queue is the only place it can be looked at. */
     private val _looking = MutableStateFlow<CommunityListUiState>(CommunityListUiState.Loading)
@@ -131,19 +140,20 @@ class ModerationViewModel @Inject constructor(
         settle(
             listId = listId,
             shown = shown.copy(reports = shown.reports.putBack(pending), pendingTakeDown = null),
+            failure = ModerationFailure.NotTakenDown,
             whileSettling = shown.copy(pendingTakeDown = null),
         ) { community.takeDown(listId, pending.ban) }
     }
 
     fun dismiss(listId: String) {
         val shown = readyToAct() ?: return
-        settle(listId, shown) { community.dismissReports(listId) }
+        settle(listId, shown, ModerationFailure.NotKept) { community.dismissReports(listId) }
     }
 
     /** Into another section, with no topic: the word it carried belonged to the place it is leaving. The complaints close with the move. */
     fun move(listId: String, category: String) {
         val shown = readyToAct() ?: return
-        settle(listId, shown) {
+        settle(listId, shown, ModerationFailure.NotMoved) {
             community.moveList(listId, category, topicId = null).mapCatching { community.dismissReports(listId).getOrThrow() }
         }
     }
@@ -155,6 +165,7 @@ class ModerationViewModel @Inject constructor(
     private fun settle(
         listId: String,
         shown: ModerationUiState.Ready,
+        failure: ModerationFailure,
         whileSettling: ModerationUiState.Ready = shown,
         act: suspend () -> Result<Unit>,
     ) {
@@ -170,6 +181,7 @@ class ModerationViewModel @Inject constructor(
                 onFailure = { error ->
                     Timber.w(error, "Settling reports about $listId failed")
                     _state.value = shown.copy(settling = null)
+                    failures.send(failure)
                 },
             )
         }

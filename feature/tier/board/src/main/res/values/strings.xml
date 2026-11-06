@@ -155,4 +155,7 @@
     <string name="list_settings_propose_section">Propose a section</string>
     <string name="list_settings_category_waiting">Waiting for a moderator</string>
     <string name="list_settings_moves_to">Moves to %1$s once it’s approved</string>
+    <string name="list_settings_public_gone">This list is no longer in the community: it was taken down, deleted or published from another account. Turn Public on to publish it again.</string>
+    <string name="list_settings_public_section_unavailable">This list’s section no longer takes lists. Choose another section, then publish again.</string>
+    <string name="list_settings_unpublish_failed">Could not take this list down; it is still public. Try again.</string>
 </resources>

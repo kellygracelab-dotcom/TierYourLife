@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.dao.NewTemplateTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.TOPIC_TAKEN_OFF
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toCoverImageUrls
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toEntity
@@ -137,7 +138,16 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) {
-        dao.setTopic(id, topicId = topicId, topicName = topicName, newTopicName = newTopicName?.trim()?.takeIf { it.isNotEmpty() })
+        dao.setTopic(
+            id,
+            topicId = topicId?.takeUnless { it == TOPIC_TAKEN_OFF },
+            topicName = topicName,
+            newTopicName = newTopicName?.trim()?.takeIf { it.isNotEmpty() },
+        )
+    }
+
+    override suspend fun takeTopicOff(id: Long) {
+        dao.setTopic(id, topicId = TOPIC_TAKEN_OFF, topicName = null, newTopicName = null)
     }
 
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) {
@@ -165,6 +175,10 @@ class RoomTierRepository internal constructor(
             NewPoolItem(title = draft.title, imageUrl = imageUrl, credit = draft.credit)
         }
         dao.addItemsToPool(tierListId, kept)
+    }
+
+    override suspend fun keepPicture(sourceUri: String): String = withContext(Dispatchers.IO) {
+        imageStore.copyToInternalStorage(sourceUri)
     }
 
     override suspend fun attachImageToItem(itemId: Long, sourceUri: String) {
@@ -247,7 +261,7 @@ class RoomTierRepository internal constructor(
 
     override suspend fun deleteTierListPermanently(id: Long) {
         dao.deleteTierListPermanently(id, owner())
-        imageStore.deleteOrphans(dao.getAllImageRefs())
+        imageStore.deleteOrphans(picturesInUse())
     }
 
     override suspend fun deleteTierItemPermanently(id: Long) {
@@ -262,7 +276,7 @@ class RoomTierRepository internal constructor(
 
     override suspend fun emptyTrash(keepingListIds: Set<Long>) {
         dao.emptyTrash(owner(), keepingListIds)
-        imageStore.deleteOrphans(dao.getAllImageRefs())
+        imageStore.deleteOrphans(picturesInUse())
     }
 
     // A card with a deletedAt from an older phone or the web stays hidden and unlisted until the trash is emptied.
@@ -291,6 +305,8 @@ class RoomTierRepository internal constructor(
 
     /** A board copied from another shares its pictures: the file goes only with the last card showing it. */
     private suspend fun letGoOfPicture(path: String) {
-        if (path !in dao.getAllImageRefs()) imageStore.deleteCopy(path)
+        if (path !in picturesInUse()) imageStore.deleteCopy(path)
     }
+
+    private suspend fun picturesInUse(): List<String> = dao.getAllImageRefs() + dao.getAllCoverRefs()
 }

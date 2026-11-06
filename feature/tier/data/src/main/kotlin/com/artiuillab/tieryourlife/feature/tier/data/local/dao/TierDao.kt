@@ -499,6 +499,10 @@ interface TierDao {
     @Query("SELECT imageUrl FROM tier_items WHERE imageUrl IS NOT NULL")
     suspend fun getAllImageRefs(): List<String>
 
+    /** A cover kept as a file of its own, such as a photo from the gallery, is a picture in use too. */
+    @Query("SELECT coverImageUrl FROM tier_lists WHERE coverImageUrl IS NOT NULL")
+    suspend fun getAllCoverRefs(): List<String>
+
     @Query("UPDATE tier_items SET position = :position WHERE id = :id")
     suspend fun updateTierItemPosition(id: Long, position: Int)
 

@@ -154,4 +154,7 @@
     <string name="list_settings_propose_section">Rubrik vorschlagen</string>
     <string name="list_settings_category_waiting">Wartet auf einen Moderator</string>
     <string name="list_settings_moves_to">Zieht nach %1$s, sobald sie angenommen ist</string>
+    <string name="list_settings_public_gone">Diese Liste ist nicht mehr in der Community: Sie wurde entfernt, gelöscht oder von einem anderen Konto veröffentlicht. Schalte Öffentlich ein, um sie neu zu veröffentlichen.</string>
+    <string name="list_settings_public_section_unavailable">Der Bereich dieser Liste nimmt keine Listen mehr an. Wähle einen anderen Bereich und veröffentliche erneut.</string>
+    <string name="list_settings_unpublish_failed">Die Liste konnte nicht zurückgenommen werden; sie ist noch öffentlich. Versuche es erneut.</string>
 </resources>

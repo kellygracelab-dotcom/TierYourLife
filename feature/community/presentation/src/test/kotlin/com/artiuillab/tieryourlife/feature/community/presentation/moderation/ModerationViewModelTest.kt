@@ -9,7 +9,10 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -127,6 +130,41 @@ class ModerationViewModelTest {
 
         assertEquals(listOf("a"), still.reports.map { it.listId })
         assertEquals(2, still.reports.single().reportCount)
+    }
+
+    // "Taken down" was on screen before anything was sent; a failure has to say it did not happen.
+    @Test
+    fun aTakedownThatFails_saysTheListIsStillUp() = runBlocking {
+        val viewModel = ModerationViewModel(FakeModerationRepository(twoAboutOneList(), actionsFail = true))
+        viewModel.state.firstWithin { it is ModerationUiState.Ready }
+
+        viewModel.takeDown("a")
+        viewModel.confirmTakeDown()
+
+        assertEquals(ModerationFailure.NotTakenDown, withTimeout(5_000) { viewModel.failed.first() })
+    }
+
+    @Test
+    fun leavingUpOrMovingThatFails_saysWhichDidNotHappen() = runBlocking {
+        val viewModel = ModerationViewModel(FakeModerationRepository(twoAboutOneList(), actionsFail = true))
+        viewModel.state.firstWithin { it is ModerationUiState.Ready }
+
+        viewModel.dismiss("a")
+        assertEquals(ModerationFailure.NotKept, withTimeout(5_000) { viewModel.failed.first() })
+        viewModel.state.firstWithin { it.isSettled() }
+        viewModel.move("a", ListCategory.Food.id)
+        assertEquals(ModerationFailure.NotMoved, withTimeout(5_000) { viewModel.failed.first() })
+    }
+
+    @Test
+    fun anActionThatGoesThrough_saysNothingFailed() = runBlocking {
+        val viewModel = ModerationViewModel(FakeModerationRepository(twoAboutOneList() + about("b")))
+        viewModel.state.firstWithin { it is ModerationUiState.Ready }
+
+        viewModel.dismiss("a")
+        viewModel.state.firstWithin { it is ModerationUiState.Ready && it.reports.size == 1 }
+
+        assertNull(withTimeoutOrNull(200) { viewModel.failed.first() })
     }
 
     // The server groups by list now, so two complaints about one board arrive

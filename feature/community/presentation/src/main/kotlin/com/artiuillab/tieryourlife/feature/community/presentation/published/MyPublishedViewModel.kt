@@ -5,15 +5,21 @@ import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.PublishedStanding
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -45,6 +51,11 @@ class MyPublishedViewModel @Inject constructor(
 
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
+
+    private val refused = Channel<PublishError>(Channel.BUFFERED)
+
+    /** Why an Update did not go, in the words the board's own settings use. */
+    val refusals: Flow<PublishError> = refused.receiveAsFlow()
 
     init {
         load()
@@ -115,17 +126,56 @@ class MyPublishedViewModel @Inject constructor(
             }
             community.publish(board).fold(
                 onSuccess = { published ->
-                    runSuspendCatching { tiers.setPublished(board.id, published.id, published.fingerprint) }
+                    runSuspendCatching { record(board, published) }
                         .onFailure { Timber.w(it, "Recording the update of $publishedId failed") }
                     // Sent, so it is neither behind nor unknown any more.
                     _state.value = shown.copy(updating = null, behind = shown.behind - publishedId)
                 },
                 onFailure = { error ->
                     Timber.w(error, "Updating $publishedId failed")
+                    val refusal = (error as? PublishRefused)?.error
                     _state.value = shown.copy(updating = null)
-                    messages.send(UserMessage.ActionFailed)
+                    when (refusal) {
+                        null, PublishError.Unknown -> messages.send(UserMessage.ActionFailed)
+                        else -> {
+                            settle(board, refusal)
+                            refused.send(refusal)
+                        }
+                    }
                 },
             )
+        }
+    }
+
+    /** As the board's own screen records a publish: the id, what was sent, and the topic the server filed it under. */
+    private suspend fun record(board: TierList, published: Published) {
+        tiers.setPublished(board.id, published.id, published.fingerprint)
+        val topicId = published.topicId
+        if (topicId != null) {
+            val name = published.topicName ?: board.topicName ?: board.newTopicName
+            tiers.setTopic(board.id, topicId, name, board.newTopicName?.takeIf { board.topicId == null })
+        } else if (board.topicTakenOff) {
+            tiers.setTopic(board.id, null, null, null)
+        }
+    }
+
+    /** A refused topic is forgotten, and a list that is gone is gone from this page too. */
+    private suspend fun settle(board: TierList, refusal: PublishError) {
+        when (refusal) {
+            PublishError.TopicUnavailable -> runSuspendCatching { tiers.setTopic(board.id, null, null, null) }
+                .onFailure { Timber.w(it, "Forgetting a refused topic failed") }
+            PublishError.ListGone -> {
+                val publishedId = board.publishedId ?: return
+                runSuspendCatching { tiers.setPublished(board.id, null, null) }
+                    .onFailure { Timber.w(it, "Forgetting $publishedId on this phone failed") }
+                val now = _state.value as? MyPublishedUiState.Ready ?: return
+                _state.value = now.copy(
+                    lists = now.lists.filterNot { it.id == publishedId },
+                    canUpdate = now.canUpdate - publishedId,
+                    behind = now.behind - publishedId,
+                )
+            }
+            else -> Unit
         }
     }
 

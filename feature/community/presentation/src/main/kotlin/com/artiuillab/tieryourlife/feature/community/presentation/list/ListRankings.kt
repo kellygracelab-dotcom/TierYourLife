@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
+import com.artiuillab.tieryourlife.feature.community.domain.model.PageGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefusal
@@ -80,6 +81,15 @@ internal class ListRankings(
                 },
                 onFailure = { error ->
                     Timber.w(error, "Reading a list's rankings failed")
+                    if (error is PageGone && after != null) {
+                        // A ranking on the last page went: the first page again, in place of what was there.
+                        cursor = null
+                        state.update { current ->
+                            if (current is CommunityListUiState.Success) current.copy(rankings = emptyList()) else current
+                        }
+                        fetch(after = null)
+                        return@fold
+                    }
                     state.update { current ->
                         if (current is CommunityListUiState.Success) current.copy(rankingsLoading = false) else current
                     }
@@ -133,9 +143,9 @@ internal class ListRankings(
      * Mine, shown to others as this reader's ranking, or the one shown before
      * changed. Only somebody else's list, only once Mine was arranged, and only
      * signed in: a guest is asked to sign in instead. Its rows name the cards
-     * by where they sit in the list, so only a list the server handed over in
-     * this visit will do: a kept copy is read again first, and one that changed
-     * meanwhile sends nothing.
+     * by where they sit in the list, so the list is read again first, and one
+     * its author changed since it was placed sends nothing: the rows would
+     * land on other cards.
      */
     fun showMine() {
         val current = state.value as? CommunityListUiState.Success ?: return
@@ -147,7 +157,14 @@ internal class ListRankings(
         }
         state.update { now -> if (now is CommunityListUiState.Success) now.copy(sendingRanking = true) else now }
         scope.launch {
-            val answer = freshAnswer()
+            val before = opened?.summary?.updatedAtMillis
+            reread()
+            val answer = opened?.takeIf { fromServer }
+            if (answer != null && answer.summary.updatedAtMillis != before) {
+                stopSending()
+                told.send(RankingNotice.ListChanged)
+                return@launch
+            }
             val mine = (state.value as? CommunityListUiState.Success)?.takeIf { it.canShowRanking }?.mine
             if (answer == null || mine == null) {
                 stopSending()
@@ -162,20 +179,14 @@ internal class ListRankings(
                 onFailure = { error ->
                     Timber.w(error, "Showing a ranking failed")
                     stopSending()
-                    if ((error as? RankingRefused)?.reason == RankingRefusal.NotSignedIn) {
-                        told.send(RankingNotice.SignInFirst)
-                    } else {
-                        messages.send(UserMessage.ActionFailed)
+                    when ((error as? RankingRefused)?.reason) {
+                        RankingRefusal.NotSignedIn -> told.send(RankingNotice.SignInFirst)
+                        RankingRefusal.Banned -> told.send(RankingNotice.Banned)
+                        else -> messages.send(UserMessage.ActionFailed)
                     }
                 },
             )
         }
-    }
-
-    /** The list as the server has it now: the kept copy is read again first, and null when that fails. */
-    private suspend fun freshAnswer(): PublishedList? {
-        if (!fromServer) reread()
-        return opened?.takeIf { fromServer }
     }
 
     private fun stopSending() {
@@ -197,4 +208,4 @@ internal class ListRankings(
 }
 
 /** What a reader is told after asking to show their ranking; a failure is the usual one. */
-enum class RankingNotice { Shown, SignInFirst }
+enum class RankingNotice { Shown, SignInFirst, ListChanged, Banned }

@@ -73,6 +73,9 @@ interface TierRepository {
     /** A known topic by id and name, a new one by name alone, or none; a known one leaves no draft behind. */
     suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?)
 
+    /** No topic, said out loud: the next publish takes the list's topic off. Any [setTopic] after it forgets that. */
+    suspend fun takeTopicOff(id: Long) = setTopic(id, null, null, null)
+
     /** The board's saved game as the shared JSON, or none once it is over; it travels with the board on the next sync. */
     suspend fun setPlay(id: Long, play: String?)
 
@@ -90,6 +93,13 @@ interface TierRepository {
     suspend fun addItemsToPool(tierListId: Long, items: List<PoolItemDraft>)
 
     suspend fun attachImageToItem(itemId: Long, sourceUri: String)
+
+    /**
+     * A picture from the gallery copied into the app's own, where it outlives
+     * the picker's permission and publishes as this person's photo. Answers
+     * where it is kept.
+     */
+    suspend fun keepPicture(sourceUri: String): String = sourceUri
 
     suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int)
 
