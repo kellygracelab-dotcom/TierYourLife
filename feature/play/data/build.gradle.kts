@@ -10,6 +10,7 @@ android {
 
 dependencies {
     implementation(projects.core.logging)
+    implementation(projects.core.settings)
     implementation(projects.feature.play.domain)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)

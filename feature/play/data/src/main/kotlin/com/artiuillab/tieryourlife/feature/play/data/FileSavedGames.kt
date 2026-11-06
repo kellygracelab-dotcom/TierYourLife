@@ -48,6 +48,11 @@ class FileSavedGames(
         change { it.copy(last = kind.name) }
     }
 
+    /** Every game and the last one chosen: they were played on somebody's boards. */
+    suspend fun forgetAll() {
+        change { Shelf() }
+    }
+
     /** What did not reach the file is not taken as done here either. */
     private suspend fun change(edit: (Shelf) -> Shelf): Boolean = lock.withLock {
         val next = edit(current())

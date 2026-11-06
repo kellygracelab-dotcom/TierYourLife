@@ -84,6 +84,7 @@ internal fun BackupSection(
 
 private fun BackupRefusal.Reason.message(): Int = when (this) {
     BackupRefusal.Reason.TooLarge -> R.string.settings_backup_refused_too_large
+    BackupRefusal.Reason.TooManyTiers -> R.string.settings_backup_refused_too_many_tiers
     BackupRefusal.Reason.TooManyBoards -> R.string.settings_backup_refused_too_many
     BackupRefusal.Reason.NotAccepted -> R.string.settings_backup_refused_not_accepted
 }

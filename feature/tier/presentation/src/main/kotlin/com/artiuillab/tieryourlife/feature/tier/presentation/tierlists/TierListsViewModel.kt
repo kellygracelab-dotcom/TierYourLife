@@ -92,6 +92,10 @@ class TierListsViewModel @Inject constructor(
         viewModelScope.launch {
             owner.changes.collect { loadTierListsInternal() }
         }
+        // A run from a returning connection, with no screen having asked for it.
+        viewModelScope.launch {
+            boardSync.finished.collect { report -> if (loaded && report.carried > 0) showWhatTheRunLeft() }
+        }
     }
 
     /**

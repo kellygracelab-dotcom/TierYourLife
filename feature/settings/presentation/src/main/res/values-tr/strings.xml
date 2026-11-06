@@ -53,6 +53,7 @@
     <string name="settings_backup_refused_not_accepted">“%1$s” yedeklenmiyor: hesap üzerindeki bir şeyi kabul etmiyor.</string>
     <string name="settings_backup_refused_too_large">“%1$s” yedeklenmiyor: hesabın sakladığından büyük. Üzerinden birkaç kart kaldır.</string>
     <string name="settings_backup_refused_too_many">“%1$s” yedeklenmiyor: hesap en fazla 200 pano saklar. Artık gerekmeyenleri sil.</string>
+    <string name="settings_backup_refused_too_many_tiers">“%1$s” yedeklenmiyor: hesabın sakladığından fazla seviyesi var, havuzun yanında 19. Bir seviyesini kaldır.</string>
     <string name="settings_backup_stuck">%1$s tarihinden beri yedeklenmedi. Bağlantını kontrol et.</string>
     <string name="settings_backup_sub">Seviyeler, kartlar ve notlar</string>
     <string name="settings_export">Verileri dışa aktar</string>

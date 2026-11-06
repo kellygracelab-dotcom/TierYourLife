@@ -29,8 +29,12 @@ class PictureSync @Inject constructor(
     private val _restoring = MutableStateFlow(PictureRestore.Progress.Idle)
     override val restoring: StateFlow<PictureRestore.Progress> = _restoring.asStateFlow()
 
-    /** A picture that will not go stays unrecorded, so the next run tries again; recording it would lose it quietly. */
-    suspend fun push(account: String) {
+    /**
+     * A picture that will not go stays unrecorded, so the next run tries
+     * again; recording it would lose it quietly. [stopped] is asked between
+     * pictures, and the rest wait for the next run.
+     */
+    suspend fun push(account: String, stopped: () -> Boolean = { false }) {
         // Pictures cost data allowance; boards are text and go regardless.
         if (preferences.picturesOnWifiOnly() && !connection.unmetered()) {
             Timber.d("Pictures are waiting for Wi-Fi")
@@ -39,8 +43,9 @@ class PictureSync @Inject constructor(
         val sent = dao.sentPictureIds(account).toSet()
         val here = dao.imageUrlsOf(account).mapNotNull(images::pictureIdOf).distinct()
 
-        here.filterNot { it in sent }.forEach { pictureId ->
-            val bytes = images.read(pictureId) ?: return@forEach
+        for (pictureId in here.filterNot { it in sent }) {
+            if (stopped()) return
+            val bytes = images.read(pictureId) ?: continue
             if (vault.put(pictureId, bytes)) {
                 dao.rememberPicture(PictureSyncEntity(account, pictureId, System.currentTimeMillis()))
             } else {
@@ -74,7 +79,7 @@ class PictureSync @Inject constructor(
      * What a new phone looks like: boards arrive in one request, pictures take
      * as long as they take, and until then a tile shows its title.
      */
-    suspend fun pull(account: String, wanted: Map<String, String>) {
+    suspend fun pull(account: String, wanted: Map<String, String>, stopped: () -> Boolean = { false }) {
         if (preferences.picturesOnWifiOnly() && !connection.unmetered()) {
             _restoring.value = PictureRestore.Progress.Idle
             return
@@ -89,7 +94,8 @@ class PictureSync @Inject constructor(
         _restoring.value = PictureRestore.Progress(done = 0, total = missing.size)
         // A write that throws halfway must not leave the banner up until the app is killed.
         try {
-            missing.forEach { (itemUid, pictureId) ->
+            for ((itemUid, pictureId) in missing) {
+                if (stopped()) break
                 val bytes = vault.get(pictureId)
                 if (bytes != null) {
                     dao.setItemImage(itemUid, images.write(pictureId, bytes))

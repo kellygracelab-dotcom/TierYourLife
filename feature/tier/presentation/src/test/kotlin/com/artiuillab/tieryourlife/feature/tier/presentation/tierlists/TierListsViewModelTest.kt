@@ -159,6 +159,28 @@ class TierListsViewModelTest {
         }
     }
 
+    // A12: a run started by a returning connection changed the boards, and
+    // the list kept showing what was there before until something else redrew it.
+    @Test
+    fun aRunNoScreenAskedFor_isShownWhenItEnds() = runBlocking<Unit> {
+        val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Before")))
+        val finished = MutableSharedFlow<SyncReport>(extraBufferCapacity = 1)
+        val sync = object : BoardSync {
+            override suspend fun sync(): SyncReport = SyncReport(signedIn = false)
+            override val finished: Flow<SyncReport> = finished
+        }
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), sync, NoPictureRestore, NoOwnerChange)
+        viewModel.loadTierLists()
+        viewModel.state.firstWithin { it is TierListsUiState.Success && it.lists.singleOrNull()?.title == "Before" }
+
+        repository.renameTierList(1, "Came from the account")
+        finished.emit(SyncReport(signedIn = true, carried = 1))
+
+        viewModel.state.firstWithin {
+            it is TierListsUiState.Success && it.lists.singleOrNull()?.title == "Came from the account"
+        }
+    }
+
     @Test
     fun secondLoad_afterADeletionOnTheRepository_dropsTheDeletedList() = runBlocking {
         val repository = FakeTierRepository(

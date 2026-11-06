@@ -2,6 +2,8 @@ package com.artiuillab.tieryourlife.feature.tier.data.sync
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
+import com.artiuillab.tieryourlife.core.settings.PersonalData
+import com.artiuillab.tieryourlife.core.settings.ThePerson
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
@@ -40,7 +42,10 @@ class AccountErasureTest : SyncEngineBench() {
         lock,
         preferences,
         accounts,
+        ThePerson(preferences, setOf(PersonalData { forgotten++ })),
     ) { now }
+
+    private var forgotten = 0
 
     private suspend fun ownerOf(uid: String) = dao.boardByUid(uid)!!.ownerUid
 
@@ -109,6 +114,7 @@ class AccountErasureTest : SyncEngineBench() {
         assertNull(ownerOf(films))
         assertEquals(Account.Guest, accounts.current())
         assertNull(preferences.erasureUnderWay())
+        assertEquals("S22: forgotten as on any other way out", 1, forgotten)
     }
 
     @Test
@@ -136,6 +142,7 @@ class AccountErasureTest : SyncEngineBench() {
         merge().settleUnansweredErase()
 
         assertNull(ownerOf(films))
+        assertEquals(1, forgotten)
     }
 
     @Test
@@ -161,6 +168,27 @@ class AccountErasureTest : SyncEngineBench() {
         merge().signOutSettlingErase(signOut)
 
         assertNull(ownerOf(films))
+        assertEquals(Account.Guest, accounts.current())
+    }
+
+    // A32: signing out sat behind the whole run, several seconds with nothing said.
+    @Test
+    fun signingOutDuringARun_stopsItAtTheNextStep() = runBlocking {
+        givenLocalBoard("Films", owner = "ann")
+        givenLocalBoard("Games", owner = "ann")
+        val engine = engine(preferences = preferences, accounts = accounts)
+        var leaving: Deferred<*>? = null
+        boards.onIndex = {
+            boards.onIndex = {}
+            leaving = async { merge().signOutSettlingErase(signOut) }
+            yield()
+        }
+
+        val report = engine.sync()
+        leaving!!.await()
+
+        assertTrue("nothing sent once the sign-out asked", boards.kept.isEmpty())
+        assertEquals(2, report.refused)
         assertEquals(Account.Guest, accounts.current())
     }
 

@@ -55,6 +55,7 @@
     <string name="settings_backup_refused_not_accepted">« %1$s » n’est pas sauvegardé : le compte refuse quelque chose qu’il contient.</string>
     <string name="settings_backup_refused_too_large">« %1$s » n’est pas sauvegardé : il dépasse ce que le compte conserve. Retirez-en quelques cartes.</string>
     <string name="settings_backup_refused_too_many">« %1$s » n’est pas sauvegardé : le compte conserve 200 tableaux au plus. Supprimez ceux dont vous n’avez plus besoin.</string>
+    <string name="settings_backup_refused_too_many_tiers">« %1$s » n’est pas sauvegardé : il a plus de rangs que le compte n’en conserve, 19 plus la réserve. Retirez-en un rang.</string>
     <string name="settings_backup_stuck">Pas de sauvegarde depuis %1$s. Vérifiez votre connexion.</string>
     <string name="settings_backup_sub">Niveaux, cartes et légendes</string>
     <string name="settings_export">Exporter les données</string>

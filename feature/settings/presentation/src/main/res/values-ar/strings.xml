@@ -61,6 +61,7 @@
     <string name="settings_backup_refused_not_accepted">لا توجد نسخة من «%1$s»: لا يقبل الحساب شيئًا موجودًا فيها.</string>
     <string name="settings_backup_refused_too_large">لا توجد نسخة من «%1$s»: إنها أكبر مما يحفظه الحساب. أزل منها بعض البطاقات.</string>
     <string name="settings_backup_refused_too_many">لا توجد نسخة من «%1$s»: يحفظ الحساب 200 لوحة على الأكثر. احذف ما لم تعد تحتاجه.</string>
+    <string name="settings_backup_refused_too_many_tiers">لا توجد نسخة من «%1$s»: فيها مستويات أكثر مما يحفظه الحساب، 19 إلى جانب المجمّع. احذف منها مستوى.</string>
     <string name="settings_backup_stuck">لا توجد نسخة منذ %1$s. تحقق من اتصالك.</string>
     <string name="settings_backup_sub">المستويات والبطاقات والملاحظات</string>
     <string name="settings_export">تصدير البيانات</string>

@@ -4,6 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.Multibinds
 import javax.inject.Singleton
 
 @Module
@@ -15,4 +16,8 @@ abstract class SettingsModule {
     abstract fun bindAppPreferences(
         implementation: SharedPreferencesAppPreferences,
     ): AppPreferences
+
+    /** Empty until a module keeps something of the person's own. */
+    @Multibinds
+    abstract fun personalData(): Set<PersonalData>
 }

@@ -8,6 +8,8 @@ data class LocalBoard(
     val uid: String,
     /** Stands in for the whole contents: change anything and it changes. Only ever compared. */
     val fingerprint: String,
+    /** In this phone's trash: an edit made there, the trashing itself included, is not worth bringing it back for. */
+    val inTrash: Boolean = false,
 )
 
 /** A board as the account has it, from the index. */
@@ -120,7 +122,8 @@ private fun stepFor(local: LocalBoard, remote: RemoteBoard?, synced: SyncedBoard
         // it was thrown away on another phone: it goes to the trash here once
         // and stays there until somebody empties it or takes it back out.
         return when {
-            synced == null || local.fingerprint != synced.fingerprint -> SyncStep.Revive(local.uid, basedOn = remote.revision)
+            synced == null -> SyncStep.Revive(local.uid, basedOn = remote.revision)
+            local.fingerprint != synced.fingerprint && !local.inTrash -> SyncStep.Revive(local.uid, basedOn = remote.revision)
             synced.revision != remote.revision -> SyncStep.TrashLocal(local.uid, revision = remote.revision)
             else -> null
         }

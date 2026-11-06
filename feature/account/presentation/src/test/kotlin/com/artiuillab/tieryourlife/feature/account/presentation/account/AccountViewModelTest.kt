@@ -3,6 +3,8 @@ package com.artiuillab.tieryourlife.feature.account.presentation.account
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.settings.HiddenEntry
+import com.artiuillab.tieryourlife.core.settings.PersonalData
+import com.artiuillab.tieryourlife.core.settings.ThePerson
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
@@ -299,6 +301,26 @@ class AccountViewModelTest {
         assertEquals(emptyList<HiddenEntry>(), preferences.hiddenAuthors())
     }
 
+    // S22: Play's saved games outlived the person who played them.
+    @Test
+    fun signingOutAndDeleting_bothForgetWhatEachModuleKept() = runBlocking {
+        var forgotten = 0
+        val kept = setOf(PersonalData { forgotten++ })
+        val signedIn = Account.SignedIn(email = "someone@example.com", photoUrl = null, uid = "someone")
+
+        val leaving = viewModel(FakeAccountRepository(initial = signedIn), kept = kept)
+        leaving.state.firstWithin { it.account is Account.SignedIn }
+        leaving.signOut()
+        withTimeout(5_000) { while (forgotten < 1) delay(10) }
+
+        val deleting = viewModel(FakeAccountRepository(initial = signedIn), kept = kept)
+        deleting.state.firstWithin { it.account is Account.SignedIn }
+        deleting.deleteAccount()
+        withTimeout(5_000) { while (forgotten < 2) delay(10) }
+
+        assertEquals(2, forgotten)
+    }
+
     // The account has to be gone before the identity that asked is given up,
     // or a failure leaves somebody unable to sign back in or try again.
     @Test
@@ -520,9 +542,10 @@ class AccountViewModelTest {
         community: FakeCommunityRepository = FakeCommunityForAccount(),
         facePhotos: FacePhotos = FakeFacePhotos(),
         preferences: FakeAppPreferences = FakeAppPreferences(),
+        kept: Set<PersonalData> = emptySet(),
     ): AccountViewModel {
         picker = credential
-        return AccountViewModel(repository, credits, publishedLists, community, merge, erasure, facePhotos, preferences)
+        return AccountViewModel(repository, credits, publishedLists, community, merge, erasure, facePhotos, ThePerson(preferences, kept))
     }
 }
 

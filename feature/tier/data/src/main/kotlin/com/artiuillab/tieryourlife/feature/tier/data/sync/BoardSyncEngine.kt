@@ -21,6 +21,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.LocalBoard
@@ -29,6 +30,10 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncReport
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncStep
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncedBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.planSync
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -64,7 +69,11 @@ class BoardSyncEngine @Inject constructor(
      * one, at launch together; a run that read the boards before the other
      * restored one took the restore for an edit here and sent it back up.
      */
-    override suspend fun sync(): SyncReport = lock.withLock { run() }
+    override suspend fun sync(): SyncReport = lock.withLock { run() }.also { report -> runsFinished.tryEmit(report) }
+
+    private val runsFinished = MutableSharedFlow<SyncReport>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+    override val finished: Flow<SyncReport> = runsFinished.asSharedFlow()
 
     /**
      * Only the signed-in account's own boards: another account's, or the ones
@@ -82,22 +91,24 @@ class BoardSyncEngine @Inject constructor(
         val remote = readIndex()
         claimUnclaimed(account, fingerprints, remote)
         val steps = planSync(
-            local = local.map { board -> LocalBoard(board.uid, fingerprints.getValue(board.uid)) },
+            local = local.map { board -> LocalBoard(board.uid, fingerprints.getValue(board.uid), inTrash = board.deletedAt != null) },
             remote = remote.values.toList(),
             synced = dao.syncRecordsOf(account).map { SyncedBoard(it.listUid, it.revision, it.fingerprint) },
         )
 
         // Pictures before boards, so no board ever names a picture the other
         // phone cannot fetch yet.
-        runSuspendCatching { pictures.push(account) }
+        runSuspendCatching { pictures.push(account, stopped = { lock.stopAsked }) }
             .onFailure { failure -> Timber.w(failure, "Pictures did not go up") }
 
         var carried = 0
         var refused = 0
         var refusal: BackupRefusal? = null
         for ((index, step) in steps.withIndex()) {
-            // Planned from this account's rows; another one signed in since would be handed them.
-            if (signedInAs() != account) {
+            // Planned from this account's rows; another one signed in since
+            // would be handed them. Between steps is where a run can stop
+            // for a sign-out without leaving a board half written.
+            if (lock.stopAsked || signedInAs() != account) {
                 refused += steps.size - index
                 break
             }
@@ -115,11 +126,7 @@ class BoardSyncEngine @Inject constructor(
             refusedBoard != null -> preferences.setBoardRefusal(account, refusedBoard.encoded())
             refused == 0 -> preferences.setBoardRefusal(account, null)
         }
-        runSuspendCatching { pictures.pull(account, wantedPictures(account)) }
-            .onFailure { failure -> Timber.w(failure, "Pictures did not come down") }
-
-        runSuspendCatching { forgetWhatIsNoLongerPublished() }
-            .onFailure { failure -> Timber.w(failure, "Could not reconcile what is published") }
+        if (!lock.stopAsked) afterTheBoards(account)
 
         // Only after a complete run: a partial one leaves the account behind,
         // which is what this timestamp is there to report.
@@ -128,6 +135,14 @@ class BoardSyncEngine @Inject constructor(
         }
 
         return SyncReport(signedIn = true, carried = carried, refused = refused)
+    }
+
+    private suspend fun afterTheBoards(account: String) {
+        runSuspendCatching { pictures.pull(account, wantedPictures(account), stopped = { lock.stopAsked }) }
+            .onFailure { failure -> Timber.w(failure, "Pictures did not come down") }
+        if (lock.stopAsked) return
+        runSuspendCatching { forgetWhatIsNoLongerPublished() }
+            .onFailure { failure -> Timber.w(failure, "Could not reconcile what is published") }
     }
 
     /**
@@ -289,7 +304,7 @@ class BoardSyncEngine @Inject constructor(
         // Thrown rather than logged and returned: the run counts it as refused,
         // so the last-synced time stays put and the stuck banner can show.
         val refusal = refusalOf(answer)
-        val theirs = refusal?.board?.takeIf { answer.code() == HTTP_CONFLICT } ?: throw refused(answer, refusal, board.title)
+        val theirs = refusal?.board?.takeIf { answer.code() == HTTP_CONFLICT } ?: throw refused(answer, refusal, board.title, tiers.size)
 
         // Our own board coming back: the last write's answer never arrived.
         // Same content, so take the missed number and stop -- otherwise a
@@ -302,7 +317,7 @@ class BoardSyncEngine @Inject constructor(
         // changed here, and that outweighs the delete.
         keepBeside(account, theirs)
         val second = api.keep(uid, request(board, tiers, items, fingerprint, basedOn = theirs.revision))
-        if (!second.isSuccessful) throw refused(second, refusalOf(second), board.title)
+        if (!second.isSuccessful) throw refused(second, refusalOf(second), board.title, tiers.size)
         second.body()?.let { remember(account, uid, it.revision, fingerprint) }
     }
 
@@ -311,8 +326,11 @@ class BoardSyncEngine @Inject constructor(
         return runSuspendCatching { json.decodeFromString<BoardConflictDto>(body) }.getOrNull()
     }
 
-    private fun refused(answer: Response<*>, refusal: BoardConflictDto?, title: String): Exception {
+    private fun refused(answer: Response<*>, refusal: BoardConflictDto?, title: String, tierCount: Int): Exception {
         val reason = when {
+            // Told by the board as well as by the words: an undo can take a board past the cap.
+            answer.code() == HTTP_TOO_LARGE && (refusal?.error == TOO_MANY_TIERS || tierCount > TierList.MAX_RANKED_TIERS + 1) ->
+                BackupRefusal.Reason.TooManyTiers
             answer.code() == HTTP_TOO_LARGE -> BackupRefusal.Reason.TooLarge
             answer.code() == HTTP_CONFLICT && refusal?.code == TOO_MANY_BOARDS -> BackupRefusal.Reason.TooManyBoards
             answer.code() == HTTP_BAD_REQUEST -> BackupRefusal.Reason.NotAccepted
@@ -337,8 +355,8 @@ class BoardSyncEngine @Inject constructor(
             }
         }
         dao.itemsOf(board.id).forEach { item ->
-            // A card without a name keeps none; it goes up under a stand-in.
-            KeptText.clean(item.title, KeptText.TITLE)?.takeIf { it != item.title }?.let { dao.settleItemTitle(item.id, item.title, it) }
+            val kept = keptTitleOf(item)
+            if (kept != item.title) dao.settleItemTitle(item.id, item.title, kept)
             item.credit?.let { credit ->
                 val clean = KeptText.clean(credit, KeptText.CREDIT)
                 if (clean != credit) dao.settleItemCredit(item.id, credit, clean)
@@ -471,7 +489,7 @@ class BoardSyncEngine @Inject constructor(
                     pictureId = images.pictureIdOf(item.imageUrl),
                     tierUid = tierUid,
                     position = item.position,
-                    title = item.title.ifBlank { KeptText.UNTITLED_CARD },
+                    title = keptTitleOf(item),
                     imageUrl = item.imageUrl,
                     source = item.source,
                     deletedAt = item.deletedAt,
@@ -481,11 +499,17 @@ class BoardSyncEngine @Inject constructor(
         )
     }
 
+    private fun keptTitleOf(item: TierItemEntity): String =
+        KeptText.cardTitle(item.title, KeptText.isKeptPicture(images.pictureIdOf(item.imageUrl), item.imageUrl))
+
     private companion object {
         const val HTTP_BAD_REQUEST = 400
         const val HTTP_CONFLICT = 409
         const val HTTP_TOO_LARGE = 413
         const val TOO_MANY_BOARDS = "TOO_MANY_BOARDS"
+
+        /** What `/boards` names as the limit in a 413 for a board over its tiers. */
+        const val TOO_MANY_TIERS = "Too many tiers"
     }
 }
 
@@ -566,7 +590,8 @@ private fun KeptBoardDto.tiers(
                 TierItemEntity(
                     tierId = index.toLong(),
                     position = item.position,
-                    title = item.title.takeUnless { it == KeptText.UNTITLED_CARD && (item.pictureId != null || item.imageUrl != null) }.orEmpty(),
+                    // The stand-in a card with a picture went up under before the account took nameless ones.
+                    title = item.title.takeUnless { it == KeptText.UNTITLED_CARD && KeptText.isKeptPicture(item.pictureId, item.imageUrl) }.orEmpty(),
                     // Written as the path it will live at once fetched; until
                     // then the tile shows the title, like any card without one.
                     imageUrl = item.pictureId?.let(pathFor) ?: item.imageUrl,

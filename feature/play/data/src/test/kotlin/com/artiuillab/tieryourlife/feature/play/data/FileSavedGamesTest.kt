@@ -56,6 +56,19 @@ class FileSavedGamesTest {
         assertEquals(setOf("list:abc"), store().keys())
     }
 
+    // S22: the games were played on the last person's boards.
+    @Test
+    fun forgettingAll_leavesNothingForTheNextPerson() = runBlocking {
+        val games = store()
+        games.save("board:3", game)
+        games.rememberKind(GameKind.Swiss)
+
+        games.forgetAll()
+
+        assertEquals(emptySet<String>(), store().keys())
+        assertNull(store().lastKind())
+    }
+
     @Test
     fun theLastGameKind_isRememberedForTheDevice() = runBlocking {
         assertNull(store().lastKind())

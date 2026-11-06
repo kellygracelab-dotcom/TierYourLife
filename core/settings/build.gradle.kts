@@ -12,6 +12,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.logging)
     implementation(libs.androidx.core.ktx)
 
     testImplementation(libs.robolectric)

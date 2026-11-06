@@ -53,6 +53,7 @@
     <string name="settings_backup_refused_not_accepted">„%1$s“ wird nicht gesichert: Etwas darauf nimmt das Konto nicht an.</string>
     <string name="settings_backup_refused_too_large">„%1$s“ wird nicht gesichert: Das Board ist größer, als das Konto speichert. Nimm ein paar Karten herunter.</string>
     <string name="settings_backup_refused_too_many">„%1$s“ wird nicht gesichert: Das Konto speichert höchstens 200 Boards. Lösche die, die du nicht mehr brauchst.</string>
+    <string name="settings_backup_refused_too_many_tiers">„%1$s“ wird nicht gesichert: Das Board hat mehr Stufen, als das Konto speichert, 19 plus Pool. Entferne eine Stufe.</string>
     <string name="settings_backup_stuck">Seit %1$s nicht gesichert. Prüfe deine Verbindung.</string>
     <string name="settings_backup_sub">Stufen, Karten und Beschriftungen</string>
     <string name="settings_export">Daten exportieren</string>

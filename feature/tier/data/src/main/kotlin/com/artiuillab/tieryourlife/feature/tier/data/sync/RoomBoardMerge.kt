@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.ThePerson
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
@@ -28,6 +29,7 @@ class RoomBoardMerge internal constructor(
     private val lock: SyncLock,
     private val preferences: AppPreferences,
     private val accounts: AccountRepository,
+    private val thePerson: ThePerson,
     private val clock: () -> Long,
 ) : BoardMerge {
 
@@ -39,7 +41,8 @@ class RoomBoardMerge internal constructor(
         lock: SyncLock,
         preferences: AppPreferences,
         accounts: AccountRepository,
-    ) : this(dao, owners, api, ownership, lock, preferences, accounts, System::currentTimeMillis)
+        thePerson: ThePerson,
+    ) : this(dao, owners, api, ownership, lock, preferences, accounts, thePerson, System::currentTimeMillis)
 
     override fun hold() = ownership.hold()
 
@@ -56,7 +59,7 @@ class RoomBoardMerge internal constructor(
         account: String,
         erase: suspend () -> Result<Unit>,
         signOut: suspend () -> Unit,
-    ): Result<Unit> = lock.withLock {
+    ): Result<Unit> = lock.ahead {
         preferences.setErasureUnderWay(ErasureMark(account, clock()).encoded())
         val result = erase()
         when {
@@ -76,7 +79,7 @@ class RoomBoardMerge internal constructor(
         }
     }
 
-    override suspend fun signOutSettlingErase(signOut: suspend () -> Unit) = lock.withLock {
+    override suspend fun signOutSettlingErase(signOut: suspend () -> Unit) = lock.ahead {
         val mark = erasureMarkOf(preferences.erasureUnderWay())
         if (mark != null && signedInAs(accounts.current()) == mark.account) {
             if (accounts.currentAccountExists() == false) {
@@ -97,12 +100,14 @@ class RoomBoardMerge internal constructor(
             // Signing out by choice settles the mark first, so only the account
             // going away can have signed it out.
             keepBoardsOf(mark.account)
+            thePerson.forget()
             return@withLock
         }
         when (accounts.currentAccountExists()) {
             false -> {
                 keepBoardsOf(mark.account)
                 accounts.signOut()
+                thePerson.forget()
             }
             true -> if (clock() - mark.atMs > ERASE_ANSWERS_WITHIN_MS) preferences.setErasureUnderWay(null)
             null -> Timber.i("Whether the account was erased cannot be told yet")

@@ -3,8 +3,8 @@ package com.artiuillab.tieryourlife.feature.account.presentation.account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
-import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.Features
+import com.artiuillab.tieryourlife.core.settings.ThePerson
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
@@ -39,7 +39,7 @@ class AccountViewModel @Inject constructor(
     private val merge: BoardMerge,
     private val erasure: AccountErasure,
     private val facePhotos: FacePhotos,
-    private val preferences: AppPreferences,
+    private val thePerson: ThePerson,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -90,7 +90,7 @@ class AccountViewModel @Inject constructor(
     fun signOut() {
         viewModelScope.launch {
             merge.signOutSettlingErase { repository.signOut() }
-            preferences.forgetThePerson()
+            thePerson.forget()
             _state.update { it.copy(notice = null) }
         }
     }
@@ -108,7 +108,7 @@ class AccountViewModel @Inject constructor(
         viewModelScope.launch {
             merge.eraseKeepingBoards(account, erase = { erasure.erase() }, signOut = { repository.signOut() }).fold(
                 onSuccess = {
-                    preferences.forgetThePerson()
+                    thePerson.forget()
                     _state.update { it.copy(deleting = false) }
                 },
                 onFailure = { error ->
