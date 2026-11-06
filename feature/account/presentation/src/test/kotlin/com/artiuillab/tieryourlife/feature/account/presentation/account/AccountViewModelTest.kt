@@ -1,10 +1,10 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account
 
+import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.settings.Features
+import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
-import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
-import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.FakeFacePhotos
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
