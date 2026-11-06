@@ -144,7 +144,7 @@
     <string name="tier_list_settings_mode_wrapped">Строки с переносом</string>
     <string name="tier_list_settings_mode_wrapped_sub">Виден каждый элемент, строки становятся выше</string>
     <string name="tier_list_settings_new_tier_title">Новый уровень</string>
-    <string name="tier_list_settings_tier_limit">20 уровней вместе с пулом — больше на доске не поместится</string>
+    <string name="tier_list_settings_tier_limit">19 уровней и пул — больше на доске не поместится</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="one">%d уровень</item>
         <item quantity="few">%d уровня</item>

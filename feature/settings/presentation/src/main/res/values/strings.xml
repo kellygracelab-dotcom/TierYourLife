@@ -51,7 +51,7 @@
     <string name="settings_backup_pictures_label">Pictures on Wi-Fi only</string>
     <string name="settings_backup_pictures_sub">%1$s in your account</string>
     <string name="settings_backup_refused_not_accepted">“%1$s” isn’t backed up: the account won’t take something on it.</string>
-    <string name="settings_backup_refused_too_large">“%1$s” isn’t backed up: it’s bigger than the account keeps. Fewer tiers or cards will let it through.</string>
+    <string name="settings_backup_refused_too_large">“%1$s” isn’t backed up: it’s bigger than the account keeps. Take some cards off it.</string>
     <string name="settings_backup_refused_too_many">“%1$s” isn’t backed up: the account keeps 200 boards at most. Delete the ones you no longer need.</string>
     <string name="settings_backup_stuck">Not backed up since %1$s. Check your connection.</string>
     <string name="settings_backup_sub">Tiers, items and notes</string>

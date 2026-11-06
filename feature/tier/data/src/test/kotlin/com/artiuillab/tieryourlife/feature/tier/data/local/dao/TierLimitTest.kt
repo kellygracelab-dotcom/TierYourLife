@@ -16,7 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 
-/** The account keeps 20 tiers on a board, the pool among them; a 21st made the board refused on every run. */
+/** The account keeps 19 tiers on a board besides the pool; a 20th made the board refused on every run. */
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [35])
 class TierLimitTest {
@@ -33,31 +33,31 @@ class TierLimitTest {
     @After
     fun tearDown() = database.close()
 
-    private suspend fun boardWith(tiers: Int): Long {
+    private suspend fun boardWith(ranked: Int): Long {
         val board = dao.insertTierList(TierListEntity(title = "Films"))
-        repeat(tiers) { index ->
-            dao.insertTier(TierEntity(tierListId = board, position = index, label = "T$index", colorLight = "#111111", colorDark = "#EEEEEE", isPool = index == tiers - 1))
+        repeat(ranked + 1) { index ->
+            dao.insertTier(TierEntity(tierListId = board, position = index, label = "T$index", colorLight = "#111111", colorDark = "#EEEEEE", isPool = index == ranked))
         }
         return board
     }
 
     @Test
     fun aTierFitsUpToTheLimit() = runBlocking {
-        val board = boardWith(TierList.MAX_TIERS - 1)
+        val board = boardWith(TierList.MAX_RANKED_TIERS - 1)
 
         val added = dao.addTier(board, "New", null, "#222222", "#DDDDDD")
 
         assertNotEquals(TierDao.NO_ROW, added)
-        assertEquals(TierList.MAX_TIERS, dao.getAllTiersByTierListId(board).size)
+        assertEquals(TierList.MAX_RANKED_TIERS + 1, dao.getAllTiersByTierListId(board).size)
     }
 
     @Test
     fun aFullBoardTakesNoMoreTiers() = runBlocking {
-        val board = boardWith(TierList.MAX_TIERS)
+        val board = boardWith(TierList.MAX_RANKED_TIERS)
 
         val added = dao.addTier(board, "One too many", null, "#222222", "#DDDDDD")
 
         assertEquals(TierDao.NO_ROW, added)
-        assertEquals(TierList.MAX_TIERS, dao.getAllTiersByTierListId(board).size)
+        assertEquals(TierList.MAX_RANKED_TIERS + 1, dao.getAllTiersByTierListId(board).size)
     }
 }

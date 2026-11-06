@@ -145,9 +145,6 @@ interface BoardSyncDao {
     @Update
     suspend fun updateBoard(board: TierListEntity)
 
-    @Query("DELETE FROM tiers WHERE tierListId = :boardId")
-    suspend fun deleteTiersOf(boardId: Long)
-
     @Query("DELETE FROM tier_lists WHERE uid = :uid")
     suspend fun deleteBoardByUid(uid: String)
 
@@ -168,16 +165,53 @@ interface BoardSyncDao {
     }
 
     /**
-     * Replaces a board's contents, keeping its row and uid. Whole board, not
-     * row by row: matching card against card buys nothing when every one is
-     * written either way. `tiers` cascades to the cards.
+     * Replaces a board's contents, keeping its row and uid, and the row of
+     * every tier and card that is still on it, matched by uid: a screen open
+     * on the board holds those ids, and a Play session that applied its order
+     * to ids written over found no cards and moved nothing.
      */
     @Transaction
     suspend fun replaceContents(board: TierListEntity, tiers: List<IncomingTier>) {
-        deleteTiersOf(board.id)
         updateBoard(board)
-        writeContents(board.id, tiers)
+        val tiersHere = tiersOf(board.id).associateBy { it.uid }
+        val itemsHere = itemsOf(board.id).associateBy { it.uid }
+        val keptTiers = mutableSetOf<Long>()
+        val keptItems = mutableSetOf<Long>()
+        tiers.forEach { incoming ->
+            val tierHere = tiersHere[incoming.tier.uid]
+            val tierId = if (tierHere != null) {
+                updateTier(incoming.tier.copy(id = tierHere.id, tierListId = board.id))
+                tierHere.id
+            } else {
+                insertTierWithFreeUid(incoming.tier.copy(tierListId = board.id))
+            }
+            keptTiers += tierId
+            incoming.items.forEach { item ->
+                val itemHere = itemsHere[item.uid]
+                if (itemHere != null) {
+                    updateItem(item.copy(id = itemHere.id, tierId = tierId))
+                    keptItems += itemHere.id
+                } else {
+                    insertItemWithFreeUid(item.copy(tierId = tierId))
+                }
+            }
+        }
+        // Cards first: one moved out of a tier that goes has already been rewritten above.
+        deleteItems(itemsHere.values.map { it.id }.filterNot { it in keptItems })
+        deleteTiers(tiersHere.values.map { it.id }.filterNot { it in keptTiers })
     }
+
+    @Update
+    suspend fun updateTier(tier: TierEntity)
+
+    @Update
+    suspend fun updateItem(item: TierItemEntity)
+
+    @Query("DELETE FROM tier_items WHERE id IN (:ids)")
+    suspend fun deleteItems(ids: List<Long>)
+
+    @Query("DELETE FROM tiers WHERE id IN (:ids)")
+    suspend fun deleteTiers(ids: List<Long>)
 
     /**
      * A uid another board here already holds is replaced: the account keeps
@@ -186,13 +220,19 @@ interface BoardSyncDao {
      */
     suspend fun writeContents(boardId: Long, tiers: List<IncomingTier>) {
         tiers.forEach { incoming ->
-            val tier = incoming.tier.let { if (tierUidTaken(it.uid)) it.copy(uid = UUID.randomUUID().toString()) else it }
-            val tierId = insertTier(tier.copy(id = 0, tierListId = boardId))
-            incoming.items.forEach { item ->
-                val uid = if (itemUidTaken(item.uid)) UUID.randomUUID().toString() else item.uid
-                insertItem(item.copy(id = 0, tierId = tierId, uid = uid))
-            }
+            val tierId = insertTierWithFreeUid(incoming.tier.copy(tierListId = boardId))
+            incoming.items.forEach { item -> insertItemWithFreeUid(item.copy(tierId = tierId)) }
         }
+    }
+
+    suspend fun insertTierWithFreeUid(tier: TierEntity): Long {
+        val uid = if (tierUidTaken(tier.uid)) UUID.randomUUID().toString() else tier.uid
+        return insertTier(tier.copy(id = 0, uid = uid))
+    }
+
+    suspend fun insertItemWithFreeUid(item: TierItemEntity) {
+        val uid = if (itemUidTaken(item.uid)) UUID.randomUUID().toString() else item.uid
+        insertItem(item.copy(id = 0, uid = uid))
     }
 
     @Query("SELECT EXISTS(SELECT 1 FROM tiers WHERE uid = :uid)")

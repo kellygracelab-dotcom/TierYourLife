@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** The account keeps 20 tiers on a board, the pool among them; one more and the board never backed up again. */
+/** The account keeps 19 tiers on a board besides the pool; one more and the board never backed up again. */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], qualifiers = "en-w411dp-h891dp")
 class NewTierLimitTest {
@@ -24,10 +24,10 @@ class NewTierLimitTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private fun show(tiers: Int) {
+    private fun show(ranked: Int) {
         val list = previewTierList.copy(
-            tiers = List(tiers) { index ->
-                Tier(id = index.toLong(), label = "T$index", colorLight = "#111111", colorDark = "#EEEEEE", items = emptyList(), isPool = index == tiers - 1)
+            tiers = List(ranked + 1) { index ->
+                Tier(id = index.toLong(), label = "T$index", colorLight = "#111111", colorDark = "#EEEEEE", items = emptyList(), isPool = index == ranked)
             },
         )
         composeRule.setContent {
@@ -39,7 +39,7 @@ class NewTierLimitTest {
 
     @Test
     fun aBoardWithRoom_offersANewTier() {
-        show(tiers = TierList.MAX_TIERS - 1)
+        show(ranked = TierList.MAX_RANKED_TIERS - 1)
 
         composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).assertHasClickAction()
         composeRule.onNodeWithText("18 tiers").assertExists()
@@ -47,9 +47,9 @@ class NewTierLimitTest {
 
     @Test
     fun aFullBoard_saysWhyThereIsNoNewTier() {
-        show(tiers = TierList.MAX_TIERS)
+        show(ranked = TierList.MAX_RANKED_TIERS)
 
         composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).assertIsNotEnabled()
-        composeRule.onNodeWithText("20 tiers with the pool: the most a board holds").assertExists()
+        composeRule.onNodeWithText("19 tiers plus the pool: the most a board holds").assertExists()
     }
 }

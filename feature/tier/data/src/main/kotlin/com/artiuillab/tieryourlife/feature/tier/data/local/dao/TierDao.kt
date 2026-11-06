@@ -415,8 +415,8 @@ interface TierDao {
         colorDark: String,
     ): Long {
         val tiers = getAllTiersByTierListId(tierListId)
-        if (tiers.size >= TierList.MAX_TIERS) return NO_ROW
         val rankedCount = tiers.count { !it.isPool }
+        if (rankedCount >= TierList.MAX_RANKED_TIERS) return NO_ROW
         shiftTiersFrom(tierListId, rankedCount)
 
         return insertTier(

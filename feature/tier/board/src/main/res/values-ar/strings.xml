@@ -160,7 +160,7 @@
     <string name="tier_list_settings_mode_wrapped">صفوف ملتفّة</string>
     <string name="tier_list_settings_mode_wrapped_sub">كل عنصر مرئي، وتصبح الصفوف أطول</string>
     <string name="tier_list_settings_new_tier_title">مستوى جديد</string>
-    <string name="tier_list_settings_tier_limit">20 مستوى مع المجمّع: لا تتسع اللوحة لأكثر</string>
+    <string name="tier_list_settings_tier_limit">19 مستوى إلى جانب المجمّع: لا تتسع اللوحة لأكثر</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="zero">لا مستويات</item>
         <item quantity="one">مستوى واحد</item>

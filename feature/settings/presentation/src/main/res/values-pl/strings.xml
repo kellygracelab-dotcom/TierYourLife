@@ -55,7 +55,7 @@
     <string name="settings_backup_pictures_label">Zdjęcia tylko przez Wi-Fi</string>
     <string name="settings_backup_pictures_sub">%1$s na twoim koncie</string>
     <string name="settings_backup_refused_not_accepted">„%1$s” nie ma kopii: konto nie przyjmuje czegoś, co na niej jest.</string>
-    <string name="settings_backup_refused_too_large">„%1$s” nie ma kopii: tablica jest większa, niż konto przechowuje. Usuń część poziomów lub kart.</string>
+    <string name="settings_backup_refused_too_large">„%1$s” nie ma kopii: tablica jest większa, niż konto przechowuje. Zdejmij z niej kilka kart.</string>
     <string name="settings_backup_refused_too_many">„%1$s” nie ma kopii: konto przechowuje najwyżej 200 tablic. Usuń te, których już nie potrzebujesz.</string>
     <string name="settings_backup_stuck">Brak kopii od %1$s. Sprawdź połączenie.</string>
     <string name="settings_backup_sub">Poziomy, karty i podpisy</string>

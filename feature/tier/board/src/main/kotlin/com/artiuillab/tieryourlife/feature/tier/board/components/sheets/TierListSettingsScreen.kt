@@ -455,7 +455,7 @@ private fun NewTierRow(tierCount: Int, hasRoom: Boolean, onClick: () -> Unit) {
         subtitle = if (hasRoom) {
             pluralStringResource(R.plurals.tier_list_settings_tier_count, tierCount, tierCount)
         } else {
-            stringResource(R.string.tier_list_settings_tier_limit, TierList.MAX_TIERS)
+            stringResource(R.string.tier_list_settings_tier_limit)
         },
         onClick = onClick,
         testTag = TierDetailTestTags.NEW_TIER_ROW,

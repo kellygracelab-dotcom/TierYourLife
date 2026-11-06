@@ -136,7 +136,7 @@
     <string name="tier_list_settings_mode_wrapped">Linhas com quebra</string>
     <string name="tier_list_settings_mode_wrapped_sub">Cada item visível, as linhas ficam mais altas</string>
     <string name="tier_list_settings_new_tier_title">Novo nível</string>
-    <string name="tier_list_settings_tier_limit">20 níveis com o grupo: não cabe mais nenhum</string>
+    <string name="tier_list_settings_tier_limit">19 níveis mais o grupo: não cabe mais nenhum</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="one">%d nível</item>
         <item quantity="many">%d níveis</item>

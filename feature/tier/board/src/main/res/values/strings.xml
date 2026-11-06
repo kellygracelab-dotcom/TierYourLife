@@ -129,7 +129,7 @@
     <string name="tier_list_settings_mode_wrapped">Wrapped rows</string>
     <string name="tier_list_settings_mode_wrapped_sub">Every item visible, rows grow taller</string>
     <string name="tier_list_settings_new_tier_title">New tier</string>
-    <string name="tier_list_settings_tier_limit">20 tiers with the pool: the most a board holds</string>
+    <string name="tier_list_settings_tier_limit">19 tiers plus the pool: the most a board holds</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="one">%d tier</item>
         <item quantity="other">%d tiers</item>

@@ -5,6 +5,8 @@ import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupRefusal
@@ -168,6 +170,54 @@ class SyncFindingsTest : SyncEngineBench() {
         engine().sync()
 
         assertTrue(dao.allBoards().isEmpty())
+    }
+
+    // Play's Apply holds the board's row ids; a restore that wrote every row
+    // anew left it moving cards that no longer existed.
+    @Test
+    fun aRestore_keepsTheRowsOfTiersAndCardsStillOnTheBoard() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        engine().sync()
+        val here = dao.boardByUid(uid)!!
+        val tier = dao.tiersOf(here.id).single()
+        val card = dao.itemsOf(here.id).single()
+        boards.server[uid] = KeptBoardDto(
+            uid = uid,
+            revision = 2,
+            fingerprint = "theirs-2",
+            title = "Films",
+            tiers = listOf(
+                KeptTierDto(uid = tier.uid, position = 0, label = "S+", colorLight = "#111111", colorDark = "#EEEEEE"),
+                KeptTierDto(uid = "new-tier", position = 1, label = "A", colorLight = "#222222", colorDark = "#DDDDDD"),
+            ),
+            items = listOf(
+                KeptItemDto(uid = card.uid, tierUid = "new-tier", position = 0, title = "Alien, renamed"),
+                KeptItemDto(uid = "new-card", tierUid = tier.uid, position = 0, title = "Heat"),
+            ),
+        )
+
+        engine().sync()
+
+        val tiers = dao.tiersOf(here.id)
+        val cards = dao.itemsOf(here.id)
+        assertEquals("S+", tiers.single { it.id == tier.id }.label)
+        val moved = cards.single { it.id == card.id }
+        assertEquals("Alien, renamed", moved.title)
+        assertEquals(tiers.single { it.uid == "new-tier" }.id, moved.tierId)
+        assertEquals(listOf("Alien, renamed", "Heat"), cards.map { it.title }.sorted())
+    }
+
+    @Test
+    fun aRestore_dropsTheTiersAndCardsNoLongerOnTheBoard() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        engine().sync()
+        boards.server[uid] = theirBoard(uid, title = "Films", revision = 2, fingerprint = "theirs-2")
+
+        engine().sync()
+
+        val here = dao.boardByUid(uid)!!
+        assertEquals(listOf("$uid-tier"), dao.tiersOf(here.id).map { it.uid })
+        assertEquals(listOf("Doom"), dao.itemsOf(here.id).map { it.title })
     }
 
     // A8: a card added while the run read the index was wiped by the

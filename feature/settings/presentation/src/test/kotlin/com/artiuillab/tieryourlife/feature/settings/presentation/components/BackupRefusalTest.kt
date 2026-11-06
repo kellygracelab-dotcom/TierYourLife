@@ -37,7 +37,7 @@ class BackupRefusalTest {
         show(settings(BackupRefusal("Films", BackupRefusal.Reason.TooLarge)))
 
         composeRule.onNodeWithTag(SettingsTestTags.BACKUP_STUCK)
-            .assertTextEquals("“Films” isn’t backed up: it’s bigger than the account keeps. Fewer tiers or cards will let it through.")
+            .assertTextEquals("“Films” isn’t backed up: it’s bigger than the account keeps. Take some cards off it.")
     }
 
     @Test

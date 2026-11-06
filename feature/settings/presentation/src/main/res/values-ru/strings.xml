@@ -55,7 +55,7 @@
     <string name="settings_backup_pictures_label">Картинки только по Wi-Fi</string>
     <string name="settings_backup_pictures_sub">%1$s в вашем аккаунте</string>
     <string name="settings_backup_refused_not_accepted">«%1$s» не сохраняется в аккаунте: что-то на доске он не принимает.</string>
-    <string name="settings_backup_refused_too_large">«%1$s» не сохраняется в аккаунте: доска больше, чем он хранит. Уберите часть уровней или карточек.</string>
+    <string name="settings_backup_refused_too_large">«%1$s» не сохраняется в аккаунте: доска больше, чем он хранит. Уберите с неё несколько карточек.</string>
     <string name="settings_backup_refused_too_many">«%1$s» не сохраняется в аккаунте: в нём не больше 200 досок. Удалите ненужные, чтобы освободить место.</string>
     <string name="settings_backup_stuck">Нет копии с %1$s. Проверьте подключение.</string>
     <string name="settings_backup_sub">Тиры, карточки и подписи</string>

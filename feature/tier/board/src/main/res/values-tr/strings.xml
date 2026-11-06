@@ -128,7 +128,7 @@
     <string name="tier_list_settings_mode_wrapped">Kaydırılan satırlar</string>
     <string name="tier_list_settings_mode_wrapped_sub">Her öğe görünür, satırlar uzar</string>
     <string name="tier_list_settings_new_tier_title">Yeni seviye</string>
-    <string name="tier_list_settings_tier_limit">Havuzla birlikte 20 seviye: bir panoya daha fazlası sığmaz</string>
+    <string name="tier_list_settings_tier_limit">Havuzun yanında 19 seviye: bir panoya daha fazlası sığmaz</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="one">%d seviye</item>
         <item quantity="other">%d seviye</item>

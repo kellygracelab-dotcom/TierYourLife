@@ -120,7 +120,7 @@
     <string name="tier_list_settings_mode_wrapped">折り返し行</string>
     <string name="tier_list_settings_mode_wrapped_sub">すべてのアイテムが見え、行が高くなります</string>
     <string name="tier_list_settings_new_tier_title">新しいティア</string>
-    <string name="tier_list_settings_tier_limit">プールを含めて20ティアまで。これ以上は追加できません</string>
+    <string name="tier_list_settings_tier_limit">プールのほかに19ティアまで。これ以上は追加できません</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="other">%d個のティア</item>
     </plurals>
