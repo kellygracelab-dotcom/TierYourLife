@@ -101,13 +101,32 @@ class PublishingTest {
         val published = phone.publish(id)
         assertEquals(topicId, published.topicId)
 
-        phone.boards.setTopic(id, null, null, null)
+        // What None in the topic picker does on a board that had one.
+        phone.boards.takeTopicOff(id)
         val republished = phone.publish(id)
 
         assertEquals(published.id, republished.id)
         assertEquals(listOf(200), phone.answersTo("POST", "/lists/${published.id}").map { it.status })
         assertNull(republished.topicId)
         assertNull(phone.community.open(published.id).getOrThrow().summary.topicId)
+    }
+
+    // A board that knows of no topic says nothing about one, so a topic the list has, a moderator's perhaps, stays, and the board learns its name.
+    @Test
+    fun aBoardThatKnowsOfNoTopic_leavesTheListsTopicAndLearnsIt() = runBlocking<Unit> {
+        val topicId = approvedTopic(ListCategory.Anime.id)
+        val phone = phone()
+        val id = phone.newBoard("Ghibli films", category = ListCategory.Anime.id)
+        phone.boards.setTopic(id, topicId, "Ghibli", null)
+        val published = phone.publish(id)
+
+        phone.boards.setTopic(id, null, null, null)
+        val republished = phone.publish(id)
+
+        assertEquals(published.id, republished.id)
+        assertEquals(topicId, republished.topicId)
+        assertTrue(republished.topicName.orEmpty().startsWith("E2E "))
+        assertEquals(topicId, phone.community.open(published.id).getOrThrow().summary.topicId)
     }
 
     @Test
