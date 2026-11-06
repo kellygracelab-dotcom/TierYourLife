@@ -36,10 +36,6 @@ interface BoardSyncDao {
     @Query("DELETE FROM board_sync WHERE account = :account AND listUid = :listUid")
     suspend fun forget(account: String, listUid: String)
 
-    /** Every account's row: the board left this phone for all of them, and none of them asked for it. */
-    @Query("DELETE FROM board_sync WHERE listUid = :listUid")
-    suspend fun forgetEverywhere(listUid: String)
-
     @Query("DELETE FROM board_sync WHERE account = '${BoardSyncEntity.UNCLAIMED}' AND listUid IN (:listUids)")
     suspend fun forgetUnclaimed(listUids: List<String>)
 
@@ -94,6 +90,32 @@ interface BoardSyncDao {
 
     @Query("UPDATE tier_lists SET title = :title WHERE uid = :uid")
     suspend fun renameBoard(uid: String, title: String)
+
+    // The settle* writes change a text only if it is still what was read, so
+    // an edit made in between is not undone.
+
+    @Query("UPDATE tier_lists SET title = :now WHERE id = :id AND title = :was")
+    suspend fun settleBoardTitle(id: Long, was: String, now: String)
+
+    @Query("UPDATE tiers SET label = :now WHERE id = :id AND label = :was")
+    suspend fun settleTierLabel(id: Long, was: String, now: String)
+
+    @Query("UPDATE tiers SET caption = :now WHERE id = :id AND caption = :was")
+    suspend fun settleTierCaption(id: Long, was: String, now: String?)
+
+    @Query("UPDATE tier_items SET title = :now WHERE id = :id AND title = :was")
+    suspend fun settleItemTitle(id: Long, was: String, now: String)
+
+    @Query("UPDATE tier_items SET credit = :now WHERE id = :id AND credit = :was")
+    suspend fun settleItemCredit(id: Long, was: String, now: String?)
+
+    /**
+     * Whatever [block] writes lands together or not at all: a board and the
+     * record of agreeing on it, written apart, left a run killed in between
+     * with a duplicate next time, or a trashed board deleted for good.
+     */
+    @Transaction
+    suspend fun together(block: suspend () -> Unit) = block()
 
     @Query("SELECT * FROM tier_lists WHERE uid = :uid")
     suspend fun boardByUid(uid: String): TierListEntity?

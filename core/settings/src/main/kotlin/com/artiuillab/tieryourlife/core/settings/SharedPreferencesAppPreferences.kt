@@ -18,6 +18,7 @@ private const val KEY_SIGN_IN_OFFER_ANSWERED = "sign_in_offer_answered"
 private const val KEY_PICTURES_ON_WIFI_ONLY = "pictures_on_wifi_only"
 private const val KEY_LAST_SYNCED_AT = "last_synced_at"
 private const val KEY_CONFLICTS_SEEN = "conflicts_seen"
+private const val KEY_BOARD_REFUSAL = "board_refusal"
 private const val KEY_LAST_KNOWN_REPORTS = "last_known_reports"
 private const val KEY_LAST_KNOWN_TRASH = "last_known_trash"
 private const val KEY_LAST_KNOWN_STORED_BYTES = "last_known_stored_bytes"
@@ -147,6 +148,14 @@ class SharedPreferencesAppPreferences @Inject constructor(
     override fun setLastSyncedAtMs(atMs: Long?) {
         prefs.edit {
             if (atMs == null) remove(KEY_LAST_SYNCED_AT) else putLong(KEY_LAST_SYNCED_AT, atMs)
+        }
+    }
+
+    override fun boardRefusal(account: String): String? = prefs.getString("$KEY_BOARD_REFUSAL:$account", null)
+
+    override fun setBoardRefusal(account: String, refusal: String?) {
+        prefs.edit {
+            if (refusal == null) remove("$KEY_BOARD_REFUSAL:$account") else putString("$KEY_BOARD_REFUSAL:$account", refusal)
         }
     }
 

@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWithTiers
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 @Dao
 interface TierDao {
@@ -413,7 +414,9 @@ interface TierDao {
         colorLight: String,
         colorDark: String,
     ): Long {
-        val rankedCount = getAllTiersByTierListId(tierListId).count { !it.isPool }
+        val tiers = getAllTiersByTierListId(tierListId)
+        if (tiers.size >= TierList.MAX_TIERS) return NO_ROW
+        val rankedCount = tiers.count { !it.isPool }
         shiftTiersFrom(tierListId, rankedCount)
 
         return insertTier(
@@ -537,5 +540,10 @@ interface TierDao {
 
             updateTierItemTierAndPosition(itemId, toTierId, clampedPosition)
         }
+    }
+
+    companion object {
+        /** What [addTier] answers on a board with no room for another tier. */
+        const val NO_ROW = -1L
     }
 }

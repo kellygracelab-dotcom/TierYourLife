@@ -81,6 +81,14 @@ class FakeAppPreferences(
 
     override fun setLastSyncedAtMs(atMs: Long?) = Unit
 
+    private val refusals = mutableMapOf<String, String>()
+
+    override fun boardRefusal(account: String): String? = refusals[account]
+
+    override fun setBoardRefusal(account: String, refusal: String?) {
+        if (refusal == null) refusals.remove(account) else refusals[account] = refusal
+    }
+
     override fun conflictsSeen(): Set<String> = emptySet()
 
     override fun markConflictSeen(listUid: String) = Unit

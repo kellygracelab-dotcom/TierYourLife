@@ -44,12 +44,15 @@
     </plurals>
     <string name="settings_backup_label">Meine Boards sichern</string>
     <string name="settings_backup_note">Deine Fotos und erzeugten Karten liegen in deinem Konto, wo nur du sie siehst. Beim Veröffentlichen werden die Bilder in den Feed kopiert, wo alle sie sehen.</string>
-    <string name="settings_backup_off_body">Auf diesem Telefon wird nichts gelöscht: Deine Boards bleiben hier. Die Kopie in deinem Konto wird gelöscht, und ein neues Telefon fängt leer an. Schaltest du es wieder ein, werden sie erneut hochgeladen.</string>
+    <string name="settings_backup_off_body">Auf diesem Telefon wird nichts gelöscht: Deine Boards bleiben hier. Die Kopie in deinem Konto wird gelöscht, auf deinen anderen Geräten landen die Boards im Papierkorb, und ein neues Telefon fängt leer an. Schaltest du es wieder ein, werden sie erneut hochgeladen.</string>
     <string name="settings_backup_off_cancel">Abbrechen</string>
     <string name="settings_backup_off_confirm">Beenden und löschen</string>
     <string name="settings_backup_off_title">Sicherung beenden?</string>
     <string name="settings_backup_pictures_label">Bilder nur über WLAN</string>
     <string name="settings_backup_pictures_sub">%1$s in deinem Konto</string>
+    <string name="settings_backup_refused_not_accepted">„%1$s“ wird nicht gesichert: Etwas darauf nimmt das Konto nicht an.</string>
+    <string name="settings_backup_refused_too_large">„%1$s“ wird nicht gesichert: Das Board ist größer, als das Konto speichert. Mit weniger Stufen oder Karten klappt es.</string>
+    <string name="settings_backup_refused_too_many">„%1$s“ wird nicht gesichert: Das Konto speichert höchstens 200 Boards. Lösche die, die du nicht mehr brauchst.</string>
     <string name="settings_backup_stuck">Seit %1$s nicht gesichert. Prüfe deine Verbindung.</string>
     <string name="settings_backup_sub">Stufen, Karten und Beschriftungen</string>
     <string name="settings_export">Daten exportieren</string>

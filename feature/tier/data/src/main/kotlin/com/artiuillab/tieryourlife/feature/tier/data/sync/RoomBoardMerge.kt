@@ -17,6 +17,7 @@ class RoomBoardMerge @Inject constructor(
     private val owners: OwnerDao,
     private val api: BoardsApi,
     private val ownership: BoardOwnership,
+    private val lock: SyncLock,
 ) : BoardMerge {
 
     override fun hold() = ownership.hold()
@@ -29,6 +30,14 @@ class RoomBoardMerge @Inject constructor(
     }
 
     override suspend fun keepHere() = ownership.release(moveGuestBoardsIn = false)
+
+    override suspend fun eraseKeepingBoards(account: String, erase: suspend () -> Result<Unit>): Result<Unit> = lock.withLock {
+        erase().onSuccess {
+            val kept = owners.keepBoardsOfDeleted(account)
+            Timber.i("Kept %d board(s) of the deleted account on this phone", kept)
+            ownership.announceMove()
+        }
+    }
 
     /**
      * Nothing is sent from here: the boards have uids the account has never
@@ -49,6 +58,12 @@ class RoomBoardMerge @Inject constructor(
 
         owners.guestBoardsInUse()
             .filter { board -> board.title in theirs }
-            .forEach { board -> dao.renameBoard(board.uid, "${board.title} $fromThisPhone") }
+            .forEach { board -> dao.renameBoard(board.uid, withSuffix(board.title, fromThisPhone)) }
     }
+}
+
+/** Cut to fit rather than past the account's limit, where the suffix telling the two apart was the part cut off. */
+internal fun withSuffix(title: String, suffix: String): String {
+    val room = (KeptText.TITLE - suffix.length - 1).coerceAtLeast(0)
+    return "${title.take(room).trimEnd()} $suffix".take(KeptText.TITLE)
 }

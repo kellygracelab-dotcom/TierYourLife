@@ -8,7 +8,8 @@ sealed interface SignInOutcome {
 
     data object NoGoogleAccount : SignInOutcome
 
-    data class SignedInToExistingAccount(val creditsCarriedOver: Boolean) : SignInOutcome
+    /** [guestCreditsLost]: a guest had credits, and they stayed with the guest. */
+    data class SignedInToExistingAccount(val guestCreditsLost: Boolean) : SignInOutcome
 
     data object Failed : SignInOutcome
 }

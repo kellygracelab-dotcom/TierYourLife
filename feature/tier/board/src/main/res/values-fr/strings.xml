@@ -136,6 +136,7 @@
     <string name="tier_list_settings_mode_wrapped">Lignes avec retour</string>
     <string name="tier_list_settings_mode_wrapped_sub">Chaque élément visible, les lignes s’agrandissent</string>
     <string name="tier_list_settings_new_tier_title">Nouveau rang</string>
+    <string name="tier_list_settings_tier_limit">20 rangs avec le réservoir : un tableau n’en contient pas plus</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="one">%d rang</item>
         <item quantity="many">%d rangs</item>

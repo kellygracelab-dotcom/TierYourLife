@@ -46,12 +46,15 @@
     </plurals>
     <string name="settings_backup_label">Sauvegarder mes tableaux</string>
     <string name="settings_backup_note">Vos photos et cartes générées vont dans votre compte, où vous seul les voyez. Publier copie les images dans le fil, où tout le monde les voit.</string>
-    <string name="settings_backup_off_body">Rien n’est supprimé sur ce téléphone : vos tableaux y restent. La copie dans votre compte est supprimée, et un nouveau téléphone démarrera vide. Réactivez-la et ils seront de nouveau envoyés.</string>
+    <string name="settings_backup_off_body">Rien n’est supprimé sur ce téléphone : vos tableaux y restent. La copie dans votre compte est supprimée, sur vos autres appareils les tableaux passent à la corbeille, et un nouveau téléphone démarrera vide. Réactivez-la et ils seront de nouveau envoyés.</string>
     <string name="settings_backup_off_cancel">Annuler</string>
     <string name="settings_backup_off_confirm">Arrêter et supprimer</string>
     <string name="settings_backup_off_title">Arrêter la sauvegarde ?</string>
     <string name="settings_backup_pictures_label">Images en Wi-Fi seulement</string>
     <string name="settings_backup_pictures_sub">%1$s dans votre compte</string>
+    <string name="settings_backup_refused_not_accepted">« %1$s » n’est pas sauvegardé : le compte refuse quelque chose qu’il contient.</string>
+    <string name="settings_backup_refused_too_large">« %1$s » n’est pas sauvegardé : il dépasse ce que le compte conserve. Avec moins de rangs ou de cartes, il passera.</string>
+    <string name="settings_backup_refused_too_many">« %1$s » n’est pas sauvegardé : le compte conserve 200 tableaux au plus. Supprimez ceux dont vous n’avez plus besoin.</string>
     <string name="settings_backup_stuck">Pas de sauvegarde depuis %1$s. Vérifiez votre connexion.</string>
     <string name="settings_backup_sub">Niveaux, cartes et légendes</string>
     <string name="settings_export">Exporter les données</string>

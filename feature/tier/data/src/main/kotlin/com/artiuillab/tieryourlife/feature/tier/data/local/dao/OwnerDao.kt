@@ -46,4 +46,26 @@ interface OwnerDao {
     /** The trash goes with them: it is part of the same library. */
     @Query("UPDATE tier_lists SET ownerUid = :owner WHERE ownerUid IS NULL")
     suspend fun moveGuestBoardsTo(owner: String): Int
+
+    /** Its published lists went with the account, so no board here is one any more. */
+    @Query("UPDATE tier_lists SET ownerUid = NULL, publishedId = NULL, publishedFingerprint = NULL WHERE ownerUid = :owner")
+    suspend fun makeGuestBoards(owner: String): Int
+
+    @Query("DELETE FROM board_sync WHERE account = :account")
+    suspend fun forgetSyncRecordsOf(account: String)
+
+    @Query("DELETE FROM picture_sync WHERE account = :account")
+    suspend fun forgetPicturesOf(account: String)
+
+    /**
+     * A deleted account's boards, trash and all, become this phone's own, as
+     * "Delete account" promises: its uid is never signed into again, and
+     * boards left under it could not be reached by anyone.
+     */
+    @Transaction
+    suspend fun keepBoardsOfDeleted(account: String): Int {
+        forgetSyncRecordsOf(account)
+        forgetPicturesOf(account)
+        return makeGuestBoards(account)
+    }
 }

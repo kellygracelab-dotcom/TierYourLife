@@ -77,6 +77,11 @@ class BoardOwnership @Inject constructor(
         moved.tryEmit(Unit)
     }
 
+    /** Boards changed hands outside a sign-in. */
+    fun announceMove() {
+        moved.tryEmit(Unit)
+    }
+
     private suspend fun settle() {
         val account = accounts.current().takeUnless { it is Account.Unknown }
             ?: accounts.account.first { it !is Account.Unknown }

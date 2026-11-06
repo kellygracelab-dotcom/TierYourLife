@@ -64,7 +64,7 @@ class AccountViewModelTest {
     @Test
     fun signIn_intoAnAccountUsedBefore_asksAboutTheGuestBoards_andMovesNothingYet() = runBlocking {
         val merge = RecordingMerge(guestBoards = 2)
-        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = true))
+        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(guestCreditsLost = false))
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
 
         viewModel.signIn(picker::request)
@@ -77,7 +77,7 @@ class AccountViewModelTest {
     @Test
     fun signIn_intoAnAccountUsedBefore_withNoGuestBoards_asksNothing() = runBlocking {
         val merge = RecordingMerge(guestBoards = 0)
-        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = true))
+        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(guestCreditsLost = false))
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
 
         viewModel.signIn(picker::request)
@@ -90,7 +90,7 @@ class AccountViewModelTest {
     @Test
     fun guestBoardsQuestion_answeredMove_movesThemIn_withThisPhonesName() = runBlocking {
         val merge = RecordingMerge(guestBoards = 2)
-        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = true))
+        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(guestCreditsLost = false))
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
         viewModel.signIn(picker::request)
         viewModel.state.firstWithin { it.merge != null }
@@ -105,7 +105,7 @@ class AccountViewModelTest {
     @Test
     fun guestBoardsQuestion_answeredKeep_leavesThemOnThePhone() = runBlocking {
         val merge = RecordingMerge(guestBoards = 2)
-        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = true))
+        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(guestCreditsLost = false))
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
         viewModel.signIn(picker::request)
         viewModel.state.firstWithin { it.merge != null }
@@ -182,7 +182,7 @@ class AccountViewModelTest {
     @Test
     fun signIn_ontoAnAccountThatKeptItsOwnCredits_saysWhatHappened() = runBlocking {
         val repository = FakeAccountRepository(
-            outcome = SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = false),
+            outcome = SignInOutcome.SignedInToExistingAccount(guestCreditsLost = true),
         )
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")))
 
@@ -282,6 +282,36 @@ class AccountViewModelTest {
         viewModel.state.firstWithin { !it.deleting && it.notice == null && order.size == 2 }
 
         assertEquals(listOf("erased", "signed out"), order)
+    }
+
+    // The dialog says the boards on this phone stay where they are; left
+    // under the deleted uid, nobody could ever reach them again.
+    @Test
+    fun deletingAnAccount_keepsItsBoardsOnThisPhone() = runBlocking {
+        var signedOut = false
+        val repository = FakeAccountRepository(
+            initial = Account.SignedIn(email = "someone@example.com", photoUrl = null, uid = "someone"),
+            onSignOut = { signedOut = true },
+        )
+        val merge = RecordingMerge(guestBoards = 0)
+        val viewModel = viewModel(repository = repository, merge = merge)
+
+        viewModel.deleteAccount()
+        viewModel.state.firstWithin { !it.deleting && signedOut }
+
+        assertEquals(listOf("erase:someone", "keptBoardsOf:someone"), merge.calls)
+    }
+
+    @Test
+    fun anAccountTheServerWouldNotDelete_keepsItsBoardsWhereTheyWere() = runBlocking {
+        val repository = FakeAccountRepository(initial = Account.SignedIn(email = "someone@example.com", photoUrl = null, uid = "someone"))
+        val merge = RecordingMerge(guestBoards = 0)
+        val viewModel = viewModel(repository = repository, erasure = RefusingErasure, merge = merge)
+
+        viewModel.deleteAccount()
+        viewModel.state.firstWithin { it.notice == AccountNotice.NotDeleted }
+
+        assertEquals(listOf("erase:someone"), merge.calls)
     }
 
     // Nothing has happened, so the account must still be usable and the person
@@ -537,6 +567,11 @@ private class RecordingMerge(private val guestBoards: Int) : BoardMerge {
     override suspend fun keepHere() {
         calls += "keepHere"
         answered.complete(Unit)
+    }
+
+    override suspend fun eraseKeepingBoards(account: String, erase: suspend () -> Result<Unit>): Result<Unit> {
+        calls += "erase:$account"
+        return erase().onSuccess { calls += "keptBoardsOf:$account" }
     }
 }
 

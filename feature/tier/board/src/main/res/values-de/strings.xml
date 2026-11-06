@@ -128,6 +128,7 @@
     <string name="tier_list_settings_mode_wrapped">Umbrochene Zeilen</string>
     <string name="tier_list_settings_mode_wrapped_sub">Jedes Element sichtbar, Zeilen werden höher</string>
     <string name="tier_list_settings_new_tier_title">Neue Stufe</string>
+    <string name="tier_list_settings_tier_limit">20 Stufen samt Pool: mehr passt nicht auf ein Board</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="one">%d Stufe</item>
         <item quantity="other">%d Stufen</item>

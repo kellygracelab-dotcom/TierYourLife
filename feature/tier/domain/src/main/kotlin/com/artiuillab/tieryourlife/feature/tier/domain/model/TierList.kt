@@ -47,4 +47,12 @@ data class TierList(
 ) {
     /** Out in the community one way or the other: as a list of its own, or as a ranking of somebody's. */
     val isPublic: Boolean get() = publishedId != null || rankingOf != null
+
+    /** As many as the account keeps on one board; one more and it never backs up again. */
+    val hasRoomForATier: Boolean get() = tiers.size < MAX_TIERS
+
+    companion object {
+        /** The pool counts: the account takes 20 tiers in all. */
+        const val MAX_TIERS = 20
+    }
 }

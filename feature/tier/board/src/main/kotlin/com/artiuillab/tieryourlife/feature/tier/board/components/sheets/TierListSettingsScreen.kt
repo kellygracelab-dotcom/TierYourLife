@@ -136,6 +136,7 @@ fun TierListSettingsScreenContent(
                     // tier is what people come here for most.
                     NewTierRow(
                         tierCount = rankedTierCount,
+                        hasRoom = list.hasRoomForATier,
                         onClick = { tierEditorVisible = true },
                     )
                     HorizontalDivider(
@@ -347,11 +348,12 @@ private fun SettingsActionRow(
     subtitle: String,
     onClick: () -> Unit,
     testTag: String,
+    enabled: Boolean = true,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(enabled = enabled, onClick = onClick)
             .testTag(testTag)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -361,7 +363,7 @@ private fun SettingsActionRow(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else DISABLED_ALPHA),
             )
             Text(
                 text = subtitle,
@@ -369,9 +371,11 @@ private fun SettingsActionRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        ChevronRightIcon(20.dp, MaterialTheme.colorScheme.outline)
+        if (enabled) ChevronRightIcon(20.dp, MaterialTheme.colorScheme.outline)
     }
 }
+
+private const val DISABLED_ALPHA = 0.38f
 
 @Composable
 private fun CategoryRow(category: String?, onClick: () -> Unit) {
@@ -443,13 +447,19 @@ private fun SeeInCommunityRow(onClick: () -> Unit) {
 }
 
 @Composable
-private fun NewTierRow(tierCount: Int, onClick: () -> Unit) {
+private fun NewTierRow(tierCount: Int, hasRoom: Boolean, onClick: () -> Unit) {
     SettingsActionRow(
         icon = { PlusIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
         title = stringResource(R.string.tier_list_settings_new_tier_title),
-        subtitle = pluralStringResource(R.plurals.tier_list_settings_tier_count, tierCount, tierCount),
+        // The reason stays in sight rather than a tap that only refuses.
+        subtitle = if (hasRoom) {
+            pluralStringResource(R.plurals.tier_list_settings_tier_count, tierCount, tierCount)
+        } else {
+            stringResource(R.string.tier_list_settings_tier_limit, TierList.MAX_TIERS)
+        },
         onClick = onClick,
         testTag = TierDetailTestTags.NEW_TIER_ROW,
+        enabled = hasRoom,
     )
 }
 

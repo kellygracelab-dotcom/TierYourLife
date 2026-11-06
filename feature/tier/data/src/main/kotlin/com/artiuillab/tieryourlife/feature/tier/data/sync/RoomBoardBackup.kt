@@ -22,6 +22,7 @@ class RoomBoardBackup @Inject constructor(
     private val images: TierImageStore,
     private val api: BoardsApi,
     private val accounts: AccountRepository,
+    private val lock: SyncLock,
 ) : BoardBackup {
 
     override suspend fun settings(): BackupSettings {
@@ -30,12 +31,16 @@ class RoomBoardBackup @Inject constructor(
         return settingsNow().copy(storedBytes = bytes)
     }
 
-    override fun settingsNow() = BackupSettings(
-        on = signedInAs()?.let(preferences::backUpBoards) ?: false,
-        picturesOnWifiOnly = preferences.picturesOnWifiOnly(),
-        storedBytes = preferences.lastKnownStoredBytes(),
-        lastSyncedAtMs = preferences.lastSyncedAtMs(),
-    )
+    override fun settingsNow(): BackupSettings {
+        val account = signedInAs()
+        return BackupSettings(
+            on = account?.let(preferences::backUpBoards) ?: false,
+            picturesOnWifiOnly = preferences.picturesOnWifiOnly(),
+            storedBytes = preferences.lastKnownStoredBytes(),
+            lastSyncedAtMs = preferences.lastSyncedAtMs(),
+            refusal = account?.let { backupRefusalOf(preferences.boardRefusal(it)) },
+        )
+    }
 
     override fun setPicturesOnWifiOnly(wifiOnly: Boolean) {
         preferences.setPicturesOnWifiOnly(wifiOnly)
@@ -51,17 +56,24 @@ class RoomBoardBackup @Inject constructor(
      * everything again: with the records gone, a marker is written over. The
      * switch goes off only once the copy is gone: off stops every sync, so
      * nothing would ever finish a delete left halfway. Only the signed-in
-     * account's rows: the rest are other accounts' boards.
+     * account's rows: the rest are other accounts' boards. Not while a run is
+     * under way: it would send back up what was just deleted.
      */
-    override suspend fun stopAndDelete(): Boolean {
-        val account = signedInAs() ?: return false
-        return try {
-            dao.syncRecordsOf(account).forEach { record ->
-                api.forget(record.listUid)
-                dao.forget(account, record.listUid)
+    override suspend fun stopAndDelete(): Boolean = lock.withLock {
+        val account = signedInAs() ?: return@withLock false
+        try {
+            // The index too: a board another phone sent, not yet brought down
+            // here, is part of the copy that a new phone would start with.
+            // Each record goes with its board, so one left halfway is sent
+            // back up by the next run rather than read as a delete.
+            liveInAccount().forEach { uid ->
+                api.forget(uid)
+                dao.forget(account, uid)
             }
+            dao.syncRecordsOf(account).forEach { record -> dao.forget(account, record.listUid) }
             dao.forgetPicturesOf(account)
             preferences.setLastSyncedAtMs(null)
+            preferences.setBoardRefusal(account, null)
             preferences.setBackUpBoards(account, false)
             true
         } catch (e: IOException) {
@@ -71,6 +83,17 @@ class RoomBoardBackup @Inject constructor(
             Timber.w(e, "The account would not delete every kept board; backup stays on")
             false
         }
+    }
+
+    private suspend fun liveInAccount(): List<String> {
+        val live = mutableListOf<String>()
+        var after: String? = null
+        do {
+            val page = api.index(after)
+            page.boards.filterNot { it.deleted }.mapTo(live) { it.uid }
+            after = page.next
+        } while (after != null)
+        return live
     }
 
     private fun signedInAs(): String? = (accounts.current() as? Account.SignedIn)?.recordKey

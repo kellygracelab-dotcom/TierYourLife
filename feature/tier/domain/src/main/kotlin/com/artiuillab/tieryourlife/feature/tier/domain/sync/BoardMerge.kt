@@ -23,4 +23,12 @@ interface BoardMerge {
 
     /** They stay this phone's own, shown whenever nobody is signed in. */
     suspend fun keepHere()
+
+    /**
+     * Deletes [account] with [erase], no sync running meanwhile. Once it is
+     * gone, its boards on this phone, trash included, become boards made
+     * without an account: the account was where they were copied to, not
+     * where they lived, and its uid is never signed into again.
+     */
+    suspend fun eraseKeepingBoards(account: String, erase: suspend () -> Result<Unit>): Result<Unit>
 }

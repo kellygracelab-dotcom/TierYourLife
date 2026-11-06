@@ -44,12 +44,15 @@
     </plurals>
     <string name="settings_backup_label">Back up my boards</string>
     <string name="settings_backup_note">Your photos and generated cards go to your account, where only you can see them. Publishing a list copies its pictures into the feed, where anyone can.</string>
-    <string name="settings_backup_off_body">Nothing on this phone is deleted: your boards stay here. The copy in your account is deleted, and a new phone will start empty. Turn it back on and they go up again.</string>
+    <string name="settings_backup_off_body">Nothing on this phone is deleted: your boards stay here. The copy in your account is deleted, on your other devices the boards move to their trash, and a new phone will start empty. Turn it back on and they go up again.</string>
     <string name="settings_backup_off_cancel">Cancel</string>
     <string name="settings_backup_off_confirm">Stop and delete</string>
     <string name="settings_backup_off_title">Stop backing up?</string>
     <string name="settings_backup_pictures_label">Pictures on Wi-Fi only</string>
     <string name="settings_backup_pictures_sub">%1$s in your account</string>
+    <string name="settings_backup_refused_not_accepted">“%1$s” isn’t backed up: the account won’t take something on it.</string>
+    <string name="settings_backup_refused_too_large">“%1$s” isn’t backed up: it’s bigger than the account keeps. Fewer tiers or cards will let it through.</string>
+    <string name="settings_backup_refused_too_many">“%1$s” isn’t backed up: the account keeps 200 boards at most. Delete the ones you no longer need.</string>
     <string name="settings_backup_stuck">Not backed up since %1$s. Check your connection.</string>
     <string name="settings_backup_sub">Tiers, items and notes</string>
     <string name="settings_export">Export data</string>

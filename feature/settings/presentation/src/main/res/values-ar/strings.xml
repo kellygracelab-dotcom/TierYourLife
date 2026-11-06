@@ -52,12 +52,15 @@
     </plurals>
     <string name="settings_backup_label">احتفظ بنسخة من لوحاتي</string>
     <string name="settings_backup_note">تنتقل صورك وبطاقاتك المُولّدة إلى حسابك، ولا يراها سواك. والنشر ينسخ صور القائمة إلى المجتمع حيث يراها الجميع.</string>
-    <string name="settings_backup_off_body">لا يُحذف شيء من هذا الهاتف: تبقى لوحاتك هنا. تُحذف النسخة في حسابك، وسيبدأ الهاتف الجديد فارغًا. أعد تشغيله فتُرفع من جديد.</string>
+    <string name="settings_backup_off_body">لا يُحذف شيء من هذا الهاتف: تبقى لوحاتك هنا. تُحذف النسخة في حسابك، وتنتقل اللوحات على أجهزتك الأخرى إلى سلة المهملات، وسيبدأ الهاتف الجديد فارغًا. أعد تشغيله فتُرفع من جديد.</string>
     <string name="settings_backup_off_cancel">إلغاء</string>
     <string name="settings_backup_off_confirm">إيقاف وحذف</string>
     <string name="settings_backup_off_title">إيقاف النسخ الاحتياطي؟</string>
     <string name="settings_backup_pictures_label">الصور عبر Wi-Fi فقط</string>
     <string name="settings_backup_pictures_sub">%1$s في حسابك</string>
+    <string name="settings_backup_refused_not_accepted">لا توجد نسخة من «%1$s»: لا يقبل الحساب شيئًا موجودًا فيها.</string>
+    <string name="settings_backup_refused_too_large">لا توجد نسخة من «%1$s»: إنها أكبر مما يحفظه الحساب. قلّل المستويات أو البطاقات لتتسع.</string>
+    <string name="settings_backup_refused_too_many">لا توجد نسخة من «%1$s»: يحفظ الحساب 200 لوحة على الأكثر. احذف ما لم تعد تحتاجه.</string>
     <string name="settings_backup_stuck">لا توجد نسخة منذ %1$s. تحقق من اتصالك.</string>
     <string name="settings_backup_sub">المستويات والبطاقات والملاحظات</string>
     <string name="settings_export">تصدير البيانات</string>

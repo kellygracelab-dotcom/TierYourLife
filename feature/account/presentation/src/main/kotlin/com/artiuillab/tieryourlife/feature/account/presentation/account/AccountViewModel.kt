@@ -95,13 +95,15 @@ class AccountViewModel @Inject constructor(
     /**
      * Account first, then sign out: signing out first would take away the
      * identity the request is made with, and a failure would leave somebody
-     * unable to sign in or to try again.
+     * unable to sign in or to try again. The boards here stay, as the dialog
+     * promises: left under the deleted uid, nobody could ever see them again.
      */
     fun deleteAccount() {
         if (_state.value.deleting) return
+        val account = (repository.current() as? Account.SignedIn)?.recordKey ?: return
         _state.update { it.copy(deleting = true, notice = null) }
         viewModelScope.launch {
-            erasure.erase().fold(
+            merge.eraseKeepingBoards(account) { erasure.erase() }.fold(
                 onSuccess = {
                     repository.signOut()
                     _state.update { it.copy(deleting = false) }
@@ -125,7 +127,7 @@ class AccountViewModel @Inject constructor(
             val notice = when (outcome) {
                 SignInOutcome.Success -> null
                 is SignInOutcome.SignedInToExistingAccount ->
-                    if (outcome.creditsCarriedOver) null else AccountNotice.SignedInToExistingAccount
+                    if (outcome.guestCreditsLost) AccountNotice.SignedInToExistingAccount else null
                 SignInOutcome.Failed -> AccountNotice.SignInFailed
                 SignInOutcome.Cancelled -> null
                 SignInOutcome.NoGoogleAccount -> AccountNotice.NoGoogleAccount

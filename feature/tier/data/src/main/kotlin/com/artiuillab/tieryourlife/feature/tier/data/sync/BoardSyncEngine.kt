@@ -21,6 +21,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.LocalBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.RemoteBoard
@@ -29,8 +30,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncStep
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncedBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.planSync
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import retrofit2.HttpException
@@ -57,16 +56,15 @@ class BoardSyncEngine @Inject constructor(
     private val deviceName: DeviceName,
     private val community: CommunityRepository,
     private val ownership: BoardOwnership,
+    private val lock: SyncLock,
 ) : BoardSync {
-
-    private val running = Mutex()
 
     /**
      * One run at a time. The list screen and a returning connection both start
      * one, at launch together; a run that read the boards before the other
      * restored one took the restore for an edit here and sent it back up.
      */
-    override suspend fun sync(): SyncReport = running.withLock { run() }
+    override suspend fun sync(): SyncReport = lock.withLock { run() }
 
     /**
      * Only the signed-in account's own boards: another account's, or the ones
@@ -96,6 +94,7 @@ class BoardSyncEngine @Inject constructor(
 
         var carried = 0
         var refused = 0
+        var refusal: BackupRefusal? = null
         for ((index, step) in steps.withIndex()) {
             // Planned from this account's rows; another one signed in since would be handed them.
             if (signedInAs() != account) {
@@ -106,8 +105,15 @@ class BoardSyncEngine @Inject constructor(
                 .onSuccess { carried++ }
                 .onFailure { failure ->
                     refused++
+                    if (failure is RefusedByAccount) refusal = refusal ?: failure.refusal
                     Timber.w(failure, "Board sync: %s did not go through", step.uid)
                 }
+        }
+        // A run that failed only on the connection says nothing about a board refused before.
+        val refusedBoard = refusal
+        when {
+            refusedBoard != null -> preferences.setBoardRefusal(account, refusedBoard.encoded())
+            refused == 0 -> preferences.setBoardRefusal(account, null)
         }
         runSuspendCatching { pictures.pull(account, wantedPictures(account)) }
             .onFailure { failure -> Timber.w(failure, "Pictures did not come down") }
@@ -215,33 +221,49 @@ class BoardSyncEngine @Inject constructor(
             is SyncStep.KeepBoth -> {
                 // Theirs comes down first, so it is safe here even if the
                 // write below never happens.
-                adopt(account, api.board(step.uid), asCopy = true)
-                send(account, step.uid, basedOn = step.basedOn)
+                val theirs = api.board(step.uid)
+                keepBeside(account, theirs)
+                send(account, step.uid, basedOn = theirs.revision)
             }
-            is SyncStep.Restore -> takeOver(account, api.board(step.uid))
+            is SyncStep.Restore -> takeOver(account, api.board(step.uid), planned = fingerprints[step.uid])
             is SyncStep.Adopt -> adopt(account, api.board(step.uid))
-            is SyncStep.DiscardLocal -> discard(step.uid)
+            is SyncStep.TrashLocal -> trashHere(account, step.uid, step.revision, planned = fingerprints[step.uid])
             is SyncStep.Forget -> {
                 api.forget(step.uid)
                 dao.forget(account, step.uid)
             }
+            is SyncStep.DropRecord -> dao.forget(account, step.uid)
             is SyncStep.Remember -> remember(account, step.uid, step.revision, fingerprints.getValue(step.uid))
         }
     }
 
     /**
-     * Gone elsewhere. A board in use here goes to the trash, where it can still
-     * be had back; only one already there leaves for good. Restoring it later
-     * sends it up again, since the record of agreeing goes either way.
+     * Thrown away on another phone. Into the trash here and no further: only
+     * the person empties it. The record moves on to the marker rather than
+     * going, or the next run reads the marker as never agreed on and sends the
+     * board back up. Not if it was edited since the plan: then the edit goes
+     * up over the marker next run.
      */
-    private suspend fun discard(uid: String) {
+    private suspend fun trashHere(account: String, uid: String, revision: Int, planned: String?) = dao.together {
         val board = dao.boardByUid(uid)
-        if (board != null && board.deletedAt == null) {
-            dao.trashBoard(uid, System.currentTimeMillis())
-        } else {
-            dao.deleteBoardByUid(uid)
+        if (board == null || (planned != null && fingerprintOf(board) != planned)) return@together
+        if (board.deletedAt == null) dao.trashBoard(uid, System.currentTimeMillis())
+        val trashed = dao.boardByUid(uid) ?: return@together
+        remember(account, uid, revision, fingerprintOf(trashed))
+    }
+
+    /**
+     * The account's version as a copy beside ours, and with it the record of
+     * agreeing on that version: should our write then be refused for good, the
+     * next run only sends ours again instead of bringing down another copy.
+     * A marker is not a board, so there is nothing to keep beside.
+     */
+    private suspend fun keepBeside(account: String, theirs: KeptBoardDto) {
+        if (theirs.deleted) return
+        dao.together {
+            adopt(account, theirs, asCopy = true)
+            remember(account, theirs.uid, theirs.revision, theirs.fingerprint.orEmpty())
         }
-        dao.forgetEverywhere(uid)
     }
 
     /**
@@ -251,7 +273,10 @@ class BoardSyncEngine @Inject constructor(
      * edit in between, recorded under the older one, went up again next run.
      */
     private suspend fun send(account: String, uid: String, basedOn: Int?) {
-        val board = dao.boardByUid(uid) ?: return
+        val board = dao.boardByUid(uid)?.let { read ->
+            settleText(read)
+            dao.boardByUid(uid)
+        } ?: return
         val tiers = dao.tiersOf(board.id)
         val items = dao.itemsOf(board.id)
         val fingerprint = BoardFingerprint.of(board, tiers, items, images::pictureIdOf)
@@ -263,58 +288,111 @@ class BoardSyncEngine @Inject constructor(
         }
         // Thrown rather than logged and returned: the run counts it as refused,
         // so the last-synced time stays put and the stuck banner can show.
-        val theirs = conflictBoard(answer) ?: throw HttpException(answer)
+        val refusal = refusalOf(answer)
+        val theirs = refusal?.board?.takeIf { answer.code() == HTTP_CONFLICT } ?: throw refused(answer, refusal, board.title)
 
         // Our own board coming back: the last write's answer never arrived.
         // Same content, so take the missed number and stop -- otherwise a
         // kill at the wrong moment leaves a copy of your own board every time.
-        if (theirs.fingerprint != null && theirs.fingerprint == fingerprint) {
+        if (!theirs.deleted && theirs.fingerprint != null && theirs.fingerprint == fingerprint) {
             return remember(account, uid, theirs.revision, fingerprint)
         }
 
-        adopt(account, theirs, asCopy = true)
+        // Thrown away elsewhere meanwhile: ours was being sent because it
+        // changed here, and that outweighs the delete.
+        keepBeside(account, theirs)
         val second = api.keep(uid, request(board, tiers, items, fingerprint, basedOn = theirs.revision))
-        if (!second.isSuccessful) throw HttpException(second)
+        if (!second.isSuccessful) throw refused(second, refusalOf(second), board.title)
         second.body()?.let { remember(account, uid, it.revision, fingerprint) }
     }
 
-    private fun conflictBoard(answer: Response<*>): KeptBoardDto? {
-        if (answer.code() != HTTP_CONFLICT) return null
+    private fun refusalOf(answer: Response<*>): BoardConflictDto? {
         val body = answer.errorBody()?.string() ?: return null
-        return runSuspendCatching { json.decodeFromString<BoardConflictDto>(body).board }.getOrNull()
+        return runSuspendCatching { json.decodeFromString<BoardConflictDto>(body) }.getOrNull()
     }
 
-    /** The account's copy replaces what is here, uid and all. */
-    private suspend fun takeOver(account: String, incoming: KeptBoardDto) {
+    private fun refused(answer: Response<*>, refusal: BoardConflictDto?, title: String): Exception {
+        val reason = when {
+            answer.code() == HTTP_TOO_LARGE -> BackupRefusal.Reason.TooLarge
+            answer.code() == HTTP_CONFLICT && refusal?.code == TOO_MANY_BOARDS -> BackupRefusal.Reason.TooManyBoards
+            answer.code() == HTTP_BAD_REQUEST -> BackupRefusal.Reason.NotAccepted
+            else -> return HttpException(answer)
+        }
+        return RefusedByAccount(BackupRefusal(boardTitle = title, reason = reason), HttpException(answer))
+    }
+
+    /**
+     * The account keeps text with whitespace collapsed and cut to its limits.
+     * Written so here before it goes up, so this phone holds what every other
+     * one will: otherwise the next pull rewrote what was typed here, and a lost
+     * record of agreeing turned the difference into a second board.
+     */
+    private suspend fun settleText(board: TierListEntity) {
+        KeptText.clean(board.title, KeptText.TITLE)?.takeIf { it != board.title }?.let { dao.settleBoardTitle(board.id, board.title, it) }
+        dao.tiersOf(board.id).forEach { tier ->
+            KeptText.clean(tier.label, KeptText.TITLE)?.takeIf { it != tier.label }?.let { dao.settleTierLabel(tier.id, tier.label, it) }
+            tier.caption?.let { caption ->
+                val clean = KeptText.clean(caption, KeptText.CAPTION)
+                if (clean != caption) dao.settleTierCaption(tier.id, caption, clean)
+            }
+        }
+        dao.itemsOf(board.id).forEach { item ->
+            // A card without a name keeps none; it goes up under a stand-in.
+            KeptText.clean(item.title, KeptText.TITLE)?.takeIf { it != item.title }?.let { dao.settleItemTitle(item.id, item.title, it) }
+            item.credit?.let { credit ->
+                val clean = KeptText.clean(credit, KeptText.CREDIT)
+                if (clean != credit) dao.settleItemCredit(item.id, credit, clean)
+            }
+        }
+    }
+
+    /**
+     * The account's copy replaces what is here, uid and all -- unless the
+     * board was edited since the plan was made: that edit stays, and the next
+     * run sees a change on both sides and keeps both. A marker in its place
+     * means it was thrown away meanwhile.
+     */
+    private suspend fun takeOver(account: String, incoming: KeptBoardDto, planned: String?) {
+        if (incoming.deleted) return trashHere(account, incoming.uid, incoming.revision, planned)
         val existing = dao.boardByUid(incoming.uid) ?: return adopt(account, incoming)
-        dao.replaceContents(incoming.toEntity(existing.id, existing.uid).keepingLocalFieldsOf(existing), incoming.tiers(images::pathFor))
-        remember(account, incoming.uid, incoming.revision, fingerprintOf(dao.boardByUid(incoming.uid) ?: return))
+        dao.together {
+            val now = dao.boardByUid(incoming.uid) ?: return@together
+            if (planned != null && fingerprintOf(now) != planned) {
+                Timber.i("A board edited during the run keeps its edit")
+                return@together
+            }
+            dao.replaceContents(incoming.toEntity(existing.id, existing.uid).keepingLocalFieldsOf(now), incoming.tiers(images::pathFor))
+            val stored = dao.boardByUid(incoming.uid) ?: return@together
+            remember(account, incoming.uid, incoming.revision, fingerprintOf(stored))
+        }
     }
 
     /**
      * As itself when it is news from another device; as a copy with a new uid
      * when it lost to the board already here -- two boards a person can sort
-     * out, a silent overwrite they cannot.
+     * out, a silent overwrite they cannot. A marker is not a board.
      */
     private suspend fun adopt(account: String, incoming: KeptBoardDto, asCopy: Boolean = false) {
+        if (incoming.deleted) return
         if (!asCopy && dao.boardByUid(incoming.uid) != null) return adoptBesideAnotherOwners(account, incoming)
         val uid = if (asCopy) UUID.randomUUID().toString() else incoming.uid
-        dao.addBoard(
-            board = incoming.toEntity(id = 0, uid = uid).copy(
-                // Null rather than a placeholder: the wording belongs to the screen.
-                arrivedFrom = if (asCopy) incoming.deviceName else null,
-                // A copy is not the published list; two boards pointing at one
-                // published id would fight over it on the next publish.
-                publishedId = if (asCopy) null else incoming.publishedId,
-                ownerUid = account,
-            ),
-            // Renamed: every uid is unique and the original board still holds them.
-            tiers = incoming.tiers(images::pathFor, renamed = asCopy),
-        )
-        if (asCopy) return
-
-        val stored = dao.boardByUid(uid) ?: return
-        remember(account, uid, incoming.revision, fingerprintOf(stored))
+        dao.together {
+            dao.addBoard(
+                board = incoming.toEntity(id = 0, uid = uid).copy(
+                    // Null rather than a placeholder: the wording belongs to the screen.
+                    arrivedFrom = if (asCopy) incoming.deviceName else null,
+                    // A copy is not the published list; two boards pointing at one
+                    // published id would fight over it on the next publish.
+                    publishedId = if (asCopy) null else incoming.publishedId,
+                    ownerUid = account,
+                ),
+                // Renamed: every uid is unique and the original board still holds them.
+                tiers = incoming.tiers(images::pathFor, renamed = asCopy),
+            )
+            if (asCopy) return@together
+            val stored = dao.boardByUid(uid) ?: return@together
+            remember(account, uid, incoming.revision, fingerprintOf(stored))
+        }
     }
 
     /**
@@ -392,7 +470,7 @@ class BoardSyncEngine @Inject constructor(
                     pictureId = images.pictureIdOf(item.imageUrl),
                     tierUid = tierUid,
                     position = item.position,
-                    title = item.title,
+                    title = item.title.ifBlank { KeptText.UNTITLED_CARD },
                     imageUrl = item.imageUrl,
                     source = item.source,
                     deletedAt = item.deletedAt,
@@ -403,8 +481,25 @@ class BoardSyncEngine @Inject constructor(
     }
 
     private companion object {
+        const val HTTP_BAD_REQUEST = 400
         const val HTTP_CONFLICT = 409
+        const val HTTP_TOO_LARGE = 413
+        const val TOO_MANY_BOARDS = "TOO_MANY_BOARDS"
     }
+}
+
+/** A write the account turns away for what the board is; trying again changes nothing until the board does. */
+internal class RefusedByAccount(val refusal: BackupRefusal, cause: HttpException) : Exception(cause.message, cause)
+
+private const val REFUSAL_SEPARATOR = "\n"
+
+/** As [AppPreferences.boardRefusal] keeps it. */
+internal fun BackupRefusal.encoded(): String = "${reason.name}$REFUSAL_SEPARATOR$boardTitle"
+
+internal fun backupRefusalOf(encoded: String?): BackupRefusal? {
+    val (reason, title) = encoded?.split(REFUSAL_SEPARATOR, limit = 2)?.takeIf { it.size == 2 } ?: return null
+    val known = BackupRefusal.Reason.entries.firstOrNull { it.name == reason } ?: return null
+    return BackupRefusal(boardTitle = title, reason = known)
 }
 
 /** The game as it came down, to go back up as it came; text that no longer reads as JSON is not worth a refused board. */
@@ -470,7 +565,7 @@ private fun KeptBoardDto.tiers(
                 TierItemEntity(
                     tierId = index.toLong(),
                     position = item.position,
-                    title = item.title,
+                    title = item.title.takeUnless { it == KeptText.UNTITLED_CARD && (item.pictureId != null || item.imageUrl != null) }.orEmpty(),
                     // Written as the path it will live at once fetched; until
                     // then the tile shows the title, like any card without one.
                     imageUrl = item.pictureId?.let(pathFor) ?: item.imageUrl,

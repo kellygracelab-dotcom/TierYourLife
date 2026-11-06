@@ -71,9 +71,9 @@ class FirebaseAccountRepository @Inject constructor(
         }
 
         return try {
-            auth.signInWithCredential(credential).await()
+            val result = auth.signInWithCredential(credential).await()
             adoptGoogleProfile()
-            SignInOutcome.Success
+            outcomeWithoutAGuest(isNewUser = result.additionalUserInfo?.isNewUser)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -91,7 +91,7 @@ class FirebaseAccountRepository @Inject constructor(
         // The guest is gone from this phone but not from the ledger; the last
         // moment anybody can say whose balance it was.
         val carried = guestToken != null && guestCredits.carryOver(guestToken)
-        SignInOutcome.SignedInToExistingAccount(creditsCarriedOver = carried)
+        SignInOutcome.SignedInToExistingAccount(guestCreditsLost = !carried)
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
@@ -180,3 +180,13 @@ private fun FirebaseUser?.toAccount(): Account = when {
         )
     }
 }
+
+/**
+ * No guest to link: a fresh install, or a sign-out whose new guest never
+ * arrived offline. Only a brand-new account is the guest becoming one; any
+ * other may be somebody else's, so the boards here are asked about, as
+ * after a guest's sign-in into it. Unknown is treated as the latter. No guest
+ * also means no guest credits to lose.
+ */
+internal fun outcomeWithoutAGuest(isNewUser: Boolean?): SignInOutcome =
+    if (isNewUser == true) SignInOutcome.Success else SignInOutcome.SignedInToExistingAccount(guestCreditsLost = false)
