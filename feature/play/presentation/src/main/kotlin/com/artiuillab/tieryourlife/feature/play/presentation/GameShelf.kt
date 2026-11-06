@@ -3,7 +3,9 @@ package com.artiuillab.tieryourlife.feature.play.presentation
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGames
+import com.artiuillab.tieryourlife.feature.play.domain.SharedGame
 import com.artiuillab.tieryourlife.feature.play.domain.SharedGameJson
+import com.artiuillab.tieryourlife.feature.play.domain.foundBy
 import com.artiuillab.tieryourlife.feature.play.domain.isExpired
 import com.artiuillab.tieryourlife.feature.play.domain.latestGame
 import com.artiuillab.tieryourlife.feature.play.domain.local
@@ -27,17 +29,18 @@ internal class GameShelf(
     private val now: () -> Long,
 ) {
 
-    /** A game with nothing answered is not worth keeping. Returns whether one is kept. */
-    suspend fun put(session: Session): Boolean {
+    /** A game with nothing answered is not worth keeping. */
+    suspend fun put(session: Session): Shelved {
         val game = session.game.copy(round = progress(session.game.spec, session.game.history).round)
         if (game.history.isEmpty()) {
             clear(session)
-            return false
+            return Shelved.NothingToKeep
         }
-        val play = if (session.own) encoded(session.board, game) else null
-        val onBoard = play != null && write(session.board.id, play)
-        games.save(session.key, game.copy(onBoard = onBoard))
-        return true
+        val shared = if (session.own) shared(session.board, game) else null
+        val onBoard = shared != null && write(session.board.id, SharedGameJson.encode(shared))
+        val kept = game.copy(onBoard = onBoard, uids = shared?.ids, scopeUids = shared?.scope, touchedAt = now())
+        val inFile = runSuspendCatching { games.save(session.key, kept) }.getOrDefault(false)
+        return if (inFile || onBoard) Shelved.Kept else Shelved.Lost
     }
 
     suspend fun clear(session: Session) {
@@ -46,19 +49,27 @@ internal class GameShelf(
     }
 
     /**
-     * The game put down for [request]'s board: the board's copy when it is the
-     * newer, the file's otherwise. A month-old one goes without a word, from both,
-     * and so does one of an older version of the list.
+     * The game put down for [request]'s board: the board's copy unless the
+     * file's is newer, the file's found on the board's rows by uid. One of an
+     * older version of the list goes without a word, and so does one a month
+     * past its last write here; the board's copy goes with it only when nothing
+     * newer was put there since, as the account lets it go a month after its
+     * last write.
      */
     suspend fun take(request: PlayRequest): SavedGame? {
         games.keys().filter { it != request.key && PlayRequest.sameBoard(it, request.key) }.forEach { games.discard(it) }
-        val inFile = games.load(request.key)
         val board = if (request.intoMine) null else runSuspendCatching { boards.getTierListById(request.board.id) }.getOrNull()
-        val game = latestGame(onBoard = board?.let(::gameOn), inFile = inFile)
-        if (game != null && game.isExpired(now())) {
-            clear(Session(request.key, board ?: request.board, game, own = !request.intoMine))
-            return null
+        val stored = games.load(request.key)?.let { file -> board?.let { file.foundOn(it) } ?: file }
+        var onBoard = board?.let(::gameOn)
+        val inFile = stored?.takeUnless { it.isExpired(now()) }
+        if (stored != null && inFile == null) {
+            games.discard(request.key)
+            if (board != null && onBoard != null && !onBoard.newerThan(stored)) {
+                write(board.id, null)
+                onBoard = null
+            }
         }
+        val game = latestGame(onBoard = onBoard, inFile = inFile)
         // On the board once and gone from it: it ended elsewhere.
         if (game == null && inFile != null) games.discard(request.key)
         return game
@@ -69,16 +80,16 @@ internal class GameShelf(
 
     private fun gameOn(board: TierList): SavedGame? {
         val shared = board.play?.let(SharedGameJson::decode) ?: return null
-        val itemIds = board.tiers.flatMap { it.items }.filter { it.uid.isNotEmpty() }.associate { it.uid to it.id }
-        val tierIds = board.tiers.filter { it.uid.isNotEmpty() }.associate { it.uid to it.id }
-        return shared.local(itemIds::get, tierIds::get)
+        return shared.local(board.itemIds()::get, board.tierIds()::get)
     }
 
+    private fun SavedGame.foundOn(board: TierList): SavedGame = foundBy(board.itemIds()::get, board.tierIds()::get)
+
     /** Null when a card or tier of the game has no uid here: such a game stays in the file. */
-    private fun encoded(board: TierList, game: SavedGame): String? {
+    private fun shared(board: TierList, game: SavedGame): SharedGame? {
         val itemUids = board.tiers.flatMap { it.items }.associate { it.id to it.uid }
         val tierUids = board.tiers.associate { it.id to it.uid }
-        return game.shared(itemUids::get, tierUids::get, now())?.let(SharedGameJson::encode)
+        return game.shared(itemUids::get, tierUids::get, now())
     }
 
     /** False when the row did not take it: then only the file has the game. */
@@ -87,3 +98,13 @@ internal class GameShelf(
             .onFailure { Timber.w(it, "Putting the game on the board failed") }
             .isSuccess
 }
+
+internal enum class Shelved { Kept, NothingToKeep, Lost }
+
+private fun SavedGame.newerThan(other: SavedGame): Boolean =
+    compareValuesBy(this, other, { it.startedAt }, { it.history.size }) > 0
+
+private fun TierList.itemIds(): Map<String, Long> =
+    tiers.flatMap { it.items }.filter { it.uid.isNotEmpty() }.associate { it.uid to it.id }
+
+private fun TierList.tierIds(): Map<String, Long> = tiers.filter { it.uid.isNotEmpty() }.associate { it.uid to it.id }

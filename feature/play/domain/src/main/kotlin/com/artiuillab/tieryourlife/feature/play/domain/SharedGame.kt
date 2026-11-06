@@ -152,17 +152,18 @@ fun SharedGame.local(itemId: (String) -> Long?, tierId: (String) -> Long?): Save
 )
 
 /** Row ids count up from 1; these count down from -1, one per missing card. */
-private const val MISSING_CARD = -1L
+internal const val MISSING_CARD = -1L
 
 /**
- * Which copy of a board's game to offer: the one on the board, which the
- * account carries, when it is newer (started later, or as late with more
- * answers); this phone's file otherwise. A file copy that was on the board and
- * is gone from it now ended somewhere else, so it is not offered.
+ * Which copy of a board's game to offer: this phone's file when it is newer
+ * (started later, or as late with more answers); the one on the board, which
+ * the account carries and whose cards are found by uid, otherwise. A file
+ * copy that was on the board and is gone from it now ended somewhere else, so
+ * it is not offered.
  */
 fun latestGame(onBoard: SavedGame?, inFile: SavedGame?): SavedGame? = when {
     onBoard == null -> inFile?.takeUnless { it.onBoard }
     inFile == null -> onBoard
-    compareValuesBy(onBoard, inFile, { it.startedAt }, { it.history.size }) > 0 -> onBoard
-    else -> inFile
+    compareValuesBy(inFile, onBoard, { it.startedAt }, { it.history.size }) > 0 -> inFile
+    else -> onBoard
 }

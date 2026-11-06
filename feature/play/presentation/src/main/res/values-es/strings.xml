@@ -2,16 +2,16 @@
 <resources>
     <string name="play_title">Jugar</string>
     <plurals name="play_cards_from">
-        <item quantity="one">%1$d carta de %2$s</item>
-        <item quantity="many">%1$d cartas de %2$s</item>
-        <item quantity="other">%1$d cartas de %2$s</item>
+        <item quantity="one">%1$d tarjeta de %2$s</item>
+        <item quantity="many">%1$d tarjetas de %2$s</item>
+        <item quantity="other">%1$d tarjetas de %2$s</item>
     </plurals>
-    <string name="play_choose_cards">Elegir cartas</string>
+    <string name="play_choose_cards">Elegir tarjetas</string>
     <string name="play_game_swiss">Los perdedores siguen</string>
     <string name="play_game_hill">Rey de la colina</string>
     <string name="play_game_bracket">Eliminatoria</string>
     <string name="play_game_swiss_line">Todos juegan cada ronda. Más lento, lo mejor para llenar los niveles.</string>
-    <string name="play_game_hill_line">El ganador se queda y se enfrenta a la siguiente carta. Rápido; los niveles salen aproximados.</string>
+    <string name="play_game_hill_line">El ganador se queda y se enfrenta a la siguiente tarjeta. Rápido; los niveles salen aproximados.</string>
     <string name="play_game_bracket_line">Se enfrentan por parejas y los ganadores avanzan hasta que queda una. Rápido; los niveles salen aproximados.</string>
     <plurals name="play_estimate_duels">
         <item quantity="one">%1$d duelo</item>
@@ -34,11 +34,11 @@
         <item quantity="other">Empezada hace %1$d días</item>
     </plurals>
     <plurals name="play_new_cards_join">
-        <item quantity="one">%1$d carta nueva entra en la siguiente ronda</item>
-        <item quantity="many">%1$d cartas nuevas entran en la siguiente ronda</item>
-        <item quantity="other">%1$d cartas nuevas entran en la siguiente ronda</item>
+        <item quantity="one">%1$d tarjeta nueva entra en la siguiente ronda</item>
+        <item quantity="many">%1$d tarjetas nuevas entran en la siguiente ronda</item>
+        <item quantity="other">%1$d tarjetas nuevas entran en la siguiente ronda</item>
     </plurals>
-    <string name="play_board_changed">Las cartas han cambiado desde que empezó esta partida.</string>
+    <string name="play_board_changed">Las tarjetas han cambiado desde que empezó esta partida.</string>
     <string name="play_start_again">Empezar de nuevo</string>
     <string name="play_into_mine_note">El resultado va a «Mío». «Suyo» no cambia.</string>
     <string name="play_cancel">Cancelar</string>
@@ -46,16 +46,16 @@
     <string name="play_continue">Continuar</string>
     <string name="play_back">Atrás</string>
     <plurals name="play_cards_limit">
-        <item quantity="one">Hasta %1$d carta por partida</item>
-        <item quantity="many">Hasta %1$d cartas por partida</item>
-        <item quantity="other">Hasta %1$d cartas por partida</item>
+        <item quantity="one">Hasta %1$d tarjeta por partida</item>
+        <item quantity="many">Hasta %1$d tarjetas por partida</item>
+        <item quantity="other">Hasta %1$d tarjetas por partida</item>
     </plurals>
-    <string name="play_pool">El montón</string>
+    <string name="play_pool">La reserva</string>
     <string name="play_everything">Todo</string>
     <plurals name="play_cards">
-        <item quantity="one">%1$d carta</item>
-        <item quantity="many">%1$d cartas</item>
-        <item quantity="other">%1$d cartas</item>
+        <item quantity="one">%1$d tarjeta</item>
+        <item quantity="many">%1$d tarjetas</item>
+        <item quantity="other">%1$d tarjetas</item>
     </plurals>
     <string name="play_too_many_in_tier">Demasiadas para una partida.</string>
     <plurals name="play_selected">
@@ -87,14 +87,14 @@
     <string name="play_empty_tier">Vacío</string>
     <string name="play_nothing_to_apply">Se saltaron todos los duelos, así que no hay nada que aplicar.</string>
     <plurals name="play_thin">
-        <item quantity="one">%1$d carta jugó menos de 2 duelos, así que su puesto es una suposición. Afinar añade hasta %2$d duelos para ella, o aplica ahora y ajusta a mano.</item>
-        <item quantity="many">%1$d cartas jugaron menos de 2 duelos, así que sus puestos son una suposición. Afinar añade hasta %2$d duelos para ellas, o aplica ahora y ajusta a mano.</item>
-        <item quantity="other">%1$d cartas jugaron menos de 2 duelos, así que sus puestos son una suposición. Afinar añade hasta %2$d duelos para ellas, o aplica ahora y ajusta a mano.</item>
+        <item quantity="one">%1$d tarjeta jugó menos de 2 duelos, así que su puesto es una suposición. Afinar añade hasta %2$d duelos para ella, o aplica ahora y ajusta a mano.</item>
+        <item quantity="many">%1$d tarjetas jugaron menos de 2 duelos, así que sus puestos son una suposición. Afinar añade hasta %2$d duelos para ellas, o aplica ahora y ajusta a mano.</item>
+        <item quantity="other">%1$d tarjetas jugaron menos de 2 duelos, así que sus puestos son una suposición. Afinar añade hasta %2$d duelos para ellas, o aplica ahora y ajusta a mano.</item>
     </plurals>
     <plurals name="play_thin_refined">
-        <item quantity="one">%1$d carta jugó menos de 2 duelos, así que su puesto es una suposición. Aplica ahora y ajusta a mano.</item>
-        <item quantity="many">%1$d cartas jugaron menos de 2 duelos, así que sus puestos son una suposición. Aplica ahora y ajusta a mano.</item>
-        <item quantity="other">%1$d cartas jugaron menos de 2 duelos, así que sus puestos son una suposición. Aplica ahora y ajusta a mano.</item>
+        <item quantity="one">%1$d tarjeta jugó menos de 2 duelos, así que su puesto es una suposición. Aplica ahora y ajusta a mano.</item>
+        <item quantity="many">%1$d tarjetas jugaron menos de 2 duelos, así que sus puestos son una suposición. Aplica ahora y ajusta a mano.</item>
+        <item quantity="other">%1$d tarjetas jugaron menos de 2 duelos, así que sus puestos son una suposición. Aplica ahora y ajusta a mano.</item>
     </plurals>
     <string name="play_apply">Aplicar</string>
     <string name="play_put_in_mine">Poner en «Mío»</string>
@@ -108,11 +108,13 @@
     <string name="play_snack_game_saved">Partida guardada · %1$d de %2$d</string>
     <string name="play_snack_discard">Descartar</string>
     <plurals name="play_snack_arranged">
-        <item quantity="one">Lista ordenada a partir de %1$d duelo</item>
-        <item quantity="many">Lista ordenada a partir de %1$d duelos</item>
-        <item quantity="other">Lista ordenada a partir de %1$d duelos</item>
+        <item quantity="one">Tablero ordenado a partir de %1$d duelo</item>
+        <item quantity="many">Tablero ordenado a partir de %1$d duelos</item>
+        <item quantity="other">Tablero ordenado a partir de %1$d duelos</item>
     </plurals>
     <string name="play_snack_saved_discarded">Partida guardada descartada</string>
     <string name="play_snack_result_discarded">Resultado descartado</string>
     <string name="play_snack_undo">Deshacer</string>
+    <string name="play_snack_not_saved">No se pudo guardar la partida</string>
+    <string name="play_snack_list_updated">La lista se actualizó durante la partida, así que la partida se descartó</string>
 </resources>

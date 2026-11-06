@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.settings.takeWhole
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
@@ -103,7 +104,7 @@ fun TierEditorSheetContent(
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedTextField(
                         value = label,
-                        onValueChange = { label = it.take(TIER_LABEL_MAX_LENGTH) },
+                        onValueChange = { label = it.takeWhole(TIER_LABEL_MAX_LENGTH) },
                         label = { Text(stringResource(R.string.tier_editor_label_field)) },
                         supportingText = labelCounter,
                         singleLine = true,
@@ -113,7 +114,7 @@ fun TierEditorSheetContent(
                     )
                     OutlinedTextField(
                         value = caption,
-                        onValueChange = { caption = it.take(TIER_CAPTION_MAX_LENGTH) },
+                        onValueChange = { caption = it.takeWhole(TIER_CAPTION_MAX_LENGTH) },
                         label = { Text(stringResource(R.string.tier_editor_caption_field)) },
                         supportingText = captionCounter,
                         singleLine = true,

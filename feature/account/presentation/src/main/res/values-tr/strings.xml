@@ -10,7 +10,7 @@
     <string name="account_error_sign_in_failed">Oturum açılamadı. Tekrar dene.</string>
     <string name="account_error_no_google_account">Bu telefonda Google hesabı yok.</string>
     <string name="account_error_unavailable">Oturum açma şu anda kullanılamıyor.</string>
-    <string name="account_notice_existing_account">Bu Google hesabının kendi hakları vardı — artık sende olanlar onlar.</string>
+    <string name="account_notice_existing_account">Bu Google hesabının kendi hakları vardı — artık sizde olanlar onlar.</string>
     <string name="account_cd_close">Kapat</string>
     <string name="account_action_sign_out">Oturumu kapat</string>
     <string name="account_community_section">TOPLULUKTA</string>
@@ -41,8 +41,8 @@
     </plurals>
     <string name="account_reason_devices">Panoların yeni telefona seninle gelir.</string>
     <string name="account_reason_publish">Bir listeyi yayınlamak için hesap gerekir.</string>
-    <string name="account_sign_out_body_1">Panoların %1$s hesabında ve bu telefonda kalır, yeniden giriş yapana kadar gizlenir. Çıkış yapınca yalnızca hesapsız yapılan panoları görürsün.</string>
-    <string name="account_sign_out_body_2">Krediler ve satın almalar burada seni bekler.</string>
+    <string name="account_sign_out_body_1">Panoların %1$s hesabında ve bu telefonda kalır, yeniden oturum açana kadar gizlenir. Çıkış yapınca yalnızca hesapsız yapılan panoları görürsün.</string>
+    <string name="account_sign_out_body_2">Krediler ve satın almalar burada sizi bekler.</string>
     <plurals name="account_board_count">
         <item quantity="one">1 pano</item>
         <item quantity="other">%1$d pano</item>
@@ -52,7 +52,7 @@
     <string name="merge_footnote">Telefonda tutulanlar, oturum kapalıyken görünür. Hiçbir durumda bir şey silinmez.</string>
     <string name="merge_name_suffix">(bu telefondan)</string>
     <string name="account_sign_out_title">Çıkış yapılsın mı?</string>
-    <string name="account_sign_out_helper">Panoların hesabında ve bu telefonda kalır, yeniden giriş yapana kadar gizlenir. Krediler ve satın almalar burada seni bekler.</string>
+    <string name="account_sign_out_helper">Panolarınız hesabınızda ve bu telefonda kalır, yeniden oturum açana kadar gizlenir. Krediler ve satın almalar burada sizi bekler.</string>
     <string name="account_action_delete">Hesabı sil</string>
     <string name="account_delete_title">Hesap silinsin mi?</string>
     <string name="account_delete_body">Hesap silinir; onunla birlikte panolarınızın kopyası, yayımladığınız her şey ve bunlara ait görseller de gider. Bu geri alınamaz.</string>

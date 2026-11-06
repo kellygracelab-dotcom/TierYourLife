@@ -82,9 +82,11 @@
     <string name="play_snack_game_saved">ゲームを保存しました · %1$d / %2$d</string>
     <string name="play_snack_discard">破棄</string>
     <plurals name="play_snack_arranged">
-        <item quantity="other">%1$d 回の対戦からリストを並べました</item>
+        <item quantity="other">%1$d 回の対戦からボードを並べました</item>
     </plurals>
     <string name="play_snack_saved_discarded">保存したゲームを破棄しました</string>
     <string name="play_snack_result_discarded">結果を破棄しました</string>
     <string name="play_snack_undo">元に戻す</string>
+    <string name="play_snack_not_saved">ゲームを保存できませんでした</string>
+    <string name="play_snack_list_updated">プレイ中にリストが更新されたため、ゲームを破棄しました</string>
 </resources>

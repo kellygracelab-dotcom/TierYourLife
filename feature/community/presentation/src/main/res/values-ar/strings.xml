@@ -69,7 +69,7 @@
     <string name="home_following_empty">لا أحد ممن تتابعهم لديه لوحة في %1$s.</string>
     <string name="home_following_empty_all">لم ينشر أحد ممن تتابعهم شيئًا بعد.</string>
     <string name="home_following_nobody">أنت لا تتابع أحدًا</string>
-    <string name="home_following_nobody_body">تابِع شخصًا ما، وستظهر لوحاته الجديدة هنا أولًا.</string>
+    <string name="home_following_nobody_body">تابِع شخصًا ما، وستظهر قوائمه الجديدة هنا أولًا.</string>
     <string name="moderation_action_keep">إبقاء</string>
     <string name="moderation_action_put_back">إعادة</string>
     <string name="moderation_action_take_down">إزالة</string>
@@ -93,7 +93,7 @@
     <string name="moderation_take_down_body">ستختفي القائمة نهائيًا. تبقى لوحاته على هاتفه.</string>
     <string name="moderation_take_down_title">إزالتها</string>
     <string name="moderation_take_down_with">إزالة · %1$s</string>
-    <string name="moderation_taken_down">أُزيلت</string>
+    <string name="moderation_taken_down">أُلغي النشر</string>
     <string name="moderation_title">البلاغات</string>
     <string name="moderation_unblur">إظهار الأغلفة</string>
     <string name="moderation_undo">تراجع</string>
@@ -158,12 +158,12 @@
     <string name="home_following_empty_topics">لا شيء بعد من المواضيع التي تتابعها.</string>
     <string name="moderation_action_move">نقل…</string>
     <string name="moderation_moderators_unavailable">تعذّرت قراءة قائمة المشرفين.</string>
-    <string name="community_rankings_title">الترتيبات</string>
+    <string name="community_rankings_title">التصنيفات</string>
     <string name="community_rankings_body">البطاقات نفسها مرتبة على طريقة شخص آخر. اختر صفوف من تريد عرضها.</string>
     <string name="community_ranking_author">صاحب القائمة</string>
     <string name="community_ranking_you">أنت</string>
     <string name="community_ranking_withdraw">سحب</string>
-    <string name="community_action_rankings">الترتيبات · %1$d</string>
+    <string name="community_action_rankings">التصنيفات · %1$d</string>
     <string name="community_rank_it_yourself">رتّبها بنفسك</string>
     <string name="community_drag_any_card">اسحب أي بطاقة</string>
     <string name="community_based_on">مبني على «%1$s» لـ %2$s</string>
@@ -301,7 +301,7 @@
     </plurals>
     <string name="community_show_my_ranking">اعرض ترتيبي للآخرين</string>
     <string name="community_sign_in_to_show_ranking">سجّل الدخول لعرض ترتيبك</string>
-    <string name="community_ranking_shown">أصبح ترتيبك ضمن ترتيبات القائمة</string>
+    <string name="community_ranking_shown">أصبح ترتيبك ضمن تصنيفات القائمة</string>
     <string name="community_action_sign_in">تسجيل الدخول</string>
     <string name="community_your_list_badge">قائمتك</string>
     <string name="community_own_published">منشورة</string>

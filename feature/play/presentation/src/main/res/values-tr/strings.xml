@@ -34,10 +34,10 @@
         <item quantity="other">%1$d yeni kart bir sonraki turdan itibaren katılır</item>
     </plurals>
     <string name="play_board_changed">Bu oyun başladığından beri kartlar değişti.</string>
-    <string name="play_start_again">Yeniden başlat</string>
+    <string name="play_start_again">Yeniden başla</string>
     <string name="play_into_mine_note">Sonuç “Benimki”ne gider. “Onunki” değişmez.</string>
     <string name="play_cancel">İptal</string>
-    <string name="play_start">Başlat</string>
+    <string name="play_start">Başla</string>
     <string name="play_continue">Devam</string>
     <string name="play_back">Geri</string>
     <plurals name="play_cards_limit">
@@ -63,10 +63,10 @@
     <string name="play_quit">Çık</string>
     <string name="play_duel_of">Düello %1$d/%2$d</string>
     <string name="play_round_of">Tur %1$d/%2$d</string>
-    <string name="play_refine_of">İyileştir · %1$d/%2$d</string>
+    <string name="play_refine_of">Netleştir · %1$d/%2$d</string>
     <string name="play_undo_pick">Son seçimi geri al</string>
-    <string name="play_skip">Geç</string>
-    <string name="play_skip_hint">Seçemiyorsanız geçin. Hiçbir şey kaydedilmez.</string>
+    <string name="play_skip">Atla</string>
+    <string name="play_skip_hint">Seçemiyorsanız atlayın. Hiçbir şey kaydedilmez.</string>
     <string name="play_pick">%1$s seç</string>
     <string name="play_your_result">Sonucunuz</string>
     <plurals name="play_from_duels">
@@ -77,8 +77,8 @@
     <string name="play_empty_tier">Boş</string>
     <string name="play_nothing_to_apply">Tüm düellolar geçildi, uygulanacak bir şey yok.</string>
     <plurals name="play_thin">
-        <item quantity="one">%1$d kart 2 düellodan az oynadı, bu yüzden yeri bir tahmin. İyileştir onun için en fazla %2$d düello ekler; ya da şimdi uygulayıp elle düzeltin.</item>
-        <item quantity="other">%1$d kart 2 düellodan az oynadı, bu yüzden yerleri bir tahmin. İyileştir onlar için en fazla %2$d düello ekler; ya da şimdi uygulayıp elle düzeltin.</item>
+        <item quantity="one">%1$d kart 2 düellodan az oynadı, bu yüzden yeri bir tahmin. Netleştir onun için en fazla %2$d düello ekler; ya da şimdi uygulayıp elle düzeltin.</item>
+        <item quantity="other">%1$d kart 2 düellodan az oynadı, bu yüzden yerleri bir tahmin. Netleştir onlar için en fazla %2$d düello ekler; ya da şimdi uygulayıp elle düzeltin.</item>
     </plurals>
     <plurals name="play_thin_refined">
         <item quantity="one">%1$d kart 2 düellodan az oynadı, bu yüzden yeri bir tahmin. Şimdi uygulayıp elle düzeltin.</item>
@@ -86,19 +86,21 @@
     </plurals>
     <string name="play_apply">Uygula</string>
     <string name="play_put_in_mine">“Benimki”ne koy</string>
-    <string name="play_refine">İyileştir</string>
+    <string name="play_refine">Netleştir</string>
     <plurals name="play_refine_up_to">
-        <item quantity="one">İyileştir · %1$d düello</item>
-        <item quantity="other">İyileştir · en fazla %1$d düello</item>
+        <item quantity="one">Netleştir · %1$d düello</item>
+        <item quantity="other">Netleştir · en fazla %1$d düello</item>
     </plurals>
     <string name="play_again">Yeniden oyna</string>
     <string name="play_snack_game_saved">Oyun kaydedildi · %1$d/%2$d</string>
-    <string name="play_snack_discard">Sil</string>
+    <string name="play_snack_discard">Vazgeç</string>
     <plurals name="play_snack_arranged">
-        <item quantity="one">Liste %1$d düellodan düzenlendi</item>
-        <item quantity="other">Liste %1$d düellodan düzenlendi</item>
+        <item quantity="one">Pano %1$d düellodan düzenlendi</item>
+        <item quantity="other">Pano %1$d düellodan düzenlendi</item>
     </plurals>
     <string name="play_snack_saved_discarded">Kayıtlı oyun silindi</string>
     <string name="play_snack_result_discarded">Sonuç silindi</string>
     <string name="play_snack_undo">Geri al</string>
+    <string name="play_snack_not_saved">Oyun kaydedilemedi</string>
+    <string name="play_snack_list_updated">Liste oyun sırasında güncellendi, bu yüzden oyun silindi</string>
 </resources>

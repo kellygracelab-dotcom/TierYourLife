@@ -147,14 +147,16 @@
     <string name="play_snack_game_saved">حُفظت اللعبة · %1$d من %2$d</string>
     <string name="play_snack_discard">تجاهل</string>
     <plurals name="play_snack_arranged">
-        <item quantity="zero">رُتّبت القائمة</item>
-        <item quantity="one">رُتّبت القائمة من مواجهة واحدة</item>
-        <item quantity="two">رُتّبت القائمة من مواجهتين</item>
-        <item quantity="few">رُتّبت القائمة من %1$d مواجهات</item>
-        <item quantity="many">رُتّبت القائمة من %1$d مواجهة</item>
-        <item quantity="other">رُتّبت القائمة من %1$d مواجهة</item>
+        <item quantity="zero">رُتّبت اللوحة</item>
+        <item quantity="one">رُتّبت اللوحة من مواجهة واحدة</item>
+        <item quantity="two">رُتّبت اللوحة من مواجهتين</item>
+        <item quantity="few">رُتّبت اللوحة من %1$d مواجهات</item>
+        <item quantity="many">رُتّبت اللوحة من %1$d مواجهة</item>
+        <item quantity="other">رُتّبت اللوحة من %1$d مواجهة</item>
     </plurals>
     <string name="play_snack_saved_discarded">تم تجاهل اللعبة المحفوظة</string>
     <string name="play_snack_result_discarded">تم تجاهل النتيجة</string>
     <string name="play_snack_undo">تراجع</string>
+    <string name="play_snack_not_saved">تعذّر حفظ اللعبة</string>
+    <string name="play_snack_list_updated">تم تحديث هذه القائمة أثناء اللعب، لذلك أُلغيت اللعبة</string>
 </resources>

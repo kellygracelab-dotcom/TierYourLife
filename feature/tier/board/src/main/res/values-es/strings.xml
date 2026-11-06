@@ -45,7 +45,7 @@
         <item quantity="many">Añadir %1$d elementos</item>
         <item quantity="other">Añadir %1$d elementos</item>
     </plurals>
-    <string name="manual_dialog_body">Va al montón. Después puedes arrastrarlo a un nivel.</string>
+    <string name="manual_dialog_body">Va a la reserva. Después puedes arrastrarlo a un nivel.</string>
     <string name="manual_dialog_cancel">Cancelar</string>
     <string name="manual_dialog_choose_photo">Elegir foto</string>
     <string name="manual_dialog_field_name">Nombre</string>
@@ -64,6 +64,7 @@
     <string name="my_published_behind">La versión publicada está desactualizada.</string>
     <string name="share_caption">%1$s — ordenado en TierYourLife\n%2$s</string>
     <string name="share_footer">Hecho en TierYourLife</string>
+    <string name="share_failed">No se pudo compartir la imagen</string>
     <string name="tier_detail_add">Añadir</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d elemento</item>
@@ -74,22 +75,22 @@
     <string name="tier_detail_content_description_manual_add">Añadir un elemento manualmente</string>
     <string name="tier_detail_item_removed">Se quitó %1$s</string>
     <plurals name="tier_detail_items_added_to_pool">
-        <item quantity="one">%1$d elemento añadido al montón</item>
-        <item quantity="many">%1$d elementos añadidos al montón</item>
-        <item quantity="other">%1$d elementos añadidos al montón</item>
+        <item quantity="one">%1$d elemento añadido a la reserva</item>
+        <item quantity="many">%1$d elementos añadidos a la reserva</item>
+        <item quantity="other">%1$d elementos añadidos a la reserva</item>
     </plurals>
     <string name="tier_detail_move_sheet_current_tier">Actualmente aquí</string>
     <string name="tier_detail_move_sheet_pool_subtitle">Sin clasificar, permanece en la lista</string>
-    <string name="tier_detail_move_sheet_pool_title">Volver al montón</string>
+    <string name="tier_detail_move_sheet_pool_title">Volver a la reserva</string>
     <string name="tier_detail_move_sheet_remove_subtitle">Se puede deshacer justo después</string>
     <string name="tier_detail_move_sheet_remove_title">Quitar de la lista</string>
     <string name="tier_detail_move_sheet_subtitle">Mover a un nivel</string>
     <string name="tier_detail_move_sheet_photo_credit">Foto: %1$s</string>
     <string name="tier_detail_not_found">No se encontró la lista.</string>
     <plurals name="tier_detail_pool_unranked_count">
-        <item quantity="one">Montón · %d sin clasificar</item>
-        <item quantity="many">Montón · %d sin clasificar</item>
-        <item quantity="other">Montón · %d sin clasificar</item>
+        <item quantity="one">Reserva · %d sin clasificar</item>
+        <item quantity="many">Reserva · %d sin clasificar</item>
+        <item quantity="other">Reserva · %d sin clasificar</item>
     </plurals>
     <plurals name="tier_detail_ranked_header">
         <item quantity="one">%1$d clasificado · de mejor a peor</item>
@@ -98,14 +99,14 @@
     </plurals>
     <string name="tier_detail_ranked_header_empty">Nada clasificado todavía</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
-        <item quantity="one">Montón, %1$d sin clasificar. Expandir.</item>
-        <item quantity="many">Montón, %1$d sin clasificar. Expandir.</item>
-        <item quantity="other">Montón, %1$d sin clasificar. Expandir.</item>
+        <item quantity="one">Reserva, %1$d sin clasificar. Expandir.</item>
+        <item quantity="many">Reserva, %1$d sin clasificar. Expandir.</item>
+        <item quantity="other">Reserva, %1$d sin clasificar. Expandir.</item>
     </plurals>
     <plurals name="tier_detail_ranked_pool_expanded_description">
-        <item quantity="one">Montón, %1$d sin clasificar. Contraer.</item>
-        <item quantity="many">Montón, %1$d sin clasificar. Contraer.</item>
-        <item quantity="other">Montón, %1$d sin clasificar. Contraer.</item>
+        <item quantity="one">Reserva, %1$d sin clasificar. Contraer.</item>
+        <item quantity="many">Reserva, %1$d sin clasificar. Contraer.</item>
+        <item quantity="other">Reserva, %1$d sin clasificar. Contraer.</item>
     </plurals>
     <string name="tier_detail_ranked_row_description">Puesto %1$d, %2$s, nivel %3$s.</string>
     <string name="tier_detail_snackbar_undo">Deshacer</string>
@@ -144,20 +145,20 @@
     <string name="tier_list_settings_title">Ajustes de la lista</string>
     <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
     <plurals name="tier_lists_in_pool_count">
-        <item quantity="one">%d en el montón</item>
-        <item quantity="many">%d en el montón</item>
-        <item quantity="other">%d en el montón</item>
+        <item quantity="one">%d en la reserva</item>
+        <item quantity="many">%d en la reserva</item>
+        <item quantity="other">%d en la reserva</item>
     </plurals>
     <string name="list_settings_public_topic_unavailable">Ese tema ya no está disponible: se fusionó, se rechazó o es de otra persona. La lista ya no tiene tema; elige otro o publica sin tema.</string>
     <string name="list_settings_public_ranking_body">Publicada como tu ranking de la lista de %1$s; en el feed no aparece una segunda lista.</string>
-    <string name="tier_detail_add_card">Añadir una carta</string>
+    <string name="tier_detail_add_card">Añadir una tarjeta</string>
     <string name="tier_detail_pool_count">Reserva · %1$d</string>
     <string name="tier_detail_drop_items_here">Suelta elementos aquí</string>
     <string name="tier_detail_drop_to_delete">Suelta para eliminar</string>
-    <string name="tier_detail_drop_unrank_column">Suelta en las cartas de abajo para quitar el rango</string>
+    <string name="tier_detail_drop_unrank_column">Suelta en las tarjetas de abajo para quitar el rango</string>
     <string name="tier_detail_drop_unrank_dock">Suelta en la reserva para quitar el rango</string>
     <string name="tier_detail_content_description_play">Jugar</string>
-    <string name="tier_detail_play_needs_cards">Para jugar hacen falta al menos 3 cartas</string>
+    <string name="tier_detail_play_needs_cards">Para jugar hacen falta al menos 3 tarjetas</string>
     <string name="list_settings_anonymous">Publicar de forma anónima</string>
     <string name="list_settings_anonymous_body">Tu nombre y tu foto no aparecen con la lista. Sigue siendo tuya: solo tú puedes editarla o eliminarla.</string>
     <string name="list_settings_propose_section">Proponer una sección</string>

@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.propose
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.artiuillab.tieryourlife.core.settings.takeWhole
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.MAX_PENDING_SECTIONS
@@ -133,7 +134,7 @@ class ProposeSectionViewModel @Inject constructor(
 
     /** At most 24 characters; the server is asked about it once the typing has stopped for a moment. */
     fun updateName(typed: String) {
-        val name = typed.take(MAX_SECTION_NAME)
+        val name = typed.takeWhole(MAX_SECTION_NAME)
         form.update { it.copy(name = name, nameStanding = NameStanding.Unasked, error = null) }
         checking?.cancel()
         val trimmed = name.trim()

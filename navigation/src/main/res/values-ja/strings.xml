@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rail_lists">リスト</string>
+    <string name="rail_community">コミュニティ</string>
+    <string name="rail_settings">設定</string>
+</resources>

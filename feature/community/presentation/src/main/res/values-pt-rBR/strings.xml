@@ -33,9 +33,9 @@
     <string name="community_action_view_author">Ver %1$s</string>
     <string name="community_by_author">de %1$s</string>
     <plurals name="community_item_count">
-        <item quantity="one">%1$d card</item>
-        <item quantity="other">%1$d cards</item>
-        <item quantity="many">%1$d cards</item>
+        <item quantity="one">%1$d cartão</item>
+        <item quantity="other">%1$d cartões</item>
+        <item quantity="many">%1$d cartões</item>
     </plurals>
     <string name="community_not_saved_yet">Sua organização ainda não foi salva.</string>
     <string name="community_open_failed">Não foi possível abrir esta lista</string>
@@ -66,7 +66,7 @@
     <string name="home_following_empty">Ninguém que você segue tem um quadro em %1$s.</string>
     <string name="home_following_empty_all">Ninguém que você segue publicou nada ainda.</string>
     <string name="home_following_nobody">Você não segue ninguém</string>
-    <string name="home_following_nobody_body">Siga alguém e os novos quadros dessa pessoa aparecem aqui primeiro.</string>
+    <string name="home_following_nobody_body">Siga alguém e as novas listas dessa pessoa aparecem aqui primeiro.</string>
     <string name="moderation_action_keep">Manter</string>
     <string name="moderation_action_put_back">Restaurar</string>
     <string name="moderation_action_take_down">Remover</string>
@@ -87,7 +87,7 @@
     <string name="moderation_take_down_body">A lista some para sempre. Os quadros dele continuam no telefone.</string>
     <string name="moderation_take_down_title">Remover</string>
     <string name="moderation_take_down_with">Remover · %1$s</string>
-    <string name="moderation_taken_down">Removida</string>
+    <string name="moderation_taken_down">Publicação removida</string>
     <string name="moderation_title">Denúncias</string>
     <string name="moderation_unblur">Mostrar capas</string>
     <string name="moderation_undo">Desfazer</string>
@@ -152,14 +152,14 @@
     <string name="home_following_empty_topics">Ainda não há nada dos temas que você segue.</string>
     <string name="moderation_action_move">Mover…</string>
     <string name="moderation_moderators_unavailable">Não foi possível ler a lista de moderadores.</string>
-    <string name="community_rankings_title">Rankings</string>
-    <string name="community_rankings_body">As mesmas cartas, colocadas do jeito de alguém. Escolha de quem mostrar as fileiras.</string>
+    <string name="community_rankings_title">Classificações</string>
+    <string name="community_rankings_body">Os mesmos cartões, colocados do jeito de alguém. Escolha de quem mostrar as fileiras.</string>
     <string name="community_ranking_author">Autor da lista</string>
     <string name="community_ranking_you">Você</string>
     <string name="community_ranking_withdraw">Retirar</string>
-    <string name="community_action_rankings">Rankings · %1$d</string>
+    <string name="community_action_rankings">Classificações · %1$d</string>
     <string name="community_rank_it_yourself">Organize você mesmo</string>
-    <string name="community_drag_any_card">Arraste um card</string>
+    <string name="community_drag_any_card">Arraste um cartão</string>
     <string name="community_based_on">Baseada em “%1$s” de %2$s</string>
     <string name="explore_tab_explore">Explorar</string>
     <string name="explore_tab_following">Seguindo</string>
@@ -209,9 +209,9 @@
     <string name="manage_people">Pessoas · %1$d</string>
     <string name="manage_waiting_supporting">Em %1$s · aguardando moderação</string>
     <plurals name="explore_cards">
-        <item quantity="one">%1$s carta</item>
-        <item quantity="many">%1$s cartas</item>
-        <item quantity="other">%1$s cartas</item>
+        <item quantity="one">%1$s cartão</item>
+        <item quantity="many">%1$s cartões</item>
+        <item quantity="other">%1$s cartões</item>
     </plurals>
     <string name="community_save_short">Salvar</string>
     <plurals name="moderation_open_count">

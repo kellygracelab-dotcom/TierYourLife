@@ -44,7 +44,7 @@
     <string name="item_search_field_label">Rechercher</string>
     <string name="item_search_close_content_description">Fermer la recherche</string>
     <string name="item_search_clear_content_description">Effacer la recherche</string>
-    <string name="item_search_source_caption">Ajout au réservoir de %1$s</string>
+    <string name="item_search_source_caption">Ajout à la réserve de %1$s</string>
     <string name="item_search_min_query">Saisissez au moins deux lettres pour rechercher.</string>
     <string name="item_search_empty_title">Rien trouvé pour \"%1$s\"</string>
     <string name="item_search_error_title">Impossible de charger les résultats</string>

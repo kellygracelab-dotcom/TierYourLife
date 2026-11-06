@@ -62,6 +62,7 @@
     <string name="my_published_behind">The published copy is behind this board.</string>
     <string name="share_caption">%1$s — ranked in TierYourLife\n%2$s</string>
     <string name="share_footer">Made in TierYourLife</string>
+    <string name="share_failed">Could not share the picture</string>
     <string name="tier_detail_add">Add</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d item</item>

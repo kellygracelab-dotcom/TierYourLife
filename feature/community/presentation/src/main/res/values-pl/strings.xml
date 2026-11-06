@@ -89,7 +89,7 @@
     <string name="moderation_take_down_body">Lista zniknie na zawsze. Jego tablice na telefonie zostaną.</string>
     <string name="moderation_take_down_title">Usuń z publikacji</string>
     <string name="moderation_take_down_with">Usuń · %1$s</string>
-    <string name="moderation_taken_down">Usunięto z publikacji</string>
+    <string name="moderation_taken_down">Cofnięto publikację</string>
     <string name="moderation_title">Zgłoszenia</string>
     <string name="moderation_unblur">Pokaż okładki</string>
     <string name="moderation_undo">Cofnij</string>

@@ -44,7 +44,7 @@
     <string name="item_search_field_label">Pesquisar</string>
     <string name="item_search_close_content_description">Fechar pesquisa</string>
     <string name="item_search_clear_content_description">Limpar pesquisa</string>
-    <string name="item_search_source_caption">Adicionando ao grupo de %1$s</string>
+    <string name="item_search_source_caption">Adicionando à reserva de %1$s</string>
     <string name="item_search_min_query">Digite pelo menos duas letras para pesquisar.</string>
     <string name="item_search_empty_title">Nada encontrado para \"%1$s\"</string>
     <string name="item_search_error_title">Não foi possível carregar os resultados</string>
@@ -132,7 +132,7 @@
     <string name="lists_filter_private">Privadas</string>
     <string name="lists_filter_clear">Limpar tudo</string>
     <string name="lists_group_favourites">Favoritas</string>
-    <string name="lists_group_others">Todas as listas</string>
+    <string name="lists_group_others">Todos os quadros</string>
     <string name="lists_favourite_add">Adicionar aos favoritos</string>
     <string name="lists_favourite_remove">Remover dos favoritos</string>
     <string name="snack_published_list_still_public">Mantida, não excluída: não foi possível retirar a cópia pública. Tente de novo quando estiver online.</string>
@@ -161,7 +161,7 @@
     <string name="cover_picker_title">Capa</string>
     <string name="cover_picker_done">Concluir</string>
     <string name="cover_picker_reset">Redefinir</string>
-    <string name="cover_picker_tab_cards">Seus cards · %1$d</string>
+    <string name="cover_picker_tab_cards">Seus cartões · %1$d</string>
     <string name="cover_picker_tab_search">Buscar imagens</string>
     <string name="topic_picker_title">Tema</string>
     <string name="topic_picker_done">Concluir</string>
@@ -189,7 +189,7 @@
         <item quantity="many">%1$d de %2$d escolhidas, uma colagem</item>
         <item quantity="other">%1$d de %2$d escolhidas, uma colagem</item>
     </plurals>
-    <string name="cover_picker_no_cards">Nenhum card desta lista tem imagem ainda.</string>
+    <string name="cover_picker_no_cards">Nenhum cartão desta lista tem imagem ainda.</string>
     <string name="cover_picker_gallery">Escolher da galeria</string>
     <string name="cover_picker_gallery_note">Uma imagem da galeria é a capa inteira e viaja com a lista quando você a publica.</string>
     <string name="tier_detail_ranking_of">Seu ranking de uma lista de %1$s</string>

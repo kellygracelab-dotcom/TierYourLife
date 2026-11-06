@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rail_lists">Listen</string>
+    <string name="rail_community">Community</string>
+    <string name="rail_settings">Einstellungen</string>
+</resources>

@@ -42,7 +42,7 @@
     <string name="community_open_failed">Не вдалося відкрити цей список</string>
     <string name="community_rank_it_your_way">Розкладіть його як забажаєте.</string>
     <string name="community_save_to_my_lists">Зберегти собі</string>
-    <string name="community_save_which_title">Яке ранжування зберегти?</string>
+    <string name="community_save_which_title">Який рейтинг зберегти?</string>
     <string name="community_save_which_body">Копія у будь-якому разі ваша. Перекласти можна будь-коли.</string>
     <string name="community_save_theirs">Як у автора</string>
     <string name="community_save_mine">Як у мене</string>
@@ -52,7 +52,7 @@
     <string name="community_showing_mine">Моє</string>
     <string name="community_showing_theirs">Його</string>
     <string name="community_someone_elses">Чужий список. Розкладіть його як забажаєте.</string>
-    <string name="community_tile_hidden">Сховано в тебе</string>
+    <string name="community_tile_hidden">Сховано у вас</string>
     <string name="community_tile_reported">Скаргу надіслано. Людина подивиться.</string>
     <string name="feed_sort_popular">Популярні</string>
     <string name="feed_sort_recent">Нові</string>
@@ -67,7 +67,7 @@
     <string name="home_following_empty">Ні в кого з ваших підписок немає дошок у категорії «%1$s».</string>
     <string name="home_following_empty_all">Ваші підписки поки нічого не опублікували.</string>
     <string name="home_following_nobody">Ви ні на кого не підписані</string>
-    <string name="home_following_nobody_body">Підпишіться — і нові дошки цих людей зʼявлятимуться тут першими.</string>
+    <string name="home_following_nobody_body">Підпишіться — і нові списки цих людей зʼявлятимуться тут першими.</string>
     <string name="moderation_action_keep">Залишити</string>
     <string name="moderation_action_put_back">Повернути</string>
     <string name="moderation_action_take_down">Зняти</string>
@@ -94,11 +94,11 @@
     <string name="moderation_unblur">Показати обкладинки</string>
     <string name="moderation_undo">Скасувати</string>
     <string name="my_published_action_open">Відкрити</string>
-    <string name="my_published_empty_body">Списки, які ти зробиш публічними, зʼявляться тут.</string>
+    <string name="my_published_empty_body">Списки, які ви зробите публічними, зʼявляться тут.</string>
     <string name="my_published_empty_title">Нічого не опубліковано</string>
-    <string name="my_published_failed">Не вдалося завантажити твої публічні списки</string>
-    <string name="my_published_subtitle">Усе, що є в тебе у спільноті, звідки б ти це не опублікував.</string>
-    <string name="my_published_title">Твої публічні списки</string>
+    <string name="my_published_failed">Не вдалося завантажити ваші публічні списки</string>
+    <string name="my_published_subtitle">Усе, що є у вас у спільноті, звідки б ви це не опублікували.</string>
+    <string name="my_published_title">Ваші публічні списки</string>
     <string name="report_action_send">Поскаржитися</string>
     <string name="report_by_hand">Скарги читає людина. Якщо їх набереться, список сховається до рішення.</string>
     <string name="report_hide_author">Сховати взагалі все від %1$s</string>
@@ -154,12 +154,12 @@
     <string name="home_following_empty_topics">З тем, на які ви підписані, поки нічого немає.</string>
     <string name="moderation_action_move">Перемістити…</string>
     <string name="moderation_moderators_unavailable">Не вдалося прочитати список модераторів.</string>
-    <string name="community_rankings_title">Ранжування</string>
+    <string name="community_rankings_title">Рейтинги</string>
     <string name="community_rankings_body">Ті самі картки, розставлені по-своєму. Оберіть, чиї ряди показати.</string>
     <string name="community_ranking_author">Автор списку</string>
     <string name="community_ranking_you">Ви</string>
     <string name="community_ranking_withdraw">Зняти</string>
-    <string name="community_action_rankings">Ранжування · %1$d</string>
+    <string name="community_action_rankings">Рейтинги · %1$d</string>
     <string name="community_rank_it_yourself">Розкладіть самі</string>
     <string name="community_drag_any_card">Перетягніть картку</string>
     <string name="community_based_on">За мотивами «%1$s» від %2$s</string>
@@ -273,7 +273,7 @@
     <string name="propose_too_many_title">Три пропозиції вже чекають</string>
     <string name="propose_too_many_body">Ви зможете запропонувати ще, щойно модератор перегляне одну з них.</string>
     <string name="section_waiting_pill">Очікує</string>
-    <string name="section_proposal_withdraw">Відкликати</string>
+    <string name="section_proposal_withdraw">Зняти</string>
     <string name="section_proposal_dismiss">Закрити</string>
     <string name="section_proposal_declined">«%1$s» не додали як розділ. Ваші списки лишаються в розділі «%2$s».</string>
     <string name="section_proposal_merged">«%1$s» обʼєднано з розділом «%2$s».</string>
@@ -287,9 +287,9 @@
         <item quantity="many">Чекають %1$d з %2$d ваших пропозицій.</item>
         <item quantity="other">Чекають %1$d з %2$d ваших пропозицій.</item>
     </plurals>
-    <string name="community_show_my_ranking">Показати моє ранжування іншим</string>
-    <string name="community_sign_in_to_show_ranking">Увійдіть, щоб показати своє ранжування</string>
-    <string name="community_ranking_shown">Ваше ранжування тепер серед ранжувань списку</string>
+    <string name="community_show_my_ranking">Показати мій рейтинг іншим</string>
+    <string name="community_sign_in_to_show_ranking">Увійдіть, щоб показати свій рейтинг</string>
+    <string name="community_ranking_shown">Ваш рейтинг тепер серед рейтингів списку</string>
     <string name="community_action_sign_in">Увійти</string>
     <string name="community_your_list_badge">Ваш список</string>
     <string name="community_own_published">Опубліковано</string>
