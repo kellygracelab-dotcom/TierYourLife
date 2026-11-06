@@ -188,6 +188,35 @@ class TierDetailViewModelTest {
     }
 
     @Test
+    fun setPublic_heldForAModerator_saysItWaits() = runBlocking {
+        val repository = FakeTierRepository(listWithOneCard())
+        val community = FakeCommunityRepositoryForDetail(publishResult = Result.success(Published("p-1", "sent", underReview = true)))
+        val viewModel = TierDetailViewModel(repository, community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+        val said = async { viewModel.userMessages.first() }
+
+        viewModel.setPublic(true)
+        viewModel.screen.firstWithin { !it.publish.publishing }
+
+        assertEquals("p-1", (viewModel.screen.value.board as TierDetailUiState.Success).list.publishedId)
+        assertEquals(UserMessage.PublishedUnderReview, said.await())
+    }
+
+    @Test
+    fun setPublic_heldRanking_saysItWaitsRatherThanOutAsARanking() = runBlocking {
+        val repository = FakeTierRepository(listWithOneCard().copy(takenFrom = "src-1"))
+        val community = FakeCommunityRepositoryForDetail(publishResult = Result.success(Published("src-1", "sent", ranking = true, underReview = true)))
+        val viewModel = TierDetailViewModel(repository, community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+        val said = async { viewModel.userMessages.first() }
+
+        viewModel.setPublic(true)
+        viewModel.screen.firstWithin { !it.publish.publishing }
+
+        assertEquals(UserMessage.PublishedUnderReview, said.await())
+    }
+
+    @Test
     fun setPublic_off_takesARankingDownFromTheListItAnswers() = runBlocking {
         val repository = FakeTierRepository(listWithOneCard().copy(takenFrom = "src-1", rankingOf = "src-1"))
         val community = FakeCommunityRepositoryForDetail()

@@ -26,4 +26,5 @@
     </plurals>
     <string name="tier_lists_title">あなたのリスト</string>
     <string name="snack_published_as_ranking">そのリストのあなたのランキングとして公開しました。フィードに2つ目のリストは出ません。</string>
+    <string name="snack_published_under_review">保存しました。他の人に表示される前に、モデレーターの確認を待っています。</string>
 </resources>

@@ -162,6 +162,8 @@ data class PublishedIdDto(
     val ranking: Boolean = false,
     /** True when this board was out already: [id] is the list an earlier publish made, and nothing new was. */
     val existing: Boolean = false,
+    /** True when the list was kept but starts out of the feed, held for a moderator; an "existing" answer may not carry it. */
+    val underReview: Boolean = false,
 )
 
 @Serializable

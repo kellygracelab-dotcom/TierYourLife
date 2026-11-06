@@ -227,6 +227,7 @@ fun TierListsScreenContent(
     val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
     val stillPublicMessage = stringResource(R.string.snack_published_list_still_public)
     val publishedAsRankingMessage = stringResource(ThemeR.string.snack_published_as_ranking)
+    val underReviewMessage = stringResource(ThemeR.string.snack_published_under_review)
 
     LaunchedEffect(Unit) {
         userMessages.collect { message ->
@@ -235,6 +236,7 @@ fun TierListsScreenContent(
                     UserMessage.ActionFailed -> actionFailedMessage
                     UserMessage.PublishedListStillPublic -> stillPublicMessage
                     UserMessage.PublishedAsRanking -> publishedAsRankingMessage
+                    UserMessage.PublishedUnderReview -> underReviewMessage
                 },
             )
         }

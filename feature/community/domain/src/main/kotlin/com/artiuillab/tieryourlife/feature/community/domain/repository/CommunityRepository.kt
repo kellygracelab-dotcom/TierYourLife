@@ -189,4 +189,6 @@ data class Published(
     val topicName: String? = null,
     /** True when the server kept it as this person's ranking of [id] rather than as a list of its own. */
     val ranking: Boolean = false,
+    /** True when the list was kept but is held for a moderator: out of the feed, its link closed to others. */
+    val underReview: Boolean = false,
 )

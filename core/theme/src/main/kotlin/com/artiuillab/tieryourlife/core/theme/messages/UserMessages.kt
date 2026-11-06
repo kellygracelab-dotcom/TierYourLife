@@ -17,6 +17,9 @@ enum class UserMessage {
 
     /** The copy went out as this person's ranking of the list it was taken from, not as a second list. */
     PublishedAsRanking,
+
+    /** The list was kept, but it waits for a moderator before anyone else can see it. */
+    PublishedUnderReview,
 }
 
 class UserMessages {

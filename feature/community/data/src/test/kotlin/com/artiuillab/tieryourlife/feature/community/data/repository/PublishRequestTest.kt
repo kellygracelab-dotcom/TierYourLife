@@ -332,6 +332,15 @@ class PublishRequestTest {
     }
 
     @Test
+    fun `an answer that holds the list for a moderator says so, and one without the field does not`() {
+        val held = networkJson.decodeFromString(PublishedIdDto.serializer(), """{"id":"p8","topicId":"t1","underReview":true}""")
+        val out = networkJson.decodeFromString(PublishedIdDto.serializer(), """{"id":"p8","topicId":"t1"}""")
+
+        assertTrue(held.toPublished("f").underReview)
+        assertFalse(out.toPublished("f").underReview)
+    }
+
+    @Test
     fun `the board a list of mine was published from comes back with it`() {
         val mine = networkJson.decodeFromString(
             PublishedListSummaryDto.serializer(),
