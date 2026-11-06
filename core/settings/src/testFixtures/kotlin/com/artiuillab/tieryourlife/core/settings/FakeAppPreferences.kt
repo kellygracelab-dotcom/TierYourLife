@@ -9,6 +9,11 @@ class FakeAppPreferences(
     private val hiddenLists = mutableMapOf<String, String>()
     private val hiddenAuthors = mutableMapOf<String, String>()
 
+    override fun forgetThePerson() {
+        hiddenLists.clear()
+        hiddenAuthors.clear()
+    }
+
     override fun themeChoice(): ThemeChoice = ThemeChoice.SYSTEM
     override fun setThemeChoice(choice: ThemeChoice) = Unit
     override fun languageTag(): String? = null

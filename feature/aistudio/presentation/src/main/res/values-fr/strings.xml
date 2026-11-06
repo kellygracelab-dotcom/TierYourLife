@@ -1,6 +1,6 @@
 <resources>
     <string name="ai_title">Générer une image</string>
-    <string name="ai_caption">Les nouvelles cartes vont dans le réservoir « %1$s ».</string>
+    <string name="ai_caption">Les nouvelles cartes vont dans la réserve « %1$s ».</string>
     <string name="ai_empty_title">Décrivez une image</string>
     <string name="ai_empty_body">L’IA la dessine. Gardez celles que vous aimez comme cartes.</string>
     <string name="ai_hints_label">Essayez l’une de ces idées</string>
@@ -16,7 +16,7 @@
     <string name="ai_error_title">Impossible de générer cette image</string>
     <string name="ai_error_body">Vérifiez votre connexion ou essayez une autre description.</string>
     <string name="ai_name_title">Nommez cette carte</string>
-    <string name="ai_name_body">Elle va dans le réservoir. Vous pourrez la glisser vers un niveau ensuite.</string>
+    <string name="ai_name_body">Elle va dans la réserve. Vous pourrez la glisser vers un niveau ensuite.</string>
     <string name="ai_name_photo_note">L’image générée devient la photo de la carte.</string>
     <string name="ai_name_field">Nom</string>
     <string name="action_add">Ajouter</string>

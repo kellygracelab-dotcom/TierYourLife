@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.board
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -312,6 +313,7 @@ private fun TierScreenBody(
         unrankedBand = media.unrankedRibbon,
         isDark = media.isDark,
     )
+    val shareFailed = stringResource(R.string.share_failed)
     val shareCaption = stringResource(R.string.share_caption, list.title, SHARE_LINK)
     val shareFooter = stringResource(R.string.share_footer)
 
@@ -339,7 +341,13 @@ private fun TierScreenBody(
                 listSettingsVisible = false
                 actions.onAddClick()
             },
-            onShare = { scope.launch { shareBoard(context, list, palette, shareCaption, shareFooter) } },
+            onShare = {
+                scope.launch {
+                    if (!shareBoard(context, list, palette, shareCaption, shareFooter)) {
+                        Toast.makeText(context, shareFailed, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            },
             onSeeInCommunity = actions.onSeeInCommunity?.let { open -> list.publishedId?.let { id -> { open(id) } } },
         )
         return

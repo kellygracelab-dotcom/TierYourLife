@@ -1,8 +1,8 @@
 <resources>
     <string name="ai_title">Gerar uma imagem</string>
-    <string name="ai_caption">Novas cartas vão para o grupo “%1$s”.</string>
+    <string name="ai_caption">Novos cartões vão para a reserva “%1$s”.</string>
     <string name="ai_empty_title">Descreva uma imagem</string>
-    <string name="ai_empty_body">A IA a desenha. Guarde as que você gostar como cartas.</string>
+    <string name="ai_empty_body">A IA a desenha. Guarde as que você gostar como cartões.</string>
     <string name="ai_hints_label">Experimente uma destas</string>
     <string name="ai_hint_1">Uma rua de Tóquio iluminada por neon na chuva</string>
     <string name="ai_hint_2">Uma figura solitária em um planeta deserto vermelho</string>
@@ -15,9 +15,9 @@
     <string name="ai_added">Adicionado</string>
     <string name="ai_error_title">Não foi possível gerar essa imagem</string>
     <string name="ai_error_body">Verifique sua conexão ou tente outra descrição.</string>
-    <string name="ai_name_title">Nomeie esta carta</string>
-    <string name="ai_name_body">Vai para o grupo. Você pode arrastá-la para um nível depois.</string>
-    <string name="ai_name_photo_note">A imagem gerada se torna a foto da carta.</string>
+    <string name="ai_name_title">Nomeie este cartão</string>
+    <string name="ai_name_body">Vai para a reserva. Você pode arrastá-lo para um nível depois.</string>
+    <string name="ai_name_photo_note">A imagem gerada se torna a foto do cartão.</string>
     <string name="ai_name_field">Nome</string>
     <string name="action_add">Adicionar</string>
     <string name="action_cancel">Cancelar</string>

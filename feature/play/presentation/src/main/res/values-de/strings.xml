@@ -95,8 +95,8 @@
     <string name="play_snack_game_saved">Spiel gespeichert · %1$d von %2$d</string>
     <string name="play_snack_discard">Verwerfen</string>
     <plurals name="play_snack_arranged">
-        <item quantity="one">Liste aus %1$d Duell geordnet</item>
-        <item quantity="other">Liste aus %1$d Duellen geordnet</item>
+        <item quantity="one">Board aus %1$d Duell geordnet</item>
+        <item quantity="other">Board aus %1$d Duellen geordnet</item>
     </plurals>
     <string name="play_snack_saved_discarded">Gespeichertes Spiel verworfen</string>
     <string name="play_snack_result_discarded">Ergebnis verworfen</string>

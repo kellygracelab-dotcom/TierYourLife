@@ -121,10 +121,10 @@
     <string name="play_snack_game_saved">Gra zapisana · %1$d z %2$d</string>
     <string name="play_snack_discard">Odrzuć</string>
     <plurals name="play_snack_arranged">
-        <item quantity="one">Lista ułożona na podstawie %1$d pojedynku</item>
-        <item quantity="few">Lista ułożona na podstawie %1$d pojedynków</item>
-        <item quantity="many">Lista ułożona na podstawie %1$d pojedynków</item>
-        <item quantity="other">Lista ułożona na podstawie %1$d pojedynku</item>
+        <item quantity="one">Tablica ułożona na podstawie %1$d pojedynku</item>
+        <item quantity="few">Tablica ułożona na podstawie %1$d pojedynków</item>
+        <item quantity="many">Tablica ułożona na podstawie %1$d pojedynków</item>
+        <item quantity="other">Tablica ułożona na podstawie %1$d pojedynku</item>
     </plurals>
     <string name="play_snack_saved_discarded">Zapisana gra odrzucona</string>
     <string name="play_snack_result_discarded">Wynik odrzucony</string>
