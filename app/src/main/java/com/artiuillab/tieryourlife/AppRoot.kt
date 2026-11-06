@@ -1,6 +1,10 @@
 package com.artiuillab.tieryourlife
 
+import android.graphics.Color
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.LocalActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsets
@@ -10,6 +14,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
@@ -36,6 +41,8 @@ fun AppRoot(
         ThemeChoice.DARK -> true
         ThemeChoice.SYSTEM -> isSystemInDarkTheme()
     }
+
+    SystemBarIconsFor(darkTheme)
 
     TierYourLifeTheme(darkTheme = darkTheme) {
         // Screens pad for the system bars at the top and bottom only; sideways,
@@ -73,3 +80,23 @@ fun AppRoot(
         }
     }
 }
+
+/**
+ * The bars' icons follow the app's theme, not the phone's: Dark chosen here on
+ * a light phone left dark clock and battery icons on a dark screen.
+ */
+@Composable
+private fun SystemBarIconsFor(darkTheme: Boolean) {
+    val activity = LocalActivity.current as? ComponentActivity ?: return
+    DisposableEffect(activity, darkTheme) {
+        activity.enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { darkTheme },
+            navigationBarStyle = SystemBarStyle.auto(LIGHT_SCRIM, DARK_SCRIM) { darkTheme },
+        )
+        onDispose {}
+    }
+}
+
+// The scrims enableEdgeToEdge() draws under three-button navigation by default.
+private val LIGHT_SCRIM = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+private val DARK_SCRIM = Color.argb(0x80, 0x1b, 0x1b, 0x1b)

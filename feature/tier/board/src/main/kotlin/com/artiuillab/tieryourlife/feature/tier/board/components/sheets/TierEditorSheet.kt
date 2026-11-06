@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -75,7 +74,7 @@ fun TierEditorSheetContent(
 ) {
     var label by rememberSaveable { mutableStateOf(initialTier?.label ?: "") }
     var caption by rememberSaveable { mutableStateOf(initialTier?.caption ?: "") }
-    var colorSelection by remember {
+    var colorSelection by rememberSaveable(stateSaver = TierColorSelectionSaver) {
         mutableStateOf(
             initialTier?.let { tierColorSelectionFor(it.colorLight, it.colorDark) } ?: defaultTierColorSelection(),
         )
@@ -295,7 +294,8 @@ private fun LivePreviewCard(
                         labelStyle = TierYourLifeType.current.tierBandLetter,
                         captionStyle = TierYourLifeType.current.tierBandCaption,
                         color = colors.onBand,
-                        width = TIER_BAND_WIDTH - BAND_CAPTION_PADDING * 2,
+                        width = TIER_BAND_WIDTH,
+                        padding = BAND_CAPTION_PADDING,
                         height = PREVIEW_ROW_HEIGHT - BAND_CAPTION_PADDING * 2,
                     )
                 }

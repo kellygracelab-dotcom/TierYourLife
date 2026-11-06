@@ -26,6 +26,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,10 +84,33 @@ sealed interface TierColorSelection {
     }
 }
 
-fun defaultTierColorSelection(): TierColorSelection = TierColorSelection.Preset(
-    index = 0,
-    colorLight = TIER_COLOR_PRESETS[0].colorLight,
-    colorDark = TIER_COLOR_PRESETS[0].colorDark,
+fun defaultTierColorSelection(): TierColorSelection = presetSelection(0)
+
+private fun presetSelection(index: Int): TierColorSelection =
+    TierColorSelection.Preset(index, TIER_COLOR_PRESETS[index].colorLight, TIER_COLOR_PRESETS[index].colorDark)
+
+/** A preset as its index, a custom colour as its six HSL numbers, so the slider is where it was. */
+val TierColorSelectionSaver: Saver<TierColorSelection, Any> = listSaver(
+    save = { selection ->
+        when (selection) {
+            is TierColorSelection.Preset -> listOf(selection.index)
+            is TierColorSelection.Custom -> with(selection) {
+                listOf(light.hue, light.saturation, light.lightness, dark.hue, dark.saturation, dark.lightness)
+            }
+        }
+    },
+    restore = { saved ->
+        val index = saved.singleOrNull() as? Int
+        if (index != null) {
+            presetSelection(index)
+        } else {
+            val numbers = saved.map { it as Float }
+            TierColorSelection.Custom(
+                light = Hsl(numbers[0], numbers[1], numbers[2]),
+                dark = Hsl(numbers[3], numbers[4], numbers[5]),
+            )
+        }
+    },
 )
 
 fun tierColorSelectionFor(colorLight: String, colorDark: String): TierColorSelection {
@@ -94,7 +120,7 @@ fun tierColorSelectionFor(colorLight: String, colorDark: String): TierColorSelec
         it.colorLight.equals(light, ignoreCase = true) && it.colorDark.equals(dark, ignoreCase = true)
     }
     return if (presetIndex >= 0) {
-        TierColorSelection.Preset(presetIndex, TIER_COLOR_PRESETS[presetIndex].colorLight, TIER_COLOR_PRESETS[presetIndex].colorDark)
+        presetSelection(presetIndex)
     } else {
         TierColorSelection.Custom(hexToHsl(light), hexToHsl(dark))
     }
@@ -243,7 +269,7 @@ private fun CustomColorPanel(
     onCustomChange: (TierColorSelection.Custom) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var activeTab by remember { mutableStateOf(ColorTab.LIGHT) }
+    var activeTab by rememberSaveable { mutableStateOf(ColorTab.LIGHT) }
     val activeHsl = if (activeTab == ColorTab.LIGHT) custom.light else custom.dark
     val activeColor = activeHsl.toColor()
 

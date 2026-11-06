@@ -42,8 +42,13 @@ import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.BandText
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
+
+private val BADGE_SIZE = 40.dp
+private val BADGE_PADDING = 3.dp
+private const val LETTER_LIKE_LENGTH = 3
 
 private val CurrentTierTintLight = Color(0xFFEDEBFA)
 private val CurrentTierTintDark = Color(0xFF2E2F45)
@@ -218,23 +223,38 @@ private fun MoveSheetTierRow(tier: Tier, isCurrent: Boolean, onClick: (() -> Uni
     ) {
         Box(
             modifier = Modifier
-                .size(40.dp)
+                .size(BADGE_SIZE)
                 .clip(RoundedCornerShape(10.dp))
-                .background(colors.band),
+                .background(colors.band)
+                .padding(BADGE_PADDING),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = tier.label,
-                style = TierYourLifeType.current.tierSwatchLetter,
+            BandText(
+                label = tier.label,
+                caption = null,
+                labelStyle = TierYourLifeType.current.tierSwatchLetter,
+                captionStyle = TierYourLifeType.current.tierBandCaption,
                 color = colors.onBand,
+                width = BADGE_SIZE,
+                padding = BADGE_PADDING,
+                height = BADGE_SIZE - BADGE_PADDING * 2,
             )
         }
+        // A name may not fit the badge, so it is written out beside it; a letter leaves that place to the caption.
+        val named = tier.label.length > LETTER_LIKE_LENGTH
         Column(Modifier.weight(1f)) {
             Text(
-                text = tier.caption ?: tier.label,
+                text = if (named) tier.label else tier.caption ?: tier.label,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
+            tier.caption?.takeIf { named }?.let { caption ->
+                Text(
+                    text = caption,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             if (isCurrent) {
                 Text(
                     text = stringResource(R.string.tier_detail_move_sheet_current_tier),

@@ -297,7 +297,7 @@ private fun TierScreenBody(
     val onSetDisplayMode = actions.onSetDisplayMode
     val onRenameList = actions.onRenameList
     val onGenerateClick = { actions.onOpenAiStudio(list.title) }
-    var listSettingsVisible by remember { mutableStateOf(false) }
+    var listSettingsVisible by rememberSaveable { mutableStateOf(false) }
 
     BackHandler(enabled = listSettingsVisible) { listSettingsVisible = false }
 
@@ -357,12 +357,12 @@ private fun TierScreenBody(
     val pool = list.tiers.firstOrNull { it.isPool }
     val layoutDirection = LocalLayoutDirection.current
     val dragController = remember { TierDragController() }
-    var chooserItemId by remember { mutableStateOf<Long?>(null) }
+    var chooserItemId by rememberSaveable { mutableStateOf<Long?>(null) }
     val onCardLifted by rememberUpdatedState(actions.onCardLifted)
     LaunchedEffect(dragController) {
         snapshotFlow { dragController.draggedPayload != null }.collect { lifted -> onCardLifted(lifted) }
     }
-    var editingTierId by remember { mutableStateOf<Long?>(null) }
+    var editingTierId by rememberSaveable { mutableStateOf<Long?>(null) }
 
     SideEffect {
         dragController.setValidTargets(
