@@ -301,4 +301,5 @@
     <string name="moderation_not_taken_down">Nicht entfernt: Die Liste ist noch öffentlich. Versuche es erneut.</string>
     <string name="moderation_not_kept">Behalten hat nicht geklappt: Die Meldungen sind noch offen. Versuche es erneut.</string>
     <string name="moderation_not_moved">Nicht verschoben: Die Liste ist, wo sie war. Versuche es erneut.</string>
+    <string name="moderation_moved_not_dismissed">Verschoben, aber die Meldungen sind noch offen. Weise sie ab, um die Warteschlange zu leeren.</string>
 </resources>

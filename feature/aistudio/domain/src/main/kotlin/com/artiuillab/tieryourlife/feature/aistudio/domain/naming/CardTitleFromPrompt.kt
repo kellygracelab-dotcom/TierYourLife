@@ -21,9 +21,16 @@ private fun stripLeadingArticle(text: String): String {
     return if (article != null) text.substring(article.length) else text
 }
 
+// This module is plain JVM and cannot reach core.settings' String.takeWhole.
+internal fun String.takeWhole(n: Int): String {
+    if (length <= n) return this
+    val cut = if (n > 0 && this[n - 1].isHighSurrogate()) n - 1 else n
+    return substring(0, cut)
+}
+
 private fun truncateToWordBoundary(text: String, maxLength: Int): String {
     if (text.length <= maxLength) return text
-    val prefix = text.substring(0, maxLength)
+    val prefix = text.takeWhole(maxLength)
     val lastSpace = prefix.lastIndexOf(' ')
     return if (lastSpace > 0) prefix.substring(0, lastSpace) else prefix
 }
