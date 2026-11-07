@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
+import android.database.sqlite.SQLiteFullException
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.settings.PersonalData
@@ -7,11 +8,16 @@ import com.artiuillab.tieryourlife.core.settings.ThePerson
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.GuestBoardsDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.IncomingTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.BoardSyncEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.yield
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -64,6 +70,34 @@ class LostSessionTest : SyncEngineBench() {
     private fun nothingDeletedIn(account: FakeBoards) = account.server.values.none { it.deleted }
 
     private val carol = Account.SignedIn(email = "carol@example.com", photoUrl = null, uid = "carol")
+
+    // A44: a write that failed while holding the boards ended the watch, and sync on reconnect with it.
+    @Test
+    fun aFailureWhileNoticing_isLetGo_andTheNextChangeIsNoticed() = runBlocking {
+        annWithTwoBoardsSynced()
+        var full = true
+        val real = database.guestBoardsDao()
+        val guests = object : GuestBoardsDao by real {
+            override suspend fun releaseBoardsOf(account: String): Int {
+                if (full) {
+                    full = false
+                    throw SQLiteFullException("database or disk is full")
+                }
+                return real.releaseBoardsOf(account)
+            }
+        }
+        val watching = LostSession(accounts, database.ownerDao(), BoardOwnership(accounts, database.ownerDao(), guests, preferences), lock, preferences, thePerson)
+        val watch = launch { watching.watch() }
+        yield()
+
+        accounts.accounts.value = Account.Guest
+        withTimeout(5_000) { while (full) delay(10) }
+        accounts.accounts.value = carol
+        withTimeout(5_000) { while (preferences.lastSignedIn() != "carol") delay(10) }
+
+        assertEquals(mapOf("ann" to 2), preferences.heldBoards().mapValues { it.value.size })
+        watch.cancel()
+    }
 
     @Test
     fun aLostSession_leavesTheBoardsOnThePhone_andForgetsThePerson() = runBlocking {
