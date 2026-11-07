@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,10 +30,12 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,6 +48,7 @@ internal val RAIL_WIDTH = 80.dp
 private val ITEM_WIDTH = 76.dp
 private val PILL_SIZE = 32.dp
 private val FAB_SIZE = 56.dp
+private const val MAX_LABEL_FONT_SCALE = 1.3f
 
 /**
  * Replaces the tabs rather than joining them: two navigation systems on one
@@ -143,17 +147,23 @@ private fun RailItem(destination: RailDestination, selected: Boolean, onSelect: 
                 },
             )
         }
-        CardLabel(
-            text = stringResource(destination.labelRes()),
-            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
-            maxLines = 2,
-            smallest = 9.sp,
-            color = if (selected) {
-                MaterialTheme.colorScheme.onSurface
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            },
-        )
+        val density = LocalDensity.current
+        CompositionLocalProvider(
+            LocalDensity provides Density(density.density, density.fontScale.coerceAtMost(MAX_LABEL_FONT_SCALE)),
+        ) {
+            CardLabel(
+                text = stringResource(destination.labelRes()),
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
+                maxLines = 2,
+                smallest = 6.sp,
+                color = if (selected) {
+                    MaterialTheme.colorScheme.onSurface
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                modifier = Modifier.testTag(RailTestTags.label(destination)),
+            )
+        }
     }
 }
 
