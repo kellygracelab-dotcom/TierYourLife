@@ -4,6 +4,7 @@ internal object ExploreTestTags {
     const val SCREEN = "explore_screen"
     const val TAB_EXPLORE = "explore_tab_explore"
     const val TAB_FOLLOWING = "explore_tab_following"
+    const val FOLLOWING_FEED = "following_feed"
     const val SKELETON = "explore_skeleton"
     const val FAILED = "explore_failed"
     const val OFFLINE_STRIP = "explore_offline_strip"

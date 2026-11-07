@@ -168,4 +168,8 @@
     <string name="list_settings_public_gone">Esta lista ya no está en la comunidad: se retiró, se borró o se publicó desde otra cuenta. Activa Pública para publicarla de nuevo.</string>
     <string name="list_settings_public_section_unavailable">La sección de esta lista ya no admite listas. Elige otra sección y vuelve a publicar.</string>
     <string name="list_settings_unpublish_failed">No se pudo retirar la lista; sigue siendo pública. Inténtalo de nuevo.</string>
+    <string name="tier_detail_image_credits">Créditos de la imagen</string>
+    <string name="tier_detail_card_details">Detalles de la tarjeta</string>
+    <string name="tier_detail_credits_close">Cerrar</string>
+    <string name="list_settings_public_changed_elsewhere">La lista cambió en otro dispositivo. Intenta publicarla de nuevo.</string>
 </resources>

@@ -321,4 +321,6 @@
     <string name="moderation_not_kept">Не удалось оставить список: жалобы всё ещё открыты. Попробуйте ещё раз.</string>
     <string name="moderation_not_moved">Не перемещено: список остался на месте. Попробуйте ещё раз.</string>
     <string name="moderation_moved_not_dismissed">Перемещено, но жалобы остались открытыми. Нажмите «Оставить», чтобы закрыть их.</string>
+    <string name="my_published_action_view">Смотреть публикацию</string>
+    <string name="my_published_action_edit">Редактировать</string>
 </resources>

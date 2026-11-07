@@ -65,6 +65,36 @@ jobs:
             **/build/outputs/roborazzi/**
           retention-days: 7
 
+  ci-passed:
+    name: Android CI passed
+    needs: [build, changes, e2e, instrumentation]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every applicable check
+        env:
+          BUILD_RESULT: ${{ needs.build.result }}
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          CODE_CHANGED: ${{ needs.changes.outputs.code }}
+          E2E_RESULT: ${{ needs.e2e.result }}
+          INSTRUMENTATION_RESULT: ${{ needs.instrumentation.result }}
+        run: |
+          set -euo pipefail
+          test "$BUILD_RESULT" = success
+          test "$CHANGES_RESULT" = success
+          case "$CODE_CHANGED" in
+            true)
+              test "$E2E_RESULT" = success
+              test "$INSTRUMENTATION_RESULT" = success
+              ;;
+            false)
+              for result in "$E2E_RESULT" "$INSTRUMENTATION_RESULT"; do
+                case "$result" in success|skipped) ;; *) exit 1 ;; esac
+              done
+              ;;
+            *) exit 1 ;;
+          esac
+
   # Twenty emulator minutes for a change to a README read nothing new.
   changes:
     name: What changed

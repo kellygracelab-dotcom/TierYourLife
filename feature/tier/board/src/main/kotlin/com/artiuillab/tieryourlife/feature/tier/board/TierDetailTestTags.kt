@@ -17,6 +17,7 @@ object TierDetailTestTags {
     const val MOVE_SHEET_REMOVE = "tier_detail_move_sheet_remove"
     const val MOVE_SHEET_POOL = "tier_detail_move_sheet_pool"
     const val MOVE_SHEET_CREDIT = "tier_detail_move_sheet_credit"
+    const val IMAGE_CREDITS_TEXT = "tier_detail_image_credits_text"
     const val TRASH_TARGET = "tier_detail_trash_target"
     const val FLOATING_DRAG_TILE = "tier_detail_floating_drag_tile"
     const val DELETED_ITEM_SNACKBAR = "tier_detail_deleted_item_snackbar"

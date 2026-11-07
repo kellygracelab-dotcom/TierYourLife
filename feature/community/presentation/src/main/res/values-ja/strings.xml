@@ -303,4 +303,6 @@
     <string name="moderation_not_kept">リストを残せませんでした。通報はまだ未処理です。もう一度お試しください。</string>
     <string name="moderation_not_moved">移動できませんでした。リストは元の場所のままです。もう一度お試しください。</string>
     <string name="moderation_moved_not_dismissed">移動しましたが、通報はまだ残っています。「残す」をタップすると解消できます。</string>
+    <string name="my_published_action_view">公開リストを見る</string>
+    <string name="my_published_action_edit">編集</string>
 </resources>

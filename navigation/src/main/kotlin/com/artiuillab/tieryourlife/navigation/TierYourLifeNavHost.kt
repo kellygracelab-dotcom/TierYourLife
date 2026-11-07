@@ -187,6 +187,7 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController, openLis
                     makeBoard = route.makeBoard,
                     onTierListClick = { id -> navController.navigateToTierDetail(id) },
                     onSettingsClick = { navController.navigateToSettings() },
+                    onOpenPublished = { navController.navigateToMyPublished() },
                     onSignInClick = { navController.navigateToAccount() },
                     onNewListCreated = { id -> navController.navigateToTierDetail(id) },
                     tabs = tabs,

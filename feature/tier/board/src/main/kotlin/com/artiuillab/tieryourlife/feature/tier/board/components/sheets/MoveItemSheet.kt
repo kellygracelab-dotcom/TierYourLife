@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.board.components.sheets
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +17,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -95,8 +101,15 @@ fun MoveItemSheetContent(
     onMoveToTier: (tierId: Long, toPosition: Int) -> Unit,
     onRemove: () -> Unit,
 ) {
+    var creditsVisible by rememberSaveable(item.id) { mutableStateOf(false) }
+    val credit = item.credit?.takeIf { it.isNotBlank() }
+    if (creditsVisible && credit != null) {
+        BackHandler { creditsVisible = false }
+        ImageCredits(credit, onDismiss = { creditsVisible = false })
+        return
+    }
     Column(Modifier.testTag(TierDetailTestTags.MOVE_SHEET)) {
-        MoveSheetHeader(item)
+        MoveSheetHeader(item, onCredits = { creditsVisible = true })
         Column(Modifier.padding(top = 8.dp)) {
             rankedTiers.forEach { tier ->
                 val isCurrent = tier.id == currentTierId
@@ -138,7 +151,7 @@ fun MoveItemSheetContent(
 }
 
 @Composable
-private fun MoveSheetHeader(item: TierItem) {
+private fun MoveSheetHeader(item: TierItem, onCredits: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -155,15 +168,11 @@ private fun MoveSheetHeader(item: TierItem) {
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            item.credit?.let { credit ->
-                Text(
-                    text = stringResource(R.string.tier_detail_move_sheet_photo_credit, credit),
+            if (!item.credit.isNullOrBlank()) {
+                TextButton(
+                    onClick = onCredits,
                     modifier = Modifier.testTag(TierDetailTestTags.MOVE_SHEET_CREDIT),
-                    style = TierYourLifeType.current.supportingLabel,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                ) { Text(stringResource(R.string.tier_detail_image_credits)) }
             }
             Text(
                 text = stringResource(R.string.tier_detail_move_sheet_subtitle),

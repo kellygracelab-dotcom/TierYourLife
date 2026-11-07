@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.board.components.drag
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.size
@@ -25,6 +26,11 @@ import androidx.compose.ui.geometry.lerp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LocalPinnableContainer
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -34,16 +40,25 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
+import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.ItemTile
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalTextCardRoom
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import kotlin.math.roundToInt
+
+private val DETAIL_KEYS = setOf(Key.Enter, Key.DirectionCenter, Key.Spacebar)
 
 @Composable
 fun DraggableTile(
@@ -68,6 +83,7 @@ fun DraggableTile(
     val haptic = LocalHapticFeedback.current
     val textRoom by rememberUpdatedState(LocalTextCardRoom.current)
     val baseViewConfiguration = LocalViewConfiguration.current
+    val detailsLabel = stringResource(R.string.tier_detail_card_details)
     val dragViewConfiguration = remember(baseViewConfiguration) {
         ShortLongPressViewConfiguration(baseViewConfiguration, DRAG_LONG_PRESS_TIMEOUT_MILLIS)
     }
@@ -89,6 +105,23 @@ fun DraggableTile(
         Box(
             modifier = modifier
                 .testTag(TierDetailTestTags.tile(item.id))
+                .semantics(mergeDescendants = true) {
+                    contentDescription = item.title
+                    role = Role.Button
+                    onClick(label = detailsLabel) {
+                        onDoubleTap(item.id)
+                        true
+                    }
+                }
+                .onKeyEvent { event ->
+                    if (event.type == KeyEventType.KeyUp && event.key in DETAIL_KEYS) {
+                        onDoubleTap(item.id)
+                        true
+                    } else {
+                        false
+                    }
+                }
+                .focusable()
                 .onGloballyPositioned { coordinates ->
                     rootPosition = coordinates.positionInRoot()
                     sizePx = Offset(coordinates.size.width.toFloat(), coordinates.size.height.toFloat())
@@ -163,17 +196,17 @@ fun FloatingDragTile(dragController: TierDragController) {
 
     ForcedLeftToRightOverlay { origin ->
         val payload = dragController.draggedPayload ?: trip?.payload ?: return@ForcedLeftToRightOverlay
-        val position = if (dragController.draggedPayload == null && trip != null) {
-            lerp(trip.from, trip.to, back.value)
-        } else {
-            dragController.pointerPositionInRoot
-        }
         val halfWidthPx = with(density) { (payload.width / 2).toPx() }
         val halfHeightPx = with(density) { (payload.height / 2).toPx() }
 
         Box(
             modifier = Modifier
                 .absoluteOffset {
+                    val position = if (dragController.draggedPayload == null && trip != null) {
+                        lerp(trip.from, trip.to, back.value)
+                    } else {
+                        dragController.pointerPositionInRoot
+                    }
                     // The pointer is measured against the window; this places
                     // against whatever pane the overlay sits in. Beside a
                     // column of boards those are four hundred points apart.

@@ -315,4 +315,6 @@
     <string name="moderation_not_kept">No se pudo dejar la lista: las denuncias siguen abiertas. Inténtalo de nuevo.</string>
     <string name="moderation_not_moved">No se movió: la lista sigue donde estaba. Inténtalo de nuevo.</string>
     <string name="moderation_moved_not_dismissed">Movida, pero sus denuncias siguen abiertas. Toca «Dejar» para cerrarlas.</string>
+    <string name="my_published_action_view">Ver lista pública</string>
+    <string name="my_published_action_edit">Editar</string>
 </resources>

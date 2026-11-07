@@ -234,4 +234,5 @@
         <item quantity="many">%1$d списків видалено, їхні публічні копії знято</item>
         <item quantity="other">%1$d списку видалено, їхні публічні копії знято</item>
     </plurals>
+    <string name="lists_public_lists">Мої публікації</string>
 </resources>

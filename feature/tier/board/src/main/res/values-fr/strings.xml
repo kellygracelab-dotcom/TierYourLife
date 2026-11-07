@@ -168,4 +168,8 @@
     <string name="list_settings_public_gone">Cette liste n’est plus dans la communauté : elle a été retirée, supprimée ou publiée depuis un autre compte. Activez Publique pour la publier à nouveau.</string>
     <string name="list_settings_public_section_unavailable">La section de cette liste n’accepte plus de listes. Choisissez-en une autre, puis publiez à nouveau.</string>
     <string name="list_settings_unpublish_failed">Impossible de retirer cette liste ; elle est toujours publique. Réessayez.</string>
+    <string name="tier_detail_image_credits">Crédits de l’image</string>
+    <string name="tier_detail_card_details">Détails de la carte</string>
+    <string name="tier_detail_credits_close">Fermer</string>
+    <string name="list_settings_public_changed_elsewhere">Cette liste a changé sur un autre appareil. Réessayez de la publier.</string>
 </resources>

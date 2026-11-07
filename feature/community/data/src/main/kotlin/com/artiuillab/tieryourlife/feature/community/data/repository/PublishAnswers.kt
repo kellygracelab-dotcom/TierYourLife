@@ -20,7 +20,11 @@ internal fun Throwable.asPublishError(): PublishError = when {
             // Replacing a list another account published: this board's link is not this person's.
             ?: if (proxyCode() == NOT_YOURS) PublishError.ListGone else PublishError.NotSignedIn
         HTTP_NOT_FOUND -> PublishError.ListGone
-        HTTP_CONFLICT -> if (proxyCode() == TOO_MANY_PENDING_TOPICS) PublishError.TooManyPendingTopics else PublishError.TooManyLists
+        HTTP_CONFLICT -> when (proxyCode()) {
+            PUBLICATION_CHANGED -> PublishError.ChangedElsewhere
+            TOO_MANY_PENDING_TOPICS -> PublishError.TooManyPendingTopics
+            else -> PublishError.TooManyLists
+        }
         HTTP_BAD_REQUEST -> when {
             proxyCode() == TOPIC_UNAVAILABLE -> PublishError.TopicUnavailable
             proxyDetail() == CATEGORY -> PublishError.SectionUnavailable
@@ -63,6 +67,7 @@ internal fun TierList.topicToLearn(answer: PublishedIdDto): String? =
     answer.topicId?.takeIf { !answer.ranking && it != topicId && newTopicName == null }
 
 private const val TOO_MANY_PENDING_TOPICS = "TOO_MANY_PENDING_TOPICS"
+private const val PUBLICATION_CHANGED = "PUBLICATION_CHANGED"
 private const val CURSOR_GONE = "CURSOR_GONE"
 private const val NOT_YOURS = "NOT_YOURS"
 private const val CATEGORY = "category"

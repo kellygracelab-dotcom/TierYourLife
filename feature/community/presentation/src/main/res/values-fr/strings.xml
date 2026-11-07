@@ -315,4 +315,6 @@
     <string name="moderation_not_kept">Impossible de laisser la liste : les signalements sont toujours ouverts. Réessayez.</string>
     <string name="moderation_not_moved">Non déplacée : la liste est restée où elle était. Réessayez.</string>
     <string name="moderation_moved_not_dismissed">Déplacée, mais ses signalements sont toujours ouverts. Touchez « Laisser » pour les clore.</string>
+    <string name="my_published_action_view">Voir la liste publique</string>
+    <string name="my_published_action_edit">Modifier</string>
 </resources>

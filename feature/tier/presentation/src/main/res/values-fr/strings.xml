@@ -220,4 +220,5 @@
         <item quantity="many">%1$d listes supprimées et leurs copies publiques retirées</item>
         <item quantity="other">%1$d listes supprimées et leurs copies publiques retirées</item>
     </plurals>
+    <string name="lists_public_lists">Vos listes publiques</string>
 </resources>

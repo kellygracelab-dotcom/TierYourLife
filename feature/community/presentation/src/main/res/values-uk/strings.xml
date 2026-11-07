@@ -321,4 +321,6 @@
     <string name="moderation_not_kept">Не вдалося залишити список: скарги досі відкриті. Спробуйте ще раз.</string>
     <string name="moderation_not_moved">Не переміщено: список залишився на місці. Спробуйте ще раз.</string>
     <string name="moderation_moved_not_dismissed">Переміщено, але скарги лишилися відкритими. Натисніть «Залишити», щоб закрити їх.</string>
+    <string name="my_published_action_view">Переглянути публікацію</string>
+    <string name="my_published_action_edit">Редагувати</string>
 </resources>

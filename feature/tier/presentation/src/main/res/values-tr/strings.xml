@@ -206,4 +206,5 @@
         <item quantity="one">%1$d liste silindi ve herkese açık kopyası kaldırıldı</item>
         <item quantity="other">%1$d liste silindi ve herkese açık kopyaları kaldırıldı</item>
     </plurals>
+    <string name="lists_public_lists">Herkese açık listelerin</string>
 </resources>

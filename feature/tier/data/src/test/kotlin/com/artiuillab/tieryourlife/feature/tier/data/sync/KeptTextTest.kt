@@ -8,6 +8,12 @@ import org.junit.Test
 class KeptTextTest {
 
     @Test
+    fun `an attribution over 200 characters keeps its author licence and whole links`() {
+        val credit = "© " + "Jane Doe ".repeat(30) + "· CC BY 4.0 · https://creativecommons.org/licenses/by/4.0/ · https://commons.wikimedia.org/?curid=12345"
+        assertEquals(credit, KeptText.clean(credit, KeptText.CREDIT))
+    }
+
+    @Test
     fun `whitespace collapses and trims as the account does`() {
         assertEquals("Blade Runner", KeptText.clean("  Blade \t\n Runner ", KeptText.TITLE))
     }

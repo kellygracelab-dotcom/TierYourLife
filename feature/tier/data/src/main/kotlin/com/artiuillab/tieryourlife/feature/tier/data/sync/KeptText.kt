@@ -7,7 +7,7 @@ internal object KeptText {
 
     const val TITLE = 80
     const val CAPTION = 60
-    const val CREDIT = 200
+    const val CREDIT = 1000
     const val URL = 2000
 
     /**

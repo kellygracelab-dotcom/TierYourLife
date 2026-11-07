@@ -178,4 +178,8 @@
     <string name="list_settings_public_gone">Этого списка больше нет в сообществе: его сняли, удалили или опубликовали с другого аккаунта. Включите «Публичный», чтобы опубликовать его снова.</string>
     <string name="list_settings_public_section_unavailable">Раздел этого списка больше не принимает списки. Выберите другой раздел и опубликуйте снова.</string>
     <string name="list_settings_unpublish_failed">Не удалось снять список с публикации; он всё ещё публичный. Попробуйте ещё раз.</string>
+    <string name="tier_detail_image_credits">Об изображении</string>
+    <string name="tier_detail_card_details">Детали карточки</string>
+    <string name="tier_detail_credits_close">Закрыть</string>
+    <string name="list_settings_public_changed_elsewhere">Список изменился на другом устройстве. Повторите публикацию.</string>
 </resources>

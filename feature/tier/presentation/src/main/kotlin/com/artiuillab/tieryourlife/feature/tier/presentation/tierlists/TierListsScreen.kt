@@ -35,6 +35,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -109,6 +110,7 @@ fun TierListsScreen(
     makeBoard: Boolean = false,
     onTierListClick: (Long) -> Unit,
     onSettingsClick: () -> Unit,
+    onOpenPublished: () -> Unit = {},
     onSignInClick: () -> Unit,
     onNewListCreated: (Long) -> Unit,
     tabs: @Composable () -> Unit = {},
@@ -138,6 +140,7 @@ fun TierListsScreen(
         state = state,
         onTierListClick = onTierListClick,
         onSettingsClick = onSettingsClick,
+        onOpenPublished = onOpenPublished,
         onSignInClick = onSignInClick,
         onDismissSignInOffer = viewModel::dismissSignInOffer,
         onDismissConflictNotice = viewModel::dismissConflictNotice,
@@ -167,6 +170,7 @@ fun TierListsScreenContent(
     state: TierListsUiState,
     onTierListClick: (Long) -> Unit,
     onSettingsClick: () -> Unit = {},
+    onOpenPublished: () -> Unit = {},
     onSignInClick: () -> Unit = {},
     onDismissSignInOffer: () -> Unit = {},
     onDismissConflictNotice: (String) -> Unit = {},
@@ -334,6 +338,11 @@ fun TierListsScreenContent(
                         RestoringPictures(restoringPictures)
 
                         if (mode !is HomeMode.Searching) tabs()
+                        if (localOnly == LocalOnly.Kept && mode == HomeMode.Browsing) {
+                            TextButton(onClick = onOpenPublished, modifier = Modifier.testTag(TierListsTestTags.PUBLIC_LISTS)) {
+                                Text(stringResource(R.string.lists_public_lists))
+                            }
+                        }
                     }
                 },
             ) {

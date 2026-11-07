@@ -234,4 +234,5 @@
         <item quantity="many">%1$d list usunięto, a ich publiczne kopie wycofano</item>
         <item quantity="other">%1$d listy usunięto, a ich publiczne kopie wycofano</item>
     </plurals>
+    <string name="lists_public_lists">Twoje publiczne listy</string>
 </resources>

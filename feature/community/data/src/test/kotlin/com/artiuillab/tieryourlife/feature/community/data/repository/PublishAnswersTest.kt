@@ -97,6 +97,7 @@ class PublishAnswersTest {
     @Test
     fun `the list limit is said, whichever check refused it`() {
         assertEquals(PublishError.TooManyLists, refusal(409, """{"error":"Too many published lists","code":"TOO_MANY_LISTS"}""").asPublishError())
+        assertEquals(PublishError.ChangedElsewhere, refusal(409, """{"code":"PUBLICATION_CHANGED"}""").asPublishError())
         assertEquals(PublishError.TooManyPendingTopics, refusal(409, """{"code":"TOO_MANY_PENDING_TOPICS"}""").asPublishError())
     }
 

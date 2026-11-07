@@ -7,6 +7,7 @@ sealed interface PublishError {
     data object NothingToPublish : PublishError
 
     data object TooManyLists : PublishError
+    data object ChangedElsewhere : PublishError
 
     /** Three of this account's topics already wait for a moderator; a fourth must wait for one of them. */
     data object TooManyPendingTopics : PublishError

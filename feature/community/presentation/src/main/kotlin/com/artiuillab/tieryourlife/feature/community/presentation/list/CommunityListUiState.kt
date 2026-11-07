@@ -97,6 +97,7 @@ sealed interface CommunityListUiState {
          * starts the reader's own version.
          */
         val readOnly: Boolean get() = own || showing == Showing.Theirs
+        val namedAuthor: String? get() = authorName.takeUnless { editorial || byNobody || it.isBlank() }
 
         /** Their own list with no board here: the way to get it back. A board that is here opens instead of this page. */
         val ownBoardAction: OwnBoardAction? get() = when {

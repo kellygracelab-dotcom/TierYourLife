@@ -206,4 +206,5 @@
         <item quantity="one">%1$d Liste gelöscht, die öffentliche Kopie entfernt</item>
         <item quantity="other">%1$d Listen gelöscht, die öffentlichen Kopien entfernt</item>
     </plurals>
+    <string name="lists_public_lists">Deine öffentlichen Listen</string>
 </resources>
