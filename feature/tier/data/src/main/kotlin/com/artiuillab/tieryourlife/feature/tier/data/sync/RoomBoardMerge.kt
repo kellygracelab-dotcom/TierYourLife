@@ -71,13 +71,16 @@ class RoomBoardMerge internal constructor(
         val boards = ownership.heldForOthersInUse()
         if (boards.isEmpty()) return@withLock
         val theirs = if (fromThisPhone != null) accountTitles() else emptySet()
+        if (!ownership.markCopied(owner, boards.map { it.uid })) {
+            Timber.w("Could not write down what was copied; nothing is")
+            return@withLock
+        }
         dao.together {
             boards.forEach { board ->
                 val title = if (fromThisPhone != null && board.title in theirs) withSuffix(board.title, fromThisPhone) else board.title
                 copyFor(owner, board, title)
             }
         }
-        ownership.markCopied(boards.map { it.uid })
         Timber.i("Copied %d board(s) of an account signed out of into this one", boards.size)
         ownership.announceMove()
     }
@@ -168,6 +171,7 @@ class RoomBoardMerge internal constructor(
     private suspend fun keepBoardsOf(account: String) {
         // Held ones too: whatever it left on this phone is the phone's own now, and no longer waits for it.
         ownership.reclaim(account)
+        ownership.forgetCopiesInto(account)
         val kept = owners.keepBoardsOfDeleted(account)
         preferences.setErasureUnderWay(null)
         if (preferences.lastSignedIn() == account) preferences.setLastSignedIn(null)

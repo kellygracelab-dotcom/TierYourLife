@@ -22,6 +22,9 @@ interface GuestBoardsDao {
     @Query("SELECT uid FROM tier_lists WHERE ownerUid = :account")
     suspend fun boardsOwnedBy(account: String): List<String>
 
+    @Query("SELECT uid FROM tier_lists")
+    suspend fun everyBoardUid(): List<String>
+
     /** Records, published ids and rankings stay: the account they belong to may take the boards back. */
     @Query("UPDATE tier_lists SET ownerUid = NULL WHERE ownerUid = :account")
     suspend fun releaseBoardsOf(account: String): Int

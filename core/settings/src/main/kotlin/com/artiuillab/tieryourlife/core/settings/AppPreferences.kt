@@ -117,10 +117,14 @@ interface AppPreferences {
     /** False when it could not be written: the boards must not be let go on a promise nobody kept. */
     fun setHeldBoards(held: Map<String, Set<String>>): Boolean
 
-    /** Held boards already copied into another account at the person's word: not offered again. */
-    fun heldBoardsCopied(): Set<String>
+    /**
+     * Held boards copied at the person's word, as uids of the originals by the
+     * `recordKey` of the account they were copied into: not offered to it again.
+     */
+    fun heldBoardsCopied(): Map<String, Set<String>>
 
-    fun setHeldBoardsCopied(uids: Set<String>)
+    /** False when it could not be written: no copy is made without it, or the next sign-in would make a second. */
+    fun setHeldBoardsCopied(copied: Map<String, Set<String>>): Boolean
 
     /** By uid rather than one flag: a second conflict months later is news again. */
     fun conflictsSeen(): Set<String>

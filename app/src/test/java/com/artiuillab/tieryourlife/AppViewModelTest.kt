@@ -124,9 +124,9 @@ private class FakeAppPreferences(
 
     override fun setHeldBoards(held: Map<String, Set<String>>) = true
 
-    override fun heldBoardsCopied(): Set<String> = emptySet()
+    override fun heldBoardsCopied(): Map<String, Set<String>> = emptyMap()
 
-    override fun setHeldBoardsCopied(uids: Set<String>) = Unit
+    override fun setHeldBoardsCopied(copied: Map<String, Set<String>>) = true
 
     override fun conflictsSeen(): Set<String> = emptySet()
 

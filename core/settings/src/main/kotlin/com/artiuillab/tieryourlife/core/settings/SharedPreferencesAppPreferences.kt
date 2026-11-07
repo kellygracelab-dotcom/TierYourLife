@@ -197,26 +197,29 @@ class SharedPreferencesAppPreferences @Inject constructor(
         }
     }
 
-    override fun heldBoards(): Map<String, Set<String>> =
-        prefs.getStringSet(KEY_HELD_BOARDS, emptySet()).orEmpty()
+    override fun heldBoards(): Map<String, Set<String>> = uidsByAccount(KEY_HELD_BOARDS)
+
+    // Committed: written just before the boards are let go, and the only thing saying whose they were.
+    override fun setHeldBoards(held: Map<String, Set<String>>): Boolean = commitUidsByAccount(KEY_HELD_BOARDS, held)
+
+    override fun heldBoardsCopied(): Map<String, Set<String>> = uidsByAccount(KEY_HELD_BOARDS_COPIED)
+
+    // Committed: written before the copies are made.
+    override fun setHeldBoardsCopied(copied: Map<String, Set<String>>): Boolean = commitUidsByAccount(KEY_HELD_BOARDS_COPIED, copied)
+
+    private fun uidsByAccount(key: String): Map<String, Set<String>> =
+        stored(key)
             .mapNotNull { entry -> entry.split(HELD_SEPARATOR, limit = 2).takeIf { it.size == 2 } }
             .groupBy({ it[0] }, { it[1] })
             .mapValues { (_, uids) -> uids.toSet() }
 
-    // The KTX edit {} drops what commit() answers, and here the answer decides whether boards are let go.
+    // The KTX edit {} drops what commit() answers, and here the answer decides whether boards are let go or copied.
     @SuppressLint("UseKtx")
-    override fun setHeldBoards(held: Map<String, Set<String>>): Boolean {
-        val entries = held.flatMapTo(mutableSetOf()) { (account, uids) -> uids.map { "$account$HELD_SEPARATOR$it" } }
-        // Committed: written just before the boards are let go, and the only thing saying whose they were.
+    private fun commitUidsByAccount(key: String, uids: Map<String, Set<String>>): Boolean {
+        val entries = uids.flatMapTo(mutableSetOf()) { (account, ofIt) -> ofIt.map { "$account$HELD_SEPARATOR$it" } }
         val editor = prefs.edit()
-        if (entries.isEmpty()) editor.remove(KEY_HELD_BOARDS) else editor.putStringSet(KEY_HELD_BOARDS, entries)
+        if (entries.isEmpty()) editor.remove(key) else editor.putStringSet(key, entries)
         return editor.commit()
-    }
-
-    override fun heldBoardsCopied(): Set<String> = stored(KEY_HELD_BOARDS_COPIED)
-
-    override fun setHeldBoardsCopied(uids: Set<String>) {
-        prefs.edit { if (uids.isEmpty()) remove(KEY_HELD_BOARDS_COPIED) else putStringSet(KEY_HELD_BOARDS_COPIED, uids) }
     }
 
     override fun conflictsSeen(): Set<String> = stored(KEY_CONFLICTS_SEEN)

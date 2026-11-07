@@ -120,12 +120,16 @@ class FakeAppPreferences(
         return true
     }
 
-    private var copied: Set<String> = emptySet()
+    private var copied: Map<String, Set<String>> = emptyMap()
 
-    override fun heldBoardsCopied(): Set<String> = copied
+    var copiedWriteFails = false
 
-    override fun setHeldBoardsCopied(uids: Set<String>) {
-        copied = uids
+    override fun heldBoardsCopied(): Map<String, Set<String>> = copied
+
+    override fun setHeldBoardsCopied(copied: Map<String, Set<String>>): Boolean {
+        if (copiedWriteFails) return false
+        this.copied = copied.filterValues { it.isNotEmpty() }
+        return true
     }
 
     override fun setBoardRefusal(account: String, refusal: String?) {

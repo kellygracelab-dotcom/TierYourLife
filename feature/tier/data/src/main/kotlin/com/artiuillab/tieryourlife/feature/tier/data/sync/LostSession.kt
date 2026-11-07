@@ -48,6 +48,7 @@ class LostSession @Inject constructor(
         if (erasureMarkOf(preferences.erasureUnderWay())?.account == account) {
             // As settling the erase at the next start would: the account going away is what ended it.
             ownership.reclaim(account)
+            ownership.forgetCopiesInto(account)
             val kept = owners.keepBoardsOfDeleted(account)
             preferences.setErasureUnderWay(null)
             Timber.i("Signed out with an erase unanswered; kept %d board(s) of the account", kept)

@@ -60,6 +60,8 @@ class LostSessionTest : SyncEngineBench() {
 
     private fun nothingDeletedIn(account: FakeBoards) = account.server.values.none { it.deleted }
 
+    private val carol = Account.SignedIn(email = "carol@example.com", photoUrl = null, uid = "carol")
+
     private companion object {
         const val HTTP_TOO_LARGE = 413
     }
@@ -284,7 +286,7 @@ class LostSessionTest : SyncEngineBench() {
         assertTrue(nothingDeletedIn(boards))
         assertEquals(setOf(films, games, draft), boards.kept.map { it.first }.toSet())
         assertEquals("Games I finished", boards.server.getValue(games).title)
-        assertTrue(preferences.heldBoardsCopied().isEmpty())
+        assertEquals("kept across the reclaim", mapOf("bob" to setOf(games, draft)), preferences.heldBoardsCopied())
     }
 
     @Test
@@ -302,6 +304,54 @@ class LostSessionTest : SyncEngineBench() {
         assertEquals(0, merge.heldBoards())
         merge.copyHeldIn(fromThisPhone = null)
         assertEquals("no second set of copies", 2, dao.boardsOf("bob").size)
+    }
+
+    @Test
+    fun boardsCopiedIntoAnAccount_areNotCopiedAgain_afterTheirOwnReturnsAndIsLostAgain() = runBlocking {
+        annWithTwoBoardsSynced()
+        sessionLost()
+        signIn(bob)
+        merge.copyHeldIn(fromThisPhone = null)
+        merge.keepHere()
+        merge.signOutSettlingErase { accounts.signOut() }
+        session.notice()
+        signIn(ann)
+        sessionLost()
+
+        signIn(bob)
+        assertEquals(0, merge.heldBoards())
+        merge.copyHeldIn(fromThisPhone = null)
+        assertEquals(2, dao.boardsOf("bob").size)
+
+        merge.signOutSettlingErase { accounts.signOut() }
+        session.notice()
+        signIn(carol)
+        assertEquals("another account is still offered them", 2, merge.heldBoards())
+    }
+
+    @Test
+    fun whatWasCopiedCannotBeWrittenDown_nothingIsCopied() = runBlocking {
+        annWithTwoBoardsSynced()
+        sessionLost()
+        signIn(bob)
+        preferences.copiedWriteFails = true
+
+        merge.copyHeldIn(fromThisPhone = null)
+
+        assertTrue(dao.boardsOf("bob").isEmpty())
+        assertEquals(2, merge.heldBoards())
+    }
+
+    @Test
+    fun anAccountDeleted_isNoLongerHeldBackFrom() = runBlocking {
+        annWithTwoBoardsSynced()
+        sessionLost()
+        signIn(bob)
+        merge.copyHeldIn(fromThisPhone = null)
+
+        merge.eraseKeepingBoards("bob", erase = { Result.success(Unit) }, signOut = { accounts.signOut() })
+
+        assertTrue(preferences.heldBoardsCopied().isEmpty())
     }
 
     @Test

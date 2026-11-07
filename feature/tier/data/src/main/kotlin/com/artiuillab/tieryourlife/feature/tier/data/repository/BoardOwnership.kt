@@ -109,18 +109,31 @@ class BoardOwnership @Inject constructor(
 
     /**
      * Held for an account other than the signed-in one, trash left out, and
-     * not copied into one before: what the question about them counts, and
-     * what a yes copies.
+     * not copied into the signed-in one before: what the question about them
+     * counts, and what a yes copies.
      */
     suspend fun heldForOthersInUse(): List<TierListEntity> {
         val owner = current()
         val held = preferences.heldBoards().filterKeys { it != owner }.values.flatten().toSet()
-        val copied = preferences.heldBoardsCopied()
+        val copied = owner?.let { preferences.heldBoardsCopied()[it] }.orEmpty()
         return guests.guestBoardsInUse().filter { it.uid in held && it.uid !in copied }
     }
 
-    suspend fun markCopied(uids: Collection<String>) = heldChanges.withLock {
-        preferences.setHeldBoardsCopied(preferences.heldBoardsCopied() + uids)
+    /**
+     * Before the copies are made: a crash in between leaves them unmade
+     * rather than made twice. Originals deleted for good drop out. False when
+     * it could not be written, and then no copy is made.
+     */
+    suspend fun markCopied(into: String, uids: Collection<String>): Boolean = heldChanges.withLock {
+        val here = guests.everyBoardUid().toSet()
+        val copied = preferences.heldBoardsCopied().mapValues { (_, ofIt) -> ofIt.filterTo(mutableSetOf()) { it in here } }
+        preferences.setHeldBoardsCopied(copied + (into to copied[into].orEmpty() + uids))
+    }
+
+    /** [account] is gone: nothing is held back from it any more. */
+    suspend fun forgetCopiesInto(account: String) = heldChanges.withLock {
+        val copied = preferences.heldBoardsCopied()
+        if (account in copied) preferences.setHeldBoardsCopied(copied - account)
     }
 
     /** The boards held for [account] that are still here are its own again. */
@@ -130,7 +143,6 @@ class BoardOwnership @Inject constructor(
             val boards = held[account] ?: return
             val given = guests.giveBack(account, boards)
             preferences.setHeldBoards(held - account)
-            preferences.setHeldBoardsCopied(preferences.heldBoardsCopied() - boards)
             given
         }
         if (count > 0) {
