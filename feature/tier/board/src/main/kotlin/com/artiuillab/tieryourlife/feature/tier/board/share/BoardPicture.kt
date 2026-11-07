@@ -12,6 +12,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withClip
+import com.artiuillab.tieryourlife.core.settings.nextWholeCut
+import com.artiuillab.tieryourlife.core.settings.wholeCutAtOrBefore
 import com.artiuillab.tieryourlife.feature.tier.board.common.parseTierColor
 import com.artiuillab.tieryourlife.feature.tier.board.common.rowTintFor
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.BAND_CAPTION_PADDING
@@ -246,8 +248,7 @@ object BoardPicture {
         val lines = mutableListOf<String>()
         var rest = title.trim()
         while (rest.isNotEmpty() && lines.size < 3) {
-            val fits = paint.breakText(rest, true, maxWidth, null)
-            val cut = if (fits < rest.length) rest.lastIndexOf(' ', fits).takeIf { it > 0 } ?: fits else fits
+            val cut = lineEnd(rest, paint.breakText(rest, true, maxWidth, null))
             lines += rest.substring(0, cut).trim()
             rest = rest.substring(cut).trim()
         }
@@ -272,4 +273,12 @@ object BoardPicture {
         }
         canvas.drawText(footer, PADDING, height - FOOTER_HEIGHT / 2 + FOOTER_TEXT_SIZE / 3, text)
     }
+}
+
+/** Where a line of [text] with room for [fits] chars ends: at a space if it can, never inside an emoji. */
+internal fun lineEnd(text: String, fits: Int): Int {
+    if (fits >= text.length) return text.length
+    val space = text.lastIndexOf(' ', fits)
+    if (space > 0) return space
+    return text.wholeCutAtOrBefore(fits).takeIf { it > 0 } ?: text.nextWholeCut(0)
 }
