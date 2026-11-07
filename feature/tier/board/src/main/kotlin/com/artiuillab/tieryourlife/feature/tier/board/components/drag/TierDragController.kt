@@ -356,14 +356,14 @@ private fun insertionIndexInGrid(
     if (visible.isEmpty()) return 0
 
     val lines = visible.groupBy { it.bounds.top }.toSortedMap().values.toList()
-    for (line in lines) {
-        val lineMidY = (line.minOf { it.bounds.top } + line.maxOf { it.bounds.bottom }) / 2f
-        if (pointer.y < lineMidY) {
-            return translate(columnIndex(line, pointer.x, rightToLeft), excludedFullIndex)
-        }
-    }
-
-    return translate(columnIndex(lines.last(), pointer.x, rightToLeft), excludedFullIndex)
+    val line = lines.firstOrNull { line ->
+        pointer.y < (line.minOf { it.bounds.top } + line.maxOf { it.bounds.bottom }) / 2f
+    } ?: lines.last()
+    // Below every card is the line only the slot holds: answering with the last
+    // card line's column moves the slot up, a card drops into its place, and back.
+    val belowEveryCard = pointer.y > lines.last().maxOf { it.bounds.bottom }
+    val raw = if (belowEveryCard) visible.maxOf { it.index } + 1 else columnIndex(line, pointer.x, rightToLeft)
+    return translate(raw, excludedFullIndex)
 }
 
 private fun columnIndex(line: List<TileRecord>, pointerX: Float, rightToLeft: Boolean): Int {
