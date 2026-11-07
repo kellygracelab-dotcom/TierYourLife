@@ -307,5 +307,5 @@
     <string name="moderation_not_taken_down">Non retirée : la liste est toujours publique. Réessayez.</string>
     <string name="moderation_not_kept">Impossible de laisser la liste : les signalements sont toujours ouverts. Réessayez.</string>
     <string name="moderation_not_moved">Non déplacée : la liste est restée où elle était. Réessayez.</string>
-    <string name="moderation_moved_not_dismissed">Déplacée, mais ses signalements sont toujours ouverts. Écartez-les pour vider la file.</string>
+    <string name="moderation_moved_not_dismissed">Déplacée, mais ses signalements sont toujours ouverts. Touchez « Laisser » pour les clore.</string>
 </resources>

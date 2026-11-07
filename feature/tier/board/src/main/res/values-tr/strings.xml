@@ -25,8 +25,8 @@
     <string name="list_settings_public_banned_until">Bir moderatör listelerinizden birini kaldırdı. %1$s tarihinden itibaren yeniden yayımlayabilirsiniz.</string>
     <string name="list_settings_public_body">Herkes bu listeyi açıp kendince sıralayabilir.</string>
     <string name="list_settings_public_failed">Bu liste yayımlanamadı. Yeniden deneyin.</string>
-    <string name="list_settings_public_images">Yayımlarken listenin görselleri de gider; kendi fotoğrafların ve üretilen görseller dahil. Her biri önce denetlenir.</string>
-    <string name="list_settings_public_needs_account">Yayımlamak için Google ile oturum aç. Başkalarınınkini okumak ve kaydetmek hesap istemez.</string>
+    <string name="list_settings_public_images">Yayımlarken listenin görselleri de gider; kendi fotoğraflarınız ve üretilen görseller dahil. Her biri önce denetlenir.</string>
+    <string name="list_settings_public_needs_account">Yayımlamak için Google ile oturum açın. Başkalarınınkini okumak ve kaydetmek hesap istemez.</string>
     <string name="list_settings_public_needs_items">Listeyi yayımlamadan önce en az bir kart ekleyin.</string>
     <string name="list_settings_public_offline">Bağlantı yok. Çevrimiçi olduğunuzda yeniden deneyin.</string>
     <string name="list_settings_public_picture_refused">Fotoğraflarınızdan biri herkese açık akışta yer alamaz. Silin ya da listeyi özel tutun.</string>
@@ -44,11 +44,11 @@
         <item quantity="one">%1$d öğe ekle</item>
         <item quantity="other">%1$d öğe ekle</item>
     </plurals>
-    <string name="manual_dialog_body">Havuza gider. Sonra bir seviyeye sürükleyebilirsin.</string>
+    <string name="manual_dialog_body">Havuza gider. Sonra bir seviyeye sürükleyebilirsiniz.</string>
     <string name="manual_dialog_cancel">İptal</string>
     <string name="manual_dialog_choose_photo">Fotoğraf seç</string>
     <string name="manual_dialog_field_name">Ad</string>
-    <string name="manual_dialog_photo_frame_chosen">Fotoğraf seçildi. Değiştirmek için \"Fotoğrafı değiştir\" öğesine dokun.</string>
+    <string name="manual_dialog_photo_frame_chosen">Fotoğraf seçildi. Değiştirmek için \"Fotoğrafı değiştir\" öğesine dokunun.</string>
     <string name="manual_dialog_photo_frame_empty">Fotoğraf seçilmedi</string>
     <string name="manual_dialog_photo_optional">Fotoğraf isteğe bağlıdır.</string>
     <plurals name="manual_dialog_photos_chosen">
@@ -107,7 +107,7 @@
     <string name="tier_editor_add_title">Seviye ekle</string>
     <string name="tier_editor_cancel">İptal</string>
     <string name="tier_editor_caption_field">Alt yazı</string>
-    <string name="tier_editor_color_section_caption">Özel · açık ve koyu renkleri bağımsız olarak ayarla</string>
+    <string name="tier_editor_color_section_caption">Özel · açık ve koyu renkleri bağımsız olarak ayarlayın</string>
     <string name="tier_editor_color_section_title">Renk</string>
     <string name="tier_editor_custom_color_description">Özel renk</string>
     <string name="tier_editor_hex_label">Hex</string>

@@ -307,5 +307,5 @@
     <string name="moderation_not_taken_down">No se retiró: la lista sigue siendo pública. Inténtalo de nuevo.</string>
     <string name="moderation_not_kept">No se pudo dejar la lista: los reportes siguen abiertos. Inténtalo de nuevo.</string>
     <string name="moderation_not_moved">No se movió: la lista sigue donde estaba. Inténtalo de nuevo.</string>
-    <string name="moderation_moved_not_dismissed">Movida, pero sus denuncias siguen abiertas. Descártalas para vaciar la cola.</string>
+    <string name="moderation_moved_not_dismissed">Movida, pero sus denuncias siguen abiertas. Pulsa «Dejar» para cerrarlas.</string>
 </resources>

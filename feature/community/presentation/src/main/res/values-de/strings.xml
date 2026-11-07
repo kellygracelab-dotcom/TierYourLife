@@ -296,10 +296,10 @@
     <string name="community_action_undo">Rückgängig</string>
     <string name="community_picture_credits">Bildnachweise</string>
     <string name="community_picture_credit_line">%1$s — %2$s</string>
-    <string name="community_ranking_list_changed">Der Autor hat diese Liste geändert, seit du ihre Karten eingeordnet hast. Ordne sie neu ein, um deine Reihung zu zeigen.</string>
-    <string name="community_ranking_banned">Ein Moderator hat eine deiner Listen entfernt, deshalb kannst du vorerst keine Reihungen zeigen.</string>
+    <string name="community_ranking_list_changed">Der Autor hat diese Liste geändert, seit du ihre Karten eingeordnet hast. Ordne sie neu ein, um deine Rangliste zu zeigen.</string>
+    <string name="community_ranking_banned">Ein Moderator hat eine deiner Listen entfernt, deshalb kannst du vorerst keine Ranglisten zeigen.</string>
     <string name="moderation_not_taken_down">Nicht entfernt: Die Liste ist noch öffentlich. Versuche es erneut.</string>
     <string name="moderation_not_kept">Behalten hat nicht geklappt: Die Meldungen sind noch offen. Versuche es erneut.</string>
     <string name="moderation_not_moved">Nicht verschoben: Die Liste ist, wo sie war. Versuche es erneut.</string>
-    <string name="moderation_moved_not_dismissed">Verschoben, aber die Meldungen sind noch offen. Weise sie ab, um die Warteschlange zu leeren.</string>
+    <string name="moderation_moved_not_dismissed">Verschoben, aber die Meldungen sind noch offen. Tippe auf „Behalten“, um sie zu schließen.</string>
 </resources>
