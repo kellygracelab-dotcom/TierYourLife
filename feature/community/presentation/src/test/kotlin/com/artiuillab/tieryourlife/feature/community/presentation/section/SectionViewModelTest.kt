@@ -30,9 +30,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -103,8 +105,9 @@ class SectionViewModelTest {
         memory: SectionSortMemory = SectionSortMemory(),
         sectionId: String = "games",
         afterSignIn: FollowAfterSignIn = signedInFollows(),
+        savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("sectionId" to sectionId)),
     ) = SectionViewModel(
-        savedStateHandle = SavedStateHandle(mapOf("sectionId" to sectionId)),
+        savedStateHandle = savedStateHandle,
         community = community,
         cache = FakeCommunityFeedCache(),
         network = FakeCommunityNetwork(),
@@ -241,6 +244,22 @@ class SectionViewModelTest {
         val opened = withTimeout(5_000) { viewModel.mergedIntoTopic.first() }
 
         assertEquals(CommunityRoute.Topic(topicId = "t7", section = ListCategory.Games.id), opened)
+    }
+
+    // Back from the topic after the process was let go, the section sent the person there again.
+    @Test
+    fun aSectionMergedIntoATopic_sendsThereOnlyOnce_evenAfterTheProcessWasLetGo() = runBlocking {
+        val community = Community(lookups = mapOf("autos" to SectionLookup.Merged("games", topic = "t7")))
+        val saved = SavedStateHandle(mapOf("sectionId" to "autos"))
+        val first = viewModel(community, sectionId = "autos", savedStateHandle = saved)
+        first.open()
+        withTimeout(5_000) { first.mergedIntoTopic.first() }
+
+        val restored = viewModel(community, sectionId = "autos", savedStateHandle = saved)
+        restored.open()
+        restored.state.firstWithin { it.sectionId == ListCategory.Games.id && it.feed.phase == FeedPhase.Ready }
+
+        assertNull(withTimeoutOrNull(500) { restored.mergedIntoTopic.first() })
     }
 
     @Test

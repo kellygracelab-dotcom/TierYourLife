@@ -87,7 +87,7 @@ data class SectionUiState(
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SectionViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val community: CommunityRepository,
     private val cache: CommunityFeedCache,
     network: CommunityNetwork,
@@ -156,9 +156,13 @@ class SectionViewModel @Inject constructor(
     init {
         viewModelScope.launch { network.available.collect { feed.onNetworkBack() } }
         guest.afterSignIn({ it == FollowTarget.Section(section) }) { setFollowing(section, true) }
-        viewModelScope.launch {
-            val topic = catalog.directory.map { it.mergedTopics[route.sectionId] }.filterNotNull().first()
-            toTopic.send(CommunityRoute.Topic(topicId = topic, section = catalog.directory.value.resolve(route.sectionId)))
+        // Once: coming back from that topic, even after the process was let go, stays on the section.
+        if (savedStateHandle.get<Boolean>(SENT_TO_TOPIC) != true) {
+            viewModelScope.launch {
+                val topic = catalog.directory.map { it.mergedTopics[route.sectionId] }.filterNotNull().first()
+                savedStateHandle[SENT_TO_TOPIC] = true
+                toTopic.send(CommunityRoute.Topic(topicId = topic, section = catalog.directory.value.resolve(route.sectionId)))
+            }
         }
         // A link to a section that was merged away opens the one it became, as soon as that is known.
         viewModelScope.launch {
@@ -244,6 +248,8 @@ class SectionViewModel @Inject constructor(
 
     fun report(summary: PublishedListSummary, reason: ReportReason, note: String?) = menu.report(feed, summary, reason, note)
 }
+
+private const val SENT_TO_TOPIC = "sentToMergedTopic"
 
 /** A built-in's counts are the app's zeros until the list was read; anybody else's section only ever came from the server. */
 private fun countsKnown(directory: SectionDirectory, found: Section): Boolean = directory.counted || found.art == null
