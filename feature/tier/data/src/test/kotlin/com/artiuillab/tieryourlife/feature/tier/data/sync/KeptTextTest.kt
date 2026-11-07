@@ -44,6 +44,24 @@ class KeptTextTest {
         assertEquals(true, renamed.endsWith(" (from this phone)"))
     }
 
+    // P8: cut between the halves of an emoji, the account got a "?" mid-title.
+    @Test
+    fun `a title cut to make room for the suffix keeps every emoji whole`() {
+        val suffix = "(from this phone)"
+        val room = KeptText.TITLE - suffix.length - 1
+
+        val renamed = withSuffix("a".repeat(room - 1) + "😀b", suffix)
+
+        assertEquals("a".repeat(room - 1) + " " + suffix, renamed)
+    }
+
+    @Test
+    fun `a suffix too long for the limit is cut whole too`() {
+        val renamed = withSuffix("Films", "a".repeat(KeptText.TITLE - 2) + "😀")
+
+        assertEquals(false, renamed.last().isHighSurrogate())
+    }
+
     @Test
     fun `a short title keeps all of itself`() {
         assertEquals("Films (from this phone)", withSuffix("Films", "(from this phone)"))
