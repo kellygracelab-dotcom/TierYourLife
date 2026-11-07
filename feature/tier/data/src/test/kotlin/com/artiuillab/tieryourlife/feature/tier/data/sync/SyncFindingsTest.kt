@@ -11,6 +11,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
+import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -367,5 +368,34 @@ class SyncFindingsTest : SyncEngineBench() {
         engine(preferences = preferences).sync()
 
         assertEquals(BackupRefusal.Reason.NotAccepted, backupRefusalOf(preferences.boardRefusal(someone))?.reason)
+    }
+
+    // A24: the copy took new uids for its cards and tiers but kept a game naming
+    // the old ones, so the board showed a saved game that could not go on.
+    @Test
+    fun theCopyKeepBothMakes_carriesItsGameUnderItsOwnUids() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        val game = """{"kind":"hill","count":1,"seed":3,"refine":false,"ids":["$uid-item"],"history":[],"round":0,"startedAt":1,"scope":["$uid-tier"]}"""
+        boards.refuseNextWith = theirBoard(uid, title = "Films (tablet)", revision = 3).copy(play = Json.parseToJsonElement(game))
+
+        engine().sync()
+
+        val copy = dao.allBoards().single { it.uid != uid }
+        val item = dao.itemsOf(copy.id).single().uid
+        val tier = dao.tiersOf(copy.id).single().uid
+        assertEquals(game.replace("$uid-item", item).replace("$uid-tier", tier), copy.play)
+    }
+
+    @Test
+    fun anotherAccountsBoardComingDownAsACopy_carriesItsGameUnderItsOwnUids() = runBlocking {
+        val uid = givenLocalBoard("Films", owner = "ann")
+        val bobBoards = FakeBoards()
+        val game = """{"kind":"hill","count":1,"seed":3,"refine":false,"ids":["$uid-item"],"history":[],"round":0,"startedAt":1}"""
+        bobBoards.server[uid] = theirBoard(uid, title = "Films, Bob's", revision = 3).copy(play = Json.parseToJsonElement(game))
+
+        engine(account = bob, api = bobBoards).sync()
+
+        val copy = dao.boardsOf("bob").single()
+        assertEquals(game.replace("$uid-item", dao.itemsOf(copy.id).single().uid), copy.play)
     }
 }

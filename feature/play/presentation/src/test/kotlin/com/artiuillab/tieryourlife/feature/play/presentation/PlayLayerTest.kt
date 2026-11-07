@@ -32,7 +32,7 @@ class PlayLayerTest {
     @Test
     fun startingAGame_keepsThePickerUp_untilTheDuelsAreDrawnUnderIt() {
         val viewModel = PlayViewModel(FakeSavedGames(), MovingTierRepository(unranked))
-        composeRule.setContent { TierYourLifeTheme { PlayLayer(request, open = true, onArranged = {}, onClose = {}, viewModel = viewModel) } }
+        composeRule.setContent { TierYourLifeTheme { PlayLayer(request, open = true, onArranged = { _, _ -> }, onClose = {}, viewModel = viewModel) } }
         composeRule.onNodeWithTag(PlayTestTags.START).assertExists()
 
         composeRule.mainClock.autoAdvance = false

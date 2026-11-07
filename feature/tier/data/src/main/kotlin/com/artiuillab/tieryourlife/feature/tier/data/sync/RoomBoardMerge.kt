@@ -98,11 +98,14 @@ class RoomBoardMerge internal constructor(
 
     /** As a board made here: nothing published, nothing ranked, and every uid its own. */
     private suspend fun copyFor(owner: String, board: TierListEntity, title: String) {
-        val items = dao.itemsOf(board.id).groupBy { it.tierId }
-        val tiers = dao.tiersOf(board.id).map { tier ->
+        val allItems = dao.itemsOf(board.id)
+        val allTiers = dao.tiersOf(board.id)
+        val fresh = FreshUids(allTiers.map { it.uid }, allItems.map { it.uid })
+        val items = allItems.groupBy { it.tierId }
+        val tiers = allTiers.map { tier ->
             IncomingTier(
-                tier = tier.copy(id = 0, tierListId = 0, uid = UUID.randomUUID().toString()),
-                items = items[tier.id].orEmpty().map { it.copy(id = 0, tierId = 0, uid = UUID.randomUUID().toString()) },
+                tier = tier.copy(id = 0, tierListId = 0, uid = fresh.tiers.getValue(tier.uid)),
+                items = items[tier.id].orEmpty().map { it.copy(id = 0, tierId = 0, uid = fresh.items.getValue(it.uid)) },
             )
         }
         val copy = board.copy(
@@ -113,6 +116,7 @@ class RoomBoardMerge internal constructor(
             publishedId = null,
             publishedFingerprint = null,
             rankingOf = null,
+            play = fresh.play(board.play),
         )
         dao.addBoard(copy, tiers)
     }

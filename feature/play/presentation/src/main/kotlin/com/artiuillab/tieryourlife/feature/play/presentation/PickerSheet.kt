@@ -247,6 +247,7 @@ private fun ResumeRow(offer: ResumeOffer, minHeight: Dp, onResume: () -> Unit, o
                 val started = startedText(offer.startedAt)
                 Text(
                     text = when {
+                        offer.changed && !offer.canStartAgain -> stringResource(R.string.play_too_few_to_start_again)
                         offer.changed -> stringResource(R.string.play_board_changed)
                         offer.joined > 0 -> started + " · " + pluralStringResource(R.plurals.play_new_cards_join, offer.joined, offer.joined)
                         else -> started
@@ -259,6 +260,7 @@ private fun ResumeRow(offer: ResumeOffer, minHeight: Dp, onResume: () -> Unit, o
             Spacer(Modifier.width(8.dp))
             FilledTonalButton(
                 onClick = if (offer.changed) onStartAgain else onResume,
+                enabled = !offer.changed || offer.canStartAgain,
                 modifier = Modifier
                     .height(36.dp)
                     .testTag(PlayTestTags.RESUME),

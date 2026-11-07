@@ -241,6 +241,30 @@ class CommunityListViewModelTest {
         assertEquals(null, after.savedId)
     }
 
+    // A24: the undo of a result put in Mine left Mine on screen and marked as arranged.
+    @Test
+    fun undoingAGamesResult_putsBackWhatWasOnScreen() = runBlocking {
+        val viewModel = viewModel()
+        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        val played = loaded.mine.copy(
+            tiers = loaded.mine.tiers.map { tier ->
+                when {
+                    tier.isPool -> tier.copy(items = emptyList())
+                    tier.id == 0L -> tier.copy(items = published.items)
+                    else -> tier
+                }
+            },
+        )
+        viewModel.putInMine(played)
+
+        viewModel.putInMine(loaded.mine, undone = true)
+
+        val after = viewModel.state.value as CommunityListUiState.Success
+        assertEquals(loaded.mine, after.mine)
+        assertEquals(loaded.showing, after.showing)
+        assertEquals(loaded.arranged, after.arranged)
+    }
+
     // Keeping a list the way its author ranked it is a reason to save it, not
     // a mistake to correct.
     @Test

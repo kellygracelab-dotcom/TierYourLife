@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.play.presentation
 
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
+import com.artiuillab.tieryourlife.feature.play.domain.MIN_PLAY_CARDS
 import com.artiuillab.tieryourlife.feature.play.domain.Resumption
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
 import com.artiuillab.tieryourlife.feature.play.domain.duels
@@ -51,7 +52,8 @@ internal fun totalOf(game: SavedGame): Int {
 }
 
 internal fun offerFor(saved: SavedGame, board: TierList): ResumeOffer {
-    val resumption = saved.resumeOn(board.cardsIn(saved.scope).map { it.id })
+    val cards = board.cardsIn(saved.scope)
+    val resumption = saved.resumeOn(cards.map { it.id })
     val game = (resumption as? Resumption.Ready)?.game ?: saved
     return ResumeOffer(
         kind = game.spec.kind,
@@ -60,6 +62,7 @@ internal fun offerFor(saved: SavedGame, board: TierList): ResumeOffer {
         startedAt = saved.startedAt,
         changed = resumption is Resumption.Changed,
         joined = (resumption as? Resumption.Ready)?.joined ?: 0,
+        canStartAgain = cards.size >= MIN_PLAY_CARDS,
     )
 }
 

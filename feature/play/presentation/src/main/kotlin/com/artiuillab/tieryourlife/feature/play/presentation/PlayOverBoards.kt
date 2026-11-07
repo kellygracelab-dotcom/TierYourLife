@@ -42,7 +42,7 @@ object PlayOverBoards : BoardPlay {
     }
 
     @Composable
-    override fun Layer(request: PlayRequest, open: Boolean, onArranged: (TierList) -> Unit, onClose: () -> Unit) {
+    override fun Layer(request: PlayRequest, open: Boolean, onArranged: (board: TierList, undone: Boolean) -> Unit, onClose: () -> Unit) {
         PlayLayer(request, open, onArranged, onClose, hiltViewModel())
     }
 }
@@ -51,7 +51,7 @@ object PlayOverBoards : BoardPlay {
 internal fun PlayLayer(
     request: PlayRequest,
     open: Boolean,
-    onArranged: (TierList) -> Unit,
+    onArranged: (board: TierList, undone: Boolean) -> Unit,
     onClose: () -> Unit,
     viewModel: PlayViewModel,
 ) {
@@ -67,7 +67,7 @@ internal fun PlayLayer(
         viewModel.events.collect { event ->
             when (event) {
                 PlayEvent.Closed -> close()
-                is PlayEvent.Arranged -> arranged(event.board)
+                is PlayEvent.Arranged -> arranged(event.board, event.undone)
                 is PlayEvent.Said -> launch {
                     snackbar.currentSnackbarData?.dismiss()
                     val (message, action) = noticeText(event.notice, resources)

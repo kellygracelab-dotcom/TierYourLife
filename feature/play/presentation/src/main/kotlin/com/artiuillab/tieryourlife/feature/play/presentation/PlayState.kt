@@ -50,6 +50,8 @@ data class ResumeOffer(
     val startedAt: Long,
     /** A hill or bracket whose cards changed: it can only start again. */
     val changed: Boolean = false,
+    /** Whether enough of its cards are left to start it again. */
+    val canStartAgain: Boolean = true,
     /** Cards that joined a Swiss game since it was put down. */
     val joined: Int = 0,
 )
@@ -138,7 +140,7 @@ sealed interface PlayEvent {
     data object Closed : PlayEvent
 
     /** The board an applied result, or its undo, left: the screen beneath takes it. */
-    data class Arranged(val board: TierList) : PlayEvent
+    data class Arranged(val board: TierList, val undone: Boolean = false) : PlayEvent
 
     data class Said(val notice: PlayNotice) : PlayEvent
 }

@@ -520,4 +520,22 @@ class LostSessionTest : SyncEngineBench() {
         assertEquals("ann", preferences.lastSignedIn())
         assertEquals(0, forgotten)
     }
+
+    // A24: the copy's cards and tiers take uids of their own, and its game has to name those.
+    @Test
+    fun aHeldBoardsCopy_carriesItsGameUnderItsOwnUids() = runBlocking {
+        val (_, games) = annWithTwoBoardsSynced()
+        val original = dao.boardByUid(games)!!
+        val item = dao.itemsOf(original.id).single().uid
+        val game = """{"kind":"hill","count":1,"seed":3,"refine":false,"ids":["$item"],"history":[],"round":0,"startedAt":1}"""
+        database.tierDao().setPlay(original.id, game)
+        sessionLost()
+
+        signIn(bob)
+        merge.copyHeldIn(fromThisPhone = null)
+
+        val copy = dao.boardsOf("bob").single { it.title == "Games" }
+        assertEquals(game.replace(item, dao.itemsOf(copy.id).single().uid), copy.play)
+        assertEquals("the original keeps its own", game, dao.boardByUid(games)!!.play)
+    }
 }
