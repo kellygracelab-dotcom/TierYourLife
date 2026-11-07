@@ -48,7 +48,7 @@ class OwnCoverSyncTest : SyncEngineBench() {
         engine(vault = vault, connection = Unmetered).sync()
 
         val request = boards.kept.single().second
-        assertEquals("cover-1", request.coverPictureId)
+        assertEquals(JsonPrimitive("cover-1"), request.coverPictureId)
         assertNull(request.coverImageUrl)
         assertTrue("cover-1" in vault.sent)
     }

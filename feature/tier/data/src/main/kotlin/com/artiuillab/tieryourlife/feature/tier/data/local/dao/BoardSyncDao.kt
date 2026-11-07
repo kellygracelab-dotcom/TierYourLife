@@ -81,6 +81,10 @@ interface BoardSyncDao {
     @Query("SELECT DISTINCT coverImageUrl FROM tier_lists WHERE coverImageUrl IS NOT NULL AND ownerUid = :owner")
     suspend fun coverUrlsOf(owner: String): List<String>
 
+    /** Only onto a board with no cover of its own: one chosen here wins. */
+    @Query("UPDATE tier_lists SET coverImageUrl = :path WHERE uid = :uid AND coverImageUrl IS NULL AND coverImageUrls IS NULL")
+    suspend fun learnCover(uid: String, path: String)
+
     /** Written as it already was, so a screen showing the cover draws the file that has just arrived. */
     @Query("UPDATE tier_lists SET coverImageUrl = :path WHERE coverImageUrl = :path")
     suspend fun coverArrived(path: String)

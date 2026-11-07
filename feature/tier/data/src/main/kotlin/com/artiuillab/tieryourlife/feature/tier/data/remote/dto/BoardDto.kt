@@ -108,8 +108,11 @@ data class KeepBoardRequestDto(
     val category: String? = null,
     val coverImageUrl: String? = null,
     val coverImageUrls: List<String> = emptyList(),
-    /** No default, so a null is written out: an absent one tells the account to keep the cover it has. */
-    val coverPictureId: String?,
+    /**
+     * Three ways, as the account reads them: the id, `JsonNull` to clear it,
+     * or left out (null here) to keep the one it has.
+     */
+    val coverPictureId: JsonElement? = null,
     val authorName: String? = null,
     val publishedId: String? = null,
     val deletedAt: Long? = null,

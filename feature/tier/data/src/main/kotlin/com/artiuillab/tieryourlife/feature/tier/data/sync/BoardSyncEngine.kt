@@ -30,13 +30,20 @@ import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncReport
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncStep
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncedBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.planSync
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonPrimitive
 import retrofit2.HttpException
 import retrofit2.Response
 import timber.log.Timber
@@ -88,10 +95,16 @@ class BoardSyncEngine @Inject constructor(
 
         // A record without its board would be planned as a delete in the account.
         ownership.reclaim(account)
-        val local = dao.boardsOf(account)
-        val fingerprints = local.associate { board -> board.uid to fingerprintOf(board) }
+        var local = dao.boardsOf(account)
+        var fingerprints = fingerprintsOf(local)
         val remote = readIndex()
         claimUnclaimed(account, fingerprints, remote)
+        if (!preferences.coverIdsLearned(account)) {
+            runSuspendCatching { learnCoverIds(account, remote, fingerprints) }
+                .onFailure { failure -> Timber.w(failure, "Not every kept cover was read") }
+            local = dao.boardsOf(account)
+            fingerprints = fingerprintsOf(local)
+        }
         val steps = planSync(
             local = local.map { board -> LocalBoard(board.uid, fingerprints.getValue(board.uid), inTrash = board.deletedAt != null) },
             remote = remote.values.toList(),
@@ -216,6 +229,38 @@ class BoardSyncEngine @Inject constructor(
 
     private suspend fun signedInAs(): String? = (accounts.account.first() as? Account.SignedIn)?.recordKey
 
+    private suspend fun fingerprintsOf(boards: List<TierListEntity>): Map<String, String> =
+        boards.associate { board -> board.uid to fingerprintOf(board) }
+
+    /**
+     * QA A13: a build before `coverPictureId` read past it, so a board it took
+     * from the account holds no cover here and a record saying the two agree.
+     * Each kept board is read once more. One unchanged here takes the
+     * account's version; one changed here takes only the cover, when it has
+     * none of its own. Until every read has worked, boards go up without the
+     * field, which keeps the account's cover (coverAsLearned).
+     */
+    private suspend fun learnCoverIds(account: String, remote: Map<String, RemoteBoard>, fingerprints: Map<String, String>) {
+        val records = dao.syncRecordsOf(account).filter { it.listUid in fingerprints && remote[it.listUid]?.deleted == false }
+        val gate = Semaphore(COVER_READS_AT_ONCE)
+        val read = coroutineScope {
+            records.map { record ->
+                async { gate.withPermit { runSuspendCatching { api.board(record.listUid) }.getOrNull() } }
+            }.awaitAll()
+        }
+        records.zip(read).forEach { (record, theirs) ->
+            if (lock.stopAsked) return
+            val incoming = theirs?.takeUnless { it.deleted } ?: return@forEach
+            val pictureId = incoming.coverPictureId ?: return@forEach
+            if (fingerprints[record.listUid] == record.fingerprint) {
+                takeOver(account, incoming, planned = record.fingerprint)
+            } else {
+                dao.learnCover(record.listUid, images.pathFor(pictureId))
+            }
+        }
+        if (null !in read) preferences.setCoverIdsLearned(account)
+    }
+
     private suspend fun claimUnclaimed(
         account: String,
         fingerprints: Map<String, String>,
@@ -327,7 +372,8 @@ class BoardSyncEngine @Inject constructor(
         val tiers = dao.tiersOf(board.id)
         val items = dao.itemsOf(board.id)
         val fingerprint = BoardFingerprint.of(board, tiers, items, images::pictureIdOf)
-        val answer = api.keep(uid, request(board, tiers, items, fingerprint, basedOn))
+        val learned = preferences.coverIdsLearned(account)
+        val answer = api.keep(uid, request(board, tiers, items, fingerprint, basedOn).coverAsLearned(learned))
 
         if (answer.isSuccessful) {
             val revision = answer.body()?.revision ?: error("The account kept $uid but named no revision")
@@ -348,7 +394,7 @@ class BoardSyncEngine @Inject constructor(
         // Thrown away elsewhere meanwhile: ours was being sent because it
         // changed here, and that outweighs the delete.
         keepBeside(account, theirs)
-        val second = api.keep(uid, request(board, tiers, items, fingerprint, basedOn = theirs.revision))
+        val second = api.keep(uid, request(board, tiers, items, fingerprint, basedOn = theirs.revision).coverAsLearned(learned))
         if (!second.isSuccessful) throw refused(second, refusalOf(second), board.title, tiers.size)
         second.body()?.let { remember(account, uid, it.revision, fingerprint) }
     }
@@ -505,7 +551,7 @@ class BoardSyncEngine @Inject constructor(
             category = board.category,
             coverImageUrl = board.coverImageUrl.takeIf { coverPictureId == null },
             coverImageUrls = board.coverImageUrls.toCoverImageUrls(),
-            coverPictureId = coverPictureId,
+            coverPictureId = coverPictureId?.let { JsonPrimitive(it) } ?: JsonNull,
             authorName = board.authorName,
             publishedId = board.publishedId,
             deletedAt = board.deletedAt,
@@ -547,6 +593,7 @@ class BoardSyncEngine @Inject constructor(
         const val HTTP_CONFLICT = 409
         const val HTTP_TOO_LARGE = 413
         const val TOO_MANY_BOARDS = "TOO_MANY_BOARDS"
+        const val COVER_READS_AT_ONCE = 4
 
         /** What `/boards` names as the limit in a 413 for a board over its tiers. */
         const val TOO_MANY_TIERS = "Too many tiers"
@@ -606,6 +653,10 @@ internal fun KeptBoardDto.toEntity(id: Long, uid: String, pathFor: (String) -> S
     anonymous = anonymous,
     play = play?.toString(),
 )
+
+/** Before every kept cover was read, a null could clear one this phone never saw; left out, the account keeps it. */
+private fun KeepBoardRequestDto.coverAsLearned(learned: Boolean) =
+    if (learned || coverPictureId != JsonNull) this else copy(coverPictureId = null)
 
 /** A card naming a tier that is not here is dropped, not guessed at; the account never stores one. */
 private fun KeptBoardDto.freshUids() = FreshUids(tiers.map { it.uid }, items.map { it.uid })

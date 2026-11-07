@@ -64,6 +64,15 @@ interface AppPreferences {
     fun setBackUpBoards(account: String, backUp: Boolean)
 
     /**
+     * Whether this phone has read every board [account] keeps with a reader
+     * that knows `coverPictureId` (QA A13). Until then a board goes up without
+     * the field, so a cover this phone never saw stays in the account.
+     */
+    fun coverIdsLearned(account: String): Boolean = false
+
+    fun setCoverIdsLearned(account: String) = Unit
+
+    /**
      * The one switch from before it was per account goes to [account], whoever
      * is signed in when this first runs; to nobody when nobody is. Once.
      */

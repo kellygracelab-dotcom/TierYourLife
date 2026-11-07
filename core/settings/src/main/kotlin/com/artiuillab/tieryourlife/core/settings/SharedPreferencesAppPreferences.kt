@@ -17,6 +17,7 @@ private const val KEY_BACK_UP_BOARDS = "back_up_boards"
 private const val KEY_BOARDS_AS_PICTURES = "boards_as_pictures"
 private const val KEY_SIGN_IN_OFFER_ANSWERED = "sign_in_offer_answered"
 private const val KEY_PICTURES_ON_WIFI_ONLY = "pictures_on_wifi_only"
+private const val KEY_COVER_IDS_LEARNED = "cover_ids_learned"
 private const val KEY_LAST_SYNCED_AT = "last_synced_at"
 private const val KEY_CONFLICTS_SEEN = "conflicts_seen"
 private const val KEY_BOARD_REFUSAL = "board_refusal"
@@ -150,6 +151,12 @@ class SharedPreferencesAppPreferences @Inject constructor(
     }
 
     private fun backUpKey(account: String) = "$KEY_BACK_UP_BOARDS:$account"
+
+    override fun coverIdsLearned(account: String): Boolean = prefs.getBoolean("$KEY_COVER_IDS_LEARNED:$account", false)
+
+    override fun setCoverIdsLearned(account: String) {
+        prefs.edit { putBoolean("$KEY_COVER_IDS_LEARNED:$account", true) }
+    }
 
     override fun signInOfferAnswered(): Boolean = prefs.getBoolean(KEY_SIGN_IN_OFFER_ANSWERED, false)
 

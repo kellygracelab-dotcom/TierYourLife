@@ -5,6 +5,8 @@ class FakeAppPreferences(
     private var offerAnswered: Boolean = false,
     private var pendingReports: Int? = null,
     private var trashCount: Int = 0,
+    /** Learned unless a test says otherwise: the one-time cover pass is its own tests' business. */
+    private val coverIdsLearned: Boolean = true,
 ) : AppPreferences {
     private val hiddenLists = mutableMapOf<String, String>()
     private val hiddenAuthors = mutableMapOf<String, String>()
@@ -67,6 +69,14 @@ class FakeAppPreferences(
 
     override fun setBackUpBoards(account: String, backUp: Boolean) {
         backUpByAccount[account] = backUp
+    }
+
+    private val learnedCoverIds = mutableSetOf<String>()
+
+    override fun coverIdsLearned(account: String): Boolean = coverIdsLearned || account in learnedCoverIds
+
+    override fun setCoverIdsLearned(account: String) {
+        learnedCoverIds += account
     }
 
     override fun signInOfferAnswered(): Boolean = offerAnswered
