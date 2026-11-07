@@ -3,12 +3,14 @@ package com.artiuillab.tieryourlife.feature.tier.data.sync
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.PictureSyncEntity
+import com.artiuillab.tieryourlife.feature.tier.data.local.image.MAX_ACCOUNT_PICTURE_BYTES
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,6 +31,8 @@ class PictureSync @Inject constructor(
     private val _restoring = MutableStateFlow(PictureRestore.Progress.Idle)
     override val restoring: StateFlow<PictureRestore.Progress> = _restoring.asStateFlow()
 
+    private val toldTooLarge = ConcurrentHashMap.newKeySet<String>()
+
     /**
      * A picture that will not go stays unrecorded, so the next run tries
      * again; recording it would lose it quietly. [stopped] is asked between
@@ -43,7 +47,7 @@ class PictureSync @Inject constructor(
         val sent = dao.sentPictureIds(account).toSet()
         val here = (dao.imageUrlsOf(account) + dao.coverUrlsOf(account)).mapNotNull(images::pictureIdOf).distinct()
 
-        for (pictureId in here.filterNot { it in sent }) {
+        for (pictureId in here.filterNot { it in sent || tooLarge(it) }) {
             if (stopped()) return
             val bytes = images.read(pictureId) ?: continue
             if (vault.put(pictureId, bytes)) {
@@ -52,6 +56,13 @@ class PictureSync @Inject constructor(
                 Timber.d("Picture %s did not go up; it will be tried again", pictureId)
             }
         }
+    }
+
+    /** The account's folder refuses it every time; said once a run of the app, not on every sync. */
+    private fun tooLarge(pictureId: String): Boolean {
+        if (images.sizeOf(pictureId) < MAX_ACCOUNT_PICTURE_BYTES) return false
+        if (toldTooLarge.add(pictureId)) Timber.w("Picture %s is too large for the account; it stays on this phone", pictureId)
+        return true
     }
 
     /**

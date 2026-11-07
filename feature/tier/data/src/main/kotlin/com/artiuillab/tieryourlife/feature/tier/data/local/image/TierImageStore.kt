@@ -27,9 +27,9 @@ internal const val MAX_STORED_EDGE_PX = 1000
 private const val JPEG_QUALITY = 85
 
 /** As much as the account's own folder takes (storage.rules). */
-private const val MAX_WEB_PICTURE_BYTES = 4L * 1024 * 1024
+internal const val MAX_ACCOUNT_PICTURE_BYTES = 4L * 1024 * 1024
 
-/** Under [MAX_WEB_PICTURE_BYTES] with room to spare. */
+/** Under [MAX_ACCOUNT_PICTURE_BYTES] with room to spare. */
 internal const val MAX_STILL_BYTES = 3_500_000L
 
 private const val SMALLEST_HALVED_EDGE_PX = 125
@@ -106,7 +106,7 @@ class TierImageStore internal constructor(
         val target = File(directory, UUID.randomUUID().toString())
         try {
             val input = openWeb(url) ?: return@withContext null
-            val written = input.use { source -> target.outputStream().use { sink -> copyAtMost(source, sink, MAX_WEB_PICTURE_BYTES) } }
+            val written = input.use { source -> target.outputStream().use { sink -> copyAtMost(source, sink, MAX_ACCOUNT_PICTURE_BYTES) } }
             if (!written || !isPicture(target)) {
                 target.delete()
                 return@withContext null
