@@ -164,8 +164,29 @@ class AccountErasureTest : SyncEngineBench() {
         assertEquals(1, preferences.hiddenLists().size)
     }
 
+    // The watcher settles the mark as it sees the account go, so a guest who carried on finds none at the next start.
     @Test
-    fun anEraseSettledAfterAGuestCarriedOn_forgetsNothingOfThem() = runBlocking {
+    fun anEraseTheWatcherSettled_leavesTheGuestWhoCarriedOnAlone() = runBlocking {
+        val films = givenLocalBoard("Films", owner = "ann")
+        preferences.setLastSignedIn("ann")
+        accounts.exists = null
+        merge().eraseKeepingBoards("ann", erase = noAnswer, signOut = signOut)
+        accounts.accounts.value = Account.Guest
+        val ownership = BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences)
+        LostSession(accounts, database.ownerDao(), ownership, lock, preferences, ThePerson(preferences, setOf(PersonalData { forgotten++ }))).notice()
+        val forgottenByTheWatcher = forgotten
+        preferences.hideList("list-1", "Hidden by the guest")
+
+        merge().settleUnansweredErase()
+
+        assertNull(ownerOf(films))
+        assertEquals(forgottenByTheWatcher, forgotten)
+        assertEquals(1, preferences.hiddenLists().size)
+    }
+
+    // A40: the first start after updating from a build that never wrote down who was signed in.
+    @Test
+    fun theFirstStartAfterTheUpdate_withNobodySignedIn_forgetsTheErasedAccount() = runBlocking {
         val films = givenLocalBoard("Films", owner = "ann")
         accounts.exists = null
         merge().eraseKeepingBoards("ann", erase = noAnswer, signOut = signOut)
@@ -175,7 +196,23 @@ class AccountErasureTest : SyncEngineBench() {
         merge().settleUnansweredErase()
 
         assertNull(ownerOf(films))
+        assertEquals(1, forgotten)
+    }
+
+    @Test
+    fun theFirstStartAfterTheUpdate_withAnotherAccountSignedIn_forgetsNothingOfThem() = runBlocking {
+        val films = givenLocalBoard("Films", owner = "ann")
+        accounts.exists = null
+        merge().eraseKeepingBoards("ann", erase = noAnswer, signOut = signOut)
+        preferences.setLastSignedIn(null)
+        preferences.hideList("list-1", "Hidden by Bob")
+        accounts.accounts.value = bob
+
+        merge().settleUnansweredErase()
+
+        assertNull(ownerOf(films))
         assertEquals(0, forgotten)
+        assertEquals(1, preferences.hiddenLists().size)
     }
 
     @Test
