@@ -173,6 +173,7 @@ class PlayViewModel @Inject constructor(
         fun startAgain() {
             val request = request ?: return
             val saved = stored ?: return
+            if (!offerFor(saved, request.board).canStartAgain) return
             begin(request, saved.spec.kind, saved.scope, saved.keepTier)
         }
     }
@@ -317,12 +318,12 @@ class PlayViewModel @Inject constructor(
             arranged = null
             viewModelScope.launch {
                 if (!undo.own) {
-                    _events.send(PlayEvent.Arranged(undo.before))
+                    _events.send(PlayEvent.Arranged(undo.before, undone = true))
                     return@launch
                 }
                 val done = restore(undo.before)
                 if (done == null) say(PlayNotice.Failed)
-                _events.send(PlayEvent.Arranged(done ?: undo.before))
+                _events.send(PlayEvent.Arranged(done ?: undo.before, undone = true))
             }
         }
     }

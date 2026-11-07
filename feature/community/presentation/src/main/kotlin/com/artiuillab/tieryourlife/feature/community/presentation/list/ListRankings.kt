@@ -182,6 +182,8 @@ internal class ListRankings(
                     when ((error as? RankingRefused)?.reason) {
                         RankingRefusal.NotSignedIn -> told.send(RankingNotice.SignInFirst)
                         RankingRefusal.Banned -> told.send(RankingNotice.Banned)
+                        RankingRefusal.OwnList -> told.send(RankingNotice.OwnList)
+                        RankingRefusal.ListGone -> told.send(RankingNotice.ListGone)
                         else -> messages.send(UserMessage.ActionFailed)
                     }
                 },
@@ -208,4 +210,4 @@ internal class ListRankings(
 }
 
 /** What a reader is told after asking to show their ranking; a failure is the usual one. */
-enum class RankingNotice { Shown, SignInFirst, ListChanged, Banned }
+enum class RankingNotice { Shown, SignInFirst, ListChanged, Banned, OwnList, ListGone }

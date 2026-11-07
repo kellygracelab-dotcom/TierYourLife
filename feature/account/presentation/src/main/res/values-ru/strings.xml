@@ -25,6 +25,7 @@
     <string name="account_action_cancel">Отмена</string>
     <string name="account_error_name_not_saved">Не удалось сохранить имя. Попробуйте ещё раз.</string>
     <string name="account_error_face_not_made">Эта картинка не может быть вашей аватаркой. Выберите другую.</string>
+    <string name="account_error_face_not_saved">Не удалось сохранить — сервер не ответил.</string>
     <plurals name="account_community_lists">
         <item quantity="one">%1$d публичный список</item>
         <item quantity="few">%1$d публичных списка</item>

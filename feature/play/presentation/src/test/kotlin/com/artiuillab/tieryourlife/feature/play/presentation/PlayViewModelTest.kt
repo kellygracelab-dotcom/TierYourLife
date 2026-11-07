@@ -184,6 +184,24 @@ class PlayViewModelTest {
         assertEquals(5, duel.total)
     }
 
+    // A24: Start again over fewer than three cards did nothing, and nothing said why.
+    @Test
+    fun aHillWithTooFewCardsLeft_offersNoStartAgain() = runBlocking {
+        val saved = savedGame(GameKind.Hill, (1L..4L).toList(), answered = 1).copy(scope = listOf(1L))
+        val thinned = board(1L to listOf(1L, 2L), POOL to (3L..6L).toList())
+        val games = FakeSavedGames(mapOf(KEY to saved))
+        val viewModel = viewModel(games = games, boards = MovingTierRepository(thinned), request = PlayRequest.ownBoard(thinned))
+        viewModel.open()
+
+        val offer = viewModel.state.firstWithin { picker(it)?.resume != null }.let { picker(it)!!.resume!! }
+        viewModel.picker.startAgain()
+
+        assertTrue(offer.changed)
+        assertFalse(offer.canStartAgain)
+        assertTrue(viewModel.state.value.stage is PlayStage.Picking)
+        assertEquals(saved, games.games[KEY])
+    }
+
     @Test
     fun aMonthOldGame_goesWithoutAWord() = runBlocking {
         val saved = savedGame(GameKind.Swiss, (1L..6L).toList(), answered = 2).copy(startedAt = NOW - 40 * DAY, touchedAt = NOW - 31 * DAY)
@@ -321,6 +339,25 @@ class PlayViewModelTest {
         assertTrue(arranged.board.tiers.first { it.isPool }.items.isEmpty())
         assertEquals(6, arranged.board.tiers.sumOf { it.items.size })
         assertTrue(repository.moves.isEmpty())
+    }
+
+    @Test
+    fun undoingAResultPutInMine_saysItIsAnUndo_andHandsBackMineAsItWas() = runBlocking {
+        val theirs = board(1L to listOf(1L, 2L, 3L), 2L to listOf(4L, 5L, 6L), POOL to emptyList(), id = 0)
+        val mine = board(1L to emptyList(), 2L to emptyList(), POOL to (1L..6L).toList(), id = 0)
+        val viewModel = viewModel(request = PlayRequest.someoneElses("abc", version = 1, theirs, mine))
+        viewModel.open()
+        viewModel.picker.start()
+        viewModel.playToTheEnd()
+        viewModel.result.apply()
+        val applied = viewModel.events.firstWithin { it is PlayEvent.Arranged } as PlayEvent.Arranged
+
+        viewModel.notices.undoArrange()
+
+        val undone = viewModel.events.firstWithin { it is PlayEvent.Arranged } as PlayEvent.Arranged
+        assertFalse(applied.undone)
+        assertTrue(undone.undone)
+        assertEquals(mine, undone.board)
     }
 
     @Test

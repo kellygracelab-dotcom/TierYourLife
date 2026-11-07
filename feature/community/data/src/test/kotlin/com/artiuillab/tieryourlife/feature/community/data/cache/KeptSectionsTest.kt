@@ -17,7 +17,8 @@ class KeptSectionsTest {
         val kept = SectionDirectory(
             sections = Section.BUILT_IN + cars,
             extra = mapOf("boats" to Section(id = "boats", name = "Boats")),
-            merged = mapOf("autos" to "cars"),
+            merged = mapOf("autos" to "cars", "bikes" to "cars"),
+            mergedTopics = mapOf("bikes" to "t7"),
             fetchedAtMillis = 42L,
         )
 

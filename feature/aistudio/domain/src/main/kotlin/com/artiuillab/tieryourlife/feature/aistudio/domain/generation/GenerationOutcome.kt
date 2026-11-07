@@ -12,5 +12,11 @@ sealed interface GenerationOutcome {
 
     data object OutOfCredits : GenerationOutcome
 
+    /** Another picture of this person's is still being made. */
+    data object Busy : GenerationOutcome
+
+    /** Generation is switched off or at its daily limit for now. */
+    data object Paused : GenerationOutcome
+
     data object Failed : GenerationOutcome
 }

@@ -75,10 +75,24 @@ class ProxyCardImageGeneratorTest {
 
     @Test
     fun `any other refusal is a plain failure`() = runBlocking {
-        val api = FakeCardImageApi(errorCode = 503)
+        val api = FakeCardImageApi(errorCode = 502)
         val generator = ProxyCardImageGenerator(api, FakeImageBytesStore("/data/cache/card.jpg"))
 
         assertEquals(GenerationOutcome.Failed, generator.generate("anything"))
+    }
+
+    @Test
+    fun `a busy proxy is told apart from a failure`() = runBlocking {
+        val generator = ProxyCardImageGenerator(FakeCardImageApi(errorCode = 429), FakeImageBytesStore("/data/cache/card.jpg"))
+
+        assertEquals(GenerationOutcome.Busy, generator.generate("anything"))
+    }
+
+    @Test
+    fun `generation switched off or at its daily limit is told apart from a failure`() = runBlocking {
+        val generator = ProxyCardImageGenerator(FakeCardImageApi(errorCode = 503), FakeImageBytesStore("/data/cache/card.jpg"))
+
+        assertEquals(GenerationOutcome.Paused, generator.generate("anything"))
     }
 
     @Test

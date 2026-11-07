@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.artiuillab.tieryourlife.core.settings.firstWhole
 import com.artiuillab.tieryourlife.feature.community.domain.model.SuggestedAuthor
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeedTestTags
@@ -141,7 +142,7 @@ private fun Face(author: SuggestedAuthor) {
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Text(
-                    text = author.name.take(1).uppercase(),
+                    text = initialOf(author.name),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
@@ -156,3 +157,5 @@ private fun Face(author: SuggestedAuthor) {
         modifier = Modifier.size(40.dp).clip(shape),
     )
 }
+
+internal fun initialOf(name: String): String = name.trim().firstWhole().uppercase()

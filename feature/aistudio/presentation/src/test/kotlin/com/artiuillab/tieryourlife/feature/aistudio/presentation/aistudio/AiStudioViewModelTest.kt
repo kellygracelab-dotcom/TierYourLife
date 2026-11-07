@@ -220,6 +220,22 @@ class AiStudioViewModelTest {
         assertEquals(AiExchangePhase.OutOfCredits, state.exchanges.single().phase)
     }
 
+    // A18: a busy proxy and generation switched off both read as "Failed".
+    @Test
+    fun aBusyOrPausedProxy_saysSo_andLeavesTheBalanceAlone() = runBlocking {
+        listOf(GenerationOutcome.Busy to AiExchangePhase.Busy, GenerationOutcome.Paused to AiExchangePhase.Paused).forEach { (outcome, phase) ->
+            val generator = FakeCardImageGenerator().apply { this.outcome = outcome }
+            val viewModel = viewModel(generator, credits = FakeGenerationCredits(balance = 3))
+            viewModel.state.firstWithin { it.credits == 3 }
+
+            viewModel.send("A neon street")
+            val state = viewModel.state.firstWithin { it.exchanges.singleOrNull()?.phase != AiExchangePhase.Generating }
+
+            assertEquals(phase, state.exchanges.single().phase)
+            assertEquals(3, state.credits)
+        }
+    }
+
     // The backend hands the credit back when generation fails, so the number
     // on screen must not drop for something nobody was charged for.
     @Test

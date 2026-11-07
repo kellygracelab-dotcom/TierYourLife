@@ -15,6 +15,8 @@
     <string name="ai_added">Добавлено</string>
     <string name="ai_error_title">Не удалось сгенерировать изображение</string>
     <string name="ai_error_body">Проверьте соединение или попробуйте другое описание.</string>
+    <string name="ai_error_busy">Другое изображение ещё создаётся. Попробуйте снова через минуту.</string>
+    <string name="ai_error_paused">Создание изображений сейчас приостановлено. Попробуйте позже.</string>
     <string name="ai_name_title">Назовите карточку</string>
     <string name="ai_name_body">Попадает в пул. Потом можно перетащить его на уровень.</string>
     <string name="ai_name_photo_note">Сгенерированное изображение станет фото карточки.</string>

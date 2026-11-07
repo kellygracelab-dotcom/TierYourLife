@@ -424,18 +424,21 @@ class BoardSyncEngine @Inject constructor(
         if (incoming.deleted) return
         if (!asCopy && dao.boardByUid(incoming.uid) != null) return adoptBesideAnotherOwners(account, incoming)
         val uid = if (asCopy) UUID.randomUUID().toString() else incoming.uid
+        val fresh = if (asCopy) incoming.freshUids() else null
         dao.together {
+            val board = incoming.toEntity(id = 0, uid = uid)
             dao.addBoard(
-                board = incoming.toEntity(id = 0, uid = uid).copy(
+                board = board.copy(
                     // Null rather than a placeholder: the wording belongs to the screen.
                     arrivedFrom = if (asCopy) incoming.deviceName else null,
                     // A copy is not the published list; two boards pointing at one
                     // published id would fight over it on the next publish.
                     publishedId = if (asCopy) null else incoming.publishedId,
                     ownerUid = account,
+                    play = if (fresh == null) board.play else fresh.play(board.play),
                 ),
                 // Renamed: every uid is unique and the original board still holds them.
-                tiers = incoming.tiers(images::pathFor, renamed = asCopy),
+                tiers = incoming.tiers(images::pathFor, fresh),
             )
             if (asCopy) return@together
             val stored = dao.boardByUid(uid) ?: return@together
@@ -451,9 +454,11 @@ class BoardSyncEngine @Inject constructor(
      */
     private suspend fun adoptBesideAnotherOwners(account: String, incoming: KeptBoardDto) {
         val uid = standInFor(account, incoming.uid).takeIf { dao.boardByUid(it) == null } ?: UUID.randomUUID().toString()
+        val fresh = incoming.freshUids()
+        val board = incoming.toEntity(id = 0, uid = uid)
         dao.addBoardRemembering(
-            board = incoming.toEntity(id = 0, uid = uid).copy(publishedId = null, ownerUid = account),
-            tiers = incoming.tiers(images::pathFor, renamed = true),
+            board = board.copy(publishedId = null, ownerUid = account, play = fresh.play(board.play)),
+            tiers = incoming.tiers(images::pathFor, fresh),
             record = BoardSyncEntity(
                 account = account,
                 listUid = incoming.uid,
@@ -597,11 +602,12 @@ internal fun KeptBoardDto.toEntity(id: Long, uid: String) = TierListEntity(
 )
 
 /** A card naming a tier that is not here is dropped, not guessed at; the account never stores one. */
+private fun KeptBoardDto.freshUids() = FreshUids(tiers.map { it.uid }, items.map { it.uid })
+
 private fun KeptBoardDto.tiers(
     pathFor: (String) -> String,
-    renamed: Boolean = false,
+    renamed: FreshUids? = null,
 ): List<IncomingTier> {
-    fun idFor(original: String) = if (renamed) UUID.randomUUID().toString() else original
     val itemsByTierUid = items.groupBy { it.tierUid }
     return tiers.sortedBy { it.position }.mapIndexed { index, tier ->
         IncomingTier(
@@ -614,7 +620,7 @@ private fun KeptBoardDto.tiers(
                 colorDark = tier.colorDark,
                 isPool = tier.isPool,
                 caption = tier.caption,
-                uid = idFor(tier.uid),
+                uid = renamed?.tiers?.get(tier.uid) ?: tier.uid,
             ),
             items = itemsByTierUid[tier.uid].orEmpty().sortedBy { it.position }.map { item ->
                 TierItemEntity(
@@ -627,7 +633,7 @@ private fun KeptBoardDto.tiers(
                     imageUrl = item.pictureId?.let(pathFor) ?: item.imageUrl,
                     source = item.source,
                     deletedAt = item.deletedAt,
-                    uid = idFor(item.uid),
+                    uid = renamed?.items?.get(item.uid) ?: item.uid,
                     credit = item.credit,
                 )
             },

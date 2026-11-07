@@ -15,6 +15,8 @@
     <string name="ai_added">追加済み</string>
     <string name="ai_error_title">画像を生成できませんでした</string>
     <string name="ai_error_body">接続を確認するか、別の説明を試してください。</string>
+    <string name="ai_error_busy">別の画像をまだ作成中です。少し待ってからもう一度お試しください。</string>
+    <string name="ai_error_paused">画像の作成は現在一時停止中です。後でもう一度お試しください。</string>
     <string name="ai_name_title">カードに名前を付ける</string>
     <string name="ai_name_body">プールに追加されます。あとでティアにドラッグできます。</string>
     <string name="ai_name_photo_note">生成された画像がカードの写真になります。</string>

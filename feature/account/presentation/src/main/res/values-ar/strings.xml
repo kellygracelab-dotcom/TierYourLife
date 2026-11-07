@@ -25,6 +25,7 @@
     <string name="account_action_cancel">إلغاء</string>
     <string name="account_error_name_not_saved">تعذّر حفظ هذا الاسم. أعد المحاولة.</string>
     <string name="account_error_face_not_made">لا يمكن استخدام هذه الصورة. اختر غيرها.</string>
+    <string name="account_error_face_not_saved">تعذّر الحفظ: لم يستجب الخادم.</string>
     <plurals name="account_community_lists">
         <item quantity="zero">لا قوائم عامة</item>
         <item quantity="one">قائمة عامة واحدة</item>

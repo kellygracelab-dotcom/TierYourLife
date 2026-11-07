@@ -51,11 +51,12 @@ interface BoardPlay {
     /**
      * Everything Play draws over a board: the picker while [open], then the
      * duels and the result. Always composed, so what it says on the way out
-     * outlives it. [onArranged] gets the board an applied result (or its undo)
-     * left; [onClose] says Play is done with the screen.
+     * outlives it. [onArranged] gets the board an applied result left, or
+     * the one its undo put back, and which of the two it was; [onClose] says
+     * Play is done with the screen.
      */
     @Composable
-    fun Layer(request: PlayRequest, open: Boolean, onArranged: (TierList) -> Unit, onClose: () -> Unit)
+    fun Layer(request: PlayRequest, open: Boolean, onArranged: (board: TierList, undone: Boolean) -> Unit, onClose: () -> Unit)
 }
 
 /** Where nothing plays: previews, tests, and screens navigation gave no Play to. */
@@ -64,5 +65,6 @@ object NoPlay : BoardPlay {
     override fun isSaved(key: String): Boolean = false
 
     @Composable
-    override fun Layer(request: PlayRequest, open: Boolean, onArranged: (TierList) -> Unit, onClose: () -> Unit) = Unit
+    override fun Layer(request: PlayRequest, open: Boolean, onArranged: (board: TierList, undone: Boolean) -> Unit, onClose: () -> Unit) =
+        Unit
 }

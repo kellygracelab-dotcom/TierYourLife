@@ -15,6 +15,8 @@
     <string name="ai_added">Hinzugefügt</string>
     <string name="ai_error_title">Bild konnte nicht generiert werden</string>
     <string name="ai_error_body">Prüfe deine Verbindung oder versuche eine andere Beschreibung.</string>
+    <string name="ai_error_busy">Ein anderes Bild wird noch erstellt. Versuche es gleich noch einmal.</string>
+    <string name="ai_error_paused">Das Erstellen von Bildern ist gerade pausiert. Versuche es später noch einmal.</string>
     <string name="ai_name_title">Karte benennen</string>
     <string name="ai_name_body">Kommt in den Pool. Du kannst sie später in eine Stufe ziehen.</string>
     <string name="ai_name_photo_note">Das generierte Bild wird zum Foto der Karte.</string>

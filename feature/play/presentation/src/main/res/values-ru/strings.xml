@@ -44,6 +44,7 @@
         <item quantity="other">%1$d новой карточки присоединятся со следующего раунда</item>
     </plurals>
     <string name="play_board_changed">Карточки изменились с начала этой игры.</string>
+    <string name="play_too_few_to_start_again">Карточки изменились, и их осталось слишком мало, чтобы начать эту игру заново.</string>
     <string name="play_start_again">Начать заново</string>
     <string name="play_into_mine_note">Результат попадёт в «Моя». «Его» не изменится.</string>
     <string name="play_cancel">Отмена</string>

@@ -90,6 +90,7 @@ class CommunityListViewModel @Inject constructor(
 
     /** Mine as it was before a move on Theirs replaced it, for Undo. */
     private var beforeTheirs: Pair<TierList, Boolean>? = null
+    private var beforeResult: BeforeResult? = null
 
     /** When the board on screen was last changed by its author, as the server said. */
     private var shownUpdatedAt: Long? = null
@@ -223,6 +224,7 @@ class CommunityListViewModel @Inject constructor(
         rankings.opened(answer, fromServer, sameBoard)
         ownList.opened(answer)
         shownUpdatedAt = answer.summary.updatedAtMillis
+        if (!sameBoard) beforeResult = null
         val shown = if (sameBoard) fresh.keepingWhatTheReaderDid(before) else fresh
         _state.value = shown
         return shown
@@ -314,15 +316,23 @@ class CommunityListViewModel @Inject constructor(
         }
     }
 
-    /** A game's result on someone else's list: it becomes the reader's own arrangement, on screen, still unsaved. */
-    fun putInMine(board: TierList) {
-        _state.update { current ->
-            if (current !is CommunityListUiState.Success || current.arriving) {
-                current
-            } else {
-                current.copy(mine = board.inWordsOf(current.mine, current.list), showing = Showing.Mine, arranged = true)
-            }
+    /**
+     * A game's result on someone else's list: it becomes the reader's own
+     * arrangement, on screen, still unsaved. Its undo puts back what was on
+     * screen before, Theirs and an untouched Mine included.
+     */
+    fun putInMine(board: TierList, undone: Boolean = false) {
+        val current = _state.value as? CommunityListUiState.Success ?: return
+        if (current.arriving) return
+        val before = beforeResult
+        beforeResult = null
+        // No record: a republished list replaced Mine meanwhile, and the result with it.
+        if (undone) {
+            before?.let { _state.value = current.copy(mine = it.mine, showing = it.showing, arranged = it.arranged) }
+            return
         }
+        beforeResult = BeforeResult(current.mine, current.showing, current.arranged)
+        _state.value = current.copy(mine = board.inWordsOf(current.mine, current.list), showing = Showing.Mine, arranged = true)
     }
 
     /**
@@ -437,3 +447,6 @@ internal fun pool(items: List<TierItem>) = Tier(
     items = items,
     isPool = true,
 )
+
+/** What was on screen when a game's result went into Mine, for its undo. */
+private data class BeforeResult(val mine: TierList, val showing: Showing, val arranged: Boolean)

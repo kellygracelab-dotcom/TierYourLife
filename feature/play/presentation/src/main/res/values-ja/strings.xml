@@ -29,6 +29,7 @@
         <item quantity="other">新しいカード %1$d 枚が次のラウンドから参加します</item>
     </plurals>
     <string name="play_board_changed">このゲームの開始後にカードが変わりました。</string>
+    <string name="play_too_few_to_start_again">カードが変わり、このゲームをやり直すには残りが少なすぎます。</string>
     <string name="play_start_again">最初から</string>
     <string name="play_into_mine_note">結果は「自分」に入ります。「作者」は変わりません。</string>
     <string name="play_cancel">キャンセル</string>

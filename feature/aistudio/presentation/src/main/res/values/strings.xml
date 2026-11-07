@@ -15,6 +15,8 @@
     <string name="ai_added">Added</string>
     <string name="ai_error_title">Couldn’t generate that image</string>
     <string name="ai_error_body">Check your connection, or try a different description.</string>
+    <string name="ai_error_busy">Another picture is still being made. Try again in a moment.</string>
+    <string name="ai_error_paused">Making pictures is paused for now. Try again later.</string>
     <string name="ai_name_title">Name this card</string>
     <string name="ai_name_body">Goes into the pool. You can drag it into a tier afterwards.</string>
     <string name="ai_name_photo_note">The generated image becomes the card’s photo.</string>

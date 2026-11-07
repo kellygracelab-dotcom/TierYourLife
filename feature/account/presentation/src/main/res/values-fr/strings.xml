@@ -25,6 +25,7 @@
     <string name="account_action_cancel">Annuler</string>
     <string name="account_error_name_not_saved">Impossible d’enregistrer ce nom. Réessayez.</string>
     <string name="account_error_face_not_made">Cette image ne peut pas être votre photo. Choisissez-en une autre.</string>
+    <string name="account_error_face_not_saved">Impossible d’enregistrer : le serveur n’a pas répondu.</string>
     <plurals name="account_community_lists">
         <item quantity="one">%1$d liste publique</item>
         <item quantity="other">%1$d listes publiques</item>

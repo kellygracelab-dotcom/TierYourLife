@@ -22,6 +22,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.FacePhotos
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.model.FaceRefused
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
 import kotlinx.coroutines.CompletableDeferred
@@ -559,7 +560,7 @@ class AccountViewModelTest {
         viewModel.face.confirmPosition(null)
         val state = viewModel.state.firstWithin { it.notice != null }
 
-        assertEquals(AccountNotice.FaceNotMade, state.notice)
+        assertEquals(AccountNotice.FaceNotSaved, state.notice)
         assertEquals(OLD_FACE, state.shownFace)
         assertEquals(emptyList<String?>(), repository.photoUrls)
         assertEquals(false, state.makingFace)
@@ -580,6 +581,21 @@ class AccountViewModelTest {
         assertEquals(AccountNotice.FaceNotMade, state.notice)
         assertEquals(OLD_FACE, state.shownFace)
         assertEquals(emptyList<String?>(), repository.photoUrls)
+    }
+
+    // A18: a server that did not answer read as a picture it turned down.
+    @Test
+    fun aPhotoTheServerNeverAnswersFor_saysSo_ratherThanThatThePictureWasRefused() = runBlocking {
+        val repository = FakeAccountRepository(initial = FakeAccountRepository.signedIn.withFace(OLD_FACE))
+        val viewModel = viewModel(repository, community = UnansweredFaces())
+        viewModel.state.firstWithin { it.shownFace == OLD_FACE }
+
+        viewModel.face.position("content://photos/1", fromGallery = true)
+        viewModel.face.confirmPosition(null)
+        val state = viewModel.state.firstWithin { it.notice != null }
+
+        assertEquals(AccountNotice.FaceNotSaved, state.notice)
+        assertEquals(OLD_FACE, state.shownFace)
     }
 
     // A poster left where it was needs no copy: its address is the face at once.
@@ -680,7 +696,11 @@ private fun Account.withFace(photoUrl: String): Account = (this as Account.Signe
 private class FakeCommunityForAccount : FakeCommunityRepository()
 
 private class RefusingFaces : FakeCommunityRepository() {
-    override suspend fun makeFace(pictureId: String): Result<String> = Result.failure(IllegalStateException("refused"))
+    override suspend fun makeFace(pictureId: String): Result<String> = Result.failure(FaceRefused())
+}
+
+private class UnansweredFaces : FakeCommunityRepository() {
+    override suspend fun makeFace(pictureId: String): Result<String> = Result.failure(IOException("no answer"))
 }
 
 private class FakeOwnLists(private val published: Int = 0, private val boards: Int = 0) : OwnLists {

@@ -35,6 +35,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.EditorialAuthors
+import com.artiuillab.tieryourlife.feature.community.domain.model.FaceRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
@@ -323,7 +324,7 @@ class RetrofitCommunityRepository @Inject constructor(
     override suspend fun makeFace(pictureId: String): Result<String> = attempt("Making that picture a face") {
         // Sent up first, as for publishing.
         pictures.sendNow(listOf(pictureId))
-        api.makeFace(pictureId).url
+        refusedAsAFace { api.makeFace(pictureId).url }
     }
 
     override suspend fun refreshAuthor(): Result<Unit> = attempt("Refreshing the author on published lists") { api.refreshAuthor() }
@@ -397,6 +398,13 @@ internal suspend fun <T> refusedOverTheLimit(block: suspend () -> T): T = try {
     throw if (refused.code() == HTTP_CONFLICT && refused.proxyCode() == TOO_MANY_FOLLOWING) TooManyFollowed() else refused
 }
 
+/** A picture SafeSearch turned down as its own failure, which a screen names; any other refusal as it came. */
+internal suspend fun <T> refusedAsAFace(block: suspend () -> T): T = try {
+    block()
+} catch (refused: HttpException) {
+    throw if (refused.code() == HTTP_UNPROCESSABLE_FACE) FaceRefused() else refused
+}
+
 /** Not found is an answer about the list, not about the network: it is gone. */
 internal fun HttpException.goneIfMissing(): Exception = if (code() == HTTP_NOT_FOUND) ListGone() else this
 
@@ -407,6 +415,7 @@ private const val MAX_BOARD_UID = 100
 private const val TOO_MANY_FOLLOWING = "TOO_MANY_FOLLOWING"
 private const val BAD_NAME = "BAD_NAME"
 private const val HTTP_NOT_FOUND = 404
+private const val HTTP_UNPROCESSABLE_FACE = 422
 internal const val HTTP_CONFLICT = 409
 
 /** The built-ins' ids and the slugs the server makes (`street-food`, `s-k3f9x2ab`). */

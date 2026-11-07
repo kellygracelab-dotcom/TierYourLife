@@ -15,6 +15,8 @@
     <string name="ai_added">Eklendi</string>
     <string name="ai_error_title">Bu görsel oluşturulamadı</string>
     <string name="ai_error_body">Bağlantınızı kontrol edin veya farklı bir açıklama deneyin.</string>
+    <string name="ai_error_busy">Başka bir görsel hâlâ oluşturuluyor. Biraz sonra tekrar deneyin.</string>
+    <string name="ai_error_paused">Görsel oluşturma şu anda duraklatıldı. Daha sonra tekrar deneyin.</string>
     <string name="ai_name_title">Bu kartı adlandırın</string>
     <string name="ai_name_body">Havuza eklenir. Sonra bir seviyeye sürükleyebilirsiniz.</string>
     <string name="ai_name_photo_note">Oluşturulan görsel, kartın fotoğrafı olur.</string>

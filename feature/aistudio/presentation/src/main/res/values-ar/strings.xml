@@ -15,6 +15,8 @@
     <string name="ai_added">تمت الإضافة</string>
     <string name="ai_error_title">تعذّر توليد هذه الصورة</string>
     <string name="ai_error_body">تحقق من اتصالك، أو جرّب وصفًا مختلفًا.</string>
+    <string name="ai_error_busy">لا تزال صورة أخرى قيد الإنشاء. حاول مرة أخرى بعد قليل.</string>
+    <string name="ai_error_paused">إنشاء الصور متوقف مؤقتًا. حاول مرة أخرى لاحقًا.</string>
     <string name="ai_name_title">سمِّ هذه البطاقة</string>
     <string name="ai_name_body">تنتقل إلى المجمّع. يمكنك سحبها إلى مستوى لاحقًا.</string>
     <string name="ai_name_photo_note">تصبح الصورة المولَّدة صورة البطاقة.</string>

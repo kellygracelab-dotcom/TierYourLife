@@ -26,6 +26,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowA
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowTarget
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.GuestFollows
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.sectionRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,6 +38,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
@@ -84,7 +87,7 @@ data class SectionUiState(
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SectionViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val community: CommunityRepository,
     private val cache: CommunityFeedCache,
     network: CommunityNetwork,
@@ -107,6 +110,11 @@ class SectionViewModel @Inject constructor(
 
     /** A guest's Follow opens the sign-in; signing in follows. */
     val signInRequests: Flow<Unit> = guest.signInRequests
+
+    private val toTopic = Channel<CommunityRoute.Topic>(Channel.CONFLATED)
+
+    /** A link to a section merged into a topic opens that topic, once, as soon as it is known; the section page stays beneath it. */
+    val mergedIntoTopic: Flow<CommunityRoute.Topic> = toTopic.receiveAsFlow()
 
     private val menu = ListMenuActions(preferences, community, viewModelScope) { notes.send(CommunityNotice.ActionFailed) }
 
@@ -148,6 +156,14 @@ class SectionViewModel @Inject constructor(
     init {
         viewModelScope.launch { network.available.collect { feed.onNetworkBack() } }
         guest.afterSignIn({ it == FollowTarget.Section(section) }) { setFollowing(section, true) }
+        // Once: coming back from that topic, even after the process was let go, stays on the section.
+        if (savedStateHandle.get<Boolean>(SENT_TO_TOPIC) != true) {
+            viewModelScope.launch {
+                val topic = catalog.directory.map { it.mergedTopics[route.sectionId] }.filterNotNull().first()
+                savedStateHandle[SENT_TO_TOPIC] = true
+                toTopic.send(CommunityRoute.Topic(topicId = topic, section = catalog.directory.value.resolve(route.sectionId)))
+            }
+        }
         // A link to a section that was merged away opens the one it became, as soon as that is known.
         viewModelScope.launch {
             catalog.directory.map { it.resolve(route.sectionId) }.distinctUntilChanged().collect { id ->
@@ -232,6 +248,8 @@ class SectionViewModel @Inject constructor(
 
     fun report(summary: PublishedListSummary, reason: ReportReason, note: String?) = menu.report(feed, summary, reason, note)
 }
+
+private const val SENT_TO_TOPIC = "sentToMergedTopic"
 
 /** A built-in's counts are the app's zeros until the list was read; anybody else's section only ever came from the server. */
 private fun countsKnown(directory: SectionDirectory, found: Section): Boolean = directory.counted || found.art == null

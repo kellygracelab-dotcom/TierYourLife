@@ -15,6 +15,8 @@
     <string name="ai_added">Dodano</string>
     <string name="ai_error_title">Nie udało się wygenerować obrazu</string>
     <string name="ai_error_body">Sprawdź połączenie lub spróbuj innego opisu.</string>
+    <string name="ai_error_busy">Inny obraz wciąż powstaje. Spróbuj ponownie za chwilę.</string>
+    <string name="ai_error_paused">Tworzenie obrazów jest teraz wstrzymane. Spróbuj ponownie później.</string>
     <string name="ai_name_title">Nazwij tę kartę</string>
     <string name="ai_name_body">Trafia do puli. Później możesz przeciągnąć ją na poziom.</string>
     <string name="ai_name_photo_note">Wygenerowany obraz stanie się zdjęciem karty.</string>

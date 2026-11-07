@@ -15,6 +15,8 @@
     <string name="ai_added">Adicionado</string>
     <string name="ai_error_title">Não foi possível gerar essa imagem</string>
     <string name="ai_error_body">Verifique sua conexão ou tente outra descrição.</string>
+    <string name="ai_error_busy">Outra imagem ainda está sendo criada. Tente de novo em instantes.</string>
+    <string name="ai_error_paused">A criação de imagens está pausada no momento. Tente de novo mais tarde.</string>
     <string name="ai_name_title">Nomeie este cartão</string>
     <string name="ai_name_body">Vai para a reserva. Você pode arrastá-lo para um nível depois.</string>
     <string name="ai_name_photo_note">A imagem gerada se torna a foto do cartão.</string>

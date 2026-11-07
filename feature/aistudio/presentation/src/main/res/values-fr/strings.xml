@@ -15,6 +15,8 @@
     <string name="ai_added">Ajouté</string>
     <string name="ai_error_title">Impossible de générer cette image</string>
     <string name="ai_error_body">Vérifiez votre connexion ou essayez une autre description.</string>
+    <string name="ai_error_busy">Une autre image est encore en cours de création. Réessayez dans un instant.</string>
+    <string name="ai_error_paused">La création d’images est en pause pour le moment. Réessayez plus tard.</string>
     <string name="ai_name_title">Nommez cette carte</string>
     <string name="ai_name_body">Elle va dans la réserve. Vous pourrez la glisser vers un niveau ensuite.</string>
     <string name="ai_name_photo_note">L’image générée devient la photo de la carte.</string>

@@ -298,6 +298,8 @@
     <string name="community_picture_credit_line">%1$s — %2$s</string>
     <string name="community_ranking_list_changed">The author changed this list since you placed its cards. Place them again to show your ranking.</string>
     <string name="community_ranking_banned">A moderator took down one of your lists, so you cannot show rankings for now.</string>
+    <string name="community_ranking_own_list">This list is yours, so there is no ranking of yours to show on it.</string>
+    <string name="community_ranking_list_gone">This list isn’t available anymore, so your ranking can’t be shown.</string>
     <string name="moderation_not_taken_down">Not taken down: the list is still public. Try again.</string>
     <string name="moderation_not_kept">Could not leave it up: the reports are still open. Try again.</string>
     <string name="moderation_not_moved">Not moved: the list is where it was. Try again.</string>

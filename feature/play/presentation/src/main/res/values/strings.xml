@@ -34,6 +34,7 @@
         <item quantity="other">%1$d new cards join from the next round</item>
     </plurals>
     <string name="play_board_changed">The cards changed since this game started.</string>
+    <string name="play_too_few_to_start_again">The cards changed, and too few are left to start this game again.</string>
     <string name="play_start_again">Start again</string>
     <string name="play_into_mine_note">The result goes into Mine. Theirs doesn’t change.</string>
     <string name="play_cancel">Cancel</string>

@@ -298,6 +298,8 @@
     <string name="community_picture_credit_line">%1$s — %2$s</string>
     <string name="community_ranking_list_changed">Der Autor hat diese Liste geändert, seit du ihre Karten eingeordnet hast. Ordne sie neu ein, um deine Rangliste zu zeigen.</string>
     <string name="community_ranking_banned">Ein Moderator hat eine deiner Listen entfernt, deshalb kannst du vorerst keine Ranglisten zeigen.</string>
+    <string name="community_ranking_own_list">Diese Liste ist deine, deshalb gibt es keine eigene Rangliste, die du hier zeigen kannst.</string>
+    <string name="community_ranking_list_gone">Diese Liste ist nicht mehr verfügbar, deshalb kann deine Rangliste nicht gezeigt werden.</string>
     <string name="moderation_not_taken_down">Nicht entfernt: Die Liste ist noch öffentlich. Versuche es erneut.</string>
     <string name="moderation_not_kept">Behalten hat nicht geklappt: Die Meldungen sind noch offen. Versuche es erneut.</string>
     <string name="moderation_not_moved">Nicht verschoben: Die Liste ist, wo sie war. Versuche es erneut.</string>

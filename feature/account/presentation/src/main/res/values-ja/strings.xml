@@ -25,6 +25,7 @@
     <string name="account_action_cancel">キャンセル</string>
     <string name="account_error_name_not_saved">この名前を保存できませんでした。もう一度お試しください。</string>
     <string name="account_error_face_not_made">この画像はプロフィールに使えません。別のものを選んでください。</string>
+    <string name="account_error_face_not_saved">保存できませんでした。サーバーが応答しません。</string>
     <plurals name="account_community_lists">
         <item quantity="other">公開リスト %1$d 件</item>
     </plurals>
@@ -62,7 +63,7 @@
     <string name="account_delete_confirm">完全に削除</string>
     <string name="account_error_not_deleted">アカウントを削除できませんでした。もう一度お試しください。</string>
     <string name="account_error_boards_not_copied">ボードをコピーできませんでした。ボードは端末に残っています。</string>
-    <string name="account_face_position_title">顔の位置を決める</string>
+    <string name="account_face_position_title">アイコンの位置を決める</string>
     <string name="account_face_position_body">画像をドラッグし、ピンチで拡大します。円の中がほかの人に見える部分です。</string>
     <string name="account_face_position_use">これを使う</string>
     <string name="account_face_position_failed">ここでは画像を表示できません。このままでも使えます。</string>

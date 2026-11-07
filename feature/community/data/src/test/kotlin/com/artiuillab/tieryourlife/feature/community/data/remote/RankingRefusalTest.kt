@@ -33,6 +33,11 @@ class RankingRefusalTest {
     }
 
     @Test
+    fun aListGoneOrUnderReview_isItsOwnRefusal() {
+        assertEquals(RankingRefusal.ListGone, refusal(404, """{"error":"No such list","code":"NOT_FOUND"}""").rankingRefusal())
+    }
+
+    @Test
     fun anythingElse_isAFailureToTryAgain() {
         assertEquals(RankingRefusal.Failed, refusal(400, """{"code":"INVALID"}""").rankingRefusal())
         assertEquals(RankingRefusal.Failed, refusal(404, "not json").rankingRefusal())

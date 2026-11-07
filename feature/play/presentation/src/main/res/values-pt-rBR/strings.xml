@@ -39,6 +39,7 @@
         <item quantity="other">%1$d cartões novos entram na próxima rodada</item>
     </plurals>
     <string name="play_board_changed">Os cartões mudaram desde que este jogo começou.</string>
+    <string name="play_too_few_to_start_again">Os cartões mudaram e restam poucos para começar este jogo de novo.</string>
     <string name="play_start_again">Começar de novo</string>
     <string name="play_into_mine_note">O resultado vai para “Meu”. “Dele” não muda.</string>
     <string name="play_cancel">Cancelar</string>

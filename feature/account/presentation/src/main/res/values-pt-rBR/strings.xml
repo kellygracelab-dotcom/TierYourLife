@@ -25,6 +25,7 @@
     <string name="account_action_cancel">Cancelar</string>
     <string name="account_error_name_not_saved">Não foi possível salvar esse nome. Tente de novo.</string>
     <string name="account_error_face_not_made">Essa imagem não pode ser sua foto. Escolha outra.</string>
+    <string name="account_error_face_not_saved">Não foi possível salvar: o servidor não respondeu.</string>
     <plurals name="account_community_lists">
         <item quantity="one">%1$d lista pública</item>
         <item quantity="other">%1$d listas públicas</item>

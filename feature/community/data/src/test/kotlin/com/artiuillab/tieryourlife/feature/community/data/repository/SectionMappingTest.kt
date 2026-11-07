@@ -167,6 +167,13 @@ class SectionMappingTest {
     }
 
     @Test
+    fun `gone into a topic names the topic too`() {
+        val merged = refusal(410, """{"code":"MERGED","mergedInto":"food","detail":"food","mergedTopicId":"t7"}""").sectionRefusal()
+
+        assertEquals(SectionLookup.Merged("food", topic = "t7"), merged)
+    }
+
+    @Test
     fun `gone without saying where is as good as unknown`() {
         assertEquals(SectionLookup.Unknown, refusal(410, "<html>").sectionRefusal())
     }
