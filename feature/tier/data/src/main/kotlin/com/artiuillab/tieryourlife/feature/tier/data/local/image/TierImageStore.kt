@@ -79,7 +79,12 @@ class TierImageStore internal constructor(
         input.use { source ->
             target.outputStream().use { sink -> source.copyTo(sink) }
         }
-        shrinkInPlace(target)
+        try {
+            shrinkInPlace(target)
+        } catch (refused: IOException) {
+            target.delete()
+            throw refused
+        }
         return target.absolutePath
     }
 
@@ -154,28 +159,53 @@ internal fun copyAtMost(source: InputStream, sink: OutputStream, limit: Long): B
 /** Whether the bytes decode as a picture at all; a site's error page is not one. */
 private fun isPicture(file: File): Boolean {
     val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    BitmapFactory.decodeFile(file.absolutePath, bounds)
+    decode(file, bounds)
     return bounds.outWidth > 0 && bounds.outHeight > 0
 }
 
+/**
+ * Compression is best effort, and the original stays when it could not be
+ * smaller. Not for a GIF or a WebP: either may move, so it always becomes a
+ * still of its first frame, larger or not, and one that cannot is an [IOException].
+ */
 internal fun shrinkInPlace(file: File) {
-    val bitmap = decodeWithinLimit(file) ?: return
+    val mayMove = mayMove(file)
+    val bitmap = if (mayMove) decodeFirstFrame(file) else decodeWithinLimit(file)
+    if (bitmap == null) {
+        if (mayMove) throw IOException("A GIF or WebP that would not decode")
+        return
+    }
+    // A JPEG has no see-through parts; a GIF's or a WebP's may.
+    val format = if (mayMove && bitmap.hasAlpha()) Bitmap.CompressFormat.PNG else Bitmap.CompressFormat.JPEG
     val temp = File(file.parentFile, file.name + ".tmp")
-
-    // Compression is best effort; the original copy remains usable on failure.
     try {
-        val written = temp.outputStream().use { out ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, out)
-        }
-        if (written && temp.length() > 0 && temp.length() < file.length()) {
-            temp.copyTo(file, overwrite = true)
-        }
-    } catch (_: IOException) {
+        val compressed = runCatching { temp.outputStream().use { out -> bitmap.compress(format, JPEG_QUALITY, out) } }.getOrDefault(false)
+        val written = compressed && temp.length() > 0
+        val replaced = written &&
+            (mayMove || temp.length() < file.length()) &&
+            runCatching { temp.copyTo(file, overwrite = true) }.isSuccess
+        if (mayMove && !replaced) throw IOException("A GIF or WebP that would not become a still")
     } finally {
         temp.delete()
         bitmap.recycle()
     }
 }
+
+private val GIF = "GIF8".toByteArray(Charsets.US_ASCII)
+private val RIFF = "RIFF".toByteArray(Charsets.US_ASCII)
+private val WEBP = "WEBP".toByteArray(Charsets.US_ASCII)
+private const val WEBP_TAG_AT = 8
+private const val HEADER_BYTES = 12
+
+/** By the bytes, as the server judges them: a name or a MIME type says nothing about what is inside. */
+private fun mayMove(file: File): Boolean {
+    val head = ByteArray(HEADER_BYTES)
+    val read = file.inputStream().use { it.read(head) }
+    if (read < HEADER_BYTES) return read >= GIF.size && head.startsWith(GIF)
+    return head.startsWith(GIF) || (head.startsWith(RIFF) && head.copyOfRange(WEBP_TAG_AT, HEADER_BYTES).contentEquals(WEBP))
+}
+
+private fun ByteArray.startsWith(prefix: ByteArray): Boolean = copyOfRange(0, prefix.size).contentEquals(prefix)
 
 private fun decodeWithinLimit(file: File): Bitmap? {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return null
@@ -190,6 +220,19 @@ private fun decodeWithinLimit(file: File): Bitmap? {
         }
     }.getOrNull()
 }
+
+/** BitmapFactory, on every API level: it reads the first frame of a GIF or a WebP. */
+private fun decodeFirstFrame(file: File): Bitmap? {
+    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    decode(file, bounds)
+    val longestEdge = maxOf(bounds.outWidth, bounds.outHeight)
+    if (longestEdge <= 0) return null
+    return decode(file, BitmapFactory.Options().apply { inSampleSize = sampleSizeFor(longestEdge) })
+}
+
+/** Through a stream closed here: a file still held open could be neither replaced nor deleted. */
+private fun decode(file: File, options: BitmapFactory.Options): Bitmap? =
+    runCatching { file.inputStream().use { BitmapFactory.decodeStream(it, null, options) } }.getOrNull()
 
 internal fun sampleSizeFor(longestEdge: Int): Int {
     var sample = 1
