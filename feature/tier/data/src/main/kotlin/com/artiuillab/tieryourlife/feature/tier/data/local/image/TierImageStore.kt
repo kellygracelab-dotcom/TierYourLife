@@ -7,6 +7,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.os.Build
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.scale
 import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -205,7 +207,7 @@ private fun writeStill(frame: Bitmap, temp: File, limit: Long): Boolean {
     try {
         var fits = temp.compressFrom(still, Bitmap.CompressFormat.PNG) && temp.length() <= limit
         while (!fits && maxOf(still.width, still.height) / 2 >= SMALLEST_HALVED_EDGE_PX) {
-            val half = Bitmap.createScaledBitmap(still, still.width / 2, still.height / 2, true)
+            val half = still.scale(still.width / 2, still.height / 2)
             if (still !== frame) still.recycle()
             still = half
             fits = temp.compressFrom(still, Bitmap.CompressFormat.PNG) && temp.length() <= limit
@@ -217,7 +219,7 @@ private fun writeStill(frame: Bitmap, temp: File, limit: Long): Boolean {
 }
 
 private fun File.compressOnWhite(still: Bitmap): Boolean {
-    val flat = Bitmap.createBitmap(still.width, still.height, Bitmap.Config.ARGB_8888)
+    val flat = createBitmap(still.width, still.height)
     return try {
         Canvas(flat).apply {
             drawColor(Color.WHITE)
