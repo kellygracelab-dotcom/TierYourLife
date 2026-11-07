@@ -8,6 +8,7 @@ internal object KeptText {
     const val TITLE = 80
     const val CAPTION = 60
     const val CREDIT = 200
+    const val URL = 2000
 
     /**
      * The name of a card with neither a name nor a picture the account can
@@ -27,7 +28,7 @@ internal object KeptText {
     fun cardTitle(title: String, hasKeptPicture: Boolean): String =
         clean(title, TITLE) ?: if (hasKeptPicture) "" else UNTITLED_CARD
 
-    /** A picture another device can fetch: one of ours by its id, or a web address. */
+    /** A picture another device can fetch: one of ours by its id, or a web address the account keeps. */
     fun isKeptPicture(pictureId: String?, imageUrl: String?): Boolean =
-        pictureId != null || imageUrl?.trim()?.startsWith("https://", ignoreCase = true) == true
+        pictureId != null || imageUrl?.trim()?.let { it.startsWith("https://", ignoreCase = true) && it.length <= URL } == true
 }
