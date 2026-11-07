@@ -159,6 +159,11 @@ interface AppPreferences {
 
     fun setAccountErasedNoticePending(pending: Boolean) = Unit
 
+    /** An account the proxy said was erased, written before the phone leaves it: a process killed halfway leaves it again. */
+    fun erasedAccountToLeave(): String? = null
+
+    fun setErasedAccountToLeave(uid: String?) = Unit
+
     /**
      * Whether the person folded the pool's side column (true), opened it
      * (false), or left it to the board (null). Kept on this device only: it is

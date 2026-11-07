@@ -172,4 +172,12 @@ class FakeAppPreferences(
     override fun setAccountErasedNoticePending(pending: Boolean) {
         accountErasedNotice = pending
     }
+
+    var erasedToLeave: String? = null
+
+    override fun erasedAccountToLeave(): String? = erasedToLeave
+
+    override fun setErasedAccountToLeave(uid: String?) {
+        erasedToLeave = uid
+    }
 }

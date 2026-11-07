@@ -24,7 +24,11 @@ import org.robolectric.annotation.Config
 class ErasedElsewhereTest : SyncEngineBench() {
 
     private val preferences = FakeAppPreferences()
-    private val accounts = FakeAccountRepository(initial = ann)
+    private var atSignOut: Pair<Boolean, String?>? = null
+    private val accounts = FakeAccountRepository(
+        initial = ann,
+        onSignOut = { atSignOut = preferences.accountErasedNoticePending() to preferences.erasedAccountToLeave() },
+    )
     private val notice = AccountErasedNotice(preferences)
     private var forgotten = 0
     private val ownership by lazy { BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences) }
@@ -42,6 +46,7 @@ class ErasedElsewhereTest : SyncEngineBench() {
             ThePerson(preferences, setOf(PersonalData { forgotten++ })),
         ) { 0L },
         notice,
+        preferences,
     )
 
     private suspend fun ownerOf(uid: String) = dao.boardByUid(uid)!!.ownerUid
@@ -116,6 +121,43 @@ class ErasedElsewhereTest : SyncEngineBench() {
         assertNull(ownerOf(films))
         assertEquals(0, forgotten)
         assertFalse(notice.pending.value)
+    }
+
+    @Test
+    fun theNoticeAndTheLeave_areWrittenDownBeforeTheSignOut() = runBlocking {
+        watcher().leave("ann")
+
+        assertEquals(true to "ann", atSignOut)
+        assertNull("done", preferences.erasedAccountToLeave())
+    }
+
+    // Killed before the sign-out: at the next start it is all done again.
+    @Test
+    fun aLeaveTheProcessDidNotFinish_isDoneAgainAtStart() = runBlocking {
+        val films = givenLocalBoard("Films", owner = "ann")
+        preferences.setLastSignedIn("ann")
+        preferences.setErasedAccountToLeave("ann")
+
+        watcher().resume()
+
+        assertEquals(Account.Guest, accounts.current())
+        assertNull(ownerOf(films))
+        assertTrue(notice.pending.value)
+        assertNull(preferences.erasedAccountToLeave())
+    }
+
+    @Test
+    fun leftTwice_endsAsOnce() = runBlocking {
+        val films = givenLocalBoard("Films", owner = "ann")
+        preferences.setLastSignedIn("ann")
+
+        watcher().leave("ann")
+        watcher().leave("ann")
+
+        assertEquals(Account.Guest, accounts.current())
+        assertNull(ownerOf(films))
+        assertEquals(1, forgotten)
+        assertTrue(notice.pending.value)
     }
 
     @Test

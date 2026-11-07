@@ -34,6 +34,7 @@ private const val KEY_POOL_DOCK_ROWS = "poolDockRows"
 private const val KEY_PUBLISHED_OWNERS = "published_owners"
 private const val KEY_LAST_PUBLISHING_ACCOUNT = "last_publishing_account"
 private const val KEY_ACCOUNT_ERASED_NOTICE = "account_erased_notice"
+private const val KEY_ERASED_ACCOUNT_TO_LEAVE = "erased_account_to_leave"
 
 @Singleton
 class SharedPreferencesAppPreferences @Inject constructor(
@@ -124,8 +125,17 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun accountErasedNoticePending(): Boolean = prefs.getBoolean(KEY_ACCOUNT_ERASED_NOTICE, false)
 
+    // Committed: written just before the sign-out, which may be the last thing the process does.
     override fun setAccountErasedNoticePending(pending: Boolean) {
-        prefs.edit { putBoolean(KEY_ACCOUNT_ERASED_NOTICE, pending) }
+        prefs.edit(commit = true) { putBoolean(KEY_ACCOUNT_ERASED_NOTICE, pending) }
+    }
+
+    override fun erasedAccountToLeave(): String? = prefs.getString(KEY_ERASED_ACCOUNT_TO_LEAVE, null)
+
+    override fun setErasedAccountToLeave(uid: String?) {
+        prefs.edit(commit = true) {
+            if (uid == null) remove(KEY_ERASED_ACCOUNT_TO_LEAVE) else putString(KEY_ERASED_ACCOUNT_TO_LEAVE, uid)
+        }
     }
 
     override fun poolDockRows(): Int = prefs.getInt(KEY_POOL_DOCK_ROWS, DEFAULT_POOL_DOCK_ROWS)

@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.sync
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.network.ErasedAccounts
 import com.artiuillab.tieryourlife.core.settings.AccountErasedNotice
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,16 +14,29 @@ class ErasedElsewhere @Inject constructor(
     private val erased: ErasedAccounts,
     private val merge: RoomBoardMerge,
     private val notice: AccountErasedNotice,
+    private val preferences: AppPreferences,
 ) {
 
     suspend fun watch() {
-        erased.uids.collect { uid -> runSuspendCatching { leave(uid) }.onFailure { Timber.w(it, "Could not leave an erased account") } }
+        resume()
+        erased.uids.collect { uid -> leaveOrSay(uid) }
+    }
+
+    /** A leave the process did not live to finish. */
+    internal suspend fun resume() {
+        preferences.erasedAccountToLeave()?.let { leaveOrSay(it) }
+    }
+
+    private suspend fun leaveOrSay(uid: String) {
+        runSuspendCatching { leave(uid) }.onFailure { Timber.w(it, "Could not leave an erased account") }
     }
 
     internal suspend fun leave(uid: String) {
-        if (merge.leaveErased(uid)) {
-            Timber.i("The account was erased elsewhere; signed out, boards kept here")
+        preferences.setErasedAccountToLeave(uid)
+        merge.leaveErased(uid) {
+            Timber.i("The account was erased elsewhere; signing out, boards kept here")
             notice.raise()
         }
+        preferences.setErasedAccountToLeave(null)
     }
 }
