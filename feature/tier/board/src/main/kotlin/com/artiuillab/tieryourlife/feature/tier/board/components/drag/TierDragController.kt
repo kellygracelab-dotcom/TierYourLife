@@ -11,6 +11,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TextCardRoom
 
 val TIER_LIST_ITEM_SPACING = 8.dp
 
@@ -21,6 +22,8 @@ data class DragPayload(
     val sourceTierId: Long,
     val width: Dp,
     val height: Dp,
+    /** A picture-less card is drawn lifted as it was in its row. */
+    val textRoom: TextCardRoom = TextCardRoom(),
 )
 
 sealed interface DragTarget {

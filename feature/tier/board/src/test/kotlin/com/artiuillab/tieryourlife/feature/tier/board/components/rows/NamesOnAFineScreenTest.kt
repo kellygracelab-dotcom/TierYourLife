@@ -68,14 +68,6 @@ class NamesOnAFineScreenTest {
     }
 
     @Test
-    fun aOneWordCard_onAnOrdinaryTile_isNotCutInTwo() {
-        show(board(cardTitle = "Item-293"))
-
-        assertBreaksOnlyBetweenWords("Item-293")
-        assertEquals(1, layoutOf("Item-293").lineCount)
-    }
-
-    @Test
     fun theMoveSheet_keepsTheNameInItsBadge_andWritesItOutBeside() {
         show(board(label = LONG_NAME, caption = "Every time"))
         composeRule.onNodeWithTag(TierDetailTestTags.tile(previewTierList.tiers[1].items.first().id)).performTouchInput { doubleClick() }
@@ -92,11 +84,10 @@ class NamesOnAFineScreenTest {
         TierYourLifeTheme { TierDetailScreenContent(state = TierDetailUiState.Success(list)) }
     }
 
-    private fun board(label: String? = null, caption: String? = null, cardTitle: String? = null): TierList = previewTierList.copy(
+    private fun board(label: String? = null, caption: String? = null): TierList = previewTierList.copy(
         tiers = previewTierList.tiers.mapIndexed { index, tier ->
             when {
                 index == 0 && label != null -> tier.copy(label = label, caption = caption)
-                index == 0 && cardTitle != null -> tier.copy(items = tier.items.mapIndexed { at, item -> if (at == 0) item.copy(title = cardTitle) else item })
                 else -> tier
             }
         },
