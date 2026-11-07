@@ -27,6 +27,7 @@ class ErasedElsewhereTest : SyncEngineBench() {
     private val accounts = FakeAccountRepository(initial = ann)
     private val notice = AccountErasedNotice(preferences)
     private var forgotten = 0
+    private val ownership by lazy { BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences) }
 
     private fun watcher() = ErasedElsewhere(
         ErasedAccounts(),
@@ -34,7 +35,7 @@ class ErasedElsewhereTest : SyncEngineBench() {
             dao,
             database.ownerDao(),
             boards,
-            BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences),
+            ownership,
             lock,
             preferences,
             accounts,
@@ -66,25 +67,53 @@ class ErasedElsewhereTest : SyncEngineBench() {
         assertTrue("still there after a restart", preferences.accountErasedNoticePending())
     }
 
-    // Answered after a sign-out, or to a token another account's request carried.
+    // Answered after a switch, or to a request still on its way when Bob signed out: his boards are let go, Ann is left be.
     @Test
-    fun anotherAccountErased_changesNothing() = runBlocking {
+    fun anotherAccountErased_keepsItsBoardsHere_andLeavesTheSignedInOneBe() = runBlocking {
         val films = givenLocalBoard("Films", owner = "ann")
+        val games = givenLocalBoard("Bob's games", owner = "bob")
+        ownership.holdFor("bob")
+        val books = givenLocalBoard("Bob's books", owner = "bob")
+        preferences.setLastSignedIn("ann")
 
         watcher().leave("bob")
 
+        assertNull("the phone's own now", ownerOf(books))
+        assertNull(ownerOf(games))
+        assertTrue("no longer held for an account that cannot come back", preferences.heldBoards().isEmpty())
         assertEquals(ann, accounts.current())
         assertEquals("ann", ownerOf(films))
+        assertEquals("ann", preferences.lastSignedIn())
         assertEquals(0, forgotten)
         assertFalse(notice.pending.value)
     }
 
+    // The session was already gone, and its boards held for it as for any lost one.
     @Test
-    fun aGuestHearingIt_changesNothing() = runBlocking {
+    fun aSessionAlreadyLost_keepsItsBoardsHere_andSaysSo() = runBlocking {
+        val films = givenLocalBoard("Films", owner = "ann")
+        accounts.accounts.value = Account.Guest
+        ownership.holdFor("ann")
+        preferences.setLastSignedIn("ann")
+
+        watcher().leave("ann")
+
+        assertNull(ownerOf(films))
+        assertTrue(preferences.heldBoards().isEmpty())
+        assertNull(preferences.lastSignedIn())
+        assertEquals(Account.Guest, accounts.current())
+        assertEquals(1, forgotten)
+        assertTrue(notice.pending.value)
+    }
+
+    @Test
+    fun aGuestWithNobodyBefore_keepsTheBoards_andSaysNothing() = runBlocking {
+        val films = givenLocalBoard("Films", owner = "ann")
         accounts.accounts.value = Account.Guest
 
         watcher().leave("ann")
 
+        assertNull(ownerOf(films))
         assertEquals(0, forgotten)
         assertFalse(notice.pending.value)
     }

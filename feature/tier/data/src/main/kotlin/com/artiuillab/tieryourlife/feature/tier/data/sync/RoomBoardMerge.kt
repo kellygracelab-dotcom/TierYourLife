@@ -189,17 +189,20 @@ class RoomBoardMerge internal constructor(
 
     /**
      * The proxy said [uid] was erased, from another phone: as an erase from
-     * this one ends, without asking the server again. False when [uid] is not
-     * who is signed in now, so there was nothing to do.
+     * this one ends, without asking the server again. Its boards are the
+     * phone's own whoever is signed in now; only its own session is signed
+     * out. False when the phone was no longer its, so there is nobody to tell.
      */
     suspend fun leaveErased(uid: String): Boolean = lock.ahead {
-        val now = accounts.current() as? Account.SignedIn
-        if (now?.uid != uid) return@ahead false
-        keepBoardsOf(now.recordKey)
-        preferences.setLastSignedIn(null)
-        accounts.signOut()
-        thePerson.forget()
-        true
+        val current = (accounts.account.first { it != Account.Unknown } as? Account.SignedIn)?.uid == uid
+        val itsOwn = current || preferences.lastSignedIn() == uid
+        keepBoardsOf(uid)
+        if (current) {
+            preferences.setLastSignedIn(null)
+            accounts.signOut()
+        }
+        if (itsOwn) thePerson.forget()
+        itsOwn
     }
 
     private suspend fun keepBoardsOf(account: String) {
@@ -207,7 +210,7 @@ class RoomBoardMerge internal constructor(
         ownership.reclaim(account)
         ownership.forgetCopiesInto(account)
         val kept = owners.keepBoardsOfDeleted(account)
-        preferences.setErasureUnderWay(null)
+        if (erasureMarkOf(preferences.erasureUnderWay())?.account == account) preferences.setErasureUnderWay(null)
         if (preferences.lastSignedIn() == account) preferences.setLastSignedIn(null)
         Timber.i("Kept %d board(s) of the deleted account on this phone", kept)
         ownership.announceMove()
