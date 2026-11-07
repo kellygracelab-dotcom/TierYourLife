@@ -312,7 +312,7 @@
     <string name="community_picture_credit_line">%1$s — %2$s</string>
     <string name="community_ranking_list_changed">Автор изменил этот список, пока вы расставляли карточки. Расставьте их заново, чтобы показать свой рейтинг.</string>
     <string name="community_ranking_banned">Модератор снял один из ваших списков, поэтому пока вы не можете показывать рейтинги.</string>
-    <string name="community_ranking_own_list">Это ваш список, поэтому показывать на нём ваш рейтинг не нужно.</string>
+    <string name="community_ranking_own_list">Это ваш список, поэтому на нём нечего показывать.</string>
     <string name="community_ranking_list_gone">Этот список больше недоступен, поэтому ваш рейтинг нельзя показать.</string>
     <string name="community_ranking_bad_tier_names">У каждого уровня должно быть название, а в рейтинге может быть не больше 20 уровней.</string>
     <string name="community_ranking_cards_dont_match">Карточки в вашем рейтинге не совпадают с этим списком. Откройте его заново и расставьте их ещё раз.</string>

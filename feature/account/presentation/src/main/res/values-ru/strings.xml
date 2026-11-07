@@ -58,8 +58,8 @@
     <string name="merge_title">Доски без аккаунта</string>
     <string name="merge_body">На этом телефоне есть доски, сделанные без аккаунта (%1$s). Перенести их в аккаунт %2$s?</string>
     <string name="merge_footnote">Оставленные на телефоне, они видны, когда вы не вошли в аккаунт. Ничего не удаляется ни в одном случае.</string>
-    <string name="merge_held_title">Доски аккаунта, из которого вас вывели</string>
-    <string name="merge_held_body">На этом телефоне есть доски из аккаунта, из которого вас вывели (%1$s). Скопировать их в аккаунт %2$s?</string>
+    <string name="merge_held_title">Доски аккаунта, из которого вы вышли</string>
+    <string name="merge_held_body">На этом телефоне есть доски из аккаунта, из которого вы вышли (%1$s). Скопировать их в аккаунт %2$s?</string>
     <string name="merge_held_footnote">Сами доски остаются на телефоне и вернутся в тот аккаунт, когда вы снова в него войдёте. Ничего не удаляется.</string>
     <string name="merge_held_action_copy_in">Скопировать в аккаунт %1$s</string>
     <string name="merge_name_suffix">(с этого телефона)</string>

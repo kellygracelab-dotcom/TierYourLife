@@ -38,7 +38,7 @@
     <string name="list_settings_see_in_community">Toplulukta gör</string>
     <string name="list_settings_see_in_community_sub">Başkalarının gördüğü gibi; sıralamaları ve bağlantısıyla</string>
     <string name="list_settings_update_published">Yayımlanan sürüm</string>
-    <string name="list_settings_update_published_body">Bu panoyu aynı bağlantıyla yeniden gönder.</string>
+    <string name="list_settings_update_published_body">Bu panoyu aynı bağlantıyla yeniden gönderin.</string>
     <string name="manual_dialog_add">Ekle</string>
     <plurals name="manual_dialog_add_many">
         <item quantity="one">%1$d öğe ekle</item>
@@ -93,12 +93,12 @@
     </plurals>
     <string name="tier_detail_ranked_header_empty">Henüz sıralanan yok</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
-        <item quantity="one">Havuz, %1$d sıralanmadı. Genişlet.</item>
-        <item quantity="other">Havuz, %1$d sıralanmadı. Genişlet.</item>
+        <item quantity="one">Havuz, %1$d sıralanmadı. Genişletin.</item>
+        <item quantity="other">Havuz, %1$d sıralanmadı. Genişletin.</item>
     </plurals>
     <plurals name="tier_detail_ranked_pool_expanded_description">
-        <item quantity="one">Havuz, %1$d sıralanmadı. Daralt.</item>
-        <item quantity="other">Havuz, %1$d sıralanmadı. Daralt.</item>
+        <item quantity="one">Havuz, %1$d sıralanmadı. Daraltın.</item>
+        <item quantity="other">Havuz, %1$d sıralanmadı. Daraltın.</item>
     </plurals>
     <string name="tier_detail_ranked_row_description">%1$d. sıra, %2$s, seviye %3$s.</string>
     <string name="tier_detail_snackbar_undo">Geri al</string>

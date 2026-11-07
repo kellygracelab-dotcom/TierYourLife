@@ -117,4 +117,21 @@ class CardTitleFromPromptTest {
         assertTrue(result.length <= 40)
         assertEquals("Alpha bravo charlie delta echo foxtrot", result)
     }
+
+    @Test
+    fun `a family emoji at the cut is dropped whole`() {
+        val family = "👨‍👩‍👧"
+        val prompt = "a".repeat(38) + family + "z"
+
+        val result = cardTitleFromPrompt(prompt)
+
+        assertEquals("A" + "a".repeat(37), result)
+    }
+
+    @Test
+    fun `a family emoji that fits is kept whole`() {
+        val family = "👨‍👩‍👧"
+
+        assertTrue(cardTitleFromPrompt("a".repeat(30) + family + "z").endsWith(family + "z"))
+    }
 }

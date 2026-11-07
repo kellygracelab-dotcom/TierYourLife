@@ -306,7 +306,7 @@
     <string name="community_ranking_cards_dont_match">Sıralamanızdaki kartlar bu listeyle uyuşmuyor. Listeyi yeniden açın ve kartları bir kez daha yerleştirin.</string>
     <string name="community_ranking_not_accepted">Sıralamanız gönderilemedi: içindeki bir şey kabul edilmiyor.</string>
     <string name="moderation_not_taken_down">Kaldırılmadı: liste hâlâ herkese açık. Yeniden deneyin.</string>
-    <string name="moderation_not_kept">Liste bırakılamadı: şikâyetler hâlâ açık. Yeniden deneyin.</string>
+    <string name="moderation_not_kept">Liste bırakılamadı: şikayetler hâlâ açık. Yeniden deneyin.</string>
     <string name="moderation_not_moved">Taşınmadı: liste olduğu yerde. Yeniden deneyin.</string>
-    <string name="moderation_moved_not_dismissed">Taşındı, ancak şikâyetleri hâlâ açık. Kapatmak için “Bırak” düğmesine dokunun.</string>
+    <string name="moderation_moved_not_dismissed">Taşındı, ancak şikayetleri hâlâ açık. Kapatmak için “Bırak” düğmesine dokunun.</string>
 </resources>

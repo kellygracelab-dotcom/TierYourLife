@@ -47,7 +47,7 @@
         <item quantity="other">Zalogowano · %1$d kredytu</item>
     </plurals>
     <string name="settings_backup_label">Kopia moich tablic</string>
-    <string name="settings_backup_note">Twoje zdjęcia i wygenerowane karty trafiają na Twoje konto, gdzie widzisz je tylko Ty. Publikacja kopiuje obrazy listy do kanału, gdzie widzą je wszyscy.</string>
+    <string name="settings_backup_note">Twoje zdjęcia i wygenerowane karty trafiają na twoje konto, gdzie widzisz je tylko Ty. Publikacja kopiuje obrazy listy do kanału, gdzie widzą je wszyscy.</string>
     <string name="settings_backup_off_body">Z tego telefonu nic nie zostanie usunięte: tablice zostają tutaj. Kopia na koncie zostanie usunięta, na twoich innych urządzeniach tablice trafią do kosza, a nowy telefon zacznie od pustego. Po ponownym włączeniu trafią na konto jeszcze raz.</string>
     <string name="settings_backup_off_cancel">Anuluj</string>
     <string name="settings_backup_off_confirm">Usuń kopię</string>
