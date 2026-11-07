@@ -1,7 +1,15 @@
 package com.artiuillab.tieryourlife.core.settings
 
-/** [take] that never cuts through an emoji, a flag or a letter and its accent. */
-fun String.takeWhole(n: Int): String = if (length <= n) this else substring(0, wholeCutAtOrBefore(n))
+/**
+ * [take] that never cuts through an emoji, a flag or a letter and its accent --
+ * unless the first of them alone is longer than [n]: then only its halves of a
+ * pair are kept together, as nothing would otherwise be left.
+ */
+fun String.takeWhole(n: Int): String {
+    if (length <= n) return this
+    val cut = wholeCutAtOrBefore(n).takeIf { it > 0 } ?: if (n > 0 && this[n - 1].isHighSurrogate()) n - 1 else n
+    return substring(0, cut)
+}
 
 /** The first emoji, flag or letter with its accents, whole. */
 fun String.firstWhole(): String = substring(0, nextWholeCut(0))

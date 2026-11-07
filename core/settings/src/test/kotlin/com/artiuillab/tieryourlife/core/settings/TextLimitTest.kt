@@ -50,6 +50,15 @@ class TextLimitTest {
     }
 
     @Test
+    fun aFirstLetterLongerThanTheLimit_isStillCut_ratherThanLost() {
+        val marked = "a" + "\u0301".repeat(90)
+        assertEquals(marked.take(80), marked.takeWhole(80))
+
+        val chain = List(20) { "👨" }.joinToString("\u200D")
+        assertEquals(chain.take(39), chain.takeWhole(40))
+    }
+
+    @Test
     fun theFirstWholeIsTheWholeEmoji() {
         val family = "👨‍👩‍👧"
         assertEquals(family, "${family}Ann".firstWhole())

@@ -308,6 +308,21 @@ class SyncFindingsTest : SyncEngineBench() {
         assertEquals(fingerprintOf(uid), sent.fingerprint)
     }
 
+    // P8: a title that is one letter with a hundred accents was cut to nothing,
+    // written over here, and refused by the account on every run after.
+    @Test
+    fun aTitleThatIsOneHugeLetter_staysATitle() = runBlocking {
+        val marked = "a" + "\u0301".repeat(100)
+        val uid = givenLocalBoard(marked, itemTitle = marked)
+
+        engine().sync()
+
+        val sent = boards.kept.single().second
+        assertEquals(marked.take(KeptText.TITLE), sent.title)
+        assertEquals(marked.take(KeptText.TITLE), sent.items.single().title)
+        assertEquals(sent.title, dao.boardByUid(uid)!!.title)
+    }
+
     // A2: two photos added at once make cards with no name, which /boards
     // refuses, and the whole board never backed up again.
     @Test
