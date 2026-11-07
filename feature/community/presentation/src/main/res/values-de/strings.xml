@@ -302,6 +302,9 @@
     <string name="community_ranking_banned">Ein Moderator hat eine deiner Listen entfernt, deshalb kannst du vorerst keine Ranglisten zeigen.</string>
     <string name="community_ranking_own_list">Diese Liste ist deine, deshalb gibt es keine eigene Rangliste, die du hier zeigen kannst.</string>
     <string name="community_ranking_list_gone">Diese Liste ist nicht mehr verfügbar, deshalb kann deine Rangliste nicht gezeigt werden.</string>
+    <string name="community_ranking_bad_tier_names">Jede Stufe braucht einen Namen, und eine Rangliste hat höchstens 20 Stufen.</string>
+    <string name="community_ranking_cards_dont_match">Die Karten in deiner Rangliste passen nicht zu dieser Liste. Öffne sie erneut und ordne sie noch einmal ein.</string>
+    <string name="community_ranking_not_accepted">Deine Rangliste konnte nicht gesendet werden: Etwas darin wird nicht angenommen.</string>
     <string name="moderation_not_taken_down">Nicht entfernt: Die Liste ist noch öffentlich. Versuche es erneut.</string>
     <string name="moderation_not_kept">Behalten hat nicht geklappt: Die Meldungen sind noch offen. Versuche es erneut.</string>
     <string name="moderation_not_moved">Nicht verschoben: Die Liste ist, wo sie war. Versuche es erneut.</string>

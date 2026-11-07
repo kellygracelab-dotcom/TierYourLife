@@ -314,6 +314,9 @@
     <string name="community_ranking_banned">Модератор зняв один з ваших списків, тому поки ви не можете показувати рейтинги.</string>
     <string name="community_ranking_own_list">Це ваш список, тому показувати на ньому ваш рейтинг не потрібно.</string>
     <string name="community_ranking_list_gone">Цей список більше недоступний, тому ваш рейтинг не можна показати.</string>
+    <string name="community_ranking_bad_tier_names">Кожен рівень має мати назву, а в рейтингу може бути не більше 20 рівнів.</string>
+    <string name="community_ranking_cards_dont_match">Картки у вашому рейтингу не збігаються з цим списком. Відкрийте його знову й розставте їх ще раз.</string>
+    <string name="community_ranking_not_accepted">Не вдалося надіслати ваш рейтинг: щось у ньому не приймається.</string>
     <string name="moderation_not_taken_down">Не знято: список досі публічний. Спробуйте ще раз.</string>
     <string name="moderation_not_kept">Не вдалося залишити список: скарги досі відкриті. Спробуйте ще раз.</string>
     <string name="moderation_not_moved">Не переміщено: список залишився на місці. Спробуйте ще раз.</string>

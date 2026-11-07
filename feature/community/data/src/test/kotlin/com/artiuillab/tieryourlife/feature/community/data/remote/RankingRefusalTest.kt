@@ -37,9 +37,18 @@ class RankingRefusalTest {
         assertEquals(RankingRefusal.ListGone, refusal(404, """{"error":"No such list","code":"NOT_FOUND"}""").rankingRefusal())
     }
 
+    // A18: a 400 INVALID was the generic failure, as if trying again would help.
+    @Test
+    fun aRankingTheServerDoesNotAccept_saysWhichPart() {
+        assertEquals(RankingRefusal.BadTierNames, refusal(400, """{"code":"INVALID","detail":"tierLabels"}""").rankingRefusal())
+        assertEquals(RankingRefusal.CardsDontMatch, refusal(400, """{"code":"INVALID","detail":"rows"}""").rankingRefusal())
+        assertEquals(RankingRefusal.CardsDontMatch, refusal(400, """{"code":"INVALID","detail":"arrangement"}""").rankingRefusal())
+        assertEquals(RankingRefusal.NotAccepted, refusal(400, """{"code":"INVALID"}""").rankingRefusal())
+    }
+
     @Test
     fun anythingElse_isAFailureToTryAgain() {
-        assertEquals(RankingRefusal.Failed, refusal(400, """{"code":"INVALID"}""").rankingRefusal())
+        assertEquals(RankingRefusal.Failed, refusal(400, """{"code":"SOMETHING_NEW"}""").rankingRefusal())
         assertEquals(RankingRefusal.Failed, refusal(404, "not json").rankingRefusal())
         assertEquals(RankingRefusal.Failed, IOException("offline").rankingRefusal())
     }

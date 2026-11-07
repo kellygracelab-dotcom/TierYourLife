@@ -472,6 +472,9 @@ private fun ListSnackbar(
                 RankingNotice.Banned -> host.showSnackbar(resources.getString(R.string.community_ranking_banned))
                 RankingNotice.OwnList -> host.showSnackbar(resources.getString(R.string.community_ranking_own_list))
                 RankingNotice.ListGone -> host.showSnackbar(resources.getString(R.string.community_ranking_list_gone))
+                RankingNotice.BadTierNames -> host.showSnackbar(resources.getString(R.string.community_ranking_bad_tier_names))
+                RankingNotice.CardsDontMatch -> host.showSnackbar(resources.getString(R.string.community_ranking_cards_dont_match))
+                RankingNotice.NotAccepted -> host.showSnackbar(resources.getString(R.string.community_ranking_not_accepted))
                 RankingNotice.SignInFirst -> {
                     val answer = host.showSnackbar(
                         message = resources.getString(R.string.community_sign_in_to_show_ranking),

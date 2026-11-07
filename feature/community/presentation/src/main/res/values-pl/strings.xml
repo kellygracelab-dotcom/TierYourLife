@@ -314,6 +314,9 @@
     <string name="community_ranking_banned">Moderator usunął jedną z twoich list, więc na razie nie możesz pokazywać rankingów.</string>
     <string name="community_ranking_own_list">Ta lista jest twoja, więc nie ma tu twojego rankingu do pokazania.</string>
     <string name="community_ranking_list_gone">Ta lista nie jest już dostępna, więc twojego rankingu nie da się pokazać.</string>
+    <string name="community_ranking_bad_tier_names">Każdy poziom musi mieć nazwę, a ranking może mieć najwyżej 20 poziomów.</string>
+    <string name="community_ranking_cards_dont_match">Karty w twoim rankingu nie pasują do tej listy. Otwórz ją ponownie i ułóż je jeszcze raz.</string>
+    <string name="community_ranking_not_accepted">Nie udało się wysłać twojego rankingu: coś w nim nie jest akceptowane.</string>
     <string name="moderation_not_taken_down">Nie usunięto: lista nadal jest publiczna. Spróbuj ponownie.</string>
     <string name="moderation_not_kept">Nie udało się zostawić listy: zgłoszenia są nadal otwarte. Spróbuj ponownie.</string>
     <string name="moderation_not_moved">Nie przeniesiono: lista jest tam, gdzie była. Spróbuj ponownie.</string>

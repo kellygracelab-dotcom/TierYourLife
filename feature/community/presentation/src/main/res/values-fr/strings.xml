@@ -308,6 +308,9 @@
     <string name="community_ranking_banned">Un modérateur a retiré l’une de vos listes ; vous ne pouvez pas montrer de classement pour l’instant.</string>
     <string name="community_ranking_own_list">Cette liste est la vôtre : il n’y a pas de classement de votre part à y montrer.</string>
     <string name="community_ranking_list_gone">Cette liste n’est plus disponible ; votre classement ne peut pas être montré.</string>
+    <string name="community_ranking_bad_tier_names">Chaque rang doit avoir un nom, et un classement compte 20 rangs au maximum.</string>
+    <string name="community_ranking_cards_dont_match">Les cartes de votre classement ne correspondent pas à cette liste. Rouvrez-la et placez-les à nouveau.</string>
+    <string name="community_ranking_not_accepted">Votre classement n’a pas pu être envoyé : un élément n’est pas accepté.</string>
     <string name="moderation_not_taken_down">Non retirée : la liste est toujours publique. Réessayez.</string>
     <string name="moderation_not_kept">Impossible de laisser la liste : les signalements sont toujours ouverts. Réessayez.</string>
     <string name="moderation_not_moved">Non déplacée : la liste est restée où elle était. Réessayez.</string>

@@ -308,6 +308,9 @@
     <string name="community_ranking_banned">Um moderador removeu uma das suas listas, então por enquanto você não pode mostrar rankings.</string>
     <string name="community_ranking_own_list">Esta lista é sua, então não há um ranking seu para mostrar nela.</string>
     <string name="community_ranking_list_gone">Esta lista não está mais disponível, então seu ranking não pode ser mostrado.</string>
+    <string name="community_ranking_bad_tier_names">Cada nível precisa de um nome, e um ranking pode ter no máximo 20 níveis.</string>
+    <string name="community_ranking_cards_dont_match">Os cartões do seu ranking não correspondem a esta lista. Abra-a de novo e posicione-os mais uma vez.</string>
+    <string name="community_ranking_not_accepted">Não foi possível enviar seu ranking: algo nele não é aceito.</string>
     <string name="moderation_not_taken_down">Não removida: a lista continua pública. Tente de novo.</string>
     <string name="moderation_not_kept">Não foi possível manter a lista: as denúncias continuam abertas. Tente de novo.</string>
     <string name="moderation_not_moved">Não movida: a lista continua onde estava. Tente de novo.</string>
