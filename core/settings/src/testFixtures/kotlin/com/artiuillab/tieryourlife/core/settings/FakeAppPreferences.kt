@@ -164,4 +164,12 @@ class FakeAppPreferences(
     override fun setLastPublishingAccount(account: String?) {
         publishingAccount = account
     }
+
+    var accountErasedNotice = false
+
+    override fun accountErasedNoticePending(): Boolean = accountErasedNotice
+
+    override fun setAccountErasedNoticePending(pending: Boolean) {
+        accountErasedNotice = pending
+    }
 }

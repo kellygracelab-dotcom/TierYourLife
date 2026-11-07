@@ -33,6 +33,7 @@ private const val KEY_POOL_COLUMN_COLLAPSED = "poolColumnCollapsed"
 private const val KEY_POOL_DOCK_ROWS = "poolDockRows"
 private const val KEY_PUBLISHED_OWNERS = "published_owners"
 private const val KEY_LAST_PUBLISHING_ACCOUNT = "last_publishing_account"
+private const val KEY_ACCOUNT_ERASED_NOTICE = "account_erased_notice"
 
 @Singleton
 class SharedPreferencesAppPreferences @Inject constructor(
@@ -119,6 +120,12 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun setLastPublishingAccount(account: String?) {
         prefs.edit { putString(KEY_LAST_PUBLISHING_ACCOUNT, account) }
+    }
+
+    override fun accountErasedNoticePending(): Boolean = prefs.getBoolean(KEY_ACCOUNT_ERASED_NOTICE, false)
+
+    override fun setAccountErasedNoticePending(pending: Boolean) {
+        prefs.edit { putBoolean(KEY_ACCOUNT_ERASED_NOTICE, pending) }
     }
 
     override fun poolDockRows(): Int = prefs.getInt(KEY_POOL_DOCK_ROWS, DEFAULT_POOL_DOCK_ROWS)

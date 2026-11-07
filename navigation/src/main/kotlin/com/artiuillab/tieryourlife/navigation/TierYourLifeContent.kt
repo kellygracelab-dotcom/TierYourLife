@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
+import com.artiuillab.tieryourlife.feature.account.presentation.erased.AccountErasedNoticeHost
 import com.artiuillab.tieryourlife.feature.community.presentation.section.ProvideSections
 
 /**
@@ -57,6 +58,7 @@ fun TierYourLifeContent(
                 onBoardShown = { boardOnMain = it },
             )
         }
+        AccountErasedNoticeHost()
     }
 }
 

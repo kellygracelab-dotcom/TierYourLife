@@ -154,6 +154,11 @@ interface AppPreferences {
 
     fun setLastPublishingAccount(account: String?) = Unit
 
+    /** Not forgotten with the person: it is what tells the person they were. */
+    fun accountErasedNoticePending(): Boolean = false
+
+    fun setAccountErasedNoticePending(pending: Boolean) = Unit
+
     /**
      * Whether the person folded the pool's side column (true), opened it
      * (false), or left it to the board (null). Kept on this device only: it is

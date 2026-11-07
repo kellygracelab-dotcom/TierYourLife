@@ -68,6 +68,9 @@
     <string name="account_delete_keeps_local">Les tableaux de ce téléphone restent où ils sont.</string>
     <string name="account_delete_confirm">Supprimer définitivement</string>
     <string name="account_error_not_deleted">Le compte n’a pas été supprimé. Réessayez.</string>
+    <string name="account_erased_title">Compte supprimé</string>
+    <string name="account_erased_body">Ce compte a été supprimé sur un autre appareil : la session est donc fermée ici. Vos tableaux restent sur ce téléphone.</string>
+    <string name="account_erased_ok">OK</string>
     <string name="account_error_boards_not_copied">Les tableaux n’ont pas été copiés. Ils sont toujours sur ce téléphone.</string>
     <string name="account_face_position_title">Placez votre photo</string>
     <string name="account_face_position_body">Faites glisser l’image et pincez pour zoomer. Le cercle est ce que les autres verront.</string>

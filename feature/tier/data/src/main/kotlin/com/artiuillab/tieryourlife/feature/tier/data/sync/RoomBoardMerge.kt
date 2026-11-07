@@ -187,6 +187,21 @@ class RoomBoardMerge internal constructor(
         }
     }
 
+    /**
+     * The proxy said [uid] was erased, from another phone: as an erase from
+     * this one ends, without asking the server again. False when [uid] is not
+     * who is signed in now, so there was nothing to do.
+     */
+    suspend fun leaveErased(uid: String): Boolean = lock.ahead {
+        val now = accounts.current() as? Account.SignedIn
+        if (now?.uid != uid) return@ahead false
+        keepBoardsOf(now.recordKey)
+        preferences.setLastSignedIn(null)
+        accounts.signOut()
+        thePerson.forget()
+        true
+    }
+
     private suspend fun keepBoardsOf(account: String) {
         // Held ones too: whatever it left on this phone is the phone's own now, and no longer waits for it.
         ownership.reclaim(account)

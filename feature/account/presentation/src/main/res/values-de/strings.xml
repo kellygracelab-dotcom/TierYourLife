@@ -65,6 +65,9 @@
     <string name="account_delete_keeps_local">Die Boards auf diesem Telefon bleiben, wo sie sind.</string>
     <string name="account_delete_confirm">Endgültig löschen</string>
     <string name="account_error_not_deleted">Das Konto wurde nicht gelöscht. Versuche es erneut.</string>
+    <string name="account_erased_title">Konto gelöscht</string>
+    <string name="account_erased_body">Dieses Konto wurde auf einem anderen Gerät gelöscht, deshalb bist du hier abgemeldet. Deine Boards bleiben auf diesem Telefon.</string>
+    <string name="account_erased_ok">OK</string>
     <string name="account_error_boards_not_copied">Die Boards wurden nicht kopiert. Sie sind weiter auf dem Telefon.</string>
     <string name="account_face_position_title">Bild ausrichten</string>
     <string name="account_face_position_body">Zieh das Bild und zoome mit zwei Fingern. Der Kreis ist das, was andere sehen.</string>
