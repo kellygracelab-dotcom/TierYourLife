@@ -7,6 +7,7 @@ import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
+import com.artiuillab.tieryourlife.core.theme.messages.picturesDroppedMessage
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
@@ -169,7 +170,10 @@ class TierDetailViewModel @Inject constructor(
         if (recorded) showPublished(published, waiting)
         // Just sent, so nothing is behind any more.
         publishedIsBehind = false
-        if (recorded) publishedMessage(published)?.let { messages.send(it) }
+        if (recorded) {
+            publishedMessage(published)?.let { messages.send(it) }
+            picturesDroppedMessage(published?.droppedPictures ?: 0)?.let { messages.send(it) }
+        }
     }
 
     /** Held for a moderator says more than where the copy went. */

@@ -164,6 +164,8 @@ data class PublishedIdDto(
     val existing: Boolean = false,
     /** True when the list was kept but starts out of the feed, held for a moderator; an "existing" answer may not carry it. */
     val underReview: Boolean = false,
+    /** Pictures from other sites the server could not fetch or check in time, published without; absent when none. */
+    val droppedPictures: Int = 0,
 )
 
 @Serializable

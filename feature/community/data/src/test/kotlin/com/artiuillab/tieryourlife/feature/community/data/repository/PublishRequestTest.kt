@@ -340,6 +340,16 @@ class PublishRequestTest {
         assertFalse(out.toPublished("f").underReview)
     }
 
+    // Proxy #97: pictures from other sites it could not fetch or check in time are left out, and counted.
+    @Test
+    fun `pictures from other sites left out are counted, and none is the field absent`() {
+        val short = networkJson.decodeFromString(PublishedIdDto.serializer(), """{"id":"p9","droppedPictures":4}""")
+        val whole = networkJson.decodeFromString(PublishedIdDto.serializer(), """{"id":"p9"}""")
+
+        assertEquals(4, short.toPublished("f").droppedPictures)
+        assertEquals(0, whole.toPublished("f").droppedPictures)
+    }
+
     @Test
     fun `the board a list of mine was published from comes back with it`() {
         val mine = networkJson.decodeFromString(

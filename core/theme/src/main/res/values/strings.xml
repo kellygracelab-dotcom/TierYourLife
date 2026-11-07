@@ -35,4 +35,8 @@
     <string name="snack_target_is_staff">Its author is a moderator or the owner. Only the owner can act on this list.</string>
     <string name="refusal_web_pictures_today">That’s more pictures from other sites than can be added today. Try again tomorrow.</string>
     <string name="refusal_too_many_web_pictures">A list can have up to 200 pictures from other sites. Remove some and try again.</string>
+    <plurals name="snack_pictures_dropped">
+        <item quantity="one">Published. %1$d picture from another site couldn’t be added.</item>
+        <item quantity="other">Published. %1$d pictures from other sites couldn’t be added.</item>
+    </plurals>
 </resources>

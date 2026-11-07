@@ -50,4 +50,12 @@
     <string name="snack_target_is_staff">مؤلف هذه القائمة مشرف أو المالك. وحده المالك يستطيع اتخاذ إجراء بشأنها.</string>
     <string name="refusal_web_pictures_today">هذه صور من مواقع أخرى أكثر مما يمكن إضافته اليوم. حاول مرة أخرى غدًا.</string>
     <string name="refusal_too_many_web_pictures">يمكن أن تضم القائمة حتى 200 صورة من مواقع أخرى. احذف بعضها وحاول مرة أخرى.</string>
+    <plurals name="snack_pictures_dropped">
+        <item quantity="zero">نُشرت. لم تُضَف أي صورة من مواقع أخرى.</item>
+        <item quantity="one">نُشرت. تعذّرت إضافة صورة واحدة من موقع آخر.</item>
+        <item quantity="two">نُشرت. تعذّرت إضافة صورتين من مواقع أخرى.</item>
+        <item quantity="few">نُشرت. تعذّرت إضافة %1$d صور من مواقع أخرى.</item>
+        <item quantity="many">نُشرت. تعذّرت إضافة %1$d صورة من مواقع أخرى.</item>
+        <item quantity="other">نُشرت. تعذّرت إضافة %1$d صورة من مواقع أخرى.</item>
+    </plurals>
 </resources>

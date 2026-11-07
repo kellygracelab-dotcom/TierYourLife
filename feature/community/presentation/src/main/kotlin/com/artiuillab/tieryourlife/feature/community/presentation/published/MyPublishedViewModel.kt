@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
+import com.artiuillab.tieryourlife.core.theme.messages.picturesDroppedMessage
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -131,6 +132,7 @@ class MyPublishedViewModel @Inject constructor(
                     // Sent, so it is neither behind nor unknown any more.
                     _state.value = shown.copy(updating = null, behind = shown.behind - publishedId)
                     if (published.underReview) messages.send(UserMessage.PublishedUnderReview)
+                    picturesDroppedMessage(published.droppedPictures)?.let { messages.send(it) }
                 },
                 onFailure = { error ->
                     Timber.w(error, "Updating $publishedId failed")

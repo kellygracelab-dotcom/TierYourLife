@@ -233,7 +233,7 @@ fun TierListsScreenContent(
         userMessages.collect { message ->
             snackbarHostState.showSnackbar(
                 when (message) {
-                    UserMessage.ActionFailed, UserMessage.TargetIsStaff -> actionFailedMessage
+                    UserMessage.ActionFailed, UserMessage.TargetIsStaff, is UserMessage.PicturesDropped -> actionFailedMessage
                     UserMessage.PublishedListStillPublic -> stillPublicMessage
                     UserMessage.PublishedAsRanking -> publishedAsRankingMessage
                     UserMessage.PublishedUnderReview -> underReviewMessage

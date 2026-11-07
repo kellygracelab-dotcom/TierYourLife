@@ -38,4 +38,9 @@
     <string name="snack_target_is_staff">Su autor es un moderador o el propietario. Solo el propietario puede actuar sobre esta lista.</string>
     <string name="refusal_web_pictures_today">Son más imágenes de otros sitios de las que se pueden añadir hoy. Inténtalo de nuevo mañana.</string>
     <string name="refusal_too_many_web_pictures">Una lista puede tener hasta 200 imágenes de otros sitios. Quita algunas e inténtalo de nuevo.</string>
+    <plurals name="snack_pictures_dropped">
+        <item quantity="one">Publicada. No se pudo añadir %1$d imagen de otro sitio.</item>
+        <item quantity="many">Publicada. No se pudieron añadir %1$d imágenes de otros sitios.</item>
+        <item quantity="other">Publicada. No se pudieron añadir %1$d imágenes de otros sitios.</item>
+    </plurals>
 </resources>

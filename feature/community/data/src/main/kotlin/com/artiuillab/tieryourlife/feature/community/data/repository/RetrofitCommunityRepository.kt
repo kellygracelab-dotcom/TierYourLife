@@ -406,7 +406,14 @@ internal suspend fun <T> refusedAsAFace(block: suspend () -> T): T = try {
 internal fun HttpException.goneIfMissing(): Exception = if (code() == HTTP_NOT_FOUND) ListGone() else this
 
 /** A list this board already had out comes back as one just made would: the board takes its id either way. */
-internal fun PublishedIdDto.toPublished(fingerprint: String) = Published(id = id, fingerprint = fingerprint, topicId = topicId, ranking = ranking, underReview = underReview)
+internal fun PublishedIdDto.toPublished(fingerprint: String) = Published(
+    id = id,
+    fingerprint = fingerprint,
+    topicId = topicId,
+    ranking = ranking,
+    underReview = underReview,
+    droppedPictures = droppedPictures.coerceAtLeast(0),
+)
 
 private const val MAX_BOARD_UID = 100
 private const val TOO_MANY_FOLLOWING = "TOO_MANY_FOLLOWING"

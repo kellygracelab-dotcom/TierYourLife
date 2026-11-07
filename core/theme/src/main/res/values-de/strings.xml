@@ -34,4 +34,8 @@
     <string name="snack_target_is_staff">Diese Liste stammt von einem Moderator oder dem Inhaber. Nur der Inhaber kann hier etwas tun.</string>
     <string name="refusal_web_pictures_today">Das sind mehr Bilder von anderen Websites, als heute hinzugefügt werden können. Versuche es morgen erneut.</string>
     <string name="refusal_too_many_web_pictures">Eine Liste kann bis zu 200 Bilder von anderen Websites haben. Entferne einige und versuche es erneut.</string>
+    <plurals name="snack_pictures_dropped">
+        <item quantity="one">Veröffentlicht. %1$d Bild von einer anderen Website konnte nicht hinzugefügt werden.</item>
+        <item quantity="other">Veröffentlicht. %1$d Bilder von anderen Websites konnten nicht hinzugefügt werden.</item>
+    </plurals>
 </resources>

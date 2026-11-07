@@ -42,4 +42,10 @@
     <string name="snack_target_is_staff">Автор списка — модератор или владелец. Действовать здесь может только владелец.</string>
     <string name="refusal_web_pictures_today">Картинок с других сайтов больше, чем можно добавить сегодня. Попробуйте завтра.</string>
     <string name="refusal_too_many_web_pictures">В списке может быть до 200 картинок с других сайтов. Уберите часть и попробуйте ещё раз.</string>
+    <plurals name="snack_pictures_dropped">
+        <item quantity="one">Опубликовано. Не удалось добавить %1$d картинку с другого сайта.</item>
+        <item quantity="few">Опубликовано. Не удалось добавить %1$d картинки с других сайтов.</item>
+        <item quantity="many">Опубликовано. Не удалось добавить %1$d картинок с других сайтов.</item>
+        <item quantity="other">Опубликовано. Не удалось добавить %1$d картинки с других сайтов.</item>
+    </plurals>
 </resources>
