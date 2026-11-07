@@ -11,6 +11,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PageGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.TargetIsStaff
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
@@ -173,7 +174,7 @@ class TopicViewModel @Inject constructor(
         viewModelScope.launch {
             community.report(summary.id, ReportReason.WrongCategory, null).onFailure { error ->
                 Timber.w(error, "Reporting a list as out of place failed")
-                messages.send(UserMessage.ActionFailed)
+                messages.send(reportFailure(error))
             }
         }
     }
@@ -192,8 +193,11 @@ class TopicViewModel @Inject constructor(
             community.report(summary.id, reason, note).onFailure { error ->
                 Timber.w(error, "Could not file the report")
                 preferences.unhideList(summary.id)
-                messages.send(UserMessage.ActionFailed)
+                messages.send(reportFailure(error))
             }
         }
     }
 }
+
+private fun reportFailure(error: Throwable): UserMessage =
+    if (error is TargetIsStaff) UserMessage.TargetIsStaff else UserMessage.ActionFailed

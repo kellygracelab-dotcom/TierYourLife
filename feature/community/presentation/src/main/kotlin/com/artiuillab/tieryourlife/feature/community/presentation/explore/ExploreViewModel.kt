@@ -75,7 +75,7 @@ class ExploreViewModel @Inject constructor(
 
     private val notes = Channel<CommunityNotice>(Channel.BUFFERED)
 
-    private val menu = ListMenuActions(preferences, community, viewModelScope) { notes.send(CommunityNotice.ActionFailed) }
+    private val menu = ListMenuActions(preferences, community, viewModelScope) { notes.send(it) }
 
     internal val feed = FeedLoader(FeedKeys.EXPLORE, viewModelScope, cache, clock, menu::isVisible) { after ->
         community.feed(sort = FeedSort.Popular, after = after)

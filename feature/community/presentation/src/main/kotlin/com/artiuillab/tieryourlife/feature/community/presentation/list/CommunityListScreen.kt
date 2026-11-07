@@ -463,7 +463,12 @@ private fun ListSnackbar(
     val undo by rememberUpdatedState(onUndoStartFromTheirs)
     val leave by rememberUpdatedState(onTakenDown)
     val openBoard by rememberUpdatedState(onOpenBoard)
-    LaunchedEffect(userMessages) { userMessages.collect { host.showSnackbar(resources.getString(ThemeR.string.snack_action_failed)) } }
+    LaunchedEffect(userMessages) {
+        userMessages.collect {
+            val text = if (it == UserMessage.TargetIsStaff) ThemeR.string.snack_target_is_staff else ThemeR.string.snack_action_failed
+            host.showSnackbar(resources.getString(text))
+        }
+    }
     LaunchedEffect(rankingNotices) {
         rankingNotices.collect { notice ->
             when (notice) {
@@ -475,6 +480,8 @@ private fun ListSnackbar(
                 RankingNotice.BadTierNames -> host.showSnackbar(resources.getString(R.string.community_ranking_bad_tier_names))
                 RankingNotice.CardsDontMatch -> host.showSnackbar(resources.getString(R.string.community_ranking_cards_dont_match))
                 RankingNotice.NotAccepted -> host.showSnackbar(resources.getString(R.string.community_ranking_not_accepted))
+                RankingNotice.TooManyWebPictures -> host.showSnackbar(resources.getString(ThemeR.string.refusal_too_many_web_pictures))
+                RankingNotice.WebPicturesToday -> host.showSnackbar(resources.getString(ThemeR.string.refusal_web_pictures_today))
                 RankingNotice.SignInFirst -> {
                     val answer = host.showSnackbar(
                         message = resources.getString(R.string.community_sign_in_to_show_ranking),

@@ -33,9 +33,12 @@ object ProxyModule {
     fun provideProxyOkHttpClient(
         appCheckInterceptor: AppCheckInterceptor,
         idTokenInterceptor: IdTokenInterceptor,
+        erasedAccounts: ErasedAccounts,
     ): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(appCheckInterceptor)
         .addInterceptor(idTokenInterceptor)
+        // After the token, so it sees whose token the refusal answered.
+        .addInterceptor(AccountErasedInterceptor(erasedAccounts::report))
         .build()
 
     @ProxyRetrofit

@@ -68,6 +68,10 @@
     <string name="account_delete_keeps_local">Os quadros neste telefone continuam onde estão.</string>
     <string name="account_delete_confirm">Excluir para sempre</string>
     <string name="account_error_not_deleted">A conta não foi excluída. Tente de novo.</string>
+    <string name="account_erased_title">Conta excluída</string>
+    <string name="account_erased_body">Esta conta foi excluída em outro dispositivo, então você saiu dela aqui. Seus quadros continuam neste telefone.</string>
+    <string name="account_erased_here_body">Sua conta foi excluída, então você saiu dela. Seus quadros continuam neste telefone.</string>
+    <string name="account_erased_ok">OK</string>
     <string name="account_error_boards_not_copied">Os quadros não foram copiados. Eles continuam neste telefone.</string>
     <string name="account_face_position_title">Posicione sua foto</string>
     <string name="account_face_position_body">Arraste a imagem e use dois dedos para ampliar. O círculo é o que os outros vão ver.</string>

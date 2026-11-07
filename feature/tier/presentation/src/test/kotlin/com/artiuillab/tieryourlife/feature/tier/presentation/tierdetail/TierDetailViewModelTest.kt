@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.yield
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -200,6 +201,33 @@ class TierDetailViewModelTest {
 
         assertEquals("p-1", (viewModel.screen.value.board as TierDetailUiState.Success).list.publishedId)
         assertEquals(UserMessage.PublishedUnderReview, said.await())
+    }
+
+    @Test
+    fun setPublic_withPicturesFromOtherSitesLeftOut_saysHowMany() = runBlocking {
+        val repository = FakeTierRepository(listWithOneCard())
+        val community = FakeCommunityRepositoryForDetail(publishResult = Result.success(Published("p-1", "sent", droppedPictures = 3)))
+        val viewModel = TierDetailViewModel(repository, community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+        val said = async { viewModel.userMessages.first() }
+
+        viewModel.setPublic(true)
+        viewModel.screen.firstWithin { !it.publish.publishing }
+
+        assertEquals(UserMessage.PicturesDropped(3), said.await())
+    }
+
+    @Test
+    fun setPublic_withNoPicturesLeftOut_saysNothing() = runBlocking {
+        val repository = FakeTierRepository(listWithOneCard())
+        val community = FakeCommunityRepositoryForDetail(publishResult = Result.success(Published("p-1", "sent")))
+        val viewModel = TierDetailViewModel(repository, community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+
+        viewModel.setPublic(true)
+        viewModel.screen.firstWithin { !it.publish.publishing }
+
+        assertNull(withTimeoutOrNull(300) { viewModel.userMessages.first() })
     }
 
     @Test

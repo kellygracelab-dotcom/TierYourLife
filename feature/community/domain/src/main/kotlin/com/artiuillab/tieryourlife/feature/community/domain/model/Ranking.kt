@@ -27,7 +27,18 @@ data class ShownRanking(val ranking: Ranking, val created: Boolean)
  * its tier names, [CardsDontMatch] for its cards, and [NotAccepted] when it
  * did not say which.
  */
-enum class RankingRefusal { NotSignedIn, Banned, OwnList, ListGone, BadTierNames, CardsDontMatch, NotAccepted, Failed }
+enum class RankingRefusal {
+    NotSignedIn,
+    Banned,
+    OwnList,
+    ListGone,
+    BadTierNames,
+    CardsDontMatch,
+    NotAccepted,
+    TooManyWebPictures,
+    WebPicturesToday,
+    Failed,
+}
 
 class RankingRefused(val reason: RankingRefusal) : Exception(reason.name)
 

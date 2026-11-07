@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.artiuillab.tieryourlife.core.network.AppCheckInterceptor
+import com.artiuillab.tieryourlife.core.network.ErasedAccounts
 import com.artiuillab.tieryourlife.core.network.IdTokenInterceptor
 import com.artiuillab.tieryourlife.core.network.ProxyModule
 import com.artiuillab.tieryourlife.core.network.networkJson
@@ -65,6 +66,7 @@ class Phone(identity: Identity) : Closeable {
     private val client = ProxyModule.provideProxyOkHttpClient(
         appCheckInterceptor = AppCheckInterceptor { null },
         idTokenInterceptor = IdTokenInterceptor { identity.idToken },
+        erasedAccounts = ErasedAccounts(),
     ).newBuilder().addInterceptor(::record).build()
     private val retrofit = ProxyModule.proxyRetrofit(Emulators.functionsUrl, client)
 

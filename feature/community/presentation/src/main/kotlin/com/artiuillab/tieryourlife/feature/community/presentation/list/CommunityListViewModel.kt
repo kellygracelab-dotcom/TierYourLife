@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.ListGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.TargetIsStaff
 import com.artiuillab.tieryourlife.feature.community.domain.model.readIn
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.OpenedLists
@@ -393,7 +394,7 @@ class CommunityListViewModel @Inject constructor(
                 Timber.w(it, "Could not file the report")
                 // Shown again in the feed, so it can be reported again; hidden, it never could.
                 preferences.unhideList(publishedId)
-                messages.send(UserMessage.ActionFailed)
+                messages.send(if (it is TargetIsStaff) UserMessage.TargetIsStaff else UserMessage.ActionFailed)
             }
         }
     }

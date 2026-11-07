@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
+import com.artiuillab.tieryourlife.feature.community.domain.model.TargetIsStaff
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import com.artiuillab.tieryourlife.feature.community.presentation.R
@@ -24,6 +25,9 @@ sealed interface CommunityNotice {
     /** With Undo, which follows the section again. */
     data class Unfollowed(val sectionId: String) : CommunityNotice
     data object ActionFailed : CommunityNotice
+
+    /** A report of a staff member's list: only the owner acts on it. */
+    data object TargetIsStaff : CommunityNotice
 
     /** A proposal withdrawn too late: a moderator had approved, declined or merged it. [name] is the one it went out with. */
     data class AlreadyDecided(val name: String, val status: SectionStatus) : CommunityNotice {
@@ -54,7 +58,7 @@ internal class ListMenuActions(
     private val preferences: AppPreferences,
     private val community: CommunityRepository,
     private val scope: CoroutineScope,
-    private val failed: suspend () -> Unit,
+    private val failed: suspend (CommunityNotice) -> Unit,
 ) {
     fun isVisible(summary: PublishedListSummary): Boolean =
         summary.id !in preferences.hiddenListIds() && summary.authorUid !in preferences.hiddenAuthorUids()
@@ -77,7 +81,7 @@ internal class ListMenuActions(
                 Timber.w(it, "Could not file the report")
                 preferences.unhideList(summary.id)
                 loader.refilter(loader.pane.value.justHidden - summary.id)
-                failed()
+                failed(if (it is TargetIsStaff) CommunityNotice.TargetIsStaff else CommunityNotice.ActionFailed)
             }
         }
     }

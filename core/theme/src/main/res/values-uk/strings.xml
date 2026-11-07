@@ -39,4 +39,13 @@
     <string name="tier_lists_title">Ваші списки</string>
     <string name="snack_published_as_ranking">Опублікована як ваш рейтинг того списку. Другого списку в стрічці не зʼявиться.</string>
     <string name="snack_published_under_review">Збережено. Список чекає на модератора, перш ніж його побачать інші.</string>
+    <string name="snack_target_is_staff">Автор списку — модератор або власник. Діяти тут може лише власник.</string>
+    <string name="refusal_web_pictures_today">Зображень з інших сайтів більше, ніж можна додати сьогодні. Спробуйте завтра.</string>
+    <string name="refusal_too_many_web_pictures">У списку може бути до 200 зображень з інших сайтів. Приберіть частину й спробуйте ще раз.</string>
+    <plurals name="snack_pictures_dropped">
+        <item quantity="one">Опубліковано. Не вдалося додати %1$d зображення з іншого сайту.</item>
+        <item quantity="few">Опубліковано. Не вдалося додати %1$d зображення з інших сайтів.</item>
+        <item quantity="many">Опубліковано. Не вдалося додати %1$d зображень з інших сайтів.</item>
+        <item quantity="other">Опубліковано. Не вдалося додати %1$d зображення з інших сайтів.</item>
+    </plurals>
 </resources>

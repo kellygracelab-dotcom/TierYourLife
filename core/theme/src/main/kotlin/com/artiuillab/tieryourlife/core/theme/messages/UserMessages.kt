@@ -6,21 +6,30 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import timber.log.Timber
 
-enum class UserMessage {
-    ActionFailed,
+sealed interface UserMessage {
+    data object ActionFailed : UserMessage
 
     /**
      * A published list was left alone rather than deleted, because the copy in
      * the community could not be taken down.
      */
-    PublishedListStillPublic,
+    data object PublishedListStillPublic : UserMessage
 
     /** The copy went out as this person's ranking of the list it was taken from, not as a second list. */
-    PublishedAsRanking,
+    data object PublishedAsRanking : UserMessage
 
     /** The list was kept, but it waits for a moderator before anyone else can see it. */
-    PublishedUnderReview,
+    data object PublishedUnderReview : UserMessage
+
+    /** A moderator reported a list by staff, which only the owner may judge. */
+    data object TargetIsStaff : UserMessage
+
+    /** Published, but [count] pictures from other sites could not be added. */
+    data class PicturesDropped(val count: Int) : UserMessage
 }
+
+/** Null when nothing was left out, which is also what an answer without the field means. */
+fun picturesDroppedMessage(count: Int): UserMessage? = count.takeIf { it > 0 }?.let { UserMessage.PicturesDropped(it) }
 
 class UserMessages {
 

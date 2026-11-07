@@ -164,4 +164,20 @@ class FakeAppPreferences(
     override fun setLastPublishingAccount(account: String?) {
         publishingAccount = account
     }
+
+    var accountErasedWhere: String? = null
+
+    override fun accountErasedNotice(): String? = accountErasedWhere
+
+    override fun setAccountErasedNotice(where: String?) {
+        accountErasedWhere = where
+    }
+
+    var erasedToLeave: String? = null
+
+    override fun erasedAccountToLeave(): String? = erasedToLeave
+
+    override fun setErasedAccountToLeave(uid: String?) {
+        erasedToLeave = uid
+    }
 }

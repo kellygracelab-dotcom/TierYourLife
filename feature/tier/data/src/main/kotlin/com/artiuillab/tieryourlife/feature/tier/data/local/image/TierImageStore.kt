@@ -3,8 +3,12 @@ package com.artiuillab.tieryourlife.feature.tier.data.local.image
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.os.Build
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.scale
 import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +29,12 @@ internal const val MAX_STORED_EDGE_PX = 1000
 private const val JPEG_QUALITY = 85
 
 /** As much as the account's own folder takes (storage.rules). */
-private const val MAX_WEB_PICTURE_BYTES = 4L * 1024 * 1024
+internal const val MAX_ACCOUNT_PICTURE_BYTES = 4L * 1024 * 1024
+
+/** Under [MAX_ACCOUNT_PICTURE_BYTES] with room to spare. */
+internal const val MAX_STILL_BYTES = 3_500_000L
+
+private const val SMALLEST_HALVED_EDGE_PX = 125
 
 private const val WEB_TIMEOUT_MILLIS = 10_000
 
@@ -79,7 +88,12 @@ class TierImageStore internal constructor(
         input.use { source ->
             target.outputStream().use { sink -> source.copyTo(sink) }
         }
-        shrinkInPlace(target)
+        try {
+            shrinkInPlace(target)
+        } catch (refused: IOException) {
+            target.delete()
+            throw refused
+        }
         return target.absolutePath
     }
 
@@ -94,7 +108,7 @@ class TierImageStore internal constructor(
         val target = File(directory, UUID.randomUUID().toString())
         try {
             val input = openWeb(url) ?: return@withContext null
-            val written = input.use { source -> target.outputStream().use { sink -> copyAtMost(source, sink, MAX_WEB_PICTURE_BYTES) } }
+            val written = input.use { source -> target.outputStream().use { sink -> copyAtMost(source, sink, MAX_ACCOUNT_PICTURE_BYTES) } }
             if (!written || !isPicture(target)) {
                 target.delete()
                 return@withContext null
@@ -154,28 +168,87 @@ internal fun copyAtMost(source: InputStream, sink: OutputStream, limit: Long): B
 /** Whether the bytes decode as a picture at all; a site's error page is not one. */
 private fun isPicture(file: File): Boolean {
     val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    BitmapFactory.decodeFile(file.absolutePath, bounds)
+    decode(file, bounds)
     return bounds.outWidth > 0 && bounds.outHeight > 0
 }
 
-internal fun shrinkInPlace(file: File) {
-    val bitmap = decodeWithinLimit(file) ?: return
+/**
+ * Compression is best effort, and the original stays when it could not be
+ * smaller. Not for a GIF or a WebP: either may move, so it always becomes a
+ * still of its first frame, larger or not, and one that cannot is an [IOException].
+ */
+internal fun shrinkInPlace(file: File, stillLimit: Long = MAX_STILL_BYTES) {
+    val mayMove = mayMove(file)
+    val bitmap = if (mayMove) decodeFirstFrame(file) else decodeWithinLimit(file)
+    if (bitmap == null) {
+        if (mayMove) throw IOException("A GIF or WebP that would not decode")
+        return
+    }
     val temp = File(file.parentFile, file.name + ".tmp")
-
-    // Compression is best effort; the original copy remains usable on failure.
     try {
-        val written = temp.outputStream().use { out ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, out)
-        }
-        if (written && temp.length() > 0 && temp.length() < file.length()) {
-            temp.copyTo(file, overwrite = true)
-        }
-    } catch (_: IOException) {
+        val written = if (mayMove) writeStill(bitmap, temp, stillLimit) else temp.compressFrom(bitmap, Bitmap.CompressFormat.JPEG)
+        val replaced = written &&
+            (mayMove || temp.length() < file.length()) &&
+            runCatching { temp.copyTo(file, overwrite = true) }.isSuccess
+        if (mayMove && !replaced) throw IOException("A GIF or WebP that would not become a still")
     } finally {
         temp.delete()
         bitmap.recycle()
     }
 }
+
+/**
+ * A JPEG has no see-through parts, so a frame with them is a PNG, halved
+ * until the account takes it; one that never fits is flattened onto white.
+ */
+private fun writeStill(frame: Bitmap, temp: File, limit: Long): Boolean {
+    if (!frame.hasAlpha()) return temp.compressFrom(frame, Bitmap.CompressFormat.JPEG)
+    var still = frame
+    try {
+        var fits = temp.compressFrom(still, Bitmap.CompressFormat.PNG) && temp.length() <= limit
+        while (!fits && maxOf(still.width, still.height) / 2 >= SMALLEST_HALVED_EDGE_PX) {
+            val half = still.scale(still.width / 2, still.height / 2)
+            if (still !== frame) still.recycle()
+            still = half
+            fits = temp.compressFrom(still, Bitmap.CompressFormat.PNG) && temp.length() <= limit
+        }
+        return fits || temp.compressOnWhite(still)
+    } finally {
+        if (still !== frame) still.recycle()
+    }
+}
+
+private fun File.compressOnWhite(still: Bitmap): Boolean {
+    val flat = createBitmap(still.width, still.height)
+    return try {
+        Canvas(flat).apply {
+            drawColor(Color.WHITE)
+            drawBitmap(still, 0f, 0f, null)
+        }
+        compressFrom(flat, Bitmap.CompressFormat.JPEG)
+    } finally {
+        flat.recycle()
+    }
+}
+
+private fun File.compressFrom(bitmap: Bitmap, format: Bitmap.CompressFormat): Boolean =
+    runCatching { outputStream().use { out -> bitmap.compress(format, JPEG_QUALITY, out) } }.getOrDefault(false) && length() > 0
+
+private val GIF = "GIF8".toByteArray(Charsets.US_ASCII)
+private val RIFF = "RIFF".toByteArray(Charsets.US_ASCII)
+private val WEBP = "WEBP".toByteArray(Charsets.US_ASCII)
+private const val WEBP_TAG_AT = 8
+private const val HEADER_BYTES = 12
+
+/** By the bytes, as the server judges them: a name or a MIME type says nothing about what is inside. */
+private fun mayMove(file: File): Boolean {
+    val head = ByteArray(HEADER_BYTES)
+    val read = file.inputStream().use { it.read(head) }
+    if (read < HEADER_BYTES) return read >= GIF.size && head.startsWith(GIF)
+    return head.startsWith(GIF) || (head.startsWith(RIFF) && head.copyOfRange(WEBP_TAG_AT, HEADER_BYTES).contentEquals(WEBP))
+}
+
+private fun ByteArray.startsWith(prefix: ByteArray): Boolean = copyOfRange(0, prefix.size).contentEquals(prefix)
 
 private fun decodeWithinLimit(file: File): Bitmap? {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return null
@@ -190,6 +263,19 @@ private fun decodeWithinLimit(file: File): Bitmap? {
         }
     }.getOrNull()
 }
+
+/** BitmapFactory, on every API level: it reads the first frame of a GIF or a WebP. */
+private fun decodeFirstFrame(file: File): Bitmap? {
+    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    decode(file, bounds)
+    val longestEdge = maxOf(bounds.outWidth, bounds.outHeight)
+    if (longestEdge <= 0) return null
+    return decode(file, BitmapFactory.Options().apply { inSampleSize = sampleSizeFor(longestEdge) })
+}
+
+/** Through a stream closed here: a file still held open could be neither replaced nor deleted. */
+private fun decode(file: File, options: BitmapFactory.Options): Bitmap? =
+    runCatching { file.inputStream().use { BitmapFactory.decodeStream(it, null, options) } }.getOrNull()
 
 internal fun sampleSizeFor(longestEdge: Int): Int {
     var sample = 1

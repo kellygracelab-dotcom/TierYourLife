@@ -4,6 +4,8 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.banNotice
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIdDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.isAppUnverified
+import com.artiuillab.tieryourlife.feature.community.data.remote.isTooManyWebPictures
+import com.artiuillab.tieryourlife.feature.community.data.remote.isWebPicturesToday
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyDetail
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
@@ -24,7 +26,8 @@ internal fun Throwable.asPublishError(): PublishError = when {
             proxyDetail() == CATEGORY -> PublishError.SectionUnavailable
             else -> PublishError.Unknown
         }
-        HTTP_TOO_LARGE -> PublishError.TooLarge
+        HTTP_TOO_LARGE -> if (isTooManyWebPictures()) PublishError.TooManyWebPictures else PublishError.TooLarge
+        HTTP_TOO_MANY_REQUESTS -> if (isWebPicturesToday()) PublishError.WebPicturesToday else PublishError.Unknown
         HTTP_UNPROCESSABLE -> PublishError.PictureRefused
         else -> PublishError.Unknown
     }
@@ -69,3 +72,4 @@ private const val HTTP_FORBIDDEN = 403
 private const val HTTP_NOT_FOUND = 404
 private const val HTTP_TOO_LARGE = 413
 private const val HTTP_UNPROCESSABLE = 422
+private const val HTTP_TOO_MANY_REQUESTS = 429

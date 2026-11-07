@@ -4,11 +4,15 @@ import com.artiuillab.tieryourlife.core.network.networkJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import retrofit2.HttpException
+import java.net.HttpURLConnection.HTTP_FORBIDDEN
+
+private const val TARGET_IS_MODERATOR = "TARGET_IS_MODERATOR"
 
 @Serializable
 private data class CodedRefusalDto(
     @SerialName("code") val code: String? = null,
     @SerialName("detail") val detail: String? = null,
+    @SerialName("error") val error: String? = null,
 )
 
 /**
@@ -17,8 +21,15 @@ private data class CodedRefusalDto(
  */
 fun Throwable.proxyCode(): String? = codedRefusal()?.code
 
+/** A moderator acting on a list by staff, which only the owner may. */
+fun Throwable.isTargetStaff(): Boolean =
+    this is HttpException && code() == HTTP_FORBIDDEN && proxyCode() == TARGET_IS_MODERATOR
+
 /** Which field a `400 INVALID` was about, such as "category". */
 fun Throwable.proxyDetail(): String? = codedRefusal()?.detail
+
+/** The refusal in words, which is all that tells one `413 TOO_LARGE` limit from another. */
+internal fun Throwable.proxyError(): String? = codedRefusal()?.error
 
 private fun Throwable.codedRefusal(): CodedRefusalDto? =
     runCatching { networkJson.decodeFromString<CodedRefusalDto>(errorText()) }.getOrNull()

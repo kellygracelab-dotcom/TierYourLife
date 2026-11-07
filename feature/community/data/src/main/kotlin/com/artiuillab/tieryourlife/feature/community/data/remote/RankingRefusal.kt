@@ -8,6 +8,8 @@ fun Throwable.rankingRefusal(): RankingRefusal = when (proxyCode()) {
     "BANNED" -> RankingRefusal.Banned
     "OWN_LIST" -> RankingRefusal.OwnList
     "NOT_FOUND" -> RankingRefusal.ListGone
+    "WEB_PICTURES_DAILY_LIMIT" -> RankingRefusal.WebPicturesToday
+    "TOO_LARGE" -> if (isTooManyWebPictures()) RankingRefusal.TooManyWebPictures else RankingRefusal.Failed
     "INVALID" -> when (proxyDetail()) {
         "tierLabels" -> RankingRefusal.BadTierNames
         "rows", "arrangement" -> RankingRefusal.CardsDontMatch

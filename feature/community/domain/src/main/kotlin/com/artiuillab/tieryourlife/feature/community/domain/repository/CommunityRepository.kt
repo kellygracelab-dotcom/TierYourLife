@@ -191,4 +191,6 @@ data class Published(
     val ranking: Boolean = false,
     /** True when the list was kept but is held for a moderator: out of the feed, its link closed to others. */
     val underReview: Boolean = false,
+    /** Pictures from other sites the server left out: their cards went without art. */
+    val droppedPictures: Int = 0,
 )

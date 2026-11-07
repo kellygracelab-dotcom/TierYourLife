@@ -93,6 +93,13 @@ class PublishAnswersTest {
         assertEquals(PublishError.Offline, IOException("offline").asPublishError())
     }
 
+    // Proxy #96 counts again inside the transaction, so parallel publishes past 50 get the same answer.
+    @Test
+    fun `the list limit is said, whichever check refused it`() {
+        assertEquals(PublishError.TooManyLists, refusal(409, """{"error":"Too many published lists","code":"TOO_MANY_LISTS"}""").asPublishError())
+        assertEquals(PublishError.TooManyPendingTopics, refusal(409, """{"code":"TOO_MANY_PENDING_TOPICS"}""").asPublishError())
+    }
+
     @Test
     fun `a cursor that names a list taken down is told apart from other conflicts`() {
         assertTrue(refusal(409, """{"error":"That page is gone","code":"CURSOR_GONE"}""").isCursorGone())

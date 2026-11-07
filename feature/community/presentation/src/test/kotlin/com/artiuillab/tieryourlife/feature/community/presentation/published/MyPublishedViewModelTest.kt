@@ -113,6 +113,18 @@ class MyPublishedViewModelTest {
     }
 
     @Test
+    fun anUpdateThatLeftPicturesOut_saysHowMany() = runBlocking {
+        val board = TierList(id = 7, title = "A list", tiers = emptyList(), publishedId = "a")
+        val community = FakePublishedRepository(listOf(mine("a")), publishResult = Result.success(Published("a", "sent", droppedPictures = 1)))
+        val viewModel = MyPublishedViewModel(community, RecordingTierRepository(boards = listOf(board)))
+        viewModel.state.firstWithin { it is MyPublishedUiState.Ready }
+
+        viewModel.update("a")
+
+        assertEquals(UserMessage.PicturesDropped(1), withTimeout(WAIT_MILLIS) { viewModel.userMessages.first() })
+    }
+
+    @Test
     fun anUpdateHeldForAModerator_saysItWaits() = runBlocking {
         val board = TierList(id = 7, title = "A list", tiers = emptyList(), publishedId = "a")
         val community = FakePublishedRepository(listOf(mine("a")), publishResult = Result.success(Published("a", "sent", underReview = true)))

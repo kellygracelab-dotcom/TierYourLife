@@ -27,4 +27,10 @@
     <string name="tier_lists_title">あなたのリスト</string>
     <string name="snack_published_as_ranking">そのリストのあなたのランキングとして公開しました。フィードに2つ目のリストは出ません。</string>
     <string name="snack_published_under_review">保存しました。他の人に表示される前に、モデレーターの確認を待っています。</string>
+    <string name="snack_target_is_staff">このリストの作成者はモデレーターまたはオーナーです。対応できるのはオーナーだけです。</string>
+    <string name="refusal_web_pictures_today">他のサイトの画像が、今日追加できる数を超えています。明日もう一度お試しください。</string>
+    <string name="refusal_too_many_web_pictures">1つのリストに使える他のサイトの画像は200枚までです。いくつか外してからもう一度お試しください。</string>
+    <plurals name="snack_pictures_dropped">
+        <item quantity="other">公開しました。他のサイトの画像%1$d枚を追加できませんでした。</item>
+    </plurals>
 </resources>

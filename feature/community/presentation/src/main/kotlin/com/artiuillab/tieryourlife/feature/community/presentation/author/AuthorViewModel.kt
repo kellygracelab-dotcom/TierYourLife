@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.EditorialAutho
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.TargetIsStaff
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
@@ -218,7 +219,7 @@ class AuthorViewModel @Inject constructor(
                 // Back on the page, so it can be reported again; hidden, it never could.
                 preferences.unhideList(publishedId)
                 load()
-                messages.send(UserMessage.ActionFailed)
+                messages.send(if (it is TargetIsStaff) UserMessage.TargetIsStaff else UserMessage.ActionFailed)
             }
         }
     }

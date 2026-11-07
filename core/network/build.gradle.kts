@@ -29,6 +29,7 @@ android {
 
 dependencies {
     implementation(projects.core.logging)
+    implementation(libs.kotlinx.coroutines.core)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.appcheck)
     implementation(libs.firebase.auth)

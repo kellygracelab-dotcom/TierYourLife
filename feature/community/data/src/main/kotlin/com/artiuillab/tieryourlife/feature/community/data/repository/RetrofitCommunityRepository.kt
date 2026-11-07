@@ -24,13 +24,11 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicMergeRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicNameRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicSectionRequestDto
-import com.artiuillab.tieryourlife.feature.community.data.remote.isAppUnverified
 import com.artiuillab.tieryourlife.feature.community.data.remote.proposalError
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
 import com.artiuillab.tieryourlife.feature.community.data.remote.rankingRefusal
 import com.artiuillab.tieryourlife.feature.community.data.remote.refusalError
 import com.artiuillab.tieryourlife.feature.community.data.remote.toWithdrawal
-import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
@@ -45,7 +43,6 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ListGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.ListTranslations
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
-import com.artiuillab.tieryourlife.feature.community.domain.model.PageGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalError
 import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalRefused
@@ -387,13 +384,7 @@ private inline fun <T> attempt(what: String, block: () -> T): Result<T> =
             Timber.w(failure, "%s failed", what)
             // Named here rather than at each screen: every caller of this file
             // gets the same refusal, and none of them can read an HTTP body.
-            Result.failure(
-                when {
-                    failure.isAppUnverified() -> AppUnverified()
-                    failure.isCursorGone() -> PageGone()
-                    else -> failure
-                },
-            )
+            Result.failure(failure.named())
         },
     )
 
@@ -415,7 +406,14 @@ internal suspend fun <T> refusedAsAFace(block: suspend () -> T): T = try {
 internal fun HttpException.goneIfMissing(): Exception = if (code() == HTTP_NOT_FOUND) ListGone() else this
 
 /** A list this board already had out comes back as one just made would: the board takes its id either way. */
-internal fun PublishedIdDto.toPublished(fingerprint: String) = Published(id = id, fingerprint = fingerprint, topicId = topicId, ranking = ranking, underReview = underReview)
+internal fun PublishedIdDto.toPublished(fingerprint: String) = Published(
+    id = id,
+    fingerprint = fingerprint,
+    topicId = topicId,
+    ranking = ranking,
+    underReview = underReview,
+    droppedPictures = droppedPictures.coerceAtLeast(0),
+)
 
 private const val MAX_BOARD_UID = 100
 private const val TOO_MANY_FOLLOWING = "TOO_MANY_FOLLOWING"

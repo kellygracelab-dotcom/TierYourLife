@@ -71,6 +71,10 @@
     <string name="account_delete_keeps_local">Доски на этом телефоне остаются на месте.</string>
     <string name="account_delete_confirm">Удалить навсегда</string>
     <string name="account_error_not_deleted">Аккаунт не удалён. Попробуйте ещё раз.</string>
+    <string name="account_erased_title">Аккаунт удалён</string>
+    <string name="account_erased_body">Этот аккаунт удалили на другом устройстве, поэтому здесь вы вышли из него. Ваши доски остаются на этом телефоне.</string>
+    <string name="account_erased_here_body">Ваш аккаунт удалён, поэтому вы вышли из него. Ваши доски остаются на этом телефоне.</string>
+    <string name="account_erased_ok">ОК</string>
     <string name="account_error_boards_not_copied">Доски не скопированы. Они остались на телефоне.</string>
     <string name="account_face_position_title">Расположите фото</string>
     <string name="account_face_position_body">Двигайте картинку и сводите пальцы, чтобы приблизить. Круг — то, что увидят другие.</string>

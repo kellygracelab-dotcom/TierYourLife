@@ -74,6 +74,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.ui.DeletedItemSnackbarHost
+import com.artiuillab.tieryourlife.core.theme.ui.text
 import com.artiuillab.tieryourlife.feature.tier.board.components.BoardIndex
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.FloatingDragTile
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDragController
@@ -388,6 +389,7 @@ private fun TierScreenBody(
                 when (message) {
                     UserMessage.PublishedAsRanking -> publishedAsRankingMessage
                     UserMessage.PublishedUnderReview -> underReviewMessage
+                    is UserMessage.PicturesDropped -> message.text(resources)
                     else -> actionFailedMessage
                 },
             )

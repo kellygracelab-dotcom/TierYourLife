@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
+import com.artiuillab.tieryourlife.feature.community.domain.model.TargetIsStaff
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -44,7 +45,7 @@ data class PendingTakeDown(
 )
 
 /** What did not happen, said after the fact: "Taken down" was on screen before anything was sent. */
-enum class ModerationFailure { NotTakenDown, NotKept, NotMoved, MovedNotDismissed }
+enum class ModerationFailure { NotTakenDown, NotKept, NotMoved, MovedNotDismissed, TargetIsStaff }
 
 @HiltViewModel
 class ModerationViewModel @Inject constructor(
@@ -183,7 +184,13 @@ class ModerationViewModel @Inject constructor(
                 onFailure = { error ->
                     Timber.w(error, "Settling reports about $listId failed")
                     _state.value = shown.copy(settling = null)
-                    failures.send(if (error is MovedNotDismissed) ModerationFailure.MovedNotDismissed else failure)
+                    failures.send(
+                        when (error) {
+                            is TargetIsStaff -> ModerationFailure.TargetIsStaff
+                            is MovedNotDismissed -> ModerationFailure.MovedNotDismissed
+                            else -> failure
+                        },
+                    )
                 },
             )
         }

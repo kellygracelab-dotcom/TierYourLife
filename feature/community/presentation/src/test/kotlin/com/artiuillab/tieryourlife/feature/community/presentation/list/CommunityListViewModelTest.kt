@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefusal
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.TargetIsStaff
 import com.artiuillab.tieryourlife.feature.community.domain.model.TooManyFollowed
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
@@ -466,6 +467,18 @@ class CommunityListViewModelTest {
         assertTrue(community.reported.isEmpty())
     }
 
+    @Test
+    fun aModeratorReportingAListByStaff_isToldOnlyTheOwnerCan() = runBlocking {
+        val preferences = FakeAppPreferences()
+        val viewModel = viewModel(community = TestCommunity(reportRefusal = TargetIsStaff()), preferences = preferences)
+        viewModel.state.firstWithin { it is CommunityListUiState.Success }
+
+        viewModel.report(ReportReason.Spam, null)
+
+        assertEquals(UserMessage.TargetIsStaff, withTimeout(5_000) { viewModel.userMessages.first() })
+        assertTrue("back in the feed", preferences.hiddenListIds().isEmpty())
+    }
+
     private fun ownCommunity(anonymous: Boolean = false, unpublishFails: Boolean = false) = TestCommunity(
         arrangement = listOf(0, null),
         unpublishFails = unpublishFails,
@@ -737,6 +750,21 @@ class CommunityListViewModelTest {
 
         assertEquals(RankingNotice.SignInFirst, withTimeout(5_000) { viewModel.rankingNotices.first() })
         assertFalse((viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.sendingRanking == false } as CommunityListUiState.Success).sendingRanking)
+    }
+
+    @Test
+    fun theLimitsOnPicturesFromOtherSites_areSaidAsThemselves() = runBlocking {
+        listOf(
+            RankingRefusal.WebPicturesToday to RankingNotice.WebPicturesToday,
+            RankingRefusal.TooManyWebPictures to RankingNotice.TooManyWebPictures,
+        ).forEach { (refusal, notice) ->
+            val viewModel = viewModel(community = TestCommunity(showRefusal = refusal), accounts = signedIn)
+            arranged(viewModel)
+
+            viewModel.showMyRanking()
+
+            assertEquals(notice, withTimeout(5_000) { viewModel.rankingNotices.first() })
+        }
     }
 
     @Test
