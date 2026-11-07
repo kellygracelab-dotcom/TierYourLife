@@ -22,6 +22,8 @@ data class KeptBoardDto(
     val coverImageUrl: String? = null,
     /** The collage chosen for the cover, in its order; empty when the cards decide. */
     val coverImageUrls: List<String> = emptyList(),
+    /** The person's own photo as the whole cover, by the file's name; absent when there is none. */
+    val coverPictureId: String? = null,
     val authorName: String? = null,
     val publishedId: String? = null,
     val deletedAt: Long? = null,
@@ -106,6 +108,8 @@ data class KeepBoardRequestDto(
     val category: String? = null,
     val coverImageUrl: String? = null,
     val coverImageUrls: List<String> = emptyList(),
+    /** No default, so a null is written out: an absent one tells the account to keep the cover it has. */
+    val coverPictureId: String?,
     val authorName: String? = null,
     val publishedId: String? = null,
     val deletedAt: Long? = null,

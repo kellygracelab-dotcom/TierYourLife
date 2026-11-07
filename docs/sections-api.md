@@ -196,8 +196,9 @@ The test vector (#9A5638) and all nine built-in rows reproduce exactly from thei
 
   Anything invalid drops `play` and keeps the board. Each write that carries a valid game stamps it with `touchedAt` (stored, never returned). A game not stored for 30 days is left out of reads. A board without `play` has no `play` key at all. The app keeps the JSON as an opaque column and sends it back exactly as it came.
 - The account stores a board as it is written, with no merge. A client that leaves either field out wipes it.
+- **`coverPictureId`**: an own photo as the whole cover, a file in `users/{uid}/pictures/`, by the rule for a card's `pictureId`. The app always sends it: the id with a null `coverImageUrl`, or `null`. The account returns it only when there is one. A board that arrives with it takes its cover from that picture, fetched as a card's is.
 - **Fingerprint** (app `BoardFingerprint`, the site matches it): SHA-256 over fields written as `{length}:{value}|`, or `~|` for null, encoded as UTF-8. The length counts UTF-16 code units, as JavaScript's `.length` does.
-  - The board's own fields, in order: `uid, title, displayMode, category, coverImageUrl, coverImageUrls (one address per line), authorName, deletedAt`.
+  - The board's own fields, in order: `uid, title, displayMode, category, cover, coverImageUrls (one address per line), authorName, deletedAt`. The cover is `coverPictureId ?? coverImageUrl`, as a card's picture is: an own photo by its id, else the address.
   - Then each tier by uid, `uid, position, label, caption, colorLight, colorDark, isPool`, each followed by its cards by uid: `uid, position, title, picture id or http(s) address, source, deletedAt`.
   - After the last card come two more fields, each only when there is something to say. A board with neither keeps its old fingerprint.
     1. `anonymous`, when the board is anonymous.
@@ -206,6 +207,7 @@ The test vector (#9A5638) and all nine built-in rows reproduce exactly from thei
        - keys in this order: `kind, count, seed, refine, ids, history, round, startedAt`, then `scope` only when present, then `keepTier` only when true;
        - `history` entries as `[first,second,winner]`, with a skip's winner as `null`.
   - Vector (a): board uid `u`, title `T`, displayMode `WRAP`, every other field null, no tiers, anonymous. That is the SHA-256 of `1:u|1:T|4:WRAP|~|~|~|~|~|9:anonymous|`, `b7c68568ab4c48be25a724e26ef8f14ac5f940178b556a1cb4afb7183c717394`. Without anonymous: `1:u|1:T|4:WRAP|~|~|~|~|~|`, `8e5ded7251916b6817519d19b768e298cb2e38b195ef08173f4e22c50189b27f`.
+  - Vector (c): the board of (a), not anonymous, with an own photo `cover-1` as its cover: `1:u|1:T|4:WRAP|~|7:cover-1|~|~|~|`, `86fac132f338adcf24003c54a050265ea6c8b5d9aca53dff9a234a4709d08bef`. With the web cover `https://i/cover.jpg` instead: `1:u|1:T|4:WRAP|~|19:https://i/cover.jpg|~|~|~|`, `12564983e429bc9ffea4275f919268e0190fb5c36148ef706fc0e9d366937ffe`, as before the id was kept.
   - Vector (b): the same board with the game `{"kind":"swiss","count":4,"seed":7,"refine":false,"ids":["a","b","c","d"],"history":[[0,1,0],[2,3,null]],"round":1,"startedAt":1793146000000,"scope":["t-s"],"keepTier":true}` (173 characters). That is the SHA-256 of `1:u|1:T|4:WRAP|~|~|~|~|~|9:anonymous|173:{…}|`, `b97bfcf2595276d8399cacd16b85ec5341c62ae5ea9916330b394bf61c9cea89`.
 
 ## 9. Topics, moderators, counts, audit
