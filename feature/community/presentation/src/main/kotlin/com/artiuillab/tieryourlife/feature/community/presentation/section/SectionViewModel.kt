@@ -117,7 +117,7 @@ class SectionViewModel @Inject constructor(
     /** A link to a section merged into a topic opens that topic, once, as soon as it is known; the section page stays beneath it. */
     val mergedIntoTopic: Flow<CommunityRoute.Topic> = toTopic.receiveAsFlow()
 
-    private val menu = ListMenuActions(preferences, community, viewModelScope) { notes.send(CommunityNotice.ActionFailed) }
+    private val menu = ListMenuActions(preferences, community, viewModelScope) { notes.send(it) }
 
     private val topics = MutableStateFlow<List<Topic>?>(null)
     private val waiting = MutableStateFlow<List<Topic>>(emptyList())

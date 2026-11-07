@@ -93,7 +93,7 @@ class FollowingFeedViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val notes = Channel<CommunityNotice>(Channel.BUFFERED)
-    private val menu = ListMenuActions(preferences, community, viewModelScope) { notes.send(CommunityNotice.ActionFailed) }
+    private val menu = ListMenuActions(preferences, community, viewModelScope) { notes.send(it) }
 
     internal val feed = FeedLoader(FeedKeys.FOLLOWING, viewModelScope, cache, clock, menu::isVisible) { after ->
         community.feed(sort = FeedSort.Recent, following = true, after = after)

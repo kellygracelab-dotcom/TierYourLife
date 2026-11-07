@@ -12,9 +12,11 @@ import com.artiuillab.tieryourlife.feature.community.domain.FakeSectionStore
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
+import com.artiuillab.tieryourlife.feature.community.domain.model.TargetIsStaff
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CachedFeed
@@ -59,6 +61,7 @@ class ExploreViewModelTest {
         val lists: List<PublishedListSummary> = listOf(summary("a"), summary("b")),
         val sectionsAnswer: Result<List<Section>> = Result.success(Section.BUILT_IN.map { it.copy(lists30d = ANSWERED) }),
         val followFails: Boolean = false,
+        val reportRefusal: Throwable? = null,
     ) : FakeCommunityRepository() {
         val sorts = mutableListOf<FeedSort>()
         val queries = mutableListOf<String?>()
@@ -79,6 +82,9 @@ class ExploreViewModelTest {
         }
 
         override suspend fun sections(): Result<List<Section>> = sectionsAnswer
+
+        override suspend fun report(publishedId: String, reason: ReportReason, note: String?): Result<Unit> =
+            reportRefusal?.let { Result.failure(it) } ?: Result.success(Unit)
 
         override suspend fun followSection(section: String): Result<Unit> {
             followed.complete(section)
@@ -117,6 +123,17 @@ class ExploreViewModelTest {
 
         assertEquals(listOf("a", "b"), state.feed.lists.map { it.id })
         assertEquals(FeedSort.Popular, community.sorts.first())
+    }
+
+    @Test
+    fun reportingAStaffMembersList_saysOnlyTheOwnerActsOnIt() = runBlocking {
+        val viewModel = viewModel(Community(reportRefusal = TargetIsStaff()))
+        viewModel.open()
+        val shown = viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready }
+
+        viewModel.report(shown.feed.lists.first(), ReportReason.Spam, null)
+
+        assertEquals(CommunityNotice.TargetIsStaff, withTimeout(5_000) { viewModel.notices.first() })
     }
 
     @Test

@@ -4,12 +4,14 @@ import androidx.lifecycle.SavedStateHandle
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.TargetIsStaff
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
@@ -171,6 +173,17 @@ class TopicViewModelTest {
         assertEquals(listOf("a"), (viewModel.state.value.feed as CommunityFeed.Ready).lists.map { it.id })
     }
 
+    @Test
+    fun reportingAStaffMembersList_eitherWay_saysOnlyTheOwnerActsOnIt() = runBlocking {
+        val viewModel = topicFor(TopicFake(lists = listOf(published("a")), reportRefusal = TargetIsStaff()))
+        val list = (viewModel.state.firstWithin { it.feed is CommunityFeed.Ready }.feed as CommunityFeed.Ready).lists.single()
+
+        viewModel.notThisTopic(list)
+        assertEquals(UserMessage.TargetIsStaff, withTimeout(WAIT_MILLIS) { viewModel.userMessages.first() })
+        viewModel.report(list, ReportReason.Spam, null)
+        assertEquals(UserMessage.TargetIsStaff, withTimeout(WAIT_MILLIS) { viewModel.userMessages.first() })
+    }
+
     private fun topicFor(
         community: TopicFake,
         preferences: FakeAppPreferences = FakeAppPreferences(),
@@ -199,6 +212,7 @@ private class TopicFake(
     private val answers: Boolean = true,
     private val lists: List<PublishedListSummary> = emptyList(),
     private val refuses: Boolean = false,
+    private val reportRefusal: Throwable? = null,
     /** Held while a request for the newest lists is in flight; the rest answer at once. */
     private val recentGate: CompletableDeferred<Unit>? = null,
 ) : FakeCommunityRepository() {
@@ -238,7 +252,7 @@ private class TopicFake(
 
     override suspend fun report(publishedId: String, reason: ReportReason, note: String?): Result<Unit> {
         reported.complete(publishedId to reason)
-        return Result.success(Unit)
+        return reportRefusal?.let { Result.failure(it) } ?: Result.success(Unit)
     }
 }
 
