@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -52,6 +54,7 @@ internal fun SignedInPanel(
     modifier: Modifier = Modifier,
     onDeleteAccount: () -> Unit = {},
     deleting: Boolean = false,
+    signingOut: Boolean = false,
     makingFace: Boolean = false,
     photoCrop: FaceCrop? = null,
 ) {
@@ -144,6 +147,7 @@ internal fun SignedInPanel(
         Spacer(Modifier.height(40.dp))
         OutlinedButton(
             onClick = { confirming = true },
+            enabled = !signingOut && !deleting,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(BUTTON_HEIGHT)
@@ -152,7 +156,16 @@ internal fun SignedInPanel(
                 contentColor = MaterialTheme.colorScheme.error,
             ),
         ) {
-            Text(stringResource(R.string.account_action_sign_out))
+            if (signingOut) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp).testTag(AccountTestTags.SIGNING_OUT),
+                    strokeWidth = 2.dp,
+                )
+                Spacer(Modifier.width(12.dp))
+                Text(stringResource(R.string.account_signing_out))
+            } else {
+                Text(stringResource(R.string.account_action_sign_out))
+            }
         }
         Spacer(Modifier.height(8.dp))
         // The same three facts the dialog asks, as one line of reassurance.
@@ -170,7 +183,7 @@ internal fun SignedInPanel(
         Spacer(Modifier.height(24.dp))
         TextButton(
             onClick = { deleteConfirming = true },
-            enabled = !deleting,
+            enabled = !deleting && !signingOut,
             modifier = Modifier.testTag(AccountTestTags.DELETE_ACCOUNT),
             colors = ButtonDefaults.textButtonColors(
                 contentColor = MaterialTheme.colorScheme.error,

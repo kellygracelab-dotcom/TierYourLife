@@ -1,5 +1,9 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account
 
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.settings.HiddenEntry
@@ -341,6 +345,57 @@ class AccountViewModelTest {
         assertEquals(listOf("settledBeforeSigningOut"), merge.calls)
     }
 
+    // A32: it can wait out the call a sync is in, up to minutes for a picture.
+    @Test
+    fun signOut_saysItIsSigningOutUntilItHas() = runBlocking {
+        val repository = FakeAccountRepository(initial = Account.SignedIn(email = "someone@example.com", photoUrl = null))
+        val syncEnds = CompletableDeferred<Unit>()
+        val viewModel = viewModel(repository, merge = RecordingMerge(guestBoards = 0, signOutWaits = syncEnds))
+        viewModel.state.firstWithin { it.account is Account.SignedIn }
+
+        viewModel.signOut()
+        viewModel.state.firstWithin { it.signingOut }
+        syncEnds.complete(Unit)
+        val state = viewModel.state.firstWithin { !it.signingOut }
+
+        assertEquals(Account.Guest, state.account)
+    }
+
+    @Test
+    fun signOut_pressedAgainWhileItWaits_signsOutOnce() = runBlocking {
+        val repository = FakeAccountRepository(initial = Account.SignedIn(email = "someone@example.com", photoUrl = null))
+        val syncEnds = CompletableDeferred<Unit>()
+        val merge = RecordingMerge(guestBoards = 0, signOutWaits = syncEnds)
+        val viewModel = viewModel(repository, merge = merge)
+        viewModel.state.firstWithin { it.account is Account.SignedIn }
+
+        viewModel.signOut()
+        viewModel.state.firstWithin { it.signingOut }
+        viewModel.signOut()
+        syncEnds.complete(Unit)
+        viewModel.state.firstWithin { !it.signingOut }
+
+        assertEquals(listOf("settledBeforeSigningOut"), merge.calls)
+    }
+
+    // Leaving the screen while it waited took the sign-out with it.
+    @Test
+    fun signOut_goesThroughAfterTheScreenIsLeft() = runBlocking {
+        val repository = FakeAccountRepository(initial = Account.SignedIn(email = "someone@example.com", photoUrl = null))
+        val syncEnds = CompletableDeferred<Unit>()
+        val store = ViewModelStore()
+        val made = viewModel(repository, merge = RecordingMerge(guestBoards = 0, signOutWaits = syncEnds))
+        val viewModel = ViewModelProvider.create(store, viewModelFactory { initializer { made } })[AccountViewModel::class]
+        viewModel.state.firstWithin { it.account is Account.SignedIn }
+
+        viewModel.signOut()
+        viewModel.state.firstWithin { it.signingOut }
+        withContext(Dispatchers.Main) { store.clear() }
+        syncEnds.complete(Unit)
+
+        assertEquals(Account.Guest, withTimeout(5_000) { repository.account.first { it == Account.Guest } })
+    }
+
     @Test
     fun signOut_leavesNothingOfThePersonForTheNextOne() = runBlocking {
         val repository = FakeAccountRepository(
@@ -669,6 +724,7 @@ private class RecordingMerge(
     private val guestBoards: Int,
     private val heldBoards: Int = 0,
     private val copyFails: Boolean = false,
+    private val signOutWaits: CompletableDeferred<Unit>? = null,
 ) : BoardMerge {
     val calls = mutableListOf<String>()
     val answered = CompletableDeferred<Unit>()
@@ -706,6 +762,7 @@ private class RecordingMerge(
 
     override suspend fun signOutSettlingErase(signOut: suspend () -> Unit) {
         calls += "settledBeforeSigningOut"
+        signOutWaits?.await()
         signOut()
     }
 

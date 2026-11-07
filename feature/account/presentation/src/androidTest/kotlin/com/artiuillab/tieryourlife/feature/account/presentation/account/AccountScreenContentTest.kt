@@ -179,6 +179,16 @@ class AccountScreenContentTest {
         composeRule.onNodeWithText(string(R.string.account_sign_out_body_2)).assertIsDisplayed()
     }
 
+    // A32: waiting for a sync's call to end, the button looked as if it did nothing.
+    @Test
+    fun whileSigningOut_theButtonSaysSo_andCannotBePressedAgain() {
+        setContent(signedIn().copy(signingOut = true))
+
+        composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT).performScrollTo().assertIsNotEnabled()
+        composeRule.onNodeWithTag(AccountTestTags.SIGNING_OUT, useUnmergedTree = true).assertExists()
+        composeRule.onNodeWithText(string(R.string.account_signing_out), useUnmergedTree = true).assertExists()
+    }
+
     @Test
     fun asAGuest_thereIsNothingToSignOutOf() {
         setContent(guest())

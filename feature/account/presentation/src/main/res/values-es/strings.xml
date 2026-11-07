@@ -13,6 +13,7 @@
     <string name="account_notice_existing_account">Esta cuenta de Google ya tenía sus propios créditos: esos son los que tienes ahora.</string>
     <string name="account_cd_close">Cerrar</string>
     <string name="account_action_sign_out">Cerrar sesión</string>
+    <string name="account_signing_out">Cerrando sesión…</string>
     <string name="account_community_section">EN LA COMUNIDAD</string>
     <string name="account_community_note">Así apareces en las listas que publicas. Tu correo nunca se muestra.</string>
     <string name="account_nickname_title">Tu nombre</string>

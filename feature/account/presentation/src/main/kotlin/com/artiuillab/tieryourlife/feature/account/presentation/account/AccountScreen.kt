@@ -179,6 +179,7 @@ internal fun AccountScreenContent(
                                 onSignOut = onSignOut,
                                 onDeleteAccount = onDeleteAccount,
                                 deleting = state.deleting,
+                                signingOut = state.signingOut,
                                 makingFace = state.makingFace,
                                 photoCrop = state.shownFaceCrop,
                             )

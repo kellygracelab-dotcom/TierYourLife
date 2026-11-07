@@ -19,6 +19,7 @@
     <string name="account_notice_existing_account">This Google account already had credits of its own — those are what you have now.</string>
     <string name="account_cd_close">Close</string>
     <string name="account_action_sign_out">Sign out</string>
+    <string name="account_signing_out">Signing out…</string>
     <string name="account_sign_out_title">Sign out?</string>
     <string name="account_sign_out_helper">Your boards stay in your account and on this phone, hidden until you sign in again. Credits and purchases wait for you here.</string>
     <string name="account_action_delete">Delete account</string>

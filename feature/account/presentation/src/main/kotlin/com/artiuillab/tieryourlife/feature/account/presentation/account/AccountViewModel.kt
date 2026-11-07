@@ -87,11 +87,22 @@ class AccountViewModel @Inject constructor(
         }
     }
 
+    /**
+     * It may wait out the call a sync is in, and goes through even when the
+     * screen is left meanwhile: pressed, the account's boards must not stay on show.
+     */
     fun signOut() {
+        if (_state.value.signingOut) return
+        _state.update { it.copy(signingOut = true, notice = null) }
         viewModelScope.launch {
-            merge.signOutSettlingErase { repository.signOut() }
-            thePerson.forget()
-            _state.update { it.copy(notice = null) }
+            withContext(NonCancellable) {
+                try {
+                    merge.signOutSettlingErase { repository.signOut() }
+                    thePerson.forget()
+                } finally {
+                    _state.update { it.copy(signingOut = false) }
+                }
+            }
         }
     }
 
