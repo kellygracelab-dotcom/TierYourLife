@@ -72,6 +72,22 @@ class ErasedElsewhereTest : SyncEngineBench() {
         assertEquals("still there after a restart", AccountErasedNotice.Where.AnotherDevice, AccountErasedNotice(preferences).pending.value)
     }
 
+    // Ann signed out by choice and Bob's sign-in asks about the phone's boards: a yes must not carry hers in uncounted.
+    @Test
+    fun anAccountErasedWhileASignInAsks_keepsItsBoardsHeldForIt() = runBlocking {
+        val films = givenLocalBoard("Films", owner = "ann")
+        accounts.accounts.value = bob
+        ownership.hold()
+
+        watcher().leave("ann")
+
+        assertEquals(setOf(films), preferences.heldBoards()["ann"])
+        assertTrue(ownership.guestBoardsInUse().none { it.uid == films })
+        assertEquals(bob, accounts.current())
+        assertEquals(0, forgotten)
+        assertNull(notice.pending.value)
+    }
+
     // Answered after a switch, or to a request still on its way when Bob signed out: his boards are let go, Ann is left be.
     @Test
     fun anotherAccountErased_keepsItsBoardsHere_andLeavesTheSignedInOneBe() = runBlocking {
