@@ -2,14 +2,14 @@
     <string name="tier_lists_private">gizli</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · henüz sıralanan yok</string>
-    <string name="tier_lists_status_start_dragging">Sıralamak için sürükle</string>
+    <string name="tier_lists_status_start_dragging">Sıralamak için sürükleyin</string>
 
     <plurals name="search_results_count">
         <item quantity="one">%1$d liste</item>
         <item quantity="other">%1$d liste</item>
     </plurals>
     <string name="search_no_results_title">“%1$s” adında liste yok</string>
-    <string name="search_no_results_body">Daha kısa bir kelime dene veya yazımı kontrol et.</string>
+    <string name="search_no_results_body">Daha kısa bir kelime deneyin veya yazımı kontrol edin.</string>
 
     <plurals name="selection_count">
         <item quantity="one">%1$d seçildi</item>
@@ -42,10 +42,10 @@
     <string name="item_search_close_content_description">Aramayı kapat</string>
     <string name="item_search_clear_content_description">Aramayı temizle</string>
     <string name="item_search_source_caption">%1$s havuzuna ekleniyor</string>
-    <string name="item_search_min_query">Aramak için en az iki harf gir.</string>
+    <string name="item_search_min_query">Aramak için en az iki harf girin.</string>
     <string name="item_search_empty_title">\"%1$s\" için bir şey bulunamadı</string>
     <string name="item_search_error_title">Sonuçlar yüklenemedi</string>
-    <string name="item_search_error_body">Bağlantını kontrol et ve tekrar dene.</string>
+    <string name="item_search_error_body">Bağlantınızı kontrol edin ve tekrar deneyin.</string>
     <string name="item_search_try_again">Tekrar dene</string>
     <string name="item_search_scope_all">Tümü</string>
     <string name="item_search_scope_animals">Hayvanlar</string>
@@ -110,7 +110,7 @@
     <string name="home_suggestion_restaurants">Restoranlar</string>
     <string name="home_suggestion_albums">Albümler</string>
     <string name="home_suggestion_books">Kitaplar</string>
-    <string name="home_tab_mine">Listelerin</string>
+    <string name="home_tab_mine">Listeleriniz</string>
     <string name="home_tab_community">Topluluk</string>
     <string name="lists_sort_newest">En yeni</string>
     <string name="lists_sort_oldest">En eski</string>
@@ -141,7 +141,7 @@
     <string name="restoring_one_picture">Resim geri yükleniyor</string>
     <string name="restoring_pictures">Resimler geri yükleniyor · %1$d / %2$d</string>
     <string name="conflict_title">“%1$s” iki telefonda değişti</string>
-    <string name="conflict_body">İki sürüm de burada. Açıp istediğini tut, diğerini sil.</string>
+    <string name="conflict_body">İki sürüm de burada. Açıp istediğinizi tutun, diğerini silin.</string>
     <string name="conflict_got_it">Anladım</string>
     <string name="conflict_tag">%1$s’dan</string>
     <string name="conflict_tag_unknown">başka bir telefondan</string>

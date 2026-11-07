@@ -2,10 +2,10 @@
 <resources>
     <string name="cd_clear_query">Aramayı temizle</string>
     <string name="cd_close_search">Aramayı kapat</string>
-    <string name="home_search_hint">Listelerinde ara</string>
+    <string name="home_search_hint">Listelerinizde ara</string>
     <string name="tier_lists_content_description_as_pictures">Panoları görsel olarak göster</string>
     <string name="tier_lists_content_description_as_rows">Panoları satır olarak göster</string>
-    <string name="tier_lists_content_description_search">Listelerinde ara</string>
+    <string name="tier_lists_content_description_search">Listelerinizde ara</string>
     <string name="tier_lists_content_description_settings">Ayarlar</string>
     <string name="action_cancel">İptal</string>
     <string name="action_try_again">Tekrar dene</string>
@@ -28,7 +28,7 @@
         <item quantity="one">%d sıralandı</item>
         <item quantity="other">%d sıralandı</item>
     </plurals>
-    <string name="tier_lists_title">Listelerin</string>
+    <string name="tier_lists_title">Listeleriniz</string>
     <string name="snack_published_as_ranking">O listenin sizin sıralamanız olarak yayınlandı. Akışta ikinci bir liste görünmez.</string>
     <string name="snack_published_under_review">Kaydedildi. Başkaları görmeden önce bir moderatörü bekliyor.</string>
 </resources>

@@ -325,5 +325,5 @@
     <string name="moderation_not_taken_down">لم تُزَل: القائمة ما زالت عامة. أعد المحاولة.</string>
     <string name="moderation_not_kept">تعذّر إبقاء القائمة: البلاغات ما زالت مفتوحة. أعد المحاولة.</string>
     <string name="moderation_not_moved">لم تُنقل: القائمة في مكانها. أعد المحاولة.</string>
-    <string name="moderation_moved_not_dismissed">نُقلت، لكن بلاغاتها ما زالت مفتوحة. تجاهلها لتفريغ القائمة.</string>
+    <string name="moderation_moved_not_dismissed">نُقلت، لكن بلاغاتها ما زالت مفتوحة. اضغط «إبقاء» لتفريغها.</string>
 </resources>
