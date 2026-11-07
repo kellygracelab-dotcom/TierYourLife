@@ -65,4 +65,7 @@ enum class AccountNotice {
 
     /** The account is still there. Saying nothing would read as "it worked". */
     NotDeleted,
+
+    /** Nothing was copied; they stay on this phone and are offered again. */
+    BoardsNotCopied,
 }

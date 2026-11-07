@@ -35,7 +35,8 @@ interface BoardMerge {
      * The person has [heldBoards] copied into the signed-in account, under new
      * uids and renamed as in [moveIn]; not asked about again. The boards
      * themselves stay held, untouched, for the account they wait for. Nothing
-     * syncs yet: [moveIn] or [keepHere] still follows.
+     * syncs yet: [moveIn] or [keepHere] still follows. Throws when the copies
+     * could not be made; they are offered again then.
      */
     suspend fun copyHeldIn(fromThisPhone: String?)
 

@@ -11,7 +11,9 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
@@ -71,15 +73,23 @@ class RoomBoardMerge internal constructor(
         val boards = ownership.heldForOthersInUse()
         if (boards.isEmpty()) return@withLock
         val theirs = if (fromThisPhone != null) accountTitles() else emptySet()
-        if (!ownership.markCopied(owner, boards.map { it.uid })) {
+        val uids = boards.map { it.uid }
+        if (!ownership.markCopied(owner, uids)) {
             Timber.w("Could not write down what was copied; nothing is")
             return@withLock
         }
-        dao.together {
-            boards.forEach { board ->
-                val title = if (fromThisPhone != null && board.title in theirs) withSuffix(board.title, fromThisPhone) else board.title
-                copyFor(owner, board, title)
+        var copied = false
+        try {
+            dao.together {
+                boards.forEach { board ->
+                    val title = if (fromThisPhone != null && board.title in theirs) withSuffix(board.title, fromThisPhone) else board.title
+                    copyFor(owner, board, title)
+                }
             }
+            copied = true
+        } finally {
+            // Nothing was copied: marked so, they would never be offered again.
+            if (!copied) withContext(NonCancellable) { ownership.unmarkCopied(owner, uids) }
         }
         Timber.i("Copied %d board(s) of an account signed out of into this one", boards.size)
         ownership.announceMove()

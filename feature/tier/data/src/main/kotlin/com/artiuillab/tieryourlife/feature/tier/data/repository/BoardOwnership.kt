@@ -130,6 +130,14 @@ class BoardOwnership @Inject constructor(
         preferences.setHeldBoardsCopied(copied + (into to copied[into].orEmpty() + uids))
     }
 
+    /** The copies were not made after all. */
+    suspend fun unmarkCopied(into: String, uids: Collection<String>) = heldChanges.withLock {
+        val copied = preferences.heldBoardsCopied()
+        if (!preferences.setHeldBoardsCopied(copied + (into to copied[into].orEmpty() - uids.toSet()))) {
+            Timber.w("Could not take back the mark of copies never made")
+        }
+    }
+
     /** [account] is gone: nothing is held back from it any more. */
     suspend fun forgetCopiesInto(account: String) = heldChanges.withLock {
         val copied = preferences.heldBoardsCopied()

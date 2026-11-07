@@ -152,6 +152,21 @@ class AccountViewModelTest {
     }
 
     @Test
+    fun heldBoardsQuestion_aCopyThatFails_saysSo_andSyncingIsNotLeftWaiting() = runBlocking {
+        val merge = RecordingMerge(guestBoards = 0, heldBoards = 3, copyFails = true)
+        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(guestCreditsLost = false))
+        val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
+        viewModel.signIn(picker::request)
+        viewModel.state.firstWithin { it.merge?.fromAnotherAccount == true }
+
+        viewModel.moveGuestBoardsIn("(Pixel)")
+        merge.answered.await()
+
+        assertEquals(AccountNotice.BoardsNotCopied, viewModel.state.value.notice)
+        assertEquals(listOf("hold", "copyHeldIn:(Pixel)", "keepHere"), merge.calls)
+    }
+
+    @Test
     fun heldBoardsQuestion_answeredKeep_onANewAccount_movesOnlyTheGuestBoards() = runBlocking {
         val merge = RecordingMerge(guestBoards = 2, heldBoards = 3)
         val viewModel = viewModel(credential = FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
@@ -650,7 +665,11 @@ private class FakeGenerationCredits(private val balance: Int? = null) : Generati
     }
 }
 
-private class RecordingMerge(private val guestBoards: Int, private val heldBoards: Int = 0) : BoardMerge {
+private class RecordingMerge(
+    private val guestBoards: Int,
+    private val heldBoards: Int = 0,
+    private val copyFails: Boolean = false,
+) : BoardMerge {
     val calls = mutableListOf<String>()
     val answered = CompletableDeferred<Unit>()
 
@@ -674,6 +693,7 @@ private class RecordingMerge(private val guestBoards: Int, private val heldBoard
 
     override suspend fun copyHeldIn(fromThisPhone: String?) {
         calls += "copyHeldIn:$fromThisPhone"
+        check(!copyFails) { "disk full" }
     }
 
     override suspend fun eraseKeepingBoards(account: String, erase: suspend () -> Result<Unit>, signOut: suspend () -> Unit): Result<Unit> {

@@ -6,7 +6,10 @@ import com.artiuillab.tieryourlife.core.settings.PersonalData
 import com.artiuillab.tieryourlife.core.settings.ThePerson
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.IncomingTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.BoardSyncEntity
+import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -334,6 +337,26 @@ class LostSessionTest : SyncEngineBench() {
 
         merge.copyHeldIn(fromThisPhone = null)
 
+        assertTrue(dao.boardsOf("bob").isEmpty())
+        assertEquals(2, merge.heldBoards())
+    }
+
+    @Test
+    fun aCopyThatFails_takesItsMarkBack_andIsOfferedAgain() = runBlocking {
+        annWithTwoBoardsSynced()
+        sessionLost()
+        signIn(bob)
+        val failing = object : BoardSyncDao by dao {
+            override suspend fun addBoard(board: TierListEntity, tiers: List<IncomingTier>) = throw IllegalStateException("disk full")
+        }
+
+        val result = runCatching {
+            RoomBoardMerge(failing, database.ownerDao(), boards, ownership, lock, preferences, accounts, thePerson) { 0L }
+                .copyHeldIn(fromThisPhone = null)
+        }
+
+        assertTrue(result.isFailure)
+        assertTrue(preferences.heldBoardsCopied()["bob"].isNullOrEmpty())
         assertTrue(dao.boardsOf("bob").isEmpty())
         assertEquals(2, merge.heldBoards())
     }

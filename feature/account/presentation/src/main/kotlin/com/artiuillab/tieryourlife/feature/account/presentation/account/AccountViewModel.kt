@@ -191,7 +191,10 @@ class AccountViewModel @Inject constructor(
         _state.update { it.copy(merge = null) }
         viewModelScope.launch {
             if (held) {
-                merge.copyHeldIn(fromThisPhone)
+                runSuspendCatching { merge.copyHeldIn(fromThisPhone) }.onFailure { failure ->
+                    Timber.w(failure, "Copying the boards of an account signed out of failed")
+                    _state.update { it.copy(notice = AccountNotice.BoardsNotCopied) }
+                }
                 askAfterHeldBoards()
             } else {
                 merge.moveIn(fromThisPhone)
