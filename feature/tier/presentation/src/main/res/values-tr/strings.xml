@@ -103,7 +103,7 @@
     <string name="cd_trash_back">Geri git</string>
 
     <string name="home_start_with">Şununla başla</string>
-    <string name="home_start_hint">Panoyu hemen oluşturur. Adını değiştirmek için başlığa dokun.</string>
+    <string name="home_start_hint">Panoyu hemen oluşturur. Adını değiştirmek için başlığa dokunun.</string>
     <string name="home_new_list">Yeni liste</string>
     <string name="home_suggestion_films">Filmler</string>
     <string name="home_suggestion_games">Oyunlar</string>
