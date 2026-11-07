@@ -203,7 +203,13 @@ class RoomBoardMerge internal constructor(
             tell(erasureMarkOf(preferences.erasureUnderWay())?.account == uid)
             thePerson.forget()
         }
-        keepBoardsOf(uid)
+        if (!current && ownership.holding) {
+            // A sign-in's question is open and was counted without them: a yes must not carry them in.
+            ownership.holdFor(uid)
+            if (preferences.lastSignedIn() == uid) preferences.setLastSignedIn(null)
+        } else {
+            keepBoardsOf(uid)
+        }
         if (current) {
             preferences.setLastSignedIn(null)
             accounts.signOut()
