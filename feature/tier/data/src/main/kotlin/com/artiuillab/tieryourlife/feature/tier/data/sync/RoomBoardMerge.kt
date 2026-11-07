@@ -210,7 +210,14 @@ class RoomBoardMerge internal constructor(
 
     /** None when they cannot be read: both sets are still kept, only the renaming that tells them apart is lost. */
     private suspend fun accountTitles(): Set<String> = try {
-        api.index().boards.filterNot { it.deleted }.map { it.title }.toSet()
+        val titles = mutableSetOf<String>()
+        var after: String? = null
+        do {
+            val page = api.index(after)
+            page.boards.filterNot { it.deleted }.mapTo(titles) { it.title }
+            after = page.next
+        } while (after != null)
+        titles
     } catch (e: IOException) {
         Timber.w(e, "Could not read the account's titles; boards keep their names")
         emptySet()

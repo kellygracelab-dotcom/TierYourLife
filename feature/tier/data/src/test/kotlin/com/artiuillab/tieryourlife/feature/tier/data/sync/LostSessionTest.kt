@@ -169,6 +169,19 @@ class LostSessionTest : SyncEngineBench() {
         assertEquals(0, merge.guestBoards())
     }
 
+    // A45: only the first page of the account's boards was read, so a clash past it went in under the same name.
+    @Test
+    fun aTitleTheAccountHasPastItsFirstPage_isToldApartToo() = runBlocking {
+        repeat(3) { boards.server["early-$it"] = theirBoard("early-$it", title = "Early $it", revision = 1) }
+        boards.server["late"] = theirBoard("late", title = "Late", revision = 1)
+        boards.pageSize = 2
+        val late = givenLocalBoard("Late", owner = null)
+
+        merge.moveIn(fromThisPhone = "Pixel")
+
+        assertEquals(withSuffix("Late", "Pixel"), dao.boardByUid(late)!!.title)
+    }
+
     @Test
     fun anotherAccount_isNotAskedAboutHeldBoards_andMovingInLeavesThemForTheirOwn() = runBlocking {
         val (films, games) = annWithTwoBoardsSynced()
