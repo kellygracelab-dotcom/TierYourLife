@@ -53,6 +53,9 @@
     <string name="merge_title">Tableaux créés sans compte</string>
     <string name="merge_body">Ce téléphone a %1$s créés sans compte. Les déplacer dans le compte %2$s ?</string>
     <string name="merge_footnote">Gardés sur ce téléphone, ils s’affichent dès que vous êtes déconnecté. Rien n’est supprimé dans les deux cas.</string>
+    <string name="merge_held_title">Tableaux d’un compte dont vous avez été déconnecté</string>
+    <string name="merge_held_body">Ce téléphone a %1$s d’un compte dont vous avez été déconnecté. Les déplacer dans le compte %2$s ?</string>
+    <string name="merge_held_footnote">Gardés sur ce téléphone, ils retournent à ce compte dès que vous vous y reconnectez. Rien n’est supprimé dans les deux cas.</string>
     <string name="merge_name_suffix">(de ce téléphone)</string>
     <string name="account_sign_out_title">Se déconnecter ?</string>
     <string name="account_sign_out_helper">Vos tableaux restent dans votre compte et sur ce téléphone, masqués jusqu’à votre prochaine connexion. Les crédits et les achats vous attendent ici.</string>

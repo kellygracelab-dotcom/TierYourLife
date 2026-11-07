@@ -249,6 +249,94 @@ class LostSessionTest : SyncEngineBench() {
     }
 
     @Test
+    fun anotherAccount_takesHeldBoardsWhenThePersonSaysSo_andTheFirstLosesNothing() = runBlocking {
+        val (films, games) = annWithTwoBoardsSynced()
+        sessionLost()
+
+        signIn(bob)
+        val asked = merge.heldBoards()
+        merge.moveHeldIn(fromThisPhone = null)
+        merge.keepHere()
+        bobsEngine().sync()
+
+        assertEquals(2, asked)
+        assertEquals("bob", ownerOf(films))
+        assertEquals("bob", ownerOf(games))
+        assertTrue(preferences.heldBoards().isEmpty())
+        assertTrue("ann's records of them went", dao.syncRecordsOf("ann").isEmpty())
+        assertEquals(setOf(films, games), bobsAccount.server.keys)
+
+        merge.signOutSettlingErase { accounts.signOut() }
+        signIn(ann)
+        annsEngine().sync()
+        annsEngine().sync()
+        val kept = boards.server.values.filterNot { it.deleted }.map { it.title }
+        assertTrue("ann's account still has both, if under new uids", kept.containsAll(listOf("Films", "Games")))
+    }
+
+    @Test
+    fun theQuestionAboutHeldBoards_countsNeitherTheSignedInAccountsNorTheTrash() = runBlocking {
+        val (films, _) = annWithTwoBoardsSynced()
+        database.tierDao().markTierListsDeleted(listOf(dao.boardByUid(films)!!.id), deletedAt = 1)
+        sessionLost()
+
+        signIn(bob)
+        assertEquals(1, merge.heldBoards())
+        merge.signOutSettlingErase { accounts.signOut() }
+        session.notice()
+        signIn(ann)
+        assertEquals(0, merge.heldBoards())
+    }
+
+    @Test
+    fun anEraseSettledLater_makesHeldBoardsThePhonesOwn() = runBlocking {
+        val (films, _) = annWithTwoBoardsSynced()
+        sessionLost()
+        preferences.setErasureUnderWay(ErasureMark("ann", 0L).encoded())
+
+        merge.settleUnansweredErase()
+
+        assertTrue(preferences.heldBoards().isEmpty())
+        assertNull(ownerOf(films))
+        assertNull(dao.boardByUid(films)!!.publishedId)
+        assertTrue(dao.syncRecordsOf("ann").isEmpty())
+        signIn(bob)
+        assertEquals("guest boards now, asked about as such", 2, merge.guestBoards())
+    }
+
+    @Test
+    fun aLossWithAnEraseUnanswered_alsoLetsGoOfWhatWasHeld() = runBlocking {
+        val old = givenLocalBoard("Old", publishedId = "pub-old", owner = null)
+        preferences.setHeldBoards(mapOf("ann" to setOf(old)))
+        annWithTwoBoardsSynced()
+        preferences.setErasureUnderWay(ErasureMark("ann", 0L).encoded())
+
+        sessionLost()
+
+        assertTrue(preferences.heldBoards().isEmpty())
+        assertNull(ownerOf(old))
+        assertNull(dao.boardByUid(old)!!.publishedId)
+    }
+
+    @Test
+    fun whenWhoseTheBoardsWereCannotBeWritten_nothingIsLetGo_andTheNextLookTriesAgain() = runBlocking {
+        val (films, _) = annWithTwoBoardsSynced()
+        preferences.heldBoardsWriteFails = true
+
+        sessionLost()
+
+        assertEquals("ann", ownerOf(films))
+        assertEquals("ann", preferences.lastSignedIn())
+        assertTrue(preferences.heldBoards().isEmpty())
+
+        preferences.heldBoardsWriteFails = false
+        session.notice()
+        assertNull(ownerOf(films))
+        assertEquals(setOf("ann"), preferences.heldBoards().keys)
+        assertNull(preferences.lastSignedIn())
+    }
+
+    @Test
     fun aSignOutByChoice_isNotALostSession() = runBlocking {
         val (films, _) = annWithTwoBoardsSynced()
 

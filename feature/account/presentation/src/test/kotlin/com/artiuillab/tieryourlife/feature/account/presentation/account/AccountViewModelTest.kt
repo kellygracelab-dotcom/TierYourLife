@@ -123,6 +123,48 @@ class AccountViewModelTest {
         assertNull(viewModel.state.value.merge)
     }
 
+    @Test
+    fun signIn_withBoardsOfAnAccountSignedOutOf_asksAboutThemFirst_andOnTheirOwn() = runBlocking {
+        val merge = RecordingMerge(guestBoards = 2, heldBoards = 3)
+        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(guestCreditsLost = false))
+        val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
+
+        viewModel.signIn(picker::request)
+        val state = viewModel.state.firstWithin { it.merge != null }
+
+        assertEquals(GuestBoardsQuestion(boards = 3, into = FakeAccountRepository.SIGNED_IN_EMAIL, fromAnotherAccount = true), state.merge)
+        assertEquals(listOf("hold"), merge.calls)
+    }
+
+    @Test
+    fun heldBoardsQuestion_answeredMove_movesThem_thenAsksAboutTheGuestBoards() = runBlocking {
+        val merge = RecordingMerge(guestBoards = 2, heldBoards = 3)
+        val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(guestCreditsLost = false))
+        val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
+        viewModel.signIn(picker::request)
+        viewModel.state.firstWithin { it.merge?.fromAnotherAccount == true }
+
+        viewModel.moveGuestBoardsIn("(Pixel)")
+        val next = viewModel.state.firstWithin { it.merge?.fromAnotherAccount == false }
+
+        assertEquals(GuestBoardsQuestion(boards = 2, into = FakeAccountRepository.SIGNED_IN_EMAIL), next.merge)
+        assertEquals(listOf("hold", "moveHeldIn:(Pixel)"), merge.calls)
+    }
+
+    @Test
+    fun heldBoardsQuestion_answeredKeep_onANewAccount_movesOnlyTheGuestBoards() = runBlocking {
+        val merge = RecordingMerge(guestBoards = 2, heldBoards = 3)
+        val viewModel = viewModel(credential = FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
+        viewModel.signIn(picker::request)
+        viewModel.state.firstWithin { it.merge?.fromAnotherAccount == true }
+
+        viewModel.keepGuestBoardsHere()
+        merge.answered.await()
+
+        assertEquals(listOf("hold", "moveIn:null"), merge.calls)
+        assertNull(viewModel.state.value.merge)
+    }
+
     // A failed sign-in leaves the guest where they were, and syncing is not left waiting.
     @Test
     fun signIn_thatFails_releasesTheHold_movingNothing() = runBlocking {
@@ -608,7 +650,7 @@ private class FakeGenerationCredits(private val balance: Int? = null) : Generati
     }
 }
 
-private class RecordingMerge(private val guestBoards: Int) : BoardMerge {
+private class RecordingMerge(private val guestBoards: Int, private val heldBoards: Int = 0) : BoardMerge {
     val calls = mutableListOf<String>()
     val answered = CompletableDeferred<Unit>()
 
@@ -626,6 +668,12 @@ private class RecordingMerge(private val guestBoards: Int) : BoardMerge {
     override suspend fun keepHere() {
         calls += "keepHere"
         answered.complete(Unit)
+    }
+
+    override suspend fun heldBoards(): Int = heldBoards
+
+    override suspend fun moveHeldIn(fromThisPhone: String?) {
+        calls += "moveHeldIn:$fromThisPhone"
     }
 
     override suspend fun eraseKeepingBoards(account: String, erase: suspend () -> Result<Unit>, signOut: suspend () -> Unit): Result<Unit> {

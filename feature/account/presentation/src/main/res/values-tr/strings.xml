@@ -50,6 +50,9 @@
     <string name="merge_title">Hesapsız yapılan panolar</string>
     <string name="merge_body">Bu telefonda hesapsız yaptığın %1$s var. %2$s hesabına taşınsın mı?</string>
     <string name="merge_footnote">Telefonda tutulanlar, oturum kapalıyken görünür. Hiçbir durumda bir şey silinmez.</string>
+    <string name="merge_held_title">Oturumunun kapatıldığı bir hesabın panoları</string>
+    <string name="merge_held_body">Bu telefonda oturumunun kapatıldığı bir hesaptan %1$s var. %2$s hesabına taşınsın mı?</string>
+    <string name="merge_held_footnote">Telefonda tutulanlar, o hesaba yeniden girdiğinde ona geri döner. Hiçbir durumda bir şey silinmez.</string>
     <string name="merge_name_suffix">(bu telefondan)</string>
     <string name="account_sign_out_title">Çıkış yapılsın mı?</string>
     <string name="account_sign_out_helper">Panolarınız hesabınızda ve bu telefonda kalır, yeniden oturum açana kadar gizlenir. Krediler ve satın almalar burada sizi bekler.</string>

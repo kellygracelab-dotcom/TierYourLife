@@ -36,6 +36,16 @@ class MergePickerTest {
     }
 
     @Test
+    fun boardsOfAnAccountSignedOutOf_areAskedAboutInTheirOwnWords() {
+        setScreen(GuestBoardsQuestion(boards = 2, into = EMAIL, fromAnotherAccount = true))
+
+        composeRule.onNodeWithText(string(R.string.merge_held_title)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.merge_held_body, plural(2), EMAIL)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.merge_action_move_in, EMAIL)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.merge_action_keep_here)).assertIsDisplayed()
+    }
+
+    @Test
     fun anAccountWithoutAnEmail_isStillNamed() {
         setScreen(GuestBoardsQuestion(boards = 1, into = null))
 

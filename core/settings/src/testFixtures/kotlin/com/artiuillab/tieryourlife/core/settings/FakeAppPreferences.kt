@@ -111,8 +111,13 @@ class FakeAppPreferences(
 
     override fun heldBoards(): Map<String, Set<String>> = held
 
-    override fun setHeldBoards(held: Map<String, Set<String>>) {
+    /** As a full disk would: nothing written, and said so. */
+    var heldBoardsWriteFails = false
+
+    override fun setHeldBoards(held: Map<String, Set<String>>): Boolean {
+        if (heldBoardsWriteFails) return false
         this.held = held.filterValues { it.isNotEmpty() }
+        return true
     }
 
     override fun setBoardRefusal(account: String, refusal: String?) {

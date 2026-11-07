@@ -114,7 +114,8 @@ interface AppPreferences {
      */
     fun heldBoards(): Map<String, Set<String>>
 
-    fun setHeldBoards(held: Map<String, Set<String>>)
+    /** False when it could not be written: the boards must not be let go on a promise nobody kept. */
+    fun setHeldBoards(held: Map<String, Set<String>>): Boolean
 
     /** By uid rather than one flag: a second conflict months later is news again. */
     fun conflictsSeen(): Set<String>

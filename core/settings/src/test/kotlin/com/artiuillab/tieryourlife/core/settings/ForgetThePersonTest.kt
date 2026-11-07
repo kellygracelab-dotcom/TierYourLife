@@ -30,7 +30,7 @@ class ForgetThePersonTest {
     fun boardsHeldForAnAccount_outliveForgettingThePerson_andGoWhenGivenBack() {
         val preferences = SharedPreferencesAppPreferences(ApplicationProvider.getApplicationContext())
         val held = mapOf("uid-a" to setOf("board-1", "board-2"), "someone@example.com" to setOf("board-3"))
-        preferences.setHeldBoards(held)
+        assertTrue(preferences.setHeldBoards(held))
 
         preferences.forgetThePerson()
 

@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.OwnerDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
@@ -54,11 +55,18 @@ class RoomBoardMerge internal constructor(
 
     /** Under the lock, as holding a lost session's boards is: neither may land between the other's read and write. */
     override suspend fun moveIn(fromThisPhone: String?) = lock.withLock {
-        if (fromThisPhone != null) renameClashes(fromThisPhone)
+        if (fromThisPhone != null) renameClashes(fromThisPhone, ownership.guestBoardsInUse())
         ownership.release(moveGuestBoardsIn = true)
     }
 
     override suspend fun keepHere() = ownership.release(moveGuestBoardsIn = false)
+
+    override suspend fun heldBoards(): Int = ownership.heldForOthersInUse().size
+
+    override suspend fun moveHeldIn(fromThisPhone: String?) = lock.withLock {
+        if (fromThisPhone != null) renameClashes(fromThisPhone, ownership.heldForOthersInUse())
+        ownership.moveHeldIn()
+    }
 
     override suspend fun eraseKeepingBoards(
         account: String,
@@ -123,6 +131,8 @@ class RoomBoardMerge internal constructor(
     }
 
     private suspend fun keepBoardsOf(account: String) {
+        // Held ones too: whatever it left on this phone is the phone's own now, and no longer waits for it.
+        ownership.reclaim(account)
         val kept = owners.keepBoardsOfDeleted(account)
         preferences.setErasureUnderWay(null)
         if (preferences.lastSignedIn() == account) preferences.setLastSignedIn(null)
@@ -135,7 +145,7 @@ class RoomBoardMerge internal constructor(
      * seen, so the next run creates them beside what is there. Only the two
      * sets have to be made tellable apart first.
      */
-    private suspend fun renameClashes(fromThisPhone: String) {
+    private suspend fun renameClashes(fromThisPhone: String, boards: List<TierListEntity>) {
         val theirs = try {
             api.index().boards.filterNot { it.deleted }.map { it.title }.toSet()
         } catch (e: IOException) {
@@ -147,7 +157,7 @@ class RoomBoardMerge internal constructor(
             return
         }
 
-        ownership.guestBoardsInUse()
+        boards
             .filter { board -> board.title in theirs }
             .forEach { board -> dao.renameBoard(board.uid, withSuffix(board.title, fromThisPhone)) }
     }

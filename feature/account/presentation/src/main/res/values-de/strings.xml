@@ -50,6 +50,9 @@
     <string name="merge_title">Boards ohne Konto</string>
     <string name="merge_body">Auf diesem Telefon sind %1$s, die du ohne Konto gemacht hast. In das Konto %2$s verschieben?</string>
     <string name="merge_footnote">Auf dem Telefon behalten, erscheinen sie, wann immer du abgemeldet bist. In keinem Fall wird etwas gelöscht.</string>
+    <string name="merge_held_title">Boards eines Kontos, von dem du abgemeldet wurdest</string>
+    <string name="merge_held_body">Auf diesem Telefon sind %1$s eines Kontos, von dem du abgemeldet wurdest. In das Konto %2$s verschieben?</string>
+    <string name="merge_held_footnote">Auf dem Telefon behalten, gehen sie an dieses Konto zurück, sobald du dich dort wieder anmeldest. In keinem Fall wird etwas gelöscht.</string>
     <string name="merge_name_suffix">(von diesem Telefon)</string>
     <string name="account_sign_out_title">Abmelden?</string>
     <string name="account_sign_out_helper">Deine Boards bleiben in deinem Konto und auf diesem Telefon, verborgen, bis du dich wieder anmeldest. Credits und Käufe warten hier auf dich.</string>

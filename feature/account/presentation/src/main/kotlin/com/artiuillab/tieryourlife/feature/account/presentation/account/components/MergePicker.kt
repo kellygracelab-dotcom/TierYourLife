@@ -25,7 +25,8 @@ private val BUTTON_HEIGHT = 52.dp
 /**
  * Asked on signing into an account used before, only when this phone has
  * boards made without an account. Only those: another account's boards are
- * never offered. Neither answer deletes anything.
+ * offered only once its session was ended for it, in a question of their own.
+ * Neither answer deletes anything.
  */
 @Composable
 internal fun MergePicker(
@@ -35,16 +36,17 @@ internal fun MergePicker(
     modifier: Modifier = Modifier,
 ) {
     val account = question.into ?: stringResource(R.string.merge_account_fallback)
+    val held = question.fromAnotherAccount
     Column(modifier = modifier.fillMaxWidth().testTag(AccountTestTags.MERGE)) {
         Text(
-            text = stringResource(R.string.merge_title),
+            text = stringResource(if (held) R.string.merge_held_title else R.string.merge_title),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface,
         )
         Spacer(Modifier.height(8.dp))
         Text(
             text = stringResource(
-                R.string.merge_body,
+                if (held) R.string.merge_held_body else R.string.merge_body,
                 pluralStringResource(R.plurals.account_board_count, question.boards, question.boards),
                 account,
             ),
@@ -75,7 +77,7 @@ internal fun MergePicker(
 
         Spacer(Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.merge_footnote),
+            text = stringResource(if (held) R.string.merge_held_footnote else R.string.merge_footnote),
             modifier = Modifier.fillMaxWidth(),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

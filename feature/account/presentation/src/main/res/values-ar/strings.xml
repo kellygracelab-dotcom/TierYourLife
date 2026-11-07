@@ -62,6 +62,9 @@
     <string name="merge_title">لوحات أُنشئت بلا حساب</string>
     <string name="merge_body">على هذا الهاتف %1$s أنشأتها بلا حساب. هل تنقلها إلى حساب %2$s؟</string>
     <string name="merge_footnote">ما تبقيه على الهاتف يظهر كلما كنت خارج حسابك. لا يُحذف شيء في الحالتين.</string>
+    <string name="merge_held_title">لوحات من حساب سُجّل خروجك منه</string>
+    <string name="merge_held_body">على هذا الهاتف %1$s من حساب سُجّل خروجك منه. هل تنقلها إلى حساب %2$s؟</string>
+    <string name="merge_held_footnote">ما تبقيه على الهاتف يعود إلى ذلك الحساب حين تسجّل الدخول إليه مجددًا. لا يُحذف شيء في الحالتين.</string>
     <string name="merge_name_suffix">(من هذا الهاتف)</string>
     <string name="account_sign_out_title">تسجيل الخروج؟</string>
     <string name="account_sign_out_helper">تبقى لوحاتك في حسابك وعلى هذا الهاتف، مخفية حتى تسجّل الدخول مجددًا. الأرصدة والمشتريات تنتظرك هنا.</string>

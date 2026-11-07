@@ -96,14 +96,37 @@ class BoardOwnership @Inject constructor(
      * [account]'s session ended without a sign-out: its boards become this
      * phone's to show, but stay [account]'s to take back, with their records.
      */
-    suspend fun holdFor(account: String): Int = heldChanges.withLock {
+    suspend fun holdFor(account: String): Boolean = heldChanges.withLock {
         val boards = guests.boardsOwnedBy(account)
-        if (boards.isEmpty()) return@withLock 0
+        if (boards.isEmpty()) return@withLock true
         val held = preferences.heldBoards()
         // Written first: let go with nothing saying whose they were, they would be anyone's.
-        preferences.setHeldBoards(held + (account to held[account].orEmpty() + boards))
+        if (!preferences.setHeldBoards(held + (account to held[account].orEmpty() + boards))) return@withLock false
         guests.releaseBoardsOf(account)
-        boards.size
+        Timber.i("The session ended without a sign-out; %d board(s) stay on this phone", boards.size)
+        true
+    }
+
+    /** Held for an account other than the signed-in one, trash left out: what the question about them counts. */
+    suspend fun heldForOthersInUse(): List<TierListEntity> {
+        val owner = current()
+        val held = preferences.heldBoards().filterKeys { it != owner }.values.flatten().toSet()
+        return guests.guestBoardsInUse().filter { it.uid in held }
+    }
+
+    /** Asked and answered: the boards held for other accounts become the signed-in one's. */
+    suspend fun moveHeldIn() {
+        val owner = current() ?: return
+        val count = heldChanges.withLock {
+            val held = preferences.heldBoards()
+            val others = held.filterKeys { it != owner }
+            val given = guests.moveHeldTo(owner, others)
+            // Left behind, an entry names boards that have an owner now, and those are never given back.
+            if (!preferences.setHeldBoards(held - others.keys)) Timber.w("Could not forget whose the moved boards were")
+            given
+        }
+        Timber.i("Moved %d board(s) from an account signed out of into this one", count)
+        moved.tryEmit(Unit)
     }
 
     /** The boards held for [account] that are still here are its own again. */

@@ -38,4 +38,25 @@ interface GuestBoardsDao {
     @Transaction
     suspend fun giveBack(owner: String, uids: Collection<String>): Int =
         uids.chunked(UIDS_PER_STATEMENT).sumOf { giveGuestBoardsTo(owner, it) }
+
+    @Query("DELETE FROM board_sync WHERE account = :account AND listUid IN (:uids)")
+    suspend fun forgetRecords(account: String, uids: List<String>)
+
+    /**
+     * The person chose to move boards [held] for other accounts into [owner].
+     * Those accounts keep their copies but lose the record of agreeing on
+     * them here, or their next run would read the move as a delete; so does
+     * [owner], whose record of such a uid is of a copy it was given beside it.
+     * Any other account's record stays: it is what tells that account to
+     * forget a uid it already holds under another.
+     */
+    @Transaction
+    suspend fun moveHeldTo(owner: String, held: Map<String, Set<String>>): Int {
+        val ownerless = guestBoardUids().toSet()
+        val moving = held.values.flatten().filter { it in ownerless }.distinct()
+        (held.keys + owner).forEach { account ->
+            moving.chunked(UIDS_PER_STATEMENT).forEach { forgetRecords(account, it) }
+        }
+        return giveBack(owner, moving)
+    }
 }

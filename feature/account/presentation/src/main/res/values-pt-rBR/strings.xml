@@ -53,6 +53,9 @@
     <string name="merge_title">Quadros feitos sem conta</string>
     <string name="merge_body">Este telefone tem %1$s que você fez sem conta. Mover para a conta %2$s?</string>
     <string name="merge_footnote">Mantidos aqui, eles aparecem sempre que você estiver fora da conta. Nada é apagado em nenhum dos casos.</string>
+    <string name="merge_held_title">Quadros de uma conta da qual você foi desconectado</string>
+    <string name="merge_held_body">Este telefone tem %1$s de uma conta da qual você foi desconectado. Mover para a conta %2$s?</string>
+    <string name="merge_held_footnote">Mantidos aqui, eles voltam para essa conta quando você entrar nela de novo. Nada é apagado em nenhum dos casos.</string>
     <string name="merge_name_suffix">(deste telefone)</string>
     <string name="account_sign_out_title">Sair?</string>
     <string name="account_sign_out_helper">Seus quadros ficam na sua conta e neste telefone, ocultos até você entrar de novo. Créditos e compras esperam por você aqui.</string>

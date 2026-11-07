@@ -58,6 +58,9 @@
     <string name="merge_title">Boards made without an account</string>
     <string name="merge_body">This phone has %1$s made without an account. Move them into %2$s?</string>
     <string name="merge_footnote">Kept on this phone, they show whenever you’re signed out. Nothing is deleted either way.</string>
+    <string name="merge_held_title">Boards from an account you were signed out of</string>
+    <string name="merge_held_body">This phone has %1$s from an account it was signed out of. Move them into %2$s?</string>
+    <string name="merge_held_footnote">Kept on this phone, they go back to that account when you sign in to it again. Nothing is deleted either way.</string>
     <string name="merge_name_suffix">(from this phone)</string>
     <string name="account_face_position_title">Place your face</string>
     <string name="account_face_position_body">Drag the picture and pinch to zoom. The circle is what people see.</string>

@@ -201,12 +201,12 @@ class SharedPreferencesAppPreferences @Inject constructor(
             .groupBy({ it[0] }, { it[1] })
             .mapValues { (_, uids) -> uids.toSet() }
 
-    override fun setHeldBoards(held: Map<String, Set<String>>) {
+    override fun setHeldBoards(held: Map<String, Set<String>>): Boolean {
         val entries = held.flatMapTo(mutableSetOf()) { (account, uids) -> uids.map { "$account$HELD_SEPARATOR$it" } }
         // Committed: written just before the boards are let go, and the only thing saying whose they were.
-        prefs.edit(commit = true) {
-            if (entries.isEmpty()) remove(KEY_HELD_BOARDS) else putStringSet(KEY_HELD_BOARDS, entries)
-        }
+        val editor = prefs.edit()
+        if (entries.isEmpty()) editor.remove(KEY_HELD_BOARDS) else editor.putStringSet(KEY_HELD_BOARDS, entries)
+        return editor.commit()
     }
 
     override fun conflictsSeen(): Set<String> = stored(KEY_CONFLICTS_SEEN)

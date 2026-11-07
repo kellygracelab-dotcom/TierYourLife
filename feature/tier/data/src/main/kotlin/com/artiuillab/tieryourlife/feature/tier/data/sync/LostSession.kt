@@ -45,16 +45,19 @@ class LostSession @Inject constructor(
     }
 
     private suspend fun lose(account: String) {
-        preferences.setLastSignedIn(null)
         if (erasureMarkOf(preferences.erasureUnderWay())?.account == account) {
             // As settling the erase at the next start would: the account going away is what ended it.
+            ownership.reclaim(account)
             val kept = owners.keepBoardsOfDeleted(account)
             preferences.setErasureUnderWay(null)
             Timber.i("Signed out with an erase unanswered; kept %d board(s) of the account", kept)
-        } else {
-            val held = ownership.holdFor(account)
-            Timber.i("The session ended without a sign-out; %d board(s) stay on this phone", held)
+        } else if (!ownership.holdFor(account)) {
+            // Nothing let go: the boards stay the account's, and the next look tries again.
+            Timber.w("Could not write down whose the boards were; holding them waits")
+            thePerson.forget()
+            return
         }
+        preferences.setLastSignedIn(null)
         thePerson.forget()
         ownership.announceMove()
     }

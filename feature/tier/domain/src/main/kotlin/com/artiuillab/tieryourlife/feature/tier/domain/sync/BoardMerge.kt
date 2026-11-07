@@ -25,6 +25,20 @@ interface BoardMerge {
     suspend fun keepHere()
 
     /**
+     * Boards of another account this phone was signed out of without a
+     * sign-out by choice, the trash left out. They wait for that account, and
+     * are never part of the question about [guestBoards].
+     */
+    suspend fun heldBoards(): Int
+
+    /**
+     * The person moves [heldBoards] into the signed-in account; renamed as in
+     * [moveIn]. The account they waited for keeps its copies of them. Nothing
+     * syncs yet: [moveIn] or [keepHere] still follows.
+     */
+    suspend fun moveHeldIn(fromThisPhone: String?)
+
+    /**
      * Deletes [account] with [erase] and signs out with [signOut], no sync
      * running in between. Once it is gone, its boards on this phone, trash
      * included, become boards made without an account: the account was where
