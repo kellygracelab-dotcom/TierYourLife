@@ -295,7 +295,7 @@
     <string name="community_ranking_own_list">これはあなたのリストなので、見せるランキングはありません。</string>
     <string name="community_ranking_list_gone">このリストはもう利用できないため、ランキングを見せられません。</string>
     <string name="moderation_not_taken_down">取り下げられませんでした。リストはまだ公開されています。もう一度お試しください。</string>
-    <string name="moderation_not_kept">リストを残せませんでした。報告はまだ未処理です。もう一度お試しください。</string>
+    <string name="moderation_not_kept">リストを残せませんでした。通報はまだ未処理です。もう一度お試しください。</string>
     <string name="moderation_not_moved">移動できませんでした。リストは元の場所のままです。もう一度お試しください。</string>
     <string name="moderation_moved_not_dismissed">移動しましたが、通報はまだ残っています。「残す」を押すと解消できます。</string>
 </resources>
