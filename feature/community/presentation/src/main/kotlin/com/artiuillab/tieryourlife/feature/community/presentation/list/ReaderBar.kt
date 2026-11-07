@@ -56,7 +56,7 @@ internal fun RowScope.ReaderBarControls(
     if (compact && state.own) {
         YourListChip()
         Spacer(Modifier.width(8.dp))
-    } else if (compact && !state.editorial) {
+    } else if (compact && state.namedAuthor != null) {
         AuthorPill(
             name = state.authorName,
             photoUrl = state.authorPhotoUrl,
@@ -136,11 +136,13 @@ internal fun AuthorAndSection(state: CommunityListUiState.Success, onOpenAuthor:
         return
     }
     val section = state.section?.let { sectionLabel(it) }
-    val text = listOfNotNull(state.authorName.takeUnless { state.editorial }, section).joinToString(" · ") + " ›"
+    val author = state.namedAuthor
+    val text = listOfNotNull(author, section).joinToString(" · ")
+    if (text.isEmpty()) return
     Text(
-        text = text,
+        text = if (author != null) "$text ›" else text,
         modifier = Modifier
-            .then(if (state.editorial) Modifier else Modifier.clickable(onClick = onOpenAuthor))
+            .then(if (author == null) Modifier else Modifier.clickable(onClick = onOpenAuthor))
             .testTag(CommunityListTestTags.AUTHOR_AND_SECTION),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.primary,

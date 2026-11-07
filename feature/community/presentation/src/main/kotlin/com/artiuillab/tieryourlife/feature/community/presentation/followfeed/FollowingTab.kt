@@ -121,6 +121,7 @@ internal fun FollowingTab(
                 columns = GridCells.Fixed(layout.feedColumns),
                 state = gridState,
                 modifier = Modifier
+                    .testTag(ExploreTestTags.FOLLOWING_FEED)
                     .then(if (layout == HomeLayout.Wide) Modifier.widthIn(max = WideContentMax) else Modifier)
                     .fillMaxSize(),
                 contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = if (state.followsNothing) PickBarRoom else 16.dp),

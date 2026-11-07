@@ -644,6 +644,7 @@ private fun PublishError.messageRes(): Int = when (this) {
     PublishError.NotSignedIn -> R.string.list_settings_public_needs_account
     PublishError.NothingToPublish -> R.string.list_settings_public_needs_items
     PublishError.TooManyLists -> R.string.list_settings_public_too_many
+    PublishError.ChangedElsewhere -> R.string.list_settings_public_changed_elsewhere
     PublishError.TooManyPendingTopics -> R.string.list_settings_public_too_many_topics
     PublishError.TopicUnavailable -> R.string.list_settings_public_topic_unavailable
     PublishError.TooLarge -> R.string.list_settings_public_too_large

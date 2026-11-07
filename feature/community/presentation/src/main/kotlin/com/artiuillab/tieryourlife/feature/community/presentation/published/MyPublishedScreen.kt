@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.published
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,6 +67,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.components.sho
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
+import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.publishErrorText
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
@@ -155,7 +157,8 @@ fun MyPublishedScreenContent(
                                             busy = state.removing != null || state.updating != null,
                                             canUpdate = summary.id in state.canUpdate,
                                             behind = summary.id in state.behind,
-                                            onOpen = { onOpen(CommunityRoute.CommunityList.of(summary, languageTag)) },
+                                            onOpen = { onOpen(CommunityRoute.CommunityList.of(summary, languageTag).copy(mine = true, fromBoard = true)) },
+                                            onEdit = { onOpen(CommunityRoute.CommunityList.of(summary, languageTag).copy(mine = true, fromBoard = false)) },
                                             onUpdate = { onUpdate(summary.id) },
                                             onTakeDown = { onTakeDown(summary.id) },
                                         )
@@ -205,6 +208,7 @@ private fun PublishedRow(
     canUpdate: Boolean,
     behind: Boolean,
     onOpen: () -> Unit,
+    onEdit: () -> Unit,
     onUpdate: () -> Unit,
     onTakeDown: () -> Unit,
 ) {
@@ -216,13 +220,28 @@ private fun PublishedRow(
             .testTag(MyPublishedTestTags.row(summary.id))
             .padding(16.dp),
     ) {
-        Text(
-            text = summary.shownTitle(),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
+        Row(
+            Modifier.fillMaxWidth().clickable(enabled = !busy, onClick = onOpen).testTag(MyPublishedTestTags.open(summary.id)),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ListArt(
+                coverImageUrl = summary.coverImageUrl,
+                previewImages = summary.previewImages,
+                tierColors = summary.tierColors,
+                modifier = Modifier.size(64.dp, 80.dp).clip(RoundedCornerShape(8.dp)),
+            )
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = summary.shownTitle(),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(stringResource(R.string.my_published_action_view), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+            }
+        }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
                 text = pluralStringResource(R.plurals.community_item_count, summary.itemCount, summary.itemCount),
@@ -254,11 +273,11 @@ private fun PublishedRow(
         }
         Spacer(Modifier.height(4.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            TextButton(
-                onClick = onOpen,
-                enabled = !busy,
-                modifier = Modifier.testTag(MyPublishedTestTags.open(summary.id)),
-            ) { Text(stringResource(R.string.my_published_action_open)) }
+            if (canUpdate) {
+                TextButton(onClick = onEdit, enabled = !busy, modifier = Modifier.testTag(MyPublishedTestTags.edit(summary.id))) {
+                    Text(stringResource(R.string.my_published_action_edit))
+                }
+            }
             // Offered whenever there is a board here to send. Saying "behind"
             // needs proof; offering to send again does not.
             if (canUpdate) {

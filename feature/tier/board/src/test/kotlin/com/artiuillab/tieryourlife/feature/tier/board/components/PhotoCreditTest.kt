@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.board.components
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItemSheetContent
@@ -41,7 +42,8 @@ class PhotoCreditTest {
     fun aCreditedCard_saysWhoThePhotoIsBy() {
         show(TierItem(id = 1, title = "Red fox", imageUrl = null, credit = "© Jane Doe, CC BY"))
 
-        composeRule.onNodeWithText("Photo: © Jane Doe, CC BY").assertExists()
+        composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET_CREDIT).performClick()
+        composeRule.onNodeWithText("© Jane Doe, CC BY").assertExists()
     }
 
     @Test

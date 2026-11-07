@@ -158,4 +158,8 @@
     <string name="list_settings_public_gone">Diese Liste ist nicht mehr in der Community: Sie wurde entfernt, gelöscht oder von einem anderen Konto veröffentlicht. Schalte Öffentlich ein, um sie neu zu veröffentlichen.</string>
     <string name="list_settings_public_section_unavailable">Der Bereich dieser Liste nimmt keine Listen mehr an. Wähle einen anderen Bereich und veröffentliche erneut.</string>
     <string name="list_settings_unpublish_failed">Die Liste konnte nicht zurückgenommen werden; sie ist noch öffentlich. Versuche es erneut.</string>
+    <string name="tier_detail_image_credits">Bildnachweis</string>
+    <string name="tier_detail_card_details">Kartendetails</string>
+    <string name="tier_detail_credits_close">Schließen</string>
+    <string name="list_settings_public_changed_elsewhere">Diese Liste wurde auf einem anderen Gerät geändert. Versuche erneut, sie zu veröffentlichen.</string>
 </resources>

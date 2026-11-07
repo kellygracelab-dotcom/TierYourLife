@@ -341,7 +341,7 @@ private fun HomeBody(
     // Following is one swipe away: asked for at once, and drawn off screen once
     // the screen has come in and nothing moves, so the first swipe finds it
     // ready instead of composing it, and its answer, under the finger.
-    var drawnAhead by remember { mutableIntStateOf(0) }
+    var drawnAhead by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(Unit) {
         exploreFeed.onOpen()
         followingFeed.onOpen()

@@ -148,4 +148,8 @@
     <string name="list_settings_public_gone">このリストはもうコミュニティにありません。取り下げられたか、削除されたか、別のアカウントから公開されたものです。もう一度公開するには「公開」をオンにしてください。</string>
     <string name="list_settings_public_section_unavailable">このリストのセクションは、もうリストを受け付けていません。別のセクションを選んでから、もう一度公開してください。</string>
     <string name="list_settings_unpublish_failed">このリストの公開を取り消せませんでした。まだ公開されています。もう一度お試しください。</string>
+    <string name="tier_detail_image_credits">画像クレジット</string>
+    <string name="tier_detail_card_details">カードの詳細</string>
+    <string name="tier_detail_credits_close">閉じる</string>
+    <string name="list_settings_public_changed_elsewhere">別の端末でリストが変更されました。もう一度公開してください。</string>
 </resources>

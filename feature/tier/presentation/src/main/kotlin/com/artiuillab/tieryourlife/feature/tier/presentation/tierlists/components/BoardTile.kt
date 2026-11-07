@@ -40,7 +40,7 @@ private val SCRIM_DISC = 32.dp
 
 /** Amber, and the same amber in both themes: the disc under it is always dark. */
 private val STAR_ON = Color(0xFFFFC94D)
-private const val SCRIM_ALPHA = 0.55f
+private const val SCRIM_ALPHA = 0.8f
 
 @Composable
 internal fun BoardTile(

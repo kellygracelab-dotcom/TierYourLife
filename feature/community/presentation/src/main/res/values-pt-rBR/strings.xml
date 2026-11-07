@@ -315,4 +315,6 @@
     <string name="moderation_not_kept">Não foi possível manter a lista: as denúncias continuam abertas. Tente de novo.</string>
     <string name="moderation_not_moved">Não movida: a lista continua onde estava. Tente de novo.</string>
     <string name="moderation_moved_not_dismissed">Movida, mas as denúncias continuam abertas. Toque em “Manter” para encerrá-las.</string>
+    <string name="my_published_action_view">Ver lista pública</string>
+    <string name="my_published_action_edit">Editar</string>
 </resources>

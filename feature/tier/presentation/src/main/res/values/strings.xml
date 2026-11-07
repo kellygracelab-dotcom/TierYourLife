@@ -207,4 +207,5 @@
         <item quantity="one">%1$d list deleted and its public copy taken down</item>
         <item quantity="other">%1$d lists deleted and their public copies taken down</item>
     </plurals>
+    <string name="lists_public_lists">Your public lists</string>
 </resources>

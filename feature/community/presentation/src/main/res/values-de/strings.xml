@@ -309,4 +309,6 @@
     <string name="moderation_not_kept">Behalten hat nicht geklappt: Die Meldungen sind noch offen. Versuche es erneut.</string>
     <string name="moderation_not_moved">Nicht verschoben: Die Liste ist, wo sie war. Versuche es erneut.</string>
     <string name="moderation_moved_not_dismissed">Verschoben, aber die Meldungen sind noch offen. Tippe auf „Behalten“, um sie zu schließen.</string>
+    <string name="my_published_action_view">Öffentliche Liste ansehen</string>
+    <string name="my_published_action_edit">Bearbeiten</string>
 </resources>

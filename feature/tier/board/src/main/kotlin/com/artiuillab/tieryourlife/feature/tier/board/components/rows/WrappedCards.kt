@@ -3,11 +3,13 @@ package com.artiuillab.tieryourlife.feature.tier.board.components.rows
 import androidx.compose.foundation.lazy.LazyListLayoutInfo
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.IntrinsicMeasureScope
 import androidx.compose.ui.layout.Layout
@@ -15,14 +17,18 @@ import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.constrainHeight
+import androidx.compose.ui.unit.toSize
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.DraggableTile
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDragController
+import com.artiuillab.tieryourlife.feature.tier.board.components.drag.WrappedDropGrid
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import kotlin.math.ceil
 
@@ -163,6 +169,11 @@ internal fun WrappedCards(
     }
     val showsHint = cells.count == 0 && hint != null
     val children = childrenFor(tier, cells, window, grid.perLine(widthPx), liftedIndex, showsHint)
+    val itemIds = remember(tier.items) { tier.items.mapTo(mutableSetOf()) { it.id } }
+
+    DisposableEffect(dragController, tier.id) {
+        onDispose { dragController.unregisterWrappedGrid(tier.id) }
+    }
 
     Layout(
         content = {
@@ -191,7 +202,19 @@ internal fun WrappedCards(
                 }
             }
         },
-        modifier = modifier,
+        modifier = modifier.onGloballyPositioned { coordinates ->
+            dragController.registerWrappedGrid(
+                tier.id,
+                WrappedDropGrid(
+                    bounds = Rect(coordinates.positionInRoot(), coordinates.size.toSize()),
+                    cellWidth = grid.cellWidth,
+                    cellHeight = grid.cellHeight,
+                    gap = grid.gap,
+                    columns = grid.perLine(coordinates.size.width),
+                    itemIds = itemIds,
+                ),
+            )
+        },
         measurePolicy = WrappedCardsPolicy(grid, cells.count, children.map { it.cell }, showsHint),
     )
 }

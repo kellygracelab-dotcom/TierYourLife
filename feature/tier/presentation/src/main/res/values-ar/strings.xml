@@ -262,4 +262,5 @@
         <item quantity="many">تم حذف %1$d قائمة وإزالة نسخها العامة</item>
         <item quantity="other">تم حذف %1$d قائمة وإزالة نسخها العامة</item>
     </plurals>
+    <string name="lists_public_lists">قوائمك العامة</string>
 </resources>

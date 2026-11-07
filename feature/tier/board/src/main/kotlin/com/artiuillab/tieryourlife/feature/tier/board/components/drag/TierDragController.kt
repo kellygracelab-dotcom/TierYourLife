@@ -101,6 +101,16 @@ class TierDragController {
 
     private val tileBounds = mutableStateMapOf<Long, TileRecord>()
 
+    private val wrappedGrids = mutableMapOf<Long, WrappedDropGrid>()
+
+    internal fun registerWrappedGrid(tierId: Long, grid: WrappedDropGrid) {
+        wrappedGrids[tierId] = grid
+    }
+
+    internal fun unregisterWrappedGrid(tierId: Long) {
+        wrappedGrids.remove(tierId)
+    }
+
     private var rightToLeft: Boolean = false
     private var validTierIds: Set<Long> = emptySet()
     private var validItemIds: Set<Long> = emptySet()
@@ -313,10 +323,14 @@ class TierDragController {
     }
 
     private fun computeMove(payload: DragPayload, tierId: Long): DropOutcome.MoveTo? {
+        val grid = wrappedGrids[tierId]
         val pool = itemsRowInfo[tierId]
-        val index = if (pool != null) {
-            val bounds = pool.bounds ?: return null
-            val state = pool.state ?: return null
+        val index = if (grid != null) {
+            grid.insertionIndex(pointerPositionInRoot, payload.itemId, rightToLeft)
+        } else if (pool != null) {
+            val bounds = pool.bounds
+            val state = pool.state
+            if (bounds == null || state == null) return null
             val excludedIndex = pool.itemIds.indexOf(payload.itemId).takeIf { it >= 0 }
             val fromStart = if (rightToLeft) {
                 bounds.right - pointerPositionInRoot.x

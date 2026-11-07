@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.PublishedFilter
 
 internal object TierListsTestTags {
+    const val PUBLIC_LISTS = "tier_lists_public_lists"
     const val SUMMARY = "tier_lists_summary"
     const val LOADING = "tier_lists_loading"
     const val LISTS = "tier_lists"

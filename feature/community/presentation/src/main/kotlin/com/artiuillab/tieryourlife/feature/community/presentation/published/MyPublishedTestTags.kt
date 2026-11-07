@@ -8,6 +8,7 @@ internal object MyPublishedTestTags {
     fun row(id: String): String = "my_published_row_$id"
 
     fun open(id: String): String = "my_published_open_$id"
+    fun edit(id: String): String = "my_published_edit_$id"
 
     fun update(id: String): String = "my_published_update_$id"
 

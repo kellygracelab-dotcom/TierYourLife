@@ -159,4 +159,8 @@
     <string name="list_settings_public_gone">This list is no longer in the community: it was taken down, deleted or published from another account. Turn Public on to publish it again.</string>
     <string name="list_settings_public_section_unavailable">This list’s section no longer takes lists. Choose another section, then publish again.</string>
     <string name="list_settings_unpublish_failed">Could not take this list down; it is still public. Try again.</string>
+    <string name="tier_detail_image_credits">Image credits</string>
+    <string name="tier_detail_card_details">Card details</string>
+    <string name="tier_detail_credits_close">Close</string>
+    <string name="list_settings_public_changed_elsewhere">This list changed on another device. Try publishing again.</string>
 </resources>

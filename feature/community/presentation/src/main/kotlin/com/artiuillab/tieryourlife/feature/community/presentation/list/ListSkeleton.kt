@@ -50,6 +50,7 @@ private const val ROWS_WHEN_UNKNOWN = 3
  */
 @Composable
 internal fun ListSkeleton(preview: ListPreview, onBack: () -> Unit, modifier: Modifier = Modifier) {
+    val authorName = preview.authorName?.takeIf { it.isNotBlank() && !preview.byNobody }
     BoxWithConstraints(modifier.fillMaxSize()) {
         // The board's own rule, so the skeleton is laid out as the board that replaces it.
         val short = WindowShape.isShort(maxHeight)
@@ -68,7 +69,7 @@ internal fun ListSkeleton(preview: ListPreview, onBack: () -> Unit, modifier: Mo
                 readOnly = true,
                 compact = short,
                 barHeight = if (docked) 72.dp else null,
-                subline = preview.authorName?.takeIf { docked }?.let { name ->
+                subline = authorName?.takeIf { docked }?.let { name ->
                     {
                         Text(
                             text = name,
@@ -80,7 +81,7 @@ internal fun ListSkeleton(preview: ListPreview, onBack: () -> Unit, modifier: Mo
                 },
             )
             if (!short && !docked) {
-                preview.authorName?.let { name ->
+                authorName?.let { name ->
                     AuthorLine(name = name, photoUrl = null, follow = null, onOpenAuthor = {}, onToggleFollow = {})
                 }
             }
