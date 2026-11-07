@@ -3,14 +3,14 @@
     <string name="account_sign_in_title">Zachowaj swoją pracę</string>
     <string name="account_optional">Konto jest opcjonalne. Bez niego aplikacja działa tak samo.</string>
     <string name="account_reason_purchases">Kredyty i zakupy wracają na każdym urządzeniu.</string>
-    <string name="account_credits_note">Przywrócone z Twojego konta</string>
+    <string name="account_credits_note">Przywrócone z twojego konta</string>
     <string name="account_action_sign_in_google">Zaloguj się przez Google</string>
     <string name="account_action_not_now">Nie teraz</string>
     <string name="account_action_done">Gotowe</string>
     <string name="account_error_sign_in_failed">Nie udało się zalogować. Spróbuj ponownie.</string>
     <string name="account_error_no_google_account">Brak konta Google na tym telefonie.</string>
     <string name="account_error_unavailable">Logowanie jest teraz niedostępne.</string>
-    <string name="account_notice_existing_account">To konto Google miało już własne kredyty — i to one są teraz Twoje.</string>
+    <string name="account_notice_existing_account">To konto Google miało już własne kredyty — i to one są teraz twoje.</string>
     <string name="account_cd_close">Zamknij</string>
     <string name="account_action_sign_out">Wyloguj się</string>
     <string name="account_signing_out">Wylogowywanie…</string>
@@ -24,7 +24,7 @@
     <string name="account_action_save">Zapisz</string>
     <string name="account_action_cancel">Anuluj</string>
     <string name="account_error_name_not_saved">Nie udało się zapisać tej nazwy. Spróbuj ponownie.</string>
-    <string name="account_error_face_not_made">To zdjęcie nie może być Twoim awatarem. Wybierz inne.</string>
+    <string name="account_error_face_not_made">To zdjęcie nie może być twoim awatarem. Wybierz inne.</string>
     <string name="account_error_face_not_saved">Nie udało się zapisać – serwer nie odpowiedział.</string>
     <plurals name="account_community_lists">
         <item quantity="one">%1$d lista publiczna</item>

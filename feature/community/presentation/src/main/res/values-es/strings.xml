@@ -312,7 +312,7 @@
     <string name="community_ranking_cards_dont_match">Las tarjetas de tu ranking no coinciden con esta lista. Ábrela de nuevo y colócalas otra vez.</string>
     <string name="community_ranking_not_accepted">No se pudo enviar tu ranking: hay algo en él que no se acepta.</string>
     <string name="moderation_not_taken_down">No se retiró: la lista sigue siendo pública. Inténtalo de nuevo.</string>
-    <string name="moderation_not_kept">No se pudo dejar la lista: los reportes siguen abiertos. Inténtalo de nuevo.</string>
+    <string name="moderation_not_kept">No se pudo dejar la lista: las denuncias siguen abiertas. Inténtalo de nuevo.</string>
     <string name="moderation_not_moved">No se movió: la lista sigue donde estaba. Inténtalo de nuevo.</string>
-    <string name="moderation_moved_not_dismissed">Movida, pero sus denuncias siguen abiertas. Pulsa «Dejar» para cerrarlas.</string>
+    <string name="moderation_moved_not_dismissed">Movida, pero sus denuncias siguen abiertas. Toca «Dejar» para cerrarlas.</string>
 </resources>

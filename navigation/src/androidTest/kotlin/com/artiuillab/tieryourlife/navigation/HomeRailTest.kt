@@ -1,13 +1,22 @@
 package com.artiuillab.tieryourlife.navigation
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.Density
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -84,5 +93,31 @@ class HomeRailTest {
 
         assertEquals(1, boardsAsked)
         assertEquals(emptyList<RailDestination>(), chosen)
+    }
+
+    @Test
+    fun atFontScale2_everyLabelBreaksOnlyBetweenWords() {
+        composeRule.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale = 2f)) {
+                TierYourLifeTheme { HomeRail(selected = null, onSelect = {}, onNewList = {}) }
+            }
+        }
+
+        RailDestination.entries.forEach { destination ->
+            val node = composeRule.onNode(
+                hasAnyAncestor(hasTestTag(RailTestTags.label(destination))) and
+                    SemanticsMatcher.keyIsDefined(SemanticsActions.GetTextLayoutResult),
+                useUnmergedTree = true,
+            ).fetchSemanticsNode()
+            val results = mutableListOf<TextLayoutResult>()
+            node.config[SemanticsActions.GetTextLayoutResult].action?.invoke(results)
+            val layout = results.single()
+            val words = layout.layoutInput.text.text.split(' ').toSet()
+            val lines = (0 until layout.lineCount).map { line ->
+                layout.layoutInput.text.text.substring(layout.getLineStart(line), layout.getLineEnd(line)).trim()
+            }
+            assertTrue("$destination: $lines", lines.all { line -> line.split(' ').all { it in words } })
+        }
     }
 }

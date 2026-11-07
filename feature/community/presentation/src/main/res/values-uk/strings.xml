@@ -146,7 +146,7 @@
     <string name="moderation_moderators_empty">Поки що тут вирішуєте лише ви.</string>
     <string name="moderation_appoint">Призначити</string>
     <string name="moderation_appoint_title">Призначити модератора</string>
-    <string name="moderation_appoint_uid">Ідентифікатор акаунта</string>
+    <string name="moderation_appoint_uid">Ідентифікатор облікового запису</string>
     <string name="moderation_appoint_name">Імʼя (необовʼязково)</string>
     <string name="moderation_remove_moderator">Зняти</string>
     <string name="author_make_moderator">Зробити %1$s модератором</string>
@@ -270,7 +270,7 @@
     <string name="propose_error_banned_until">Ви не можете пропонувати розділи до %1$s.</string>
     <string name="propose_error_banned">Ви не можете пропонувати розділи.</string>
     <string name="propose_sign_in_title">Увійдіть, щоб запропонувати розділ</string>
-    <string name="propose_sign_in_body">Пропозиція надходить від акаунта, щоб модератор міг повідомити, що з нею сталося.</string>
+    <string name="propose_sign_in_body">Пропозиція надходить від облікового запису, щоб модератор міг повідомити, що з нею сталося.</string>
     <string name="propose_sign_in">Увійти</string>
     <string name="propose_too_many_title">Три пропозиції вже чекають</string>
     <string name="propose_too_many_body">Ви зможете запропонувати ще, щойно модератор перегляне одну з них.</string>
@@ -312,7 +312,7 @@
     <string name="community_picture_credit_line">%1$s — %2$s</string>
     <string name="community_ranking_list_changed">Автор змінив цей список, поки ви розставляли картки. Розставте їх заново, щоб показати свій рейтинг.</string>
     <string name="community_ranking_banned">Модератор зняв один з ваших списків, тому поки ви не можете показувати рейтинги.</string>
-    <string name="community_ranking_own_list">Це ваш список, тому показувати на ньому ваш рейтинг не потрібно.</string>
+    <string name="community_ranking_own_list">Це ваш список, тому на ньому нічого показувати.</string>
     <string name="community_ranking_list_gone">Цей список більше недоступний, тому ваш рейтинг не можна показати.</string>
     <string name="community_ranking_bad_tier_names">Кожен рівень має мати назву, а в рейтингу може бути не більше 20 рівнів.</string>
     <string name="community_ranking_cards_dont_match">Картки у вашому рейтингу не збігаються з цим списком. Відкрийте його знову й розставте їх ще раз.</string>
