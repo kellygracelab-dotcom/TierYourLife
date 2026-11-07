@@ -138,6 +138,7 @@ fun PoolColumn(
     val collapsed = choice ?: (count == 0)
     val choose: (Boolean) -> Unit = { fold -> if (side != null) sideChoice = fold else memory.poolColumnCollapsed = fold }
     val openWidth = openColumnWidth(roomy, indexBeside)
+    val gap = if (roomy) 10.dp else 8.dp
     val width by animateDpAsState(if (collapsed) POOL_STRIP_WIDTH else openWidth, tween(WIDTH_MILLIS), label = "pool column width")
     val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
     val lifting = dragController.draggedPayload != null && !readOnly
@@ -187,29 +188,31 @@ fun PoolColumn(
             onAddClick = onAddClick,
             onGenerateClick = onGenerateClick,
         )
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(if (roomy) 4 else 3),
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f, fill = false)
-                .testTag(TierDetailTestTags.POOL_ITEMS),
-            contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(if (roomy) 10.dp else 8.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(if (roomy) 10.dp else 8.dp),
-        ) {
-            itemsIndexed(pool.items, key = { _, item -> item.id }) { index, item ->
-                Box(contentAlignment = Alignment.Center) {
-                    DraggableTile(
-                        item = item,
-                        sourceTierId = pool.id,
-                        width = POOL_TILE_WIDTH,
-                        height = POOL_TILE_HEIGHT,
-                        dragController = dragController,
-                        onMoveItem = onMoveItem,
-                        onDeleteItem = onDeleteItem,
-                        onPositioned = { bounds -> dragController.registerTileBounds(pool.id, item.id, index, bounds) },
-                        onDoubleTap = onDoubleTap,
-                    )
+        ProvideTextCardRoom(pool.items, POOL_TILE_WIDTH, POOL_TILE_HEIGHT, gap) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(if (roomy) 4 else 3),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f, fill = false)
+                    .testTag(TierDetailTestTags.POOL_ITEMS),
+                contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(gap, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(gap),
+            ) {
+                itemsIndexed(pool.items, key = { _, item -> item.id }) { index, item ->
+                    Box(contentAlignment = Alignment.Center) {
+                        DraggableTile(
+                            item = item,
+                            sourceTierId = pool.id,
+                            width = POOL_TILE_WIDTH,
+                            height = POOL_TILE_HEIGHT,
+                            dragController = dragController,
+                            onMoveItem = onMoveItem,
+                            onDeleteItem = onDeleteItem,
+                            onPositioned = { bounds -> dragController.registerTileBounds(pool.id, item.id, index, bounds) },
+                            onDoubleTap = onDoubleTap,
+                        )
+                    }
                 }
             }
         }

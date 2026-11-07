@@ -172,10 +172,8 @@
         <item quantity="other">%1$d لوحة</item>
     </plurals>
     <string name="local_only_footer">%1$s، على هذا الهاتف فقط</string>
-    <string name="local_only_card_title_one">هذه اللوحة موجودة على هذا الهاتف فقط</string>
-    <string name="local_only_card_title_many">هذه اللوحات موجودة على هذا الهاتف فقط</string>
-    <string name="local_only_card_body_one">غيّر الهاتف أو أعد التثبيت وستختفي. الحساب يحتفظ بها.</string>
-    <string name="local_only_card_body_many">غيّر الهاتف أو أعد التثبيت وستختفي. الحساب يحتفظ بها.</string>
+    <string name="local_only_notice_keep_one">سجّل الدخول لتبقى معك عند تغيير الهاتف.</string>
+    <string name="local_only_notice_keep_many">سجّل الدخول لتبقى معك عند تغيير الهاتف.</string>
     <string name="local_only_card_not_now">ليس الآن</string>
     <string name="local_only_card_sign_in">تسجيل الدخول</string>
     <string name="restoring_one_picture">جارٍ استعادة الصورة</string>

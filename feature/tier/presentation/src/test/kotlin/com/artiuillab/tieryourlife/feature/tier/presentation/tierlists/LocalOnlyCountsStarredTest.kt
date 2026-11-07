@@ -1,11 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
-import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performScrollToNode
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import org.junit.Rule
@@ -14,7 +10,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** A starred board lives on this phone as much as any other, so the card and the footer count it. */
+/** A starred board lives on this phone as much as any other, so the notice counts it. */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], qualifiers = "en-w411dp-h891dp")
 class LocalOnlyCountsStarredTest {
@@ -40,9 +36,8 @@ class LocalOnlyCountsStarredTest {
             }
         }
 
-        composeRule.onNodeWithText("These boards live on this phone").assertExists()
-        composeRule.onNodeWithTag(TierListsTestTags.LISTS).performScrollToNode(hasTestTag(TierListsTestTags.LOCAL_ONLY_FOOTER))
-        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_FOOTER).assertTextEquals("3 boards, on this phone only")
+        composeRule.onNodeWithText("3 boards, on this phone only").assertExists()
+        composeRule.onNodeWithText("Sign in to keep them when you change phones.").assertExists()
     }
 
     private fun board(id: Long, starred: Boolean = false) = TierListSummary(

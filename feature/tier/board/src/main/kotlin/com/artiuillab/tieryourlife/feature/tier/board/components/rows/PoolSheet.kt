@@ -262,27 +262,29 @@ private fun PoolCards(
         onDispose { dragController.unregisterItemsRow(pool.id) }
     }
 
-    LazyRow(
-        state = listState,
-        modifier = Modifier
-            .fillMaxWidth()
-            .onGloballyPositioned { coordinates -> dragController.registerItemsRowBounds(pool.id, coordinates.boundsInRoot()) }
-            .testTag(TierDetailTestTags.POOL_ITEMS),
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        items(pool.items, key = { it.id }) { item ->
-            DraggableTile(
-                item = item,
-                sourceTierId = pool.id,
-                width = POOL_TILE_WIDTH,
-                height = POOL_TILE_HEIGHT,
-                dragController = dragController,
-                onMoveItem = onMoveItem,
-                onDeleteItem = onDeleteItem,
-                onDoubleTap = onDoubleTap,
-                scroll = TileScroll.Sideways,
-            )
+    ProvideTextCardRoom(pool.items, POOL_TILE_WIDTH, POOL_TILE_HEIGHT, 10.dp) {
+        LazyRow(
+            state = listState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned { coordinates -> dragController.registerItemsRowBounds(pool.id, coordinates.boundsInRoot()) }
+                .testTag(TierDetailTestTags.POOL_ITEMS),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            items(pool.items, key = { it.id }) { item ->
+                DraggableTile(
+                    item = item,
+                    sourceTierId = pool.id,
+                    width = POOL_TILE_WIDTH,
+                    height = POOL_TILE_HEIGHT,
+                    dragController = dragController,
+                    onMoveItem = onMoveItem,
+                    onDeleteItem = onDeleteItem,
+                    onDoubleTap = onDoubleTap,
+                    scroll = TileScroll.Sideways,
+                )
+            }
         }
     }
 }
@@ -400,28 +402,30 @@ private fun PoolCardsWrapped(
     onDoubleTap: (itemId: Long) -> Unit,
 ) {
     SideEffect { dragController.unregisterItemsRow(pool.id) }
-    LazyVerticalGrid(
-        columns = GridCells.FixedSize(POOL_TILE_WIDTH),
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(max = POOL_TILE_HEIGHT * lines + DOCKED_GAP * (lines - 1))
-            .testTag(TierDetailTestTags.POOL_ITEMS),
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(DOCKED_GAP),
-        verticalArrangement = Arrangement.spacedBy(DOCKED_GAP),
-    ) {
-        itemsIndexed(pool.items, key = { _, item -> item.id }) { index, item ->
-            DraggableTile(
-                item = item,
-                sourceTierId = pool.id,
-                width = POOL_TILE_WIDTH,
-                height = POOL_TILE_HEIGHT,
-                dragController = dragController,
-                onMoveItem = onMoveItem,
-                onDeleteItem = onDeleteItem,
-                onPositioned = { bounds -> dragController.registerTileBounds(pool.id, item.id, index, bounds) },
-                onDoubleTap = onDoubleTap,
-            )
+    ProvideTextCardRoom(pool.items, POOL_TILE_WIDTH, POOL_TILE_HEIGHT, DOCKED_GAP) {
+        LazyVerticalGrid(
+            columns = GridCells.FixedSize(POOL_TILE_WIDTH),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = POOL_TILE_HEIGHT * lines + DOCKED_GAP * (lines - 1))
+                .testTag(TierDetailTestTags.POOL_ITEMS),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(DOCKED_GAP),
+            verticalArrangement = Arrangement.spacedBy(DOCKED_GAP),
+        ) {
+            itemsIndexed(pool.items, key = { _, item -> item.id }) { index, item ->
+                DraggableTile(
+                    item = item,
+                    sourceTierId = pool.id,
+                    width = POOL_TILE_WIDTH,
+                    height = POOL_TILE_HEIGHT,
+                    dragController = dragController,
+                    onMoveItem = onMoveItem,
+                    onDeleteItem = onDeleteItem,
+                    onPositioned = { bounds -> dragController.registerTileBounds(pool.id, item.id, index, bounds) },
+                    onDoubleTap = onDoubleTap,
+                )
+            }
         }
     }
 }

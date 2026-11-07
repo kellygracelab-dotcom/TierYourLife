@@ -142,10 +142,8 @@
         <item quantity="other">%1$d tableros</item>
     </plurals>
     <string name="local_only_footer">%1$s, solo en este teléfono</string>
-    <string name="local_only_card_title_one">Este tablero solo vive en este teléfono</string>
-    <string name="local_only_card_title_many">Estos tableros solo viven en este teléfono</string>
-    <string name="local_only_card_body_one">Cambia de teléfono o reinstala y desaparece. Una cuenta lo conserva.</string>
-    <string name="local_only_card_body_many">Cambia de teléfono o reinstala y desaparecen. Una cuenta los conserva.</string>
+    <string name="local_only_notice_keep_one">Inicia sesión para conservarlo al cambiar de teléfono.</string>
+    <string name="local_only_notice_keep_many">Inicia sesión para conservarlos al cambiar de teléfono.</string>
     <string name="local_only_card_not_now">Ahora no</string>
     <string name="local_only_card_sign_in">Iniciar sesión</string>
     <string name="restoring_one_picture">Restaurando la imagen</string>

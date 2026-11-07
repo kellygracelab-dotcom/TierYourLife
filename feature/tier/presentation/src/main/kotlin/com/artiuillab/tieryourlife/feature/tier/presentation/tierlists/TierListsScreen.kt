@@ -84,8 +84,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ConflictBanner
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeEmptyState
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeHeader
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlyFooter
-import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlySignInCard
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlyNotice
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.PrefetchTilesAhead
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.RestoringPictures
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.SearchResultRow
@@ -503,11 +502,12 @@ private fun HomeContent(
                 }
             }
         }
-        if (here?.offerSignIn == true && !isSelecting) {
-            wide("local-only-card") {
+        if (here != null) {
+            wide("local-only-notice") {
                 Box(Modifier.widthIn(max = ContentWidth.Reading)) {
-                    LocalOnlySignInCard(
+                    LocalOnlyNotice(
                         boardCount = boardCount,
+                        offerSignIn = here.offerSignIn && !isSelecting,
                         onSignIn = onSignInClick,
                         onDismiss = onDismissSignInOffer,
                     )
@@ -543,13 +543,6 @@ private fun HomeContent(
                 onToggleSelected = onToggleSelected,
                 onToggleFavourite = onToggleFavourite,
             )
-        }
-        if (here != null) {
-            wide("local-only-footer") {
-                Box(Modifier.widthIn(max = ContentWidth.Reading)) {
-                    LocalOnlyFooter(boardCount = boardCount)
-                }
-            }
         }
     }
 }
@@ -628,10 +621,11 @@ private fun BoardTiles(
                 )
             }
         }
-        if (here?.offerSignIn == true && !isSelecting) {
-            item(key = "local-only-card", span = { GridItemSpan(maxLineSpan) }) {
-                LocalOnlySignInCard(
+        if (here != null) {
+            item(key = "local-only-notice", span = { GridItemSpan(maxLineSpan) }) {
+                LocalOnlyNotice(
                     boardCount = boardCount,
+                    offerSignIn = here.offerSignIn && !isSelecting,
                     onSignIn = onSignInClick,
                     onDismiss = onDismissSignInOffer,
                 )
@@ -664,11 +658,6 @@ private fun BoardTiles(
                 selected = list.id in selectedIds,
                 onToggleFavourite = { onToggleFavourite(list.id) },
             )
-        }
-        if (here != null) {
-            item(key = "local-only-footer", span = { GridItemSpan(maxLineSpan) }) {
-                LocalOnlyFooter(boardCount = boardCount)
-            }
         }
     }
 }

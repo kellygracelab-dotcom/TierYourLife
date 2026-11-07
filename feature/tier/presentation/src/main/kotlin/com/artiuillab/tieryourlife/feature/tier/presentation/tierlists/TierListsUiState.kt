@@ -43,7 +43,7 @@ enum class HomeTab { Mine, Community }
 
 /**
  * [Unknown] is not [Kept]: Firebase answers a moment after the screen appears,
- * and treating them as one flashed the footer on every start.
+ * and treating them as one flashed the notice on every start.
  */
 sealed interface LocalOnly {
     data object Unknown : LocalOnly
@@ -51,6 +51,6 @@ sealed interface LocalOnly {
     /** Signed in. Nothing is said, because nothing is wrong. */
     data object Kept : LocalOnly
 
-    /** A guest with boards. The footer always; the card once. */
+    /** A guest with boards. The notice always; its sign-in buttons until answered. */
     data class Here(val offerSignIn: Boolean) : LocalOnly
 }

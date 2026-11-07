@@ -224,81 +224,83 @@ fun TierRow(
             }
         }
 
-        if (collapsed) {
-            CollapsedItemCount(
-                count = tier.items.size,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .testTag(TierDetailTestTags.tierItems(tier.id)),
-            )
-        } else if (displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
-            // Lazy, like the pool: the drag controller works out the drop from
-            // the list's own layout.
-            LazyRow(
-                state = stripState,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(rowDensity.occupiedHeight)
-                    .onGloballyPositioned { coordinates ->
-                        dragController.registerItemsRowBounds(tier.id, coordinates.boundsInRoot())
-                    }
-                    .testTag(TierDetailTestTags.tierItems(tier.id)),
-                contentPadding = PaddingValues(rowDensity.padding),
-                horizontalArrangement = Arrangement.spacedBy(rowDensity.gap),
-            ) {
-                items(tier.items, key = { it.id }) { item ->
-                    DraggableTile(
-                        item = item,
-                        sourceTierId = tier.id,
-                        width = rowDensity.tileWidth,
-                        height = rowDensity.tileHeight,
-                        dragController = dragController,
-                        onMoveItem = onMoveItem,
-                        onDeleteItem = onDeleteItem,
-                        onDoubleTap = onDoubleTap,
-                        scroll = TileScroll.BothWays,
-                    )
-                }
-            }
-        } else {
-            // Where the lifted card would land, drawn while it hovers: the
-            // row's own cards make room for it, and its old place takes none.
-            val slot = if (isHovered) dragController.hoverIndex else null
-            val showHint = tier.items.isEmpty() && slot == null && rowDensity.emptyHint && poolHasCards
-            val cardsWidthPx = with(density) { rowWidthPx - bandWidth.roundToPx() - rowDensity.padding.roundToPx() * 2 }
-            WrappedCards(
-                tier = tier,
-                rowDensity = rowDensity,
-                widthPx = cardsWidthPx,
-                dragController = dragController,
-                onMoveItem = onMoveItem,
-                onDeleteItem = onDeleteItem,
-                onDoubleTap = onDoubleTap,
-                listState = listState,
-                itemIndex = itemIndex,
-                hint = if (showHint) {
-                    {
-                        Text(
-                            text = stringResource(R.string.tier_detail_drop_items_here),
-                            modifier = Modifier
-                                .heightIn(min = rowDensity.tileHeight)
-                                .padding(start = 9.dp)
-                                .wrapContentHeight(Alignment.CenterVertically),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+        ProvideTextCardRoom(tier.items, rowDensity.tileWidth, rowDensity.tileHeight, rowDensity.gap) {
+            if (collapsed) {
+                CollapsedItemCount(
+                    count = tier.items.size,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .testTag(TierDetailTestTags.tierItems(tier.id)),
+                )
+            } else if (displayMode == TierListDisplayMode.HORIZONTAL_SCROLL) {
+                // Lazy, like the pool: the drag controller works out the drop from
+                // the list's own layout.
+                LazyRow(
+                    state = stripState,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(rowDensity.occupiedHeight)
+                        .onGloballyPositioned { coordinates ->
+                            dragController.registerItemsRowBounds(tier.id, coordinates.boundsInRoot())
+                        }
+                        .testTag(TierDetailTestTags.tierItems(tier.id)),
+                    contentPadding = PaddingValues(rowDensity.padding),
+                    horizontalArrangement = Arrangement.spacedBy(rowDensity.gap),
+                ) {
+                    items(tier.items, key = { it.id }) { item ->
+                        DraggableTile(
+                            item = item,
+                            sourceTierId = tier.id,
+                            width = rowDensity.tileWidth,
+                            height = rowDensity.tileHeight,
+                            dragController = dragController,
+                            onMoveItem = onMoveItem,
+                            onDeleteItem = onDeleteItem,
+                            onDoubleTap = onDoubleTap,
+                            scroll = TileScroll.BothWays,
                         )
                     }
-                } else {
-                    null
-                },
-                slotContent = { DropSlot(rowDensity) },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(rowDensity.padding)
-                    .heightIn(min = rowDensity.tileHeight)
-                    .testTag(TierDetailTestTags.tierItems(tier.id)),
-            )
+                }
+            } else {
+                // Where the lifted card would land, drawn while it hovers: the
+                // row's own cards make room for it, and its old place takes none.
+                val slot = if (isHovered) dragController.hoverIndex else null
+                val showHint = tier.items.isEmpty() && slot == null && rowDensity.emptyHint && poolHasCards
+                val cardsWidthPx = with(density) { rowWidthPx - bandWidth.roundToPx() - rowDensity.padding.roundToPx() * 2 }
+                WrappedCards(
+                    tier = tier,
+                    rowDensity = rowDensity,
+                    widthPx = cardsWidthPx,
+                    dragController = dragController,
+                    onMoveItem = onMoveItem,
+                    onDeleteItem = onDeleteItem,
+                    onDoubleTap = onDoubleTap,
+                    listState = listState,
+                    itemIndex = itemIndex,
+                    hint = if (showHint) {
+                        {
+                            Text(
+                                text = stringResource(R.string.tier_detail_drop_items_here),
+                                modifier = Modifier
+                                    .heightIn(min = rowDensity.tileHeight)
+                                    .padding(start = 9.dp)
+                                    .wrapContentHeight(Alignment.CenterVertically),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            )
+                        }
+                    } else {
+                        null
+                    },
+                    slotContent = { DropSlot(rowDensity) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(rowDensity.padding)
+                        .heightIn(min = rowDensity.tileHeight)
+                        .testTag(TierDetailTestTags.tierItems(tier.id)),
+                )
+            }
         }
         }
     }

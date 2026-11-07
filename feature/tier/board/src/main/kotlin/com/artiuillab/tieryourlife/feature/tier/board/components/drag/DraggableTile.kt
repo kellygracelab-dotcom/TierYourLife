@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.toSize
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.ItemTile
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalTextCardRoom
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import kotlin.math.roundToInt
 
@@ -64,6 +66,7 @@ fun DraggableTile(
     val isDragging = dragController.draggedPayload?.itemId == item.id ||
         dragController.returning?.payload?.itemId == item.id
     val haptic = LocalHapticFeedback.current
+    val textRoom by rememberUpdatedState(LocalTextCardRoom.current)
     val baseViewConfiguration = LocalViewConfiguration.current
     val dragViewConfiguration = remember(baseViewConfiguration) {
         ShortLongPressViewConfiguration(baseViewConfiguration, DRAG_LONG_PRESS_TIMEOUT_MILLIS)
@@ -105,6 +108,7 @@ fun DraggableTile(
                                     sourceTierId = sourceTierId,
                                     width = width,
                                     height = height,
+                                    textRoom = textRoom,
                                 ),
                                 rootPosition = rootPosition + offsetInTile,
                                 homeCentre = rootPosition + sizePx / 2f,
@@ -185,11 +189,10 @@ fun FloatingDragTile(dragController: TierDragController) {
                     scaleX = 1.08f
                     scaleY = 1.08f
                 }
-                .shadow(elevation = 8.dp, shape = shape)
-                .clip(shape)
-                .border(1.dp, Color.White.copy(alpha = borderAlpha), shape),
+                .shadow(elevation = 8.dp, shape = shape, clip = payload.imageUrl != null)
+                .then(if (payload.imageUrl != null) Modifier.clip(shape).border(1.dp, Color.White.copy(alpha = borderAlpha), shape) else Modifier),
         ) {
-            CompositionLocalProvider(LocalLayoutDirection provides readingDirection) {
+            CompositionLocalProvider(LocalLayoutDirection provides readingDirection, LocalTextCardRoom provides payload.textRoom) {
                 ItemTile(
                     item = TierItem(id = payload.itemId, title = payload.title, imageUrl = payload.imageUrl),
                     width = payload.width,

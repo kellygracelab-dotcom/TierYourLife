@@ -152,10 +152,8 @@
         <item quantity="other">%1$d доски</item>
     </plurals>
     <string name="local_only_footer">%1$s, только на этом телефоне</string>
-    <string name="local_only_card_title_one">Эта доска живёт только на телефоне</string>
-    <string name="local_only_card_title_many">Эти доски живут только на телефоне</string>
-    <string name="local_only_card_body_one">Смените телефон или переустановите — и её нет. Аккаунт её сохранит.</string>
-    <string name="local_only_card_body_many">Смените телефон или переустановите — и их нет. Аккаунт их сохранит.</string>
+    <string name="local_only_notice_keep_one">Войдите, чтобы она осталась при смене телефона.</string>
+    <string name="local_only_notice_keep_many">Войдите, чтобы они остались при смене телефона.</string>
     <string name="local_only_card_not_now">Не сейчас</string>
     <string name="local_only_card_sign_in">Войти</string>
     <string name="restoring_one_picture">Восстанавливаем картинку</string>
