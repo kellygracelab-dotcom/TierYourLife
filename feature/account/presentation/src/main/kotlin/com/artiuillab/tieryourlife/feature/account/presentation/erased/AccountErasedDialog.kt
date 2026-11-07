@@ -23,7 +23,7 @@ const val ACCOUNT_ERASED_DIALOG = "account_erased_dialog"
 @HiltViewModel
 class AccountErasedViewModel @Inject constructor(private val notice: AccountErasedNotice) : ViewModel() {
 
-    val pending: StateFlow<Boolean> = notice.pending
+    val pending: StateFlow<AccountErasedNotice.Where?> = notice.pending
 
     fun dismiss() = notice.dismiss()
 }
@@ -33,18 +33,23 @@ class AccountErasedViewModel @Inject constructor(private val notice: AccountEras
 fun AccountErasedNoticeHost() {
     val model: AccountErasedViewModel = hiltViewModel()
     val pending by model.pending.collectAsStateWithLifecycle()
-    if (pending) AccountErasedDialog(onDismiss = model::dismiss)
+    pending?.let { where -> AccountErasedDialog(where, onDismiss = model::dismiss) }
 }
 
 @Composable
-internal fun AccountErasedDialog(onDismiss: () -> Unit) {
+internal fun AccountErasedDialog(where: AccountErasedNotice.Where, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = Modifier.testTag(ACCOUNT_ERASED_DIALOG),
         title = { Text(stringResource(R.string.account_erased_title)) },
         text = {
             Text(
-                text = stringResource(R.string.account_erased_body),
+                text = stringResource(
+                    when (where) {
+                        AccountErasedNotice.Where.ThisDevice -> R.string.account_erased_here_body
+                        AccountErasedNotice.Where.AnotherDevice -> R.string.account_erased_body
+                    },
+                ),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

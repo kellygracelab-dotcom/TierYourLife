@@ -64,6 +64,7 @@
     <string name="account_error_not_deleted">アカウントを削除できませんでした。もう一度お試しください。</string>
     <string name="account_erased_title">アカウントが削除されました</string>
     <string name="account_erased_body">このアカウントは別の端末で削除されたため、この端末ではログアウトしました。ボードはこの端末に残ります。</string>
+    <string name="account_erased_here_body">アカウントが削除されたため、ログアウトしました。ボードはこの端末に残ります。</string>
     <string name="account_erased_ok">OK</string>
     <string name="account_error_boards_not_copied">ボードをコピーできませんでした。ボードは端末に残っています。</string>
     <string name="account_face_position_title">アイコンの位置を決める</string>

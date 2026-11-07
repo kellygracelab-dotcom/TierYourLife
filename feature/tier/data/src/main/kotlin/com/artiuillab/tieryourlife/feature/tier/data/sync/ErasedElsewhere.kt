@@ -33,9 +33,9 @@ class ErasedElsewhere @Inject constructor(
 
     internal suspend fun leave(uid: String) {
         preferences.setErasedAccountToLeave(uid)
-        merge.leaveErased(uid) {
-            Timber.i("The account was erased elsewhere; signing out, boards kept here")
-            notice.raise()
+        merge.leaveErased(uid) { fromHere ->
+            Timber.i("The account was erased; signing out, boards kept here")
+            notice.raise(if (fromHere) AccountErasedNotice.Where.ThisDevice else AccountErasedNotice.Where.AnotherDevice)
         }
         preferences.setErasedAccountToLeave(null)
     }

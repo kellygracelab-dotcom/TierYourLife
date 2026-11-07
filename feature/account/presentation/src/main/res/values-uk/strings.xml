@@ -73,6 +73,7 @@
     <string name="account_error_not_deleted">Акаунт не видалено. Спробуйте ще раз.</string>
     <string name="account_erased_title">Акаунт видалено</string>
     <string name="account_erased_body">Цей акаунт видалили на іншому пристрої, тож тут ви вийшли з нього. Ваші дошки залишаються на цьому телефоні.</string>
+    <string name="account_erased_here_body">Ваш акаунт видалено, тож ви вийшли з нього. Ваші дошки залишаються на цьому телефоні.</string>
     <string name="account_erased_ok">OK</string>
     <string name="account_error_boards_not_copied">Дошки не скопійовано. Вони залишилися на телефоні.</string>
     <string name="account_face_position_title">Розташуйте фото</string>

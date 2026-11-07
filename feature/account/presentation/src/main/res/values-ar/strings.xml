@@ -79,6 +79,7 @@
     <string name="account_error_not_deleted">لم يُحذف الحساب. حاول مرة أخرى.</string>
     <string name="account_erased_title">حُذف الحساب</string>
     <string name="account_erased_body">حُذف هذا الحساب على جهاز آخر، لذا سُجّل خروجك هنا. تبقى لوحاتك على هذا الهاتف.</string>
+    <string name="account_erased_here_body">حُذف حسابك، لذا سُجّل خروجك. تبقى لوحاتك على هذا الهاتف.</string>
     <string name="account_erased_ok">حسنًا</string>
     <string name="account_error_boards_not_copied">لم تُنسخ اللوحات. لا تزال على الهاتف.</string>
     <string name="account_face_position_title">ضع صورتك</string>

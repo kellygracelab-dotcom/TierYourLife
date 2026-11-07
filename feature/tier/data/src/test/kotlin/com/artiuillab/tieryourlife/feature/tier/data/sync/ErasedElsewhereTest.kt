@@ -11,7 +11,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -27,7 +27,7 @@ class ErasedElsewhereTest : SyncEngineBench() {
     private var atSignOut: Pair<Boolean, String?>? = null
     private val accounts = FakeAccountRepository(
         initial = ann,
-        onSignOut = { atSignOut = preferences.accountErasedNoticePending() to preferences.erasedAccountToLeave() },
+        onSignOut = { atSignOut = (preferences.accountErasedNotice() != null) to preferences.erasedAccountToLeave() },
     )
     private val notice = AccountErasedNotice(preferences)
     private var forgotten = 0
@@ -68,8 +68,8 @@ class ErasedElsewhereTest : SyncEngineBench() {
         assertNull("not a session lost: nothing is held for it", preferences.lastSignedIn())
         assertTrue(preferences.heldBoards().isEmpty())
         assertEquals(1, forgotten)
-        assertTrue(notice.pending.value)
-        assertTrue("still there after a restart", preferences.accountErasedNoticePending())
+        assertEquals(AccountErasedNotice.Where.AnotherDevice, notice.pending.value)
+        assertEquals("still there after a restart", AccountErasedNotice.Where.AnotherDevice, AccountErasedNotice(preferences).pending.value)
     }
 
     // Answered after a switch, or to a request still on its way when Bob signed out: his boards are let go, Ann is left be.
@@ -90,7 +90,7 @@ class ErasedElsewhereTest : SyncEngineBench() {
         assertEquals("ann", ownerOf(films))
         assertEquals("ann", preferences.lastSignedIn())
         assertEquals(0, forgotten)
-        assertFalse(notice.pending.value)
+        assertNull(notice.pending.value)
     }
 
     // The session was already gone, and its boards held for it as for any lost one.
@@ -108,7 +108,7 @@ class ErasedElsewhereTest : SyncEngineBench() {
         assertNull(preferences.lastSignedIn())
         assertEquals(Account.Guest, accounts.current())
         assertEquals(1, forgotten)
-        assertTrue(notice.pending.value)
+        assertNotNull(notice.pending.value)
     }
 
     @Test
@@ -120,7 +120,7 @@ class ErasedElsewhereTest : SyncEngineBench() {
 
         assertNull(ownerOf(films))
         assertEquals(0, forgotten)
-        assertFalse(notice.pending.value)
+        assertNull(notice.pending.value)
     }
 
     @Test
@@ -142,7 +142,7 @@ class ErasedElsewhereTest : SyncEngineBench() {
 
         assertEquals(Account.Guest, accounts.current())
         assertNull(ownerOf(films))
-        assertTrue(notice.pending.value)
+        assertNotNull(notice.pending.value)
         assertNull(preferences.erasedAccountToLeave())
     }
 
@@ -157,15 +157,26 @@ class ErasedElsewhereTest : SyncEngineBench() {
         assertEquals(Account.Guest, accounts.current())
         assertNull(ownerOf(films))
         assertEquals(1, forgotten)
-        assertTrue(notice.pending.value)
+        assertNotNull(notice.pending.value)
+    }
+
+    // Asked from this phone and never answered: the proxy's word is the answer.
+    @Test
+    fun anEraseAskedHere_isToldAsYoursNotAnotherDevices() = runBlocking {
+        preferences.setErasureUnderWay(ErasureMark("ann", 0).encoded())
+
+        watcher().leave("ann")
+
+        assertEquals(AccountErasedNotice.Where.ThisDevice, notice.pending.value)
+        assertNull(preferences.erasureUnderWay())
     }
 
     @Test
     fun theNotice_goesOnceRead() {
-        notice.raise()
+        notice.raise(AccountErasedNotice.Where.AnotherDevice)
         notice.dismiss()
 
-        assertFalse(notice.pending.value)
-        assertFalse(AccountErasedNotice(preferences).pending.value)
+        assertNull(notice.pending.value)
+        assertNull(AccountErasedNotice(preferences).pending.value)
     }
 }

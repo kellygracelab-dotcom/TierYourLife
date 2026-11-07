@@ -70,6 +70,7 @@
     <string name="account_error_not_deleted">Le compte n’a pas été supprimé. Réessayez.</string>
     <string name="account_erased_title">Compte supprimé</string>
     <string name="account_erased_body">Ce compte a été supprimé sur un autre appareil : la session est donc fermée ici. Vos tableaux restent sur ce téléphone.</string>
+    <string name="account_erased_here_body">Votre compte a été supprimé : la session est donc fermée. Vos tableaux restent sur ce téléphone.</string>
     <string name="account_erased_ok">OK</string>
     <string name="account_error_boards_not_copied">Les tableaux n’ont pas été copiés. Ils sont toujours sur ce téléphone.</string>
     <string name="account_face_position_title">Placez votre photo</string>

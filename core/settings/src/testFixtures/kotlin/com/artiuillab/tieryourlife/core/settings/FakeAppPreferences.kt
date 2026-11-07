@@ -165,12 +165,12 @@ class FakeAppPreferences(
         publishingAccount = account
     }
 
-    var accountErasedNotice = false
+    var accountErasedWhere: String? = null
 
-    override fun accountErasedNoticePending(): Boolean = accountErasedNotice
+    override fun accountErasedNotice(): String? = accountErasedWhere
 
-    override fun setAccountErasedNoticePending(pending: Boolean) {
-        accountErasedNotice = pending
+    override fun setAccountErasedNotice(where: String?) {
+        accountErasedWhere = where
     }
 
     var erasedToLeave: String? = null

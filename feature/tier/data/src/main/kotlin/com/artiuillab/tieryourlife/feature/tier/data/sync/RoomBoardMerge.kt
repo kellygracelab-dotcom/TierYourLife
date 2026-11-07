@@ -191,15 +191,16 @@ class RoomBoardMerge internal constructor(
      * The proxy said [uid] was erased, from another phone: as an erase from
      * this one ends, without asking the server again. Its boards are the
      * phone's own whoever is signed in now; only its own session is signed
-     * out. [tell] only when the phone was still its.
+     * out. [tell] only when the phone was still its, and whether the erase
+     * was asked from this phone and never answered.
      *
      * Each step leaves what the next one asks as it was, so a process killed
      * between any two does all of it again, and done twice it ends as once.
      */
-    suspend fun leaveErased(uid: String, tell: () -> Unit) = lock.ahead {
+    suspend fun leaveErased(uid: String, tell: (fromHere: Boolean) -> Unit) = lock.ahead {
         val current = (accounts.account.first { it != Account.Unknown } as? Account.SignedIn)?.uid == uid
         if (current || preferences.lastSignedIn() == uid) {
-            tell()
+            tell(erasureMarkOf(preferences.erasureUnderWay())?.account == uid)
             thePerson.forget()
         }
         keepBoardsOf(uid)

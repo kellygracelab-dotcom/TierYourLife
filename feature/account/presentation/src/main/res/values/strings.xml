@@ -30,6 +30,7 @@
     <string name="account_error_not_deleted">The account was not deleted. Try again.</string>
     <string name="account_erased_title">Account deleted</string>
     <string name="account_erased_body">This account was deleted on another device, so you’re signed out here. Your boards stay on this phone.</string>
+    <string name="account_erased_here_body">Your account was deleted, so you’re signed out. Your boards stay on this phone.</string>
     <string name="account_erased_ok">OK</string>
     <string name="account_error_boards_not_copied">The boards were not copied. They are still on this phone.</string>
     <string name="account_sign_out_body_1">Your boards stay in %1$s and on this phone, hidden until you sign in again. Signed out, you’ll see only boards made without an account.</string>

@@ -155,9 +155,9 @@ interface AppPreferences {
     fun setLastPublishingAccount(account: String?) = Unit
 
     /** Not forgotten with the person: it is what tells the person they were. */
-    fun accountErasedNoticePending(): Boolean = false
+    fun accountErasedNotice(): String? = null
 
-    fun setAccountErasedNoticePending(pending: Boolean) = Unit
+    fun setAccountErasedNotice(where: String?) = Unit
 
     /** An account the proxy said was erased, written before the phone leaves it: a process killed halfway leaves it again. */
     fun erasedAccountToLeave(): String? = null
