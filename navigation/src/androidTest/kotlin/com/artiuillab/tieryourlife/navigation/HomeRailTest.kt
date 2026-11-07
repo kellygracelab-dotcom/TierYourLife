@@ -4,7 +4,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -102,8 +105,11 @@ class HomeRailTest {
         }
 
         RailDestination.entries.forEach { destination ->
-            val node = composeRule.onNodeWithTag(RailTestTags.label(destination), useUnmergedTree = true)
-                .fetchSemanticsNode()
+            val node = composeRule.onNode(
+                hasAnyAncestor(hasTestTag(RailTestTags.label(destination))) and
+                    SemanticsMatcher.keyIsDefined(SemanticsActions.GetTextLayoutResult),
+                useUnmergedTree = true,
+            ).fetchSemanticsNode()
             val results = mutableListOf<TextLayoutResult>()
             node.config[SemanticsActions.GetTextLayoutResult].action?.invoke(results)
             val layout = results.single()
