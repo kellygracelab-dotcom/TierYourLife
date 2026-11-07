@@ -3,6 +3,8 @@ package com.artiuillab.tieryourlife.feature.tier.data.local.image
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.os.Build
 import androidx.core.net.toUri
@@ -26,6 +28,11 @@ private const val JPEG_QUALITY = 85
 
 /** As much as the account's own folder takes (storage.rules). */
 private const val MAX_WEB_PICTURE_BYTES = 4L * 1024 * 1024
+
+/** Under [MAX_WEB_PICTURE_BYTES] with room to spare. */
+internal const val MAX_STILL_BYTES = 3_500_000L
+
+private const val SMALLEST_HALVED_EDGE_PX = 125
 
 private const val WEB_TIMEOUT_MILLIS = 10_000
 
@@ -168,19 +175,16 @@ private fun isPicture(file: File): Boolean {
  * smaller. Not for a GIF or a WebP: either may move, so it always becomes a
  * still of its first frame, larger or not, and one that cannot is an [IOException].
  */
-internal fun shrinkInPlace(file: File) {
+internal fun shrinkInPlace(file: File, stillLimit: Long = MAX_STILL_BYTES) {
     val mayMove = mayMove(file)
     val bitmap = if (mayMove) decodeFirstFrame(file) else decodeWithinLimit(file)
     if (bitmap == null) {
         if (mayMove) throw IOException("A GIF or WebP that would not decode")
         return
     }
-    // A JPEG has no see-through parts; a GIF's or a WebP's may.
-    val format = if (mayMove && bitmap.hasAlpha()) Bitmap.CompressFormat.PNG else Bitmap.CompressFormat.JPEG
     val temp = File(file.parentFile, file.name + ".tmp")
     try {
-        val compressed = runCatching { temp.outputStream().use { out -> bitmap.compress(format, JPEG_QUALITY, out) } }.getOrDefault(false)
-        val written = compressed && temp.length() > 0
+        val written = if (mayMove) writeStill(bitmap, temp, stillLimit) else temp.compressFrom(bitmap, Bitmap.CompressFormat.JPEG)
         val replaced = written &&
             (mayMove || temp.length() < file.length()) &&
             runCatching { temp.copyTo(file, overwrite = true) }.isSuccess
@@ -190,6 +194,43 @@ internal fun shrinkInPlace(file: File) {
         bitmap.recycle()
     }
 }
+
+/**
+ * A JPEG has no see-through parts, so a frame with them is a PNG, halved
+ * until the account takes it; one that never fits is flattened onto white.
+ */
+private fun writeStill(frame: Bitmap, temp: File, limit: Long): Boolean {
+    if (!frame.hasAlpha()) return temp.compressFrom(frame, Bitmap.CompressFormat.JPEG)
+    var still = frame
+    try {
+        var fits = temp.compressFrom(still, Bitmap.CompressFormat.PNG) && temp.length() <= limit
+        while (!fits && maxOf(still.width, still.height) / 2 >= SMALLEST_HALVED_EDGE_PX) {
+            val half = Bitmap.createScaledBitmap(still, still.width / 2, still.height / 2, true)
+            if (still !== frame) still.recycle()
+            still = half
+            fits = temp.compressFrom(still, Bitmap.CompressFormat.PNG) && temp.length() <= limit
+        }
+        return fits || temp.compressOnWhite(still)
+    } finally {
+        if (still !== frame) still.recycle()
+    }
+}
+
+private fun File.compressOnWhite(still: Bitmap): Boolean {
+    val flat = Bitmap.createBitmap(still.width, still.height, Bitmap.Config.ARGB_8888)
+    return try {
+        Canvas(flat).apply {
+            drawColor(Color.WHITE)
+            drawBitmap(still, 0f, 0f, null)
+        }
+        compressFrom(flat, Bitmap.CompressFormat.JPEG)
+    } finally {
+        flat.recycle()
+    }
+}
+
+private fun File.compressFrom(bitmap: Bitmap, format: Bitmap.CompressFormat): Boolean =
+    runCatching { outputStream().use { out -> bitmap.compress(format, JPEG_QUALITY, out) } }.getOrDefault(false) && length() > 0
 
 private val GIF = "GIF8".toByteArray(Charsets.US_ASCII)
 private val RIFF = "RIFF".toByteArray(Charsets.US_ASCII)
