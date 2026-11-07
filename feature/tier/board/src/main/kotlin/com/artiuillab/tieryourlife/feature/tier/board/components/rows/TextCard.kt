@@ -3,12 +3,11 @@ package com.artiuillab.tieryourlife.feature.tier.board.components.rows
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -17,17 +16,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
@@ -68,9 +69,9 @@ internal fun TextCard(title: String, width: Dp, height: Dp, bordered: Boolean) {
     val room = LocalTextCardRoom.current
     val fitter = rememberTextCardFitter(width, height, room.gap)
     val fitted = remember(fitter, title, room.titleSize) { fitter.fit(title, room.titleSize) }
-    val style = remember(fitter, fitted.size) { fitter.style(fitted.size) }
     val boxWidth = fitter.tilePx + fitter.growth(fitted.extra)
     val textWidth = fitter.room.width + fitted.extra
+    val lines = remember(fitter, fitted) { fitter.layOut(fitted) }
     val media = TierYourLifeMedia.current
     val background = if (bordered) MaterialTheme.colorScheme.surfaceContainerHighest else media.tilePlaceholder
     val color = if (bordered) MaterialTheme.colorScheme.onSurface else media.tileLabel
@@ -83,37 +84,26 @@ internal fun TextCard(title: String, width: Dp, height: Dp, bordered: Boolean) {
                 .then(if (bordered) Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, TEXT_CARD_SHAPE) else Modifier),
             contentAlignment = Alignment.Center,
         ) {
-            Column(
-                modifier = Modifier
-                    .exactly(textWidth, null)
-                    .clearAndSetSemantics { text = AnnotatedString(title) },
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                fitted.lines.forEach { line -> TitleLine(line, style, color) }
-            }
+            // Drawn rather than composed as texts: the card is one node that reads its whole name.
+            Spacer(
+                Modifier
+                    .exactly(textWidth, lines.sumOf { it.size.height })
+                    .semantics { text = AnnotatedString(title) }
+                    .drawBehind {
+                        var top = 0f
+                        lines.forEach { line ->
+                            drawText(line, color, Offset((size.width - line.size.width) / 2f, top))
+                            top += line.size.height
+                        }
+                    },
+            )
         }
     }
 }
 
-@Composable
-private fun TitleLine(line: String, style: TextStyle, color: Color) {
-    Text(
-        text = line,
-        style = style,
-        color = color,
-        maxLines = 1,
-        softWrap = false,
-        overflow = TextOverflow.Ellipsis,
-        textAlign = TextAlign.Center,
-    )
-}
-
 /** Measured in pixels, centred where it overflows: rounding a dp twice is how a word lost its last letter. */
-private fun Modifier.exactly(widthPx: Int, heightPx: Int?): Modifier = layout { measurable, constraints ->
-    val height = heightPx ?: constraints.maxHeight
-    val placeable = measurable.measure(
-        Constraints(minWidth = widthPx, maxWidth = widthPx, minHeight = if (heightPx == null) 0 else height, maxHeight = height),
-    )
+private fun Modifier.exactly(widthPx: Int, heightPx: Int): Modifier = layout { measurable, _ ->
+    val placeable = measurable.measure(Constraints.fixed(widthPx, heightPx))
     layout(placeable.width, placeable.height) { placeable.place(0, 0) }
 }
 
@@ -174,6 +164,18 @@ internal class TextCardFitter(
             letterSpacing = 0.sp,
         ),
     )
+
+    /** Each line at its width, a word that still does not fit ending in an ellipsis. */
+    fun layOut(fitted: CardTitle): List<TextLayoutResult> = fitted.lines.map { line ->
+        measurer.measure(
+            text = line,
+            style = style(fitted.size),
+            overflow = TextOverflow.Ellipsis,
+            softWrap = false,
+            maxLines = 1,
+            constraints = Constraints(maxWidth = room.width + fitted.extra),
+        )
+    }
 
     fun fit(title: String, cap: Float? = null): CardTitle = fitCardTitle(
         title = title,
