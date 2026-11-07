@@ -4,6 +4,9 @@ import com.artiuillab.tieryourlife.core.network.networkJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import retrofit2.HttpException
+import java.net.HttpURLConnection.HTTP_FORBIDDEN
+
+private const val TARGET_IS_MODERATOR = "TARGET_IS_MODERATOR"
 
 @Serializable
 private data class CodedRefusalDto(
@@ -16,6 +19,10 @@ private data class CodedRefusalDto(
  * of them. Null when the failure is not an HTTP one, or the body says nothing.
  */
 fun Throwable.proxyCode(): String? = codedRefusal()?.code
+
+/** A moderator acting on a list by staff, which only the owner may. */
+fun Throwable.isTargetStaff(): Boolean =
+    this is HttpException && code() == HTTP_FORBIDDEN && proxyCode() == TARGET_IS_MODERATOR
 
 /** Which field a `400 INVALID` was about, such as "category". */
 fun Throwable.proxyDetail(): String? = codedRefusal()?.detail

@@ -31,4 +31,5 @@
     <string name="tier_lists_title">Listeleriniz</string>
     <string name="snack_published_as_ranking">O listenin sizin sıralamanız olarak yayınlandı. Akışta ikinci bir liste görünmez.</string>
     <string name="snack_published_under_review">Kaydedildi. Başkaları görmeden önce bir moderatörü bekliyor.</string>
+    <string name="snack_target_is_staff">Bu listenin yazarı bir moderatör ya da sahibi. Bu listeyle ilgili yalnızca sahibi işlem yapabilir.</string>
 </resources>

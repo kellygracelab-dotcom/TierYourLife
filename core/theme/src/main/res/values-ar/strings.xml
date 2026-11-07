@@ -47,4 +47,5 @@
     <string name="tier_lists_title">قوائمك</string>
     <string name="snack_published_as_ranking">منشورة كترتيبك لتلك القائمة. لا تظهر قائمة ثانية في الخلاصة.</string>
     <string name="snack_published_under_review">تم الحفظ. تنتظر موافقة مشرف قبل أن يراها الآخرون.</string>
+    <string name="snack_target_is_staff">مؤلف هذه القائمة مشرف أو المالك. وحده المالك يستطيع اتخاذ إجراء بشأنها.</string>
 </resources>

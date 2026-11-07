@@ -809,4 +809,5 @@ private fun ModerationFailure.message(): Int = when (this) {
     ModerationFailure.NotKept -> R.string.moderation_not_kept
     ModerationFailure.NotMoved -> R.string.moderation_not_moved
     ModerationFailure.MovedNotDismissed -> R.string.moderation_moved_not_dismissed
+    ModerationFailure.TargetIsStaff -> ThemeR.string.snack_target_is_staff
 }

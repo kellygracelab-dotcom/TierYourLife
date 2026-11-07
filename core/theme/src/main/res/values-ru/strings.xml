@@ -39,4 +39,5 @@
     <string name="tier_lists_title">Ваши списки</string>
     <string name="snack_published_as_ranking">Опубликована как ваш рейтинг того списка. Второго списка в ленте не появится.</string>
     <string name="snack_published_under_review">Сохранено. Список ждёт модератора, прежде чем его увидят другие.</string>
+    <string name="snack_target_is_staff">Автор списка — модератор или владелец. Действовать здесь может только владелец.</string>
 </resources>

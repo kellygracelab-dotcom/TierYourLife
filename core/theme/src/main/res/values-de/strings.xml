@@ -31,4 +31,5 @@
     <string name="tier_lists_title">Deine Listen</string>
     <string name="snack_published_as_ranking">Draußen als deine Rangliste dieser Liste. Im Feed erscheint keine zweite Liste.</string>
     <string name="snack_published_under_review">Gespeichert. Sie wartet auf einen Moderator, bevor andere sie sehen können.</string>
+    <string name="snack_target_is_staff">Diese Liste stammt von einem Moderator oder dem Inhaber. Nur der Inhaber kann hier etwas tun.</string>
 </resources>

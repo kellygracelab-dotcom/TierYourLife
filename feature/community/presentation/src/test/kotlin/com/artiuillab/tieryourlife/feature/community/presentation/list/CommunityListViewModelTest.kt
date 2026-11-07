@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefusal
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.TargetIsStaff
 import com.artiuillab.tieryourlife.feature.community.domain.model.TooManyFollowed
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
@@ -464,6 +465,18 @@ class CommunityListViewModelTest {
         assertTrue(tiers.templates.isEmpty())
         assertTrue(preferences.hiddenListIds().isEmpty())
         assertTrue(community.reported.isEmpty())
+    }
+
+    @Test
+    fun aModeratorReportingAListByStaff_isToldOnlyTheOwnerCan() = runBlocking {
+        val preferences = FakeAppPreferences()
+        val viewModel = viewModel(community = TestCommunity(reportRefusal = TargetIsStaff()), preferences = preferences)
+        viewModel.state.firstWithin { it is CommunityListUiState.Success }
+
+        viewModel.report(ReportReason.Spam, null)
+
+        assertEquals(UserMessage.TargetIsStaff, withTimeout(5_000) { viewModel.userMessages.first() })
+        assertTrue("back in the feed", preferences.hiddenListIds().isEmpty())
     }
 
     private fun ownCommunity(anonymous: Boolean = false, unpublishFails: Boolean = false) = TestCommunity(

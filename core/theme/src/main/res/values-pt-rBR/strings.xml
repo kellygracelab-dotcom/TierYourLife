@@ -35,4 +35,5 @@
     <string name="tier_lists_title">Suas listas</string>
     <string name="snack_published_as_ranking">Publicada como seu ranking daquela lista. O feed não mostra uma segunda lista.</string>
     <string name="snack_published_under_review">Salva. Ela espera um moderador antes que outras pessoas possam vê-la.</string>
+    <string name="snack_target_is_staff">O autor é um moderador ou o dono. Só o dono pode agir sobre esta lista.</string>
 </resources>

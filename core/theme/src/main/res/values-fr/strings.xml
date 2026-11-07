@@ -35,4 +35,5 @@
     <string name="tier_lists_title">Vos listes</string>
     <string name="snack_published_as_ranking">Publiée comme votre classement de cette liste. Aucune seconde liste n’apparaît dans le fil.</string>
     <string name="snack_published_under_review">Enregistrée. Elle attend un modérateur avant que d’autres puissent la voir.</string>
+    <string name="snack_target_is_staff">Son auteur est un modérateur ou le propriétaire. Seul le propriétaire peut agir sur cette liste.</string>
 </resources>

@@ -21,8 +21,17 @@ fun ActionFailedSnackbar(messages: Flow<UserMessage>, modifier: Modifier = Modif
     val hostState = remember { SnackbarHostState() }
     val failed = stringResource(R.string.snack_action_failed)
     val underReview = stringResource(R.string.snack_published_under_review)
+    val staff = stringResource(R.string.snack_target_is_staff)
     LaunchedEffect(messages) {
-        messages.collect { hostState.showSnackbar(if (it == UserMessage.PublishedUnderReview) underReview else failed) }
+        messages.collect {
+            hostState.showSnackbar(
+                when (it) {
+                    UserMessage.PublishedUnderReview -> underReview
+                    UserMessage.TargetIsStaff -> staff
+                    else -> failed
+                },
+            )
+        }
     }
     SnackbarHost(
         hostState = hostState,

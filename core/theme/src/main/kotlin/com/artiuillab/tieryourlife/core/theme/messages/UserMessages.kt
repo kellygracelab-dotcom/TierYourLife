@@ -20,6 +20,9 @@ enum class UserMessage {
 
     /** The list was kept, but it waits for a moderator before anyone else can see it. */
     PublishedUnderReview,
+
+    /** A moderator reported a list by staff, which only the owner may judge. */
+    TargetIsStaff,
 }
 
 class UserMessages {

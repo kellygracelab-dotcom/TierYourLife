@@ -463,7 +463,12 @@ private fun ListSnackbar(
     val undo by rememberUpdatedState(onUndoStartFromTheirs)
     val leave by rememberUpdatedState(onTakenDown)
     val openBoard by rememberUpdatedState(onOpenBoard)
-    LaunchedEffect(userMessages) { userMessages.collect { host.showSnackbar(resources.getString(ThemeR.string.snack_action_failed)) } }
+    LaunchedEffect(userMessages) {
+        userMessages.collect {
+            val text = if (it == UserMessage.TargetIsStaff) ThemeR.string.snack_target_is_staff else ThemeR.string.snack_action_failed
+            host.showSnackbar(resources.getString(text))
+        }
+    }
     LaunchedEffect(rankingNotices) {
         rankingNotices.collect { notice ->
             when (notice) {

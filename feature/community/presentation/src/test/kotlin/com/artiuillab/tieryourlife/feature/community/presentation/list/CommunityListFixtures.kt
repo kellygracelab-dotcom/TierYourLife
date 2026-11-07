@@ -54,6 +54,7 @@ internal class TestCommunity(
     private val arrangement: List<Int?> = emptyList(),
     private val unpublishFails: Boolean = false,
     private val holdOpen: Boolean = false,
+    private val reportRefusal: Throwable? = null,
 ) : FakeCommunityRepository() {
     val unpublished = mutableListOf<String>()
 
@@ -93,6 +94,7 @@ internal class TestCommunity(
     }
 
     override suspend fun report(publishedId: String, reason: ReportReason, note: String?): Result<Unit> {
+        reportRefusal?.let { return Result.failure(it) }
         reported += publishedId
         return Result.success(Unit)
     }

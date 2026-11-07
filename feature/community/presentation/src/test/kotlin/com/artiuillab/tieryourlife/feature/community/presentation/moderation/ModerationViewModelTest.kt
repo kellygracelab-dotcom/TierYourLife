@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityReposit
 import com.artiuillab.tieryourlife.feature.community.domain.model.BanLength
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
+import com.artiuillab.tieryourlife.feature.community.domain.model.TargetIsStaff
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -171,6 +172,25 @@ class ModerationViewModelTest {
     }
 
     @Test
+    fun aListByStaff_saysOnlyTheOwnerCanAct_andKeepsTheRow() = runBlocking {
+        val viewModel = ModerationViewModel(FakeModerationRepository(twoAboutOneList(), actionsFail = true, failure = { TargetIsStaff() }))
+        viewModel.state.firstWithin { it is ModerationUiState.Ready }
+
+        viewModel.takeDown("a", BanLength.Week)
+        viewModel.confirmTakeDown()
+        assertEquals(ModerationFailure.TargetIsStaff, withTimeout(5_000) { viewModel.failed.first() })
+        viewModel.state.firstWithin { it.isSettled() }
+        viewModel.dismiss("a")
+        assertEquals(ModerationFailure.TargetIsStaff, withTimeout(5_000) { viewModel.failed.first() })
+        viewModel.state.firstWithin { it.isSettled() }
+        viewModel.move("a", ListCategory.Food.id)
+        assertEquals(ModerationFailure.TargetIsStaff, withTimeout(5_000) { viewModel.failed.first() })
+
+        val still = viewModel.state.firstWithin { it.isSettled() } as ModerationUiState.Ready
+        assertEquals(listOf("a"), still.reports.map { it.listId })
+    }
+
+    @Test
     fun anActionThatGoesThrough_saysNothingFailed() = runBlocking {
         val viewModel = ModerationViewModel(FakeModerationRepository(twoAboutOneList() + about("b")))
         viewModel.state.firstWithin { it is ModerationUiState.Ready }
@@ -203,13 +223,14 @@ private class FakeModerationRepository(
     private val readable: Boolean = true,
     private val actionsFail: Boolean = false,
     private val dismissFails: Boolean = false,
+    private val failure: () -> Throwable = { IllegalStateException("offline") },
 ) : FakeCommunityRepository() {
     val takenDown = mutableListOf<String>()
     val dismissed = mutableListOf<String>()
     val moved = mutableListOf<Pair<String, String>>()
 
     override suspend fun moveList(publishedId: String, category: String, topicId: String?): Result<Unit> {
-        if (actionsFail) return Result.failure(IllegalStateException("offline"))
+        if (actionsFail) return Result.failure(failure())
         moved += publishedId to category
         return Result.success(Unit)
     }
@@ -218,13 +239,13 @@ private class FakeModerationRepository(
         if (readable) Result.success(queue) else Result.failure(IllegalStateException("not yours"))
 
     override suspend fun takeDown(publishedId: String, ban: BanLength?): Result<Unit> {
-        if (actionsFail) return Result.failure(IllegalStateException("offline"))
+        if (actionsFail) return Result.failure(failure())
         takenDown += publishedId
         return Result.success(Unit)
     }
 
     override suspend fun dismissReports(publishedId: String): Result<Unit> {
-        if (actionsFail || dismissFails) return Result.failure(IllegalStateException("offline"))
+        if (actionsFail || dismissFails) return Result.failure(failure())
         dismissed += publishedId
         return Result.success(Unit)
     }

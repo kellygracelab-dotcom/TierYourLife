@@ -39,4 +39,5 @@
     <string name="tier_lists_title">Twoje listy</string>
     <string name="snack_published_as_ranking">Opublikowana jako twój ranking tej listy. W kanale nie pojawia się druga lista.</string>
     <string name="snack_published_under_review">Zapisana. Czeka na moderatora, zanim inni będą mogli ją zobaczyć.</string>
+    <string name="snack_target_is_staff">Autorem jest moderator lub właściciel. Tylko właściciel może zająć się tą listą.</string>
 </resources>
