@@ -53,6 +53,10 @@
     <string name="merge_title">Tableros hechos sin cuenta</string>
     <string name="merge_body">Este teléfono tiene %1$s que hiciste sin cuenta. ¿Pasarlos a la cuenta %2$s?</string>
     <string name="merge_footnote">Si se quedan en el teléfono, aparecen siempre que no hayas iniciado sesión. No se elimina nada en ningún caso.</string>
+    <string name="merge_held_title">Tableros de una cuenta de la que se cerró tu sesión</string>
+    <string name="merge_held_body">Este teléfono tiene %1$s de una cuenta de la que se cerró tu sesión. ¿Copiarlos a la cuenta %2$s?</string>
+    <string name="merge_held_footnote">Los tableros siguen en el teléfono y vuelven a esa cuenta cuando vuelvas a iniciar sesión en ella. No se elimina nada.</string>
+    <string name="merge_held_action_copy_in">Copiarlos a la cuenta %1$s</string>
     <string name="merge_name_suffix">(de este teléfono)</string>
     <string name="account_sign_out_title">¿Cerrar sesión?</string>
     <string name="account_sign_out_helper">Tus tableros siguen en tu cuenta y en este teléfono, ocultos hasta que vuelvas a iniciar sesión. Los créditos y las compras te esperan aquí.</string>
@@ -62,6 +66,7 @@
     <string name="account_delete_keeps_local">Los tableros de este teléfono se quedan donde están.</string>
     <string name="account_delete_confirm">Eliminar para siempre</string>
     <string name="account_error_not_deleted">La cuenta no se eliminó. Inténtalo de nuevo.</string>
+    <string name="account_error_boards_not_copied">Los tableros no se copiaron. Siguen en el teléfono.</string>
     <string name="account_face_position_title">Coloca tu foto</string>
     <string name="account_face_position_body">Arrastra la imagen y pellizca para acercar. El círculo es lo que verán los demás.</string>
     <string name="account_face_position_use">Usar esta</string>

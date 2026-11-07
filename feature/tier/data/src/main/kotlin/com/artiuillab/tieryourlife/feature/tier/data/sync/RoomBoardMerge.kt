@@ -5,15 +5,20 @@ import com.artiuillab.tieryourlife.core.settings.ThePerson
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.IncomingTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.OwnerDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
 import java.net.HttpURLConnection
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -46,14 +51,70 @@ class RoomBoardMerge internal constructor(
 
     override fun hold() = ownership.hold()
 
-    override suspend fun guestBoards(): Int = owners.guestBoardsInUse().size
+    /** Not boards held for an account: the one signed into has them back first, and no other is asked about them. */
+    override suspend fun guestBoards(): Int {
+        ownership.current()?.let { ownership.reclaim(it) }
+        return ownership.guestBoardsInUse().size
+    }
 
-    override suspend fun moveIn(fromThisPhone: String?) {
-        if (fromThisPhone != null) renameClashes(fromThisPhone)
+    /** Under the lock, as holding a lost session's boards is: neither may land between the other's read and write. */
+    override suspend fun moveIn(fromThisPhone: String?) = lock.withLock {
+        if (fromThisPhone != null) renameClashes(fromThisPhone, ownership.guestBoardsInUse())
         ownership.release(moveGuestBoardsIn = true)
     }
 
     override suspend fun keepHere() = ownership.release(moveGuestBoardsIn = false)
+
+    override suspend fun heldBoards(): Int = ownership.heldForOthersInUse().size
+
+    /** Copies under new uids: the boards themselves stay held for their account, records and all. */
+    override suspend fun copyHeldIn(fromThisPhone: String?) = lock.withLock {
+        val owner = ownership.current() ?: return@withLock
+        val boards = ownership.heldForOthersInUse()
+        if (boards.isEmpty()) return@withLock
+        val theirs = if (fromThisPhone != null) accountTitles() else emptySet()
+        val uids = boards.map { it.uid }
+        if (!ownership.markCopied(owner, uids)) {
+            Timber.w("Could not write down what was copied; nothing is")
+            return@withLock
+        }
+        var copied = false
+        try {
+            dao.together {
+                boards.forEach { board ->
+                    val title = if (fromThisPhone != null && board.title in theirs) withSuffix(board.title, fromThisPhone) else board.title
+                    copyFor(owner, board, title)
+                }
+            }
+            copied = true
+        } finally {
+            // Nothing was copied: marked so, they would never be offered again.
+            if (!copied) withContext(NonCancellable) { ownership.unmarkCopied(owner, uids) }
+        }
+        Timber.i("Copied %d board(s) of an account signed out of into this one", boards.size)
+        ownership.announceMove()
+    }
+
+    /** As a board made here: nothing published, nothing ranked, and every uid its own. */
+    private suspend fun copyFor(owner: String, board: TierListEntity, title: String) {
+        val items = dao.itemsOf(board.id).groupBy { it.tierId }
+        val tiers = dao.tiersOf(board.id).map { tier ->
+            IncomingTier(
+                tier = tier.copy(id = 0, tierListId = 0, uid = UUID.randomUUID().toString()),
+                items = items[tier.id].orEmpty().map { it.copy(id = 0, tierId = 0, uid = UUID.randomUUID().toString()) },
+            )
+        }
+        val copy = board.copy(
+            id = 0,
+            uid = UUID.randomUUID().toString(),
+            title = title,
+            ownerUid = owner,
+            publishedId = null,
+            publishedFingerprint = null,
+            rankingOf = null,
+        )
+        dao.addBoard(copy, tiers)
+    }
 
     override suspend fun eraseKeepingBoards(
         account: String,
@@ -65,6 +126,7 @@ class RoomBoardMerge internal constructor(
         when {
             result.isSuccess || accounts.currentAccountExists() == false -> {
                 keepBoardsOf(account)
+                preferences.setLastSignedIn(null)
                 signOut()
                 Result.success(Unit)
             }
@@ -90,6 +152,7 @@ class RoomBoardMerge internal constructor(
                 preferences.setErasureUnderWay(null)
             }
         }
+        preferences.setLastSignedIn(null)
         signOut()
     }
 
@@ -106,6 +169,7 @@ class RoomBoardMerge internal constructor(
         when (accounts.currentAccountExists()) {
             false -> {
                 keepBoardsOf(mark.account)
+                preferences.setLastSignedIn(null)
                 accounts.signOut()
                 thePerson.forget()
             }
@@ -115,8 +179,12 @@ class RoomBoardMerge internal constructor(
     }
 
     private suspend fun keepBoardsOf(account: String) {
+        // Held ones too: whatever it left on this phone is the phone's own now, and no longer waits for it.
+        ownership.reclaim(account)
+        ownership.forgetCopiesInto(account)
         val kept = owners.keepBoardsOfDeleted(account)
         preferences.setErasureUnderWay(null)
+        if (preferences.lastSignedIn() == account) preferences.setLastSignedIn(null)
         Timber.i("Kept %d board(s) of the deleted account on this phone", kept)
         ownership.announceMove()
     }
@@ -126,21 +194,22 @@ class RoomBoardMerge internal constructor(
      * seen, so the next run creates them beside what is there. Only the two
      * sets have to be made tellable apart first.
      */
-    private suspend fun renameClashes(fromThisPhone: String) {
-        val theirs = try {
-            api.index().boards.filterNot { it.deleted }.map { it.title }.toSet()
-        } catch (e: IOException) {
-            // Both sets are still kept; only the renaming that tells them apart is lost.
-            Timber.w(e, "Could not read the account's titles; boards keep their names")
-            return
-        } catch (e: HttpException) {
-            Timber.w(e, "The account would not give its titles; boards keep their names")
-            return
-        }
-
-        owners.guestBoardsInUse()
+    private suspend fun renameClashes(fromThisPhone: String, boards: List<TierListEntity>) {
+        val theirs = accountTitles()
+        boards
             .filter { board -> board.title in theirs }
             .forEach { board -> dao.renameBoard(board.uid, withSuffix(board.title, fromThisPhone)) }
+    }
+
+    /** None when they cannot be read: both sets are still kept, only the renaming that tells them apart is lost. */
+    private suspend fun accountTitles(): Set<String> = try {
+        api.index().boards.filterNot { it.deleted }.map { it.title }.toSet()
+    } catch (e: IOException) {
+        Timber.w(e, "Could not read the account's titles; boards keep their names")
+        emptySet()
+    } catch (e: HttpException) {
+        Timber.w(e, "The account would not give its titles; boards keep their names")
+        emptySet()
     }
 }
 

@@ -22,9 +22,9 @@ data class AccountUiState(
     /** True while the account is being removed; nothing else can be pressed. */
     val deleting: Boolean = false,
     /**
-     * Set only while the question is open: somebody has signed into an account
-     * used before while this phone has boards made without one, and nothing
-     * has been moved or sent yet.
+     * Set only while a question is open: somebody has signed in while this
+     * phone has boards made without an account, or held for one it was signed
+     * out of, and nothing has been moved or sent yet.
      */
     val merge: GuestBoardsQuestion? = null,
 ) {
@@ -46,8 +46,12 @@ data class PendingFace(val shown: String?, val crop: FaceCrop? = null)
 
 data class FaceToPosition(val sourceUri: String, val fromGallery: Boolean)
 
-/** [boards] made without an account, and the account they could move [into], by its address. */
-data class GuestBoardsQuestion(val boards: Int, val into: String?)
+/**
+ * [boards] made without an account, and the account they could move [into], by
+ * its address. [fromAnotherAccount]: instead the boards of an account this phone
+ * was signed out of, asked about on their own and first.
+ */
+data class GuestBoardsQuestion(val boards: Int, val into: String?, val fromAnotherAccount: Boolean = false)
 
 enum class AccountNotice {
     SignInFailed,
@@ -61,4 +65,7 @@ enum class AccountNotice {
 
     /** The account is still there. Saying nothing would read as "it worked". */
     NotDeleted,
+
+    /** Nothing was copied; they stay on this phone and are offered again. */
+    BoardsNotCopied,
 }

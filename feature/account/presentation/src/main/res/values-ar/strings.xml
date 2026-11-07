@@ -62,6 +62,10 @@
     <string name="merge_title">لوحات أُنشئت بلا حساب</string>
     <string name="merge_body">على هذا الهاتف %1$s أنشأتها بلا حساب. هل تنقلها إلى حساب %2$s؟</string>
     <string name="merge_footnote">ما تبقيه على الهاتف يظهر كلما كنت خارج حسابك. لا يُحذف شيء في الحالتين.</string>
+    <string name="merge_held_title">لوحات من حساب سُجّل خروجك منه</string>
+    <string name="merge_held_body">على هذا الهاتف %1$s من حساب سُجّل خروجك منه. هل تنسخها إلى حساب %2$s؟</string>
+    <string name="merge_held_footnote">تبقى اللوحات نفسها على الهاتف وتعود إلى ذلك الحساب حين تسجّل الدخول إليه مجددًا. لا يُحذف شيء.</string>
+    <string name="merge_held_action_copy_in">انسخها إلى حساب %1$s</string>
     <string name="merge_name_suffix">(من هذا الهاتف)</string>
     <string name="account_sign_out_title">تسجيل الخروج؟</string>
     <string name="account_sign_out_helper">تبقى لوحاتك في حسابك وعلى هذا الهاتف، مخفية حتى تسجّل الدخول مجددًا. الأرصدة والمشتريات تنتظرك هنا.</string>
@@ -71,6 +75,7 @@
     <string name="account_delete_keeps_local">تبقى اللوحات الموجودة على هذا الهاتف كما هي.</string>
     <string name="account_delete_confirm">حذف نهائي</string>
     <string name="account_error_not_deleted">لم يُحذف الحساب. حاول مرة أخرى.</string>
+    <string name="account_error_boards_not_copied">لم تُنسخ اللوحات. لا تزال على الهاتف.</string>
     <string name="account_face_position_title">ضع صورتك</string>
     <string name="account_face_position_body">اسحب الصورة وقرّب بإصبعين. الدائرة هي ما يراه الآخرون.</string>
     <string name="account_face_position_use">استخدم هذه</string>

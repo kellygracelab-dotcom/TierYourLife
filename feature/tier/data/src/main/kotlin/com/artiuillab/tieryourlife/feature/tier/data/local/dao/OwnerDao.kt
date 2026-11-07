@@ -6,7 +6,7 @@ import androidx.room.Transaction
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.BoardSyncEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 
-/** Whose each board is. The one place boards change hands. */
+/** Whose each board is: settling the ones from before owners, and keeping a deleted account's. */
 @Dao
 interface OwnerDao {
 
@@ -38,14 +38,6 @@ interface OwnerDao {
             forgetOtherAccountsRecords(uid, owner)
         }
     }
-
-    /** Boards made without an account, trash left out: what the question about them counts. */
-    @Query("SELECT * FROM tier_lists WHERE ownerUid IS NULL AND deletedAt IS NULL")
-    suspend fun guestBoardsInUse(): List<TierListEntity>
-
-    /** The trash goes with them: it is part of the same library. */
-    @Query("UPDATE tier_lists SET ownerUid = :owner WHERE ownerUid IS NULL")
-    suspend fun moveGuestBoardsTo(owner: String): Int
 
     /** Its published lists and rankings went with the account, so no board here is out as one any more. */
     @Query(

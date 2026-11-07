@@ -100,6 +100,32 @@ interface AppPreferences {
     /** Written before the request leaves, so a reply lost or a phone killed meanwhile still finds it. */
     fun setErasureUnderWay(mark: String?)
 
+    /**
+     * The `recordKey` of whoever was signed in, until they sign out by choice.
+     * Still there with nobody signed in, the session was ended for them.
+     */
+    fun lastSignedIn(): String?
+
+    fun setLastSignedIn(account: String?)
+
+    /**
+     * Board uids by the `recordKey` of the account whose session ended without
+     * a sign-out: only that account takes them back, and no other is handed them.
+     */
+    fun heldBoards(): Map<String, Set<String>>
+
+    /** False when it could not be written: the boards must not be let go on a promise nobody kept. */
+    fun setHeldBoards(held: Map<String, Set<String>>): Boolean
+
+    /**
+     * Held boards copied at the person's word, as uids of the originals by the
+     * `recordKey` of the account they were copied into: not offered to it again.
+     */
+    fun heldBoardsCopied(): Map<String, Set<String>>
+
+    /** False when it could not be written: no copy is made without it, or the next sign-in would make a second. */
+    fun setHeldBoardsCopied(copied: Map<String, Set<String>>): Boolean
+
     /** By uid rather than one flag: a second conflict months later is news again. */
     fun conflictsSeen(): Set<String>
 

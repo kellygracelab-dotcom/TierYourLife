@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.core.settings
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -20,6 +21,10 @@ private const val KEY_LAST_SYNCED_AT = "last_synced_at"
 private const val KEY_CONFLICTS_SEEN = "conflicts_seen"
 private const val KEY_BOARD_REFUSAL = "board_refusal"
 private const val KEY_ERASURE_UNDER_WAY = "erasure_under_way"
+private const val KEY_LAST_SIGNED_IN = "last_signed_in"
+private const val KEY_HELD_BOARDS = "held_boards"
+private const val KEY_HELD_BOARDS_COPIED = "held_boards_copied"
+private const val HELD_SEPARATOR = "\n"
 private const val KEY_LAST_KNOWN_REPORTS = "last_known_reports"
 private const val KEY_LAST_KNOWN_TRASH = "last_known_trash"
 private const val KEY_LAST_KNOWN_STORED_BYTES = "last_known_stored_bytes"
@@ -181,6 +186,40 @@ class SharedPreferencesAppPreferences @Inject constructor(
         prefs.edit(commit = true) {
             if (mark == null) remove(KEY_ERASURE_UNDER_WAY) else putString(KEY_ERASURE_UNDER_WAY, mark)
         }
+    }
+
+    override fun lastSignedIn(): String? = prefs.getString(KEY_LAST_SIGNED_IN, null)
+
+    override fun setLastSignedIn(account: String?) {
+        // Committed: a sign-out by choice clears it just before the process may end.
+        prefs.edit(commit = true) {
+            if (account == null) remove(KEY_LAST_SIGNED_IN) else putString(KEY_LAST_SIGNED_IN, account)
+        }
+    }
+
+    override fun heldBoards(): Map<String, Set<String>> = uidsByAccount(KEY_HELD_BOARDS)
+
+    // Committed: written just before the boards are let go, and the only thing saying whose they were.
+    override fun setHeldBoards(held: Map<String, Set<String>>): Boolean = commitUidsByAccount(KEY_HELD_BOARDS, held)
+
+    override fun heldBoardsCopied(): Map<String, Set<String>> = uidsByAccount(KEY_HELD_BOARDS_COPIED)
+
+    // Committed: written before the copies are made.
+    override fun setHeldBoardsCopied(copied: Map<String, Set<String>>): Boolean = commitUidsByAccount(KEY_HELD_BOARDS_COPIED, copied)
+
+    private fun uidsByAccount(key: String): Map<String, Set<String>> =
+        stored(key)
+            .mapNotNull { entry -> entry.split(HELD_SEPARATOR, limit = 2).takeIf { it.size == 2 } }
+            .groupBy({ it[0] }, { it[1] })
+            .mapValues { (_, uids) -> uids.toSet() }
+
+    // The KTX edit {} drops what commit() answers, and here the answer decides whether boards are let go or copied.
+    @SuppressLint("UseKtx")
+    private fun commitUidsByAccount(key: String, uids: Map<String, Set<String>>): Boolean {
+        val entries = uids.flatMapTo(mutableSetOf()) { (account, ofIt) -> ofIt.map { "$account$HELD_SEPARATOR$it" } }
+        val editor = prefs.edit()
+        if (entries.isEmpty()) editor.remove(key) else editor.putStringSet(key, entries)
+        return editor.commit()
     }
 
     override fun conflictsSeen(): Set<String> = stored(KEY_CONFLICTS_SEEN)

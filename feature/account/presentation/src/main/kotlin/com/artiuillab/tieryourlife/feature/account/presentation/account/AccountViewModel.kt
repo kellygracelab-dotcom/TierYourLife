@@ -154,6 +154,21 @@ class AccountViewModel @Inject constructor(
      */
     private suspend fun settleGuestBoards(outcome: SignInOutcome) {
         val signedIn = repository.current() as? Account.SignedIn
+        val signedInNow = outcome is SignInOutcome.Success || outcome is SignInOutcome.SignedInToExistingAccount
+        val held = if (signedIn != null && signedInNow) countHeldBoards() else 0
+        if (signedIn != null && held > 0) {
+            afterHeldBoards = outcome
+            _state.update { it.copy(merge = GuestBoardsQuestion(boards = held, into = signedIn.email, fromAnotherAccount = true)) }
+        } else {
+            settleBoardsMadeWithoutAnAccount(outcome, signedIn)
+        }
+    }
+
+    private suspend fun countHeldBoards(): Int = runSuspendCatching { merge.heldBoards() }
+        .onFailure { Timber.w(it, "Could not count the boards of an account signed out of") }
+        .getOrDefault(0)
+
+    private suspend fun settleBoardsMadeWithoutAnAccount(outcome: SignInOutcome, signedIn: Account.SignedIn?) {
         when {
             signedIn == null -> merge.keepHere()
             outcome is SignInOutcome.Success -> merge.moveIn(fromThisPhone = null)
@@ -172,14 +187,35 @@ class AccountViewModel @Inject constructor(
     }
 
     fun moveGuestBoardsIn(fromThisPhone: String) {
+        val held = _state.value.merge?.fromAnotherAccount == true
         _state.update { it.copy(merge = null) }
-        viewModelScope.launch { merge.moveIn(fromThisPhone) }
+        viewModelScope.launch {
+            if (held) {
+                runSuspendCatching { merge.copyHeldIn(fromThisPhone) }.onFailure { failure ->
+                    Timber.w(failure, "Copying the boards of an account signed out of failed")
+                    _state.update { it.copy(notice = AccountNotice.BoardsNotCopied) }
+                }
+                askAfterHeldBoards()
+            } else {
+                merge.moveIn(fromThisPhone)
+            }
+        }
     }
 
     /** Closing the question is this answer too: nothing moves, nothing is lost. */
     fun keepGuestBoardsHere() {
+        val held = _state.value.merge?.fromAnotherAccount == true
         _state.update { it.copy(merge = null) }
-        viewModelScope.launch { merge.keepHere() }
+        viewModelScope.launch { if (held) askAfterHeldBoards() else merge.keepHere() }
+    }
+
+    /** The sign-in whose question about another account's boards came first. */
+    private var afterHeldBoards: SignInOutcome? = null
+
+    private suspend fun askAfterHeldBoards() {
+        val outcome = afterHeldBoards
+        afterHeldBoards = null
+        if (outcome == null) merge.keepHere() else settleBoardsMadeWithoutAnAccount(outcome, repository.current() as? Account.SignedIn)
     }
 
     private fun finish(notice: AccountNotice?) {

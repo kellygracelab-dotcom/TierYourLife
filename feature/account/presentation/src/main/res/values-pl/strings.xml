@@ -56,6 +56,10 @@
     <string name="merge_title">Tablice bez konta</string>
     <string name="merge_body">Na tym telefonie są tablice zrobione bez konta (%1$s). Przenieść je na konto %2$s?</string>
     <string name="merge_footnote">Zostawione na telefonie widać zawsze, gdy nie jesteś zalogowany. Nic nie zostaje usunięte w żadnym przypadku.</string>
+    <string name="merge_held_title">Tablice z konta, z którego cię wylogowano</string>
+    <string name="merge_held_body">Na tym telefonie są tablice z konta, z którego cię wylogowano (%1$s). Skopiować je na konto %2$s?</string>
+    <string name="merge_held_footnote">Same tablice zostają na telefonie i wrócą na tamto konto, gdy znów się na nie zalogujesz. Nic nie zostaje usunięte.</string>
+    <string name="merge_held_action_copy_in">Skopiuj na konto %1$s</string>
     <string name="merge_name_suffix">(z tego telefonu)</string>
     <string name="account_sign_out_title">Wylogować?</string>
     <string name="account_sign_out_helper">Tablice zostają na koncie i na tym telefonie, ukryte do ponownego zalogowania. Kredyty i zakupy czekają tu na ciebie.</string>
@@ -65,6 +69,7 @@
     <string name="account_delete_keeps_local">Listy na tym telefonie zostają na miejscu.</string>
     <string name="account_delete_confirm">Usuń na zawsze</string>
     <string name="account_error_not_deleted">Konto nie zostało usunięte. Spróbuj ponownie.</string>
+    <string name="account_error_boards_not_copied">Tablice nie zostały skopiowane. Nadal są na telefonie.</string>
     <string name="account_face_position_title">Ustaw zdjęcie</string>
     <string name="account_face_position_body">Przeciągnij obraz i przybliż dwoma palcami. Okrąg to to, co zobaczą inni.</string>
     <string name="account_face_position_use">Użyj</string>

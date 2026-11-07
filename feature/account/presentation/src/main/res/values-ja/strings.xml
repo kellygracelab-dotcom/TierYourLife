@@ -47,6 +47,10 @@
     <string name="merge_title">アカウントなしで作ったボード</string>
     <string name="merge_body">この端末には、アカウントなしで作った%1$sがあります。%2$sに移しますか？</string>
     <string name="merge_footnote">端末に残したボードは、ログアウト中に表示されます。どちらを選んでも何も削除されません。</string>
+    <string name="merge_held_title">ログアウトされたアカウントのボード</string>
+    <string name="merge_held_body">この端末には、ログアウトされたアカウントの%1$sがあります。%2$sにコピーしますか？</string>
+    <string name="merge_held_footnote">ボード自体は端末に残り、そのアカウントにもう一度ログインすると戻ります。何も削除されません。</string>
+    <string name="merge_held_action_copy_in">%1$sにコピー</string>
     <string name="merge_name_suffix">（この端末から）</string>
     <string name="account_sign_out_title">ログアウトしますか？</string>
     <string name="account_sign_out_helper">ボードはアカウントとこの端末に残り、再びログインするまで非表示になります。クレジットと購入はここで待っています。</string>
@@ -56,6 +60,7 @@
     <string name="account_delete_keeps_local">この端末のボードはそのまま残ります。</string>
     <string name="account_delete_confirm">完全に削除</string>
     <string name="account_error_not_deleted">アカウントを削除できませんでした。もう一度お試しください。</string>
+    <string name="account_error_boards_not_copied">ボードをコピーできませんでした。ボードは端末に残っています。</string>
     <string name="account_face_position_title">顔の位置を決める</string>
     <string name="account_face_position_body">画像をドラッグし、ピンチで拡大します。円の中がほかの人に見える部分です。</string>
     <string name="account_face_position_use">これを使う</string>

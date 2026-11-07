@@ -185,9 +185,7 @@ class RoomTierRepository internal constructor(
         val copyPath = imageStore.copyToInternalStorage(sourceUri)
         val previousImage = dao.getTierItemImageById(itemId)
         dao.updateTierItemImage(itemId, copyPath)
-        if (previousImage != null) {
-            imageStore.deleteCopy(previousImage)
-        }
+        if (previousImage != null) letGoOfPicture(previousImage)
     }
 
     override suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {

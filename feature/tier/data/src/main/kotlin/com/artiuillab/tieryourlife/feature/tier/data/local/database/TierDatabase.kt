@@ -4,6 +4,7 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.GuestBoardsDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.OwnerDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.BoardSyncEntity
@@ -39,4 +40,6 @@ abstract class TierDatabase : RoomDatabase() {
     abstract fun boardSyncDao(): BoardSyncDao
 
     abstract fun ownerDao(): OwnerDao
+
+    abstract fun guestBoardsDao(): GuestBoardsDao
 }

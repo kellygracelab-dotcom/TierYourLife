@@ -27,6 +27,7 @@
     <string name="account_delete_keeps_local">The boards on this phone stay where they are.</string>
     <string name="account_delete_confirm">Delete for good</string>
     <string name="account_error_not_deleted">The account was not deleted. Try again.</string>
+    <string name="account_error_boards_not_copied">The boards were not copied. They are still on this phone.</string>
     <string name="account_sign_out_body_1">Your boards stay in %1$s and on this phone, hidden until you sign in again. Signed out, you’ll see only boards made without an account.</string>
     <string name="account_sign_out_body_2">Credits and purchases wait for you here.</string>
     <string name="account_community_section">IN COMMUNITY</string>
@@ -58,6 +59,10 @@
     <string name="merge_title">Boards made without an account</string>
     <string name="merge_body">This phone has %1$s made without an account. Move them into %2$s?</string>
     <string name="merge_footnote">Kept on this phone, they show whenever you’re signed out. Nothing is deleted either way.</string>
+    <string name="merge_held_title">Boards from an account you were signed out of</string>
+    <string name="merge_held_body">This phone has %1$s from an account it was signed out of. Copy them into %2$s?</string>
+    <string name="merge_held_footnote">The boards themselves stay on this phone and go back to that account when you sign in to it again. Nothing is deleted.</string>
+    <string name="merge_held_action_copy_in">Copy them into %1$s</string>
     <string name="merge_name_suffix">(from this phone)</string>
     <string name="account_face_position_title">Place your face</string>
     <string name="account_face_position_body">Drag the picture and pinch to zoom. The circle is what people see.</string>

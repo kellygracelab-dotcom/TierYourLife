@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.di
 import android.content.Context
 import androidx.room.Room
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.GuestBoardsDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.OwnerDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_10_11
@@ -66,6 +67,10 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideOwnerDao(database: TierDatabase): OwnerDao = database.ownerDao()
+
+    @Provides
+    @Singleton
+    fun provideGuestBoardsDao(database: TierDatabase): GuestBoardsDao = database.guestBoardsDao()
 
     private const val DATABASE_NAME = "tier_your_life.db"
 }

@@ -65,7 +65,7 @@ class RelinkedListTest : SyncEngineBench() {
         val here = dao.boardByUid(board.uid)!!
         assertEquals("pub-1", here.publishedId)
         assertEquals(PublishFingerprint.UNKNOWN, here.publishedFingerprint)
-        val repository = RoomTierRepository(database.tierDao(), images, BoardOwnership(accounts, database.ownerDao(), preferences))
+        val repository = RoomTierRepository(database.tierDao(), images, BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences))
         assertTrue(repository.isKnownBehind(repository.getTierListById(here.id)!!))
     }
 }

@@ -99,6 +99,39 @@ class FakeAppPreferences(
         erasure = mark
     }
 
+    private var signedInLast: String? = null
+
+    override fun lastSignedIn(): String? = signedInLast
+
+    override fun setLastSignedIn(account: String?) {
+        signedInLast = account
+    }
+
+    private var held: Map<String, Set<String>> = emptyMap()
+
+    override fun heldBoards(): Map<String, Set<String>> = held
+
+    /** As a full disk would: nothing written, and said so. */
+    var heldBoardsWriteFails = false
+
+    override fun setHeldBoards(held: Map<String, Set<String>>): Boolean {
+        if (heldBoardsWriteFails) return false
+        this.held = held.filterValues { it.isNotEmpty() }
+        return true
+    }
+
+    private var copied: Map<String, Set<String>> = emptyMap()
+
+    var copiedWriteFails = false
+
+    override fun heldBoardsCopied(): Map<String, Set<String>> = copied
+
+    override fun setHeldBoardsCopied(copied: Map<String, Set<String>>): Boolean {
+        if (copiedWriteFails) return false
+        this.copied = copied.filterValues { it.isNotEmpty() }
+        return true
+    }
+
     override fun setBoardRefusal(account: String, refusal: String?) {
         if (refusal == null) refusals.remove(account) else refusals[account] = refusal
     }

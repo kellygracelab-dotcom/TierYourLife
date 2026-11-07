@@ -25,6 +25,22 @@ interface BoardMerge {
     suspend fun keepHere()
 
     /**
+     * Boards of another account this phone was signed out of without a
+     * sign-out by choice, the trash left out. They wait for that account, and
+     * are never part of the question about [guestBoards].
+     */
+    suspend fun heldBoards(): Int
+
+    /**
+     * The person has [heldBoards] copied into the signed-in account, under new
+     * uids and renamed as in [moveIn]; not asked about again. The boards
+     * themselves stay held, untouched, for the account they wait for. Nothing
+     * syncs yet: [moveIn] or [keepHere] still follows. Throws when the copies
+     * could not be made; they are offered again then.
+     */
+    suspend fun copyHeldIn(fromThisPhone: String?)
+
+    /**
      * Deletes [account] with [erase] and signs out with [signOut], no sync
      * running in between. Once it is gone, its boards on this phone, trash
      * included, become boards made without an account: the account was where
