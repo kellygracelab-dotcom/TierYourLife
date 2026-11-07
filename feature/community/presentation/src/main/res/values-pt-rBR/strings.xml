@@ -304,6 +304,8 @@
     <string name="community_picture_credit_line">%1$s — %2$s</string>
     <string name="community_ranking_list_changed">O autor mudou esta lista depois que você posicionou as cartas. Posicione de novo para mostrar seu ranking.</string>
     <string name="community_ranking_banned">Um moderador removeu uma das suas listas, então por enquanto você não pode mostrar rankings.</string>
+    <string name="community_ranking_own_list">Esta lista é sua, então não há um ranking seu para mostrar nela.</string>
+    <string name="community_ranking_list_gone">Esta lista não está mais disponível, então seu ranking não pode ser mostrado.</string>
     <string name="moderation_not_taken_down">Não removida: a lista continua pública. Tente de novo.</string>
     <string name="moderation_not_kept">Não foi possível manter a lista: as denúncias continuam abertas. Tente de novo.</string>
     <string name="moderation_not_moved">Não movida: a lista continua onde estava. Tente de novo.</string>

@@ -7,6 +7,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountN
 import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountUiState
 import com.artiuillab.tieryourlife.feature.account.presentation.account.FaceToPosition
 import com.artiuillab.tieryourlife.feature.account.presentation.account.PendingFace
+import com.artiuillab.tieryourlife.feature.community.domain.model.FaceRefused
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,7 +70,8 @@ internal class AccountFace(
     private fun copyOwnPicture(path: String) {
         state.update { it.copy(makingFace = true, pendingFace = PendingFace(shown = path)) }
         scope.launch {
-            wear(community.makeFace(path.substringAfterLast('/')).getOrNull(), chosen = true)
+            val made = community.makeFace(path.substringAfterLast('/'))
+            wear(made.getOrNull(), chosen = true, failure = made.failureNotice())
         }
     }
 
@@ -89,18 +91,17 @@ internal class AccountFace(
                 return@launch
             }
             state.update { it.copy(pendingFace = PendingFace(shown = prepared)) }
-            val address = facePhotos.upload(prepared)
+            val made = facePhotos.upload(prepared)
                 .onFailure { Timber.w(it, "The chosen photo did not go up") }
-                .getOrNull()
-                ?.let { pictureId -> community.makeFace(pictureId).getOrNull() }
-            wear(address, chosen = true)
+                .fold(onSuccess = { pictureId -> community.makeFace(pictureId) }, onFailure = { Result.failure(it) })
+            wear(made.getOrNull(), chosen = true, failure = made.failureNotice())
         }
     }
 
-    /** [chosen] and no [address]: the picture was refused or lost on the way, and the old face comes back. */
-    private suspend fun wear(address: String?, chosen: Boolean) {
+    /** [chosen] and no [address]: the picture was refused or lost on the way, [failure] says which, and the old face comes back. */
+    private suspend fun wear(address: String?, chosen: Boolean, failure: AccountNotice = AccountNotice.FaceNotMade) {
         if (chosen && address == null) {
-            state.update { it.copy(makingFace = false, pendingFace = null, notice = AccountNotice.FaceNotMade) }
+            state.update { it.copy(makingFace = false, pendingFace = null, notice = failure) }
             return
         }
         val saved = repository.setPhotoUrl(address)
@@ -114,3 +115,6 @@ internal class AccountFace(
         if (saved) afterChange()
     }
 }
+
+private fun Result<String>.failureNotice(): AccountNotice =
+    if (exceptionOrNull() is FaceRefused) AccountNotice.FaceNotMade else AccountNotice.FaceNotSaved

@@ -322,6 +322,8 @@
     <string name="community_picture_credit_line">%1$s — %2$s</string>
     <string name="community_ranking_list_changed">غيّر المؤلف هذه القائمة بعد أن رتّبت بطاقاتها. رتّبها من جديد لعرض ترتيبك.</string>
     <string name="community_ranking_banned">أزال مشرف إحدى قوائمك، لذا لا يمكنك عرض الترتيبات حاليًا.</string>
+    <string name="community_ranking_own_list">هذه القائمة لك، لذا لا يوجد ترتيب لك لعرضه عليها.</string>
+    <string name="community_ranking_list_gone">لم تعد هذه القائمة متاحة، لذا لا يمكن عرض ترتيبك.</string>
     <string name="moderation_not_taken_down">لم تُزَل: القائمة ما زالت عامة. أعد المحاولة.</string>
     <string name="moderation_not_kept">تعذّر إبقاء القائمة: البلاغات ما زالت مفتوحة. أعد المحاولة.</string>
     <string name="moderation_not_moved">لم تُنقل: القائمة في مكانها. أعد المحاولة.</string>

@@ -90,7 +90,10 @@ class KeptSectionCatalog(
                 now.copy(extra = now.extra + (found.section.id to found.section), merged = renamed)
             }
 
-            is SectionLookup.Merged -> state.update { it.copy(merged = it.merged + (id to found.into)) }
+            is SectionLookup.Merged -> state.update {
+                val topics = found.topic?.let { topic -> it.mergedTopics + (id to topic) } ?: it.mergedTopics
+                it.copy(merged = it.merged + (id to found.into), mergedTopics = topics)
+            }
             SectionLookup.Unknown -> state.update { it.copy(unknown = it.unknown + id) }
         }
         keep()

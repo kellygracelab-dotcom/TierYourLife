@@ -25,6 +25,7 @@
     <string name="account_action_cancel">Abbrechen</string>
     <string name="account_error_name_not_saved">Der Name konnte nicht gespeichert werden. Versuche es erneut.</string>
     <string name="account_error_face_not_made">Dieses Bild kann nicht dein Profilbild sein. Wähle ein anderes.</string>
+    <string name="account_error_face_not_saved">Konnte nicht speichern – der Server hat nicht geantwortet.</string>
     <plurals name="account_community_lists">
         <item quantity="one">%1$d öffentliche Liste</item>
         <item quantity="other">%1$d öffentliche Listen</item>

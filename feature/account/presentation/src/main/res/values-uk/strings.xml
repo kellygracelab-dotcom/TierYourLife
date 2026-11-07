@@ -25,6 +25,7 @@
     <string name="account_action_cancel">Скасувати</string>
     <string name="account_error_name_not_saved">Не вдалося зберегти імʼя. Спробуйте ще раз.</string>
     <string name="account_error_face_not_made">Ця картинка не може бути вашою аватаркою. Оберіть іншу.</string>
+    <string name="account_error_face_not_saved">Не вдалося зберегти — сервер не відповів.</string>
     <plurals name="account_community_lists">
         <item quantity="one">%1$d публічний список</item>
         <item quantity="few">%1$d публічних списки</item>

@@ -23,6 +23,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.summar
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.signedInFollows
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
@@ -228,6 +229,18 @@ class SectionViewModelTest {
         assertEquals(listOf("cars"), community.looked)
         assertEquals(41, state.stats?.listCount)
         assertTrue(community.asked.all { it.first == "cars" })
+    }
+
+    // A18: the topic it became was ignored, and only its section opened.
+    @Test
+    fun aLinkToASectionMergedIntoATopic_opensThatTopic() = runBlocking {
+        val community = Community(lookups = mapOf("autos" to SectionLookup.Merged("games", topic = "t7")))
+        val viewModel = viewModel(community, sectionId = "autos")
+
+        viewModel.open()
+        val opened = withTimeout(5_000) { viewModel.mergedIntoTopic.first() }
+
+        assertEquals(CommunityRoute.Topic(topicId = "t7", section = ListCategory.Games.id), opened)
     }
 
     @Test

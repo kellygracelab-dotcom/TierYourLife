@@ -153,4 +153,17 @@ class CommunityListRepublishedTest {
 
         assertEquals(RankingNotice.Banned, withTimeout(5_000) { viewModel.rankingNotices.first() })
     }
+
+    // A18: a list gone or one's own came back as "Something went wrong".
+    @Test
+    fun aListGoneOrOnesOwn_isNamed() = runBlocking {
+        listOf(RankingRefusal.ListGone to RankingNotice.ListGone, RankingRefusal.OwnList to RankingNotice.OwnList).forEach { (refusal, notice) ->
+            val viewModel = viewModel(community = TestCommunity(showRefusal = refusal), accounts = signedIn)
+            arranged(viewModel)
+
+            viewModel.showMyRanking()
+
+            assertEquals(notice, withTimeout(5_000) { viewModel.rankingNotices.first() })
+        }
+    }
 }

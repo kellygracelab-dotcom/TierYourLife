@@ -7,5 +7,6 @@ fun Throwable.rankingRefusal(): RankingRefusal = when (proxyCode()) {
     "NOT_SIGNED_IN" -> RankingRefusal.NotSignedIn
     "BANNED" -> RankingRefusal.Banned
     "OWN_LIST" -> RankingRefusal.OwnList
+    "NOT_FOUND" -> RankingRefusal.ListGone
     else -> RankingRefusal.Failed
 }

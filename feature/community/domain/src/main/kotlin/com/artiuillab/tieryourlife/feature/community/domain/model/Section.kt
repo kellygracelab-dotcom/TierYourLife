@@ -100,8 +100,8 @@ data class FollowedSection(val id: String)
 sealed interface SectionLookup {
     data class Found(val section: Section) : SectionLookup
 
-    /** `410 MERGED`: the id lives on as another. */
-    data class Merged(val into: String) : SectionLookup
+    /** `410 MERGED`: the id lives on as another, or as [topic] in it. */
+    data class Merged(val into: String, val topic: String? = null) : SectionLookup
 
     /** `404`: no such section, or somebody else's proposal. */
     data object Unknown : SectionLookup

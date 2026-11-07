@@ -62,8 +62,11 @@ enum class AccountNotice {
     SignedInToExistingAccount,
     NameNotSaved,
 
-    /** The picture was refused, or would not copy. The old face stays. */
+    /** The picture was refused, or could not be read. The old face stays. */
     FaceNotMade,
+
+    /** The picture did not reach the server, or the server did not answer. The old face stays. */
+    FaceNotSaved,
 
     /** The account is still there. Saying nothing would read as "it worked". */
     NotDeleted,

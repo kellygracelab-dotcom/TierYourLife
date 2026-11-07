@@ -14,6 +14,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val HTTP_PAYMENT_REQUIRED = 402
+private const val HTTP_TOO_MANY_REQUESTS = 429
+private const val HTTP_UNAVAILABLE = 503
 private const val CREDITS_HEADER = "X-Credits-Remaining"
 
 @Singleton
@@ -32,11 +34,14 @@ class ProxyCardImageGenerator @Inject constructor(
 
         if (!response.isSuccessful) {
             response.errorBody()?.close()
-            return if (response.code() == HTTP_PAYMENT_REQUIRED) {
-                GenerationOutcome.OutOfCredits
-            } else {
-                Timber.w(HttpException(response), "Generating a card was refused")
-                GenerationOutcome.Failed
+            return when (response.code()) {
+                HTTP_PAYMENT_REQUIRED -> GenerationOutcome.OutOfCredits
+                HTTP_TOO_MANY_REQUESTS -> GenerationOutcome.Busy
+                HTTP_UNAVAILABLE -> GenerationOutcome.Paused
+                else -> {
+                    Timber.w(HttpException(response), "Generating a card was refused")
+                    GenerationOutcome.Failed
+                }
             }
         }
 

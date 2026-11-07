@@ -292,6 +292,8 @@
     <string name="community_picture_credit_line">%1$s — %2$s</string>
     <string name="community_ranking_list_changed">カードを並べた後で、作者がこのリストを変更しました。ランキングを見せるには、もう一度並べてください。</string>
     <string name="community_ranking_banned">モデレーターがあなたのリストの1つを取り下げたため、今はランキングを見せられません。</string>
+    <string name="community_ranking_own_list">これはあなたのリストなので、見せるランキングはありません。</string>
+    <string name="community_ranking_list_gone">このリストはもう利用できないため、ランキングを見せられません。</string>
     <string name="moderation_not_taken_down">取り下げられませんでした。リストはまだ公開されています。もう一度お試しください。</string>
     <string name="moderation_not_kept">リストを残せませんでした。報告はまだ未処理です。もう一度お試しください。</string>
     <string name="moderation_not_moved">移動できませんでした。リストは元の場所のままです。もう一度お試しください。</string>

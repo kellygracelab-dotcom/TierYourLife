@@ -42,6 +42,7 @@
     <string name="account_action_cancel">Cancel</string>
     <string name="account_error_name_not_saved">Could not save that name. Try again.</string>
     <string name="account_error_face_not_made">That picture cannot be your face. Pick another.</string>
+    <string name="account_error_face_not_saved">Couldn’t save — the server didn’t answer.</string>
     <plurals name="account_community_lists">
         <item quantity="one">%1$d public list</item>
         <item quantity="other">%1$d public lists</item>

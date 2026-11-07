@@ -58,7 +58,7 @@ data class ProposalAllowanceDto(
 
 /** The body of `410 MERGED`. */
 @Serializable
-data class SectionMergedDto(val mergedInto: String? = null)
+data class SectionMergedDto(val mergedInto: String? = null, val mergedTopicId: String? = null)
 
 @Serializable
 data class FollowedSectionDto(val id: String)

@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.aistudio.presentation.aistudio.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,7 +26,12 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.aistudio.presentation.R
 
 @Composable
-internal fun ErrorCard(testTag: String, onTryAgain: () -> Unit, modifier: Modifier = Modifier) {
+internal fun ErrorCard(
+    testTag: String,
+    onTryAgain: () -> Unit,
+    modifier: Modifier = Modifier,
+    @StringRes body: Int = R.string.ai_error_body,
+) {
     Column(
         modifier = modifier
             .widthIn(max = 288.dp)
@@ -45,7 +51,7 @@ internal fun ErrorCard(testTag: String, onTryAgain: () -> Unit, modifier: Modifi
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = stringResource(R.string.ai_error_body),
+                    text = stringResource(body),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onErrorContainer,
                 )

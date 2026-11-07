@@ -122,6 +122,8 @@ class AiStudioViewModel @Inject constructor(
                 is GenerationOutcome.Success -> AiExchangePhase.Result(outcome.image)
                 GenerationOutcome.OutOfCredits -> AiExchangePhase.OutOfCredits
                 GenerationOutcome.Failed -> AiExchangePhase.Failed
+                GenerationOutcome.Busy -> AiExchangePhase.Busy
+                GenerationOutcome.Paused -> AiExchangePhase.Paused
             }
             current.withPhase(exchangeId, phase).copy(
                 generating = false,
@@ -138,7 +140,7 @@ class AiStudioViewModel @Inject constructor(
     private fun creditsAfter(outcome: GenerationOutcome, current: Int?): Int? = when (outcome) {
         is GenerationOutcome.Success -> outcome.creditsRemaining ?: current
         GenerationOutcome.OutOfCredits -> 0
-        GenerationOutcome.Failed -> current
+        GenerationOutcome.Failed, GenerationOutcome.Busy, GenerationOutcome.Paused -> current
     }
 
     private fun refreshCredits() {

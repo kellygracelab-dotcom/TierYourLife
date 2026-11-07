@@ -23,6 +23,12 @@ sealed interface AiExchangePhase {
     /** Something went wrong on the way. Trying again is worth it. */
     data object Failed : AiExchangePhase
 
+    /** Another picture is still being made: worth trying again in a moment. */
+    data object Busy : AiExchangePhase
+
+    /** Generation is off for now: worth trying again later. */
+    data object Paused : AiExchangePhase
+
     /** Nothing left to spend. Trying again would fail the same way. */
     data object OutOfCredits : AiExchangePhase
 }

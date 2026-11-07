@@ -177,9 +177,14 @@ internal fun AiStudioScreenContent(
                                                     addedItemId = exchange.addedItemId,
                                                 )
 
-                                                AiExchangePhase.Failed -> ErrorCard(
+                                                AiExchangePhase.Failed, AiExchangePhase.Busy, AiExchangePhase.Paused -> ErrorCard(
                                                     testTag = AiStudioTestTags.error(exchange.id),
                                                     onTryAgain = { onRetry(exchange.id) },
+                                                    body = when (phase) {
+                                                        AiExchangePhase.Busy -> R.string.ai_error_busy
+                                                        AiExchangePhase.Paused -> R.string.ai_error_paused
+                                                        else -> R.string.ai_error_body
+                                                    },
                                                 )
 
                                                 AiExchangePhase.OutOfCredits -> OutOfCreditsCard(

@@ -171,6 +171,22 @@ class KeptSectionCatalogTest {
     }
 
     @Test
+    fun anIdMergedIntoATopic_remembersTheTopic() = runBlocking {
+        val community = Community(
+            lookups = mapOf(
+                "bikes" to Result.success(SectionLookup.Merged("cars", topic = "t7")),
+                "cars" to Result.success(SectionLookup.Found(cars)),
+            ),
+        )
+        val catalog = sectionCatalogFor(community, FakeSectionStore(), clock)
+
+        catalog.lookUp("bikes")
+
+        assertEquals(mapOf("bikes" to "t7"), catalog.directory.value.mergedTopics)
+        assertEquals(cars, catalog.directory.value.find("bikes"))
+    }
+
+    @Test
     fun anIdTheServerHasNeverHeardOf_isNotAskedAboutAgain_untilTheNextAnswer() = runBlocking {
         val community = Community()
         val catalog = sectionCatalogFor(community, clock = clock)

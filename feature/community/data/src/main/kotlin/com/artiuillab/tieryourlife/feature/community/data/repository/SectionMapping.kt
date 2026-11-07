@@ -105,8 +105,9 @@ internal fun Throwable.sectionRefusal(): SectionLookup? {
         HTTP_NOT_FOUND -> SectionLookup.Unknown
         HTTP_GONE -> {
             val body = refusal.response()?.errorBody()?.string().orEmpty()
-            val into = runCatching { networkJson.decodeFromString(SectionMergedDto.serializer(), body) }.getOrNull()?.mergedInto
-            if (into.isNullOrBlank()) SectionLookup.Unknown else SectionLookup.Merged(into)
+            val merged = runCatching { networkJson.decodeFromString(SectionMergedDto.serializer(), body) }.getOrNull()
+            val into = merged?.mergedInto
+            if (into.isNullOrBlank()) SectionLookup.Unknown else SectionLookup.Merged(into, topic = merged.mergedTopicId?.takeIf { it.isNotBlank() })
         }
 
         else -> null

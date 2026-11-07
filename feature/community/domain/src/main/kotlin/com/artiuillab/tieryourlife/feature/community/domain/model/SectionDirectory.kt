@@ -11,6 +11,8 @@ data class SectionDirectory(
     val extra: Map<String, Section> = emptyMap(),
     /** An id merged away, and the id it lives on as. */
     val merged: Map<String, String> = emptyMap(),
+    /** An id merged away into a topic of the section [merged] names, and that topic's id. */
+    val mergedTopics: Map<String, String> = emptyMap(),
     /** Ids the server has never heard of: drawn as Other, and not asked about again until the next answer. */
     val unknown: Set<String> = emptySet(),
     /** When the list last came from the server; null while it is still the app's own nine. */

@@ -25,6 +25,7 @@
     <string name="account_action_cancel">Anuluj</string>
     <string name="account_error_name_not_saved">Nie udało się zapisać tej nazwy. Spróbuj ponownie.</string>
     <string name="account_error_face_not_made">To zdjęcie nie może być Twoim awatarem. Wybierz inne.</string>
+    <string name="account_error_face_not_saved">Nie udało się zapisać – serwer nie odpowiedział.</string>
     <plurals name="account_community_lists">
         <item quantity="one">%1$d lista publiczna</item>
         <item quantity="few">%1$d listy publiczne</item>

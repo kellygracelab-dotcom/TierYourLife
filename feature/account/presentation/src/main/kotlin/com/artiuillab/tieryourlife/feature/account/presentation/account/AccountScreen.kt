@@ -263,6 +263,7 @@ private fun AccountNotice.messageRes(): Int = when (this) {
     AccountNotice.SignInUnavailable -> R.string.account_error_unavailable
     AccountNotice.SignedInToExistingAccount -> R.string.account_notice_existing_account
     AccountNotice.FaceNotMade -> R.string.account_error_face_not_made
+    AccountNotice.FaceNotSaved -> R.string.account_error_face_not_saved
     AccountNotice.NameNotSaved -> R.string.account_error_name_not_saved
     AccountNotice.NotDeleted -> R.string.account_error_not_deleted
     AccountNotice.BoardsNotCopied -> R.string.account_error_boards_not_copied

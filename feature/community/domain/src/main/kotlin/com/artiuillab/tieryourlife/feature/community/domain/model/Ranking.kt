@@ -23,7 +23,7 @@ data class RankingsPage(val rankings: List<Ranking>, val nextCursor: String?)
 data class ShownRanking(val ranking: Ranking, val created: Boolean)
 
 /** Why a reader's placing was not shown. */
-enum class RankingRefusal { NotSignedIn, Banned, OwnList, Failed }
+enum class RankingRefusal { NotSignedIn, Banned, OwnList, ListGone, Failed }
 
 class RankingRefused(val reason: RankingRefusal) : Exception(reason.name)
 
