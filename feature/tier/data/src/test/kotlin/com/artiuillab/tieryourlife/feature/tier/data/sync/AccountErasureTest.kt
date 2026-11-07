@@ -135,6 +135,7 @@ class AccountErasureTest : SyncEngineBench() {
     @Test
     fun signedOutByTheAccountGoing_keepsItsBoardsAtTheNextStart() = runBlocking {
         val films = givenLocalBoard("Films", owner = "ann")
+        preferences.setLastSignedIn("ann")
         accounts.exists = null
         merge().eraseKeepingBoards("ann", erase = noAnswer, signOut = signOut)
         accounts.accounts.value = Account.Guest
@@ -143,6 +144,38 @@ class AccountErasureTest : SyncEngineBench() {
 
         assertNull(ownerOf(films))
         assertEquals(1, forgotten)
+    }
+
+    // A40: what is on the phone by then is whoever came after; only the erased account's boards are settled.
+    @Test
+    fun anEraseSettledAfterAnotherAccountSignedIn_forgetsNothingOfThem() = runBlocking {
+        val films = givenLocalBoard("Films", owner = "ann")
+        accounts.exists = null
+        merge().eraseKeepingBoards("ann", erase = noAnswer, signOut = signOut)
+        preferences.setLastSignedIn("bob")
+        preferences.hideList("list-1", "Hidden by Bob")
+        accounts.accounts.value = bob
+
+        merge().settleUnansweredErase()
+
+        assertNull(ownerOf(films))
+        assertNull(preferences.erasureUnderWay())
+        assertEquals(0, forgotten)
+        assertEquals(1, preferences.hiddenLists().size)
+    }
+
+    @Test
+    fun anEraseSettledAfterAGuestCarriedOn_forgetsNothingOfThem() = runBlocking {
+        val films = givenLocalBoard("Films", owner = "ann")
+        accounts.exists = null
+        merge().eraseKeepingBoards("ann", erase = noAnswer, signOut = signOut)
+        preferences.setLastSignedIn(null)
+        accounts.accounts.value = Account.Guest
+
+        merge().settleUnansweredErase()
+
+        assertNull(ownerOf(films))
+        assertEquals(0, forgotten)
     }
 
     @Test

@@ -162,9 +162,11 @@ class RoomBoardMerge internal constructor(
         val now = accounts.account.first { it != Account.Unknown }
         if (signedInAs(now) != mark.account) {
             // Signing out by choice settles the mark first, so only the account
-            // going away can have signed it out.
+            // going away can have signed it out. Unless the watcher saw it go,
+            // what is on the phone is still that account's; otherwise it is whoever came after.
+            val stillItsOwn = preferences.lastSignedIn() == mark.account
             keepBoardsOf(mark.account)
-            thePerson.forget()
+            if (stillItsOwn) thePerson.forget()
             return@withLock
         }
         when (accounts.currentAccountExists()) {
