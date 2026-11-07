@@ -77,6 +77,18 @@ interface BoardSyncDao {
     @Query("UPDATE tier_items SET imageUrl = :imageUrl WHERE uid = :itemUid")
     suspend fun setItemImage(itemUid: String, imageUrl: String)
 
+    /** A cover is one picture too, and a board in the trash keeps its own. */
+    @Query("SELECT DISTINCT coverImageUrl FROM tier_lists WHERE coverImageUrl IS NOT NULL AND ownerUid = :owner")
+    suspend fun coverUrlsOf(owner: String): List<String>
+
+    /** Only onto a board with no cover of its own: one chosen here wins. */
+    @Query("UPDATE tier_lists SET coverImageUrl = :path WHERE uid = :uid AND coverImageUrl IS NULL AND coverImageUrls IS NULL")
+    suspend fun learnCover(uid: String, path: String)
+
+    /** Written as it already was, so a screen showing the cover draws the file that has just arrived. */
+    @Query("UPDATE tier_lists SET coverImageUrl = :path WHERE coverImageUrl = :path")
+    suspend fun coverArrived(path: String)
+
     /** Every board on the phone, whoever's: only for questions about the phone as a whole. */
     @Query("SELECT * FROM tier_lists")
     suspend fun allBoards(): List<TierListEntity>

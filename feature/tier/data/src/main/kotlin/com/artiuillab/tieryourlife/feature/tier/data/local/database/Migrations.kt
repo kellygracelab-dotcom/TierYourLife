@@ -1,8 +1,21 @@
 package com.artiuillab.tieryourlife.feature.tier.data.local.database
 
+import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
+
+/**
+ * A cover chosen from the gallery was once kept as the gallery's address, and
+ * the permission to read it ended with the process that picked it. It is no
+ * cover, so the cards' art decides; the address is never opened. Only such
+ * rows change, so after the first open there is nothing left to do.
+ */
+val FORGET_GALLERY_COVERS = object : RoomDatabase.Callback() {
+    override fun onOpen(db: SupportSQLiteDatabase) {
+        db.execSQL("UPDATE tier_lists SET coverImageUrl = NULL WHERE coverImageUrl LIKE 'content://%'")
+    }
+}
 
 /**
  * Boards belong to someone: an account, or nobody for the ones made without

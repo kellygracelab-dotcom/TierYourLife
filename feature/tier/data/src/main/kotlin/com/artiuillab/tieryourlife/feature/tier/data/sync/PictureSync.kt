@@ -41,7 +41,7 @@ class PictureSync @Inject constructor(
             return
         }
         val sent = dao.sentPictureIds(account).toSet()
-        val here = dao.imageUrlsOf(account).mapNotNull(images::pictureIdOf).distinct()
+        val here = (dao.imageUrlsOf(account) + dao.coverUrlsOf(account)).mapNotNull(images::pictureIdOf).distinct()
 
         for (pictureId in here.filterNot { it in sent }) {
             if (stopped()) return
@@ -79,19 +79,26 @@ class PictureSync @Inject constructor(
      * What a new phone looks like: boards arrive in one request, pictures take
      * as long as they take, and until then a tile shows its title.
      */
-    suspend fun pull(account: String, wanted: Map<String, String>, stopped: () -> Boolean = { false }) {
+    suspend fun pull(
+        account: String,
+        wanted: Map<String, String>,
+        covers: Set<String> = emptySet(),
+        stopped: () -> Boolean = { false },
+    ) {
         if (preferences.picturesOnWifiOnly() && !connection.unmetered()) {
             _restoring.value = PictureRestore.Progress.Idle
             return
         }
         val missing = wanted.filterValues { pictureId -> !images.holds(pictureId) }
-        if (missing.isEmpty()) {
+        val missingCovers = covers.filterNot { pictureId -> images.holds(pictureId) || pictureId in missing.values }
+        val total = missing.size + missingCovers.size
+        if (total == 0) {
             _restoring.value = PictureRestore.Progress.Idle
             return
         }
 
         var done = 0
-        _restoring.value = PictureRestore.Progress(done = 0, total = missing.size)
+        _restoring.value = PictureRestore.Progress(done = 0, total = total)
         // A write that throws halfway must not leave the banner up until the app is killed.
         try {
             for ((itemUid, pictureId) in missing) {
@@ -103,7 +110,17 @@ class PictureSync @Inject constructor(
                     dao.rememberPicture(PictureSyncEntity(account, pictureId, System.currentTimeMillis()))
                 }
                 done++
-                _restoring.value = PictureRestore.Progress(done = done, total = missing.size)
+                _restoring.value = PictureRestore.Progress(done = done, total = total)
+            }
+            for (pictureId in missingCovers) {
+                if (stopped()) break
+                val bytes = vault.get(pictureId)
+                if (bytes != null) {
+                    dao.coverArrived(images.write(pictureId, bytes))
+                    dao.rememberPicture(PictureSyncEntity(account, pictureId, System.currentTimeMillis()))
+                }
+                done++
+                _restoring.value = PictureRestore.Progress(done = done, total = total)
             }
         } finally {
             _restoring.value = PictureRestore.Progress.Idle
