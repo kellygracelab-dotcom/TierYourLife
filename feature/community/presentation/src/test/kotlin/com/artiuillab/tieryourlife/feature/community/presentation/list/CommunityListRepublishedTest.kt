@@ -16,6 +16,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -110,6 +111,30 @@ class CommunityListRepublishedTest {
 
         assertEquals(RankingNotice.Shown, withTimeout(5_000) { viewModel.rankingNotices.first() })
         assertEquals(opensBefore + 1, community.opens)
+    }
+
+    // A24: the undo brought back a Mine made of the cards the author had since replaced.
+    @Test
+    fun undoingAGamesResult_afterTheListWasRepublished_keepsTheNewList() = runBlocking {
+        var answer = published
+        val community = object : FakeCommunityRepository() {
+            override suspend fun open(id: String): Result<PublishedList> = Result.success(answer)
+        }
+        val viewModel = viewModel(community = community, accounts = signedIn)
+        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        viewModel.putInMine(loaded.mine.copy(tiers = loaded.mine.tiers.map { if (it.id == 0L) it.copy(items = published.items) else it }))
+        answer = published.copy(
+            summary = published.summary.copy(updatedAtMillis = 2),
+            items = listOf(TierItem(0, "Past Lives", null), TierItem(1, "Aftersun", null)),
+        )
+        viewModel.showMyRanking()
+        assertEquals(RankingNotice.ListChanged, withTimeout(5_000) { viewModel.rankingNotices.first() })
+        val republished = viewModel.state.value as CommunityListUiState.Success
+
+        viewModel.putInMine(loaded.mine, undone = true)
+
+        assertEquals(republished.mine, (viewModel.state.value as CommunityListUiState.Success).mine)
+        assertEquals(listOf("Past Lives", "Aftersun"), republished.mine.tiers.flatMap { tier -> tier.items.map { it.title } })
     }
 
     // 409 CURSOR_GONE: a ranking on the last page was withdrawn meanwhile.

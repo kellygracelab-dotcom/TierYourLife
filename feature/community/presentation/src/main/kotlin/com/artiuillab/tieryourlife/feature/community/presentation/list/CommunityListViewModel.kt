@@ -224,6 +224,7 @@ class CommunityListViewModel @Inject constructor(
         rankings.opened(answer, fromServer, sameBoard)
         ownList.opened(answer)
         shownUpdatedAt = answer.summary.updatedAtMillis
+        if (!sameBoard) beforeResult = null
         val shown = if (sameBoard) fresh.keepingWhatTheReaderDid(before) else fresh
         _state.value = shown
         return shown
@@ -325,11 +326,12 @@ class CommunityListViewModel @Inject constructor(
         if (current.arriving) return
         val before = beforeResult
         beforeResult = null
-        if (undone && before != null) {
-            _state.value = current.copy(mine = before.mine, showing = before.showing, arranged = before.arranged)
+        // No record: a republished list replaced Mine meanwhile, and the result with it.
+        if (undone) {
+            before?.let { _state.value = current.copy(mine = it.mine, showing = it.showing, arranged = it.arranged) }
             return
         }
-        if (!undone) beforeResult = BeforeResult(current.mine, current.showing, current.arranged)
+        beforeResult = BeforeResult(current.mine, current.showing, current.arranged)
         _state.value = current.copy(mine = board.inWordsOf(current.mine, current.list), showing = Showing.Mine, arranged = true)
     }
 
