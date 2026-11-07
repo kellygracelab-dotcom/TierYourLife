@@ -169,6 +169,8 @@
     <string name="explore_unfollowed">Unfollowed %1$s</string>
     <string name="explore_undo">Undo</string>
     <string name="explore_follow_failed">Couldn’t follow. Try again.</string>
+    <string name="follow_section_moved">This section moved into %1$s. You follow it there.</string>
+    <string name="follow_section_merged">This section was merged and no longer exists.</string>
     <string name="follow_unfollow_failed">Couldn’t unfollow. Try again.</string>
     <string name="follow_too_many">You can follow up to %1$d. Unfollow one to make room.</string>
     <string name="explore_new_lists">New lists</string>

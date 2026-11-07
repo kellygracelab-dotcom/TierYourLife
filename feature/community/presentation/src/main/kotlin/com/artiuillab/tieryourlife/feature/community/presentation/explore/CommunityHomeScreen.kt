@@ -74,6 +74,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.LocalOwnFace
 import com.artiuillab.tieryourlife.feature.community.presentation.components.OwnFaceViewModel
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.SignInToFollow
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.followingSentence
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenceFor
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingActions
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedUiState
@@ -296,9 +297,7 @@ private fun NoticeSnackbars(
                 }
 
                 is CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.sentenceFor(notice.refusal))
-                is CommunityNotice.NowFollowing -> snackbar.showSnackbar(
-                    resources.getString(R.string.explore_now_following, nameOf(notice.sectionId)),
-                )
+                is CommunityNotice.NowFollowing -> snackbar.showSnackbar(resources.followingSentence(notice, nameOf(notice.sectionId)))
 
                 is CommunityNotice.Unfollowed -> {
                     val result = snackbar.showSnackbar(

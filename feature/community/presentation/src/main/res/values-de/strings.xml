@@ -169,6 +169,8 @@
     <string name="explore_unfollowed">Du folgst %1$s nicht mehr</string>
     <string name="explore_undo">Rückgängig</string>
     <string name="explore_follow_failed">Folgen fehlgeschlagen. Versuch es noch einmal.</string>
+    <string name="follow_section_moved">Diese Rubrik ist in %1$s aufgegangen. Du folgst ihr jetzt dort.</string>
+    <string name="follow_section_merged">Diese Rubrik wurde zusammengelegt und existiert nicht mehr.</string>
     <string name="follow_unfollow_failed">Nicht mehr folgen ist fehlgeschlagen. Versuch es noch einmal.</string>
     <string name="follow_too_many">Du kannst höchstens %1$d folgen. Folge zuerst einem davon nicht mehr.</string>
     <string name="explore_new_lists">Neue Listen</string>

@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirecto
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposal
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionWasMerged
 import com.artiuillab.tieryourlife.feature.community.domain.model.Withdrawal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -100,8 +101,17 @@ class KeptSectionCatalog(
         if (found is SectionLookup.Merged) lookUp(found.into)
     }
 
-    override suspend fun setFollowing(id: String, now: Boolean): Result<Unit> {
+    override suspend fun setFollowing(id: String, now: Boolean): Result<String> {
         val target = state.value.resolve(id)
+        val result = follow(target, now)
+        val merged = result.exceptionOrNull() as? SectionWasMerged
+        val into = merged?.into
+        if (!now || into == null || into == target) return result.map { target }
+        learn(target, SectionLookup.Merged(into, merged?.topic))
+        return follow(into, now = true).map { into }
+    }
+
+    private suspend fun follow(target: String, now: Boolean): Result<Unit> {
         val was = state.value.find(target)?.following
         state.update { it.withFollowing(target, now) }
         val result = if (now) community.followSection(target) else community.unfollowSection(target)

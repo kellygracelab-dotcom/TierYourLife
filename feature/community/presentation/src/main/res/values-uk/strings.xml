@@ -173,6 +173,8 @@
     <string name="explore_unfollowed">Ви відписалися від «%1$s»</string>
     <string name="explore_undo">Повернути</string>
     <string name="explore_follow_failed">Не вдалося підписатися. Спробуйте ще раз.</string>
+    <string name="follow_section_moved">Цей розділ перенесли в «%1$s». Ви підписані на нього там.</string>
+    <string name="follow_section_merged">Цей розділ обʼєднали з іншим, його більше немає.</string>
     <string name="follow_unfollow_failed">Не вдалося відписатися. Спробуйте ще раз.</string>
     <string name="follow_too_many">Підписок може бути не більше %1$d. Спершу відпишіться від чогось.</string>
     <string name="explore_new_lists">Нові списки</string>

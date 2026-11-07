@@ -107,6 +107,9 @@ sealed interface SectionLookup {
     data object Unknown : SectionLookup
 }
 
+/** A follow answered `410 MERGED`: the section lives on as [into], or as [topic], or the answer named neither. */
+class SectionWasMerged(val into: String?, val topic: String?) : Exception("That section was merged")
+
 /** The icons a section may carry: the nine built-ins' first, then the fifteen a proposer picks from. */
 object SectionSymbols {
     const val DEFAULT = "category"

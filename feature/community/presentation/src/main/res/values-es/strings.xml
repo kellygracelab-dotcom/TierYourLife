@@ -171,6 +171,8 @@
     <string name="explore_unfollowed">Dejaste de seguir %1$s</string>
     <string name="explore_undo">Deshacer</string>
     <string name="explore_follow_failed">No se pudo seguir. Inténtalo de nuevo.</string>
+    <string name="follow_section_moved">Esta sección pasó a %1$s. Ahora la sigues allí.</string>
+    <string name="follow_section_merged">Esta sección se fusionó y ya no existe.</string>
     <string name="follow_unfollow_failed">No se pudo dejar de seguir. Inténtalo de nuevo.</string>
     <string name="follow_too_many">Puedes seguir hasta %1$d. Deja de seguir alguno para hacer sitio.</string>
     <string name="explore_new_lists">Listas nuevas</string>

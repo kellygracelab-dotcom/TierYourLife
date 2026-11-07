@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.FakeSectionStore
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionWasMerged
 import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -254,6 +255,36 @@ class KeptSectionCatalogTest {
         catalog.setFollowing("autos", now = true)
 
         assertEquals(listOf("cars" to true), community.followed)
+    }
+
+    // A18: merged in the meantime, the follow came back as a plain failure.
+    @Test
+    fun aFollowAnsweredMerged_followsTheSectionItWentInto() = runBlocking {
+        val community = object : Community() {
+            override suspend fun followSection(id: String): Result<Unit> {
+                followed += id to true
+                return if (id == "autos") Result.failure(SectionWasMerged(into = "cars", topic = null)) else Result.success(Unit)
+            }
+        }
+        val catalog = sectionCatalogFor(community, FakeSectionStore(SectionDirectory(sections = listOf(cars, Section(id = "autos")), fetchedAtMillis = 1L)), clock)
+
+        assertEquals(Result.success("cars"), catalog.setFollowing("autos", now = true))
+
+        assertEquals(listOf("autos" to true, "cars" to true), community.followed)
+        assertEquals("cars", catalog.directory.value.resolve("autos"))
+        assertTrue(catalog.directory.value.find("cars")?.following == true)
+    }
+
+    @Test
+    fun aFollowMergedIntoATopicOrNowhere_failsSayingSo() = runBlocking {
+        val answer = SectionWasMerged(into = null, topic = "t7")
+        val community = object : Community() {
+            override suspend fun followSection(id: String): Result<Unit> = Result.failure(answer)
+        }
+        val catalog = sectionCatalogFor(community, FakeSectionStore(SectionDirectory(sections = listOf(cars), fetchedAtMillis = 1L)), clock)
+
+        assertEquals(answer, catalog.setFollowing("cars", now = true).exceptionOrNull())
+        assertFalse(catalog.directory.value.find("cars")?.following == true)
     }
 
     @Test

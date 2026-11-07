@@ -171,6 +171,8 @@
     <string name="explore_unfollowed">Vous ne suivez plus %1$s</string>
     <string name="explore_undo">Annuler</string>
     <string name="explore_follow_failed">Impossible de suivre. Réessayez.</string>
+    <string name="follow_section_moved">Cette rubrique a rejoint %1$s. Vous la suivez désormais là-bas.</string>
+    <string name="follow_section_merged">Cette rubrique a été fusionnée et n’existe plus.</string>
     <string name="follow_unfollow_failed">Impossible d’arrêter de suivre. Réessayez.</string>
     <string name="follow_too_many">Vous suivez déjà le maximum (%1$d). Cessez d’abord de suivre l’un d’eux.</string>
     <string name="explore_new_lists">Nouvelles listes</string>

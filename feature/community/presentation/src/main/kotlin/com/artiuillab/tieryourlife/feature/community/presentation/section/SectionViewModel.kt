@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListS
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionWasMerged
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
@@ -236,8 +237,20 @@ class SectionViewModel @Inject constructor(
     private fun setFollowing(id: String, now: Boolean) {
         viewModelScope.launch {
             catalog.setFollowing(id, now).fold(
-                onSuccess = { if (!now) notes.send(CommunityNotice.Unfollowed(id)) },
-                onFailure = { notes.send(CommunityNotice.FollowFailed(FollowRefusal.of(now, it))) },
+                onSuccess = { followed ->
+                    when {
+                        !now -> notes.send(CommunityNotice.Unfollowed(id))
+                        followed != id -> notes.send(CommunityNotice.NowFollowing(followed, moved = true))
+                    }
+                },
+                onFailure = { refused ->
+                    val topic = (refused as? SectionWasMerged)?.topic?.takeIf { now }
+                    if (topic != null) {
+                        toTopic.send(CommunityRoute.Topic(topicId = topic))
+                    } else {
+                        notes.send(CommunityNotice.FollowFailed(FollowRefusal.of(now, refused)))
+                    }
+                },
             )
         }
     }

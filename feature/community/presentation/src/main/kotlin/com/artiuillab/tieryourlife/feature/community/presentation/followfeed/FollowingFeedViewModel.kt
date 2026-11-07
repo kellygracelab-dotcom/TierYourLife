@@ -175,7 +175,7 @@ class FollowingFeedViewModel @Inject constructor(
             if (followed.isNotEmpty()) {
                 following.update { now ->
                     val base = now ?: Following(emptyList(), emptyList())
-                    base.copy(sections = base.sections + followed.map(::FollowedSection))
+                    base.copy(sections = base.sections + answers.mapNotNull { it.second.getOrNull() }.map(::FollowedSection))
                 }
                 feed.reload()
             }

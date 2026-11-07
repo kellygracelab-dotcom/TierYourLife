@@ -126,7 +126,7 @@ class FollowingViewModel @Inject constructor(
     private suspend fun stop(key: String): Result<Unit> {
         val id = key.substringAfter(':')
         return when (key.substringBefore(':')) {
-            "s" -> catalog.setFollowing(id, now = false)
+            "s" -> catalog.setFollowing(id, now = false).map {}
             "t" -> community.unfollowTopic(id)
             else -> community.unfollow(id)
         }
@@ -135,7 +135,7 @@ class FollowingViewModel @Inject constructor(
     private suspend fun resume(key: String): Result<Unit> {
         val id = key.substringAfter(':')
         return when (key.substringBefore(':')) {
-            "s" -> catalog.setFollowing(id, now = true)
+            "s" -> catalog.setFollowing(id, now = true).map {}
             "t" -> community.followTopic(id)
             else -> community.follow(id)
         }

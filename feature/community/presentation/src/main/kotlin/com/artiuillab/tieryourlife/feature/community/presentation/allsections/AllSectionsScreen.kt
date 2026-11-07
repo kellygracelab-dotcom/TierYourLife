@@ -65,6 +65,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.WideCo
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.countText
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.homeLayoutFor
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.SignInToFollow
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.followingSentence
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenceFor
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.community.presentation.section.ProposalNotices
@@ -349,7 +350,7 @@ private fun AllSectionsNotices(notices: Flow<CommunityNotice>, snackbar: Snackba
     LaunchedEffect(notices) {
         notices.collect { notice ->
             when (notice) {
-                is CommunityNotice.NowFollowing -> snackbar.showSnackbar(resources.getString(R.string.explore_now_following, nameOf(notice.sectionId)))
+                is CommunityNotice.NowFollowing -> snackbar.showSnackbar(resources.followingSentence(notice, nameOf(notice.sectionId)))
                 is CommunityNotice.Unfollowed -> {
                     val result = snackbar.showSnackbar(
                         message = resources.getString(R.string.explore_unfollowed, nameOf(notice.sectionId)),

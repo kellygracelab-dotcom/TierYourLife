@@ -167,6 +167,8 @@
     <string name="explore_unfollowed">%1$sのフォローを解除しました</string>
     <string name="explore_undo">元に戻す</string>
     <string name="explore_follow_failed">フォローできませんでした。もう一度お試しください。</string>
+    <string name="follow_section_moved">このセクションは%1$sに統合されました。そちらをフォローしています。</string>
+    <string name="follow_section_merged">このセクションは統合され、今はもうありません。</string>
     <string name="follow_unfollow_failed">フォロー解除できませんでした。もう一度お試しください。</string>
     <string name="follow_too_many">フォローできるのは%1$d件までです。どれかのフォローを解除してください。</string>
     <string name="explore_new_lists">新しいリスト</string>

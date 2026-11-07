@@ -169,6 +169,8 @@
     <string name="explore_unfollowed">%1$s takibi bırakıldı</string>
     <string name="explore_undo">Geri al</string>
     <string name="explore_follow_failed">Takip edilemedi. Tekrar deneyin.</string>
+    <string name="follow_section_moved">Bu bölüm %1$s bölümüne taşındı. Artık onu orada takip ediyorsunuz.</string>
+    <string name="follow_section_merged">Bu bölüm birleştirildi ve artık mevcut değil.</string>
     <string name="follow_unfollow_failed">Takipten çıkılamadı. Tekrar deneyin.</string>
     <string name="follow_too_many">En fazla %1$d takip edebilirsiniz. Önce birini takipten çıkarın.</string>
     <string name="explore_new_lists">Yeni listeler</string>
