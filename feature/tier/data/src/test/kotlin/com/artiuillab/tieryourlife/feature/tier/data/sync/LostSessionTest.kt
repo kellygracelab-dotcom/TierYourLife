@@ -62,10 +62,6 @@ class LostSessionTest : SyncEngineBench() {
 
     private val carol = Account.SignedIn(email = "carol@example.com", photoUrl = null, uid = "carol")
 
-    private companion object {
-        const val HTTP_TOO_LARGE = 413
-    }
-
     @Test
     fun aLostSession_leavesTheBoardsOnThePhone_andForgetsThePerson() = runBlocking {
         val (films, games) = annWithTwoBoardsSynced()
@@ -446,6 +442,21 @@ class LostSessionTest : SyncEngineBench() {
         assertTrue("forgotten once the copy is there", boards.server.getValue(bobs).deleted)
         assertEquals(2, boards.server.size)
         assertEquals("bob", ownerOf(bobs))
+    }
+
+    @Test
+    fun anotherBoardRefused_doesNotHoldBackTheForgetOfOneWhoseCopyWentUp() = runBlocking {
+        val bobs = givenLocalBoard("Films", owner = "bob")
+        boards.server[bobs] = theirBoard(bobs, "Films", revision = 1)
+        annsEngine().sync()
+        val huge = givenLocalBoard("Huge", owner = "ann")
+        boards.refuseUids = setOf(huge)
+
+        annsEngine().sync()
+
+        assertTrue(boards.server.getValue(bobs).deleted)
+        assertTrue(standInFor("ann", bobs) in boards.server)
+        assertTrue(huge !in boards.server)
     }
 
     @Test

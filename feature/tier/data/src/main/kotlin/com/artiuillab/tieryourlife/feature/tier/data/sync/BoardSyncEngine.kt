@@ -123,10 +123,10 @@ class BoardSyncEngine @Inject constructor(
     private data class Carried(val carried: Int, val refused: Int, val refusal: BackupRefusal?)
 
     /**
-     * A Forget of a uid another owner holds here goes last, and only once
-     * every Create went through: its record was left when this account's copy
-     * came down beside that board under a new uid, and the copy's Create is
-     * what stands in for it in the account. With one refused, the old uid stays.
+     * A Forget of a uid another owner holds here goes last: its record was
+     * left when this account's copy came down beside that board, and the
+     * copy's Create is what stands in for it in the account. With that Create
+     * refused, the old uid stays there until a run gets the copy up.
      */
     private suspend fun carryAll(steps: List<SyncStep>, fingerprints: Map<String, String>, account: String): Carried {
         val othersHere = dao.allBoards().filter { it.ownerUid != account }.mapTo(mutableSetOf()) { it.uid }
@@ -135,7 +135,7 @@ class BoardSyncEngine @Inject constructor(
         var carried = 0
         var refused = 0
         var refusal: BackupRefusal? = null
-        var createFailed = false
+        val createsFailed = mutableSetOf<String>()
         for ((index, step) in ordered.withIndex()) {
             // Planned from this account's rows; another one signed in since
             // would be handed them. Between steps is where a run can stop
@@ -144,20 +144,26 @@ class BoardSyncEngine @Inject constructor(
                 refused += ordered.size - index
                 break
             }
-            if (createFailed && step in replaced) {
+            if (step in replaced && waitsOnACreate(account, step.uid, createsFailed, fingerprints.keys)) {
                 refused++
             } else {
                 runSuspendCatching { carry(step, fingerprints, account) }
                     .onSuccess { carried++ }
                     .onFailure { failure ->
                         refused++
-                        if (step is SyncStep.Create) createFailed = true
+                        if (step is SyncStep.Create) createsFailed += step.uid
                         if (failure is RefusedByAccount) refusal = refusal ?: failure.refusal
                         Timber.w(failure, "Board sync: %s did not go through", step.uid)
                     }
             }
         }
         return Carried(carried, refused, refusal)
+    }
+
+    /** On its own copy; a copy from before copies were named after their uid cannot be told, so on any. */
+    private fun waitsOnACreate(account: String, uid: String, createsFailed: Set<String>, boardsHere: Set<String>): Boolean {
+        val standIn = standInFor(account, uid)
+        return if (standIn in boardsHere) standIn in createsFailed else createsFailed.isNotEmpty()
     }
 
     private suspend fun afterTheBoards(account: String) {
@@ -444,8 +450,9 @@ class BoardSyncEngine @Inject constructor(
      * the account it is gone from here; the new uid goes up in its place.
      */
     private suspend fun adoptBesideAnotherOwners(account: String, incoming: KeptBoardDto) {
+        val uid = standInFor(account, incoming.uid).takeIf { dao.boardByUid(it) == null } ?: UUID.randomUUID().toString()
         dao.addBoardRemembering(
-            board = incoming.toEntity(id = 0, uid = UUID.randomUUID().toString()).copy(publishedId = null, ownerUid = account),
+            board = incoming.toEntity(id = 0, uid = uid).copy(publishedId = null, ownerUid = account),
             tiers = incoming.tiers(images::pathFor, renamed = true),
             record = BoardSyncEntity(
                 account = account,
@@ -627,3 +634,10 @@ private fun KeptBoardDto.tiers(
         )
     }
 }
+
+/**
+ * The uid [account]'s copy of [uid] takes when [uid] is another owner's board
+ * here: the same on every run, so the Forget of [uid] can wait on that copy's Create.
+ */
+internal fun standInFor(account: String, uid: String): String =
+    UUID.nameUUIDFromBytes("$account\n$uid".toByteArray()).toString()

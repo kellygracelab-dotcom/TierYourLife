@@ -147,6 +147,9 @@ abstract class SyncEngineBench {
         var thenRefuseWithCode: Int? = null
         var keepFails = false
         var refuseWithCode: Int? = null
+
+        /** Refused as too large, these alone. */
+        var refuseUids: Set<String> = emptySet()
         var refusalBody = ""
         var onKeep: () -> Unit = {}
         var onIndex: suspend () -> Unit = {}
@@ -167,6 +170,7 @@ abstract class SyncEngineBench {
         override suspend fun keep(uid: String, request: KeepBoardRequestDto): Response<KeptBoardRevisionDto> {
             if (keepFails) throw IOException("offline")
             refuseWithCode?.let { code -> return Response.error(code, refusalBody.toResponseBody("application/json".toMediaType())) }
+            if (uid in refuseUids) return Response.error(HTTP_TOO_LARGE, refusalBody.toResponseBody("application/json".toMediaType()))
             refuseNextWith?.let { theirs ->
                 refuseNextWith = null
                 refuseWithCode = thenRefuseWithCode
@@ -213,6 +217,7 @@ abstract class SyncEngineBench {
 
     protected companion object {
         const val HTTP_CONFLICT = 409
+        const val HTTP_TOO_LARGE = 413
         const val OTHER_RUN_MS = 1_000L
         val someone = (FakeAccountRepository.signedIn as Account.SignedIn).recordKey
         val ann = Account.SignedIn(email = "ann@example.com", photoUrl = null, uid = "ann")
