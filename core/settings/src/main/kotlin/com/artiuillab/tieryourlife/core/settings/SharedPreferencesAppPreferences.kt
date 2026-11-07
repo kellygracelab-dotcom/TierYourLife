@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.core.settings
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -201,6 +202,8 @@ class SharedPreferencesAppPreferences @Inject constructor(
             .groupBy({ it[0] }, { it[1] })
             .mapValues { (_, uids) -> uids.toSet() }
 
+    // The KTX edit {} drops what commit() answers, and here the answer decides whether boards are let go.
+    @SuppressLint("UseKtx")
     override fun setHeldBoards(held: Map<String, Set<String>>): Boolean {
         val entries = held.flatMapTo(mutableSetOf()) { (account, uids) -> uids.map { "$account$HELD_SEPARATOR$it" } }
         // Committed: written just before the boards are let go, and the only thing saying whose they were.
