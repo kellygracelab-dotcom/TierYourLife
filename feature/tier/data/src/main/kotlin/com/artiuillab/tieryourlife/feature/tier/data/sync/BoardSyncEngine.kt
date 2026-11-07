@@ -103,27 +103,8 @@ class BoardSyncEngine @Inject constructor(
         runSuspendCatching { pictures.push(account, stopped = { lock.stopAsked }) }
             .onFailure { failure -> Timber.w(failure, "Pictures did not go up") }
 
-        var carried = 0
-        var refused = 0
-        var refusal: BackupRefusal? = null
-        for ((index, step) in steps.withIndex()) {
-            // Planned from this account's rows; another one signed in since
-            // would be handed them. Between steps is where a run can stop
-            // for a sign-out without leaving a board half written.
-            if (lock.stopAsked || signedInAs() != account) {
-                refused += steps.size - index
-                break
-            }
-            runSuspendCatching { carry(step, fingerprints, account) }
-                .onSuccess { carried++ }
-                .onFailure { failure ->
-                    refused++
-                    if (failure is RefusedByAccount) refusal = refusal ?: failure.refusal
-                    Timber.w(failure, "Board sync: %s did not go through", step.uid)
-                }
-        }
+        val (carried, refused, refusedBoard) = carryAll(steps, fingerprints, account)
         // A run that failed only on the connection says nothing about a board refused before.
-        val refusedBoard = refusal
         when {
             refusedBoard != null -> preferences.setBoardRefusal(account, refusedBoard.encoded())
             refused == 0 -> preferences.setBoardRefusal(account, null)
@@ -137,6 +118,46 @@ class BoardSyncEngine @Inject constructor(
         }
 
         return SyncReport(signedIn = true, carried = carried, refused = refused)
+    }
+
+    private data class Carried(val carried: Int, val refused: Int, val refusal: BackupRefusal?)
+
+    /**
+     * A Forget of a uid another owner holds here goes last, and only once
+     * every Create went through: its record was left when this account's copy
+     * came down beside that board under a new uid, and the copy's Create is
+     * what stands in for it in the account. With one refused, the old uid stays.
+     */
+    private suspend fun carryAll(steps: List<SyncStep>, fingerprints: Map<String, String>, account: String): Carried {
+        val othersHere = dao.allBoards().filter { it.ownerUid != account }.mapTo(mutableSetOf()) { it.uid }
+        val (replaced, rest) = steps.partition { it is SyncStep.Forget && it.uid in othersHere }
+        val ordered = rest + replaced
+        var carried = 0
+        var refused = 0
+        var refusal: BackupRefusal? = null
+        var createFailed = false
+        for ((index, step) in ordered.withIndex()) {
+            // Planned from this account's rows; another one signed in since
+            // would be handed them. Between steps is where a run can stop
+            // for a sign-out without leaving a board half written.
+            if (lock.stopAsked || signedInAs() != account) {
+                refused += ordered.size - index
+                break
+            }
+            if (createFailed && step in replaced) {
+                refused++
+            } else {
+                runSuspendCatching { carry(step, fingerprints, account) }
+                    .onSuccess { carried++ }
+                    .onFailure { failure ->
+                        refused++
+                        if (step is SyncStep.Create) createFailed = true
+                        if (failure is RefusedByAccount) refusal = refusal ?: failure.refusal
+                        Timber.w(failure, "Board sync: %s did not go through", step.uid)
+                    }
+            }
+        }
+        return Carried(carried, refused, refusal)
     }
 
     private suspend fun afterTheBoards(account: String) {

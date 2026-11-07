@@ -60,6 +60,10 @@ class LostSessionTest : SyncEngineBench() {
 
     private fun nothingDeletedIn(account: FakeBoards) = account.server.values.none { it.deleted }
 
+    private companion object {
+        const val HTTP_TOO_LARGE = 413
+    }
+
     @Test
     fun aLostSession_leavesTheBoardsOnThePhone_andForgetsThePerson() = runBlocking {
         val (films, games) = annWithTwoBoardsSynced()
@@ -374,6 +378,24 @@ class LostSessionTest : SyncEngineBench() {
         assertNull(ownerOf(films))
         assertEquals(setOf("ann"), preferences.heldBoards().keys)
         assertNull(preferences.lastSignedIn())
+    }
+
+    @Test
+    fun aCopyTheAccountRefuses_keepsTheBoardItStandsFor_untilItGoesUp() = runBlocking {
+        // Ann's account holds a uid that is another owner's board here: hers comes down beside it.
+        val bobs = givenLocalBoard("Films", owner = "bob")
+        boards.server[bobs] = theirBoard(bobs, "Films", revision = 1)
+        annsEngine().sync()
+
+        boards.refuseWithCode = HTTP_TOO_LARGE
+        annsEngine().sync()
+        assertTrue("the old uid stays while its copy is refused", nothingDeletedIn(boards))
+
+        boards.refuseWithCode = null
+        annsEngine().sync()
+        assertTrue("forgotten once the copy is there", boards.server.getValue(bobs).deleted)
+        assertEquals(2, boards.server.size)
+        assertEquals("bob", ownerOf(bobs))
     }
 
     @Test
