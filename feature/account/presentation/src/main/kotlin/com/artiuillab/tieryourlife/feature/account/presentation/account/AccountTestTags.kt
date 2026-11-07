@@ -10,6 +10,7 @@ internal object AccountTestTags {
     const val MERGE_KEEP_HERE = "account_merge_keep_here"
     const val DONE = "account_done"
     const val SIGN_OUT = "account_sign_out"
+    const val SIGNING_OUT = "account_signing_out"
     const val DELETE_ACCOUNT = "account_delete"
     const val DELETE_CONFIRM = "account_delete_confirm"
     const val DELETE_DIALOG = "account_delete_dialog"

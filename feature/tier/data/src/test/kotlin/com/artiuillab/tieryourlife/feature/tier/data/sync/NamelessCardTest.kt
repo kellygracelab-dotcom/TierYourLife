@@ -86,4 +86,22 @@ class NamelessCardTest : SyncEngineBench() {
         assertFalse(KeptText.isKeptPicture(null, "/data/user/0/files/a.jpg"))
         assertFalse(KeptText.isKeptPicture(null, null))
     }
+
+    // A39: `/boards` drops an address this long, which would leave the card with neither.
+    @Test
+    fun aWebAddressTooLongForTheAccount_isNoKeptPicture() {
+        val longest = "https://" + "a".repeat(KeptText.URL - "https://".length)
+
+        assertTrue(KeptText.isKeptPicture(null, longest))
+        assertFalse(KeptText.isKeptPicture(null, longest + "a"))
+    }
+
+    @Test
+    fun aNamelessCardWithAnAddressTooLong_goesUpUntitled() = runBlocking {
+        givenCard("", imageUrl = "https://example.com/" + "a".repeat(KeptText.URL))
+
+        engine().sync()
+
+        assertEquals(KeptText.UNTITLED_CARD, boards.kept.single().second.items.single().title)
+    }
 }

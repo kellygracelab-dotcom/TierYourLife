@@ -21,6 +21,8 @@ data class AccountUiState(
     val notice: AccountNotice? = null,
     /** True while the account is being removed; nothing else can be pressed. */
     val deleting: Boolean = false,
+    /** True while signing out waits for the call a sync is in to end. */
+    val signingOut: Boolean = false,
     /**
      * Set only while a question is open: somebody has signed in while this
      * phone has boards made without an account, or held for one it was signed

@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.sync
 
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.ThePerson
+import com.artiuillab.tieryourlife.core.settings.takeWhole
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
@@ -161,9 +162,11 @@ class RoomBoardMerge internal constructor(
         val now = accounts.account.first { it != Account.Unknown }
         if (signedInAs(now) != mark.account) {
             // Signing out by choice settles the mark first, so only the account
-            // going away can have signed it out.
+            // going away can have signed it out. Unless the watcher saw it go,
+            // what is on the phone is still that account's; otherwise it is whoever came after.
+            val stillItsOwn = preferences.lastSignedIn() == mark.account
             keepBoardsOf(mark.account)
-            thePerson.forget()
+            if (stillItsOwn) thePerson.forget()
             return@withLock
         }
         when (accounts.currentAccountExists()) {
@@ -234,5 +237,5 @@ private const val ERASURE_SEPARATOR = "\n"
 /** Cut to fit rather than past the account's limit, where the suffix telling the two apart was the part cut off. */
 internal fun withSuffix(title: String, suffix: String): String {
     val room = (KeptText.TITLE - suffix.length - 1).coerceAtLeast(0)
-    return "${title.take(room).trimEnd()} $suffix".take(KeptText.TITLE)
+    return "${title.takeWhole(room).trimEnd()} $suffix".takeWhole(KeptText.TITLE)
 }
