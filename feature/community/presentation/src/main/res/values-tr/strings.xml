@@ -301,7 +301,7 @@
     <string name="community_ranking_own_list">Bu liste sizin, bu yüzden üzerinde gösterilecek bir sıralamanız yok.</string>
     <string name="community_ranking_list_gone">Bu liste artık kullanılamıyor, bu yüzden sıralamanız gösterilemez.</string>
     <string name="moderation_not_taken_down">Kaldırılmadı: liste hâlâ herkese açık. Yeniden deneyin.</string>
-    <string name="moderation_not_kept">Liste bırakılamadı: şikâyetler hâlâ açık. Yeniden deneyin.</string>
+    <string name="moderation_not_kept">Liste bırakılamadı: şikayetler hâlâ açık. Yeniden deneyin.</string>
     <string name="moderation_not_moved">Taşınmadı: liste olduğu yerde. Yeniden deneyin.</string>
-    <string name="moderation_moved_not_dismissed">Taşındı, ancak şikâyetleri hâlâ açık. Kapatmak için “Bırak” düğmesine dokunun.</string>
+    <string name="moderation_moved_not_dismissed">Taşındı, ancak şikayetleri hâlâ açık. Kapatmak için “Bırak” düğmesine dokunun.</string>
 </resources>

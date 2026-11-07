@@ -315,5 +315,5 @@
     <string name="moderation_not_taken_down">Nie usunięto: lista nadal jest publiczna. Spróbuj ponownie.</string>
     <string name="moderation_not_kept">Nie udało się zostawić listy: zgłoszenia są nadal otwarte. Spróbuj ponownie.</string>
     <string name="moderation_not_moved">Nie przeniesiono: lista jest tam, gdzie była. Spróbuj ponownie.</string>
-    <string name="moderation_moved_not_dismissed">Przeniesiono, ale zgłoszenia nadal są otwarte. Stuknij „Zostaw”, aby je zamknąć.</string>
+    <string name="moderation_moved_not_dismissed">Przeniesiono, ale zgłoszenia nadal są otwarte. Dotknij „Zostaw”, aby je zamknąć.</string>
 </resources>

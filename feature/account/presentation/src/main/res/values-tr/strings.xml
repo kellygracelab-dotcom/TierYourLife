@@ -54,7 +54,7 @@
     <string name="merge_footnote">Telefonda tutulanlar, oturum kapalıyken görünür. Hiçbir durumda bir şey silinmez.</string>
     <string name="merge_held_title">Oturumunun kapatıldığı bir hesabın panoları</string>
     <string name="merge_held_body">Bu telefonda oturumunun kapatıldığı bir hesaptan %1$s var. %2$s hesabına kopyalansın mı?</string>
-    <string name="merge_held_footnote">Panoların kendisi telefonda kalır ve o hesaba yeniden girdiğinizde ona geri döner. Hiçbir şey silinmez.</string>
+    <string name="merge_held_footnote">Panoların kendisi telefonda kalır ve o hesapta yeniden oturum açtığınızda ona geri döner. Hiçbir şey silinmez.</string>
     <string name="merge_held_action_copy_in">%1$s hesabına kopyala</string>
     <string name="merge_name_suffix">(bu telefondan)</string>
     <string name="account_sign_out_title">Çıkış yapılsın mı?</string>
