@@ -8,10 +8,12 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import java.util.UUID
 
-/** New uids for a copy of a board, its tiers' and its cards' kept apart. */
-internal class FreshUids(tierUids: Collection<String>, itemUids: Collection<String>) {
-    val tiers: Map<String, String> = tierUids.associateWith { UUID.randomUUID().toString() }
-    val items: Map<String, String> = itemUids.associateWith { UUID.randomUUID().toString() }
+/** A board's tiers and cards under other uids, kept apart: new ones for a copy, or the ones they took here. */
+internal class FreshUids(val tiers: Map<String, String>, val items: Map<String, String>) {
+    constructor(tierUids: Collection<String>, itemUids: Collection<String>) : this(
+        tiers = tierUids.associateWith { UUID.randomUUID().toString() },
+        items = itemUids.associateWith { UUID.randomUUID().toString() },
+    )
 
     /**
      * The board's game under the copy's uids, since it names its cards and

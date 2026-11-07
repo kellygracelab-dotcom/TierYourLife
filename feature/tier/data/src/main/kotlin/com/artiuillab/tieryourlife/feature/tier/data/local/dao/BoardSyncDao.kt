@@ -11,11 +11,18 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.PictureSyncEnt
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
+import com.artiuillab.tieryourlife.feature.tier.data.sync.FreshUids
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PublishFingerprint
 import java.util.UUID
 
 /** One tier and the cards in it, as they arrive from the account. */
 data class IncomingTier(val tier: TierEntity, val items: List<TierItemEntity>)
+
+/** The uids a write had to change, because another board here held them: as sent, to as kept. */
+class Renamed {
+    val tiers = mutableMapOf<String, String>()
+    val items = mutableMapOf<String, String>()
+}
 
 /**
  * Sync's own queries, apart from [TierDao] in the one way that matters: they
@@ -159,7 +166,10 @@ interface BoardSyncDao {
     /** A board arriving for the first time, under the uid the account keeps it as. */
     @Transaction
     suspend fun addBoard(board: TierListEntity, tiers: List<IncomingTier>) {
-        writeContents(insertBoard(board.copy(id = 0)), tiers)
+        val boardId = insertBoard(board.copy(id = 0))
+        val renamed = Renamed()
+        writeContents(boardId, tiers, renamed)
+        settlePlay(boardId, board.play, renamed)
     }
 
     /** Together, so a run that dies between the two does not bring the same board down again as another copy. */
@@ -182,13 +192,14 @@ interface BoardSyncDao {
         val itemsHere = itemsOf(board.id).associateBy { it.uid }
         val keptTiers = mutableSetOf<Long>()
         val keptItems = mutableSetOf<Long>()
+        val renamed = Renamed()
         tiers.forEach { incoming ->
             val tierHere = tiersHere[incoming.tier.uid]
             val tierId = if (tierHere != null) {
                 updateTier(incoming.tier.copy(id = tierHere.id, tierListId = board.id))
                 tierHere.id
             } else {
-                insertTierWithFreeUid(incoming.tier.copy(tierListId = board.id))
+                insertTierWithFreeUid(incoming.tier.copy(tierListId = board.id), renamed.tiers)
             }
             keptTiers += tierId
             incoming.items.forEach { item ->
@@ -197,14 +208,29 @@ interface BoardSyncDao {
                     updateItem(item.copy(id = itemHere.id, tierId = tierId))
                     keptItems += itemHere.id
                 } else {
-                    insertItemWithFreeUid(item.copy(tierId = tierId))
+                    insertItemWithFreeUid(item.copy(tierId = tierId), renamed.items)
                 }
             }
         }
         // Cards first: one moved out of a tier that goes has already been rewritten above.
         deleteItems(itemsHere.values.map { it.id }.filterNot { it in keptItems })
         deleteTiers(tiersHere.values.map { it.id }.filterNot { it in keptTiers })
+        settlePlay(board.id, board.play, renamed)
     }
+
+    /**
+     * The game names cards and tiers by uid, so one that had to take a new
+     * uid here is renamed in it too; a game naming one the board lacks goes.
+     */
+    suspend fun settlePlay(boardId: Long, play: String?, renamed: Renamed) {
+        if (play == null || (renamed.tiers.isEmpty() && renamed.items.isEmpty())) return
+        val tiers = tiersOf(boardId).associate { it.uid to it.uid } + renamed.tiers
+        val items = itemsOf(boardId).associate { it.uid to it.uid } + renamed.items
+        setPlay(boardId, FreshUids(tiers, items).play(play))
+    }
+
+    @Query("UPDATE tier_lists SET play = :play WHERE id = :id")
+    suspend fun setPlay(id: Long, play: String?)
 
     @Update
     suspend fun updateTier(tier: TierEntity)
@@ -223,20 +249,22 @@ interface BoardSyncDao {
      * uids per board, so the same game started on the site and on the phone
      * arrives under the uid it already has here.
      */
-    suspend fun writeContents(boardId: Long, tiers: List<IncomingTier>) {
+    suspend fun writeContents(boardId: Long, tiers: List<IncomingTier>, renamed: Renamed = Renamed()) {
         tiers.forEach { incoming ->
-            val tierId = insertTierWithFreeUid(incoming.tier.copy(tierListId = boardId))
-            incoming.items.forEach { item -> insertItemWithFreeUid(item.copy(tierId = tierId)) }
+            val tierId = insertTierWithFreeUid(incoming.tier.copy(tierListId = boardId), renamed.tiers)
+            incoming.items.forEach { item -> insertItemWithFreeUid(item.copy(tierId = tierId), renamed.items) }
         }
     }
 
-    suspend fun insertTierWithFreeUid(tier: TierEntity): Long {
+    suspend fun insertTierWithFreeUid(tier: TierEntity, renamed: MutableMap<String, String> = mutableMapOf()): Long {
         val uid = if (tierUidTaken(tier.uid)) UUID.randomUUID().toString() else tier.uid
+        if (uid != tier.uid) renamed[tier.uid] = uid
         return insertTier(tier.copy(id = 0, uid = uid))
     }
 
-    suspend fun insertItemWithFreeUid(item: TierItemEntity) {
+    suspend fun insertItemWithFreeUid(item: TierItemEntity, renamed: MutableMap<String, String> = mutableMapOf()) {
         val uid = if (itemUidTaken(item.uid)) UUID.randomUUID().toString() else item.uid
+        if (uid != item.uid) renamed[item.uid] = uid
         insertItem(item.copy(id = 0, uid = uid))
     }
 
