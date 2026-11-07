@@ -107,26 +107,20 @@ class BoardOwnership @Inject constructor(
         true
     }
 
-    /** Held for an account other than the signed-in one, trash left out: what the question about them counts. */
+    /**
+     * Held for an account other than the signed-in one, trash left out, and
+     * not copied into one before: what the question about them counts, and
+     * what a yes copies.
+     */
     suspend fun heldForOthersInUse(): List<TierListEntity> {
         val owner = current()
         val held = preferences.heldBoards().filterKeys { it != owner }.values.flatten().toSet()
-        return guests.guestBoardsInUse().filter { it.uid in held }
+        val copied = preferences.heldBoardsCopied()
+        return guests.guestBoardsInUse().filter { it.uid in held && it.uid !in copied }
     }
 
-    /** Asked and answered: the boards held for other accounts become the signed-in one's. */
-    suspend fun moveHeldIn() {
-        val owner = current() ?: return
-        val count = heldChanges.withLock {
-            val held = preferences.heldBoards()
-            val others = held.filterKeys { it != owner }
-            val given = guests.moveHeldTo(owner, others)
-            // Left behind, an entry names boards that have an owner now, and those are never given back.
-            if (!preferences.setHeldBoards(held - others.keys)) Timber.w("Could not forget whose the moved boards were")
-            given
-        }
-        Timber.i("Moved %d board(s) from an account signed out of into this one", count)
-        moved.tryEmit(Unit)
+    suspend fun markCopied(uids: Collection<String>) = heldChanges.withLock {
+        preferences.setHeldBoardsCopied(preferences.heldBoardsCopied() + uids)
     }
 
     /** The boards held for [account] that are still here are its own again. */
@@ -136,6 +130,7 @@ class BoardOwnership @Inject constructor(
             val boards = held[account] ?: return
             val given = guests.giveBack(account, boards)
             preferences.setHeldBoards(held - account)
+            preferences.setHeldBoardsCopied(preferences.heldBoardsCopied() - boards)
             given
         }
         if (count > 0) {

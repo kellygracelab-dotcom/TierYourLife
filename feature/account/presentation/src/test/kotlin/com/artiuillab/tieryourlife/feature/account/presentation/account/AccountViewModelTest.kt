@@ -137,7 +137,7 @@ class AccountViewModelTest {
     }
 
     @Test
-    fun heldBoardsQuestion_answeredMove_movesThem_thenAsksAboutTheGuestBoards() = runBlocking {
+    fun heldBoardsQuestion_answeredCopy_copiesThem_thenAsksAboutTheGuestBoards() = runBlocking {
         val merge = RecordingMerge(guestBoards = 2, heldBoards = 3)
         val repository = FakeAccountRepository(outcome = SignInOutcome.SignedInToExistingAccount(guestCreditsLost = false))
         val viewModel = viewModel(repository, FakeGoogleCredential(GoogleCredentialResult.Token("t")), merge = merge)
@@ -148,7 +148,7 @@ class AccountViewModelTest {
         val next = viewModel.state.firstWithin { it.merge?.fromAnotherAccount == false }
 
         assertEquals(GuestBoardsQuestion(boards = 2, into = FakeAccountRepository.SIGNED_IN_EMAIL), next.merge)
-        assertEquals(listOf("hold", "moveHeldIn:(Pixel)"), merge.calls)
+        assertEquals(listOf("hold", "copyHeldIn:(Pixel)"), merge.calls)
     }
 
     @Test
@@ -672,8 +672,8 @@ private class RecordingMerge(private val guestBoards: Int, private val heldBoard
 
     override suspend fun heldBoards(): Int = heldBoards
 
-    override suspend fun moveHeldIn(fromThisPhone: String?) {
-        calls += "moveHeldIn:$fromThisPhone"
+    override suspend fun copyHeldIn(fromThisPhone: String?) {
+        calls += "copyHeldIn:$fromThisPhone"
     }
 
     override suspend fun eraseKeepingBoards(account: String, erase: suspend () -> Result<Unit>, signOut: suspend () -> Unit): Result<Unit> {

@@ -191,7 +191,7 @@ class AccountViewModel @Inject constructor(
         _state.update { it.copy(merge = null) }
         viewModelScope.launch {
             if (held) {
-                merge.moveHeldIn(fromThisPhone)
+                merge.copyHeldIn(fromThisPhone)
                 askAfterHeldBoards()
             } else {
                 merge.moveIn(fromThisPhone)

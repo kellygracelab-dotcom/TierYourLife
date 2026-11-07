@@ -41,7 +41,7 @@ class MergePickerTest {
 
         composeRule.onNodeWithText(string(R.string.merge_held_title)).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.merge_held_body, plural(2), EMAIL)).assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.merge_action_move_in, EMAIL)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.merge_held_action_copy_in, EMAIL)).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.merge_action_keep_here)).assertIsDisplayed()
     }
 

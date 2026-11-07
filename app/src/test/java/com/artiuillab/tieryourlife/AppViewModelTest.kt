@@ -124,6 +124,10 @@ private class FakeAppPreferences(
 
     override fun setHeldBoards(held: Map<String, Set<String>>) = true
 
+    override fun heldBoardsCopied(): Set<String> = emptySet()
+
+    override fun setHeldBoardsCopied(uids: Set<String>) = Unit
+
     override fun conflictsSeen(): Set<String> = emptySet()
 
     override fun markConflictSeen(listUid: String) = Unit

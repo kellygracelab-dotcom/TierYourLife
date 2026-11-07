@@ -117,6 +117,11 @@ interface AppPreferences {
     /** False when it could not be written: the boards must not be let go on a promise nobody kept. */
     fun setHeldBoards(held: Map<String, Set<String>>): Boolean
 
+    /** Held boards already copied into another account at the person's word: not offered again. */
+    fun heldBoardsCopied(): Set<String>
+
+    fun setHeldBoardsCopied(uids: Set<String>)
+
     /** By uid rather than one flag: a second conflict months later is news again. */
     fun conflictsSeen(): Set<String>
 

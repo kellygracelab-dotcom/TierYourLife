@@ -301,6 +301,10 @@ private object OnWifiAlways : AppPreferences, Connection {
     override fun heldBoards(): Map<String, Set<String>> = emptyMap()
 
     override fun setHeldBoards(held: Map<String, Set<String>>) = true
+
+    override fun heldBoardsCopied(): Set<String> = emptySet()
+
+    override fun setHeldBoardsCopied(uids: Set<String>) = Unit
     override fun conflictsSeen(): Set<String> = emptySet()
     override fun markConflictSeen(listUid: String) = Unit
 }

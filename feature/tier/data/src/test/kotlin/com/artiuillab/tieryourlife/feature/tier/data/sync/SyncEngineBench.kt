@@ -155,7 +155,7 @@ abstract class SyncEngineBench {
         override suspend fun index(after: String?): KeptBoardIndexDto {
             onIndex()
             return KeptBoardIndexDto(
-                server.values.map { KeptBoardSummaryDto(it.uid, it.revision, it.deleted, it.fingerprint) },
+                server.values.map { KeptBoardSummaryDto(it.uid, it.revision, it.deleted, it.fingerprint, title = it.title) },
             )
         }
 

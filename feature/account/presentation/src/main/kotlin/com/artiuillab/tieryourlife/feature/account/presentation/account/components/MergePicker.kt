@@ -62,7 +62,10 @@ internal fun MergePicker(
                 .heightIn(min = BUTTON_HEIGHT)
                 .testTag(AccountTestTags.MERGE_MOVE_IN),
         ) {
-            Text(stringResource(R.string.merge_action_move_in, account), textAlign = TextAlign.Center)
+            Text(
+                stringResource(if (held) R.string.merge_held_action_copy_in else R.string.merge_action_move_in, account),
+                textAlign = TextAlign.Center,
+            )
         }
         Spacer(Modifier.height(12.dp))
         OutlinedButton(

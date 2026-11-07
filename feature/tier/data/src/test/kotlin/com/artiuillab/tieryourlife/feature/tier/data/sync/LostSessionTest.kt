@@ -249,29 +249,69 @@ class LostSessionTest : SyncEngineBench() {
     }
 
     @Test
-    fun anotherAccount_takesHeldBoardsWhenThePersonSaysSo_andTheFirstLosesNothing() = runBlocking {
+    fun copyingHeldBoardsIntoAnotherAccount_takesNothingFromTheirOwn() = runBlocking {
         val (films, games) = annWithTwoBoardsSynced()
+        val draft = givenLocalBoard("Draft", owner = "ann", itemTitle = "Quake")
         sessionLost()
+        database.tierDao().updateTierListTitle(dao.boardByUid(games)!!.id, "Games I finished")
+        database.tierDao().markTierListsDeleted(listOf(dao.boardByUid(films)!!.id), deletedAt = 1)
 
         signIn(bob)
         val asked = merge.heldBoards()
-        merge.moveHeldIn(fromThisPhone = null)
+        merge.copyHeldIn(fromThisPhone = null)
         merge.keepHere()
         bobsEngine().sync()
 
-        assertEquals(2, asked)
-        assertEquals("bob", ownerOf(films))
-        assertEquals("bob", ownerOf(games))
-        assertTrue(preferences.heldBoards().isEmpty())
-        assertTrue("ann's records of them went", dao.syncRecordsOf("ann").isEmpty())
-        assertEquals(setOf(films, games), bobsAccount.server.keys)
+        assertEquals("the trash is not offered", 2, asked)
+        val copies = bobsAccount.server.values
+        assertEquals(setOf("Games I finished", "Draft"), copies.map { it.title }.toSet())
+        assertTrue("under uids of their own", copies.none { it.uid in setOf(films, games, draft) })
+        assertNull(ownerOf(films))
+        assertNull(ownerOf(games))
+        assertEquals(setOf(films, games, draft), preferences.heldBoards().getValue("ann"))
+        assertEquals(setOf(films, games), dao.syncRecordsOf("ann").map { it.listUid }.toSet())
 
         merge.signOutSettlingErase { accounts.signOut() }
         signIn(ann)
         annsEngine().sync()
-        annsEngine().sync()
-        val kept = boards.server.values.filterNot { it.deleted }.map { it.title }
-        assertTrue("ann's account still has both, if under new uids", kept.containsAll(listOf("Films", "Games")))
+
+        assertEquals("ann", ownerOf(draft))
+        assertEquals(setOf(films, games, draft), boards.server.keys)
+        assertTrue(nothingDeletedIn(boards))
+        assertEquals(setOf(films, games, draft), boards.kept.map { it.first }.toSet())
+        assertEquals("Games I finished", boards.server.getValue(games).title)
+        assertTrue(preferences.heldBoardsCopied().isEmpty())
+    }
+
+    @Test
+    fun heldBoardsCopiedOnce_areNotOfferedAgain() = runBlocking {
+        annWithTwoBoardsSynced()
+        sessionLost()
+        signIn(bob)
+        merge.copyHeldIn(fromThisPhone = null)
+        merge.keepHere()
+        merge.signOutSettlingErase { accounts.signOut() }
+        session.notice()
+
+        signIn(bob)
+
+        assertEquals(0, merge.heldBoards())
+        merge.copyHeldIn(fromThisPhone = null)
+        assertEquals("no second set of copies", 2, dao.boardsOf("bob").size)
+    }
+
+    @Test
+    fun aCopyClashingWithTheAccount_isRenamed_andTheHeldBoardKeepsItsName() = runBlocking {
+        val (films, _) = annWithTwoBoardsSynced()
+        sessionLost()
+        bobsAccount.server["bobs-films"] = theirBoard("bobs-films", "Films", revision = 1)
+        signIn(bob)
+
+        RoomBoardMerge(dao, database.ownerDao(), bobsAccount, ownership, lock, preferences, accounts, thePerson) { 0L }
+            .copyHeldIn(fromThisPhone = "(Pixel)")
+
+        assertEquals("Films", dao.boardByUid(films)!!.title)
+        assertTrue(dao.boardsOf("bob").any { it.title == withSuffix("Films", "(Pixel)") })
     }
 
     @Test

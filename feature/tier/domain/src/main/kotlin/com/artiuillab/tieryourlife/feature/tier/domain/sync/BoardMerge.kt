@@ -32,11 +32,12 @@ interface BoardMerge {
     suspend fun heldBoards(): Int
 
     /**
-     * The person moves [heldBoards] into the signed-in account; renamed as in
-     * [moveIn]. The account they waited for keeps its copies of them. Nothing
+     * The person has [heldBoards] copied into the signed-in account, under new
+     * uids and renamed as in [moveIn]; not asked about again. The boards
+     * themselves stay held, untouched, for the account they wait for. Nothing
      * syncs yet: [moveIn] or [keepHere] still follows.
      */
-    suspend fun moveHeldIn(fromThisPhone: String?)
+    suspend fun copyHeldIn(fromThisPhone: String?)
 
     /**
      * Deletes [account] with [erase] and signs out with [signOut], no sync

@@ -120,6 +120,14 @@ class FakeAppPreferences(
         return true
     }
 
+    private var copied: Set<String> = emptySet()
+
+    override fun heldBoardsCopied(): Set<String> = copied
+
+    override fun setHeldBoardsCopied(uids: Set<String>) {
+        copied = uids
+    }
+
     override fun setBoardRefusal(account: String, refusal: String?) {
         if (refusal == null) refusals.remove(account) else refusals[account] = refusal
     }

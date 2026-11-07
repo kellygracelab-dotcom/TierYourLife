@@ -23,6 +23,7 @@ private const val KEY_BOARD_REFUSAL = "board_refusal"
 private const val KEY_ERASURE_UNDER_WAY = "erasure_under_way"
 private const val KEY_LAST_SIGNED_IN = "last_signed_in"
 private const val KEY_HELD_BOARDS = "held_boards"
+private const val KEY_HELD_BOARDS_COPIED = "held_boards_copied"
 private const val HELD_SEPARATOR = "\n"
 private const val KEY_LAST_KNOWN_REPORTS = "last_known_reports"
 private const val KEY_LAST_KNOWN_TRASH = "last_known_trash"
@@ -210,6 +211,12 @@ class SharedPreferencesAppPreferences @Inject constructor(
         val editor = prefs.edit()
         if (entries.isEmpty()) editor.remove(KEY_HELD_BOARDS) else editor.putStringSet(KEY_HELD_BOARDS, entries)
         return editor.commit()
+    }
+
+    override fun heldBoardsCopied(): Set<String> = stored(KEY_HELD_BOARDS_COPIED)
+
+    override fun setHeldBoardsCopied(uids: Set<String>) {
+        prefs.edit { if (uids.isEmpty()) remove(KEY_HELD_BOARDS_COPIED) else putStringSet(KEY_HELD_BOARDS_COPIED, uids) }
     }
 
     override fun conflictsSeen(): Set<String> = stored(KEY_CONFLICTS_SEEN)
