@@ -27,6 +27,7 @@ class KeptBoardFieldsTest {
     private fun sent(board: com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity): JsonObject {
         val request = KeepBoardRequestDto(
             fingerprint = "f",
+            coverPictureId = null,
             title = board.title,
             displayMode = board.displayMode,
             anonymous = true.takeIf { board.anonymous },
@@ -39,7 +40,7 @@ class KeptBoardFieldsTest {
 
     @Test
     fun `a game that came down goes back up exactly as it came`() {
-        val board = networkJson.decodeFromString(KeptBoardDto.serializer(), incoming).toEntity(id = 1, uid = "b-1")
+        val board = networkJson.decodeFromString(KeptBoardDto.serializer(), incoming).toEntity(id = 1, uid = "b-1", pathFor = { it })
 
         val body = sent(board)
 
@@ -49,7 +50,7 @@ class KeptBoardFieldsTest {
 
     @Test
     fun `an anonymous board says so, and keeps saying so`() {
-        val board = networkJson.decodeFromString(KeptBoardDto.serializer(), incoming).toEntity(id = 1, uid = "b-1")
+        val board = networkJson.decodeFromString(KeptBoardDto.serializer(), incoming).toEntity(id = 1, uid = "b-1", pathFor = { it })
 
         assertEquals("true", sent(board)["anonymous"].toString())
     }
@@ -57,7 +58,7 @@ class KeptBoardFieldsTest {
     @Test
     fun `a board that is neither sends neither field at all`() {
         val board = networkJson.decodeFromString(KeptBoardDto.serializer(), """{"uid":"b-2","revision":1,"title":"Books"}""")
-            .toEntity(id = 2, uid = "b-2")
+            .toEntity(id = 2, uid = "b-2", pathFor = { it })
 
         val body = sent(board)
 

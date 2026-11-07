@@ -34,7 +34,8 @@ object BoardFingerprint {
             board.title,
             board.displayMode,
             board.category,
-            board.coverImageUrl,
+            // The site's `coverPictureId ?? coverImageUrl`: an own photo by its id, as a card's.
+            pictureIdOf(board.coverImageUrl) ?: board.coverImageUrl,
             board.coverImageUrls,
             board.authorName,
             board.deletedAt?.toString(),

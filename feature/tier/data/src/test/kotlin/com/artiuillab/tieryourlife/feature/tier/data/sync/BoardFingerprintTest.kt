@@ -194,6 +194,29 @@ class BoardFingerprintTest {
         assertEquals("8e5ded7251916b6817519d19b768e298cb2e38b195ef08173f4e22c50189b27f", print)
     }
 
+    // QA A13: the site's cover term is `coverPictureId ?? coverImageUrl`, as pictureOf is for a card.
+    @Test
+    fun `a cover of one's own photo goes by its id, as the site writes it`() {
+        val here = BoardFingerprint.of(bare.copy(coverImageUrl = "/data/user/0/app/files/tier_images/cover-1"), emptyList(), emptyList(), ::pictureIdOf)
+        val there = BoardFingerprint.of(bare.copy(coverImageUrl = "/data/user/10/app/files/tier_images/cover-1"), emptyList(), emptyList(), ::pictureIdOf)
+
+        assertEquals(sha256("1:u|1:T|4:WRAP|~|7:cover-1|~|~|~|"), here)
+        assertEquals("86fac132f338adcf24003c54a050265ea6c8b5d9aca53dff9a234a4709d08bef", here)
+        assertEquals(here, there)
+    }
+
+    @Test
+    fun `a board without a cover photo keeps the fingerprint it always had`() {
+        val web = BoardFingerprint.of(bare.copy(coverImageUrl = "https://i/cover.jpg"), emptyList(), emptyList(), ::pictureIdOf)
+
+        assertEquals(sha256("1:u|1:T|4:WRAP|~|19:https://i/cover.jpg|~|~|~|"), web)
+        assertEquals("12564983e429bc9ffea4275f919268e0190fb5c36148ef706fc0e9d366937ffe", web)
+        assertEquals(
+            "8e5ded7251916b6817519d19b768e298cb2e38b195ef08173f4e22c50189b27f",
+            BoardFingerprint.of(bare, emptyList(), emptyList(), ::pictureIdOf),
+        )
+    }
+
     @Test
     fun `the anonymous field comes after the last card, not among the board's own`() {
         val anonymous = board.copy(anonymous = true)

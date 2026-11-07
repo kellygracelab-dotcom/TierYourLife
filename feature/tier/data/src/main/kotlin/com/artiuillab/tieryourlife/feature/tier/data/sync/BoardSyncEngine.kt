@@ -167,7 +167,7 @@ class BoardSyncEngine @Inject constructor(
     }
 
     private suspend fun afterTheBoards(account: String) {
-        runSuspendCatching { pictures.pull(account, wantedPictures(account), stopped = { lock.stopAsked }) }
+        runSuspendCatching { pictures.pull(account, wantedPictures(account), wantedCovers(account), stopped = { lock.stopAsked }) }
             .onFailure { failure -> Timber.w(failure, "Pictures did not come down") }
         if (lock.stopAsked) return
         runSuspendCatching { forgetWhatIsNoLongerPublished() }
@@ -238,6 +238,9 @@ class BoardSyncEngine @Inject constructor(
             item.uid to pictureId
         }
         .toMap()
+
+    private suspend fun wantedCovers(account: String): Set<String> =
+        dao.coverUrlsOf(account).mapNotNullTo(mutableSetOf(), images::pictureIdOf)
 
     private suspend fun readIndex(): Map<String, RemoteBoard> {
         val found = mutableMapOf<String, RemoteBoard>()
@@ -409,7 +412,7 @@ class BoardSyncEngine @Inject constructor(
                 Timber.i("A board edited during the run keeps its edit")
                 return@together
             }
-            dao.replaceContents(incoming.toEntity(existing.id, existing.uid).keepingLocalFieldsOf(now), incoming.tiers(images::pathFor))
+            dao.replaceContents(incoming.toEntity(existing.id, existing.uid, images::pathFor).keepingLocalFieldsOf(now), incoming.tiers(images::pathFor))
             val stored = dao.boardByUid(incoming.uid) ?: return@together
             remember(account, incoming.uid, incoming.revision, fingerprintOf(stored))
         }
@@ -426,7 +429,7 @@ class BoardSyncEngine @Inject constructor(
         val uid = if (asCopy) UUID.randomUUID().toString() else incoming.uid
         val fresh = if (asCopy) incoming.freshUids() else null
         dao.together {
-            val board = incoming.toEntity(id = 0, uid = uid)
+            val board = incoming.toEntity(id = 0, uid = uid, pathFor = images::pathFor)
             dao.addBoard(
                 board = board.copy(
                     // Null rather than a placeholder: the wording belongs to the screen.
@@ -455,7 +458,7 @@ class BoardSyncEngine @Inject constructor(
     private suspend fun adoptBesideAnotherOwners(account: String, incoming: KeptBoardDto) {
         val uid = standInFor(account, incoming.uid).takeIf { dao.boardByUid(it) == null } ?: UUID.randomUUID().toString()
         val fresh = incoming.freshUids()
-        val board = incoming.toEntity(id = 0, uid = uid)
+        val board = incoming.toEntity(id = 0, uid = uid, pathFor = images::pathFor)
         dao.addBoardRemembering(
             board = board.copy(publishedId = null, ownerUid = account, play = fresh.play(board.play)),
             tiers = incoming.tiers(images::pathFor, fresh),
@@ -492,6 +495,7 @@ class BoardSyncEngine @Inject constructor(
         basedOn: Int?,
     ): KeepBoardRequestDto {
         val uidByTierId = tiers.associate { it.id to it.uid }
+        val coverPictureId = images.pictureIdOf(board.coverImageUrl)
         return KeepBoardRequestDto(
             basedOn = basedOn,
             deviceName = deviceName.current(),
@@ -499,8 +503,9 @@ class BoardSyncEngine @Inject constructor(
             title = board.title,
             displayMode = board.displayMode,
             category = board.category,
-            coverImageUrl = board.coverImageUrl,
+            coverImageUrl = board.coverImageUrl.takeIf { coverPictureId == null },
             coverImageUrls = board.coverImageUrls.toCoverImageUrls(),
+            coverPictureId = coverPictureId,
             authorName = board.authorName,
             publishedId = board.publishedId,
             deletedAt = board.deletedAt,
@@ -586,7 +591,7 @@ internal fun TierListEntity.keepingLocalFieldsOf(here: TierListEntity) = copy(
     ownerUid = here.ownerUid,
 )
 
-internal fun KeptBoardDto.toEntity(id: Long, uid: String) = TierListEntity(
+internal fun KeptBoardDto.toEntity(id: Long, uid: String, pathFor: (String) -> String) = TierListEntity(
     id = id,
     title = title,
     deletedAt = deletedAt,
@@ -594,7 +599,8 @@ internal fun KeptBoardDto.toEntity(id: Long, uid: String) = TierListEntity(
     publishedId = publishedId,
     authorName = authorName,
     category = category,
-    coverImageUrl = coverImageUrl,
+    // As a card's picture: the path it will live at once fetched.
+    coverImageUrl = coverPictureId?.let(pathFor) ?: coverImageUrl,
     coverImageUrls = coverImageUrls.toStoredCoverImageUrls(),
     uid = uid,
     anonymous = anonymous,

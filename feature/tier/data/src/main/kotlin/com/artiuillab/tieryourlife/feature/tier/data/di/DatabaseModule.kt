@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.GuestBoardsDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.OwnerDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
+import com.artiuillab.tieryourlife.feature.tier.data.local.database.FORGET_GALLERY_COVERS
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_10_11
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_11_12
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_12_13
@@ -47,6 +48,7 @@ object DatabaseModule {
             MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12,
             MIGRATION_12_13, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17,
         )
+        .addCallback(FORGET_GALLERY_COVERS)
         // No destructive fallback of any kind. Opening a newer database with an
         // older build used to drop every table without a word, which turns
         // "you installed the wrong build" into "your library is gone" -- and
