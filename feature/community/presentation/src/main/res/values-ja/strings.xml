@@ -167,6 +167,8 @@
     <string name="explore_unfollowed">%1$sのフォローを解除しました</string>
     <string name="explore_undo">元に戻す</string>
     <string name="explore_follow_failed">フォローできませんでした。もう一度お試しください。</string>
+    <string name="follow_section_moved">このセクションは%1$sに統合されました。そちらをフォローしています。</string>
+    <string name="follow_section_merged">このセクションは統合され、今はもうありません。</string>
     <string name="follow_unfollow_failed">フォロー解除できませんでした。もう一度お試しください。</string>
     <string name="follow_too_many">フォローできるのは%1$d件までです。どれかのフォローを解除してください。</string>
     <string name="explore_new_lists">新しいリスト</string>
@@ -294,6 +296,9 @@
     <string name="community_ranking_banned">モデレーターがあなたのリストの1つを取り下げたため、今はランキングを見せられません。</string>
     <string name="community_ranking_own_list">これはあなたのリストなので、見せるランキングはありません。</string>
     <string name="community_ranking_list_gone">このリストはもう利用できないため、ランキングを見せられません。</string>
+    <string name="community_ranking_bad_tier_names">ティアにはそれぞれ名前が必要で、ランキングのティアは20段までです。</string>
+    <string name="community_ranking_cards_dont_match">ランキングのカードがこのリストと一致しません。リストを開き直して、もう一度並べてください。</string>
+    <string name="community_ranking_not_accepted">ランキングを送信できませんでした。受け付けられない内容が含まれています。</string>
     <string name="moderation_not_taken_down">取り下げられませんでした。リストはまだ公開されています。もう一度お試しください。</string>
     <string name="moderation_not_kept">リストを残せませんでした。通報はまだ未処理です。もう一度お試しください。</string>
     <string name="moderation_not_moved">移動できませんでした。リストは元の場所のままです。もう一度お試しください。</string>

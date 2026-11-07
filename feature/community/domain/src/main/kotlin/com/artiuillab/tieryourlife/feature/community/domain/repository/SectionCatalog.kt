@@ -18,8 +18,13 @@ interface SectionCatalog {
     /** Asks the server about an id the directory does not know: once, however many screens meet it. */
     fun lookUp(id: String)
 
-    /** Redrawn in the same frame and put back if the server refuses. */
-    suspend fun setFollowing(id: String, now: Boolean): Result<Unit>
+    /**
+     * Redrawn in the same frame and put back if the server refuses. The answer
+     * is the section followed: [id]'s own, or the one it was merged into. Fails
+     * with [com.artiuillab.tieryourlife.feature.community.domain.model.SectionWasMerged]
+     * when it went nowhere a follow can follow.
+     */
+    suspend fun setFollowing(id: String, now: Boolean): Result<String>
 
     /** Sends a proposal; once the server has it, it waits first on this person's screens. Fails with [com.artiuillab.tieryourlife.feature.community.domain.model.ProposalRefused]. */
     suspend fun propose(proposal: SectionProposal): Result<Section>

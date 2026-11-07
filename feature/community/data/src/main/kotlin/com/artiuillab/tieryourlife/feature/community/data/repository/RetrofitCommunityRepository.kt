@@ -160,7 +160,13 @@ class RetrofitCommunityRepository @Inject constructor(
     }
 
     override suspend fun followSection(id: String): Result<Unit> = attempt("Following a section") {
-        refusedOverTheLimit { api.followSection(id) }
+        refusedOverTheLimit {
+            try {
+                api.followSection(id)
+            } catch (refused: HttpException) {
+                throw refused.mergedAway() ?: refused
+            }
+        }
     }
 
     override suspend fun unfollowSection(id: String): Result<Unit> = attempt("Unfollowing a section") {

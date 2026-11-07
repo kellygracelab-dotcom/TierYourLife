@@ -137,7 +137,9 @@ class ExploreViewModel @Inject constructor(
     private fun setFollowing(sectionId: String, now: Boolean) {
         viewModelScope.launch {
             catalog.setFollowing(sectionId, now).fold(
-                onSuccess = { notes.send(if (now) CommunityNotice.NowFollowing(sectionId) else CommunityNotice.Unfollowed(sectionId)) },
+                onSuccess = { followed ->
+                    notes.send(if (now) CommunityNotice.NowFollowing(followed, moved = followed != sectionId) else CommunityNotice.Unfollowed(sectionId))
+                },
                 onFailure = { notes.send(CommunityNotice.FollowFailed(FollowRefusal.of(now, it))) },
             )
         }

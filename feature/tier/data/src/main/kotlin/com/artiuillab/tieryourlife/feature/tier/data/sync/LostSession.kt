@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
+import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.ThePerson
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
@@ -28,7 +29,8 @@ class LostSession @Inject constructor(
 ) {
 
     suspend fun watch() {
-        accounts.account.collect { notice() }
+        // A failed write (a full disk) must not end the watch, nor sync on reconnect beside it.
+        accounts.account.collect { runSuspendCatching { notice() }.onFailure { Timber.w(it, "Could not look at the session") } }
     }
 
     /** Reads the account again under the lock: one seen before a sign-out by choice took it would be stale. */

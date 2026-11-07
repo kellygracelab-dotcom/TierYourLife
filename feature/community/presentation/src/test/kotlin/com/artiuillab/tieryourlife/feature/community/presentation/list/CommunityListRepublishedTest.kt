@@ -182,7 +182,13 @@ class CommunityListRepublishedTest {
     // A18: a list gone or one's own came back as "Something went wrong".
     @Test
     fun aListGoneOrOnesOwn_isNamed() = runBlocking {
-        listOf(RankingRefusal.ListGone to RankingNotice.ListGone, RankingRefusal.OwnList to RankingNotice.OwnList).forEach { (refusal, notice) ->
+        listOf(
+            RankingRefusal.ListGone to RankingNotice.ListGone,
+            RankingRefusal.OwnList to RankingNotice.OwnList,
+            RankingRefusal.BadTierNames to RankingNotice.BadTierNames,
+            RankingRefusal.CardsDontMatch to RankingNotice.CardsDontMatch,
+            RankingRefusal.NotAccepted to RankingNotice.NotAccepted,
+        ).forEach { (refusal, notice) ->
             val viewModel = viewModel(community = TestCommunity(showRefusal = refusal), accounts = signedIn)
             arranged(viewModel)
 

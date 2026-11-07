@@ -169,6 +169,8 @@
     <string name="explore_unfollowed">Unfollowed %1$s</string>
     <string name="explore_undo">Undo</string>
     <string name="explore_follow_failed">Couldn’t follow. Try again.</string>
+    <string name="follow_section_moved">This section moved into %1$s. You follow it there.</string>
+    <string name="follow_section_merged">This section was merged and no longer exists.</string>
     <string name="follow_unfollow_failed">Couldn’t unfollow. Try again.</string>
     <string name="follow_too_many">You can follow up to %1$d. Unfollow one to make room.</string>
     <string name="explore_new_lists">New lists</string>
@@ -300,6 +302,9 @@
     <string name="community_ranking_banned">A moderator took down one of your lists, so you cannot show rankings for now.</string>
     <string name="community_ranking_own_list">This list is yours, so there is no ranking of yours to show on it.</string>
     <string name="community_ranking_list_gone">This list isn’t available anymore, so your ranking can’t be shown.</string>
+    <string name="community_ranking_bad_tier_names">Every tier needs a name, and a ranking can have at most 20 tiers.</string>
+    <string name="community_ranking_cards_dont_match">The cards in your ranking don’t match this list. Open it again and place them once more.</string>
+    <string name="community_ranking_not_accepted">Your ranking couldn’t be sent: something in it isn’t accepted.</string>
     <string name="moderation_not_taken_down">Not taken down: the list is still public. Try again.</string>
     <string name="moderation_not_kept">Could not leave it up: the reports are still open. Try again.</string>
     <string name="moderation_not_moved">Not moved: the list is where it was. Try again.</string>

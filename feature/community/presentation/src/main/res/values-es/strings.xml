@@ -171,6 +171,8 @@
     <string name="explore_unfollowed">Dejaste de seguir %1$s</string>
     <string name="explore_undo">Deshacer</string>
     <string name="explore_follow_failed">No se pudo seguir. Inténtalo de nuevo.</string>
+    <string name="follow_section_moved">Esta sección pasó a %1$s. Ahora la sigues allí.</string>
+    <string name="follow_section_merged">Esta sección se fusionó y ya no existe.</string>
     <string name="follow_unfollow_failed">No se pudo dejar de seguir. Inténtalo de nuevo.</string>
     <string name="follow_too_many">Puedes seguir hasta %1$d. Deja de seguir alguno para hacer sitio.</string>
     <string name="explore_new_lists">Listas nuevas</string>
@@ -306,6 +308,9 @@
     <string name="community_ranking_banned">Un moderador retiró una de tus listas, así que por ahora no puedes mostrar rankings.</string>
     <string name="community_ranking_own_list">Esta lista es tuya, así que no hay un ranking tuyo que mostrar en ella.</string>
     <string name="community_ranking_list_gone">Esta lista ya no está disponible, así que tu ranking no se puede mostrar.</string>
+    <string name="community_ranking_bad_tier_names">Cada nivel necesita un nombre, y un ranking puede tener como máximo 20 niveles.</string>
+    <string name="community_ranking_cards_dont_match">Las tarjetas de tu ranking no coinciden con esta lista. Ábrela de nuevo y colócalas otra vez.</string>
+    <string name="community_ranking_not_accepted">No se pudo enviar tu ranking: hay algo en él que no se acepta.</string>
     <string name="moderation_not_taken_down">No se retiró: la lista sigue siendo pública. Inténtalo de nuevo.</string>
     <string name="moderation_not_kept">No se pudo dejar la lista: los reportes siguen abiertos. Inténtalo de nuevo.</string>
     <string name="moderation_not_moved">No se movió: la lista sigue donde estaba. Inténtalo de nuevo.</string>

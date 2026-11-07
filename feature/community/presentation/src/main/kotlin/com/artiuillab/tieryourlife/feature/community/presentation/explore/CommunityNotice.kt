@@ -18,8 +18,8 @@ sealed interface CommunityNotice {
     data class RefreshFailed(val showingFromMillis: Long) : CommunityNotice
     data class FollowFailed(val refusal: FollowRefusal) : CommunityNotice
 
-    /** [sectionId] is named on screen, where the words are. */
-    data class NowFollowing(val sectionId: String) : CommunityNotice
+    /** [sectionId] is named on screen, where the words are; [moved] when the one tapped had been merged into it. */
+    data class NowFollowing(val sectionId: String, val moved: Boolean = false) : CommunityNotice
 
     /** With Undo, which follows the section again. */
     data class Unfollowed(val sectionId: String) : CommunityNotice

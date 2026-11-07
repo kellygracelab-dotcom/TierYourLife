@@ -184,6 +184,19 @@ class SectionMappingTest {
         assertNull(IOException("offline").sectionRefusal())
     }
 
+    @Test
+    fun `a follow of a merged section names where it went`() {
+        val intoASection = refusal(410, """{"code":"MERGED","mergedInto":"food","detail":"food"}""").mergedAway()
+        val intoATopic = refusal(410, """{"code":"MERGED","mergedTopicId":"t7"}""").mergedAway()
+        val nowhere = refusal(410, "<html>").mergedAway()
+
+        assertEquals("food" to null, intoASection?.into to intoASection?.topic)
+        assertEquals(null to "t7", intoATopic?.into to intoATopic?.topic)
+        assertEquals(null to null, nowhere?.into to nowhere?.topic)
+        assertTrue(nowhere != null)
+        assertNull(refusal(409, """{"code":"TOO_MANY_FOLLOWING"}""").mergedAway())
+    }
+
     private fun refusal(code: Int, body: String) =
         HttpException(Response.error<Any>(code, body.toResponseBody("application/json".toMediaType())))
 }

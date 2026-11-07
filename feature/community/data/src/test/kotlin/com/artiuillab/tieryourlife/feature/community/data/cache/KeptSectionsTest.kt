@@ -19,6 +19,7 @@ class KeptSectionsTest {
             extra = mapOf("boats" to Section(id = "boats", name = "Boats")),
             merged = mapOf("autos" to "cars", "bikes" to "cars"),
             mergedTopics = mapOf("bikes" to "t7"),
+            mergedNoTopic = setOf("autos"),
             fetchedAtMillis = 42L,
         )
 

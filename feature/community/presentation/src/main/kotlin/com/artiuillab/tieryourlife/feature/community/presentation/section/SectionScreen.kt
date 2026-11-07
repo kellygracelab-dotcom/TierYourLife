@@ -80,6 +80,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.feedIt
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.homeLayoutFor
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.rememberSkeletonAlpha
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.SignInToFollow
+import com.artiuillab.tieryourlife.feature.community.presentation.follow.followingSentence
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenceFor
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
@@ -204,7 +205,8 @@ private fun SectionNotices(
 
                 is CommunityNotice.FollowFailed -> snackbar.showSnackbar(resources.sentenceFor(notice.refusal))
                 CommunityNotice.ActionFailed -> snackbar.showSnackbar(resources.getString(ThemeR.string.snack_action_failed))
-                is CommunityNotice.NowFollowing, is CommunityNotice.AlreadyDecided -> Unit
+                is CommunityNotice.NowFollowing -> if (notice.moved) snackbar.showSnackbar(resources.followingSentence(notice, nameOf(notice.sectionId)))
+                is CommunityNotice.AlreadyDecided -> Unit
             }
         }
     }

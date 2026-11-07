@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirecto
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionProposal
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionWasMerged
 import com.artiuillab.tieryourlife.feature.community.domain.model.Withdrawal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -86,13 +87,18 @@ class KeptSectionCatalog(
     private suspend fun learn(id: String, found: SectionLookup) {
         when (found) {
             is SectionLookup.Found -> state.update { now ->
-                val renamed = if (found.section.id != id) now.merged + (id to found.section.id) else now.merged
-                now.copy(extra = now.extra + (found.section.id to found.section), merged = renamed)
+                val renamed = found.section.id != id
+                now.copy(
+                    extra = now.extra + (found.section.id to found.section),
+                    merged = if (renamed) now.merged + (id to found.section.id) else now.merged,
+                    mergedNoTopic = if (renamed) now.mergedNoTopic + id else now.mergedNoTopic,
+                )
             }
 
             is SectionLookup.Merged -> state.update {
                 val topics = found.topic?.let { topic -> it.mergedTopics + (id to topic) } ?: it.mergedTopics
-                it.copy(merged = it.merged + (id to found.into), mergedTopics = topics)
+                val noTopic = if (found.topic == null) it.mergedNoTopic + id else it.mergedNoTopic
+                it.copy(merged = it.merged + (id to found.into), mergedTopics = topics, mergedNoTopic = noTopic)
             }
             SectionLookup.Unknown -> state.update { it.copy(unknown = it.unknown + id) }
         }
@@ -100,8 +106,17 @@ class KeptSectionCatalog(
         if (found is SectionLookup.Merged) lookUp(found.into)
     }
 
-    override suspend fun setFollowing(id: String, now: Boolean): Result<Unit> {
+    override suspend fun setFollowing(id: String, now: Boolean): Result<String> {
         val target = state.value.resolve(id)
+        val result = follow(target, now)
+        val merged = result.exceptionOrNull() as? SectionWasMerged
+        val into = merged?.into
+        if (!now || into == null || into == target) return result.map { target }
+        learn(target, SectionLookup.Merged(into, merged?.topic))
+        return follow(into, now = true).map { into }
+    }
+
+    private suspend fun follow(target: String, now: Boolean): Result<Unit> {
         val was = state.value.find(target)?.following
         state.update { it.withFollowing(target, now) }
         val result = if (now) community.followSection(target) else community.unfollowSection(target)

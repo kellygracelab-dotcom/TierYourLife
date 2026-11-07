@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionWasMerged
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
@@ -260,6 +261,50 @@ class SectionViewModelTest {
         restored.state.firstWithin { it.sectionId == ListCategory.Games.id && it.feed.phase == FeedPhase.Ready }
 
         assertNull(withTimeoutOrNull(500) { restored.mergedIntoTopic.first() })
+    }
+
+    // A18: a Follow on a section merged meanwhile said only "Couldn't follow".
+    @Test
+    fun followingASectionMergedMeanwhile_followsWhereItWent_andSaysSo() = runBlocking {
+        val community = object : Community() {
+            override suspend fun followSection(section: String): Result<Unit> =
+                if (section == ListCategory.Games.id) Result.failure(SectionWasMerged(into = ListCategory.FilmTv.id, topic = null)) else Result.success(Unit)
+        }
+        val viewModel = viewModel(community)
+        viewModel.open()
+        viewModel.state.firstWithin { it.stats != null }
+
+        viewModel.toggleSectionFollow()
+
+        assertEquals(CommunityNotice.NowFollowing(ListCategory.FilmTv.id, moved = true), withTimeout(5_000) { viewModel.notices.first() })
+    }
+
+    @Test
+    fun followingASectionMergedIntoATopic_opensTheTopic() = runBlocking {
+        val community = object : Community() {
+            override suspend fun followSection(section: String): Result<Unit> = Result.failure(SectionWasMerged(into = null, topic = "t7"))
+        }
+        val viewModel = viewModel(community)
+        viewModel.open()
+        viewModel.state.firstWithin { it.stats != null }
+
+        viewModel.toggleSectionFollow()
+
+        assertEquals(CommunityRoute.Topic(topicId = "t7"), withTimeout(5_000) { viewModel.mergedIntoTopic.first() })
+    }
+
+    @Test
+    fun followingASectionMergedIntoNothing_saysItIsGone() = runBlocking {
+        val community = object : Community() {
+            override suspend fun followSection(section: String): Result<Unit> = Result.failure(SectionWasMerged(into = null, topic = null))
+        }
+        val viewModel = viewModel(community)
+        viewModel.open()
+        viewModel.state.firstWithin { it.stats != null }
+
+        viewModel.toggleSectionFollow()
+
+        assertEquals(CommunityNotice.FollowFailed(FollowRefusal.Merged), withTimeout(5_000) { viewModel.notices.first() })
     }
 
     @Test

@@ -157,10 +157,14 @@ abstract class SyncEngineBench {
 
         override suspend fun index(after: String?): KeptBoardIndexDto {
             onIndex()
-            return KeptBoardIndexDto(
-                server.values.map { KeptBoardSummaryDto(it.uid, it.revision, it.deleted, it.fingerprint, title = it.title) },
-            )
+            val all = server.values.map { KeptBoardSummaryDto(it.uid, it.revision, it.deleted, it.fingerprint, title = it.title) }
+            val from = after?.let { last -> all.indexOfFirst { it.uid == last } + 1 } ?: 0
+            val page = all.drop(from).take(pageSize)
+            return KeptBoardIndexDto(page, next = page.lastOrNull()?.uid?.takeIf { from + page.size < all.size })
         }
+
+        /** The proxy's is 100. */
+        var pageSize = Int.MAX_VALUE
 
         override suspend fun board(uid: String): KeptBoardDto {
             onBoard(uid)

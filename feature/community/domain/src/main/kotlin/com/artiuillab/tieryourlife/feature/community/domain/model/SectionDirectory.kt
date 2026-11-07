@@ -13,6 +13,8 @@ data class SectionDirectory(
     val merged: Map<String, String> = emptyMap(),
     /** An id merged away into a topic of the section [merged] names, and that topic's id. */
     val mergedTopics: Map<String, String> = emptyMap(),
+    /** An id merged away into the section itself, as read by a build that keeps [mergedTopics]: nothing more to ask. */
+    val mergedNoTopic: Set<String> = emptySet(),
     /** Ids the server has never heard of: drawn as Other, and not asked about again until the next answer. */
     val unknown: Set<String> = emptySet(),
     /** When the list last came from the server; null while it is still the app's own nine. */
@@ -57,7 +59,11 @@ data class SectionDirectory(
     fun find(id: String?): Section? = id?.let { byId[resolve(it)] }
 
     /** Nothing left to ask the server about this id: it is known, or known not to exist. */
-    fun settled(id: String): Boolean = find(id) != null || resolve(id) in unknown
+    fun settled(id: String): Boolean {
+        // Kept before the topic was: asked once more, as it may have gone into one.
+        if (id in merged && id !in mergedTopics && id !in mergedNoTopic) return false
+        return find(id) != null || resolve(id) in unknown
+    }
 
     /** One follow changed here, redrawn by the server's own rule, so the tile moves now rather than at the next answer. */
     fun withFollowing(id: String, now: Boolean): SectionDirectory {

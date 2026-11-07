@@ -173,6 +173,8 @@
     <string name="explore_unfollowed">Ви відписалися від «%1$s»</string>
     <string name="explore_undo">Повернути</string>
     <string name="explore_follow_failed">Не вдалося підписатися. Спробуйте ще раз.</string>
+    <string name="follow_section_moved">Цей розділ перенесли в «%1$s». Ви підписані на нього там.</string>
+    <string name="follow_section_merged">Цей розділ обʼєднали з іншим, його більше немає.</string>
     <string name="follow_unfollow_failed">Не вдалося відписатися. Спробуйте ще раз.</string>
     <string name="follow_too_many">Підписок може бути не більше %1$d. Спершу відпишіться від чогось.</string>
     <string name="explore_new_lists">Нові списки</string>
@@ -312,6 +314,9 @@
     <string name="community_ranking_banned">Модератор зняв один з ваших списків, тому поки ви не можете показувати рейтинги.</string>
     <string name="community_ranking_own_list">Це ваш список, тому показувати на ньому ваш рейтинг не потрібно.</string>
     <string name="community_ranking_list_gone">Цей список більше недоступний, тому ваш рейтинг не можна показати.</string>
+    <string name="community_ranking_bad_tier_names">Кожен рівень має мати назву, а в рейтингу може бути не більше 20 рівнів.</string>
+    <string name="community_ranking_cards_dont_match">Картки у вашому рейтингу не збігаються з цим списком. Відкрийте його знову й розставте їх ще раз.</string>
+    <string name="community_ranking_not_accepted">Не вдалося надіслати ваш рейтинг: щось у ньому не приймається.</string>
     <string name="moderation_not_taken_down">Не знято: список досі публічний. Спробуйте ще раз.</string>
     <string name="moderation_not_kept">Не вдалося залишити список: скарги досі відкриті. Спробуйте ще раз.</string>
     <string name="moderation_not_moved">Не переміщено: список залишився на місці. Спробуйте ще раз.</string>

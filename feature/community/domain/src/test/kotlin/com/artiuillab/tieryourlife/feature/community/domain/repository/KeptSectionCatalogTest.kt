@@ -6,14 +6,17 @@ import com.artiuillab.tieryourlife.feature.community.domain.FakeSectionStore
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirectory
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionWasMerged
 import com.artiuillab.tieryourlife.feature.community.domain.sectionCatalogFor
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.yield
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -254,6 +257,56 @@ class KeptSectionCatalogTest {
         catalog.setFollowing("autos", now = true)
 
         assertEquals(listOf("cars" to true), community.followed)
+    }
+
+    // A18: a merge kept before #254 had lost its topic, and the section opened instead of the topic.
+    @Test
+    fun aMergeKeptWithoutItsTopic_isAskedAboutOnceMore() = runBlocking {
+        val community = Community(
+            lookups = mapOf(
+                "autos" to Result.success(SectionLookup.Merged("cars", topic = "t7")),
+                "bikes" to Result.success(SectionLookup.Merged("cars")),
+            ),
+        )
+        val kept = SectionDirectory(sections = listOf(cars), merged = mapOf("autos" to "cars", "bikes" to "cars"), fetchedAtMillis = clock.now)
+        val catalog = sectionCatalogFor(community, FakeSectionStore(kept), clock)
+
+        listOf("autos", "bikes").forEach(catalog::lookUp)
+        val learnt = withTimeout(5_000) { catalog.directory.first { "autos" in it.mergedTopics && "bikes" in it.mergedNoTopic } }
+        listOf("autos", "bikes").forEach(catalog::lookUp)
+
+        assertEquals("t7", learnt.mergedTopics["autos"])
+        assertEquals(listOf("autos", "bikes"), community.asked)
+    }
+
+    // A18: merged in the meantime, the follow came back as a plain failure.
+    @Test
+    fun aFollowAnsweredMerged_followsTheSectionItWentInto() = runBlocking {
+        val community = object : Community() {
+            override suspend fun followSection(id: String): Result<Unit> {
+                followed += id to true
+                return if (id == "autos") Result.failure(SectionWasMerged(into = "cars", topic = null)) else Result.success(Unit)
+            }
+        }
+        val catalog = sectionCatalogFor(community, FakeSectionStore(SectionDirectory(sections = listOf(cars, Section(id = "autos")), fetchedAtMillis = 1L)), clock)
+
+        assertEquals(Result.success("cars"), catalog.setFollowing("autos", now = true))
+
+        assertEquals(listOf("autos" to true, "cars" to true), community.followed)
+        assertEquals("cars", catalog.directory.value.resolve("autos"))
+        assertTrue(catalog.directory.value.find("cars")?.following == true)
+    }
+
+    @Test
+    fun aFollowMergedIntoATopicOrNowhere_failsSayingSo() = runBlocking {
+        val answer = SectionWasMerged(into = null, topic = "t7")
+        val community = object : Community() {
+            override suspend fun followSection(id: String): Result<Unit> = Result.failure(answer)
+        }
+        val catalog = sectionCatalogFor(community, FakeSectionStore(SectionDirectory(sections = listOf(cars), fetchedAtMillis = 1L)), clock)
+
+        assertEquals(answer, catalog.setFollowing("cars", now = true).exceptionOrNull())
+        assertFalse(catalog.directory.value.find("cars")?.following == true)
     }
 
     @Test

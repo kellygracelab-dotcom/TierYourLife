@@ -8,5 +8,10 @@ fun Throwable.rankingRefusal(): RankingRefusal = when (proxyCode()) {
     "BANNED" -> RankingRefusal.Banned
     "OWN_LIST" -> RankingRefusal.OwnList
     "NOT_FOUND" -> RankingRefusal.ListGone
+    "INVALID" -> when (proxyDetail()) {
+        "tierLabels" -> RankingRefusal.BadTierNames
+        "rows", "arrangement" -> RankingRefusal.CardsDontMatch
+        else -> RankingRefusal.NotAccepted
+    }
     else -> RankingRefusal.Failed
 }

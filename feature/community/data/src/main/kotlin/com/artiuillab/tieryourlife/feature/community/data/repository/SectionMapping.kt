@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionSymbols
+import com.artiuillab.tieryourlife.feature.community.domain.model.SectionWasMerged
 import com.artiuillab.tieryourlife.feature.community.domain.model.ThemePair
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.serialization.json.JsonObject
@@ -96,6 +97,15 @@ internal fun sectionsFrom(answer: List<SectionDto>, me: String? = null): List<Se
 internal fun sectionFrom(answer: JsonObject, me: String? = null): Section {
     val body = (answer["section"] as? JsonObject) ?: answer
     return networkJson.decodeFromJsonElement(SectionDto.serializer(), body).toDomain(me)
+}
+
+/** A follow's `410 MERGED`, with whatever it named; any other failure is not one. */
+internal fun Throwable.mergedAway(): SectionWasMerged? {
+    val refusal = this as? HttpException ?: return null
+    if (refusal.code() != HTTP_GONE) return null
+    val body = refusal.response()?.errorBody()?.string().orEmpty()
+    val merged = runCatching { networkJson.decodeFromString(SectionMergedDto.serializer(), body) }.getOrNull()
+    return SectionWasMerged(into = merged?.mergedInto?.takeIf { it.isNotBlank() }, topic = merged?.mergedTopicId?.takeIf { it.isNotBlank() })
 }
 
 /** A refusal that is itself an answer: 404 is no such section, 410 one that lives on under another id. Null for any other failure. */

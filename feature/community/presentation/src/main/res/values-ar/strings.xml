@@ -177,6 +177,8 @@
     <string name="explore_unfollowed">ألغيت متابعة %1$s</string>
     <string name="explore_undo">تراجع</string>
     <string name="explore_follow_failed">تعذّرت المتابعة. حاول مرة أخرى.</string>
+    <string name="follow_section_moved">انتقل هذا القسم إلى %1$s. أنت تتابعه هناك.</string>
+    <string name="follow_section_merged">دُمج هذا القسم ولم يعد موجودًا.</string>
     <string name="follow_unfollow_failed">تعذّر إلغاء المتابعة. حاول مرة أخرى.</string>
     <string name="follow_too_many">يمكنك متابعة %1$d كحد أقصى. ألغِ متابعة واحد لتفسح المجال.</string>
     <string name="explore_new_lists">قوائم جديدة</string>
@@ -324,6 +326,9 @@
     <string name="community_ranking_banned">أزال مشرف إحدى قوائمك، لذا لا يمكنك عرض الترتيبات حاليًا.</string>
     <string name="community_ranking_own_list">هذه القائمة لك، لذا لا يوجد ترتيب لك لعرضه عليها.</string>
     <string name="community_ranking_list_gone">لم تعد هذه القائمة متاحة، لذا لا يمكن عرض ترتيبك.</string>
+    <string name="community_ranking_bad_tier_names">يحتاج كل مستوى إلى اسم، ويمكن أن يضم الترتيب 20 مستوى كحد أقصى.</string>
+    <string name="community_ranking_cards_dont_match">البطاقات في ترتيبك لا تطابق هذه القائمة. افتحها من جديد ورتّب البطاقات مرة أخرى.</string>
+    <string name="community_ranking_not_accepted">تعذّر إرسال ترتيبك: هناك شيء فيه غير مقبول.</string>
     <string name="moderation_not_taken_down">لم تُزَل: القائمة ما زالت عامة. أعد المحاولة.</string>
     <string name="moderation_not_kept">تعذّر إبقاء القائمة: البلاغات ما زالت مفتوحة. أعد المحاولة.</string>
     <string name="moderation_not_moved">لم تُنقل: القائمة في مكانها. أعد المحاولة.</string>
