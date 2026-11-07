@@ -647,6 +647,8 @@ private fun PublishError.messageRes(): Int = when (this) {
     PublishError.TooManyPendingTopics -> R.string.list_settings_public_too_many_topics
     PublishError.TopicUnavailable -> R.string.list_settings_public_topic_unavailable
     PublishError.TooLarge -> R.string.list_settings_public_too_large
+    PublishError.TooManyWebPictures -> ThemeR.string.refusal_too_many_web_pictures
+    PublishError.WebPicturesToday -> ThemeR.string.refusal_web_pictures_today
     PublishError.ListGone -> R.string.list_settings_public_gone
     PublishError.SectionUnavailable -> R.string.list_settings_public_section_unavailable
     PublishError.NotTakenDown -> R.string.list_settings_unpublish_failed

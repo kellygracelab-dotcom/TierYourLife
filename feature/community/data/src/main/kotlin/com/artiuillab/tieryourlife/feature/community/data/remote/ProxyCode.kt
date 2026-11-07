@@ -12,6 +12,7 @@ private const val TARGET_IS_MODERATOR = "TARGET_IS_MODERATOR"
 private data class CodedRefusalDto(
     @SerialName("code") val code: String? = null,
     @SerialName("detail") val detail: String? = null,
+    @SerialName("error") val error: String? = null,
 )
 
 /**
@@ -26,6 +27,9 @@ fun Throwable.isTargetStaff(): Boolean =
 
 /** Which field a `400 INVALID` was about, such as "category". */
 fun Throwable.proxyDetail(): String? = codedRefusal()?.detail
+
+/** The refusal in words, which is all that tells one `413 TOO_LARGE` limit from another. */
+internal fun Throwable.proxyError(): String? = codedRefusal()?.error
 
 private fun Throwable.codedRefusal(): CodedRefusalDto? =
     runCatching { networkJson.decodeFromString<CodedRefusalDto>(errorText()) }.getOrNull()

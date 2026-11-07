@@ -40,4 +40,6 @@
     <string name="snack_published_as_ranking">Opublikowana jako twój ranking tej listy. W kanale nie pojawia się druga lista.</string>
     <string name="snack_published_under_review">Zapisana. Czeka na moderatora, zanim inni będą mogli ją zobaczyć.</string>
     <string name="snack_target_is_staff">Autorem jest moderator lub właściciel. Tylko właściciel może zająć się tą listą.</string>
+    <string name="refusal_web_pictures_today">To więcej obrazów z innych stron, niż można dziś dodać. Spróbuj jutro.</string>
+    <string name="refusal_too_many_web_pictures">Lista może mieć do 200 obrazów z innych stron. Usuń kilka i spróbuj ponownie.</string>
 </resources>

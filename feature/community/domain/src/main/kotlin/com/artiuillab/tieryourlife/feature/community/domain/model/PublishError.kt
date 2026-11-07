@@ -16,6 +16,12 @@ sealed interface PublishError {
 
     data object TooLarge : PublishError
 
+    /** More pictures from other sites than one list may have. */
+    data object TooManyWebPictures : PublishError
+
+    /** More pictures from other sites than the server fetches for one account in a day; tomorrow it can. */
+    data object WebPicturesToday : PublishError
+
     /** The list this board was out as is not there for this person any more: taken down, deleted, or another account's. */
     data object ListGone : PublishError
 

@@ -36,4 +36,6 @@
     <string name="snack_published_as_ranking">Publicada como tu ranking de esa lista. En el feed no aparece una segunda lista.</string>
     <string name="snack_published_under_review">Guardada. Espera a un moderador antes de que otros puedan verla.</string>
     <string name="snack_target_is_staff">Su autor es un moderador o el propietario. Solo el propietario puede actuar sobre esta lista.</string>
+    <string name="refusal_web_pictures_today">Son más imágenes de otros sitios de las que se pueden añadir hoy. Inténtalo de nuevo mañana.</string>
+    <string name="refusal_too_many_web_pictures">Una lista puede tener hasta 200 imágenes de otros sitios. Quita algunas e inténtalo de nuevo.</string>
 </resources>

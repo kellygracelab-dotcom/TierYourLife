@@ -480,6 +480,8 @@ private fun ListSnackbar(
                 RankingNotice.BadTierNames -> host.showSnackbar(resources.getString(R.string.community_ranking_bad_tier_names))
                 RankingNotice.CardsDontMatch -> host.showSnackbar(resources.getString(R.string.community_ranking_cards_dont_match))
                 RankingNotice.NotAccepted -> host.showSnackbar(resources.getString(R.string.community_ranking_not_accepted))
+                RankingNotice.TooManyWebPictures -> host.showSnackbar(resources.getString(ThemeR.string.refusal_too_many_web_pictures))
+                RankingNotice.WebPicturesToday -> host.showSnackbar(resources.getString(ThemeR.string.refusal_web_pictures_today))
                 RankingNotice.SignInFirst -> {
                     val answer = host.showSnackbar(
                         message = resources.getString(R.string.community_sign_in_to_show_ranking),

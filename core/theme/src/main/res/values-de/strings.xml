@@ -32,4 +32,6 @@
     <string name="snack_published_as_ranking">Draußen als deine Rangliste dieser Liste. Im Feed erscheint keine zweite Liste.</string>
     <string name="snack_published_under_review">Gespeichert. Sie wartet auf einen Moderator, bevor andere sie sehen können.</string>
     <string name="snack_target_is_staff">Diese Liste stammt von einem Moderator oder dem Inhaber. Nur der Inhaber kann hier etwas tun.</string>
+    <string name="refusal_web_pictures_today">Das sind mehr Bilder von anderen Websites, als heute hinzugefügt werden können. Versuche es morgen erneut.</string>
+    <string name="refusal_too_many_web_pictures">Eine Liste kann bis zu 200 Bilder von anderen Websites haben. Entferne einige und versuche es erneut.</string>
 </resources>

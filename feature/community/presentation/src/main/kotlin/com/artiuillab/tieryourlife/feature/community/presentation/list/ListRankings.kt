@@ -187,6 +187,8 @@ internal class ListRankings(
                         RankingRefusal.BadTierNames -> told.send(RankingNotice.BadTierNames)
                         RankingRefusal.CardsDontMatch -> told.send(RankingNotice.CardsDontMatch)
                         RankingRefusal.NotAccepted -> told.send(RankingNotice.NotAccepted)
+                        RankingRefusal.TooManyWebPictures -> told.send(RankingNotice.TooManyWebPictures)
+                        RankingRefusal.WebPicturesToday -> told.send(RankingNotice.WebPicturesToday)
                         else -> messages.send(UserMessage.ActionFailed)
                     }
                 },
@@ -213,4 +215,16 @@ internal class ListRankings(
 }
 
 /** What a reader is told after asking to show their ranking; a failure is the usual one. */
-enum class RankingNotice { Shown, SignInFirst, ListChanged, Banned, OwnList, ListGone, BadTierNames, CardsDontMatch, NotAccepted }
+enum class RankingNotice {
+    Shown,
+    SignInFirst,
+    ListChanged,
+    Banned,
+    OwnList,
+    ListGone,
+    BadTierNames,
+    CardsDontMatch,
+    NotAccepted,
+    TooManyWebPictures,
+    WebPicturesToday,
+}

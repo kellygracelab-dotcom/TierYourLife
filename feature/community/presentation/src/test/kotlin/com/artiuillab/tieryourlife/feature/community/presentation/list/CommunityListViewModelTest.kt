@@ -753,6 +753,21 @@ class CommunityListViewModelTest {
     }
 
     @Test
+    fun theLimitsOnPicturesFromOtherSites_areSaidAsThemselves() = runBlocking {
+        listOf(
+            RankingRefusal.WebPicturesToday to RankingNotice.WebPicturesToday,
+            RankingRefusal.TooManyWebPictures to RankingNotice.TooManyWebPictures,
+        ).forEach { (refusal, notice) ->
+            val viewModel = viewModel(community = TestCommunity(showRefusal = refusal), accounts = signedIn)
+            arranged(viewModel)
+
+            viewModel.showMyRanking()
+
+            assertEquals(notice, withTimeout(5_000) { viewModel.rankingNotices.first() })
+        }
+    }
+
+    @Test
     fun anyOtherRefusal_saysItFailed_andShowsNothing() = runBlocking {
         val community = TestCommunity(showRefusal = RankingRefusal.Failed)
         val viewModel = viewModel(community = community, accounts = signedIn)

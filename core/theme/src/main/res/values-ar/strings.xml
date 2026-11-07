@@ -48,4 +48,6 @@
     <string name="snack_published_as_ranking">منشورة كترتيبك لتلك القائمة. لا تظهر قائمة ثانية في الخلاصة.</string>
     <string name="snack_published_under_review">تم الحفظ. تنتظر موافقة مشرف قبل أن يراها الآخرون.</string>
     <string name="snack_target_is_staff">مؤلف هذه القائمة مشرف أو المالك. وحده المالك يستطيع اتخاذ إجراء بشأنها.</string>
+    <string name="refusal_web_pictures_today">هذه صور من مواقع أخرى أكثر مما يمكن إضافته اليوم. حاول مرة أخرى غدًا.</string>
+    <string name="refusal_too_many_web_pictures">يمكن أن تضم القائمة حتى 200 صورة من مواقع أخرى. احذف بعضها وحاول مرة أخرى.</string>
 </resources>
