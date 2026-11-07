@@ -5,11 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -32,93 +30,54 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
 /**
- * Said once, when there is finally something to lose. A card, not a dialog:
- * anything that fires on arrival and blocks the way reads as an advertisement.
- * "Not now" means never; [LocalOnlyFooter] keeps saying it quietly.
+ * Where a guest's boards are kept, said once above them: on this phone, and
+ * an account keeps them through a change of phone. The two lines are a fact
+ * and stay; the buttons are the offer, asked until answered. A big card and a
+ * footer used to say this twice.
  */
 @Composable
-internal fun LocalOnlySignInCard(
+internal fun LocalOnlyNotice(
     boardCount: Int,
+    offerSignIn: Boolean,
     onSignIn: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    OutlinedCard(
-        modifier = modifier.fillMaxWidth().testTag(TierListsTestTags.LOCAL_ONLY_CARD),
-        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
+    Surface(
+        modifier = modifier.fillMaxWidth().testTag(TierListsTestTags.LOCAL_ONLY_NOTICE),
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)) {
-            Text(
-                text = stringResource(
-                    oneBoard(
-                        boardCount,
-                        R.string.local_only_card_title_one,
-                        R.string.local_only_card_title_many,
-                    ),
-                ),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = stringResource(
-                    oneBoard(
-                        boardCount,
-                        R.string.local_only_card_body_one,
-                        R.string.local_only_card_body_many,
-                    ),
-                ),
-                modifier = Modifier.padding(top = 6.dp),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = onDismiss,
-                    modifier = Modifier.testTag(TierListsTestTags.LOCAL_ONLY_DISMISS),
-                ) {
-                    Text(stringResource(R.string.local_only_card_not_now))
+        Column(Modifier.padding(start = 14.dp, end = 8.dp, top = 12.dp, bottom = if (offerSignIn) 4.dp else 12.dp)) {
+            Row(Modifier.padding(end = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                SmartphoneIcon(20.dp, MaterialTheme.colorScheme.onSurfaceVariant)
+                Column(Modifier.padding(start = 12.dp)) {
+                    Text(
+                        text = stringResource(
+                            R.string.local_only_footer,
+                            pluralStringResource(R.plurals.board_count, boardCount, boardCount),
+                        ),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = stringResource(oneBoard(boardCount, R.string.local_only_notice_keep_one, R.string.local_only_notice_keep_many)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
-                Button(
-                    onClick = onSignIn,
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .testTag(TierListsTestTags.LOCAL_ONLY_SIGN_IN),
-                    colors = ButtonDefaults.filledTonalButtonColors(),
-                ) {
-                    Text(stringResource(R.string.local_only_card_sign_in))
+            }
+            if (offerSignIn) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    TextButton(onClick = onDismiss, modifier = Modifier.testTag(TierListsTestTags.LOCAL_ONLY_DISMISS)) {
+                        Text(stringResource(R.string.local_only_card_not_now))
+                    }
+                    TextButton(onClick = onSignIn, modifier = Modifier.testTag(TierListsTestTags.LOCAL_ONLY_SIGN_IN)) {
+                        Text(stringResource(R.string.local_only_card_sign_in))
+                    }
                 }
             }
         }
-    }
-}
-
-/**
- * The permanent half: a fact with no button on it. Never shown to somebody
- * signed in, and there is no "backed up" counterpart -- a fine state needs
- * no reporting.
- */
-@Composable
-internal fun LocalOnlyFooter(boardCount: Int, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier.fillMaxWidth().padding(vertical = 12.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        SmartphoneIcon(16.dp, MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(
-            text = stringResource(
-                R.string.local_only_footer,
-                pluralStringResource(R.plurals.board_count, boardCount, boardCount),
-            ),
-            modifier = Modifier
-                .padding(start = 6.dp)
-                .testTag(TierListsTestTags.LOCAL_ONLY_FOOTER),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }
 
@@ -144,18 +103,12 @@ private fun SmartphoneIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { 
 
 @Preview(showBackground = true)
 @Composable
-private fun LocalOnlySignInCardPreview() = TierYourLifeTheme(false) {
-    LocalOnlySignInCard(boardCount = 1, onSignIn = {}, onDismiss = {}, modifier = Modifier.padding(16.dp))
+private fun LocalOnlyNoticePreview() = TierYourLifeTheme(false) {
+    LocalOnlyNotice(boardCount = 1, offerSignIn = true, onSignIn = {}, onDismiss = {}, modifier = Modifier.padding(16.dp))
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun LocalOnlySignInCardManyDarkPreview() = TierYourLifeTheme(true) {
-    LocalOnlySignInCard(boardCount = 4, onSignIn = {}, onDismiss = {}, modifier = Modifier.padding(16.dp))
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun LocalOnlyFooterPreview() = TierYourLifeTheme(false) {
-    LocalOnlyFooter(boardCount = 7)
+private fun LocalOnlyNoticeAnsweredDarkPreview() = TierYourLifeTheme(true) {
+    LocalOnlyNotice(boardCount = 4, offerSignIn = false, onSignIn = {}, onDismiss = {}, modifier = Modifier.padding(16.dp))
 }

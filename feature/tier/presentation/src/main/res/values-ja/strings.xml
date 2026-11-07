@@ -122,10 +122,8 @@
         <item quantity="other">%1$d 件のボード</item>
     </plurals>
     <string name="local_only_footer">%1$s、この端末だけにあります</string>
-    <string name="local_only_card_title_one">このボードはこの端末にしかありません</string>
-    <string name="local_only_card_title_many">このボードはこの端末にしかありません</string>
-    <string name="local_only_card_body_one">機種変更や再インストールで消えます。アカウントがあれば残ります。</string>
-    <string name="local_only_card_body_many">機種変更や再インストールで消えます。アカウントがあれば残ります。</string>
+    <string name="local_only_notice_keep_one">ログインすれば機種変更しても残ります。</string>
+    <string name="local_only_notice_keep_many">ログインすれば機種変更しても残ります。</string>
     <string name="local_only_card_not_now">今はしない</string>
     <string name="local_only_card_sign_in">ログイン</string>
     <string name="restoring_one_picture">画像を復元しています</string>

@@ -1,7 +1,9 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -21,9 +23,9 @@ import org.junit.runner.RunWith
 /**
  * What the list screen says about where these boards are kept.
  *
- * The rule underneath every case: the card is asked once and the footer is a
- * fact. Somebody signed in should see neither, and somebody with nothing to
- * lose should not be sold an account.
+ * The rule underneath every case: one notice, whose lines are a fact and whose
+ * buttons are asked once. Somebody signed in should see none of it, and
+ * somebody with nothing to lose should not be sold an account.
  */
 @RunWith(AndroidJUnit4::class)
 class LocalOnlyTest {
@@ -35,26 +37,31 @@ class LocalOnlyTest {
     fun aGuestWithABoard_isOfferedAnAccountOnceAndToldWhereItLives() {
         setScreen(LocalOnly.Here(offerSignIn = true), boards = 1)
 
-        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_CARD).assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.local_only_card_title_one)).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_FOOTER).assertIsDisplayed()
+        composeRule.onAllNodesWithTag(TierListsTestTags.LOCAL_ONLY_NOTICE).assertCountEquals(1)
+        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_NOTICE).assertIsDisplayed()
+        composeRule.onNodeWithText(fact(boards = 1)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.local_only_notice_keep_one)).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_SIGN_IN).assertIsDisplayed()
     }
 
     @Test
     fun severalBoards_saySoInThePlural() {
         setScreen(LocalOnly.Here(offerSignIn = true), boards = 3)
 
-        composeRule.onNodeWithText(string(R.string.local_only_card_title_many)).assertIsDisplayed()
+        composeRule.onNodeWithText(fact(boards = 3)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.local_only_notice_keep_many)).assertIsDisplayed()
     }
 
-    // The card is the part that asks for something. Once it has been answered
-    // the fact stays and the question does not come back.
+    // The buttons are the part that asks for something. Once answered, the
+    // fact stays and the question does not come back.
     @Test
     fun onceTheOfferIsAnswered_onlyTheFactRemains() {
         setScreen(LocalOnly.Here(offerSignIn = false), boards = 2)
 
-        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_CARD).assertDoesNotExist()
-        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_FOOTER).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_NOTICE).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.local_only_notice_keep_many)).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_SIGN_IN).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_DISMISS).assertDoesNotExist()
     }
 
     // "on this phone only" is a warning about being in one place. Once the
@@ -64,8 +71,7 @@ class LocalOnlyTest {
     fun signedIn_saysNothingAtAll() {
         setScreen(LocalOnly.Kept, boards = 2)
 
-        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_CARD).assertDoesNotExist()
-        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_FOOTER).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_NOTICE).assertDoesNotExist()
     }
 
     // Before Firebase answers, neither state is known. Treating unknown as
@@ -74,12 +80,11 @@ class LocalOnlyTest {
     fun beforeTheAccountIsKnown_nothingIsClaimed() {
         setScreen(LocalOnly.Unknown, boards = 2)
 
-        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_CARD).assertDoesNotExist()
-        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_FOOTER).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_NOTICE).assertDoesNotExist()
     }
 
     @Test
-    fun signingInFromTheCard_reachesTheCaller() {
+    fun signingInFromTheNotice_reachesTheCaller() {
         var calls = 0
         setScreen(LocalOnly.Here(offerSignIn = true), boards = 1, onSignInClick = { calls++ })
 
@@ -108,7 +113,8 @@ class LocalOnlyTest {
             mode = HomeMode.Selecting(setOf(1L)),
         )
 
-        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_CARD).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_NOTICE).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.LOCAL_ONLY_SIGN_IN).assertDoesNotExist()
     }
 
     private fun setScreen(
@@ -153,4 +159,9 @@ class LocalOnlyTest {
 
     private fun string(resourceId: Int): String =
         InstrumentationRegistry.getInstrumentation().targetContext.getString(resourceId)
+
+    private fun fact(boards: Int): String {
+        val resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
+        return resources.getString(R.string.local_only_footer, resources.getQuantityString(R.plurals.board_count, boards, boards))
+    }
 }

@@ -132,10 +132,8 @@
         <item quantity="other">%1$d Boards</item>
     </plurals>
     <string name="local_only_footer">%1$s, nur auf diesem Telefon</string>
-    <string name="local_only_card_title_one">Dieses Board liegt nur auf diesem Telefon</string>
-    <string name="local_only_card_title_many">Diese Boards liegen nur auf diesem Telefon</string>
-    <string name="local_only_card_body_one">Telefonwechsel oder Neuinstallation, und es ist weg. Ein Konto bewahrt es auf.</string>
-    <string name="local_only_card_body_many">Telefonwechsel oder Neuinstallation, und sie sind weg. Ein Konto bewahrt sie auf.</string>
+    <string name="local_only_notice_keep_one">Melde dich an, damit es einen Telefonwechsel übersteht.</string>
+    <string name="local_only_notice_keep_many">Melde dich an, damit sie einen Telefonwechsel überstehen.</string>
     <string name="local_only_card_not_now">Jetzt nicht</string>
     <string name="local_only_card_sign_in">Anmelden</string>
     <string name="restoring_one_picture">Bild wird wiederhergestellt</string>

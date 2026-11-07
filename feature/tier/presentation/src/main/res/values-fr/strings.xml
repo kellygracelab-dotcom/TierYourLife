@@ -142,10 +142,8 @@
         <item quantity="other">%1$d tableaux</item>
     </plurals>
     <string name="local_only_footer">%1$s, uniquement sur ce téléphone</string>
-    <string name="local_only_card_title_one">Ce tableau ne vit que sur ce téléphone</string>
-    <string name="local_only_card_title_many">Ces tableaux ne vivent que sur ce téléphone</string>
-    <string name="local_only_card_body_one">Changez de téléphone ou réinstallez et il disparaît. Un compte le garde.</string>
-    <string name="local_only_card_body_many">Changez de téléphone ou réinstallez et ils disparaissent. Un compte les garde.</string>
+    <string name="local_only_notice_keep_one">Connectez-vous pour le garder en changeant de téléphone.</string>
+    <string name="local_only_notice_keep_many">Connectez-vous pour les garder en changeant de téléphone.</string>
     <string name="local_only_card_not_now">Pas maintenant</string>
     <string name="local_only_card_sign_in">Se connecter</string>
     <string name="restoring_one_picture">Restauration de l’image</string>
