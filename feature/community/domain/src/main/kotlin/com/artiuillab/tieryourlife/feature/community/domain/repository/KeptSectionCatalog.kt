@@ -87,13 +87,18 @@ class KeptSectionCatalog(
     private suspend fun learn(id: String, found: SectionLookup) {
         when (found) {
             is SectionLookup.Found -> state.update { now ->
-                val renamed = if (found.section.id != id) now.merged + (id to found.section.id) else now.merged
-                now.copy(extra = now.extra + (found.section.id to found.section), merged = renamed)
+                val renamed = found.section.id != id
+                now.copy(
+                    extra = now.extra + (found.section.id to found.section),
+                    merged = if (renamed) now.merged + (id to found.section.id) else now.merged,
+                    mergedNoTopic = if (renamed) now.mergedNoTopic + id else now.mergedNoTopic,
+                )
             }
 
             is SectionLookup.Merged -> state.update {
                 val topics = found.topic?.let { topic -> it.mergedTopics + (id to topic) } ?: it.mergedTopics
-                it.copy(merged = it.merged + (id to found.into), mergedTopics = topics)
+                val noTopic = if (found.topic == null) it.mergedNoTopic + id else it.mergedNoTopic
+                it.copy(merged = it.merged + (id to found.into), mergedTopics = topics, mergedNoTopic = noTopic)
             }
             SectionLookup.Unknown -> state.update { it.copy(unknown = it.unknown + id) }
         }

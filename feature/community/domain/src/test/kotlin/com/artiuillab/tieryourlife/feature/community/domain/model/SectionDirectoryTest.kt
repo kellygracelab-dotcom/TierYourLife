@@ -53,6 +53,16 @@ class SectionDirectoryTest {
     }
 
     @Test
+    fun aMergeWithoutItsTopic_isSettledOnlyOnceReadSo() {
+        val cars = Section(id = "cars", name = "Cars")
+        val keptBefore = SectionDirectory(sections = listOf(cars), merged = mapOf("autos" to "cars"))
+
+        assertFalse(keptBefore.settled("autos"))
+        assertTrue(keptBefore.copy(mergedTopics = mapOf("autos" to "t7")).settled("autos"))
+        assertTrue(keptBefore.copy(mergedNoTopic = setOf("autos")).settled("autos"))
+    }
+
+    @Test
     fun hiddenAndWaitingSections_areNotShown() {
         val directory = SectionDirectory(
             sections = listOf(cars, boats.copy(hidden = true), Section(id = "kites", status = SectionStatus.Pending)),
