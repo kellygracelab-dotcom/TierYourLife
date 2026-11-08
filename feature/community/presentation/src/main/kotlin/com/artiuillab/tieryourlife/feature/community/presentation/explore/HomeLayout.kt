@@ -3,6 +3,8 @@ package com.artiuillab.tieryourlife.feature.community.presentation.explore
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
@@ -57,6 +59,12 @@ private class HeaderOffset {
     var offset = 0f
 }
 
+/** The feed restores its scroll on Back; its header must return at the same height too. */
+private val HeaderOffsetSaver = Saver<HeaderOffset, Float>(
+    save = { it.offset },
+    restore = { offset -> HeaderOffset().also { it.offset = offset } },
+)
+
 /**
  * A header that leaves with the first scroll down and comes back with the
  * first scroll up, wherever the content is (enterAlways). The body shrinks
@@ -68,8 +76,8 @@ internal fun EnterAlwaysColumn(
     body: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val state = remember { HeaderOffset() }
-    val redraw = remember { androidx.compose.runtime.mutableFloatStateOf(0f) }
+    val state = rememberSaveable(saver = HeaderOffsetSaver) { HeaderOffset() }
+    val redraw = remember { androidx.compose.runtime.mutableFloatStateOf(state.offset) }
     val connection = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
