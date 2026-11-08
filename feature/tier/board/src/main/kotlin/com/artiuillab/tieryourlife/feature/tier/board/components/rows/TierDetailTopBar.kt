@@ -67,7 +67,7 @@ fun TierScreenTopBar(
     titleEditable: Boolean = false,
     /** Someone else's list: nothing here is editable, so nothing offers to edit. */
     readOnly: Boolean = false,
-    /** A reader's overflow: who wrote this, and how to stop seeing it. */
+    /** The community's menu also applies while arranging one's own ranking. */
     onReaderMoreClick: (() -> Unit)? = null,
     subtitle: String? = null,
     /** A short window's one bar: lower, a smaller title, and no second line. */
@@ -116,7 +116,7 @@ fun TierScreenTopBar(
                 subline != null -> MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp, lineHeight = 26.sp)
                 else -> MaterialTheme.typography.titleLarge
             }
-            if (titleEditable) {
+            if (titleEditable && onReaderMoreClick == null) {
                 EditableListTitle(
                     title = title,
                     onRename = onRenameList,
@@ -146,7 +146,16 @@ fun TierScreenTopBar(
             }
             trailing?.invoke(this)
             play?.let { PlayAction(it) }
-            if (!readOnly) {
+            if (onReaderMoreClick != null) {
+                // Moving cards in Mine does not make the reader the list's editor.
+                IconButton(
+                    onClick = onReaderMoreClick,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .semantics { contentDescription = moreDescription }
+                        .testTag(TierDetailTestTags.MORE),
+                ) { MoreIcon() }
+            } else if (!readOnly) {
                 IconButton(
                     onClick = onManualAdd,
                     modifier = Modifier
@@ -159,14 +168,6 @@ fun TierScreenTopBar(
                     modifier = Modifier
                         .size(48.dp)
                         .semantics { contentDescription = moreDescription },
-                ) { MoreIcon() }
-            } else if (onReaderMoreClick != null) {
-                IconButton(
-                    onClick = onReaderMoreClick,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .semantics { contentDescription = moreDescription }
-                        .testTag(TierDetailTestTags.MORE),
                 ) { MoreIcon() }
             }
         }
