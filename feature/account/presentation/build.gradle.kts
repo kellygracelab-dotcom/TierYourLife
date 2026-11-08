@@ -35,4 +35,5 @@ dependencies {
     testImplementation(testFixtures(projects.core.settings))
     testImplementation(testFixtures(projects.feature.community.domain))
     testImplementation(testFixtures(projects.feature.account.domain))
+    testImplementation(libs.robolectric)
 }

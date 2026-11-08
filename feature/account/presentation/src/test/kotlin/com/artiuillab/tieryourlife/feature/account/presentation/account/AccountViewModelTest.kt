@@ -25,6 +25,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityReposit
 import com.artiuillab.tieryourlife.feature.community.domain.model.FaceRefused
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardMerge
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -33,6 +34,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeFalse
@@ -210,6 +212,53 @@ class AccountViewModelTest {
 
         assertNull(state.notice)
         assertEquals(emptyList<String>(), repository.tokens)
+    }
+
+    @Test
+    fun signIn_whenThePickerCoroutineIsCancelled_unlocksTheButton_withoutRetrying() = runBlocking {
+        val repository = FakeAccountRepository()
+        val viewModel = viewModel(repository)
+        val entered = CompletableDeferred<Unit>()
+        var requests = 0
+
+        viewModel.signIn {
+            requests++
+            entered.complete(Unit)
+            throw CancellationException("test picker cancelled")
+        }
+        entered.await()
+        withContext(Dispatchers.Main) {}
+
+        assertFalse(viewModel.state.value.signingIn)
+        assertNull(viewModel.state.value.notice)
+        assertEquals(1, requests)
+        assertEquals(emptyList<String>(), repository.tokens)
+
+        viewModel.signIn {
+            requests++
+            GoogleCredentialResult.Cancelled
+        }
+        withContext(Dispatchers.Main) {}
+        assertEquals(2, requests)
+        assertFalse(viewModel.state.value.signingIn)
+    }
+
+    @Test
+    fun signIn_cancelledDuringFirebaseAuth_releasesTheMergeHold_andUnlocksTheButton() = runBlocking {
+        val repository = object : FakeAccountRepository() {
+            override suspend fun signInWithGoogle(idToken: String): SignInOutcome =
+                throw CancellationException("test auth cancelled")
+        }
+        val merge = RecordingMerge(guestBoards = 2)
+        val viewModel = viewModel(repository, merge = merge)
+
+        viewModel.signIn { GoogleCredentialResult.Token("test-token") }
+        merge.answered.await()
+        withContext(Dispatchers.Main) {}
+
+        assertEquals(listOf("hold", "keepHere"), merge.calls)
+        assertFalse(viewModel.state.value.signingIn)
+        assertNull(viewModel.state.value.notice)
     }
 
     @Test

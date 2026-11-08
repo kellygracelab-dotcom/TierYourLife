@@ -66,11 +66,16 @@ class AccountViewModel @Inject constructor(
         if (_state.value.signingIn) return
         _state.update { it.copy(signingIn = true, notice = null) }
         viewModelScope.launch {
-            when (val result = pickAccount()) {
-                is GoogleCredentialResult.Token -> completeSignIn(result.idToken)
-                GoogleCredentialResult.Cancelled -> _state.update { it.copy(signingIn = false) }
-                GoogleCredentialResult.NoGoogleAccount -> finish(AccountNotice.NoGoogleAccount)
-                GoogleCredentialResult.Unavailable -> finish(AccountNotice.SignInUnavailable)
+            try {
+                when (val result = pickAccount()) {
+                    is GoogleCredentialResult.Token -> completeSignIn(result.idToken)
+                    GoogleCredentialResult.Cancelled -> _state.update { it.copy(signingIn = false) }
+                    GoogleCredentialResult.NoGoogleAccount -> finish(AccountNotice.NoGoogleAccount)
+                    GoogleCredentialResult.Unavailable -> finish(AccountNotice.SignInUnavailable)
+                }
+            } finally {
+                // Coroutine cancellation must also release the button; it never retries sign-in.
+                _state.update { it.copy(signingIn = false) }
             }
         }
     }
