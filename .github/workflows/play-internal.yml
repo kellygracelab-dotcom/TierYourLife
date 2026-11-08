@@ -109,6 +109,7 @@ jobs:
         id: restore
         env:
           GH_TOKEN: ${{ github.token }}
+          PLAY_CHECKPOINT_KEY: ${{ secrets.PLAY_CHECKPOINT_KEY }}
         run: python3 .github/scripts/play-internal.py restore
 
       - name: Sign and verify every payload entry with the upload certificate
@@ -119,17 +120,18 @@ jobs:
           PLAY_UPLOAD_STORE_PASSWORD: ${{ secrets.PLAY_UPLOAD_STORE_PASSWORD }}
           PLAY_UPLOAD_KEY_ALIAS: ${{ secrets.PLAY_UPLOAD_KEY_ALIAS }}
           PLAY_UPLOAD_KEY_PASSWORD: ${{ secrets.PLAY_UPLOAD_KEY_PASSWORD }}
+          PLAY_CHECKPOINT_KEY: ${{ secrets.PLAY_CHECKPOINT_KEY }}
         run: python3 .github/scripts/play-internal.py sign
 
       # Complete this durable checkpoint before opening a Play edit.
-      - name: Save exact signed bytes for safe retry
+      - name: Save encrypted signed checkpoint for safe retry
         if: steps.restore.outputs.signed_restored != 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ steps.prepare.outputs.signed_name }}
           path: |
-            ${{ runner.temp }}/play/signed/bundle.aab
-            ${{ runner.temp }}/play/signed/provenance.json
+            ${{ runner.temp }}/play/sealed/bundle.enc
+            ${{ runner.temp }}/play/sealed/provenance.json
           if-no-files-found: error
           retention-days: 14
 

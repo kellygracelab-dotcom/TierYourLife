@@ -51,8 +51,9 @@ def main():
         output("intent_name", artifact_name("intent", source) + f"-{int(os.environ['GITHUB_RUN_ID'])}-{int(os.environ['GITHUB_RUN_ATTEMPT'])}")
     elif args.command == "restore":
         github.fresh(source)
-        restored = github.restore_cd_artifact("signed", source, work / "signed", {"bundle.aab", "provenance.json"})
+        restored = github.restore_cd_artifact("signed", source, work / "sealed", {"bundle.enc", "provenance.json"})
         if restored:
+            artifacts.unseal(work / "sealed", work / "signed")
             validate_sealed(github, work, source, root)
         intent = github.restore_cd_artifact("intent", source, work / "intent", {"intent.json"})
         require(not intent or restored, "Edit intent exists without sealed signed bytes; do not sign again")
@@ -62,6 +63,7 @@ def main():
         artifacts.validate_bundle(work / "unsigned", source, root)
         artifacts.sign(work / "unsigned", work / "signed")
         artifacts.validate_bundle(work / "signed", source, root, signed=True)
+        artifacts.seal(work / "signed", work / "sealed")
     else:
         github.fresh(source)
         manifest = validate_sealed(github, work, source, root)

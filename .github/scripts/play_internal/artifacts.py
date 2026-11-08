@@ -54,6 +54,31 @@ def compare_payloads(unsigned, signed):
     require(payloads(unsigned) == payloads(signed), "Signed payload differs from the accepted CI AAB")
 
 
+def checkpoint_cipher(mode, source, destination):
+    require(bool(os.environ.get("PLAY_CHECKPOINT_KEY")), "Checkpoint encryption secret PLAY_CHECKPOINT_KEY is missing")
+    helper = Path(__file__).with_name("CheckpointCipher.java")
+    command([java_tool("java"), str(helper), mode, str(source), str(destination)])
+
+
+def seal(signed, sealed):
+    signed, sealed = Path(signed), Path(sealed)
+    sealed.mkdir(parents=True, exist_ok=True)
+    checkpoint_cipher("encrypt", signed / "bundle.aab", sealed / "bundle.enc")
+    manifest = read_json(signed / "provenance.json")
+    manifest["encryption"] = "AES-256-GCM-v1"
+    write_json(sealed / "provenance.json", manifest)
+
+
+def unseal(sealed, signed):
+    sealed, signed = Path(sealed), Path(signed)
+    manifest = read_json(sealed / "provenance.json")
+    require(manifest.get("encryption") == "AES-256-GCM-v1", "Unexpected checkpoint encryption")
+    signed.mkdir(parents=True, exist_ok=True)
+    checkpoint_cipher("decrypt", sealed / "bundle.enc", signed / "bundle.aab")
+    require(sha256(signed / "bundle.aab") == manifest.get("signedSha256"), "Decrypted checkpoint hash mismatch")
+    write_json(signed / "provenance.json", manifest)
+
+
 def verify_manifest(bundle, version, tools):
     jar = str(bundletool(tools))
     prefix = [java_tool("java"), "-jar", jar]
@@ -130,6 +155,7 @@ def sign(unsigned, signed):
     unsigned, signed = Path(unsigned), Path(signed)
     names = ["PLAY_UPLOAD_KEYSTORE_BASE64", "PLAY_UPLOAD_STORE_PASSWORD", "PLAY_UPLOAD_KEY_ALIAS", "PLAY_UPLOAD_KEY_PASSWORD"]
     require(all(os.environ.get(name) for name in names), "Signing secrets are missing")
+    require(bool(os.environ.get("PLAY_CHECKPOINT_KEY")), "Checkpoint encryption secret PLAY_CHECKPOINT_KEY is missing")
     alias = os.environ[names[2]]
     require(re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}", alias) is not None, "Unsupported signing alias")
     signed.mkdir(parents=True, exist_ok=True)

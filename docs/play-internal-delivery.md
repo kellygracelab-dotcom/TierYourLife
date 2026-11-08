@@ -27,6 +27,7 @@ Create environment **play-internal**, restricted to main, with these names:
 | Secret | `PLAY_UPLOAD_STORE_PASSWORD` |
 | Secret | `PLAY_UPLOAD_KEY_ALIAS` |
 | Secret | `PLAY_UPLOAD_KEY_PASSWORD` |
+| Secret | `PLAY_CHECKPOINT_KEY` — 32 random bytes, base64, coordinator-generated |
 
 Bind WIF to repository ID `1279175743`, owner ID `280666991`, `ref=refs/heads/main`,
 `event_name=workflow_run`, and:
@@ -53,8 +54,15 @@ D7FE40A522B6B0DEEF7BC5049EC22466C62941A808539B3D7F2C5B79F75D69C4
 Every non-signature payload entry must verify with exactly that signer. A fake
 test key cannot publish. The temporary keystore has owner-only permissions,
 passwords are passed by environment reference, tool errors are captured, and
-cleanup runs even on signing failure. Only the signed AAB and public provenance
-are uploaded as artifacts. No private key, password or token is an artifact.
+cleanup runs even on signing failure. This repository is public: **no plaintext
+signed AAB is uploaded as an Actions artifact**. The JDK encrypts it with
+AES-256-GCM, a fresh 96-bit nonce and authenticated container version header.
+Only `bundle.enc` and public provenance are uploaded. Decryption happens inside
+the trusted publisher, after archive digest verification; plaintext is written
+only after the entire container authenticates, then its hash, payload and actual
+signer are reverified. The environment checkpoint secret is never an argument,
+log or artifact. Preserve it while retained checkpoints are needed. No private
+key, password or token is an artifact.
 
 ## Version and artifact provenance
 
@@ -76,7 +84,7 @@ cancelled in the middle of upload/commit.
 
 ## Retry and availability
 
-The signed AAB is saved **before** opening a Play edit. An edit-intent artifact is
+The signed AAB is saved **encrypted before** opening a Play edit. An edit-intent artifact is
 saved **before** uploading a bundle or changing a track. Sealed bytes bind the
 source SHA, with the original successful CI run/attempt recorded in provenance;
 each intent generation additionally binds its CD run/attempt. Recovery trusts the artifact's creator workflow and

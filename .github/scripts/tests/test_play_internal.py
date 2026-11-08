@@ -1,5 +1,6 @@
 """Release safety regressions. No real credentials, Play writes or network."""
 import copy
+import base64
 import hashlib
 import io
 import json
@@ -13,7 +14,7 @@ from unittest.mock import patch
 import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from play_internal.artifacts import command, compare_payloads, extract_data, java_tool, sign, verify_signature
+from play_internal.artifacts import checkpoint_cipher, command, compare_payloads, extract_data, java_tool, sign, verify_signature
 from play_internal.__main__ import validate_sealed
 from play_internal.github import GitHub, verify_gates
 from play_internal.play import ApiError, PUBLISHED, Publisher
@@ -172,7 +173,7 @@ class ArchiveTests(unittest.TestCase):
 
     def test_signing_error_never_echoes_private_encoded_key(self):
         secrets = {"PLAY_UPLOAD_KEYSTORE_BASE64": "private-invalid-value", "PLAY_UPLOAD_STORE_PASSWORD": "password",
-                   "PLAY_UPLOAD_KEY_ALIAS": "upload", "PLAY_UPLOAD_KEY_PASSWORD": "other-password"}
+                   "PLAY_UPLOAD_KEY_ALIAS": "upload", "PLAY_UPLOAD_KEY_PASSWORD": "other-password", "PLAY_CHECKPOINT_KEY": "synthetic"}
         with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, secrets), self.assertRaises(Stop) as caught:
             sign(directory, Path(directory) / "signed")
         self.assertNotIn("private-invalid", str(caught.exception))
@@ -231,6 +232,35 @@ class SignatureTests(unittest.TestCase):
             archive.writestr("base/assets/injected.txt", b"unsigned payload")
         with self.assertRaises(Stop):
             command([java_tool("java"), self.helper, str(injected), self.fingerprint])
+
+    def test_checkpoint_roundtrip_retains_exact_signed_bytes(self):
+        encrypted, restored = self.root / "roundtrip.enc", self.root / "roundtrip.aab"
+        key = base64.b64encode(bytes(range(32))).decode()
+        with patch.dict(os.environ, {"PLAY_CHECKPOINT_KEY": key}):
+            checkpoint_cipher("encrypt", self.signed, encrypted)
+            checkpoint_cipher("decrypt", encrypted, restored)
+        self.assertEqual(self.signed.read_bytes(), restored.read_bytes())
+        self.assertNotEqual(encrypted.read_bytes()[:2], b"PK")
+
+    def test_checkpoint_tamper_never_writes_plaintext(self):
+        encrypted, restored = self.root / "tampered.enc", self.root / "tampered.aab"
+        key = base64.b64encode(bytes(range(32))).decode()
+        with patch.dict(os.environ, {"PLAY_CHECKPOINT_KEY": key}):
+            checkpoint_cipher("encrypt", self.signed, encrypted)
+            data = bytearray(encrypted.read_bytes())
+            data[-1] ^= 1
+            encrypted.write_bytes(data)
+            with self.assertRaises(Stop):
+                checkpoint_cipher("decrypt", encrypted, restored)
+        self.assertFalse(restored.exists())
+
+    def test_checkpoint_wrong_key_cannot_decrypt(self):
+        encrypted, restored = self.root / "wrong-key.enc", self.root / "wrong-key.aab"
+        with patch.dict(os.environ, {"PLAY_CHECKPOINT_KEY": base64.b64encode(bytes(range(32))).decode()}):
+            checkpoint_cipher("encrypt", self.signed, encrypted)
+        with patch.dict(os.environ, {"PLAY_CHECKPOINT_KEY": base64.b64encode(bytes(reversed(range(32)))).decode()}), self.assertRaises(Stop):
+            checkpoint_cipher("decrypt", encrypted, restored)
+        self.assertFalse(restored.exists())
 
 
 class FakePlay:
