@@ -3,11 +3,13 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.community.presentation.components.CommunityTestTags
+import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -83,6 +85,19 @@ class RankingsInTheMenuTest {
         composeRule.onNodeWithTag(CommunityListTestTags.MORE).performClick()
 
         composeRule.onNodeWithText("Rankings · 13").assertExists()
+    }
+
+    @Test
+    fun anUnrankedHouseList_opensRankingsFromMine_withoutOfferingToEditTheSource() {
+        show(theirs.copy(editorial = true, showing = Showing.Mine, rankingCount = 0))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ADD_BUTTON).assertDoesNotExist()
+        composeRule.onNodeWithContentDescription("Edit list name").assertDoesNotExist()
+        composeRule.onNodeWithTag(CommunityListTestTags.MORE).performClick()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_RANKINGS).performClick()
+
+        composeRule.runOnIdle { assertEquals(1, asked) }
+        composeRule.onNodeWithTag(CommunityListTestTags.RANKINGS_SHEET).assertExists()
     }
 
     @Test

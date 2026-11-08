@@ -58,7 +58,7 @@ class ShowMyRankingMenuTest {
 
     @Test
     fun arrangedMine_offersToShowIt_andTappingSendsIt() {
-        openMenu(arranged)
+        openMenu(arranged.copy(showing = Showing.Mine))
 
         composeRule.onNodeWithText("Show my ranking to others").performClick()
 
