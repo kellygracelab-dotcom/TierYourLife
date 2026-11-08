@@ -6,7 +6,7 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.NoCredentialException
 import com.artiuillab.tieryourlife.feature.account.domain.signin.GoogleWebClientId
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.CancellationException
 import timber.log.Timber
@@ -34,16 +34,10 @@ class CredentialManagerGoogleCredential @Inject constructor(
 ) : GoogleCredential {
 
     override suspend fun request(context: Context): GoogleCredentialResult {
-        val option = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(webClientId)
-            .setAutoSelectEnabled(false)
-            .build()
-
         return try {
             val response = CredentialManager.create(context).getCredential(
                 context = context,
-                request = GetCredentialRequest.Builder().addCredentialOption(option).build(),
+                request = googleButtonSignInRequest(webClientId),
             )
             val credential = GoogleIdTokenCredential.createFrom(response.credential.data)
             GoogleCredentialResult.Token(credential.idToken)
@@ -58,4 +52,10 @@ class CredentialManagerGoogleCredential @Inject constructor(
             GoogleCredentialResult.Unavailable
         }
     }
+}
+
+internal fun googleButtonSignInRequest(webClientId: String): GetCredentialRequest {
+    // Every caller arrives from an explicit button, not an automatic bottom sheet.
+    val option = GetSignInWithGoogleOption.Builder(webClientId).build()
+    return GetCredentialRequest.Builder().addCredentialOption(option).build()
 }
