@@ -11,3 +11,5 @@ build/
 local.properties
 instrumentation.log
 /release
+__pycache__/
+*.pyc

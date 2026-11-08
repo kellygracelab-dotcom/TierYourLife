@@ -1,0 +1,187 @@
+name: Play Internal
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+  SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+  SOURCE_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+
+jobs:
+  verify:
+    name: Verify trusted main CI
+    if: >-
+      github.repository_id == '1279175743' &&
+      github.repository_owner_id == '280666991' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.path == '.github/workflows/ci.yml' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.id == 1279175743 &&
+      github.event.workflow_run.head_repository.owner.id == 280666991
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      fresh: ${{ steps.fresh.outputs.fresh }}
+    steps:
+      # No checkout, environment, OIDC or secret before this stale-event check.
+      - name: Skip superseded CI before checkout
+        id: fresh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          current=$(gh api repos/kellygracelab-dotcom/TierYourLife/git/ref/heads/main --jq .object.sha)
+          if [[ "$current" == "$SOURCE_SHA" ]]; then
+            echo 'fresh=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'fresh=false' >> "$GITHUB_OUTPUT"
+            echo 'Superseded main CI: no release started.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Checkout exact main CI source
+        if: steps.fresh.outputs.fresh == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up JDK 21
+        if: steps.fresh.outputs.fresh == 'true'
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          java-version: '21'
+          distribution: temurin
+
+      - name: Verify applicable gates and unsigned AAB provenance
+        if: steps.fresh.outputs.fresh == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/play-internal.py prepare
+
+  publish:
+    name: Publish Internal only
+    needs: verify
+    if: needs.verify.outputs.fresh == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: play-internal
+    # Untrusted/stale workflow_run events never enter the pending release slot.
+    # Let an actual upload/commit finish; freshness is checked again after queueing.
+    concurrency:
+      group: android-play-internal
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - name: Checkout exact main CI source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          java-version: '21'
+          distribution: temurin
+
+      - name: Revalidate source CI, freshness and artifact
+        id: prepare
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/play-internal.py prepare
+
+      - name: Restore sealed signed bytes and saved edit intent
+        id: restore
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/play-internal.py restore
+
+      - name: Sign and verify every payload entry with the upload certificate
+        if: steps.restore.outputs.signed_restored != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAY_UPLOAD_KEYSTORE_BASE64: ${{ secrets.PLAY_UPLOAD_KEYSTORE_BASE64 }}
+          PLAY_UPLOAD_STORE_PASSWORD: ${{ secrets.PLAY_UPLOAD_STORE_PASSWORD }}
+          PLAY_UPLOAD_KEY_ALIAS: ${{ secrets.PLAY_UPLOAD_KEY_ALIAS }}
+          PLAY_UPLOAD_KEY_PASSWORD: ${{ secrets.PLAY_UPLOAD_KEY_PASSWORD }}
+        run: python3 .github/scripts/play-internal.py sign
+
+      # Complete this durable checkpoint before opening a Play edit.
+      - name: Save exact signed bytes for safe retry
+        if: steps.restore.outputs.signed_restored != 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.prepare.outputs.signed_name }}
+          path: |
+            ${{ runner.temp }}/play/signed/bundle.aab
+            ${{ runner.temp }}/play/signed/provenance.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Check main freshness before authentication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          current=$(gh api repos/kellygracelab-dotcom/TierYourLife/git/ref/heads/main --jq .object.sha)
+          test "$current" = "$SOURCE_SHA"
+
+      - name: Get short-lived Play token through WIF
+        id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ vars.PLAY_WIF_PROVIDER }}
+          service_account: ${{ vars.PLAY_PUBLISHER_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+          access_token_lifetime: 1800s
+          create_credentials_file: false
+          export_environment_variables: false
+
+      - name: Reconcile saved edit or prepare Internal intent
+        id: begin
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAY_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: python3 .github/scripts/play-internal.py begin
+
+      # A run interrupted before this step cannot have uploaded an AAB.
+      - name: Save intent before any bundle or track mutation
+        if: steps.begin.outputs.new_intent == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.prepare.outputs.intent_name }}
+          path: ${{ runner.temp }}/play/intent/intent.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish fixed Internal track and confirm tester availability
+        if: steps.begin.outputs.done != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAY_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: python3 .github/scripts/play-internal.py publish
+
+      - name: Save confirmed publication receipt
+        if: success()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: play-result-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/play/result.json
+          if-no-files-found: error
+          retention-days: 30
