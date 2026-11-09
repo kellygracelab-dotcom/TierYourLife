@@ -17,7 +17,7 @@ through delivery, rather than leave tested work on a branch:
 3. Merge the green PR, update this canonical checkout to `origin/main`, and
    verify the source tree and main checks. The Play Internal workflow must use
    that exact CI-produced AAB and full-history versionCode; confirm its real
-   completed/PUBLISHED outcome as the delivery runbook describes.
+   fresh deployed Internal completed/name/version/hash outcome as the runbook describes.
 4. Danylo's Samsung now has a Play-signed installation. Its coordinator owns
    updates through Google Play and physical acceptance. Do not sideload a fast
    APK or invoke Deliver.ps1 for it. Compatible local debug-signed devices may

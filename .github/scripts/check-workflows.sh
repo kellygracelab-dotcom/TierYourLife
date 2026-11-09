@@ -7,4 +7,7 @@ curl --fail --silent --show-error --location \
   --output "$lint_dir/actionlint.tar.gz"
 echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  $lint_dir/actionlint.tar.gz" | sha256sum --check --status
 tar -xzf "$lint_dir/actionlint.tar.gz" -C "$lint_dir" actionlint
-"$lint_dir/actionlint" -shellcheck= .github/workflows/*.yml
+for workflow in .github/workflows/*.yml; do
+  python3 .github/scripts/workflow_lint.py "$workflow" \
+    | "$lint_dir/actionlint" -shellcheck= -stdin-filename "$workflow" -
+done

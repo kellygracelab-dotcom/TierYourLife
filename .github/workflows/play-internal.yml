@@ -76,6 +76,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment: play-internal
+    # workflow_run defaults to read-only caches. Only this guarded current-main
+    # environment job may persist authenticated encrypted delivery data.
+    cache-mode: write
     # Untrusted/stale workflow_run events never enter the pending release slot.
     # Let an actual upload/commit finish; freshness is checked again after queueing.
     concurrency:
@@ -105,6 +108,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: python3 .github/scripts/play-internal.py prepare
 
+      - name: Restore encrypted signed checkpoint independently of run artifacts
+        id: signed_cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          key: play-signed-v2-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/play/sealed
+
+      - name: Restore latest authenticated edit checkpoint
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          key: play-intent-v2-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}-restore
+          restore-keys: play-intent-v2-${{ env.SOURCE_SHA }}-
+          path: ${{ runner.temp }}/play/intent-sealed
+
       - name: Restore sealed signed bytes and saved edit intent
         id: restore
         env:
@@ -123,8 +140,35 @@ jobs:
           PLAY_CHECKPOINT_KEY: ${{ secrets.PLAY_CHECKPOINT_KEY }}
         run: python3 .github/scripts/play-internal.py sign
 
-      # Complete this durable checkpoint before opening a Play edit.
-      - name: Save encrypted signed checkpoint for safe retry
+      - name: Persist encrypted signed checkpoint outside this run
+        if: steps.signed_cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          key: play-signed-v2-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/play/sealed
+
+      # Cache save can warn without failing: independently read it back and
+      # compare exact authenticated bytes BEFORE any Play operation.
+      - name: Set local signed checkpoint aside before backend readback
+        run: python3 .github/scripts/play-internal.py park-signed-cache
+
+      - name: Independently restore persisted signed checkpoint
+        id: signed_verified
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          key: play-signed-v2-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/play/sealed
+          fail-on-cache-miss: true
+
+      - name: Verify persisted signed cache bytes and original CI payload
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAY_CHECKPOINT_KEY: ${{ secrets.PLAY_CHECKPOINT_KEY }}
+          CACHE_HIT: ${{ steps.signed_verified.outputs.cache-hit }}
+        run: python3 .github/scripts/play-internal.py verify-signed-cache
+
+      # Run artifacts are audit copies, not the retry persistence mechanism.
+      - name: Save encrypted signed audit copy
         if: steps.restore.outputs.signed_restored != 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -162,22 +206,109 @@ jobs:
           PLAY_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
         run: python3 .github/scripts/play-internal.py begin
 
-      # A run interrupted before this step cannot have uploaded an AAB.
-      - name: Save intent before any bundle or track mutation
-        if: steps.begin.outputs.new_intent == 'true'
+      - name: Authenticate pre-stage edit checkpoint
+        if: steps.begin.outputs.done != 'true'
+        env:
+          PLAY_CHECKPOINT_KEY: ${{ secrets.PLAY_CHECKPOINT_KEY }}
+        run: python3 .github/scripts/play-internal.py seal-intent
+
+      - name: Persist pre-stage edit checkpoint
+        if: steps.begin.outputs.done != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          key: play-intent-v2-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}-prepare
+          path: ${{ runner.temp }}/play/intent-sealed
+
+      - name: Set local prepared checkpoint aside before backend readback
+        if: steps.begin.outputs.done != 'true'
+        env:
+          CACHE_PHASE: prepare
+        run: python3 .github/scripts/play-internal.py park-intent-cache
+
+      - name: Independently restore pre-stage checkpoint
+        if: steps.begin.outputs.done != 'true'
+        id: intent_verified
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          key: play-intent-v2-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}-prepare
+          path: ${{ runner.temp }}/play/intent-sealed
+          fail-on-cache-miss: true
+
+      - name: Verify pre-stage checkpoint before upload
+        if: steps.begin.outputs.done != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAY_CHECKPOINT_KEY: ${{ secrets.PLAY_CHECKPOINT_KEY }}
+          CACHE_HIT: ${{ steps.intent_verified.outputs.cache-hit }}
+        run: python3 .github/scripts/play-internal.py verify-intent-cache
+
+      - name: Save prepared edit audit copy
+        if: steps.begin.outputs.done != 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: ${{ steps.prepare.outputs.intent_name }}
+          name: ${{ steps.prepare.outputs.intent_name }}-prepare
           path: ${{ runner.temp }}/play/intent/intent.json
           if-no-files-found: error
           retention-days: 14
 
-      - name: Publish fixed Internal track and confirm tester availability
+      - name: Stage Internal bundle
         if: steps.begin.outputs.done != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           PLAY_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
-        run: python3 .github/scripts/play-internal.py publish
+        run: python3 .github/scripts/play-internal.py stage
+
+      - name: Authenticate commit-intent checkpoint
+        if: steps.begin.outputs.done != 'true'
+        env:
+          PLAY_CHECKPOINT_KEY: ${{ secrets.PLAY_CHECKPOINT_KEY }}
+        run: python3 .github/scripts/play-internal.py seal-intent
+
+      - name: Persist commit-intent checkpoint
+        if: steps.begin.outputs.done != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          key: play-intent-v2-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}-commit
+          path: ${{ runner.temp }}/play/intent-sealed
+
+      - name: Set local commit checkpoint aside before backend readback
+        if: steps.begin.outputs.done != 'true'
+        env:
+          CACHE_PHASE: commit
+        run: python3 .github/scripts/play-internal.py park-intent-cache
+
+      - name: Independently restore commit-intent checkpoint
+        if: steps.begin.outputs.done != 'true'
+        id: commit_verified
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          key: play-intent-v2-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}-commit
+          path: ${{ runner.temp }}/play/intent-sealed
+          fail-on-cache-miss: true
+
+      - name: Verify commit checkpoint before the single commit request
+        if: steps.begin.outputs.done != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAY_CHECKPOINT_KEY: ${{ secrets.PLAY_CHECKPOINT_KEY }}
+          CACHE_HIT: ${{ steps.commit_verified.outputs.cache-hit }}
+        run: python3 .github/scripts/play-internal.py verify-intent-cache
+
+      - name: Save commit edit audit copy
+        if: steps.begin.outputs.done != 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.prepare.outputs.intent_name }}-commit
+          path: ${{ runner.temp }}/play/intent/intent.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Commit Internal and confirm serving version
+        if: steps.begin.outputs.done != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAY_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: python3 .github/scripts/play-internal.py commit
 
       - name: Save confirmed publication receipt
         if: success()

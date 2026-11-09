@@ -76,12 +76,6 @@ class TransportTests(unittest.TestCase):
                 if path == '/edits':
                     value = {'id':'edit1'}
                 elif path == '/edits/edit1/tracks':
-                    value = {'tracks':[{'track':'internal'},{'track':'alpha'}]}
-                elif path == '/edits/edit1/tracks/internal':
-                    value = {'track':'internal'}
-                elif path == '/tracks/internal/releases':
-                    value = {'releases':[]}
-                elif path == '/tracks/alpha/releases':
                     return Response(malformed,mime)
                 else:
                     raise AssertionError('No release writes may follow an unknown queue response')
@@ -140,30 +134,35 @@ class TransportTests(unittest.TestCase):
             thread.join()
 
 
-class ReleaseSchemaTests(unittest.TestCase):
-    def publisher(self, data):
-        api = unittest.mock.Mock()
-        api.request.return_value = data
-        return Publisher(api, {'versionCode':480,'signedSha256':'d'*64,'source':{'sha':'a'*40}}, lambda:None)
+class TrackSnapshotSchemaTests(unittest.TestCase):
+    def publisher(self, tracks):
+        api=unittest.mock.Mock()
+        def response(method,path,*args,**kwargs):
+            if path.endswith('/tracks'):
+                return tracks
+            if path.endswith('/internal'):
+                return {'track':'internal'}
+            if path.endswith('/bundles'):
+                return {'bundles':[]}
+            return {'apks':[]}
+        api.request.side_effect=response
+        return Publisher(api,{'versionCode':480,'signedSha256':'d'*64,'source':{'sha':'a'*40}},lambda:None)
 
-    def test_only_valid_proto_empty_responses_count_as_empty(self):
-        self.assertEqual(self.publisher({}).releases('alpha'), [])
-        self.assertEqual(self.publisher({'releases':[]}).releases('alpha'), [])
-        for data in (None, [], {'error':{}}, {'other':'not a release list'}, {'releases':None}, {'releases':{}}):
-            with self.subTest(data=data), self.assertRaises(Stop):
-                self.publisher(data).releases('alpha')
+    def test_missing_or_malformed_track_snapshot_is_not_empty_queue(self):
+        for data in ({},{'tracks':None},{'tracks':[]},{'tracks':{}},{'tracks':[None]},{'tracks':[{'track':'production'}]}):
+            with self.subTest(data=data),self.assertRaises(Stop):
+                self.publisher(data).snapshot('edit1')
 
-    def test_unknown_pagination_and_maximum_cannot_hide_a_pending_page(self):
-        for data in ({'releases':[],'nextPageToken':'next'}, {'releases':[],'tokenPagination':{}},
-                     {'releases':[{'track':'alpha'}]*20}):
-            with self.subTest(data=data), self.assertRaises(Stop):
-                self.publisher(data).releases('alpha')
+    def test_foreign_draft_and_unknown_status_cannot_be_overwritten(self):
+        for status in ('draft','unknown','statusUnspecified'):
+            tracks={'tracks':[{'track':'internal'},{'track':'production','releases':[{'status':status,'versionCodes':['479']}]}]}
+            with self.subTest(status=status),self.assertRaises(Stop):
+                self.publisher(tracks).snapshot('edit1')
 
-    def test_wrong_track_and_malformed_artifact_stop(self):
-        for release in ({'track':'production'}, {'track':'alpha','activeArtifacts':None},
-                        {'track':'alpha','activeArtifacts':[{}]}, {'track':'alpha','activeArtifacts':[{'versionCode':True}]}):
-            with self.subTest(release=release), self.assertRaises(Stop):
-                self.publisher({'releases':[release]}).releases('alpha')
+    def test_invalid_version_schema_is_not_ignored(self):
+        for release in ({'status':'completed','versionCodes':None},{'status':'completed','versionCodes':[True]},{'status':'completed','versionCodes':['bad']}):
+            with self.subTest(release=release),self.assertRaises(Stop):
+                self.publisher({'tracks':[{'track':'internal','releases':[release]}]}).snapshot('edit1')
 
 
 if __name__ == '__main__':

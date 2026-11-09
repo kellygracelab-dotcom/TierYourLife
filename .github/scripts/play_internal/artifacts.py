@@ -1,6 +1,7 @@
 """Build provenance, bounded data-only archives, manifest and signature checks."""
 import base64
 import hashlib
+import json
 import os
 from pathlib import Path
 import re
@@ -60,23 +61,58 @@ def checkpoint_cipher(mode, source, destination):
     command([java_tool("java"), str(helper), mode, str(source), str(destination)])
 
 
-def seal(signed, sealed):
-    signed, sealed = Path(signed), Path(sealed)
+def seal(signed, sealed, unsigned, gates):
+    signed, sealed, unsigned = Path(signed), Path(sealed), Path(unsigned)
     sealed.mkdir(parents=True, exist_ok=True)
-    checkpoint_cipher("encrypt", signed / "bundle.aab", sealed / "bundle.enc")
     manifest = read_json(signed / "provenance.json")
-    manifest["encryption"] = "AES-256-GCM-v1"
+    manifest["encryption"] = "AES-256-GCM-checkpoint-v2"
+    archive = sealed.parent / "checkpoint.zip"
+    try:
+        with zipfile.ZipFile(archive, "w") as zipped:
+            zipped.write(signed / "bundle.aab", "signed.aab")
+            zipped.write(unsigned / "bundle.aab", "unsigned.aab")
+            zipped.writestr("provenance.json", json.dumps(manifest))
+            zipped.write(gates, "gates.json")
+        checkpoint_cipher("encrypt", archive, sealed / "bundle.enc")
+    finally:
+        archive.unlink(missing_ok=True)
     write_json(sealed / "provenance.json", manifest)
 
 
 def unseal(sealed, signed):
     sealed, signed = Path(sealed), Path(signed)
     manifest = read_json(sealed / "provenance.json")
-    require(manifest.get("encryption") == "AES-256-GCM-v1", "Unexpected checkpoint encryption")
+    require(manifest.get("encryption") == "AES-256-GCM-checkpoint-v2", "Unexpected checkpoint encryption")
     signed.mkdir(parents=True, exist_ok=True)
-    checkpoint_cipher("decrypt", sealed / "bundle.enc", signed / "bundle.aab")
+    original = signed.parent / "original"
+    archive = signed.parent / "checkpoint-restored.zip"
+    try:
+        checkpoint_cipher("decrypt", sealed / "bundle.enc", archive)
+        extract_data(archive, original, {"signed.aab", "unsigned.aab", "provenance.json", "gates.json"})
+    finally:
+        archive.unlink(missing_ok=True)
+    require(read_json(original / "provenance.json") == manifest, "Unauthenticated checkpoint metadata differs from encrypted record")
+    shutil.copyfile(original / "signed.aab", signed / "bundle.aab")
+    (original / "unsigned").mkdir(exist_ok=True)
+    shutil.copyfile(original / "unsigned.aab", original / "unsigned/bundle.aab")
+    write_json(original / "unsigned/provenance.json", manifest)
+    (original / "gates").mkdir(exist_ok=True)
+    shutil.copyfile(original / "gates.json", original / "gates/gates.json")
     require(sha256(signed / "bundle.aab") == manifest.get("signedSha256"), "Decrypted checkpoint hash mismatch")
     write_json(signed / "provenance.json", manifest)
+
+
+def seal_intent(work):
+    work = Path(work)
+    target = work / "intent-sealed/intent.enc"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    checkpoint_cipher("encrypt", work / "intent/intent.json", target)
+
+
+def unseal_intent(work):
+    work = Path(work)
+    (work / "intent").mkdir(parents=True, exist_ok=True)
+    checkpoint_cipher("decrypt", work / "intent-sealed/intent.enc", work / "intent/intent.json")
 
 
 def verify_manifest(bundle, version, tools):
