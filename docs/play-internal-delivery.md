@@ -99,18 +99,22 @@ receipts, expired artifacts or unknown state stops delivery. If the saved edit
 expired without consuming the target code, a read-only inspection must prove
 that the code is free and queues are clear before creating a new intent generation
 with the same sealed AAB. A committed pending candidate is polled without further
-writes. Re-running all CI jobs for an already delivered SHA reuses and verifies
+writes. Matching owned bytes already uploaded to an expired edit can be staged
+through a new durable intent without another upload. The serving read snapshot
+is created after publication is observed. Foreign queues are guarded before
+release writes; a later foreign draft does not negate proven Internal delivery.
+Re-running all CI jobs for an already delivered SHA reuses and verifies
 the original signed artifact, original green CI attempt, bundle hash and published
 release instead of signing/uploading again. A partial CI rerun missing its build
 artifact must be rerun with all jobs. Do not override the count, downgrade or
 re-upload an occupied code to force a retry.
 
 Commit always specifies `changesInReviewBehavior=ERROR_IF_IN_REVIEW`; it never
-cancels or replaces another review. It also specifies `changesNotSentForReview=true`
-without automatic fallback. Google documents the latter for rejection handling;
-it is **not** general isolation from Console metadata changes. If Play rejects an
-option, inspect the actual failure and preserve the pending queue before deciding
-on a focused correction.
+cancels or replaces another review. Normal Internal commits omit
+`changesNotSentForReview`: Google documents it for rejection handling, potentially
+requiring manual Console submission, not as general isolation from metadata.
+An actual rejection/permission/review error stops without automatic cancellation
+or a switch to another track. Ordinary Internal delivery needs no manual gate.
 
 All visible track release lifecycles are read before release writes. Foreign
 draft, unsent, in-review, rejected, approved-but-unpublished or unknown releases
@@ -124,10 +128,34 @@ checks Publishing overview before the first automatic write.
 
 Successful commit is not the delivery criterion. A separate
 `applications.tracks.releases.list` read must show this exact release name and
-version in `RELEASE_LIFECYCLE_STATE_PUBLISHED`; the staged Internal release must
-be `completed`. Missing/pending availability is reported as unfinished. The
+version in `RELEASE_LIFECYCLE_STATE_PUBLISHED`. Since that state also includes
+halted releases, a fresh read edit must independently confirm the currently
+serving Internal release is `completed` with the exact name/version/bundle hash.
+Missing/pending availability is reported as unfinished. The
 published receipt records source and signed SHA-256. Store propagation and the
 real Google-login check on the Play-installed Samsung remain separate runtime QA.
+
+### HTTP response contract
+
+Requests explicitly negotiate JSON (`Accept` and `alt=json`); release-list reads
+also request Google's `$outputDefaults=true` so empty repeated proto fields can
+be represented explicitly. GETs have no request body or Content-Type. Redirects
+are rejected before Authorization can be forwarded. Expected resource responses
+must be bounded JSON objects with an application/json MIME type. Empty bytes,
+HTML/XML, null, arrays, duplicate JSON keys, API error objects and unknown list
+schemas never mean an empty queue or successful publication. Logs contain only
+method/path, status, MIME, byte count, body classification and safe machine error
+enums; no response body, token or credential is logged.
+
+Official Discovery revision20261105 defines ListReleaseSummariesResponse with
+only an optional `releases` list: `{}` and `{"releases":[]}` are legitimate empty
+JSON responses. The method has no pageToken/pageSize parameters, and returns at
+most20 non-obsolete releases. Unexpected pagination or a saturated20-item list
+stops because complete queue evidence is unavailable. Track IDs are taken from
+the actual edit track list; the write target remains the fixed `internal` ID.
+
+References: [Discovery](https://androidpublisher.googleapis.com/$discovery/rest?version=v3),
+[JSON system parameters](https://docs.cloud.google.com/apis/docs/system-parameters).
 
 ## Validation
 
