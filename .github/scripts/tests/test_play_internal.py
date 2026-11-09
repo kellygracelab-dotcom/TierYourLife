@@ -14,10 +14,11 @@ from unittest.mock import patch
 import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from play_internal.artifacts import checkpoint_cipher, command, compare_payloads, extract_data, java_tool, sign, verify_signature
-from play_internal.__main__ import validate_sealed
+from play_internal.artifacts import checkpoint_cipher, command, compare_payloads, extract_data, java_tool, sign, verify_signature, seal, unseal, seal_intent, unseal_intent
+from play_internal.__main__ import main as workflow_main, validate_sealed, cache_snapshot
+from workflow_lint import normalize
 from play_internal.github import GitHub, verify_gates
-from play_internal.play import ApiError, PUBLISHED, Publisher
+from play_internal.play import ApiError, Publisher
 from play_internal.policy import (CD_PATH, CI_PATH, OWNER_ID, PACKAGE, PROXY_URL,
                                   REPO_ID, Stop, artifact_name, validate_provenance,
                                   write_json)
@@ -141,6 +142,76 @@ class TrustTests(unittest.TestCase):
             self.assertTrue(github.restore_cd_artifact("intent", SOURCE, "unused", {"intent.json"}))
             self.assertEqual(download.call_args.args[0]["id"], 9)
 
+    def test_prior_started_stage_is_negative_evidence_when_cache_was_lost(self):
+        github=GitHub()
+        previous={**run(True),'id':42,'run_attempt':2}
+        jobs=[{'steps':[{'name':'Stage Internal bundle','status':'completed','conclusion':'failure'}]}]
+        with patch.object(github,'pages',side_effect=[[previous],jobs]):
+            self.assertTrue(github.prior_release_writes_possible(SOURCE,42,2))
+
+    def test_skipped_publish_does_not_claim_a_version_was_uploaded(self):
+        github=GitHub()
+        previous={**run(True),'id':42,'run_attempt':2}
+        jobs=[{'steps':[{'name':'Stage Internal bundle','status':'completed','conclusion':'skipped'}]}]
+        with patch.object(github,'pages',side_effect=[[previous],jobs]):
+            self.assertFalse(github.prior_release_writes_possible(SOURCE,42,2))
+
+    def test_missing_checkpoint_after_possible_upload_stops_before_signing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            env={'GITHUB_WORKSPACE':directory,'RUNNER_TEMP':directory,'PLAY_WORK_DIR':directory,
+                 'GITHUB_RUN_ID':'42','GITHUB_RUN_ATTEMPT':'2'}
+            with patch.dict(os.environ,env),patch.object(sys,'argv',['play-internal.py','restore']),\
+                 patch('play_internal.__main__.source_env',return_value=SOURCE),\
+                 patch('play_internal.__main__.GitHub') as client,patch('play_internal.artifacts.sign') as signer:
+                client.return_value.prior_release_writes_possible.return_value=True
+                with self.assertRaisesRegex(Stop,'never regenerate different bytes'):
+                    workflow_main()
+                signer.assert_not_called()
+
+    def test_cache_save_warning_or_miss_cannot_allow_mutations(self):
+        with tempfile.TemporaryDirectory() as directory:
+            env={'GITHUB_WORKSPACE':directory,'RUNNER_TEMP':directory,'PLAY_WORK_DIR':directory,'CACHE_HIT':''}
+            with patch.dict(os.environ,env),patch.object(sys,'argv',['play-internal.py','verify-signed-cache']),\
+                 patch('play_internal.__main__.source_env',return_value=SOURCE),patch('play_internal.__main__.GitHub'):
+                with self.assertRaisesRegex(Stop,'not independently restored'):
+                    workflow_main()
+
+    def test_backend_readback_cannot_reuse_residual_local_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            work=Path(directory)
+            (work/'sealed').mkdir()
+            (work/'sealed/bundle.enc').write_bytes(b'local-only-ciphertext')
+            write_json(work/'sealed/provenance.json',{})
+            write_json(work/'cache-expected-signed.json',cache_snapshot(work,'signed'))
+            env={'GITHUB_WORKSPACE':directory,'RUNNER_TEMP':directory,'PLAY_WORK_DIR':directory,'CACHE_HIT':'true'}
+            with patch.dict(os.environ,env),patch('play_internal.__main__.source_env',return_value=SOURCE),patch('play_internal.__main__.GitHub'):
+                with patch.object(sys,'argv',['play-internal.py','park-signed-cache']):
+                    workflow_main()
+                self.assertFalse((work/'sealed').exists())
+                with patch.object(sys,'argv',['play-internal.py','verify-signed-cache']),self.assertRaisesRegex(Stop,'did not restore every expected file'):
+                    workflow_main()
+
+    def test_commit_history_distinguishes_skipped_from_started_and_unknown(self):
+        for step, expected in (({'status':'completed','conclusion':'skipped'},False),
+                               ({'status':'queued','conclusion':None},False),
+                               ({'status':'completed','conclusion':'failure'},True)):
+            github=GitHub()
+            jobs=[{'steps':[{'name':'Commit Internal and confirm serving version',**step}]}]
+            with patch.object(github,'get',return_value=run(True)),patch.object(github,'pages',return_value=jobs):
+                self.assertIs(github.commit_was_started(SOURCE,{'run':42,'attempt':1}),expected)
+        with patch.object(GitHub,'get',return_value=run(True)),patch.object(GitHub,'pages',return_value=[]):
+            self.assertIsNone(GitHub().commit_was_started(SOURCE,{'run':42,'attempt':1}))
+
+    def test_only_one_official_cache_mode_is_validated_for_old_actionlint(self):
+        text='jobs:\n  publish:\n    cache-mode: write\n    invalid-other-key: true\n'
+        result=normalize('play-internal.yml',text)
+        self.assertIn('invalid-other-key: true',result)  # Still rejected by actionlint.
+        self.assertEqual(len(result.splitlines()),len(text.splitlines()))
+        for filename,changed in (('ci.yml',text),('play-internal.yml',text.replace('publish:','verify:')),
+                                 ('play-internal.yml',text.replace('write','invalid'))):
+            with self.subTest(filename=filename,changed=changed),self.assertRaises(ValueError):
+                normalize(filename,changed)
+
     def test_expired_or_hash_mismatched_archive_rejected(self):
         github = GitHub()
         for overrides in ({"expired": True}, {"digest": "sha256:" + "0" * 64}):
@@ -262,260 +333,309 @@ class SignatureTests(unittest.TestCase):
             checkpoint_cipher("decrypt", encrypted, restored)
         self.assertFalse(restored.exists())
 
+    def test_authenticated_cache_retains_original_unsigned_gates_and_exact_signed_bytes(self):
+        root=self.root/'complete-checkpoint'
+        unsigned,signed,sealed=root/'unsigned',root/'signed',root/'sealed'
+        unsigned.mkdir(parents=True);signed.mkdir()
+        shutil.copyfile(self.unsigned,unsigned/'bundle.aab')
+        shutil.copyfile(self.signed,signed/'bundle.aab')
+        manifest={**MANIFEST,'signedSha256':hashlib.sha256(self.signed.read_bytes()).hexdigest(),
+                  'unsignedSha256':hashlib.sha256(self.unsigned.read_bytes()).hexdigest()}
+        write_json(signed/'provenance.json',manifest)
+        receipt=gates()[1]
+        write_json(root/'gates.json',receipt)
+        key=base64.b64encode(bytes(range(32))).decode()
+        with patch.dict(os.environ,{'PLAY_CHECKPOINT_KEY':key}):
+            seal(signed,sealed,unsigned,root/'gates.json')
+            # Simulate deletion of run artifacts: only the encrypted cache remains.
+            (signed/'bundle.aab').unlink()
+            (unsigned/'bundle.aab').unlink()
+            unseal(sealed,signed)
+        self.assertEqual((signed/'bundle.aab').read_bytes(),self.signed.read_bytes())
+        self.assertEqual((root/'original/unsigned/bundle.aab').read_bytes(),self.unsigned.read_bytes())
+        self.assertEqual(json.loads((root/'original/gates/gates.json').read_text()),receipt)
+
+    def test_public_cache_metadata_cannot_be_changed_outside_authenticated_container(self):
+        root=self.root/'metadata-tamper'
+        unsigned,signed,sealed=root/'unsigned',root/'signed',root/'sealed'
+        unsigned.mkdir(parents=True);signed.mkdir()
+        shutil.copyfile(self.unsigned,unsigned/'bundle.aab');shutil.copyfile(self.signed,signed/'bundle.aab')
+        write_json(signed/'provenance.json',{**MANIFEST,'signedSha256':hashlib.sha256(self.signed.read_bytes()).hexdigest()})
+        write_json(root/'gates.json',gates()[1])
+        key=base64.b64encode(bytes(range(32))).decode()
+        with patch.dict(os.environ,{'PLAY_CHECKPOINT_KEY':key}):
+            seal(signed,sealed,unsigned,root/'gates.json')
+            metadata=json.loads((sealed/'provenance.json').read_text())
+            metadata['source']={**SOURCE,'attempt':99}
+            write_json(sealed/'provenance.json',metadata)
+            with self.assertRaisesRegex(Stop,'Unauthenticated checkpoint metadata'):
+                unseal(sealed,signed)
+
+    def test_intent_checkpoint_is_authenticated_and_roundtrips_edit_and_phase(self):
+        root=self.root/'intent-checkpoint'
+        intent={'editId':'edit-first-attempt','phase':'commit','signedSha256':'d'*64,'source':SOURCE}
+        write_json(root/'intent/intent.json',intent)
+        key=base64.b64encode(bytes(range(32))).decode()
+        with patch.dict(os.environ,{'PLAY_CHECKPOINT_KEY':key}):
+            seal_intent(root)
+            (root/'intent/intent.json').unlink()
+            unseal_intent(root)
+            self.assertEqual(json.loads((root/'intent/intent.json').read_text()),intent)
+            raw=bytearray((root/'intent-sealed/intent.enc').read_bytes());raw[-1]^=1
+            (root/'intent-sealed/intent.enc').write_bytes(raw)
+            with self.assertRaises(Stop):
+                unseal_intent(root)
+
 
 class FakePlay:
+    """Separate deployed state from each staging edit; direct lifecycle API forbidden."""
     def __init__(self):
         self.calls = []
-        self.bundles = [{"versionCode": 477, "sha256": "e" * 64}]
-        self.track = {"track": "internal", "releases": [{"name": "old", "versionCodes": ["477"], "status": "completed"}]}
-        self.summary = {"internal": [{"track": "internal", "releaseName": "old", "releaseLifecycleState": PUBLISHED, "activeArtifacts": [{"versionCode": "477"}]}], "production": []}
-        self.missing_internal = False
-        self.upload_error = self.commit_error = self.put_error = False
-        self.upload_consumed = True
-        self.expired = False
-        self.commit_publishes = True
+        self.bundles = [{"versionCode":477,"sha256":"e"*64}]
+        self.deployed = {"internal":{"track":"internal","releases":[{"name":"old","versionCodes":["477"],"status":"completed"}]},
+                         "production":{"track":"production","releases":[]},"beta":{"track":"beta","releases":[]}}
+        self.edits = {}
+        self.upload_error = self.put_error = self.commit_error = False
+        self.upload_consumed = self.commit_accepted = self.commit_publishes = True
+        self.expired = set()
+        self.foreign_after_commit = False
 
     def request(self, method, path, body=None, upload=False):
-        self.calls.append((method, path, copy.deepcopy(body) if not upload else "bundle"))
+        self.calls.append((method,path,copy.deepcopy(body) if not upload else "bundle"))
+        if path == "/edits" and method == "POST":
+            self.expired.update(self.edits)
+            edit = f"edit{len(self.edits)+1}"
+            self.edits[edit] = copy.deepcopy(self.deployed)
+            return {"id":edit}
+        assert path.startswith("/edits/"), "No direct cross-track lifecycle requests allowed"
+        edit = path.split("/")[2].split(":")[0]
+        if edit in self.expired:
+            raise ApiError(404)
         if method == "GET":
-            if path.startswith("/tracks/"):
-                return {"releases": copy.deepcopy(self.summary[path.split("/")[2]])}
-            if path.endswith("/bundles"):
-                return {"bundles": copy.deepcopy(self.bundles)}
-            if path.endswith("/apks"):
-                return {"apks": []}
             if path.endswith("/tracks"):
-                return {"tracks": ([{"track": "production"}] if self.missing_internal else [copy.deepcopy(self.track), {"track": "production"}])}
+                return {"tracks":list(copy.deepcopy(self.edits[edit]).values())}
             if path.endswith("/tracks/internal"):
-                return copy.deepcopy(self.track)
-            if self.expired:
-                raise ApiError(404)
-            return {"id": "edit1"}
-        if path == "/edits":
-            return {"id": "edit1"}
+                return copy.deepcopy(self.edits[edit]["internal"])
+            if path.endswith("/bundles"):
+                return {"bundles":copy.deepcopy(self.bundles)}
+            if path.endswith("/apks"):
+                return {"apks":[]}
+            return {"id":edit}
         if "/bundles?" in path:
-            candidate = {"versionCode": 479, "sha256": MANIFEST["signedSha256"]}
+            candidate = {"versionCode":479,"sha256":MANIFEST["signedSha256"]}
             if not self.upload_error or self.upload_consumed:
                 self.bundles.append(candidate)
             if self.upload_error:
                 raise ApiError(503)
             return candidate
         if method == "PUT":
-            self.track = copy.deepcopy(body)
+            assert path.endswith("/tracks/internal")
+            self.edits[edit]["internal"] = copy.deepcopy(body)
             if self.put_error:
                 raise ApiError(503)
             return body
         if ":commit?" in path:
-            if self.commit_publishes:
-                self.summary["internal"] = [{"track": "internal", "releaseName": body_name(self.track), "releaseLifecycleState": PUBLISHED,
-                                             "activeArtifacts": [{"versionCode": "479"}]}]
+            if not self.commit_error or self.commit_accepted:
+                if self.commit_publishes:
+                    self.deployed = copy.deepcopy(self.edits[edit])
+                self.expired.add(edit)
+                if self.foreign_after_commit:
+                    self.deployed["production"]["releases"] = [{"name":"new foreign draft","versionCodes":["478"],"status":"draft"}]
             if self.commit_error:
-                raise ApiError(503)
-            return {"id": "edit1"}
-        raise AssertionError((method, path))
-
-
-def body_name(track):
-    return track["releases"][0]["name"]
+                raise ApiError(400 if not self.commit_accepted else 503)
+            return {"id":edit}
+        raise AssertionError((method,path))
 
 
 class PublisherTests(unittest.TestCase):
     def setUp(self):
         self.api = FakePlay()
         self.fresh = unittest.mock.Mock()
-        self.publisher = Publisher(self.api, copy.deepcopy(MANIFEST), self.fresh, sleep=lambda _: None)
+        self.publisher = Publisher(self.api,copy.deepcopy(MANIFEST),self.fresh,sleep=lambda _:None)
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.intent_path = Path(self.temp.name) / "intent.json"
+        self.intent_path = Path(self.temp.name)/"intent.json"
 
     def begin(self):
-        self.assertEqual(self.publisher.begin(self.intent_path), (True, False))
-        return json.loads(self.intent_path.read_text())
+        self.assertEqual(self.publisher.begin(self.intent_path),(True,False))
+        return read_intent(self.intent_path)
 
     def mutations(self, kind):
-        return [call for call in self.api.calls if call[0] != "GET" and kind in call[1]]
+        return [call for call in self.api.calls if call[0]!="GET" and kind in call[1]]
 
-    def test_success_writes_only_internal_and_safe_review_commit(self):
+    def deliver(self, intent):
+        self.publisher.stage(intent,"fake.aab")
+        intent["phase"] = "commit"
+        write_json(self.intent_path,intent)
+        return self.publisher.commit(intent)
+
+    def test_success_is_fresh_deployed_internal_only_with_exact_hash(self):
         intent = self.begin()
-        self.assertEqual(self.mutations("/bundles"), [])  # intent checkpoint precedes upload
-        result = self.publisher.publish(intent, "fake.aab")
-        self.assertEqual(result["outcome"], "PUBLISHED")
-        self.assertEqual(len(self.mutations("/bundles")), 1)
-        self.assertEqual([call[1] for call in self.mutations("/tracks")], ["/edits/edit1/tracks/internal"])
-        self.assertEqual(self.mutations(":commit")[0][1], "/edits/edit1:commit?changesInReviewBehavior=ERROR_IF_IN_REVIEW")
-        self.assertGreaterEqual(self.fresh.call_count, 6)
+        self.assertEqual(self.mutations("/bundles"),[])
+        result = self.deliver(intent)
+        self.assertEqual(result["outcome"],"SERVED")
+        self.assertFalse(result["lifecycleEnumRead"])
+        self.assertEqual(len(self.mutations("/bundles")),1)
+        self.assertEqual([call[1] for call in self.mutations("/tracks")],["/edits/edit1/tracks/internal"])
+        self.assertEqual(self.mutations(":commit")[0][1],"/edits/edit1:commit?changesInReviewBehavior=ERROR_IF_IN_REVIEW")
+        self.assertGreaterEqual(len(self.api.edits),2)
 
-    def test_pending_production_or_internal_never_uploads(self):
-        for track in ("internal", "production"):
-            for state in ("DRAFT", "NOT_SENT_FOR_REVIEW", "IN_REVIEW", "APPROVED_NOT_PUBLISHED", "NOT_APPROVED", "UNSPECIFIED"):
-                self.api.summary[track] = [{"track": track, "releaseLifecycleState": "RELEASE_LIFECYCLE_STATE_" + state}]
-                with self.subTest(track=track, state=state), self.assertRaises(Stop):
-                    self.publisher.begin(self.intent_path)
-                self.assertEqual(self.mutations("/bundles"), [])
-                self.api.summary[track] = []
+    def test_staging_is_not_deployed_and_commit_requires_saved_phase(self):
+        intent = self.begin()
+        self.publisher.stage(intent,"fake.aab")
+        self.assertEqual(self.api.deployed["internal"]["releases"][0]["versionCodes"],["477"])
+        with self.assertRaisesRegex(Stop,"checkpoint was not persisted"):
+            self.publisher.commit(intent)
+        self.assertEqual(self.mutations(":commit"),[])
 
-    def test_missing_internal_does_not_create_or_fallback_track(self):
-        self.api.missing_internal = True
-        with self.assertRaises(Stop):
-            self.publisher.begin(self.intent_path)
-        self.assertEqual(self.mutations("/tracks"), [])
-
-    def test_occupied_different_bytes_and_newer_version_block(self):
-        for code, digest in ((479, "wrong"), (480, "d" * 64)):
-            self.api.bundles = [{"versionCode": code, "sha256": digest}]
-            with self.subTest(code=code), self.assertRaises(Stop):
+    def test_known_foreign_draft_or_unknown_status_stops_before_upload(self):
+        for status in ("draft","statusUnspecified","unknown"):
+            self.api.deployed["production"]["releases"] = [{"name":"foreign","versionCodes":["478"],"status":status}]
+            with self.subTest(status=status),self.assertRaises(Stop):
                 self.publisher.begin(self.intent_path)
-            self.assertEqual(self.mutations("/bundles"), [])
+        self.assertEqual(self.mutations("/bundles"),[])
 
-    def test_existing_own_edit_reuses_same_uploaded_bytes(self):
+    def test_in_review_is_rejected_atomically_without_cancel_or_repeated_commit(self):
         intent = self.begin()
-        self.api.bundles.append({"versionCode": 479, "sha256": MANIFEST["signedSha256"]})
-        self.assertEqual(self.publisher.begin(self.intent_path), (False, False))
-        self.publisher.publish(intent, "fake.aab")
-        self.assertEqual(self.mutations("/bundles"), [])
+        self.api.commit_error,self.api.commit_accepted = True,False
+        with self.assertRaises(ApiError):
+            self.deliver(intent)
+        self.assertEqual(len(self.mutations(":commit")),1)
+        self.assertNotIn("CANCEL",self.mutations(":commit")[0][1])
 
-    def test_lost_upload_response_reconciles_without_second_upload(self):
-        intent = self.begin()
-        self.api.upload_error = True
-        result = self.publisher.publish(intent, "fake.aab")
-        self.assertEqual(result["outcome"], "PUBLISHED")
-        self.assertEqual(len(self.mutations("/bundles")), 1)
-
-    def test_unknown_upload_outcome_does_not_update_or_commit(self):
-        intent = self.begin()
-        self.api.upload_error, self.api.upload_consumed = True, False
-        with self.assertRaises(Stop):
-            self.publisher.publish(intent, "fake.aab")
-        self.assertEqual(len(self.mutations("/bundles")), 1)
-        self.assertEqual(self.mutations("/tracks"), [])
-        self.assertEqual(self.mutations(":commit"), [])
-
-    def test_lost_track_response_reads_back_without_second_put(self):
-        intent = self.begin()
-        self.api.put_error = True
-        self.publisher.publish(intent, "fake.aab")
-        self.assertEqual(len(self.mutations("/tracks")), 1)
-
-    def test_lost_commit_response_proves_published_without_second_commit(self):
-        intent = self.begin()
-        self.api.commit_error = True
-        result = self.publisher.publish(intent, "fake.aab")
-        self.assertEqual(result["outcome"], "PUBLISHED")
-        self.assertEqual(len(self.mutations(":commit")), 1)
-
-    def test_successful_commit_alone_is_not_publication(self):
-        intent = self.begin()
-        self.api.commit_publishes = False
-        with self.assertRaisesRegex(Stop, "availability not proven"):
-            self.publisher.publish(intent, "fake.aab")
-
-    def test_published_lifecycle_of_halted_release_is_not_serving_completed(self):
-        intent = self.begin()
-        original = self.api.request
-        def response(method, path, body=None, **kwargs):
-            result = original(method,path,body,**kwargs)
-            if ':commit?' in path:
-                self.api.track['releases'][0]['status'] = 'halted'
-            return result
-        with patch.object(self.api,'request',side_effect=response), self.assertRaisesRegex(Stop,'not the current completed'):
-            self.publisher.publish(intent,'fake.aab')
-
-    def test_foreign_draft_after_commit_does_not_negate_proven_internal_delivery(self):
-        intent = self.begin()
-        original = self.api.request
-        def response(method, path, body=None, **kwargs):
-            result = original(method,path,body,**kwargs)
-            if ':commit?' in path:
-                self.api.summary['production'] = [{'track':'production','releaseLifecycleState':'RELEASE_LIFECYCLE_STATE_DRAFT'}]
-            return result
-        with patch.object(self.api,'request',side_effect=response):
-            self.assertEqual(self.publisher.publish(intent,'fake.aab')['outcome'],'PUBLISHED')
-
-    def test_review_error_never_retries_with_cancellation(self):
-        intent = self.begin()
-        self.api.commit_error, self.api.commit_publishes = True, False
-        with self.assertRaises(Stop):
-            self.publisher.publish(intent, "fake.aab")
-        self.assertEqual(len(self.mutations(":commit")), 1)
-
-    def test_expired_unused_intent_can_resume_after_readonly_free_code_check(self):
-        first = self.begin()
-        self.api.expired = True
-        self.assertEqual(self.publisher.begin(self.intent_path), (True, False))
-        self.assertEqual(len(self.mutations("/edits")), 2)
-        self.assertEqual(self.mutations("/bundles"), [])
-        self.assertEqual(json.loads(self.intent_path.read_text())["signedSha256"], first["signedSha256"])
-
-    def test_expired_intent_with_foreign_occupied_code_stops(self):
-        self.begin()
-        self.api.expired = True
-        self.api.bundles.append({"versionCode": 479, "sha256": "foreign"})
+    def test_missing_internal_never_creates_or_falls_back_to_qa(self):
+        del self.api.deployed["internal"]
         with self.assertRaises(Stop):
             self.publisher.begin(self.intent_path)
-        self.assertEqual(self.mutations("/bundles"), [])
+        self.assertEqual(self.mutations("/tracks"),[])
 
-    def test_saved_pending_release_gets_read_snapshot_only_after_publication(self):
-        self.begin()
-        self.api.expired = True
-        self.api.bundles.append({'versionCode':479,'sha256':MANIFEST['signedSha256']})
-        self.api.track = {'track':'internal','releases':[{'name':self.publisher.name,'versionCodes':['479'],'status':'completed'}]}
-        self.api.summary['internal'] = [{'track':'internal','releaseName':self.publisher.name,
-            'activeArtifacts':[{'versionCode':479}],'releaseLifecycleState':'RELEASE_LIFECYCLE_STATE_IN_REVIEW'}]
-        def publish_during_wait(_):
-            self.api.summary['internal'][0]['releaseLifecycleState'] = PUBLISHED
-        self.publisher.sleep = publish_during_wait
-        new_edit = self.publisher.new_edit
-        def fresh_snapshot():
-            self.assertEqual(self.api.summary['internal'][0]['releaseLifecycleState'],PUBLISHED)
-            return new_edit()
-        with patch.object(self.publisher,'new_edit',side_effect=fresh_snapshot):
-            self.assertEqual(self.publisher.begin(self.intent_path),(False,True))
-        self.assertEqual(self.mutations('/bundles'),[])
-        self.assertEqual(self.mutations(':commit'),[])
+    def test_newer_or_different_occupied_version_cannot_be_uploaded_over(self):
+        for code,digest in ((479,"foreign"),(480,"d"*64)):
+            self.api.bundles = [{"versionCode":code,"sha256":digest}]
+            with self.subTest(code=code),self.assertRaises(Stop):
+                self.publisher.begin(self.intent_path)
+        self.assertEqual(self.mutations("/bundles"),[])
 
-    def test_expired_owned_uploaded_bundle_can_stage_without_reupload(self):
-        self.begin()
-        self.api.expired = True
-        self.api.bundles.append({'versionCode':479,'sha256':MANIFEST['signedSha256']})
-        self.assertEqual(self.publisher.begin(self.intent_path),(True,False))
-        self.publisher.publish(json.loads(self.intent_path.read_text()),'fake.aab')
-        self.assertEqual(self.mutations('/bundles'),[])
-
-    def test_own_pending_release_is_polled_without_repeating_writes(self):
+    def test_restore_staged_active_edit_keeps_exact_bytes_and_does_not_reupload(self):
         intent = self.begin()
-        original = self.publisher.published
-        count = 0
-        def pending_then_published():
-            nonlocal count
-            count += 1
-            if count <= 2:
-                self.api.summary["internal"][0]["releaseLifecycleState"] = "RELEASE_LIFECYCLE_STATE_IN_REVIEW"
-            else:
-                self.api.summary["internal"][0]["releaseLifecycleState"] = PUBLISHED
-            return original()
-        with patch.object(self.publisher, "published", side_effect=pending_then_published):
-            result = self.publisher.publish(intent, "fake.aab")
-        self.assertEqual(result["outcome"], "PUBLISHED")
-        self.assertGreaterEqual(count, 3)
-        self.assertEqual(len(self.mutations("/bundles")), 1)
-        self.assertEqual(len(self.mutations(":commit")), 1)
+        self.publisher.stage(intent,"fake.aab")
+        intent["phase"]="commit"
+        write_json(self.intent_path,intent)
+        self.assertEqual(self.publisher.begin(self.intent_path),(False,False))
+        self.assertEqual(self.deliver(read_intent(self.intent_path))["outcome"],"SERVED")
+        self.assertEqual(len(self.mutations("/bundles")),1)
+        self.assertEqual(len(self.mutations("/tracks")),1)
+        self.assertEqual(len(self.mutations(":commit")),1)
 
-    def test_expired_committed_edit_requires_published_and_hash_proof(self):
+    def test_lost_upload_response_reads_existing_bundle_without_second_upload(self):
         intent = self.begin()
-        self.publisher.publish(intent, "fake.aab")
-        self.api.expired = True
-        self.assertEqual(self.publisher.begin(self.intent_path), (False, True))
-        self.assertEqual(len(self.mutations("/bundles")), 1)
+        self.api.upload_error=True
+        self.assertEqual(self.deliver(intent)["outcome"],"SERVED")
+        self.assertEqual(len(self.mutations("/bundles")),1)
 
-    def test_intent_tampering_and_stale_main_stop_before_upload(self):
+    def test_unknown_upload_outcome_does_not_stage_or_commit(self):
         intent = self.begin()
-        for key, value in (("track", "production"), ("signedSha256", "wrong"), ("editId", "../other")):
-            with self.subTest(key=key), self.assertRaises(Stop):
-                self.publisher.publish({**intent, key: value}, "fake.aab")
-        self.fresh.side_effect = Stop("stale")
+        self.api.upload_error,self.api.upload_consumed=True,False
         with self.assertRaises(Stop):
-            self.publisher.publish(intent, "fake.aab")
-        self.assertEqual(self.mutations("/bundles"), [])
+            self.deliver(intent)
+        self.assertEqual(self.mutations("/tracks"),[])
+        self.assertEqual(self.mutations(":commit"),[])
+
+    def test_lost_put_response_reads_same_edit_without_second_put(self):
+        intent = self.begin()
+        self.api.put_error=True
+        self.deliver(intent)
+        self.assertEqual(len(self.mutations("/tracks")),1)
+
+    def test_lost_commit_response_confirms_deployed_without_second_commit(self):
+        intent = self.begin()
+        self.api.commit_error=True
+        self.assertEqual(self.deliver(intent)["outcome"],"SERVED")
+        self.assertEqual(len(self.mutations(":commit")),1)
+
+    def test_commit_success_alone_is_not_delivery(self):
+        intent = self.begin()
+        self.api.commit_publishes=False
+        with self.assertRaisesRegex(Stop,"availability not proven"):
+            self.deliver(intent)
+
+    def test_halted_or_wrong_hash_is_not_served_success(self):
+        intent = self.begin()
+        original=self.api.request
+        def response(method,path,body=None,**kwargs):
+            result=original(method,path,body,**kwargs)
+            if ":commit?" in path:
+                self.api.deployed["internal"]["releases"][0]["status"]="halted"
+            return result
+        with patch.object(self.api,"request",side_effect=response),self.assertRaises(Stop):
+            self.deliver(intent)
+
+    def test_foreign_draft_after_commit_does_not_negate_actual_delivery(self):
+        intent=self.begin()
+        self.api.foreign_after_commit=True
+        self.assertEqual(self.deliver(intent)["outcome"],"SERVED")
+
+    def test_expired_unused_edit_gets_new_edit_and_same_signed_digest(self):
+        first=self.begin()
+        self.api.expired.add(first["editId"])
+        self.assertEqual(self.publisher.begin(self.intent_path),(True,False))
+        renewed=read_intent(self.intent_path)
+        self.assertNotEqual(first["editId"],renewed["editId"])
+        self.assertEqual(first["signedSha256"],renewed["signedSha256"])
+        self.assertEqual(self.mutations("/bundles"),[])
+
+    def test_expired_owned_uploaded_bundle_reuses_without_upload(self):
+        intent=self.begin()
+        self.publisher.stage(intent,"fake.aab")
+        self.api.expired.add(intent["editId"])
+        self.assertEqual(self.publisher.begin(self.intent_path),(True,False))
+        self.deliver(read_intent(self.intent_path))
+        self.assertEqual(len(self.mutations("/bundles")),1)
+
+    def test_committed_checkpoint_rerun_proves_serving_without_mutations(self):
+        intent=self.begin()
+        self.deliver(intent)
+        before=len(self.mutations(":commit"))
+        self.assertEqual(self.publisher.begin(self.intent_path),(False,True))
+        self.assertEqual(len(self.mutations(":commit")),before)
+        self.assertEqual(len(self.mutations("/bundles")),1)
+
+    def test_uncertain_commit_marker_is_not_blindly_resubmitted(self):
+        intent=self.begin()
+        self.api.commit_publishes=False
+        with self.assertRaises(Stop):
+            self.deliver(intent)
+        with self.assertRaises(Stop):
+            self.publisher.begin(self.intent_path)
+        self.assertEqual(len(self.mutations(":commit")),1)
+
+    def test_expired_commit_marker_whose_post_never_started_can_resume(self):
+        intent=self.begin()
+        self.publisher.stage(intent,'fake.aab')
+        intent['phase']='commit'
+        write_json(self.intent_path,intent)
+        self.api.expired.add(intent['editId'])
+        self.publisher.commit_started=lambda intent:False
+        self.assertEqual(self.publisher.begin(self.intent_path),(True,False))
+        renewed=read_intent(self.intent_path)
+        self.assertEqual(renewed['phase'],'prepared')
+        self.assertEqual(self.deliver(renewed)['outcome'],'SERVED')
+        self.assertEqual(len(self.mutations('/bundles')),1)
+        self.assertEqual(len(self.mutations(':commit')),1)
+
+    def test_tampered_intent_and_stale_source_stop_before_upload(self):
+        intent=self.begin()
+        for key,value in (("track","production"),("signedSha256","foreign"),("editId","../other"),("phase","unknown")):
+            with self.subTest(key=key),self.assertRaises(Stop):
+                self.publisher.stage({**intent,key:value},"fake.aab")
+        self.fresh.side_effect=Stop("stale")
+        with self.assertRaises(Stop):
+            self.publisher.stage(intent,"fake.aab")
+        self.assertEqual(self.mutations("/bundles"),[])
+
+
+def read_intent(path):
+    return json.loads(Path(path).read_text())
 
 
 if __name__ == "__main__":

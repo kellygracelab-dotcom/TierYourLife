@@ -57,9 +57,40 @@ class GitHub:
         self.trusted_run(run, source)
         require(run.get("run_attempt") == source["attempt"] and run.get("status") == "completed" and run.get("conclusion") == "success", "Sealed artifact did not come from successful historical CI")
         jobs = self.pages(f"actions/runs/{source['runId']}/attempts/{source['attempt']}/jobs", "jobs")
-        self.ci_artifact("gates", source, directory / "gates", {"gates.json"})
+        # The authenticated checkpoint retains the original gate receipt and
+        # unsigned payload: rerunning CI can delete its old run artifacts too.
         verify_gates(jobs, read_json(directory / "gates/gates.json"), source)
-        self.ci_artifact("unsigned", source, directory / "unsigned", {"bundle.aab", "provenance.json"})
+
+    def prior_release_writes_possible(self, source, current_run, current_attempt):
+        runs = self.pages(f"actions/workflows/play-internal.yml/runs?head_sha={source['sha']}&event=workflow_run", "workflow_runs")
+        for run in runs:
+            self.trusted_run(run, source, cd=True)
+            for attempt in range(1, int(run["run_attempt"]) + 1):
+                if int(run["id"]) == current_run and attempt >= current_attempt:
+                    continue
+                jobs = self.pages(f"actions/runs/{run['id']}/attempts/{attempt}/jobs", "jobs")
+                require(bool(jobs), "Previous attempt history unavailable; missing checkpoint cannot be regenerated safely")
+                for job in jobs:
+                    for step in job.get("steps", []):
+                        if step["name"] in ("Publish fixed Internal track and confirm tester availability", "Stage Internal bundle", "Commit Internal and confirm serving version"):
+                            if step.get("status") == "in_progress" or step.get("conclusion") not in (None, "skipped"):
+                                return True
+        return False
+
+    def commit_was_started(self, source, writer):
+        if not isinstance(writer, dict) or not all(type(writer.get(key)) is int and writer[key] > 0 for key in ("run", "attempt")):
+            return None
+        run = self.get(f"actions/runs/{writer['run']}")
+        self.trusted_run(run, source, cd=True)
+        jobs = self.pages(f"actions/runs/{writer['run']}/attempts/{writer['attempt']}/jobs", "jobs")
+        for job in jobs:
+            for step in job.get("steps", []):
+                if step["name"] == "Commit Internal and confirm serving version":
+                    if step.get("conclusion") == "skipped" or step.get("status") == "queued":
+                        return False
+                    if step.get("status") in ("in_progress", "completed"):
+                        return True
+        return None  # Missing history is uncertainty, never proof of no commit.
 
     def download(self, artifact, directory, allowed):
         require(not artifact.get("expired"), "Release artifact expired; build a new main revision")
