@@ -342,7 +342,7 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual(result["outcome"], "PUBLISHED")
         self.assertEqual(len(self.mutations("/bundles")), 1)
         self.assertEqual([call[1] for call in self.mutations("/tracks")], ["/edits/edit1/tracks/internal"])
-        self.assertEqual(self.mutations(":commit")[0][1], "/edits/edit1:commit?changesInReviewBehavior=ERROR_IF_IN_REVIEW&changesNotSentForReview=true")
+        self.assertEqual(self.mutations(":commit")[0][1], "/edits/edit1:commit?changesInReviewBehavior=ERROR_IF_IN_REVIEW")
         self.assertGreaterEqual(self.fresh.call_count, 6)
 
     def test_pending_production_or_internal_never_uploads(self):
@@ -408,6 +408,17 @@ class PublisherTests(unittest.TestCase):
         self.api.commit_publishes = False
         with self.assertRaisesRegex(Stop, "availability not proven"):
             self.publisher.publish(intent, "fake.aab")
+
+    def test_published_lifecycle_of_halted_release_is_not_serving_completed(self):
+        intent = self.begin()
+        original = self.api.request
+        def response(method, path, body=None, **kwargs):
+            result = original(method,path,body,**kwargs)
+            if ':commit?' in path:
+                self.api.track['releases'][0]['status'] = 'halted'
+            return result
+        with patch.object(self.api,'request',side_effect=response), self.assertRaisesRegex(Stop,'not the current completed'):
+            self.publisher.publish(intent,'fake.aab')
 
     def test_review_error_never_retries_with_cancellation(self):
         intent = self.begin()

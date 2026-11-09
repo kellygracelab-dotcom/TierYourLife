@@ -1,51 +1,13 @@
 """Conservative Play edit state machine. All writes have one fixed track."""
-import json
 from pathlib import Path
 import re
 import time
-import urllib.error
 import urllib.parse
-import urllib.request
 
 from .policy import PACKAGE, TRACK, Stop, read_json, require, write_json
+from .transport import ApiError, PlayApi
 
-BASE = f"https://androidpublisher.googleapis.com/androidpublisher/v3/applications/{PACKAGE}"
-UPLOAD = f"https://androidpublisher.googleapis.com/upload/androidpublisher/v3/applications/{PACKAGE}"
 PUBLISHED = "RELEASE_LIFECYCLE_STATE_PUBLISHED"
-
-
-class ApiError(Stop):
-    def __init__(self, status):
-        self.status = status
-        super().__init__(f"Play API request failed (HTTP {status}); no automatic permission/review fallback")
-
-
-class PlayApi:
-    def __init__(self, token):
-        require(bool(token), "Missing short-lived Play access token")
-        self.token = token
-
-    def request(self, method, path, body=None, *, upload=False):
-        data = Path(body).read_bytes() if upload else (json.dumps(body).encode() if body is not None else None)
-        headers = {"Authorization": f"Bearer {self.token}", "Content-Type": "application/octet-stream" if upload else "application/json"}
-        url = (UPLOAD if upload else BASE) + path
-        # Only GETs have transport retries. POST upload/commit can have succeeded
-        # despite a lost response, so their caller must reconcile state first.
-        attempts = 3 if method == "GET" else 1
-        for attempt in range(attempts):
-            try:
-                request = urllib.request.Request(url, data=data, headers=headers, method=method)
-                with urllib.request.urlopen(request, timeout=180) as response:
-                    return json.load(response)
-            except urllib.error.HTTPError as error:
-                status = error.code
-                error.close()
-                if status not in (429, 500, 502, 503, 504) or attempt == attempts - 1:
-                    raise ApiError(status) from None
-            except (urllib.error.URLError, TimeoutError):
-                if attempt == attempts - 1:
-                    raise ApiError(0) from None
-            time.sleep(2 ** attempt)
 
 
 def version(value):
@@ -61,7 +23,21 @@ class Publisher:
         self.name = f"internal-{self.code}-{manifest['source']['sha'][:12]}"
 
     def releases(self, track):
-        return self.api.request("GET", f"/tracks/{urllib.parse.quote(track, safe='')}/releases").get("releases", [])
+        require(isinstance(track, str) and 0 < len(track) <= 128 and not re.search(r"[/\x00-\x1f\x7f]", track), "Invalid Play track id")
+        data = self.api.request("GET", f"/tracks/{urllib.parse.quote(track, safe='')}/releases")
+        # Discovery ListReleaseSummariesResponse has only `releases`, no page
+        # token/page-size parameters. {} is a valid protobuf-JSON empty list;
+        # empty bytes/HTML/null/arbitrary objects never reach this point.
+        require(isinstance(data, dict) and set(data) <= {"releases"}, "Unexpected release-list schema or pagination; cannot prove queue state")
+        releases = data.get("releases", [])
+        require(isinstance(releases, list) and len(releases) < 20, "Invalid or capped release list; cannot prove complete queue state")
+        for release in releases:
+            require(isinstance(release, dict) and release.get("track") == track, "Release track metadata mismatch")
+            artifacts = release.get("activeArtifacts", [])
+            require(isinstance(artifacts, list) and all(isinstance(item, dict) and "versionCode" in item for item in artifacts), "Invalid release artifact schema")
+            for item in artifacts:
+                version(item["versionCode"])
+        return releases
 
     def published(self):
         for release in self.releases(TRACK):
@@ -138,6 +114,7 @@ class Publisher:
                 if occupied:
                     if not published:
                         self.wait_published()  # own committed candidate: reads only
+                    self.confirm_serving(inspection)
                     return False, True
                 require(not published, "Published version hash cannot be verified")
                 # No target code is present, maximum is below target and queues
@@ -151,6 +128,7 @@ class Publisher:
         occupied = self.snapshot(edit)
         if occupied:
             require(self.published(), "Occupied target has no durable edit receipt; manual reconciliation required")
+            self.confirm_serving(edit)
             return False, True
         self.write_intent(path, edit)
         # Workflow must upload this intent successfully BEFORE publish() starts.
@@ -171,6 +149,12 @@ class Publisher:
     def receipt(self, *, already=False):
         return {"outcome": "PUBLISHED", "alreadyPublished": already, "package": PACKAGE, "track": TRACK, "status": "completed",
                 "versionCode": self.code, "releaseName": self.name, "signedSha256": self.digest, "source": self.manifest["source"]}
+
+    def confirm_serving(self, edit):
+        # PUBLISHED also includes halted releases. Independently confirm the
+        # currently serving Internal target is completed, not a halted fallback.
+        track = self.api.request("GET", f"/edits/{edit}/tracks/internal")
+        require(self.track_matches(track), "Published candidate is not the current completed Internal release")
 
     def track_matches(self, track):
         releases = track.get("releases", [])
@@ -213,7 +197,7 @@ class Publisher:
                 require(own or release.get("releaseLifecycleState") == PUBLISHED, "Foreign pending changes detected before commit")
         self.fresh()
         try:
-            self.api.request("POST", prefix + ":commit?changesInReviewBehavior=ERROR_IF_IN_REVIEW&changesNotSentForReview=true")
+            self.api.request("POST", prefix + ":commit?changesInReviewBehavior=ERROR_IF_IN_REVIEW")
         except ApiError as error:
             # Never repeat commit or cancel somebody else's review.
             try:
@@ -221,4 +205,7 @@ class Publisher:
             except Stop:
                 raise error from None
         self.wait_published()
+        inspection = self.new_edit()
+        require(self.snapshot(inspection, own_intent=True), "Published bundle digest cannot be confirmed")
+        self.confirm_serving(inspection)
         return self.receipt()
