@@ -99,7 +99,11 @@ receipts, expired artifacts or unknown state stops delivery. If the saved edit
 expired without consuming the target code, a read-only inspection must prove
 that the code is free and queues are clear before creating a new intent generation
 with the same sealed AAB. A committed pending candidate is polled without further
-writes. Re-running all CI jobs for an already delivered SHA reuses and verifies
+writes. Matching owned bytes already uploaded to an expired edit can be staged
+through a new durable intent without another upload. The serving read snapshot
+is created after publication is observed. Foreign queues are guarded before
+release writes; a later foreign draft does not negate proven Internal delivery.
+Re-running all CI jobs for an already delivered SHA reuses and verifies
 the original signed artifact, original green CI attempt, bundle hash and published
 release instead of signing/uploading again. A partial CI rerun missing its build
 artifact must be rerun with all jobs. Do not override the count, downgrade or

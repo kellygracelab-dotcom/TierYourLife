@@ -420,6 +420,17 @@ class PublisherTests(unittest.TestCase):
         with patch.object(self.api,'request',side_effect=response), self.assertRaisesRegex(Stop,'not the current completed'):
             self.publisher.publish(intent,'fake.aab')
 
+    def test_foreign_draft_after_commit_does_not_negate_proven_internal_delivery(self):
+        intent = self.begin()
+        original = self.api.request
+        def response(method, path, body=None, **kwargs):
+            result = original(method,path,body,**kwargs)
+            if ':commit?' in path:
+                self.api.summary['production'] = [{'track':'production','releaseLifecycleState':'RELEASE_LIFECYCLE_STATE_DRAFT'}]
+            return result
+        with patch.object(self.api,'request',side_effect=response):
+            self.assertEqual(self.publisher.publish(intent,'fake.aab')['outcome'],'PUBLISHED')
+
     def test_review_error_never_retries_with_cancellation(self):
         intent = self.begin()
         self.api.commit_error, self.api.commit_publishes = True, False
@@ -442,6 +453,33 @@ class PublisherTests(unittest.TestCase):
         with self.assertRaises(Stop):
             self.publisher.begin(self.intent_path)
         self.assertEqual(self.mutations("/bundles"), [])
+
+    def test_saved_pending_release_gets_read_snapshot_only_after_publication(self):
+        self.begin()
+        self.api.expired = True
+        self.api.bundles.append({'versionCode':479,'sha256':MANIFEST['signedSha256']})
+        self.api.track = {'track':'internal','releases':[{'name':self.publisher.name,'versionCodes':['479'],'status':'completed'}]}
+        self.api.summary['internal'] = [{'track':'internal','releaseName':self.publisher.name,
+            'activeArtifacts':[{'versionCode':479}],'releaseLifecycleState':'RELEASE_LIFECYCLE_STATE_IN_REVIEW'}]
+        def publish_during_wait(_):
+            self.api.summary['internal'][0]['releaseLifecycleState'] = PUBLISHED
+        self.publisher.sleep = publish_during_wait
+        new_edit = self.publisher.new_edit
+        def fresh_snapshot():
+            self.assertEqual(self.api.summary['internal'][0]['releaseLifecycleState'],PUBLISHED)
+            return new_edit()
+        with patch.object(self.publisher,'new_edit',side_effect=fresh_snapshot):
+            self.assertEqual(self.publisher.begin(self.intent_path),(False,True))
+        self.assertEqual(self.mutations('/bundles'),[])
+        self.assertEqual(self.mutations(':commit'),[])
+
+    def test_expired_owned_uploaded_bundle_can_stage_without_reupload(self):
+        self.begin()
+        self.api.expired = True
+        self.api.bundles.append({'versionCode':479,'sha256':MANIFEST['signedSha256']})
+        self.assertEqual(self.publisher.begin(self.intent_path),(True,False))
+        self.publisher.publish(json.loads(self.intent_path.read_text()),'fake.aab')
+        self.assertEqual(self.mutations('/bundles'),[])
 
     def test_own_pending_release_is_polled_without_repeating_writes(self):
         intent = self.begin()

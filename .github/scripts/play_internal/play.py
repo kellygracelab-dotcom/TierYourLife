@@ -39,19 +39,20 @@ class Publisher:
                 version(item["versionCode"])
         return releases
 
-    def published(self):
+    def target_lifecycle(self):
         for release in self.releases(TRACK):
             codes = [version(artifact["versionCode"]) for artifact in release.get("activeArtifacts", [])]
             if self.code in codes:
                 require(release.get("track") == TRACK and release.get("releaseName") == self.name and codes == [self.code], "Target version belongs to another release")
                 lifecycle = release.get("releaseLifecycleState")
-                if lifecycle == PUBLISHED:
-                    return True
-                require(lifecycle in ("RELEASE_LIFECYCLE_STATE_DRAFT", "RELEASE_LIFECYCLE_STATE_NOT_SENT_FOR_REVIEW",
+                require(lifecycle in (PUBLISHED, "RELEASE_LIFECYCLE_STATE_DRAFT", "RELEASE_LIFECYCLE_STATE_NOT_SENT_FOR_REVIEW",
                                       "RELEASE_LIFECYCLE_STATE_IN_REVIEW", "RELEASE_LIFECYCLE_STATE_APPROVED_NOT_PUBLISHED"),
                         "Own release rejected or has unknown lifecycle; Console action needed")
-                return False
-        return False
+                return lifecycle
+        return None
+
+    def published(self):
+        return self.target_lifecycle() == PUBLISHED
 
     def new_edit(self):
         self.fresh()
@@ -104,22 +105,18 @@ class Publisher:
         if path.exists():
             intent = read_json(path)
             self.validate_intent(intent)
+            if self.target_lifecycle() is not None:
+                self.wait_published()
+                self.confirm_serving()
+                return False, True
             try:
                 self.api.request("GET", f"/edits/{intent['editId']}")
             except ApiError as error:
                 require(error.status in (400, 404, 410), "Cannot read saved edit; retry after external issue is resolved")
-                published = self.published()
                 inspection = self.new_edit()
-                occupied = self.snapshot(inspection, own_intent=True)
-                if occupied:
-                    if not published:
-                        self.wait_published()  # own committed candidate: reads only
-                    self.confirm_serving(inspection)
-                    return False, True
-                require(not published, "Published version hash cannot be verified")
-                # No target code is present, maximum is below target and queues
-                # are clear. Reuse verified signed bytes with a NEW durable edit
-                # generation; no dummy source commit or version override needed.
+                self.snapshot(inspection, own_intent=True)
+                # The queue is clear and the code is free or holds our exact
+                # bytes. A NEW intent can stage owned bytes without re-upload.
                 self.write_intent(path, inspection)
                 return True, False
             self.snapshot(intent["editId"], own_intent=True)
@@ -128,7 +125,7 @@ class Publisher:
         occupied = self.snapshot(edit)
         if occupied:
             require(self.published(), "Occupied target has no durable edit receipt; manual reconciliation required")
-            self.confirm_serving(edit)
+            self.confirm_serving()
             return False, True
         self.write_intent(path, edit)
         # Workflow must upload this intent successfully BEFORE publish() starts.
@@ -150,11 +147,19 @@ class Publisher:
         return {"outcome": "PUBLISHED", "alreadyPublished": already, "package": PACKAGE, "track": TRACK, "status": "completed",
                 "versionCode": self.code, "releaseName": self.name, "signedSha256": self.digest, "source": self.manifest["source"]}
 
-    def confirm_serving(self, edit):
+    def confirm_serving(self):
         # PUBLISHED also includes halted releases. Independently confirm the
         # currently serving Internal target is completed, not a halted fallback.
+        # Create the read snapshot AFTER waiting for publication. Foreign queues
+        # matter before release writes, not when proving a completed delivery.
+        edit = self.new_edit()
         track = self.api.request("GET", f"/edits/{edit}/tracks/internal")
         require(self.track_matches(track), "Published candidate is not the current completed Internal release")
+        bundles = self.api.request("GET", f"/edits/{edit}/bundles").get("bundles", [])
+        require(isinstance(bundles, list), "Invalid serving bundle list")
+        candidates = [item for item in bundles if isinstance(item, dict) and version(item.get("versionCode")) == self.code]
+        require(len(candidates) == 1 and isinstance(candidates[0].get("sha256"), str)
+                and candidates[0]["sha256"].lower() == self.digest, "Published bundle digest cannot be confirmed")
 
     def track_matches(self, track):
         releases = track.get("releases", [])
@@ -205,7 +210,5 @@ class Publisher:
             except Stop:
                 raise error from None
         self.wait_published()
-        inspection = self.new_edit()
-        require(self.snapshot(inspection, own_intent=True), "Published bundle digest cannot be confirmed")
-        self.confirm_serving(inspection)
+        self.confirm_serving()
         return self.receipt()
