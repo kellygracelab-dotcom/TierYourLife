@@ -412,6 +412,23 @@ class AccountViewModelTest {
     }
 
     @Test
+    fun signOutCompletesWithTheCurrentIdentityBeforeTheListenerCatchesUp() = runBlocking {
+        val signedIn = Account.SignedIn(email = "someone@example.com", photoUrl = null)
+        val delayedListener = kotlinx.coroutines.flow.MutableStateFlow<Account>(signedIn)
+        val repository = object : FakeAccountRepository(initial = signedIn) {
+            override val account: kotlinx.coroutines.flow.Flow<Account> = delayedListener
+        }
+        val viewModel = viewModel(repository, merge = RecordingMerge(guestBoards = 0))
+        viewModel.state.firstWithin { it.account is Account.SignedIn }
+
+        viewModel.signOut()
+        val done = viewModel.state.firstWithin { !it.signingOut && repository.current() == Account.Guest }
+
+        assertEquals(Account.Guest, done.account)
+        assertEquals(signedIn, delayedListener.value)
+    }
+
+    @Test
     fun signOut_pressedAgainWhileItWaits_signsOutOnce() = runBlocking {
         val repository = FakeAccountRepository(initial = Account.SignedIn(email = "someone@example.com", photoUrl = null))
         val syncEnds = CompletableDeferred<Unit>()
