@@ -35,7 +35,7 @@ timber = "5.0.1"
 firebaseCrashlyticsGradle = "3.0.8"
 benchmark = "1.5.0"
 profileinstaller = "1.4.1"
-uiautomator = "2.3.0"
+uiautomator = "2.4.1"
 
 [libraries]
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
