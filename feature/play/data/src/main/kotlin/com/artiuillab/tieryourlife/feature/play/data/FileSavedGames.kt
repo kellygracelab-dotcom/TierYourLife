@@ -122,13 +122,8 @@ private data class GameRecord(
     /** Null for a record this version cannot read: a game from a newer one is dropped, not guessed at. */
     fun toGame(): SavedGame? {
         val kind = kindNamed(kind) ?: return null
-        val outcomes = history.map { entry ->
-            val first = entry.getOrNull(0) ?: return null
-            val second = entry.getOrNull(1) ?: return null
-            val winner = entry.getOrNull(2)
-            if (winner != null && winner != first && winner != second) return null
-            Outcome(first, second, winner)
-        }
+        if (count < 2 || count != ids.size || ids.toSet().size != count) return null
+        val outcomes = history.map { readOutcome(it, count) ?: return null }
         return SavedGame(
             spec = GameSpec(kind, count, seed, refine),
             ids = ids,
@@ -165,3 +160,15 @@ private data class GameRecord(
 }
 
 private fun kindNamed(name: String): GameKind? = GameKind.entries.firstOrNull { it.name == name }
+
+private fun readOutcome(entry: List<Int?>, count: Int): Outcome? {
+    if (entry.size != OUTCOME_FIELDS) return null
+    val first = entry[0] ?: -1
+    val second = entry[1] ?: -1
+    val winner = entry[2]
+    val validPair = first in 0 until count && second in 0 until count && first != second
+    val validWinner = winner == null || winner == first || winner == second
+    return if (validPair && validWinner) Outcome(first, second, winner) else null
+}
+
+private const val OUTCOME_FIELDS = 3

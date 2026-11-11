@@ -61,14 +61,6 @@
     <string name="play_start">ابدأ</string>
     <string name="play_continue">التالي</string>
     <string name="play_back">رجوع</string>
-    <plurals name="play_cards_limit">
-        <item quantity="zero">حتى %1$d بطاقة في اللعبة الواحدة</item>
-        <item quantity="one">حتى بطاقة واحدة في اللعبة الواحدة</item>
-        <item quantity="two">حتى بطاقتين في اللعبة الواحدة</item>
-        <item quantity="few">حتى %1$d بطاقات في اللعبة الواحدة</item>
-        <item quantity="many">حتى %1$d بطاقة في اللعبة الواحدة</item>
-        <item quantity="other">حتى %1$d بطاقة في اللعبة الواحدة</item>
-    </plurals>
     <string name="play_pool">المجمّع</string>
     <string name="play_everything">الكل</string>
     <plurals name="play_cards">
@@ -79,7 +71,6 @@
         <item quantity="many">%1$d بطاقة</item>
         <item quantity="other">%1$d بطاقة</item>
     </plurals>
-    <string name="play_too_many_in_tier">أكثر من اللازم للعبة واحدة.</string>
     <plurals name="play_selected">
         <item quantity="zero">تم اختيار %1$d من %2$d</item>
         <item quantity="one">تم اختيار %1$d من %2$d</item>
@@ -87,14 +78,6 @@
         <item quantity="few">تم اختيار %1$d من %2$d</item>
         <item quantity="many">تم اختيار %1$d من %2$d</item>
         <item quantity="other">تم اختيار %1$d من %2$d</item>
-    </plurals>
-    <plurals name="play_selected_too_many">
-        <item quantity="zero">تم اختيار %1$d، اختر 64 كحد أقصى</item>
-        <item quantity="one">تم اختيار %1$d، اختر 64 كحد أقصى</item>
-        <item quantity="two">تم اختيار %1$d، اختر 64 كحد أقصى</item>
-        <item quantity="few">تم اختيار %1$d، اختر 64 كحد أقصى</item>
-        <item quantity="many">تم اختيار %1$d، اختر 64 كحد أقصى</item>
-        <item quantity="other">تم اختيار %1$d، اختر 64 كحد أقصى</item>
     </plurals>
     <string name="play_keep_in_tier">إبقاؤها في %1$s وترتيبها فقط</string>
     <string name="play_quit">خروج</string>
@@ -160,4 +143,12 @@
     <string name="play_snack_undo">تراجع</string>
     <string name="play_snack_not_saved">تعذّر حفظ اللعبة</string>
     <string name="play_snack_list_updated">تم تحديث هذه القائمة أثناء اللعب، لذلك أُلغيت اللعبة</string>
+    <string name="play_random_sample">اختيار عشوائي</string>
+    <string name="play_individual_cards">بطاقات منفردة</string>
+    <string name="play_select_candidates">اختيار جميع البطاقات المتاحة</string>
+    <string name="play_clear_selection">إلغاء الاختيار</string>
+    <string name="play_card_unnamed">بطاقة بلا عنوان</string>
+    <string name="play_unplayed_options">البطاقات خارج اللعبة</string>
+    <string name="play_unplayed_keep">إبقاؤها في مستوياتها الأصلية بعد البطاقات التي لعبت</string>
+    <string name="play_unplayed_pool">نقل إلى المجموعة</string>
 </resources>

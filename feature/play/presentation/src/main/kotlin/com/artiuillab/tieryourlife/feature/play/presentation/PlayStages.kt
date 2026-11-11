@@ -11,10 +11,10 @@ import com.artiuillab.tieryourlife.feature.play.domain.isThin
 import com.artiuillab.tieryourlife.feature.play.domain.nextPair
 import com.artiuillab.tieryourlife.feature.play.domain.progress
 import com.artiuillab.tieryourlife.feature.play.domain.refineDuels
-import com.artiuillab.tieryourlife.feature.play.domain.result
 import com.artiuillab.tieryourlife.feature.play.domain.resumeOn
 import com.artiuillab.tieryourlife.feature.play.domain.standing
 import com.artiuillab.tieryourlife.feature.play.domain.swissRounds
+import com.artiuillab.tieryourlife.feature.play.domain.tiers
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -45,6 +45,12 @@ internal fun groupsOf(board: TierList): List<CardGroup> =
             )
         }
 
+internal fun cardsOf(board: TierList): List<CardOption> =
+    board.playOrder().flatMap { tier -> tier.items.map { CardOption(it, tier.id) } }.distinctBy { it.item.id }
+
+internal fun quickCounts(available: Int): List<Int> =
+    generateSequence(FIRST_QUICK_COUNT) { if (it <= Int.MAX_VALUE / 2) it * 2 else null }.takeWhile { it <= available }.toList()
+
 /** Duels a game will take: the estimate while it runs, what it took once the main game is over. */
 internal fun totalOf(game: SavedGame): Int {
     val progress = progress(game.spec, game.history)
@@ -52,7 +58,7 @@ internal fun totalOf(game: SavedGame): Int {
 }
 
 internal fun offerFor(saved: SavedGame, board: TierList): ResumeOffer {
-    val cards = board.cardsIn(saved.scope)
+    val cards = board.cardsIn(null)
     val resumption = saved.resumeOn(cards.map { it.id })
     val game = (resumption as? Resumption.Ready)?.game ?: saved
     return ResumeOffer(
@@ -62,7 +68,7 @@ internal fun offerFor(saved: SavedGame, board: TierList): ResumeOffer {
         startedAt = saved.startedAt,
         changed = resumption is Resumption.Changed,
         joined = (resumption as? Resumption.Ready)?.joined ?: 0,
-        canStartAgain = cards.size >= MIN_PLAY_CARDS,
+        canStartAgain = saved.ids.count { id -> cards.any { it.id == id } } >= MIN_PLAY_CARDS,
     )
 }
 
@@ -100,8 +106,9 @@ internal fun resultOf(session: Session, intoMine: Boolean): ResultState {
     val placed: List<Pair<Tier, List<Int>>> = when {
         kept != null -> listOf(kept to standing.order)
         ranked.isEmpty() -> emptyList()
-        else -> ranked.zip(result(game.spec, game.history, ranked.size))
+        else -> ranked.zip(tiers(standing, ranked.size))
     }
+    val participants = game.ids.toSet()
     return ResultState(
         kind = game.spec.kind,
         duels = game.history.duels().size,
@@ -119,5 +126,8 @@ internal fun resultOf(session: Session, intoMine: Boolean): ResultState {
         thin = isThin(standing),
         refineDuels = if (game.spec.refine) 0 else refineDuels(game.spec.count, game.history),
         intoMine = intoMine,
+        unplayedCount = session.board.cardsIn(null).count { it.id !in participants },
     )
 }
+
+private const val FIRST_QUICK_COUNT = 16

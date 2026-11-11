@@ -118,7 +118,7 @@ data class KeepBoardRequestDto(
     val deletedAt: Long? = null,
     /** True or left out, as the account stores it: a null is not sent at all. */
     val anonymous: Boolean? = null,
-    /** The game exactly as the account last sent it: the account keeps what is written, so leaving it out would lose it. */
+    /** The full game, or JsonNull to explicitly finish it. Nullable default is for legacy request compatibility. */
     val play: JsonElement? = null,
     val tiers: List<KeptTierDto>,
     val items: List<KeptItemDto>,

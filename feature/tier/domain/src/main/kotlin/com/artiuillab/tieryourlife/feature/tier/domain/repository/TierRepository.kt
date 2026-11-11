@@ -103,6 +103,17 @@ interface TierRepository {
 
     suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int)
 
+    /** Atomically compare and replace only the layout. False means nothing was changed. */
+    suspend fun arrangeBoard(id: Long, expected: Map<Long, List<Long>>, target: Map<Long, List<Long>>): Boolean = false
+
+    /** One editor action, retaining the pool's order and then the ranked tiers' reading order. */
+    suspend fun returnAllToPool(id: Long) {
+        val board = getTierListById(id) ?: return
+        val pool = board.tiers.firstOrNull { it.isPool } ?: return
+        var position = pool.items.size
+        board.tiers.filterNot { it.isPool }.flatMap { it.items }.forEach { moveItem(it.id, pool.id, position++) }
+    }
+
     suspend fun addTier(
         tierListId: Long,
         label: String,

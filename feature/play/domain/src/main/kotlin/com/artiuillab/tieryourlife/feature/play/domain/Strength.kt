@@ -32,23 +32,25 @@ const val STRENGTH_ROUNDS = 200
  * same nine places from the same bits.
  */
 fun standing(count: Int, duels: List<Duel>): Standing {
-    val met = Array(count) { IntArray(count) }
+    val met = Array(count) { mutableMapOf<Int, Int>() }
     val wins = IntArray(count)
     val played = IntArray(count)
     for (duel in duels) {
-        met[duel.winner][duel.loser]++
-        met[duel.loser][duel.winner]++
+        met[duel.winner].merge(duel.loser, 1, Int::plus)
+        met[duel.loser].merge(duel.winner, 1, Int::plus)
         wins[duel.winner]++
         played[duel.winner]++
         played[duel.loser]++
     }
+    // Exactly the old ascending-j summation order, without allocating/scanning n squared cells.
+    val opponents = met.map { it.toSortedMap().entries.toList() }
     var strength = DoubleArray(count) { 1.0 }
     repeat(STRENGTH_ROUNDS) {
         val next = DoubleArray(count)
         for (i in 0 until count) {
             var denominator = 0.0
-            for (j in 0 until count) {
-                if (j != i && met[i][j] > 0) denominator += met[i][j] / (strength[i] + strength[j])
+            for ((j, times) in opponents[i]) {
+                if (j != i) denominator += times / (strength[i] + strength[j])
             }
             denominator += 2.0 / (strength[i] + 1.0)
             next[i] = (wins[i] + 1) / denominator

@@ -558,6 +558,35 @@ interface TierDao {
         }
     }
 
+    /** Owner checked in the same transaction as the bulk move. Trashed cards are untouched. */
+    @Transaction
+    suspend fun arrangeBoard(id: Long, owner: String?, expected: Map<Long, List<Long>>, target: Map<Long, List<Long>>): Boolean {
+        if (!com.artiuillab.tieryourlife.feature.tier.domain.lists.sameLayoutCards(expected, target)) return false
+        if (getTierListWithTiers(id, owner) == null) return false
+        val current = getAllTiersByTierListId(id).associate { tier -> tier.id to getAllTierItemsByTierId(tier.id) }
+        if (current.mapValues { (_, items) -> items.map { it.id } } != expected) return false
+        val byId = current.values.flatten().associateBy { it.id }
+        target.forEach { (tier, cards) ->
+            cards.forEachIndexed { position, id ->
+                val item = byId.getValue(id)
+                if (item.tierId != tier || item.position != position) updateTierItemTierAndPosition(id, tier, position)
+            }
+        }
+        return true
+    }
+
+    /** Owner checked in the same transaction as the bulk move. Trashed cards are untouched. */
+    @Transaction
+    suspend fun returnAllToPool(id: Long, owner: String?) {
+        if (getTierListWithTiers(id, owner) == null) return
+        val tiers = getAllTiersByTierListId(id)
+        val pool = tiers.firstOrNull { it.isPool } ?: return
+        val cards = (tiers.filter { it.isPool } + tiers.filterNot { it.isPool }).flatMap { getAllTierItemsByTierId(it.id) }
+        cards.forEachIndexed { index, item ->
+            if (item.tierId != pool.id || item.position != index) updateTierItemTierAndPosition(item.id, pool.id, index)
+        }
+    }
+
     companion object {
         /** What [addTier] answers on a board with no room for another tier. */
         const val NO_ROW = -1L

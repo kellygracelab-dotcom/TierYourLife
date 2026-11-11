@@ -48,4 +48,8 @@
         <item quantity="many">Опубликовано. Не удалось добавить %1$d картинок с других сайтов.</item>
         <item quantity="other">Опубликовано. Не удалось добавить %1$d картинки с других сайтов.</item>
     </plurals>
+    <string name="community_return_all_to_pool">Вернуть все карточки в пул</string>
+    <string name="community_return_to_pool_title">Вернуть все карточки в пул?</string>
+    <string name="community_return_to_pool_explanation">Расстановка по тирам будет сброшена.</string>
+    <string name="community_return_to_pool_confirm">Вернуть в пул</string>
 </resources>

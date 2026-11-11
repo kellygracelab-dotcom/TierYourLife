@@ -105,7 +105,9 @@ class AccountViewModel @Inject constructor(
                     merge.signOutSettlingErase { repository.signOut() }
                     thePerson.forget()
                 } finally {
-                    _state.update { it.copy(signingOut = false) }
+                    // The listener may still be catching up when signOut returns.
+                    val current = repository.current()
+                    _state.update { it.copy(account = current, signingOut = false, pendingFace = it.pendingFace.takeIf { current is Account.SignedIn }) }
                 }
             }
         }

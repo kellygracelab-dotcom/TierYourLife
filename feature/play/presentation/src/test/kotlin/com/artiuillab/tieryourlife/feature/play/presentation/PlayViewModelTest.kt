@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGames
 import com.artiuillab.tieryourlife.feature.play.domain.estimatedDuels
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -30,6 +31,72 @@ class PlayViewModelTest {
     val main = MainDispatcherRule()
 
     private val unranked = board(1L to emptyList(), 2L to emptyList(), 3L to emptyList(), POOL to (1L..6L).toList())
+
+    @Test
+    fun allMeansExactlyEveryCardAcrossEveryMode_andNeverRoundsOrClips() = runBlocking {
+        for (kind in GameKind.entries) {
+            for (count in listOf(65, 91, 128, 129)) {
+                val whole = board(1L to emptyList(), POOL to (1L..count.toLong()).toList())
+                val games = FakeSavedGames()
+                val vm = viewModel(games, MovingTierRepository(whole), PlayRequest.ownBoard(whole))
+                vm.open()
+                assertEquals(count, picker(vm.state.value)!!.count)
+                vm.picker.choose(kind)
+                vm.picker.start()
+                vm.duel.pick(true)
+                eventually { games.games[KEY]?.ids?.size == count }
+                assertEquals((1L..count.toLong()).toList(), games.games.getValue(KEY).ids)
+            }
+        }
+    }
+
+    @Test
+    fun aSampleFromSingleS_keepsTheSameSixteenForResumeAndPlayAgain() = runBlocking {
+        val whole = board(1L to (1L..91L).toList(), 2L to emptyList(), POOL to emptyList())
+        val games = FakeSavedGames()
+        val vm = viewModel(games, MovingTierRepository(whole), PlayRequest.ownBoard(whole))
+        vm.open()
+        assertEquals(listOf(16, 32, 64), quickCounts(91))
+        vm.selection.sample(16)
+        val chosen = picker(vm.state.value)!!.selectedCards.map { it.item.id }
+        assertEquals(16, chosen.toSet().size)
+        vm.picker.choose(GameKind.Hill)
+        vm.picker.start()
+        vm.playToTheEnd()
+        val result = (vm.state.value.stage as PlayStage.Finished).result
+        assertEquals(listOf(1L), result.tiers.map { it.tierId })
+        assertEquals(chosen.toSet(), result.tiers.single().cards.map { it.item.id }.toSet())
+        assertEquals(75, result.unplayedCount)
+        val moved = whole.withItemMoved(chosen.first(), 2L, 0)
+        vm.offer(PlayRequest.ownBoard(moved))
+        vm.result.playAgain()
+        assertEquals(chosen, picker(vm.state.value)!!.selectedIds)
+        assertEquals(chosen, picker(vm.state.value)!!.selectedCards.map { it.item.id })
+        vm.offer(PlayRequest.ownBoard(whole.copy(tiers = whole.tiers.map { if (it.isPool) it.copy(items = listOf(com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem(999, "New", null))) else it })))
+        vm.picker.start()
+        vm.duel.pick(true)
+        eventually { games.games[KEY]?.history?.size == 1 }
+        assertEquals(chosen, games.games.getValue(KEY).ids)
+        assertEquals(listOf(1L), games.games.getValue(KEY).scope)
+    }
+
+    @Test
+    fun manualSelectionAndSamplingUseOnlyTheChosenGroups() = runBlocking {
+        val whole = board(1L to (1L..35L).toList(), POOL to (36L..91L).toList())
+        val vm = viewModel(boards = MovingTierRepository(whole), request = PlayRequest.ownBoard(whole))
+        vm.open()
+        vm.picker.toggle(POOL)
+        vm.selection.sample(32)
+        assertTrue(picker(vm.state.value)!!.selectedCards.all { it.tierId == 1L })
+        vm.selection.selectCandidates(false)
+        listOf(3L, 17L, 29L).forEach(vm.selection::toggleCard)
+        assertEquals(listOf(3L, 17L, 29L), picker(vm.state.value)!!.selectedIds)
+        assertTrue(picker(vm.state.value)!!.canPlay)
+        vm.selection.toggleCard(36L)
+        assertEquals(3, picker(vm.state.value)!!.count)
+        vm.picker.toggleEverything()
+        assertEquals(91, picker(vm.state.value)!!.count)
+    }
 
     @Test
     fun thePicker_offersTheLastGamePlayedOnThisDevice() = runBlocking {
@@ -56,16 +123,17 @@ class PlayViewModelTest {
     }
 
     @Test
-    fun aBoardTooBigToPlayWhole_opensOnChoosingCards_withThePoolChosenWhenItFits() = runBlocking {
+    fun aLargeBoardOpensWithEveryCardSelected() = runBlocking {
         val big = board(1L to (100L..159L).toList(), POOL to (1L..10L).toList())
         val viewModel = viewModel(boards = MovingTierRepository(big), request = PlayRequest.ownBoard(big))
 
         viewModel.open()
 
         val picker = picker(viewModel.state.value)!!
-        assertEquals(PickerPage.Cards, picker.page)
-        assertTrue(picker.cardsFirst)
-        assertEquals(setOf(POOL), picker.chosen)
+        assertEquals(PickerPage.Games, picker.page)
+        assertFalse(picker.cardsFirst)
+        assertEquals(setOf(1L, POOL), picker.chosen)
+        assertEquals(70, picker.count)
         assertTrue(picker.canPlay)
     }
 
@@ -151,7 +219,7 @@ class PlayViewModelTest {
     }
 
     @Test
-    fun aSwissGame_takesInCardsAddedSince() = runBlocking {
+    fun aSwissGameKeepsItsParticipantsWhenNewCardsArrive() = runBlocking {
         val saved = savedGame(GameKind.Swiss, (1L..5L).toList(), answered = 2)
         val grown = board(1L to emptyList(), POOL to (1L..7L).toList())
         val games = FakeSavedGames(mapOf(KEY to saved))
@@ -161,9 +229,9 @@ class PlayViewModelTest {
         val offer = viewModel.state.firstWithin { picker(it)?.resume != null }.let { picker(it)!!.resume!! }
         viewModel.picker.resume()
 
-        assertEquals(2, offer.joined)
+        assertEquals(0, offer.joined)
         assertFalse(offer.changed)
-        eventually { games.games[KEY]?.ids == (1L..7L).toList() }
+        assertEquals((1L..5L).toList(), games.games.getValue(KEY).ids)
     }
 
     @Test
@@ -188,7 +256,7 @@ class PlayViewModelTest {
     @Test
     fun aHillWithTooFewCardsLeft_offersNoStartAgain() = runBlocking {
         val saved = savedGame(GameKind.Hill, (1L..4L).toList(), answered = 1).copy(scope = listOf(1L))
-        val thinned = board(1L to listOf(1L, 2L), POOL to (3L..6L).toList())
+        val thinned = board(1L to listOf(1L, 2L), POOL to (5L..6L).toList())
         val games = FakeSavedGames(mapOf(KEY to saved))
         val viewModel = viewModel(games = games, boards = MovingTierRepository(thinned), request = PlayRequest.ownBoard(thinned))
         viewModel.open()

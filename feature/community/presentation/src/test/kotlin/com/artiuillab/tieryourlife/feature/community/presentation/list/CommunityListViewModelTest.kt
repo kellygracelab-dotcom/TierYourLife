@@ -646,6 +646,7 @@ class CommunityListViewModelTest {
         preferences: FakeAppPreferences = FakeAppPreferences(),
         accounts: FakeAccountRepository = FakeAccountRepository(),
         openedLists: FakeOpenedLists = FakeOpenedLists(),
+        drafts: com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts = com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts.None,
     ) = CommunityListViewModel(
         community = community,
         tiers = tiers,
@@ -654,6 +655,7 @@ class CommunityListViewModelTest {
         accounts = accounts,
         openedLists = openedLists,
         afterSignIn = FollowAfterSignIn(accounts),
+        drafts = drafts,
     ).also { made += it }
 
     private val signedIn = FakeAccountRepository(Account.SignedIn(email = "ann@example.com", photoUrl = null))

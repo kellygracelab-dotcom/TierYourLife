@@ -65,7 +65,6 @@ import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.isShortWindow
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
-import com.artiuillab.tieryourlife.feature.play.domain.MAX_PLAY_CARDS
 import com.artiuillab.tieryourlife.feature.play.domain.estimatedDuels
 import com.artiuillab.tieryourlife.feature.play.domain.estimatedMinutes
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
@@ -79,6 +78,10 @@ internal data class PickerActions(
     val onChoose: (GameKind) -> Unit = {},
     val onShowCards: () -> Unit = {},
     val onShowGames: () -> Unit = {},
+    val onShowIndividual: () -> Unit = {},
+    val onSample: (Int) -> Unit = {},
+    val onToggleCard: (Long) -> Unit = {},
+    val onSelectCandidates: (Boolean) -> Unit = {},
     val onToggle: (Long) -> Unit = {},
     val onToggleEverything: () -> Unit = {},
     val onKeepInTier: (Boolean) -> Unit = {},
@@ -118,6 +121,7 @@ internal fun ColumnScope.PickerContent(picker: Picker, actions: PickerActions, w
         Spacer(Modifier.height(24.dp))
     }
     when {
+        picker.page == PickerPage.Individual -> IndividualCardsPage(picker, actions)
         wide && picker.page == PickerPage.Games -> WideGamesPage(picker, actions)
         wide -> WideCardsPage(picker, actions)
         picker.page == PickerPage.Games -> GamesPage(picker, actions)
@@ -381,10 +385,11 @@ private fun ColumnScope.CardsPage(picker: Picker, actions: PickerActions) {
             title = stringResource(R.string.play_everything),
             count = picker.total,
             checked = picker.everything,
-            enabled = picker.total <= MAX_PLAY_CARDS,
+            enabled = true,
             onToggle = actions.onToggleEverything,
         )
         KeepInTierRow(picker, actions.onKeepInTier)
+        CardSelectionOptions(picker, actions)
     }
     SelectedCounter(picker, Modifier.padding(start = 24.dp, end = 24.dp, top = 12.dp))
     SheetActions {
@@ -418,16 +423,11 @@ private fun KeepInTierRow(picker: Picker, onKeepInTier: (Boolean) -> Unit) {
 
 @Composable
 private fun SelectedCounter(picker: Picker, modifier: Modifier = Modifier) {
-    val over = picker.count > MAX_PLAY_CARDS
     Text(
-        text = if (over) {
-            pluralStringResource(R.plurals.play_selected_too_many, picker.count, picker.count)
-        } else {
-            pluralStringResource(R.plurals.play_selected, picker.count, picker.count, MAX_PLAY_CARDS)
-        },
+        text = pluralStringResource(R.plurals.play_selected, picker.count, picker.count, picker.total),
         modifier = modifier.testTag(PlayTestTags.COUNTER),
         style = TextStyle(fontSize = 13.sp, lineHeight = 18.sp),
-        color = if (over) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
 
@@ -450,7 +450,6 @@ private fun GroupRow(group: CardGroup, checked: Boolean, onToggle: () -> Unit) {
         checked = checked,
         enabled = true,
         onToggle = onToggle,
-        note = if (group.count > MAX_PLAY_CARDS) stringResource(R.string.play_too_many_in_tier) else null,
         swatch = if (group.isPool) null else tierRowColors(group.colorLight, group.colorDark).band,
         tag = PlayTestTags.group(group.tierId),
     )
@@ -645,7 +644,7 @@ private fun ColumnScope.WideCardsPage(picker: Picker, actions: PickerActions) {
         Text(stringResource(R.string.play_choose_cards), style = WIDE_TITLE, color = MaterialTheme.colorScheme.onSurface)
         Spacer(Modifier.width(12.dp))
         Text(
-            text = pluralStringResource(R.plurals.play_cards_limit, MAX_PLAY_CARDS, MAX_PLAY_CARDS),
+            text = pluralStringResource(R.plurals.play_cards, picker.total, picker.total),
             modifier = Modifier.weight(1f, fill = false),
             style = WIDE_SUBTITLE,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -677,6 +676,7 @@ private fun ColumnScope.WideCardsPage(picker: Picker, actions: PickerActions) {
             }
         }
         KeepInTierRow(picker, actions.onKeepInTier)
+        CardSelectionOptions(picker, actions)
     }
     Spacer(Modifier.height(8.dp))
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -721,7 +721,7 @@ private fun GroupCell(group: CardGroup, checked: Boolean, onToggle: () -> Unit, 
 
 @Composable
 private fun EverythingCell(picker: Picker, onToggle: () -> Unit, modifier: Modifier) {
-    val enabled = picker.total <= MAX_PLAY_CARDS
+    val enabled = true
     CellRow(checked = picker.everything, enabled = enabled, onToggle = onToggle, tag = PlayTestTags.EVERYTHING, modifier = modifier) {
         val quiet = MaterialTheme.colorScheme.onSurfaceVariant
         EverythingIcon(22.dp, if (enabled) quiet else quiet.copy(alpha = 0.38f))
@@ -767,7 +767,6 @@ private fun RowScope.CellText(title: String, count: Int, enabled: Boolean) {
         modifier = Modifier.padding(start = 8.dp),
         style = MaterialTheme.typography.labelMedium,
         color = when {
-            count > MAX_PLAY_CARDS && enabled -> MaterialTheme.colorScheme.error
             enabled -> quiet
             else -> quiet.copy(alpha = 0.38f)
         },

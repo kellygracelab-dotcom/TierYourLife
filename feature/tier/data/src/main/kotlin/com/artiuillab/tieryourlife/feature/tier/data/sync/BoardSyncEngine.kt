@@ -108,7 +108,7 @@ class BoardSyncEngine @Inject constructor(
         val steps = planSync(
             local = local.map { board -> LocalBoard(board.uid, fingerprints.getValue(board.uid), inTrash = board.deletedAt != null) },
             remote = remote.values.toList(),
-            synced = dao.syncRecordsOf(account).map { SyncedBoard(it.listUid, it.revision, it.fingerprint) },
+            synced = dao.syncRecordsOf(account).map { SyncedBoard(it.listUid, it.revision, it.fingerprint, it.remoteFingerprint) },
         )
 
         // Pictures before boards, so no board ever names a picture the other
@@ -354,7 +354,7 @@ class BoardSyncEngine @Inject constructor(
         if (theirs.deleted) return
         dao.together {
             adopt(account, theirs, asCopy = true)
-            remember(account, theirs.uid, theirs.revision, theirs.fingerprint.orEmpty())
+            remember(account, theirs.uid, theirs.revision, theirs.fingerprint.orEmpty(), theirs.fingerprint)
         }
     }
 
@@ -460,7 +460,7 @@ class BoardSyncEngine @Inject constructor(
             }
             dao.replaceContents(incoming.toEntity(existing.id, existing.uid, images::pathFor).keepingLocalFieldsOf(now), incoming.tiers(images::pathFor))
             val stored = dao.boardByUid(incoming.uid) ?: return@together
-            remember(account, incoming.uid, incoming.revision, fingerprintOf(stored))
+            remember(account, incoming.uid, incoming.revision, fingerprintOf(stored), incoming.fingerprint)
         }
     }
 
@@ -491,7 +491,7 @@ class BoardSyncEngine @Inject constructor(
             )
             if (asCopy) return@together
             val stored = dao.boardByUid(uid) ?: return@together
-            remember(account, uid, incoming.revision, fingerprintOf(stored))
+            remember(account, uid, incoming.revision, fingerprintOf(stored), incoming.fingerprint)
         }
     }
 
@@ -513,18 +513,20 @@ class BoardSyncEngine @Inject constructor(
                 listUid = incoming.uid,
                 revision = incoming.revision,
                 fingerprint = incoming.fingerprint.orEmpty(),
+                remoteFingerprint = incoming.fingerprint,
                 syncedAt = System.currentTimeMillis(),
             ),
         )
     }
 
-    private suspend fun remember(account: String, uid: String, revision: Int, fingerprint: String) {
+    private suspend fun remember(account: String, uid: String, revision: Int, fingerprint: String, remoteFingerprint: String? = fingerprint) {
         dao.remember(
             BoardSyncEntity(
                 account = account,
                 listUid = uid,
                 revision = revision,
                 fingerprint = fingerprint,
+                remoteFingerprint = remoteFingerprint,
                 syncedAt = System.currentTimeMillis(),
             ),
         )
@@ -556,7 +558,7 @@ class BoardSyncEngine @Inject constructor(
             publishedId = board.publishedId,
             deletedAt = board.deletedAt,
             anonymous = true.takeIf { board.anonymous },
-            play = keptPlay(board.play, json),
+            play = keptPlay(board.play, json) ?: JsonNull,
             tiers = tiers.map { tier ->
                 KeptTierDto(
                     uid = tier.uid,

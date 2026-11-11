@@ -21,6 +21,8 @@ data class BoardSyncEntity(
     /** What the board looked like then. Compared, never read. */
     val fingerprint: String,
     val syncedAt: Long,
+    /** A server fingerprint is acknowledged only after the complete board was read. */
+    val remoteFingerprint: String? = null,
 ) {
     companion object {
         const val UNCLAIMED = ""

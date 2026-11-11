@@ -50,4 +50,12 @@ internal class MovingTierRepository(
         plays += play
         board = board.copy(play = play)
     }
+
+    override suspend fun arrangeBoard(id: Long, expected: Map<Long, List<Long>>, target: Map<Long, List<Long>>): Boolean {
+        if (board.tiers.associate { it.id to it.items.map { card -> card.id } } != expected) return false
+        if (!com.artiuillab.tieryourlife.feature.tier.domain.lists.sameLayoutCards(expected, target)) return false
+        val cards = board.tiers.flatMap { it.items }.associateBy { it.id }
+        board = board.copy(tiers = board.tiers.map { it.copy(items = target.getValue(it.id).map(cards::getValue)) })
+        return true
+    }
 }

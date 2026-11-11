@@ -58,4 +58,8 @@
         <item quantity="many">نُشرت. تعذّرت إضافة %1$d صورة من مواقع أخرى.</item>
         <item quantity="other">نُشرت. تعذّرت إضافة %1$d صورة من مواقع أخرى.</item>
     </plurals>
+    <string name="community_return_all_to_pool">إعادة جميع البطاقات إلى المجموعة</string>
+    <string name="community_return_to_pool_title">إعادة جميع البطاقات إلى المجموعة؟</string>
+    <string name="community_return_to_pool_explanation">ستتم إعادة ضبط ترتيب المستويات.</string>
+    <string name="community_return_to_pool_confirm">إعادة إلى المجموعة</string>
 </resources>

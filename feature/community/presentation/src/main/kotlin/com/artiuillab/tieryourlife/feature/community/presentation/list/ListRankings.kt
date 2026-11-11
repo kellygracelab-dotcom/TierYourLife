@@ -30,7 +30,10 @@ internal class ListRankings(
     private val scope: CoroutineScope,
     private val messages: UserMessages,
     private val reread: suspend () -> Unit,
+    private val resetMine: () -> Unit = {},
 ) {
+    fun returnAllToPool() = resetMine()
+
     /** The list as the server handed it over, for placing its cards a reader's way. */
     private var opened: PublishedList? = null
 

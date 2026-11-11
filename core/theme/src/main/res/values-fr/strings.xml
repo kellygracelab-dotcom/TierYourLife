@@ -43,4 +43,8 @@
         <item quantity="many">Publiée. %1$d images d’autres sites n’ont pas pu être ajoutées.</item>
         <item quantity="other">Publiée. %1$d images d’autres sites n’ont pas pu être ajoutées.</item>
     </plurals>
+    <string name="community_return_all_to_pool">Remettre toutes les cartes dans la réserve</string>
+    <string name="community_return_to_pool_title">Remettre toutes les cartes dans la réserve ?</string>
+    <string name="community_return_to_pool_explanation">La répartition par niveau sera réinitialisée.</string>
+    <string name="community_return_to_pool_confirm">Remettre dans la réserve</string>
 </resources>

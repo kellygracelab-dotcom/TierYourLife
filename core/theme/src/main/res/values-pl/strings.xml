@@ -48,4 +48,8 @@
         <item quantity="many">Opublikowano. Nie udało się dodać %1$d obrazów z innych stron.</item>
         <item quantity="other">Opublikowano. Nie udało się dodać %1$d obrazu z innych stron.</item>
     </plurals>
+    <string name="community_return_all_to_pool">Zwróć wszystkie karty do puli</string>
+    <string name="community_return_to_pool_title">Zwrócić wszystkie karty do puli?</string>
+    <string name="community_return_to_pool_explanation">Układ kart na poziomach zostanie wyzerowany.</string>
+    <string name="community_return_to_pool_confirm">Zwróć do puli</string>
 </resources>

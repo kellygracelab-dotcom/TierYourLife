@@ -187,7 +187,7 @@ class BoardGameSyncTest {
     }
 
     @Test
-    fun aCardTheBoardNoLongerHas_dropsOutOfASwissGameFromTheAccount() = runBlocking {
+    fun aMissingParticipantRequiresAnExplicitRestart() = runBlocking {
         val withAGoneCard = SharedGameJson.encode(
             SharedGame(spec, ids = listOf("c1", "c2", "c3", "c4", "c5", "gone"), history = history(2), round = 1, startedAt = NOW - DAY),
         )
@@ -197,7 +197,8 @@ class BoardGameSyncTest {
 
         val offer = viewModel.state.firstWithin { picker(it)?.resume != null }.let { picker(it)!!.resume!! }
 
-        assertEquals(1, offer.joined)
+        assertEquals(0, offer.joined)
+        assertTrue(offer.changed)
     }
 
     // The account lets a game go a month after its last write, which the board does not say.
@@ -284,7 +285,7 @@ class BoardGameSyncTest {
     }
 
     @Test
-    fun aResumeWithNoAnswerLeft_writesNothing_untilSomethingIsAnswered() = runBlocking {
+    fun aResumeWithMissingParticipantsDoesNotRewriteOrShortenTheSavedGame() = runBlocking {
         val playedCardsGone = SharedGameJson.encode(
             SharedGame(
                 spec,
@@ -303,11 +304,11 @@ class BoardGameSyncTest {
 
         viewModel.picker.resume()
 
-        assertEquals(1, (viewModel.state.value.stage as PlayStage.Dueling).duel.number)
+        assertTrue(viewModel.state.value.stage is PlayStage.Picking)
+        assertTrue(picker(viewModel.state.value)!!.resume!!.changed)
         delay(100)
         assertTrue(repository.plays.isEmpty())
-        viewModel.duel.pick(first = true)
-        eventually { repository.board.play?.let(SharedGameJson::decode)?.ids == listOf("c5", "c6", "c7") }
+        assertEquals(playedCardsGone, repository.board.play)
     }
 
     /** The board as a sync that takes the account's copy leaves it: the same uids, every row numbered anew. */

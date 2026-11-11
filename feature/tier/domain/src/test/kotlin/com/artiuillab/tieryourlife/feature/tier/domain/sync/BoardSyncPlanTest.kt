@@ -19,6 +19,27 @@ class BoardSyncPlanTest {
         listOf(SyncedBoard(board, revision, fingerprint))
 
     @Test
+    fun `a retained game not yet downloaded is restored even at an acknowledged revision`() {
+        val steps = planSync(local(), remote(revision = 3, fingerprint = "game-v1:combined"), synced(revision = 3))
+        assertEquals(listOf(SyncStep.Restore(board)), steps)
+    }
+
+    @Test
+    fun `a retained game and a local edit both survive an acknowledged revision`() {
+        val steps = planSync(local("edited"), remote(revision = 3, fingerprint = "game-v1:combined"), synced(revision = 3))
+        assertEquals(listOf(SyncStep.KeepBoth(board, basedOn = 3)), steps)
+    }
+
+    @Test
+    fun `a downloaded marker is not fetched again and a later local edit can clear its game`() {
+        val agreed = listOf(SyncedBoard(board, 3, "aaa", remoteFingerprint = "game-v1:combined"))
+        val there = remote(revision = 3, fingerprint = "game-v1:combined")
+        assertEquals(emptyList<SyncStep>(), planSync(local(), there, agreed))
+        assertEquals(listOf(SyncStep.Update(board, 3)), planSync(local("completed"), there, agreed))
+        assertEquals(listOf(SyncStep.Restore(board)), planSync(local(), remote(3, fingerprint = "game-v1:new-game"), agreed))
+    }
+
+    @Test
     fun `a board the account has never seen is sent`() {
         val steps = planSync(local(), remote = emptyList(), synced = emptyList())
 

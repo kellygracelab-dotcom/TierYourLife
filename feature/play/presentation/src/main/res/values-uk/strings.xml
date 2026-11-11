@@ -51,12 +51,6 @@
     <string name="play_start">Почати</string>
     <string name="play_continue">Далі</string>
     <string name="play_back">Назад</string>
-    <plurals name="play_cards_limit">
-        <item quantity="one">До %1$d картки за одну гру</item>
-        <item quantity="few">До %1$d карток за одну гру</item>
-        <item quantity="many">До %1$d карток за одну гру</item>
-        <item quantity="other">До %1$d картки за одну гру</item>
-    </plurals>
     <string name="play_pool">Пул</string>
     <string name="play_everything">Усе</string>
     <plurals name="play_cards">
@@ -65,18 +59,11 @@
         <item quantity="many">%1$d карток</item>
         <item quantity="other">%1$d картки</item>
     </plurals>
-    <string name="play_too_many_in_tier">Забагато для однієї гри.</string>
     <plurals name="play_selected">
         <item quantity="one">Вибрано %1$d з %2$d</item>
         <item quantity="few">Вибрано %1$d з %2$d</item>
         <item quantity="many">Вибрано %1$d з %2$d</item>
         <item quantity="other">Вибрано %1$d з %2$d</item>
-    </plurals>
-    <plurals name="play_selected_too_many">
-        <item quantity="one">Вибрано %1$d, можна не більше 64</item>
-        <item quantity="few">Вибрано %1$d, можна не більше 64</item>
-        <item quantity="many">Вибрано %1$d, можна не більше 64</item>
-        <item quantity="other">Вибрано %1$d, можна не більше 64</item>
     </plurals>
     <string name="play_keep_in_tier">Залишити їх у %1$s, лише впорядкувати</string>
     <string name="play_quit">Вийти</string>
@@ -132,4 +119,12 @@
     <string name="play_snack_undo">Скасувати</string>
     <string name="play_snack_not_saved">Не вдалося зберегти гру</string>
     <string name="play_snack_list_updated">Список оновився під час гри, тому гру відкинуто</string>
+    <string name="play_random_sample">Випадкова вибірка</string>
+    <string name="play_individual_cards">Окремі картки</string>
+    <string name="play_select_candidates">Вибрати всіх кандидатів</string>
+    <string name="play_clear_selection">Зняти вибір</string>
+    <string name="play_card_unnamed">Картка без назви</string>
+    <string name="play_unplayed_options">Картки поза грою</string>
+    <string name="play_unplayed_keep">Залишити у своїх тірах після зіграних</string>
+    <string name="play_unplayed_pool">Перемістити в пул</string>
 </resources>
