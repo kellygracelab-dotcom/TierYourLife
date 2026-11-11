@@ -63,12 +63,16 @@ object BoardFingerprint {
                     item.source,
                     item.deletedAt?.toString(),
                 )
+                item.sourceIndex?.let { digest.write("sourceIndex", it.toString()) }
             }
         }
         // After the last card and only when there is something to say, so a
         // board with neither keeps the fingerprint it always had. The site
         // writes the same two fields: without the game, a game saved on an
         // untouched board would never sync.
+        if (board.takenFrom != null || board.originVersion != null || board.rankingChoice != null) {
+            digest.write("origin", board.takenFrom, board.originVersion?.toString(), board.rankingChoice)
+        }
         if (board.anonymous) digest.write(ANONYMOUS)
         board.play?.let(::canonicalPlay)?.let { digest.write(it) }
 

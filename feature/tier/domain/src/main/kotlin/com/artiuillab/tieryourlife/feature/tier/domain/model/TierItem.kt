@@ -9,4 +9,6 @@ data class TierItem(
     val uid: String = "",
     /** Who the picture's license asks to be named, as the search found it; set once, never edited. */
     val credit: String? = null,
+    /** Position in the original public snapshot, independent of local ids and placement. */
+    val sourceIndex: Int? = null,
 )

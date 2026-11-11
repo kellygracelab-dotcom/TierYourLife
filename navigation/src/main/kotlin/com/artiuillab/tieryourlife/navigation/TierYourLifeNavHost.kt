@@ -289,6 +289,7 @@ private fun NavContent(
         homeScreen(navController, openList)
         tierDetailScreen(
             onBack = { navController.popBackStack() },
+            onSignIn = { navController.navigateToAccount() },
             // Replaces the board rather than stacking: the column beside it
             // switches boards, it does not go deeper.
             onOpenList = { id ->

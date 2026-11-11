@@ -62,4 +62,26 @@
     <string name="community_return_to_pool_title">إعادة جميع البطاقات إلى المجموعة؟</string>
     <string name="community_return_to_pool_explanation">ستتم إعادة ضبط ترتيب المستويات.</string>
     <string name="community_return_to_pool_confirm">إعادة إلى المجموعة</string>
+    <string name="ranking_choice_title">حفظ تقدمك</string>
+    <plurals name="ranking_choice_body">
+        <item quantity="zero">وضعت %1$d من أصل %2$d بطاقات. انشر ترتيبك بجانب القائمة الأصلية أو احفظه لنفسك وتابع.</item>
+        <item quantity="one">وضعت %1$d من أصل %2$d بطاقة. انشر ترتيبك بجانب القائمة الأصلية أو احفظه لنفسك وتابع.</item>
+        <item quantity="two">وضعت %1$d من أصل %2$d بطاقتين. انشر ترتيبك بجانب القائمة الأصلية أو احفظه لنفسك وتابع.</item>
+        <item quantity="few">وضعت %1$d من أصل %2$d بطاقات. انشر ترتيبك بجانب القائمة الأصلية أو احفظه لنفسك وتابع.</item>
+        <item quantity="many">وضعت %1$d من أصل %2$d بطاقة. انشر ترتيبك بجانب القائمة الأصلية أو احفظه لنفسك وتابع.</item>
+        <item quantity="other">وضعت %1$d من أصل %2$d بطاقة. انشر ترتيبك بجانب القائمة الأصلية أو احفظه لنفسك وتابع.</item>
+    </plurals>
+    <string name="ranking_choice_public">نشر ترتيبي</string>
+    <string name="ranking_choice_sign_in">تسجيل الدخول للنشر</string>
+    <string name="ranking_choice_private">حفظ لنفسي</string>
+    <string name="publication_preview_title">كيف سيتم النشر</string>
+    <string name="publication_preview_ranking">سيُنشر كترتيبك بجانب القائمة الأصلية. ستبقى نسختك الخاصة قابلة للتعديل.</string>
+    <string name="publication_preview_list">ستُنشر كقائمة مستقلة مع الإشارة إلى الأصل. ستبقى نسختك الخاصة قابلة للتعديل.</string>
+    <string name="publication_preview_confirm">نشر</string>
+    <string name="source_changed">تغيرت القائمة الأصلية. افتحها مجددًا قبل نشر ترتيبك.</string>
+    <string name="ranking_choice_storage_account">تُحفظ نسختك الخاصة في المكتبة وتتم مزامنتها مع حسابك.</string>
+    <string name="ranking_choice_storage_guest">تُحفظ نسختك الخاصة في مكتبة هذا الجهاز. سجّل الدخول لمزامنتها.</string>
+    <string name="publication_preview_independent">ستُنشر كقائمة عامة مستقلة. ستبقى نسختك الخاصة قابلة للتعديل.</string>
+    <string name="source_changed_recheck">المقارنة مع الأصل الحالي</string>
+    <string name="publication_limit_until">يمكنك نشر قائمة جديدة بعد %1$s. يمكنك الاستمرار في حفظ اللوحات الخاصة ونشر الترتيبات.</string>
 </resources>

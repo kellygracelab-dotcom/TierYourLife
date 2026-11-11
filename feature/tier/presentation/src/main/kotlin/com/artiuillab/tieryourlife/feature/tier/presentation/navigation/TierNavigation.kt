@@ -31,6 +31,7 @@ fun NavGraphBuilder.tierDetailScreen(
     onSeeInCommunity: ((String) -> Unit)? = null,
     play: BoardPlay = NoPlay,
     onProposeSection: ((String?) -> Unit)? = null,
+    onSignIn: () -> Unit = {},
 ) {
     composable<Route.TierDetail> { backStackEntry ->
         val route = backStackEntry.toRoute<Route.TierDetail>()
@@ -60,6 +61,7 @@ fun NavGraphBuilder.tierDetailScreen(
             focusTierId = route.focusTierId,
             play = play,
             onProposeSection = onProposeSection,
+            onSignIn = onSignIn,
         )
     }
 }

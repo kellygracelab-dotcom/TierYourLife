@@ -52,4 +52,24 @@
     <string name="community_return_to_pool_title">Вернуть все карточки в пул?</string>
     <string name="community_return_to_pool_explanation">Расстановка по тирам будет сброшена.</string>
     <string name="community_return_to_pool_confirm">Вернуть в пул</string>
+    <string name="ranking_choice_title">Сохранить прогресс</string>
+    <plurals name="ranking_choice_body">
+        <item quantity="one">Расставлено %1$d из %2$d карточки. Опубликуйте свой рейтинг рядом с оригиналом или сохраните его для себя и продолжайте.</item>
+        <item quantity="few">Расставлено %1$d из %2$d карточек. Опубликуйте свой рейтинг рядом с оригиналом или сохраните его для себя и продолжайте.</item>
+        <item quantity="many">Расставлено %1$d из %2$d карточек. Опубликуйте свой рейтинг рядом с оригиналом или сохраните его для себя и продолжайте.</item>
+        <item quantity="other">Расставлено %1$d из %2$d карточек. Опубликуйте свой рейтинг рядом с оригиналом или сохраните его для себя и продолжайте.</item>
+    </plurals>
+    <string name="ranking_choice_public">Опубликовать мой рейтинг</string>
+    <string name="ranking_choice_sign_in">Войти для публикации</string>
+    <string name="ranking_choice_private">Сохранить для себя</string>
+    <string name="publication_preview_title">Как это будет опубликовано</string>
+    <string name="publication_preview_ranking">Это будет ваш рейтинг рядом с оригинальным списком. Личная копия останется доступной для изменений.</string>
+    <string name="publication_preview_list">Это будет отдельный список с указанием оригинала. Личная копия останется доступной для изменений.</string>
+    <string name="publication_preview_confirm">Опубликовать</string>
+    <string name="source_changed">Оригинальный список изменился. Откройте его заново перед публикацией рейтинга.</string>
+    <string name="ranking_choice_storage_account">Личная копия сохранена в библиотеке и синхронизируется с вашим аккаунтом.</string>
+    <string name="ranking_choice_storage_guest">Личная копия сохранена в библиотеке на этом устройстве. Войдите, чтобы синхронизировать её.</string>
+    <string name="publication_preview_independent">Это будет отдельный публичный список. Личная копия останется доступной для изменений.</string>
+    <string name="source_changed_recheck">Сверить с текущим оригиналом</string>
+    <string name="publication_limit_until">Новый список можно опубликовать после %1$s. Личные сохранения и публикация рейтингов по-прежнему доступны.</string>
 </resources>

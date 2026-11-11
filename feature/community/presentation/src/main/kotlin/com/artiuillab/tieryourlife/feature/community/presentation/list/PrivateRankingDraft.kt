@@ -10,6 +10,8 @@ internal fun draftOf(source: PublishedList, board: TierList): RankingDraft {
         version = source.summary.updatedAtMillis,
         rows = rowsOf(source, board),
         pool = board.tiers.filter { it.isPool }.flatMap { it.items }.mapNotNull { indices[it.id] },
+        choice = board.rankingChoice,
+        savedBoardUid = board.uid.takeIf { it.isNotBlank() },
     )
 }
 

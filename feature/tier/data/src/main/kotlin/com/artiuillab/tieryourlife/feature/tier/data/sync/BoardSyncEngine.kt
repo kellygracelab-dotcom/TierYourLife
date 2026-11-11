@@ -19,8 +19,10 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.BoardConflictDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptOriginDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
@@ -556,6 +558,9 @@ class BoardSyncEngine @Inject constructor(
             coverPictureId = coverPictureId?.let { JsonPrimitive(it) } ?: JsonNull,
             authorName = board.authorName,
             publishedId = board.publishedId,
+            takenFrom = board.takenFrom,
+            origin = board.takenFrom?.let { listId -> board.originVersion?.let { KeptOriginDto(listId, it) } },
+            rankingChoice = RankingChoice.fromWire(board.rankingChoice)?.wireName,
             deletedAt = board.deletedAt,
             anonymous = true.takeIf { board.anonymous },
             play = keptPlay(board.play, json) ?: JsonNull,
@@ -582,6 +587,7 @@ class BoardSyncEngine @Inject constructor(
                     source = item.source,
                     deletedAt = item.deletedAt,
                     credit = item.credit,
+                    sourceIndex = item.sourceIndex?.takeIf { it in 0 until MAX_SOURCE_CARDS },
                 )
             },
         )
@@ -606,6 +612,7 @@ class BoardSyncEngine @Inject constructor(
 internal class RefusedByAccount(val refusal: BackupRefusal, cause: HttpException) : Exception(cause.message, cause)
 
 private const val REFUSAL_SEPARATOR = "\n"
+private const val MAX_SOURCE_CARDS = 2000
 
 /** As [AppPreferences.boardRefusal] keeps it. */
 internal fun BackupRefusal.encoded(): String = "${reason.name}$REFUSAL_SEPARATOR$boardTitle"
@@ -633,7 +640,9 @@ internal fun TierListEntity.keepingLocalFieldsOf(here: TierListEntity) = copy(
     topicId = here.topicId,
     topicName = here.topicName,
     newTopicName = here.newTopicName,
-    takenFrom = here.takenFrom,
+    takenFrom = takenFrom ?: here.takenFrom,
+    originVersion = originVersion ?: here.originVersion,
+    rankingChoice = rankingChoice ?: here.rankingChoice,
     rankingOf = here.rankingOf,
     arrivedFrom = here.arrivedFrom,
     favouritedAt = here.favouritedAt,
@@ -654,6 +663,9 @@ internal fun KeptBoardDto.toEntity(id: Long, uid: String, pathFor: (String) -> S
     uid = uid,
     anonymous = anonymous,
     play = play?.toString(),
+    takenFrom = origin?.listId ?: takenFrom,
+    originVersion = origin?.version?.takeIf { it >= 0 },
+    rankingChoice = RankingChoice.fromWire(rankingChoice)?.wireName,
 )
 
 /** Before every kept cover was read, a null could clear one this phone never saw; left out, the account keeps it. */
@@ -694,6 +706,7 @@ private fun KeptBoardDto.tiers(
                     deletedAt = item.deletedAt,
                     uid = renamed?.items?.get(item.uid) ?: item.uid,
                     credit = item.credit,
+                    sourceIndex = item.sourceIndex?.takeIf { it in 0 until MAX_SOURCE_CARDS },
                 )
             },
         )

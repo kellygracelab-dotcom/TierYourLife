@@ -33,6 +33,9 @@ dependencies {
     testImplementation(testFixtures(projects.feature.community.domain))
     testImplementation(testFixtures(projects.feature.account.domain))
     testImplementation(testFixtures(projects.feature.tier.domain))
+    androidTestImplementation(testFixtures(projects.feature.tier.domain))
+    androidTestImplementation(testFixtures(projects.feature.community.domain))
+    androidTestImplementation(testFixtures(projects.feature.account.domain))
     // Drawn on the JVM by Robolectric and compared with the pictures in src/test/screenshots.
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.compose.ui.test.junit4)

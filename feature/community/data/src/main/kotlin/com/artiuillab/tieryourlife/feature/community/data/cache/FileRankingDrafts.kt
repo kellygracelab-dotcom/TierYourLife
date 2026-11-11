@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AtomicFile
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
@@ -36,7 +37,7 @@ class FileRankingDrafts internal constructor(
             withContext(Dispatchers.IO) {
                 runCatching {
                     val record = json.decodeFromString<DraftRecord>(file.readFully().toString(Charsets.UTF_8))
-                    RankingDraft(record.version, record.rows, record.pool)
+                    RankingDraft(record.version, record.rows, record.pool, RankingChoice.fromWire(record.choice), record.savedBoardUid)
                 }.getOrNull()
             }
         }
@@ -44,7 +45,7 @@ class FileRankingDrafts internal constructor(
 
     override suspend fun keep(listId: String, draft: RankingDraft, owner: String?) {
         val file = fileFor(owner, listId)
-        val encoded = json.encodeToString(DraftRecord(draft.version, draft.rows, draft.pool)).toByteArray()
+        val encoded = json.encodeToString(DraftRecord(draft.version, draft.rows, draft.pool, draft.choice?.wireName, draft.savedBoardUid)).toByteArray()
         mutex.withLock {
             withContext(Dispatchers.IO) {
                 check(directory.isDirectory || directory.mkdirs())
@@ -67,4 +68,10 @@ class FileRankingDrafts internal constructor(
 }
 
 @Serializable
-private data class DraftRecord(val version: Long, val rows: List<List<Int>>, val pool: List<Int>)
+private data class DraftRecord(
+    val version: Long,
+    val rows: List<List<Int>>,
+    val pool: List<Int>,
+    val choice: String? = null,
+    val savedBoardUid: String? = null,
+)

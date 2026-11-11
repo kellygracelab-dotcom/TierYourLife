@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.ListTranslations
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
+import com.artiuillab.tieryourlife.feature.community.domain.model.RankingOffer
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 /** Whose arrangement is on screen. */
@@ -87,6 +88,7 @@ sealed interface CommunityListUiState {
         val arriving: Boolean = false,
         /** A house list's texts in the readers' languages; the boards above stay as written. */
         val translations: ListTranslations = ListTranslations(),
+        val rankingOffer: RankingOffer? = null,
     ) : CommunityListUiState {
         /** What the board area is drawing right now. */
         val shown: TierList get() = if (showing == Showing.Theirs) theirs else mine

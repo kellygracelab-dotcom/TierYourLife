@@ -59,7 +59,7 @@ private data class IdTokenClaimsDto(
 private fun Response.refusalCode(): String? =
     runCatching { networkJson.decodeFromString<RefusalCodeDto>(peekBody(REFUSAL_PEEK_BYTES).string()).code }.getOrNull()
 
-/** Read, not verified: the proxy has verified it already, and only says whose it was. */
+/** Identity hint for local actor binding/erasure dispatch, never authentication; the proxy verifies the token. */
 internal fun uidOfBearer(header: String?): String? {
     val payload = header?.takeIf { it.startsWith(BEARER) }?.removePrefix(BEARER)?.split('.')?.getOrNull(1) ?: return null
     return runCatching {

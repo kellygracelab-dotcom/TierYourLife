@@ -12,6 +12,42 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class TierDatabaseMigrationTest {
 
+    @Test
+    fun migration18To19KeepsOwnersProgressAndDuplicateCardsWithoutInventingAChoice() {
+        helper.createDatabase(TEST_DB, 18).apply {
+            execSQL("INSERT INTO tier_lists (id, title, uid, ownerUid, takenFrom, rankingOf, play) VALUES (1, 'Films', 'board-1', 'alice', 'original', 'original', '{game}')")
+            execSQL("INSERT INTO tiers (id, tierListId, position, label, colorLight, colorDark, isPool, uid) VALUES (1, 1, 0, 'S', '#111111', '#EEEEEE', 0, 'tier-1')")
+            execSQL("INSERT INTO tier_items (id, tierId, position, title, imageUrl, uid) VALUES (1, 1, 0, 'Duplicate', NULL, 'card-1')")
+            execSQL("INSERT INTO tier_items (id, tierId, position, title, imageUrl, uid) VALUES (2, 1, 1, 'Duplicate', NULL, 'card-2')")
+            execSQL("INSERT INTO board_sync (account, listUid, revision, fingerprint, syncedAt, remoteFingerprint) VALUES ('alice', 'board-1', 4, 'local', 123, 'game-v1:remote')")
+            close()
+        }
+        val migrated = helper.runMigrationsAndValidate(TEST_DB, 19, true, MIGRATION_18_19)
+        migrated.query("SELECT ownerUid, takenFrom, rankingOf, play, originVersion, rankingChoice FROM active_tier_lists").use {
+            check(it.moveToFirst())
+            assertEquals("alice", it.getString(0))
+            assertEquals("original", it.getString(1))
+            assertEquals("original", it.getString(2))
+            assertEquals("{game}", it.getString(3))
+            assertTrue(it.isNull(4))
+            assertTrue(it.isNull(5))
+        }
+        migrated.query("SELECT uid, position, sourceIndex FROM tier_items ORDER BY position").use {
+            assertEquals(2, it.count)
+            check(it.moveToFirst())
+            assertEquals("card-1", it.getString(0))
+            assertTrue(it.isNull(2))
+            check(it.moveToNext())
+            assertEquals("card-2", it.getString(0))
+            assertEquals(1, it.getInt(1))
+            assertTrue(it.isNull(2))
+        }
+        migrated.query("SELECT remoteFingerprint FROM board_sync").use {
+            check(it.moveToFirst())
+            assertEquals("game-v1:remote", it.getString(0))
+        }
+    }
+
     @get:Rule
     val helper: MigrationTestHelper = MigrationTestHelper(
         InstrumentationRegistry.getInstrumentation(),

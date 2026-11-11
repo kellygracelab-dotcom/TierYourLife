@@ -14,7 +14,6 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ListGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.TargetIsStaff
-import com.artiuillab.tieryourlife.feature.community.domain.model.readIn
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.OpenedLists
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts
@@ -22,6 +21,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowA
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowTarget
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.GuestFollows
+import com.artiuillab.tieryourlife.feature.community.presentation.list.components.CommunityRankingChoices
+import com.artiuillab.tieryourlife.feature.community.presentation.list.components.PrivateRankingProgress
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.returningAllToPool
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
@@ -30,8 +31,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +39,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -74,7 +72,13 @@ class CommunityListViewModel @Inject constructor(
     val userMessages: Flow<UserMessage> = messages.flow
 
     /** The readers' placings of this list: read on demand, chosen into the left half, this reader's own taken down. */
-    internal val rankings = ListRankings(publishedId, community, _state, viewModelScope, messages, reread = { open(quietly = true) }, resetMine = ::returnAllToPool)
+    internal val rankings = ListRankings(
+        publishedId, community, _state, viewModelScope, messages,
+        reread = { open(quietly = true) }, resetMine = ::returnAllToPool,
+        visibilityChanged = { progress.publicVisibility(it) },
+        accounts = accounts,
+        mineReady = { progress.isCurrentOwner },
+    )
 
     /** Told once a ranking was shown, or that it takes signing in. */
     val rankingNotices: Flow<RankingNotice> = rankings.notices
@@ -101,9 +105,15 @@ class CommunityListViewModel @Inject constructor(
 
     /** When the board on screen was last changed by its author, as the server said. */
     private var shownUpdatedAt: Long? = null
-    private var source: PublishedList? = null
-    private var draftAccount = draftOwner()
-    private var draftReady = true
+    internal val progress = PrivateRankingProgress(
+        publishedId, _state, accounts, drafts, viewModelScope, messages, ::emptied,
+        invalidateUndo = {
+            beforeResult = null
+            beforeTheirs = null
+        },
+        tiers = tiers,
+    )
+    internal val choices = CommunityRankingChoices(_state, progress, viewModelScope, messages, told::send, rankings::showMine)
 
     /** Taps on Follow so far: an answer asked for before the latest one does not get to undo it. */
     private var followTaps = 0
@@ -119,47 +129,15 @@ class CommunityListViewModel @Inject constructor(
         guest.afterSignIn({ it == authorTarget() }) { setFollowing(FollowState(following = true)) }
         viewModelScope.launch {
             accounts.account.collect { account ->
+                rankings.accountChanged(account)
                 if (account == Account.Unknown) return@collect
                 val owner = (account as? Account.SignedIn)?.recordKey
-                if (owner != draftAccount) switchDraftOwner(owner)
+                progress.ownerChanged(owner)
                 _state.update { current ->
                     if (current is CommunityListUiState.Success) current.copy(signedIn = account is Account.SignedIn) else current
                 }
             }
         }
-    }
-
-    /** A sign-in never places a guest's work over that account's independent draft. */
-    private suspend fun switchDraftOwner(owner: String?) {
-        keepDraft()
-        draftReady = false
-        beforeTheirs = null
-        beforeResult = null
-        val original = source
-        val current = _state.value as? CommunityListUiState.Success
-        val guestProgress = current?.mine?.takeIf { draftAccount == null && owner != null && current.arranged && !current.own }
-        if (current != null) _state.value = current.copy(arriving = true)
-        val kept = drafts.read(publishedId, owner)
-        if (draftOwner() != owner) return
-        draftAccount = owner
-        draftReady = true
-        val ready = original?.let { source ->
-            (_state.value as? CommunityListUiState.Success)?.takeIf { it.version == source.summary.updatedAtMillis }?.let { source to it }
-        } ?: return
-        val (answer, now) = ready
-        val empty = emptied(answer)
-        val mine = kept?.on(answer, empty) ?: guestProgress.takeIf { kept == null }
-        _state.value = now.copy(
-            mine = mine ?: empty,
-            showing = Showing.Mine,
-            arranged = mine != null,
-            arriving = false,
-            chosenRanking = null,
-            rankings = emptyList(),
-            rankingsLoading = false,
-            moreRankings = false,
-        )
-        if (mine === guestProgress && guestProgress != null) keepDraft()
     }
 
     private fun loadFollowState(authorUid: String) {
@@ -261,31 +239,24 @@ class CommunityListViewModel @Inject constructor(
      * with it; only the counts and the lines about it change.
      */
     private suspend fun present(answer: PublishedList, fromServer: Boolean, followTapped: Boolean = false): CommunityListUiState.Success {
-        val owner = draftOwner()
         val before = _state.value as? CommunityListUiState.Success
         val fresh = stateOf(answer, before, followTapped)
         val sameBoard = before != null &&
-            draftAccount == owner &&
+            progress.isCurrentOwner &&
             !before.arriving &&
             shownUpdatedAt == answer.summary.updatedAtMillis &&
             before.list == fresh.list
         rankings.opened(answer, fromServer, sameBoard)
         ownList.opened(answer)
         shownUpdatedAt = answer.summary.updatedAtMillis
-        source = answer
         if (!sameBoard) {
             beforeResult = null
             beforeTheirs = null
         }
-        val kept = if (!sameBoard && !fresh.own) drafts.read(publishedId, owner)?.on(answer, fresh.mine) else null
-        if (owner != draftOwner()) return before ?: fresh
-        draftAccount = owner
-        val shown = when {
-            sameBoard -> fresh.keepingWhatTheReaderDid(before)
-            kept != null -> fresh.copy(mine = kept, showing = Showing.Mine, arranged = true)
-            else -> fresh
-        }
+        val continuing = if (sameBoard) fresh.keepingWhatTheReaderDid(before) else null
+        val shown = progress.opened(answer, fresh, before, continuing)
         _state.value = shown
+        choices.offerIfNeeded()
         return shown
     }
 
@@ -335,6 +306,7 @@ class CommunityListViewModel @Inject constructor(
         _state.update { current ->
             if (current !is CommunityListUiState.Success) current else current.copy(showing = which)
         }
+        choices.offerIfNeeded()
     }
 
     /** The private draft follows ordinary moves without publishing anything. */
@@ -346,7 +318,8 @@ class CommunityListViewModel @Inject constructor(
             if (state !is CommunityListUiState.Success) return@update state
             state.copy(mine = state.mine.withItemMoved(itemId, toTierId, toPosition), arranged = true)
         }
-        keepDraft()
+        progress.keep()
+        choices.offerIfNeeded()
     }
 
     /**
@@ -365,7 +338,8 @@ class CommunityListViewModel @Inject constructor(
             )
         }
         viewModelScope.launch { told.send(ListNotice.StartedFromTheirs(current.theirsName, replaced = current.arranged)) }
-        keepDraft()
+        progress.keep()
+        choices.offerIfNeeded()
     }
 
     /** Mine as it was before, and their arrangement back on screen. */
@@ -375,7 +349,8 @@ class CommunityListViewModel @Inject constructor(
         _state.update { state ->
             if (state !is CommunityListUiState.Success) state else state.copy(mine = mine, arranged = arranged, showing = Showing.Theirs)
         }
-        keepDraft()
+        progress.keep()
+        choices.offerIfNeeded()
     }
 
     /**
@@ -391,12 +366,14 @@ class CommunityListViewModel @Inject constructor(
         // No record: a republished list replaced Mine meanwhile, and the result with it.
         if (undone) {
             before?.let { _state.value = current.copy(mine = it.mine, showing = it.showing, arranged = it.arranged) }
-            keepDraft()
+            progress.keep()
+            choices.offerIfNeeded()
             return
         }
         beforeResult = BeforeResult(current.mine, current.showing, current.arranged)
         _state.value = current.copy(mine = board.inWordsOf(current.mine, current.list), showing = Showing.Mine, arranged = true)
-        keepDraft()
+        progress.keep()
+        choices.offerIfNeeded()
     }
 
     /** A single private editor action; it never changes the author's arrangement. */
@@ -406,25 +383,7 @@ class CommunityListViewModel @Inject constructor(
         beforeResult = null
         beforeTheirs = null
         _state.value = current.copy(mine = current.mine.returningAllToPool(), showing = Showing.Mine, arranged = true)
-        keepDraft()
-    }
-
-    private fun draftOwner() = (accounts.current() as? Account.SignedIn)?.recordKey
-
-    private fun keepDraft() {
-        if (!draftReady) return
-        val current = _state.value as? CommunityListUiState.Success ?: return
-        val original = source ?: return
-        if (current.own || current.arriving || current.version != original.summary.updatedAtMillis) return
-        val owner = draftAccount
-        val draft = draftOf(original, current.mine)
-        // Start before this input callback returns. Only the finite, serialized
-        // commit survives a disappearing screen; it keeps the captured owner/version.
-        viewModelScope.launch(start = CoroutineStart.UNDISPATCHED) {
-            withContext(NonCancellable) {
-                messages.guard("Keeping private ranking progress") { drafts.keep(publishedId, draft, owner) }
-            }
-        }
+        progress.keep()
     }
 
     /**
@@ -440,16 +399,7 @@ class CommunityListViewModel @Inject constructor(
         viewModelScope.launch {
             var newId: Long? = null
             val saved = messages.guard("Saving a community list") {
-                // The reader's choice, asked for at the moment of saving: keeping
-                // the author's ranking is a reason to save, not a mistake to correct.
-                val keeping = (if (which == Showing.Theirs) current.theirs else current.mine).readIn(current.translations.wordsIn(languageTag))
-                newId = tiers.createFromTemplate(
-                    title = keeping.title,
-                    authorName = current.authorName,
-                    tiers = keeping.tiers.filterNot { it.isPool },
-                    items = keeping.tiers.filter { it.isPool }.flatMap { it.items },
-                    takenFrom = publishedId,
-                )
+                newId = progress.saveCopy(which, languageTag)
             }
             _state.update { current ->
                 current as CommunityListUiState.Success
@@ -464,7 +414,10 @@ class CommunityListViewModel @Inject constructor(
         }
     }
 
-    fun showMyRanking() = rankings.showMine()
+    fun showMyRanking(languageTag: String = "") {
+        val current = _state.value as? CommunityListUiState.Success ?: return
+        if (current.signedIn) choices.showMine(languageTag) else rankings.showMine()
+    }
 
     fun hide() {
         val current = _state.value as? CommunityListUiState.Success ?: return

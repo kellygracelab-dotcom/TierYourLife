@@ -21,6 +21,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.NoPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddItemsSheet
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BoardPublicationDialogs
 
 @Composable
 fun TierDetailScreen(
@@ -44,9 +45,11 @@ fun TierDetailScreen(
     play: BoardPlay = NoPlay,
     /** The proposal form, from the end of the category picker. */
     onProposeSection: ((String?) -> Unit)? = null,
+    onSignIn: () -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
 ) {
     val screen by viewModel.screen.collectAsStateWithLifecycle()
+    val publication by viewModel.publicationState.collectAsStateWithLifecycle()
     val state = screen.board
     val publish = screen.publish
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
@@ -69,7 +72,7 @@ fun TierDetailScreen(
     }
 
     val credit: (@Composable () -> Unit)? = when (val loaded = state) {
-        is TierDetailUiState.Success -> loaded.list.rankingOf?.let { rankingOf ->
+        is TierDetailUiState.Success -> (loaded.list.rankingOf ?: loaded.list.takenFrom)?.let { rankingOf ->
             { RankingCredit(authorName = loaded.list.authorName.orEmpty(), onOpen = { onOpenPublishedList(rankingOf) }) }
         }
         else -> null
@@ -124,6 +127,19 @@ fun TierDetailScreen(
             onPlay = { playOpen = true },
             playSaved = playRequest?.let { play.isSaved(it.key) } == true,
         ),
+    )
+
+    BoardPublicationDialogs(
+        state = publication,
+        signedIn = screen.signedIn,
+        onConfirm = viewModel::confirmPublication,
+        onDismissPreview = viewModel::dismissPublication,
+        onPrivate = viewModel::keepRankingPrivate,
+        onPublic = { viewModel.shareRankingOffer(onSignIn) },
+        onDismissOffer = viewModel::dismissRankingOffer,
+        onDismissError = viewModel::dismissPublicationError,
+        onRecheckOriginal = viewModel::recheckOriginal,
+        onSignIn = onSignIn,
     )
 
     if (playRequest != null) {

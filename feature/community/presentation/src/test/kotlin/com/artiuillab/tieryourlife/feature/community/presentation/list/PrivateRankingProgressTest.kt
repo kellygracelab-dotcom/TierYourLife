@@ -30,6 +30,39 @@ class PrivateRankingProgressTest {
     fun clear() = made.forEach { it.viewModelScope.cancel() }
 
     @Test
+    fun anAccountChangeBackDuringDraftLoadingRestoresTheGuestAndKeepsTheEditorWritable() = runBlocking {
+        val storage = mutableMapOf<String?, com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft>()
+        val reading = kotlinx.coroutines.CompletableDeferred<Unit>()
+        val release = kotlinx.coroutines.CompletableDeferred<Unit>()
+        val account = Account.SignedIn("b@example.com", null, uid = "b")
+        val drafts = object : com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts {
+            override suspend fun read(listId: String, owner: String?): com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft? {
+                if (owner == account.recordKey) {
+                    reading.complete(Unit)
+                    release.await()
+                }
+                return storage[owner]
+            }
+            override suspend fun keep(listId: String, draft: com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft, owner: String?) {
+                storage[owner] = draft
+            }
+        }
+        val accounts = FakeAccountRepository()
+        val vm = viewModel(accounts = accounts, drafts = drafts)
+        vm.state.firstWithin { it is CommunityListUiState.Success }
+        vm.show(Showing.Mine)
+        vm.moveItem(1, 0, 0)
+        accounts.accounts.value = account
+        withTimeout(5_000) { reading.await() }
+        accounts.accounts.value = Account.Guest
+        release.complete(Unit)
+        vm.state.firstWithin { (it as? CommunityListUiState.Success)?.let { state -> !state.arriving && !state.signedIn } == true }
+        vm.moveItem(0, 0, 1)
+        assertEquals(listOf(1, 0), storage[null]?.rows?.first())
+        assertEquals(emptyList<Int>(), storage[null]?.pool)
+    }
+
+    @Test
     fun signingIntoAnAccountWithItsOwnDraft_restoresIt_andCannotUndoOrOverwriteItWithGuestWork() = runBlocking {
         val storage = mutableMapOf<Pair<String?, String>, com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft>()
         val drafts = object : com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts {

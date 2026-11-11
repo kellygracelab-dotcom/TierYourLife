@@ -67,6 +67,8 @@ data class TierListEntity(
      * had owners, until the first read after the upgrade works out whose.
      */
     val ownerUid: String? = null,
+    val originVersion: Long? = null,
+    val rankingChoice: String? = null,
 ) {
     companion object {
         /** Not a uid any account can have. */
