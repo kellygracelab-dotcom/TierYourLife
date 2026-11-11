@@ -26,7 +26,7 @@ object Emulators {
     val functionsUrl: String =
         (System.getenv("E2E_FUNCTIONS_URL") ?: "http://127.0.0.1:5001/$PROJECT/europe-west1").trimEnd('/') + "/"
 
-    private val authHost: String = System.getenv("FIREBASE_AUTH_EMULATOR_HOST") ?: "127.0.0.1:9099"
+    internal val authHost: String = System.getenv("FIREBASE_AUTH_EMULATOR_HOST") ?: "127.0.0.1:9099"
 
     private val http = OkHttpClient()
     private val jsonType = "application/json".toMediaType()
