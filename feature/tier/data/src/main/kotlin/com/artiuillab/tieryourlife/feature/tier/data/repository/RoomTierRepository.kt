@@ -192,6 +192,13 @@ class RoomTierRepository internal constructor(
         dao.moveItem(itemId, toTierId, toPosition)
     }
 
+    override suspend fun returnAllToPool(id: Long) {
+        dao.returnAllToPool(id, owner())
+    }
+
+    override suspend fun arrangeBoard(id: Long, expected: Map<Long, List<Long>>, target: Map<Long, List<Long>>): Boolean =
+        dao.arrangeBoard(id, owner(), expected, target)
+
     override suspend fun addTier(
         tierListId: Long,
         label: String,

@@ -15,6 +15,11 @@ import kotlinx.serialization.json.longOrNull
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 
+/** Transport protection, matching the existing cloud-board limit; never a local game selection cap. */
+const val MAX_SHARED_GAME_CARDS = 2000
+const val MAX_SHARED_GAME_HISTORY = 14000
+private const val MAX_SHARED_GAME_SCOPE = 64
+
 /**
  * A game as the account keeps it on its board and the website reads it: the
  * engine's game with cards and tiers named by their uids, which are the same
@@ -67,16 +72,17 @@ object SharedGameJson {
     fun decode(raw: String): SharedGame? {
         val game = runCatching { Json.parseToJsonElement(raw) }.getOrNull() as? JsonObject ?: return null
         val kind = GameKind.entries.firstOrNull { it.wireName == game.text("kind") } ?: return null
-        val ids = uids(game["ids"], MAX_PLAY_CARDS)?.takeIf { it.size >= MIN_SHARED_CARDS } ?: return null
+        val ids = uids(game["ids"], MAX_SHARED_GAME_CARDS)?.takeIf { it.size >= MIN_SHARED_CARDS } ?: return null
         val count = game.whole("count")?.takeIf { it == ids.size } ?: return null
         val seed = game.whole("seed") ?: return null
         val refine = (game["refine"] as? JsonPrimitive)?.takeUnless { it.isString }?.booleanOrNull ?: return null
         val round = game.whole("round")?.takeIf { it >= 0 } ?: return null
         val startedAt = (game["startedAt"] as? JsonPrimitive)?.takeUnless { it.isString }?.longOrNull?.takeIf { it >= 1 } ?: return null
-        val history = (game["history"] as? JsonArray)?.map { outcome(it, count) ?: return null } ?: return null
+        val history = (game["history"] as? JsonArray)?.takeIf { it.size <= MAX_SHARED_GAME_HISTORY }
+            ?.map { outcome(it, count) ?: return null } ?: return null
         val scope = when (val tiers = game["scope"]) {
             null, JsonNull -> null
-            else -> uids(tiers, MAX_PLAY_CARDS)?.takeIf { it.isNotEmpty() } ?: return null
+            else -> uids(tiers, MAX_SHARED_GAME_SCOPE)?.takeIf { it.isNotEmpty() } ?: return null
         }
         return SharedGame(
             spec = GameSpec(kind, count, seed, refine),
@@ -122,6 +128,7 @@ private val GameKind.wireName: String get() = name.lowercase()
  * uid here, which keeps it on this phone alone. It never starts later than [now].
  */
 fun SavedGame.shared(itemUid: (Long) -> String?, tierUid: (Long) -> String?, now: Long): SharedGame? {
+    if (ids.size > MAX_SHARED_GAME_CARDS || history.size > MAX_SHARED_GAME_HISTORY) return null
     val uids = ids.map { id -> itemUid(id)?.takeIf { it.isNotBlank() } ?: return null }
     val tiers = scope?.map { id -> tierUid(id)?.takeIf { it.isNotBlank() } ?: return null }
     return SharedGame(

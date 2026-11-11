@@ -13,7 +13,7 @@ data class SavedGame(
     /** The Swiss round it had reached, to say so before it is resumed; 0 in the other games. */
     val round: Int,
     val startedAt: Long,
-    /** The tiers its cards came from, the pool among them; null for the whole board. New cards join only from these. */
+    /** The original tier/pool filter; the actual participants remain fixed in [ids]. */
     val scope: List<Long>? = null,
     /** One tier's cards, only being ordered inside it. */
     val keepTier: Boolean = false,
@@ -48,42 +48,25 @@ fun SavedGame.foundBy(itemId: (String) -> Long?, tierId: (String) -> Long?): Sav
 
 /** What a saved game can be on the board as it is now. */
 sealed interface Resumption {
-    /** It goes on as [game], renumbered onto the cards there are; [joined] cards are new to it. */
+    /** It goes on as [game], with the original participants and outcomes. */
     data class Ready(val game: SavedGame, val joined: Int = 0) : Resumption
 
-    /** A hill or a bracket whose cards changed: the order it was drawn from is gone, so it starts again. */
+    /** At least one original participant is missing, so an explicit restart is needed. */
     data object Changed : Resumption
 }
 
 /**
- * The saved game on [cards], the ids in its scope now, in board order. Swiss
- * drops what deleted cards played, renumbers the rest and lets new cards in
- * behind them, up to [MAX_PLAY_CARDS]. Hill and bracket go on only over the
- * very same cards.
+ * The cohort is fixed when the game starts. New board cards never join, in
+ * any mode. A missing participant requires an explicit new game, never a
+ * silently shortened or renumbered saved session.
  */
 fun SavedGame.resumeOn(cards: List<Long>): Resumption {
-    val saved = ids.toSet()
-    if (spec.kind != GameKind.Swiss) {
-        return if (cards.toSet() == saved) Resumption.Ready(this) else Resumption.Changed
-    }
     val present = cards.toSet()
-    val kept = ids.filter { it in present }
-    val joining = cards.filterNot { it in saved }.take((MAX_PLAY_CARDS - kept.size).coerceAtLeast(0))
-    if (kept.size == ids.size && joining.isEmpty()) return Resumption.Ready(this)
-    val order = kept + joining
-    if (order.size < 2) return Resumption.Changed
-    val at = order.withIndex().associate { it.value to it.index }
-    fun renumbered(card: Int): Int? = at[ids[card]]
-    val renumbered = history.mapNotNull { outcome ->
-        val first = renumbered(outcome.first)
-        val second = renumbered(outcome.second)
-        if (first == null || second == null) null else Outcome(first, second, outcome.winner?.let(::renumbered))
+    return if (spec.count == ids.size && ids.distinct().size == ids.size && ids.all { it in present }) {
+        Resumption.Ready(this)
+    } else {
+        Resumption.Changed
     }
-    val respec = spec.copy(count = order.size)
-    return Resumption.Ready(
-        copy(spec = respec, ids = order, history = renumbered, round = progress(respec, renumbered).round, uids = null, scopeUids = null),
-        joined = joining.size,
-    )
 }
 
 /**

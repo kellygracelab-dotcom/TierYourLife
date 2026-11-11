@@ -272,6 +272,12 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
+    fun returnAllToPool() {
+        val current = board as? TierDetailUiState.Success ?: return
+        if (current.list.tiers.none { !it.isPool && it.items.isNotEmpty() }) return
+        mutate("Returning all cards to the pool") { repository.returnAllToPool(tierListId) }
+    }
+
     fun reorderTiers(orderedTierIds: List<Long>) {
         val current = board
         if (current is TierDetailUiState.Success) {

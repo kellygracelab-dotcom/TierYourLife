@@ -48,4 +48,8 @@
         <item quantity="many">Опубліковано. Не вдалося додати %1$d зображень з інших сайтів.</item>
         <item quantity="other">Опубліковано. Не вдалося додати %1$d зображення з інших сайтів.</item>
     </plurals>
+    <string name="community_return_all_to_pool">Повернути всі картки в пул</string>
+    <string name="community_return_to_pool_title">Повернути всі картки в пул?</string>
+    <string name="community_return_to_pool_explanation">Розташування за тірами буде скинуто.</string>
+    <string name="community_return_to_pool_confirm">Повернути в пул</string>
 </resources>

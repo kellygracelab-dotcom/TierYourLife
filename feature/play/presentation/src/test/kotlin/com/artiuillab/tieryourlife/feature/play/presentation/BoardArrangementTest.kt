@@ -21,7 +21,7 @@ class BoardArrangementTest {
 
         val arranged = board.arrangedBy(mapOf(1L to listOf(6L, 3L), 2L to listOf(5L)))
 
-        assertEquals(listOf(1L to listOf(1L, 2L, 6L, 3L), 2L to listOf(4L, 5L), POOL to emptyList()), arranged.ids())
+        assertEquals(listOf(1L to listOf(6L, 3L, 1L, 2L), 2L to listOf(5L, 4L), POOL to emptyList()), arranged.ids())
     }
 
     @Test
@@ -30,7 +30,17 @@ class BoardArrangementTest {
 
         val arranged = board.arrangedBy(mapOf(1L to listOf(2L, 40L), 50L to listOf(1L)))
 
-        assertEquals(listOf(1L to listOf(1L, 2L), POOL to emptyList()), arranged.ids())
+        assertEquals(listOf(1L to listOf(2L, 1L), POOL to emptyList()), arranged.ids())
+    }
+
+    @Test
+    fun poolingKeepsExistingPoolFirst_thenRankedLeftovers_andNeverDuplicatesAnId() {
+        val original = board(1L to listOf(1L, 2L), 2L to listOf(3L, 4L), POOL to listOf(5L, 6L, 7L))
+        val placement = mapOf(1L to listOf(6L, 3L, 6L), 2L to listOf(6L, 5L))
+        val result = original.arrangedBy(placement, UnplayedPolicy.Pool)
+        assertEquals(listOf(1L to listOf(6L, 3L), 2L to listOf(5L), POOL to listOf(7L, 1L, 2L, 4L)), result.ids())
+        assertEquals((1L..7L).toList(), result.tiers.flatMap { it.items }.map { it.id }.sorted())
+        assertEquals(listOf(1L, 2L), original.tiers.first().items.map { it.id })
     }
 
     @Test

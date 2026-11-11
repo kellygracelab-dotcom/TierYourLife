@@ -64,6 +64,8 @@ fun ListActionsSheet(
     /** On a list's page, first: the readers' placings of it, and how many there are. */
     onOpenRankings: (() -> Unit)? = null,
     rankingCount: Int = 0,
+    onReturnAllToPool: (() -> Unit)? = null,
+    canReturnAllToPool: Boolean = false,
 ) {
     AdaptiveSheet(
         onDismiss = onDismiss,
@@ -112,6 +114,15 @@ fun ListActionsSheet(
                     testTag = CommunityTestTags.ACTION_SHOW_RANKING,
                     onClick = onShowMyRanking,
                     icon = { size, tint -> FormatListNumberedIcon(size, tint) },
+                )
+            }
+            if (onReturnAllToPool != null) {
+                ActionRow(
+                    text = stringResource(com.artiuillab.tieryourlife.core.theme.R.string.community_return_all_to_pool),
+                    testTag = "community_return_all_to_pool",
+                    onClick = onReturnAllToPool,
+                    icon = { size, tint -> GridViewIcon(size, tint) },
+                    enabled = canReturnAllToPool,
                 )
             }
             if (onOpenMyPublished != null) {
@@ -195,21 +206,23 @@ private fun ActionRow(
     onClick: () -> Unit,
     icon: @Composable (Dp, Color) -> Unit,
     color: Color = MaterialTheme.colorScheme.onSurface,
+    enabled: Boolean = true,
 ) {
+    val tint = if (enabled) color else color.copy(alpha = 0.38f)
     Row(
         Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(enabled = enabled, onClick = onClick)
             .testTag(testTag)
             .padding(horizontal = 24.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        icon(20.dp, color)
+        icon(20.dp, tint)
         Spacer(Modifier.width(16.dp))
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
-            color = color,
+            color = tint,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )

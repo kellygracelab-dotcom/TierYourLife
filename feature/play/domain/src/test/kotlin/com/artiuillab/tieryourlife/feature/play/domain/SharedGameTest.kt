@@ -117,8 +117,7 @@ class SharedGameTest {
 
         assertEquals(listOf(11L, -2L, 13L, -4L), local.ids)
         assertEquals(emptyList<Long>(), local.scope)
-        val resumed = local.copy(scope = null).resumeOn(listOf(11L, 13L)) as Resumption.Ready
-        assertEquals(listOf(11L, 13L), resumed.game.ids)
+        assertEquals(Resumption.Changed, local.copy(scope = null).resumeOn(listOf(11L, 13L)))
     }
 
     @Test

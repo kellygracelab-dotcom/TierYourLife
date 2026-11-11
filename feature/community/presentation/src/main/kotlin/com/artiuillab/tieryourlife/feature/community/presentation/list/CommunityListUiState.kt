@@ -35,7 +35,7 @@ sealed interface CommunityListUiState {
         val editorial: Boolean = false,
         /** Somebody's list out without their name: the author line says "Anonymous" and leads nowhere. */
         val byNobody: Boolean = false,
-        /** True once the reader has moved something; nothing is stored either way. */
+        /** True once the reader has edited their private draft; showing it publicly is a separate action. */
         val arranged: Boolean = false,
         /** Null until the server answers whether this author is followed. */
         val follow: FollowState? = null,

@@ -27,6 +27,8 @@ data class SyncedBoard(
     val uid: String,
     val revision: Int,
     val fingerprint: String,
+    /** Server content actually downloaded, distinct from the local serialization's hash. */
+    val remoteFingerprint: String? = null,
 )
 
 sealed interface SyncStep {
@@ -142,7 +144,11 @@ private fun stepFor(local: LocalBoard, remote: RemoteBoard?, synced: SyncedBoard
     val changedHere = local.fingerprint != synced.fingerprint
     // A new revision holding what was last agreed is an echo, a re-save of the
     // same board, not news; the site reads it the same way.
-    val changedThere = remote.revision != synced.revision && remote.fingerprint != synced.fingerprint
+    // An old client can have acknowledged a revision without decoding its retained
+    // large game. Only downloading that combined state acknowledges its marker.
+    val unseenGame = remote.fingerprint?.startsWith("game-v1:") == true && remote.fingerprint != synced.remoteFingerprint
+    val changedThere = unseenGame ||
+        (remote.revision != synced.revision && remote.fingerprint != (synced.remoteFingerprint ?: synced.fingerprint))
 
     return when {
         changedHere && changedThere -> SyncStep.KeepBoth(local.uid, basedOn = remote.revision)

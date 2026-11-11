@@ -46,11 +46,6 @@
     <string name="play_start">Empezar</string>
     <string name="play_continue">Continuar</string>
     <string name="play_back">Atrás</string>
-    <plurals name="play_cards_limit">
-        <item quantity="one">Hasta %1$d tarjeta por partida</item>
-        <item quantity="many">Hasta %1$d tarjetas por partida</item>
-        <item quantity="other">Hasta %1$d tarjetas por partida</item>
-    </plurals>
     <string name="play_pool">La reserva</string>
     <string name="play_everything">Todo</string>
     <plurals name="play_cards">
@@ -58,16 +53,10 @@
         <item quantity="many">%1$d tarjetas</item>
         <item quantity="other">%1$d tarjetas</item>
     </plurals>
-    <string name="play_too_many_in_tier">Demasiadas para una partida.</string>
     <plurals name="play_selected">
         <item quantity="one">%1$d de %2$d seleccionada</item>
         <item quantity="many">%1$d de %2$d seleccionadas</item>
         <item quantity="other">%1$d de %2$d seleccionadas</item>
-    </plurals>
-    <plurals name="play_selected_too_many">
-        <item quantity="one">%1$d seleccionada, elige 64 como máximo</item>
-        <item quantity="many">%1$d seleccionadas, elige 64 como máximo</item>
-        <item quantity="other">%1$d seleccionadas, elige 64 como máximo</item>
     </plurals>
     <string name="play_keep_in_tier">Dejarlas en %1$s, solo ordenarlas</string>
     <string name="play_quit">Salir</string>
@@ -118,4 +107,12 @@
     <string name="play_snack_undo">Deshacer</string>
     <string name="play_snack_not_saved">No se pudo guardar la partida</string>
     <string name="play_snack_list_updated">La lista se actualizó durante la partida, así que la partida se descartó</string>
+    <string name="play_random_sample">Selección aleatoria</string>
+    <string name="play_individual_cards">Tarjetas individuales</string>
+    <string name="play_select_candidates">Seleccionar todas las disponibles</string>
+    <string name="play_clear_selection">Borrar selección</string>
+    <string name="play_card_unnamed">Tarjeta sin título</string>
+    <string name="play_unplayed_options">Tarjetas fuera de la partida</string>
+    <string name="play_unplayed_keep">Mantener en sus niveles, detrás de las jugadas</string>
+    <string name="play_unplayed_pool">Mover a la reserva</string>
 </resources>

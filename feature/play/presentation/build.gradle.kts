@@ -36,4 +36,6 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.roborazzi)
     testImplementation(libs.roborazzi.compose)
+    androidTestImplementation(testFixtures(projects.feature.play.domain))
+    androidTestImplementation(testFixtures(projects.feature.tier.domain))
 }

@@ -38,4 +38,8 @@
         <item quantity="one">Yayınlandı. Başka bir siteden %1$d resim eklenemedi.</item>
         <item quantity="other">Yayınlandı. Başka sitelerden %1$d resim eklenemedi.</item>
     </plurals>
+    <string name="community_return_all_to_pool">Tüm kartları havuza döndür</string>
+    <string name="community_return_to_pool_title">Tüm kartlar havuza döndürülsün mü?</string>
+    <string name="community_return_to_pool_explanation">Seviye yerleşimi sıfırlanacak.</string>
+    <string name="community_return_to_pool_confirm">Havuza döndür</string>
 </resources>

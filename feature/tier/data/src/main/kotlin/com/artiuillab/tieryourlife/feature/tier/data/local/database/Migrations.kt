@@ -5,6 +5,13 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 
+/** Existing agreements do not prove that a retained large game has been read. */
+val MIGRATION_17_18 = object : Migration(17, 18) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE board_sync ADD COLUMN remoteFingerprint TEXT")
+    }
+}
+
 /**
  * A cover chosen from the gallery was once kept as the gallery's address, and
  * the permission to read it ended with the process that picked it. It is no

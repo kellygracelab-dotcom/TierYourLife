@@ -32,7 +32,7 @@ class PlayMishapsTest {
     private val mine = board(1L to emptyList(), 2L to emptyList(), POOL to (1L..6L).toList(), id = 0)
 
     @Test
-    fun anApplyThatFailsHalfway_putsTheBoardBack_andKeepsTheGameToApplyAgain() = runBlocking {
+    fun anAtomicApplyThatFails_leavesTheBoardUntouched_andKeepsTheGameToApplyAgain() = runBlocking {
         val repository = MovingTierRepository(unranked)
         val games = FakeSavedGames()
         val viewModel = viewModel(games, FlakyBoards(repository, failing = 3))
@@ -164,6 +164,11 @@ class PlayMishapsTest {
         var gone = false
 
         override suspend fun getTierListById(id: Long): TierList? = if (gone) null else inner.getTierListById(id)
+
+        override suspend fun arrangeBoard(id: Long, expected: Map<Long, List<Long>>, target: Map<Long, List<Long>>): Boolean {
+            if (failing > 0) throw IOException("The disk is full")
+            return inner.arrangeBoard(id, expected, target)
+        }
 
         override suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
             made += 1

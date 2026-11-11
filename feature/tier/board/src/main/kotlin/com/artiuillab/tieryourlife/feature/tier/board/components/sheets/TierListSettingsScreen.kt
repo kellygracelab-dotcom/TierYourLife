@@ -69,6 +69,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.FormatListNumberedIcon
 import com.artiuillab.tieryourlife.core.theme.ui.GridViewIcon
 import com.artiuillab.tieryourlife.core.theme.ui.LeaderboardIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
+import com.artiuillab.tieryourlife.core.theme.ui.ReturnToPoolDialog
 import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
 import com.artiuillab.tieryourlife.core.theme.ui.ShareIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ViewCarouselIcon
@@ -113,8 +114,10 @@ fun TierListSettingsScreenContent(
     onShare: () -> Unit = {},
     /** The published list's own page, where readers' rankings and its link are; null while it is not out. */
     onSeeInCommunity: (() -> Unit)? = null,
+    onReturnAllToPool: (() -> Unit)? = null,
 ) {
     var tierEditorVisible by rememberSaveable { mutableStateOf(false) }
+    var returnToPoolVisible by rememberSaveable { mutableStateOf(false) }
     var categorySheetVisible by rememberSaveable { mutableStateOf(false) }
     val rankedTierCount = list.tiers.count { !it.isPool }
 
@@ -172,11 +175,28 @@ fun TierListSettingsScreenContent(
                     CoverRow(chosen = list.coverImageUrl != null || list.coverImageUrls.isNotEmpty(), onClick = onChooseCover)
                     // Beside the cover: sharing is not publishing and needs no account.
                     ShareRow(onClick = onShare)
+                    if (onReturnAllToPool != null) {
+                        TextButton(
+                            onClick = { returnToPoolVisible = true },
+                            enabled = list.tiers.any { !it.isPool && it.items.isNotEmpty() },
+                            modifier = Modifier.padding(horizontal = 16.dp).testTag("board_return_all_to_pool"),
+                        ) { Text(stringResource(ThemeR.string.community_return_all_to_pool)) }
+                    }
 
                     DisplayModeSection(selected = list.displayMode, onSelect = onSetDisplayMode)
                 }
             }
         }
+    }
+
+    if (returnToPoolVisible) {
+        ReturnToPoolDialog(
+            onDismiss = { returnToPoolVisible = false },
+            onConfirm = {
+                returnToPoolVisible = false
+                onReturnAllToPool?.invoke()
+            },
+        )
     }
 
     if (categorySheetVisible || categoryWanted) {

@@ -41,24 +41,15 @@
     <string name="play_start">Starten</string>
     <string name="play_continue">Weiter</string>
     <string name="play_back">Zurück</string>
-    <plurals name="play_cards_limit">
-        <item quantity="one">Bis zu %1$d Karte pro Spiel</item>
-        <item quantity="other">Bis zu %1$d Karten pro Spiel</item>
-    </plurals>
     <string name="play_pool">Der Pool</string>
     <string name="play_everything">Alles</string>
     <plurals name="play_cards">
         <item quantity="one">%1$d Karte</item>
         <item quantity="other">%1$d Karten</item>
     </plurals>
-    <string name="play_too_many_in_tier">Zu viele für ein Spiel.</string>
     <plurals name="play_selected">
         <item quantity="one">%1$d von %2$d ausgewählt</item>
         <item quantity="other">%1$d von %2$d ausgewählt</item>
-    </plurals>
-    <plurals name="play_selected_too_many">
-        <item quantity="one">%1$d ausgewählt, höchstens 64 wählen</item>
-        <item quantity="other">%1$d ausgewählt, höchstens 64 wählen</item>
     </plurals>
     <string name="play_keep_in_tier">In %1$s lassen, nur ordnen</string>
     <string name="play_quit">Beenden</string>
@@ -104,4 +95,12 @@
     <string name="play_snack_undo">Rückgängig</string>
     <string name="play_snack_not_saved">Spiel konnte nicht gespeichert werden</string>
     <string name="play_snack_list_updated">Die Liste wurde während des Spiels aktualisiert, daher wurde das Spiel verworfen</string>
+    <string name="play_random_sample">Zufällige Auswahl</string>
+    <string name="play_individual_cards">Einzelne Karten</string>
+    <string name="play_select_candidates">Alle verfügbaren auswählen</string>
+    <string name="play_clear_selection">Auswahl aufheben</string>
+    <string name="play_card_unnamed">Karte ohne Titel</string>
+    <string name="play_unplayed_options">Karten außerhalb des Spiels</string>
+    <string name="play_unplayed_keep">In ursprünglichen Stufen hinter gespielten Karten behalten</string>
+    <string name="play_unplayed_pool">In den Pool verschieben</string>
 </resources>

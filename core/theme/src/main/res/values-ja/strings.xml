@@ -33,4 +33,8 @@
     <plurals name="snack_pictures_dropped">
         <item quantity="other">公開しました。他のサイトの画像%1$d枚を追加できませんでした。</item>
     </plurals>
+    <string name="community_return_all_to_pool">すべてのカードをプールに戻す</string>
+    <string name="community_return_to_pool_title">すべてのカードをプールに戻しますか？</string>
+    <string name="community_return_to_pool_explanation">ランクの配置がリセットされます。</string>
+    <string name="community_return_to_pool_confirm">プールに戻す</string>
 </resources>

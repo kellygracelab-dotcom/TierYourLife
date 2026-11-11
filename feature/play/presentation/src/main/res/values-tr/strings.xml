@@ -41,24 +41,15 @@
     <string name="play_start">Başla</string>
     <string name="play_continue">Devam</string>
     <string name="play_back">Geri</string>
-    <plurals name="play_cards_limit">
-        <item quantity="one">Bir oyunda en fazla %1$d kart</item>
-        <item quantity="other">Bir oyunda en fazla %1$d kart</item>
-    </plurals>
     <string name="play_pool">Havuz</string>
     <string name="play_everything">Tümü</string>
     <plurals name="play_cards">
         <item quantity="one">%1$d kart</item>
         <item quantity="other">%1$d kart</item>
     </plurals>
-    <string name="play_too_many_in_tier">Tek bir oyun için çok fazla.</string>
     <plurals name="play_selected">
         <item quantity="one">%1$d/%2$d seçildi</item>
         <item quantity="other">%1$d/%2$d seçildi</item>
-    </plurals>
-    <plurals name="play_selected_too_many">
-        <item quantity="one">%1$d seçildi, en fazla 64 seçin</item>
-        <item quantity="other">%1$d seçildi, en fazla 64 seçin</item>
     </plurals>
     <string name="play_keep_in_tier">%1$s içinde tut, yalnızca sırala</string>
     <string name="play_quit">Çık</string>
@@ -104,4 +95,12 @@
     <string name="play_snack_undo">Geri al</string>
     <string name="play_snack_not_saved">Oyun kaydedilemedi</string>
     <string name="play_snack_list_updated">Liste oyun sırasında güncellendi, bu yüzden oyun silindi</string>
+    <string name="play_random_sample">Rastgele seçim</string>
+    <string name="play_individual_cards">Tek tek kartlar</string>
+    <string name="play_select_candidates">Tüm uygun kartları seç</string>
+    <string name="play_clear_selection">Seçimi temizle</string>
+    <string name="play_card_unnamed">Başlıksız kart</string>
+    <string name="play_unplayed_options">Oyun dışındaki kartlar</string>
+    <string name="play_unplayed_keep">Oynanan kartlardan sonra özgün seviyelerinde tut</string>
+    <string name="play_unplayed_pool">Havuza taşı</string>
 </resources>

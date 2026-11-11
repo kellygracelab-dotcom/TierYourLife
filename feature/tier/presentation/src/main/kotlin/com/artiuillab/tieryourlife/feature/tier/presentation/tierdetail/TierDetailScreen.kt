@@ -103,6 +103,7 @@ fun TierDetailScreen(
             onAddClick = { addSheetVisible = true },
             onManualAddClick = { manualEntryVisible = true },
             onMoveItem = viewModel::moveItem,
+            onReturnAllToPool = viewModel::returnAllToPool,
             onDeleteItem = viewModel::deleteItem,
             onRestoreItem = viewModel::restoreItem,
             onForgetDeletedItem = viewModel::forgetDeletedItem,

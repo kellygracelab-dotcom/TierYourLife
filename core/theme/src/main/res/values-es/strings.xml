@@ -43,4 +43,8 @@
         <item quantity="many">Publicada. No se pudieron añadir %1$d imágenes de otros sitios.</item>
         <item quantity="other">Publicada. No se pudieron añadir %1$d imágenes de otros sitios.</item>
     </plurals>
+    <string name="community_return_all_to_pool">Devolver todas las tarjetas a la reserva</string>
+    <string name="community_return_to_pool_title">¿Devolver todas las tarjetas a la reserva?</string>
+    <string name="community_return_to_pool_explanation">Se restablecerá la distribución por niveles.</string>
+    <string name="community_return_to_pool_confirm">Devolver a la reserva</string>
 </resources>

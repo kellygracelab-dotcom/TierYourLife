@@ -528,6 +528,31 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    @Test
+    fun migration17To18_preservesAgreementsAndDoesNotPretendToHaveDownloadedTheGame() {
+        helper.createDatabase(TEST_DB, 17).apply {
+            execSQL("INSERT INTO board_sync VALUES ('ann', 'board-1', 3, 'local-hash', 9)")
+            execSQL("INSERT INTO board_sync VALUES ('bob', 'board-1', 7, 'other-hash', 11)")
+            close()
+        }
+        val migrated = helper.runMigrationsAndValidate(TEST_DB, 18, true, MIGRATION_17_18)
+        migrated.query("SELECT account, revision, fingerprint, syncedAt, remoteFingerprint FROM board_sync ORDER BY account").use {
+            assertEquals(2, it.count)
+            check(it.moveToFirst())
+            assertEquals("ann", it.getString(0))
+            assertEquals(3, it.getInt(1))
+            assertEquals("local-hash", it.getString(2))
+            assertEquals(9L, it.getLong(3))
+            assertTrue(it.isNull(4))
+            check(it.moveToNext())
+            assertEquals("bob", it.getString(0))
+            assertEquals(7, it.getInt(1))
+            assertEquals("other-hash", it.getString(2))
+            assertEquals(11L, it.getLong(3))
+            assertTrue(it.isNull(4))
+        }
+    }
+
     private fun editedAt(db: androidx.sqlite.db.SupportSQLiteDatabase): Long =
         db.query("SELECT editedAt FROM tier_lists WHERE id = 1").use {
             check(it.moveToFirst())

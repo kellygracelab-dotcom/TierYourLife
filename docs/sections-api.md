@@ -187,15 +187,15 @@ The test vector (#9A5638) and all nine built-in rows reproduce exactly from thei
 - **`anonymous`**: a board may carry `anonymous: true`, so "Publish anonymously" survives a change of device. It is stored and returned only when true. A board without it round-trips byte for byte. The app sends it only when true.
 - **`play`**: an optional saved Play game `{kind, count, seed, refine, ids, history, round, startedAt}`, validated strictly:
   - kind `swiss|hill|bracket`;
-  - 2–64 distinct `ids`, with `count` equal to their number;
+  - 2–2000 distinct `ids`, with `count` equal to their number (the existing cloud-board limit);
   - int32 `seed` and boolean `refine`;
-  - up to 2000 `history` entries `[first, second, winner|null]`;
+  - up to 14000 `history` entries `[first, second, winner|null]`;
   - `round` 0–2000 and a positive `startedAt`.
 
-  `scope` (tier uids) and `keepTier` are being added in a small proxy PR.
+  Optional `scope` contains 1–64 distinct tier uids; `keepTier` orders participants within its one selected ranked tier.
 
-  Anything invalid drops `play` and keeps the board. Each write that carries a valid game stamps it with `touchedAt` (stored, never returned). A game not stored for 30 days is left out of reads. A board without `play` has no `play` key at all. The app keeps the JSON as an opaque column and sends it back exactly as it came.
-- The account stores a board as it is written, with no merge. A client that leaves either field out wipes it.
+  An explicitly malformed non-null game is rejected with400. Each write that carries a valid game stamps it with `touchedAt` (stored, never returned). A game not stored for30days is left out of reads. A board without `play` has no `play` key at all. API triples never change; compact history and a private auxiliary game document are server storage details. Board/game reads, conflicts, writes and deletion are atomic, with the board's existing2000-card/700000-byte limits preserved.
+- Updated clients send explicit `play:null` to finish a game. Legacy omission preserves a game they cannot read (>64 participants or >2000 outcomes); omission still ends their small legacy games. Clearing never resurrects a game. A retained combined state gets a `game-v1:` fingerprint: clients download an unknown marker even at an acknowledged revision and record that downloaded fingerprint separately from their local hash. Conflicting local edits keep both copies, remapping game card/tier references with the copy.
 - **`coverPictureId`**: an own photo as the whole cover, a file in `users/{uid}/pictures/`, by the rule for a card's `pictureId`. The app sends the id with a null `coverImageUrl`, or `null`. A phone that took boards with a build before the field leaves it out instead of sending `null` until it has read every kept board once and taken the account's cover onto the ones that lack it, so its first edits cannot clear a cover it never saw. The account returns it only when there is one. A board that arrives with it takes its cover from that picture, fetched as a card's is.
 - **Fingerprint** (app `BoardFingerprint`, the site matches it): SHA-256 over fields written as `{length}:{value}|`, or `~|` for null, encoded as UTF-8. The length counts UTF-16 code units, as JavaScript's `.length` does.
   - The board's own fields, in order: `uid, title, displayMode, category, cover, coverImageUrls (one address per line), authorName, deletedAt`. The cover is `coverPictureId ?? coverImageUrl`, as a card's picture is: an own photo by its id, else the address.

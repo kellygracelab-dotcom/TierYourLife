@@ -39,4 +39,8 @@
         <item quantity="one">Published. %1$d picture from another site couldn’t be added.</item>
         <item quantity="other">Published. %1$d pictures from other sites couldn’t be added.</item>
     </plurals>
+    <string name="community_return_all_to_pool">Return all cards to pool</string>
+    <string name="community_return_to_pool_title">Return all cards to the pool?</string>
+    <string name="community_return_to_pool_explanation">The tier arrangement will be reset.</string>
+    <string name="community_return_to_pool_confirm">Return to pool</string>
 </resources>
