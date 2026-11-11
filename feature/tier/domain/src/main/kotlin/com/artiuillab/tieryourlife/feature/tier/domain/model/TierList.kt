@@ -50,6 +50,9 @@ data class TierList(
     val play: String? = null,
     /** The board's uid, the same on every phone; empty on a list that never came from the database. */
     val uid: String = "",
+    /** The source snapshot whose positional item indices this copy names. */
+    val originVersion: Long? = null,
+    val rankingChoice: RankingChoice? = null,
 ) {
     /** Out in the community one way or the other: as a list of its own, or as a ranking of somebody's. */
     val isPublic: Boolean get() = publishedId != null || rankingOf != null

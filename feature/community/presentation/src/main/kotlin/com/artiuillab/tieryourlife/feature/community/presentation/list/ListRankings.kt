@@ -2,13 +2,14 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
+import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PageGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
-import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefusal
-import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.presentation.list.components.RankingPublisher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -31,6 +32,9 @@ internal class ListRankings(
     private val messages: UserMessages,
     private val reread: suspend () -> Unit,
     private val resetMine: () -> Unit = {},
+    private val visibilityChanged: suspend (Boolean) -> Unit = {},
+    private val accounts: AccountRepository,
+    private val mineReady: () -> Boolean = { true },
 ) {
     fun returnAllToPool() = resetMine()
 
@@ -43,6 +47,18 @@ internal class ListRankings(
 
     private val told = Channel<RankingNotice>(Channel.BUFFERED)
     val notices: Flow<RankingNotice> = told.receiveAsFlow()
+
+    private val publisher = RankingPublisher(
+        listId, community, accounts, state, scope, messages,
+        reread = {
+            fromServer = false
+            reread()
+            opened?.takeIf { fromServer }
+        },
+        ready = mineReady, visibilityChanged = visibilityChanged,
+        shown = { shown, answer -> state.update { if (it is CommunityListUiState.Success) it.withMine(shown, answer) else it } },
+        tell = told::send,
+    )
 
     fun opened(answer: PublishedList, fromServer: Boolean, sameBoard: Boolean = false) {
         opened = answer
@@ -131,7 +147,7 @@ internal class ListRankings(
             )
         }
         scope.launch {
-            community.withdrawRanking(listId).onFailure { error ->
+            community.withdrawRanking(listId).onSuccess { visibilityChanged(false) }.onFailure { error ->
                 Timber.w(error, "Taking a ranking down failed")
                 state.update { now ->
                     if (now !is CommunityListUiState.Success) return@update now
@@ -142,66 +158,9 @@ internal class ListRankings(
         }
     }
 
-    /**
-     * Mine, shown to others as this reader's ranking, or the one shown before
-     * changed. Only somebody else's list, only once Mine was arranged, and only
-     * signed in: a guest is asked to sign in instead. Its rows name the cards
-     * by where they sit in the list, so the list is read again first, and one
-     * its author changed since it was placed sends nothing: the rows would
-     * land on other cards.
-     */
-    fun showMine() {
-        val current = state.value as? CommunityListUiState.Success ?: return
-        if (opened == null) return
-        if (!current.canShowRanking || current.sendingRanking) return
-        if (!current.signedIn) {
-            told.trySend(RankingNotice.SignInFirst)
-            return
-        }
-        state.update { now -> if (now is CommunityListUiState.Success) now.copy(sendingRanking = true) else now }
-        scope.launch {
-            val before = opened?.summary?.updatedAtMillis
-            reread()
-            val answer = opened?.takeIf { fromServer }
-            if (answer != null && answer.summary.updatedAtMillis != before) {
-                stopSending()
-                told.send(RankingNotice.ListChanged)
-                return@launch
-            }
-            val mine = (state.value as? CommunityListUiState.Success)?.takeIf { it.canShowRanking }?.mine
-            if (answer == null || mine == null) {
-                stopSending()
-                messages.send(UserMessage.ActionFailed)
-                return@launch
-            }
-            community.showMyRanking(listId, arrangementOf(answer, mine), rowsOf(answer, mine), tierLabelsOf(answer, mine)).fold(
-                onSuccess = { shown ->
-                    state.update { now -> if (now is CommunityListUiState.Success) now.withMine(shown, answer) else now }
-                    told.send(RankingNotice.Shown)
-                },
-                onFailure = { error ->
-                    Timber.w(error, "Showing a ranking failed")
-                    stopSending()
-                    when ((error as? RankingRefused)?.reason) {
-                        RankingRefusal.NotSignedIn -> told.send(RankingNotice.SignInFirst)
-                        RankingRefusal.Banned -> told.send(RankingNotice.Banned)
-                        RankingRefusal.OwnList -> told.send(RankingNotice.OwnList)
-                        RankingRefusal.ListGone -> told.send(RankingNotice.ListGone)
-                        RankingRefusal.BadTierNames -> told.send(RankingNotice.BadTierNames)
-                        RankingRefusal.CardsDontMatch -> told.send(RankingNotice.CardsDontMatch)
-                        RankingRefusal.NotAccepted -> told.send(RankingNotice.NotAccepted)
-                        RankingRefusal.TooManyWebPictures -> told.send(RankingNotice.TooManyWebPictures)
-                        RankingRefusal.WebPicturesToday -> told.send(RankingNotice.WebPicturesToday)
-                        else -> messages.send(UserMessage.ActionFailed)
-                    }
-                },
-            )
-        }
-    }
+    fun showMine() = publisher.show()
 
-    private fun stopSending() {
-        state.update { now -> if (now is CommunityListUiState.Success) now.copy(sendingRanking = false) else now }
-    }
+    fun accountChanged(account: Account) = publisher.accountChanged(account)
 
     /** First among the readers', as the server lists it, and in the left half if an older one of theirs was there. */
     private fun CommunityListUiState.Success.withMine(shown: ShownRanking, answer: PublishedList): CommunityListUiState.Success {

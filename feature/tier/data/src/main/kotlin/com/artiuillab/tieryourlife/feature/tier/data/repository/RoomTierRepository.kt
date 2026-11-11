@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.mapper.toRemoved
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toStoredCoverImageUrls
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toSummaries
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -48,6 +49,42 @@ class RoomTierRepository internal constructor(
         return withContext(Dispatchers.Default) { row.toDomain() }
     }
 
+    override suspend fun getTierListByUid(uid: String): TierList? =
+        dao.getTierListWithTiersByUid(uid, owner())?.let { withContext(Dispatchers.Default) { it.toDomain() } }
+
+    override suspend fun setRankingChoice(id: Long, choice: RankingChoice) {
+        dao.setRankingChoice(id, owner(), choice.wireName)
+    }
+
+    override suspend fun setRankingOrigin(id: Long, sourceVersion: Long) {
+        require(sourceVersion >= 0)
+        dao.setRankingOrigin(id, owner(), sourceVersion)
+    }
+
+    override suspend fun createRankingCopy(board: TierList, sourceId: String, sourceVersion: Long, choice: RankingChoice?): Long {
+        require(sourceId.isNotBlank() && sourceVersion >= 0)
+        return dao.createTierListFromTemplate(
+            title = board.title,
+            authorName = board.authorName.orEmpty(),
+            takenFrom = sourceId,
+            owner = owner(),
+            metadata = TierListEntity(
+                title = board.title, category = board.category, displayMode = board.displayMode.name,
+                anonymous = board.anonymous, coverImageUrl = board.coverImageUrl,
+                coverImageUrls = board.coverImageUrls.toStoredCoverImageUrls(),
+                topicId = board.topicId, topicName = board.topicName,
+                originVersion = sourceVersion, rankingChoice = choice?.wireName,
+            ),
+            tiers = board.tiers.filterNot { it.isPool }.map { tier ->
+                NewTemplateTier(
+                    tier.label, tier.caption, tier.colorLight, tier.colorDark,
+                    tier.items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex) },
+                )
+            },
+            items = board.tiers.filter { it.isPool }.flatMap { it.items }.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex) },
+        )
+    }
+
     override suspend fun getAllTierLists(): List<TierList> {
         val rows = dao.getAllTierListsWithTiers(owner())
         return withContext(Dispatchers.Default) { rows.map { it.toDomain() } }
@@ -79,10 +116,10 @@ class RoomTierRepository internal constructor(
                 caption = tier.caption,
                 colorLight = tier.colorLight,
                 colorDark = tier.colorDark,
-                items = tier.items.map { NewPoolItem(it.title, it.imageUrl, it.credit) },
+                items = tier.items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex) },
             )
         },
-        items = items.map { NewPoolItem(it.title, it.imageUrl, it.credit) },
+        items = items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex) },
     )
 
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) {

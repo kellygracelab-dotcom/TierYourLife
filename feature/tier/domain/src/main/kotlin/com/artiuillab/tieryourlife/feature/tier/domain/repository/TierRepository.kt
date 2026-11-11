@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.repository
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -14,6 +15,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 interface TierRepository {
 
     suspend fun getTierListById(id: Long): TierList?
+
+    suspend fun getTierListByUid(uid: String): TierList? = getAllTierLists().firstOrNull { it.uid == uid }
 
     suspend fun getAllTierLists(): List<TierList>
 
@@ -39,6 +42,18 @@ interface TierRepository {
         /** The published list the cards came from, when they did. */
         takenFrom: String? = null,
     ): Long
+
+    /** Production stores the complete copy and metadata in one Room transaction. */
+    suspend fun createRankingCopy(board: TierList, sourceId: String, sourceVersion: Long, choice: RankingChoice? = null): Long {
+        val id = createFromTemplate(board.title, board.authorName.orEmpty(), board.tiers.filterNot { it.isPool }, board.tiers.filter { it.isPool }.flatMap { it.items }, sourceId)
+        setRankingOrigin(id, sourceVersion)
+        if (choice != null) setRankingChoice(id, choice)
+        return id
+    }
+
+    suspend fun setRankingChoice(id: Long, choice: RankingChoice) = Unit
+
+    suspend fun setRankingOrigin(id: Long, sourceVersion: Long) = Unit
 
     suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?)
 

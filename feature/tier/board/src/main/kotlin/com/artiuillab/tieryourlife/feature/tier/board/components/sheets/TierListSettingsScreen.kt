@@ -648,6 +648,10 @@ private fun PublishError.message(): String = publishErrorText(this, LocalResourc
 
 /** The sentence for a refused publish, wherever it is said: here, or beside the list among the person's public ones. */
 fun publishErrorText(error: PublishError, resources: Resources, locale: Locale): String = when (error) {
+    is PublishError.WeeklyLimit -> {
+        val date = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, locale).format(Date(error.retryAtMillis))
+        resources.getString(ThemeR.string.publication_limit_until, date)
+    }
     is PublishError.Banned -> {
         val until = error.untilMillis
         if (until == null) {
@@ -664,7 +668,9 @@ private fun PublishError.messageRes(): Int = when (this) {
     PublishError.NotSignedIn -> R.string.list_settings_public_needs_account
     PublishError.NothingToPublish -> R.string.list_settings_public_needs_items
     PublishError.TooManyLists -> R.string.list_settings_public_too_many
+    is PublishError.WeeklyLimit -> ThemeR.string.publication_limit_until
     PublishError.ChangedElsewhere -> R.string.list_settings_public_changed_elsewhere
+    PublishError.SourceChanged -> ThemeR.string.source_changed
     PublishError.TooManyPendingTopics -> R.string.list_settings_public_too_many_topics
     PublishError.TopicUnavailable -> R.string.list_settings_public_topic_unavailable
     PublishError.TooLarge -> R.string.list_settings_public_too_large

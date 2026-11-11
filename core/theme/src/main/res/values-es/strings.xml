@@ -47,4 +47,23 @@
     <string name="community_return_to_pool_title">¿Devolver todas las tarjetas a la reserva?</string>
     <string name="community_return_to_pool_explanation">Se restablecerá la distribución por niveles.</string>
     <string name="community_return_to_pool_confirm">Devolver a la reserva</string>
+    <string name="ranking_choice_title">Guardar tu progreso</string>
+    <plurals name="ranking_choice_body">
+        <item quantity="one">Has colocado %1$d de %2$d tarjeta. Publica tu clasificación junto al original o guárdala en privado y continúa.</item>
+        <item quantity="many">Has colocado %1$d de %2$d tarjetas. Publica tu clasificación junto al original o guárdala en privado y continúa.</item>
+        <item quantity="other">Has colocado %1$d de %2$d tarjetas. Publica tu clasificación junto al original o guárdala en privado y continúa.</item>
+    </plurals>
+    <string name="ranking_choice_public">Publicar mi clasificación</string>
+    <string name="ranking_choice_sign_in">Iniciar sesión para publicar</string>
+    <string name="ranking_choice_private">Guardar para mí</string>
+    <string name="publication_preview_title">Cómo se publicará</string>
+    <string name="publication_preview_ranking">Será tu clasificación junto a la lista original. Tu copia privada seguirá siendo editable.</string>
+    <string name="publication_preview_list">Será una lista independiente con referencia al original. Tu copia privada seguirá siendo editable.</string>
+    <string name="publication_preview_confirm">Publicar</string>
+    <string name="source_changed">La lista original ha cambiado. Ábrela de nuevo antes de publicar tu clasificación.</string>
+    <string name="ranking_choice_storage_account">Tu copia privada se guarda en tu biblioteca y se sincroniza con tu cuenta.</string>
+    <string name="ranking_choice_storage_guest">Tu copia privada se guarda en la biblioteca de este dispositivo. Inicia sesión para sincronizarla.</string>
+    <string name="publication_preview_independent">Será una lista pública independiente. Tu copia privada seguirá siendo editable.</string>
+    <string name="source_changed_recheck">Comprobar con el original actual</string>
+    <string name="publication_limit_until">Podrás publicar otra lista nueva después de %1$s. Puedes seguir guardando tableros privados y publicando clasificaciones.</string>
 </resources>

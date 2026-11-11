@@ -52,6 +52,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.core.theme.ui.RankingChoiceDialog
 import com.artiuillab.tieryourlife.core.theme.ui.ReturnToPoolDialog
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
@@ -129,7 +130,7 @@ fun CommunityListScreen(
         onReturnAllToPool = viewModel.rankings::returnAllToPool,
         onPlay = { playOpen = true },
         playSaved = playRequest?.let { play.isSaved(it.key) } == true,
-        onShowMyRanking = viewModel::showMyRanking,
+        onShowMyRanking = { viewModel.showMyRanking(languageTag) },
         onSignIn = onSignIn,
         userMessages = viewModel.userMessages,
         rankingNotices = viewModel.rankingNotices,
@@ -142,6 +143,17 @@ fun CommunityListScreen(
         onUndoStartFromTheirs = viewModel::undoStartFromTheirs,
         listNotices = viewModel.listNotices,
     )
+    val loaded = state as? CommunityListUiState.Success
+    val offer = loaded?.rankingOffer
+    LaunchedEffect(offer) { if (offer != null) viewModel.choices.recordOffer(languageTag) }
+    if (offer != null) {
+        RankingChoiceDialog(
+            placed = offer.placed, total = offer.total, signedIn = loaded.signedIn, busy = loaded.saving,
+            onPrivate = { viewModel.choices.choose(public = false, languageTag) },
+            onPublic = { viewModel.choices.choose(public = true, languageTag) },
+            onDismiss = viewModel.choices::dismiss,
+        )
+    }
     if (playRequest != null) {
         play.Layer(request = playRequest, open = playOpen, onArranged = viewModel::putInMine, onClose = { playOpen = false })
     }

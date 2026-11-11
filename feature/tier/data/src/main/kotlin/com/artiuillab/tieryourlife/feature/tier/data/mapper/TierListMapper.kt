@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWithTiers
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierWithItems
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
@@ -36,6 +37,8 @@ internal fun TierListEntity.toDomain(): TierList = TierList(
     topicName = topicName,
     newTopicName = newTopicName,
     takenFrom = takenFrom,
+    originVersion = originVersion,
+    rankingChoice = RankingChoice.fromWire(rankingChoice),
     rankingOf = rankingOf,
     arrivedFrom = arrivedFrom,
     editedAt = editedAt,
@@ -63,6 +66,8 @@ internal fun TierListWithTiers.toDomain(): TierList = TierList(
     topicName = tierList.topicName,
     newTopicName = tierList.newTopicName,
     takenFrom = tierList.takenFrom,
+    originVersion = tierList.originVersion,
+    rankingChoice = RankingChoice.fromWire(tierList.rankingChoice),
     rankingOf = tierList.rankingOf,
     arrivedFrom = tierList.arrivedFrom,
     editedAt = tierList.editedAt,
@@ -117,6 +122,7 @@ private fun TierItemEntity.toDomain(): TierItem = TierItem(
     source = source.toTierItemSource(),
     uid = uid,
     credit = credit,
+    sourceIndex = sourceIndex,
 )
 
 internal fun String.toTierItemSource(): TierItemSource =

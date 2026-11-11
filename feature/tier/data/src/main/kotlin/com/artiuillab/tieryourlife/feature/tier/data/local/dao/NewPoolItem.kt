@@ -4,6 +4,7 @@ data class NewPoolItem(
     val title: String,
     val imageUrl: String?,
     val credit: String? = null,
+    val sourceIndex: Int? = null,
 )
 
 data class NewTemplateTier(

@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.community.data.cache
 
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -16,6 +17,19 @@ import org.robolectric.annotation.Config
 class FileRankingDraftsTest {
     @get:Rule
     val folder = TemporaryFolder()
+
+    @Test
+    fun offerAndFinalChoiceWithLibraryLinkSurviveASecondInstanceAndStayAccountScoped() = runBlocking {
+        val progress = RankingDraft(123, listOf(listOf(1), listOf(0)), listOf(2), RankingChoice.Offered, "my-private-board")
+        val first = FileRankingDrafts(folder.root)
+        first.keep("source", progress, "ann")
+        val final = progress.copy(choice = RankingChoice.Private)
+        FileRankingDrafts(folder.root).keep("source", final, "ann")
+        val reopened = FileRankingDrafts(folder.root)
+        assertEquals(final, reopened.read("source", "ann"))
+        assertNull(reopened.read("source"))
+        assertNull(reopened.read("source", "bob"))
+    }
 
     @Test
     fun aResetSurvivesReopeningWithoutChangingAnotherAccountsProgress() = runBlocking {

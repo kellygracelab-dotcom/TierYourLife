@@ -26,6 +26,9 @@ data class KeptBoardDto(
     val coverPictureId: String? = null,
     val authorName: String? = null,
     val publishedId: String? = null,
+    val takenFrom: String? = null,
+    val origin: KeptOriginDto? = null,
+    val rankingChoice: String? = null,
     val deletedAt: Long? = null,
     /** Present only when true. */
     val anonymous: Boolean = false,
@@ -34,6 +37,9 @@ data class KeptBoardDto(
     val tiers: List<KeptTierDto> = emptyList(),
     val items: List<KeptItemDto> = emptyList(),
 )
+
+@Serializable
+data class KeptOriginDto(val listId: String, val version: Long)
 
 @Serializable
 data class KeptTierDto(
@@ -60,6 +66,7 @@ data class KeptItemDto(
     val deletedAt: Long? = null,
     /** Who the picture's license asks to be named. Not in the fingerprint: an older app rewriting the board drops it. */
     val credit: String? = null,
+    val sourceIndex: Int? = null,
 )
 
 /** What a board looks like in the index: enough to decide whether to fetch it. */
@@ -115,6 +122,9 @@ data class KeepBoardRequestDto(
     val coverPictureId: JsonElement? = null,
     val authorName: String? = null,
     val publishedId: String? = null,
+    val takenFrom: String? = null,
+    val origin: KeptOriginDto? = null,
+    val rankingChoice: String? = null,
     val deletedAt: Long? = null,
     /** True or left out, as the account stores it: a null is not sent at all. */
     val anonymous: Boolean? = null,

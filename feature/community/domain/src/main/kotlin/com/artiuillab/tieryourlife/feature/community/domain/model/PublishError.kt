@@ -7,7 +7,11 @@ sealed interface PublishError {
     data object NothingToPublish : PublishError
 
     data object TooManyLists : PublishError
+
+    /** New lists can be published again after this server timestamp; removing a list does not return a slot. */
+    data class WeeklyLimit(val retryAtMillis: Long) : PublishError
     data object ChangedElsewhere : PublishError
+    data object SourceChanged : PublishError
 
     /** Three of this account's topics already wait for a moderator; a fourth must wait for one of them. */
     data object TooManyPendingTopics : PublishError
