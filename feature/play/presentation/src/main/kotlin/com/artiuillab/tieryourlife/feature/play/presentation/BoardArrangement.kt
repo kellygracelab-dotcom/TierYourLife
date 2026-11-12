@@ -1,9 +1,24 @@
 package com.artiuillab.tieryourlife.feature.play.presentation
 
+import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+
+internal fun TierList.tierRowIds(): Set<Long> = tiers.map { it.id }.toSet()
+
+/**
+ * The cards a result could still send to the pool: unplayed ones of the game's
+ * area. None for one tier being ordered or for the pool alone, whose result
+ * cannot move them anyway.
+ */
+internal fun unplayedIn(board: TierList, game: SavedGame, participants: Set<Long>): Int {
+    val pool = board.tiers.firstOrNull { it.isPool }?.id
+    val scope = game.scope
+    if (game.keepTier || (scope != null && scope.all { it == pool })) return 0
+    return board.cardsIn(scope).count { it.id !in participants }
+}
 
 /** The engine's card order for a board: tiers top to bottom, each left to right, then the pool. */
 internal fun TierList.playOrder(): List<Tier> = tiers.filterNot { it.isPool } + tiers.filter { it.isPool }
@@ -14,9 +29,15 @@ internal fun TierList.cardsIn(scope: Collection<Long>?): List<TierItem> =
 
 /**
  * Played cards lead each result tier. Unplayed cards keep their original order
- * after them, or go to the pool after its existing cards. Every id occurs once.
+ * after them, or go to the pool after its existing cards. Only the cards of
+ * [area]'s tiers (the whole board when null) can go to the pool: a card
+ * outside the game's area never moves. Every id occurs once.
  */
-internal fun TierList.arrangedBy(placement: Map<Long, List<Long>>, unplayed: UnplayedPolicy = UnplayedPolicy.Keep): TierList {
+internal fun TierList.arrangedBy(
+    placement: Map<Long, List<Long>>,
+    unplayed: UnplayedPolicy = UnplayedPolicy.Keep,
+    area: Collection<Long>? = null,
+): TierList {
     val byId = tiers.flatMap { it.items }.associateBy { it.id }
     val tierIds = tiers.map { it.id }.toSet()
     val placed = placement.filterKeys { it in tierIds }
@@ -28,10 +49,15 @@ internal fun TierList.arrangedBy(placement: Map<Long, List<Long>>, unplayed: Unp
     val leftovers = tiers.associate { tier -> tier.id to tier.items.filter { it.id !in assigned && remaining.add(it.id) } }
     val pool = tiers.firstOrNull { it.isPool }?.id
     val pooling = unplayed == UnplayedPolicy.Pool && pool != null
-    val toPool = if (pooling) (tiers.filter { it.isPool } + playOrder().filterNot { it.isPool }).flatMap { leftovers[it.id].orEmpty() } else emptyList()
+    val pooled = { tier: Tier -> pooling && (area == null || tier.id in area) && tier.id != pool }
+    val toPool = if (pooling) (tiers.filter { it.isPool } + playOrder().filter(pooled)).flatMap { leftovers[it.id].orEmpty() } else emptyList()
     return copy(
         tiers = tiers.map { tier ->
-            val kept = if (!pooling) leftovers[tier.id].orEmpty() else if (tier.id == pool) toPool else emptyList()
+            val kept = when {
+                tier.id == pool && pooling -> toPool
+                pooled(tier) -> emptyList()
+                else -> leftovers[tier.id].orEmpty()
+            }
             tier.copy(items = arriving[tier.id].orEmpty() + kept)
         },
     )

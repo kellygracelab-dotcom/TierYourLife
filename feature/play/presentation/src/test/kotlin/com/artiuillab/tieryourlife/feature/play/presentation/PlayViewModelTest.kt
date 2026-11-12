@@ -66,7 +66,8 @@ class PlayViewModelTest {
         val result = (vm.state.value.stage as PlayStage.Finished).result
         assertEquals(listOf(1L), result.tiers.map { it.tierId })
         assertEquals(chosen.toSet(), result.tiers.single().cards.map { it.item.id }.toSet())
-        assertEquals(75, result.unplayedCount)
+        // One tier is only ordered: its unplayed cards stay behind the played ones, so there is nothing to choose.
+        assertEquals(0, result.unplayedCount)
         val moved = whole.withItemMoved(chosen.first(), 2L, 0)
         vm.offer(PlayRequest.ownBoard(moved))
         vm.result.playAgain()
