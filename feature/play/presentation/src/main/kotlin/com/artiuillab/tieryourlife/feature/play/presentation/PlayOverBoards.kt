@@ -123,7 +123,7 @@ internal fun PlayLayer(
                     onSelectCandidates = viewModel.selection::selectCandidates,
                     onToggle = viewModel.picker::toggle,
                     onToggleEverything = viewModel.picker::toggleEverything,
-                    onKeepInTier = viewModel.picker::keepInTier,
+                    onToggleRanked = viewModel.picker::toggleRanked,
                     onDismiss = viewModel.picker::dismiss,
                     onStart = viewModel.picker::start,
                     onResume = viewModel.picker::resume,

@@ -44,7 +44,7 @@ class SavedGameTest {
         val found = saved.foundBy(rows::get, mapOf("t-s" to 50L)::get)
 
         assertEquals(listOf(110L, -2L, 130L), found.ids)
-        assertEquals(listOf(50L), found.scope)
+        assertEquals(listOf(50L, MISSING_TIER - 1), found.scope)
         assertEquals(saved.history, found.history)
     }
 
@@ -73,6 +73,14 @@ class SavedGameTest {
                 assertEquals(Resumption.Changed, saved.resumeOn(ids.dropLast(1) + 9999L))
             }
         }
+    }
+
+    @Test
+    fun aGameWhoseAreaLostATier_cannotResume_butARenamedOneStillCan() {
+        val saved = game(GameKind.Swiss, listOf(1, 2, 3)).copy(scope = listOf(7L), keepTier = true)
+
+        assertEquals(Resumption.Ready(saved), saved.resumeOn(listOf(1, 2, 3), tiers = listOf(7L, 8L)))
+        assertEquals(Resumption.Changed, saved.resumeOn(listOf(1, 2, 3), tiers = listOf(8L)))
     }
 
     @Test

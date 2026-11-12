@@ -42,7 +42,7 @@ fun SavedGame.isExpired(now: Long): Boolean = now - touchedAt > SAVED_GAME_DAYS 
 /** This copy on the board's rows as they are now, found by [uids]; as it is when it kept none. */
 fun SavedGame.foundBy(itemId: (String) -> Long?, tierId: (String) -> Long?): SavedGame {
     val cards = uids?.takeIf { it.size == ids.size } ?: return this
-    val tiers = scope?.let { kept -> scopeUids?.takeIf { it.size == kept.size }?.mapNotNull(tierId) ?: kept }
+    val tiers = scope?.let { kept -> scopeUids?.takeIf { it.size == kept.size }?.mapIndexed { at, uid -> tierId(uid) ?: (MISSING_TIER - at) } ?: kept }
     return copy(ids = cards.mapIndexed { at, uid -> itemId(uid) ?: (MISSING_CARD - at) }, scope = tiers)
 }
 
@@ -57,10 +57,12 @@ sealed interface Resumption {
 
 /**
  * The cohort is fixed when the game starts. New board cards never join, in
- * any mode. A missing participant requires an explicit new game, never a
- * silently shortened or renumbered saved session.
+ * any mode. A missing participant, or a tier of its area that is gone,
+ * requires an explicit new game, never a silently shortened, renumbered or
+ * widened saved session.
  */
-fun SavedGame.resumeOn(cards: List<Long>): Resumption {
+fun SavedGame.resumeOn(cards: List<Long>, tiers: Collection<Long>? = null): Resumption {
+    if (tiers != null && lostTier(tiers)) return Resumption.Changed
     val present = cards.toSet()
     return if (spec.count == ids.size && ids.distinct().size == ids.size && ids.all { it in present }) {
         Resumption.Ready(this)
@@ -68,6 +70,12 @@ fun SavedGame.resumeOn(cards: List<Long>): Resumption {
         Resumption.Changed
     }
 }
+
+/** A tier of this game's area is not on the board any more: the area can no longer be told. */
+fun SavedGame.lostTier(tiers: Collection<Long>): Boolean = scope.orEmpty().any { it !in tiers }
+
+/** Row ids count up from 1; a tier that is not on this board takes one of these, counting down from -1. */
+const val MISSING_TIER = -1L
 
 /**
  * Where games wait between sittings, one per board. On this device for now;
