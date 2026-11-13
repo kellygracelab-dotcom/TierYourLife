@@ -56,6 +56,7 @@
     <string name="item_search_empty_everywhere_body">¿Buscar en todos los catálogos y en la web?</string>
     <string name="item_search_notice_web_daily">La búsqueda web se agotó por hoy. Buscamos en los catálogos; mañana, de nuevo en todas partes.</string>
     <string name="item_search_notice_web_off">La búsqueda web está en pausa. Buscamos en los catálogos.</string>
+    <string name="item_search_notice_limit">Demasiadas búsquedas: la búsqueda completa vuelve a las %1$s. Mientras, buscamos en los catálogos.</string>
     <string name="item_search_selected_none">Nada seleccionado</string>
     <plurals name="item_search_selected_count">
         <item quantity="one">%1$d seleccionado</item>

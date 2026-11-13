@@ -59,6 +59,7 @@
     <string name="item_search_empty_everywhere_body">Szukać we wszystkich katalogach i w internecie?</string>
     <string name="item_search_notice_web_daily">Wyszukiwanie w internecie na dziś się skończyło. Szukamy w katalogach — jutro znów wszędzie.</string>
     <string name="item_search_notice_web_off">Wyszukiwanie w internecie chwilowo odpoczywa. Szukamy w katalogach.</string>
+    <string name="item_search_notice_limit">Za dużo wyszukiwań — pełne wyszukiwanie wróci o %1$s. Do tego czasu szukamy w katalogach.</string>
     <string name="item_search_selected_none">Nic nie wybrano</string>
     <plurals name="item_search_selected_count">
         <item quantity="one">%1$d wybrano</item>

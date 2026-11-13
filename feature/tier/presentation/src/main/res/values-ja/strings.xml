@@ -50,6 +50,7 @@
     <string name="item_search_empty_everywhere_body">すべてのカタログとウェブで検索しますか？</string>
     <string name="item_search_notice_web_daily">今日のウェブ検索は上限に達しました。カタログから検索します。明日はまたすべてで検索できます。</string>
     <string name="item_search_notice_web_off">ウェブ検索は現在休止中です。カタログから検索します。</string>
+    <string name="item_search_notice_limit">検索回数が多すぎます。%1$sに通常の検索に戻ります。それまではカタログから検索します。</string>
     <string name="item_search_selected_none">何も選択されていません</string>
     <plurals name="item_search_selected_count">
         <item quantity="other">%1$d件選択</item>

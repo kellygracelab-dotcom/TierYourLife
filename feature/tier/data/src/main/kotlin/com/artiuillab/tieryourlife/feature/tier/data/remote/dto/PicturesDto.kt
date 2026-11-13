@@ -26,6 +26,13 @@ data class PictureHitDto(
     val credit: String? = null,
 )
 
+/** The server's 429 for a person who searched too often; [retryAt] is when it answers again, epoch ms. */
+@Serializable
+data class SearchRefusalDto(
+    val code: String? = null,
+    val retryAt: Long? = null,
+)
+
 private const val WEB_SOURCE = "web"
 
 fun PicturesDto.toDomain(): CatalogueSearchPage = CatalogueSearchPage(

@@ -59,6 +59,7 @@
     <string name="item_search_empty_everywhere_body">Поискать во всех каталогах и в интернете?</string>
     <string name="item_search_notice_web_daily">Поиск в интернете на сегодня закончился. Ищем в каталогах — завтра снова везде.</string>
     <string name="item_search_notice_web_off">Поиск в интернете пока отдыхает. Ищем в каталогах.</string>
+    <string name="item_search_notice_limit">Слишком много поисков — полный поиск снова в %1$s. Пока ищем в каталогах.</string>
     <string name="item_search_selected_none">Ничего не выбрано</string>
     <plurals name="item_search_selected_count">
         <item quantity="one">%1$d выбрано</item>
