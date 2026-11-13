@@ -5,9 +5,13 @@ import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueSearchPage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchNotice
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.LinkPicture
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.LinkRefusal
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.PictureLinks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -241,8 +245,53 @@ class CatalogueSearchViewModelTest {
         assertEquals(listOf(true, false), repository.quickAsked)
     }
 
-    private fun viewModelWith(repository: CatalogueSearchRepository) =
-        CatalogueSearchViewModel(repository, FakeAppPreferences())
+    @Test
+    fun anAddressInTheField_isNotSearchedFor_butLookedAtAsAPicture() = runBlocking {
+        val repository = FakeCatalogueSearchRepository(1 to page(ids = listOf(1), hasMore = false))
+        val found = LinkPicture.Found("/files/p_1", PictureAttribution("web"), null)
+        val links = FakePictureLinks(found)
+        val viewModel = viewModelWith(repository, links)
+
+        withContext(Dispatchers.Main) { viewModel.search(" https://i.example.net/p/8812.jpg ") }
+        val shown = viewModel.link.firstWithin { it?.answer != null }
+
+        assertEquals(LinkUiState("https://i.example.net/p/8812.jpg", found), shown)
+        assertEquals("i.example.net", shown?.host)
+        assertEquals(listOf("https://i.example.net/p/8812.jpg"), links.asked)
+        assertTrue(repository.requestedPages.isEmpty())
+        assertEquals(CatalogueSearchUiState.Initial, viewModel.state.value)
+    }
+
+    @Test
+    fun wordsAfterAnAddress_searchAgain_andTheAddressIsLetGo() = runBlocking {
+        val repository = FakeCatalogueSearchRepository(1 to page(ids = listOf(1), hasMore = false))
+        val viewModel = viewModelWith(repository, FakePictureLinks(LinkPicture.Refused(LinkRefusal.NotAPicture)))
+
+        withContext(Dispatchers.Main) { viewModel.search("https://example.com/films/totoro") }
+        viewModel.link.firstWithin { it?.answer != null }
+        withContext(Dispatchers.Main) { viewModel.search("totoro") }
+        viewModel.state.firstWithin { it is CatalogueSearchUiState.Success }
+
+        assertEquals(null, viewModel.link.value)
+        assertEquals(listOf(1), repository.requestedPages)
+    }
+
+    @Test
+    fun afterSigningIn_theSameAddressIsAskedAgain() = runBlocking {
+        val links = FakePictureLinks(LinkPicture.SignInNeeded)
+        val viewModel = viewModelWith(FakeCatalogueSearchRepository(), links)
+        withContext(Dispatchers.Main) { viewModel.search("https://x.org/a.jpg") }
+        viewModel.link.firstWithin { it?.answer == LinkPicture.SignInNeeded }
+
+        links.answer = LinkPicture.Found("/files/p_2", null, null)
+        withContext(Dispatchers.Main) { viewModel.retryLink() }
+
+        assertEquals("/files/p_2", (viewModel.link.firstWithin { it?.answer is LinkPicture.Found }?.answer as LinkPicture.Found).imageUrl)
+        assertEquals(2, links.asked.size)
+    }
+
+    private fun viewModelWith(repository: CatalogueSearchRepository, links: PictureLinks = FakePictureLinks(LinkPicture.SignInNeeded)) =
+        CatalogueSearchViewModel(repository, FakeAppPreferences(), links)
 
     private fun page(ids: List<Int>, hasMore: Boolean): Result<CatalogueSearchPage> = Result.success(
         CatalogueSearchPage(
@@ -290,5 +339,14 @@ private class FakeCatalogueSearchRepository(
         return byScope[scope]
             ?: pagesByNumber[page]
             ?: Result.failure(IllegalStateException("page $page was not expected"))
+    }
+}
+
+private class FakePictureLinks(@Volatile var answer: LinkPicture) : PictureLinks {
+    val asked = mutableListOf<String>()
+
+    override suspend fun fetch(url: String): LinkPicture {
+        asked += url
+        return answer
     }
 }

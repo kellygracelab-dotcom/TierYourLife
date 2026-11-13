@@ -24,7 +24,10 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.CaptionLine
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.CenteredMessage
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.LinkChoice
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.LinkDraft
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.NoticeLine
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.PasteLinkChip
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ResultsGrid
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ScopeChips
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SearchField
@@ -56,6 +59,7 @@ fun CatalogueSearchScreenContent(
     onLoadMore: () -> Unit = {},
     scopes: ScopeChoice? = null,
     onSearchEverywhere: () -> Unit = {},
+    links: LinkChoice? = null,
 ) {
     val isDark = TierYourLifeMedia.current.isDark
     val fieldFill = if (isDark) FieldFillDark else FieldFillLight
@@ -86,9 +90,15 @@ fun CatalogueSearchScreenContent(
 
             CaptionLine(listTitle = listTitle)
         }
+        if (links != null && links.pasteOffered && links.state == null) PasteLinkChip(links.onPaste)
         scopes?.let { ScopeChips(first = it.first, selected = it.selected, onSelect = it.onSelect) }
 
         Box(modifier = Modifier.weight(1f)) {
+            val link = links?.state
+            if (link != null) {
+                LinkDraft(link, links)
+                return@Box
+            }
             when (state) {
                 is CatalogueSearchUiState.Initial -> {
                     CenteredMessage(text = stringResource(R.string.item_search_min_query))
@@ -136,11 +146,14 @@ fun CatalogueSearchScreenContent(
             }
         }
 
-        SelectionBar(
-            selectedCount = selectedIds.size,
-            fill = fieldFill,
-            onConfirm = onConfirmSelection,
-        )
+        // The link's card has its own button, and it brings whatever was picked along.
+        if (links?.state == null) {
+            SelectionBar(
+                selectedCount = selectedIds.size,
+                fill = fieldFill,
+                onConfirm = onConfirmSelection,
+            )
+        }
     }
 }
 

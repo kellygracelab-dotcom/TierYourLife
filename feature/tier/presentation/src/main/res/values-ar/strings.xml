@@ -50,7 +50,7 @@
 
 
 
-    <string name="item_search_field_label">بحث</string>
+    <string name="item_search_field_label">ابحث أو الصق رابطًا</string>
     <string name="item_search_close_content_description">إغلاق البحث</string>
     <string name="item_search_clear_content_description">مسح البحث</string>
     <string name="item_search_source_caption">تُضاف إلى مجمّع %1$s</string>
@@ -264,4 +264,23 @@
         <item quantity="other">تم حذف %1$d قائمة وإزالة نسخها العامة</item>
     </plurals>
     <string name="lists_public_lists">قوائمك العامة</string>
+    <string name="item_search_link_paste">لصق رابط صورة</string>
+    <string name="item_search_link_from">صورة من رابط · من %1$s</string>
+    <string name="item_search_link_checking">جارٍ فحص الصورة…</string>
+    <string name="item_search_link_ready">تم الفحص — جاهزة للإضافة.</string>
+    <string name="item_search_link_name">الاسم</string>
+    <string name="item_search_link_page_open">+ الصفحة المصدر</string>
+    <string name="item_search_link_page">الصفحة المصدر (اختياري)</string>
+    <string name="item_search_link_page_bad">هذا لا يبدو عنوان صفحة. اتركه فارغًا إن كنت لا تعرفه.</string>
+    <string name="item_search_link_add">إضافة</string>
+    <string name="item_search_link_add_without_picture">إضافة بدون صورة</string>
+    <string name="item_search_link_not_a_picture">هذا الرابط لصفحة وليس لصورة. افتح الصورة نفسها وانسخ عنوانها.</string>
+    <string name="item_search_link_unreachable">هذا الرابط لا يفتح. تحقق منه أو جرّب صورة أخرى.</string>
+    <string name="item_search_link_too_big">الصورة كبيرة جدًا. جرّب نسخة أصغر منها.</string>
+    <string name="item_search_link_refused">لا يمكن استخدام هذه الصورة هنا. اختر صورة أخرى.</string>
+    <string name="item_search_link_failed">تعذّر فحص الصورة. حاول مرة أخرى.</string>
+    <string name="item_search_link_limit">انتهت صور الروابط لهذا اليوم. المزيد عند %1$s. ما زال بإمكانك رفع صورة من جهازك.</string>
+    <string name="item_search_link_upload">رفع صور</string>
+    <string name="item_search_link_sign_in_text">تُحفظ صور الروابط في حسابك. سجّل الدخول وسيبقى ما كتبته هنا.</string>
+    <string name="item_search_link_sign_in">تسجيل الدخول</string>
 </resources>

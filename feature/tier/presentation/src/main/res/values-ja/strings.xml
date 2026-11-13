@@ -35,7 +35,7 @@
 
 
 
-    <string name="item_search_field_label">検索</string>
+    <string name="item_search_field_label">検索、またはリンクを貼り付け</string>
     <string name="item_search_close_content_description">検索を閉じる</string>
     <string name="item_search_clear_content_description">検索をクリア</string>
     <string name="item_search_source_caption">%1$s のプールに追加</string>
@@ -194,4 +194,23 @@
         <item quantity="other">%1$d件のリストを削除し、公開中のコピーも取り下げました</item>
     </plurals>
     <string name="lists_public_lists">自分の公開リスト</string>
+    <string name="item_search_link_paste">画像のリンクを貼り付け</string>
+    <string name="item_search_link_from">リンクの画像 · %1$s から</string>
+    <string name="item_search_link_checking">画像を確認しています…</string>
+    <string name="item_search_link_ready">確認しました。追加できます。</string>
+    <string name="item_search_link_name">名前</string>
+    <string name="item_search_link_page_open">+ 出典のページ</string>
+    <string name="item_search_link_page">出典のページ(任意)</string>
+    <string name="item_search_link_page_bad">ページのアドレスではないようです。わからない場合は空欄のままにしてください。</string>
+    <string name="item_search_link_add">追加</string>
+    <string name="item_search_link_add_without_picture">画像なしで追加</string>
+    <string name="item_search_link_not_a_picture">このリンクは画像ではなくページです。画像そのものを開いて、そのアドレスをコピーしてください。</string>
+    <string name="item_search_link_unreachable">このリンクは開けません。確認するか、別の画像を試してください。</string>
+    <string name="item_search_link_too_big">画像が大きすぎます。小さいサイズを試してください。</string>
+    <string name="item_search_link_refused">この画像はここでは使えません。別の画像を選んでください。</string>
+    <string name="item_search_link_failed">画像を確認できませんでした。もう一度お試しください。</string>
+    <string name="item_search_link_limit">今日のリンクからの画像は上限に達しました。%1$s から再び使えます。端末からのアップロードは今もできます。</string>
+    <string name="item_search_link_upload">画像をアップロード</string>
+    <string name="item_search_link_sign_in_text">リンクの画像はアカウントに保存されます。ログインしても入力内容はそのまま残ります。</string>
+    <string name="item_search_link_sign_in">ログイン</string>
 </resources>

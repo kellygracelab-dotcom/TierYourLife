@@ -44,7 +44,7 @@
 
 
 
-    <string name="item_search_field_label">Пошук</string>
+    <string name="item_search_field_label">Знайти або вставити посилання</string>
     <string name="item_search_close_content_description">Закрити пошук</string>
     <string name="item_search_clear_content_description">Очистити пошук</string>
     <string name="item_search_source_caption">Додається в пул %1$s</string>
@@ -236,4 +236,23 @@
         <item quantity="other">%1$d списку видалено, їхні публічні копії знято</item>
     </plurals>
     <string name="lists_public_lists">Мої публікації</string>
+    <string name="item_search_link_paste">Вставити посилання на картинку</string>
+    <string name="item_search_link_from">Картинка за посиланням · з %1$s</string>
+    <string name="item_search_link_checking">Перевіряємо картинку…</string>
+    <string name="item_search_link_ready">Перевірили — можна ставити.</string>
+    <string name="item_search_link_name">Назва</string>
+    <string name="item_search_link_page_open">+ Сторінка-джерело</string>
+    <string name="item_search_link_page">Сторінка-джерело (необов’язково)</string>
+    <string name="item_search_link_page_bad">Це не схоже на адресу сторінки. Якщо не знаєте її, залиште поле порожнім.</string>
+    <string name="item_search_link_add">Поставити</string>
+    <string name="item_search_link_add_without_picture">Додати без картинки</string>
+    <string name="item_search_link_not_a_picture">Це посилання на сторінку, а не на картинку. Відкрийте саму картинку й скопіюйте її адресу.</string>
+    <string name="item_search_link_unreachable">Посилання не відкривається. Перевірте його або візьміть іншу картинку.</string>
+    <string name="item_search_link_too_big">Картинка завелика. Спробуйте меншу копію.</string>
+    <string name="item_search_link_refused">Цю картинку тут використовувати не можна. Виберіть іншу.</string>
+    <string name="item_search_link_failed">Не вдалося перевірити картинку. Спробуйте ще раз.</string>
+    <string name="item_search_link_limit">На сьогодні картинки за посиланнями закінчилися. Ще будуть о %1$s. З пристрою завантажити можна й зараз.</string>
+    <string name="item_search_link_upload">Завантажити картинки</string>
+    <string name="item_search_link_sign_in_text">Картинки за посиланнями зберігаються в акаунті. Увійдіть — набране залишиться тут.</string>
+    <string name="item_search_link_sign_in">Увійти</string>
 </resources>

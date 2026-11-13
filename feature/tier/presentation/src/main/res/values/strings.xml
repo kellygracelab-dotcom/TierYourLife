@@ -38,7 +38,7 @@
 
 
 
-    <string name="item_search_field_label">Search</string>
+    <string name="item_search_field_label">Find or paste a link</string>
     <string name="item_search_close_content_description">Close search</string>
     <string name="item_search_clear_content_description">Clear search</string>
     <string name="item_search_source_caption">Adding to %1$s pool</string>
@@ -209,4 +209,23 @@
         <item quantity="other">%1$d lists deleted and their public copies taken down</item>
     </plurals>
     <string name="lists_public_lists">Your public lists</string>
+    <string name="item_search_link_paste">Paste picture link</string>
+    <string name="item_search_link_from">Picture from a link · from %1$s</string>
+    <string name="item_search_link_checking">Checking the picture…</string>
+    <string name="item_search_link_ready">Checked — ready to add.</string>
+    <string name="item_search_link_name">Name</string>
+    <string name="item_search_link_page_open">+ Page it’s from</string>
+    <string name="item_search_link_page">Page it’s from (optional)</string>
+    <string name="item_search_link_page_bad">That doesn’t look like a page address. Leave it empty if you don’t know it.</string>
+    <string name="item_search_link_add">Add</string>
+    <string name="item_search_link_add_without_picture">Add without picture</string>
+    <string name="item_search_link_not_a_picture">That link is a page, not a picture. Open the picture itself and copy its address.</string>
+    <string name="item_search_link_unreachable">That link doesn’t open. Check it, or try another picture.</string>
+    <string name="item_search_link_too_big">That picture is too big. Try a smaller copy of it.</string>
+    <string name="item_search_link_refused">This picture can’t be used here. Pick another one.</string>
+    <string name="item_search_link_failed">Couldn’t check that picture. Try again.</string>
+    <string name="item_search_link_limit">That’s all the pictures from links for today. More at %1$s. You can still upload one from your device.</string>
+    <string name="item_search_link_upload">Upload images</string>
+    <string name="item_search_link_sign_in_text">Pictures from links are kept in your account. Sign in, and what you typed stays here.</string>
+    <string name="item_search_link_sign_in">Sign in</string>
 </resources>

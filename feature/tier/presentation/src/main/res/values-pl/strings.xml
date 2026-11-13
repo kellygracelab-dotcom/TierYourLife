@@ -44,7 +44,7 @@
 
 
 
-    <string name="item_search_field_label">Szukaj</string>
+    <string name="item_search_field_label">Szukaj lub wklej link</string>
     <string name="item_search_close_content_description">Zamknij wyszukiwanie</string>
     <string name="item_search_clear_content_description">Wyczyść wyszukiwanie</string>
     <string name="item_search_source_caption">Dodawanie do puli %1$s</string>
@@ -236,4 +236,23 @@
         <item quantity="other">%1$d listy usunięto, a ich publiczne kopie wycofano</item>
     </plurals>
     <string name="lists_public_lists">Twoje publiczne listy</string>
+    <string name="item_search_link_paste">Wklej link do obrazka</string>
+    <string name="item_search_link_from">Obrazek z linku · z %1$s</string>
+    <string name="item_search_link_checking">Sprawdzamy obrazek…</string>
+    <string name="item_search_link_ready">Sprawdzony — można dodać.</string>
+    <string name="item_search_link_name">Nazwa</string>
+    <string name="item_search_link_page_open">+ Strona źródłowa</string>
+    <string name="item_search_link_page">Strona źródłowa (opcjonalnie)</string>
+    <string name="item_search_link_page_bad">To nie wygląda na adres strony. Zostaw puste, jeśli go nie znasz.</string>
+    <string name="item_search_link_add">Dodaj</string>
+    <string name="item_search_link_add_without_picture">Dodaj bez obrazka</string>
+    <string name="item_search_link_not_a_picture">Ten link prowadzi do strony, a nie do obrazka. Otwórz sam obrazek i skopiuj jego adres.</string>
+    <string name="item_search_link_unreachable">Ten link się nie otwiera. Sprawdź go albo weź inny obrazek.</string>
+    <string name="item_search_link_too_big">Obrazek jest za duży. Spróbuj mniejszej kopii.</string>
+    <string name="item_search_link_refused">Tego obrazka nie można tu użyć. Wybierz inny.</string>
+    <string name="item_search_link_failed">Nie udało się sprawdzić obrazka. Spróbuj ponownie.</string>
+    <string name="item_search_link_limit">Na dziś obrazki z linków się skończyły. Kolejne o %1$s. Z urządzenia możesz wgrać już teraz.</string>
+    <string name="item_search_link_upload">Wgraj obrazki</string>
+    <string name="item_search_link_sign_in_text">Obrazki z linków są przechowywane na koncie. Zaloguj się — to, co wpisano, zostanie tutaj.</string>
+    <string name="item_search_link_sign_in">Zaloguj się</string>
 </resources>
