@@ -180,6 +180,7 @@
     <string name="cover_picker_gallery_note">Ein Galeriebild ist das ganze Cover und reist mit der Liste, wenn du sie veröffentlichst.</string>
     <string name="tier_detail_ranking_of">Deine Rangliste einer Liste von %1$s</string>
     <string name="tier_detail_ranking_of_unnamed">Deine Rangliste einer Liste vom Autor</string>
+    <string name="tier_detail_ranking_of_editorial">Deine Rangliste einer Liste</string>
     <string name="tier_detail_open_original">Öffnen</string>
     <string name="search_names_only">nur Namen</string>
     <string name="cover_saved">gespeichert</string>

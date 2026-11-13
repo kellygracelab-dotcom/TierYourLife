@@ -82,6 +82,21 @@ class SyncSecondPassTest : SyncEngineBench() {
         assertEquals(BackupRefusal.Reason.TooLarge, backupRefusalOf(preferences.boardRefusal(someone))?.reason)
     }
 
+    // QA 484 N2: an edit waits for the next run only as long as the phone can tell it is one.
+    @Test
+    fun whatIsUnsent_isEachChangedBoard_andNothingOnceTheAccountAgrees() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        val engine = engine()
+        assertEquals(setOf("$uid:${fingerprintOf(uid)}"), engine.unsent())
+
+        engine.sync()
+        assertEquals(emptySet<String>(), engine.unsent())
+
+        database.tierDao().updateTierListTitle(dao.boardByUid(uid)!!.id, "Films I love")
+        assertEquals(setOf("$uid:${fingerprintOf(uid)}"), engine.unsent())
+        assertEquals(emptySet<String>(), engine(backUp = false).unsent())
+    }
+
     // A12: the list screen hears of a run nobody on it started.
     @Test
     fun everyRun_isAnnouncedAsItEnds() = runBlocking {

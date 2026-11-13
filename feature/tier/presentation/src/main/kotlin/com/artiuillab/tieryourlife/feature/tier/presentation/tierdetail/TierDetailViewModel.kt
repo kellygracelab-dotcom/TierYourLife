@@ -23,6 +23,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailRoute
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BoardPublicationController
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,6 +48,7 @@ class TierDetailViewModel @Inject constructor(
     private val community: CommunityRepository,
     private val accountRepository: AccountRepository,
     private val savedStateHandle: SavedStateHandle,
+    private val boardSync: BoardSync = BoardSync.None,
 ) : ViewModel() {
 
     private val tierListId = savedStateHandle.tierDetailRoute().tierListId
@@ -57,7 +59,10 @@ class TierDetailViewModel @Inject constructor(
     // Views onto one value, so a write is seen at once and the screen gets one frame per change.
     private var board: TierDetailUiState
         get() = _screen.value.board
-        set(value) = _screen.update { it.copy(board = value) }
+        set(value) {
+            _screen.update { it.copy(board = value) }
+            (value as? TierDetailUiState.Success)?.let { askWhoseOriginal(it.list) }
+        }
     private var allLists: List<TierListSummary>
         get() = _screen.value.allLists
         set(value) = _screen.update { it.copy(allLists = value) }
@@ -76,6 +81,19 @@ class TierDetailViewModel @Inject constructor(
     private var categoryWanted: Boolean
         get() = _screen.value.publish.categoryWanted
         set(value) = updatePublish { it.copy(categoryWanted = value) }
+
+    private var originalAsked: String? = null
+
+    /** Only a copy that names nobody: "by Author" or no "by" at all depends on the original. */
+    private fun askWhoseOriginal(list: TierList) {
+        val original = list.rankingOf ?: list.takenFrom ?: return
+        if (!list.authorName.isNullOrBlank() || originalAsked == original) return
+        originalAsked = original
+        viewModelScope.launch {
+            val editorial = community.open(original).getOrNull()?.summary?.editorial ?: return@launch
+            _screen.update { it.copy(originalEditorial = editorial) }
+        }
+    }
 
     private fun updatePublish(change: (PublishState) -> PublishState) =
         _screen.update { it.copy(publish = change(it.publish)) }
@@ -112,6 +130,11 @@ class TierDetailViewModel @Inject constructor(
     fun recheckOriginal() = publication.recheckOriginal()
 
     init {
+        // What the website or another phone did since shows on the board that is open, not the next time it opens.
+        viewModelScope.launch {
+            boardSync.finished.collect { report -> if (report.carried > 0) reloadTierList() }
+        }
+        viewModelScope.launch { runSuspendCatching { boardSync.sync() } }
         viewModelScope.launch {
             var observed: Account? = null
             accountRepository.account.collectLatest { account ->

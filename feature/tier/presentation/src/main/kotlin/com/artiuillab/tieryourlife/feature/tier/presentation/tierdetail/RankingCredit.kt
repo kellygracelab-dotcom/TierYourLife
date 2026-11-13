@@ -16,9 +16,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 
-/** Under the title of a copy that is out as a ranking: whose list it answers, and the way there; an author with no public name is "Author". */
+/**
+ * Under the title of a copy: whose list it answers, and the way there. As on
+ * the website, an editorial or anonymous list names nobody, and an author with
+ * no public name is "Author"; until the copy knows which, it names nobody.
+ */
 @Composable
-internal fun RankingCredit(authorName: String, onOpen: () -> Unit, modifier: Modifier = Modifier) {
+internal fun RankingCredit(authorName: String, editorial: Boolean?, onOpen: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -29,10 +33,10 @@ internal fun RankingCredit(authorName: String, onOpen: () -> Unit, modifier: Mod
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = if (authorName.isBlank()) {
-                stringResource(R.string.tier_detail_ranking_of_unnamed)
-            } else {
-                stringResource(R.string.tier_detail_ranking_of, authorName.trim())
+            text = when {
+                authorName.isNotBlank() -> stringResource(R.string.tier_detail_ranking_of, authorName.trim())
+                editorial == false -> stringResource(R.string.tier_detail_ranking_of_unnamed)
+                else -> stringResource(R.string.tier_detail_ranking_of_editorial)
             },
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.bodySmall,

@@ -55,6 +55,7 @@
     </plurals>
     <string name="play_board_changed">تغيّرت البطاقات منذ بدء هذه اللعبة.</string>
     <string name="play_too_few_to_start_again">تغيّرت البطاقات، ولم يبقَ منها ما يكفي لبدء هذه اللعبة من جديد.</string>
+    <string name="play_tier_gone">لم يعد أحد مستويات هذه اللعبة موجودًا.</string>
     <string name="play_start_again">البدء من جديد</string>
     <string name="play_into_mine_note">تذهب النتيجة إلى «ترتيبي». «ترتيبه» لا يتغيّر.</string>
     <string name="play_cancel">إلغاء</string>

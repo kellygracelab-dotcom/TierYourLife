@@ -168,6 +168,7 @@
     <string name="cover_picker_gallery_note">ギャラリーの画像はカバー全体になり、公開時にリストと一緒に送られます。</string>
     <string name="tier_detail_ranking_of">%1$sのリストのあなたのランキング</string>
     <string name="tier_detail_ranking_of_unnamed">作成者のリストのあなたのランキング</string>
+    <string name="tier_detail_ranking_of_editorial">リストのあなたのランキング</string>
     <string name="tier_detail_open_original">開く</string>
     <string name="search_names_only">名前のみ</string>
     <string name="cover_saved">保存済み</string>
