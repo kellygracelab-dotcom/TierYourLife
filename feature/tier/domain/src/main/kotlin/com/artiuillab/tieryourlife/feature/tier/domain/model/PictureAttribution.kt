@@ -16,6 +16,13 @@ data class PictureAttribution(
     val link: String? = null,
     /** Only while the picture is the server's copy: the catalogue address it was copied from. */
     val originalUrl: String? = null,
+    /**
+     * The picture's title at its catalogue, such as `tmdb:movie:348`: what the
+     * server finds a dead address again by. Copied from the search, never made up.
+     */
+    val id: String? = null,
+    /** Addresses the picture had before the server found it again; the server's to write. */
+    val formerUrls: List<String> = emptyList(),
 ) {
     companion object {
         const val TMDB = "tmdb"

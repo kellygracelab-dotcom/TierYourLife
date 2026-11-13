@@ -101,15 +101,14 @@ fun MoveItemSheetContent(
     onMoveToTier: (tierId: Long, toPosition: Int) -> Unit,
     onRemove: () -> Unit,
 ) {
-    var creditsVisible by rememberSaveable(item.id) { mutableStateOf(false) }
-    val credit = item.credit?.takeIf { it.isNotBlank() }
-    if (creditsVisible && credit != null) {
-        BackHandler { creditsVisible = false }
-        ImageCredits(credit, onDismiss = { creditsVisible = false })
+    var aboutVisible by rememberSaveable(item.id) { mutableStateOf(false) }
+    if (aboutVisible && item.hasAboutThePicture()) {
+        BackHandler { aboutVisible = false }
+        AboutThePicture(item, onDismiss = { aboutVisible = false })
         return
     }
     Column(Modifier.testTag(TierDetailTestTags.MOVE_SHEET)) {
-        MoveSheetHeader(item, onCredits = { creditsVisible = true })
+        MoveSheetHeader(item, onAbout = { aboutVisible = true })
         Column(Modifier.padding(top = 8.dp)) {
             rankedTiers.forEach { tier ->
                 val isCurrent = tier.id == currentTierId
@@ -151,7 +150,7 @@ fun MoveItemSheetContent(
 }
 
 @Composable
-private fun MoveSheetHeader(item: TierItem, onCredits: () -> Unit) {
+private fun MoveSheetHeader(item: TierItem, onAbout: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,11 +167,11 @@ private fun MoveSheetHeader(item: TierItem, onCredits: () -> Unit) {
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            if (!item.credit.isNullOrBlank()) {
+            if (item.hasAboutThePicture()) {
                 TextButton(
-                    onClick = onCredits,
-                    modifier = Modifier.testTag(TierDetailTestTags.MOVE_SHEET_CREDIT),
-                ) { Text(stringResource(R.string.tier_detail_image_credits)) }
+                    onClick = onAbout,
+                    modifier = Modifier.testTag(TierDetailTestTags.MOVE_SHEET_ABOUT_PICTURE),
+                ) { Text(stringResource(R.string.tier_detail_about_picture)) }
             }
             Text(
                 text = stringResource(R.string.tier_detail_move_sheet_subtitle),
