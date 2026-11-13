@@ -41,11 +41,12 @@
     <string name="community_not_saved_yet">Votre classement n’est pas encore enregistré.</string>
     <string name="community_open_failed">Impossible d’ouvrir cette liste</string>
     <string name="community_rank_it_your_way">Classez-la librement.</string>
-    <string name="community_save_to_my_lists">Enregistrer dans mes listes</string>
+    <string name="community_save_authors_list">Enregistrer la liste de l’auteur</string>
+    <string name="community_save_my_list">Enregistrer ma liste</string>
     <string name="community_saved">Enregistrée</string>
     <string name="community_saved_to_your_lists">Enregistré dans vos listes.</string>
     <string name="community_showing_mine">Le mien</string>
-    <string name="community_showing_theirs">Le sien</string>
+    <string name="community_showing_theirs">Auteur</string>
     <string name="community_someone_elses">Liste de quelqu’un d’autre. Classez-la librement.</string>
     <string name="community_tile_hidden">Masqué pour vous</string>
     <string name="community_tile_reported">Signalé. Une personne va regarder.</string>

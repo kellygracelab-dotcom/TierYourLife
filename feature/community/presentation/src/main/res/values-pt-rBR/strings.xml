@@ -41,11 +41,12 @@
     <string name="community_not_saved_yet">Sua organização ainda não foi salva.</string>
     <string name="community_open_failed">Não foi possível abrir esta lista</string>
     <string name="community_rank_it_your_way">Organize do seu jeito.</string>
-    <string name="community_save_to_my_lists">Salvar nas minhas listas</string>
+    <string name="community_save_authors_list">Salvar a lista do autor</string>
+    <string name="community_save_my_list">Salvar minha lista</string>
     <string name="community_saved">Salva</string>
     <string name="community_saved_to_your_lists">Salvo nas suas listas.</string>
     <string name="community_showing_mine">Meu</string>
-    <string name="community_showing_theirs">Dele</string>
+    <string name="community_showing_theirs">Autor</string>
     <string name="community_someone_elses">Lista de outra pessoa. Organize do seu jeito.</string>
     <string name="community_tile_hidden">Oculto para você</string>
     <string name="community_tile_reported">Denunciado. Uma pessoa vai analisar.</string>

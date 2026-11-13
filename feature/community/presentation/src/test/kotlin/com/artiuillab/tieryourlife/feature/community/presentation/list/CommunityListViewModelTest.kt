@@ -269,12 +269,11 @@ class CommunityListViewModelTest {
     // Keeping a list the way its author ranked it is a reason to save it, not
     // a mistake to correct.
     @Test
-    fun savingBeforeArrangingAnything_keepsTheAuthorsArrangement() = runBlocking {
+    fun savingOnAuthor_keepsTheAuthorsArrangement() = runBlocking {
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
         viewModel.state.firstWithin { it is CommunityListUiState.Success }
-        // Nothing of the reader's yet: the author's is where they start, whichever half is on screen.
-        viewModel.show(Showing.Mine)
+        viewModel.show(Showing.Theirs)
 
         viewModel.saveToMyLists()
 
@@ -287,6 +286,22 @@ class CommunityListViewModelTest {
         // Only what was left unranked goes to the pool. Every card used to,
         // which is how a saved copy came out with its tiers empty.
         assertEquals(theirs.list.tiers.first { it.isPool }.items.map { it.title }, template.items.map { it.title })
+    }
+
+    // Save my list before placing anything: the reader's own version, every card still to place.
+    @Test
+    fun savingOnMine_keepsTheReadersOwnVersion() = runBlocking {
+        val tiers = RecordingTierRepository()
+        val viewModel = viewModel(tiers = tiers)
+        viewModel.state.firstWithin { it is CommunityListUiState.Success }
+        viewModel.show(Showing.Mine)
+
+        viewModel.saveToMyLists()
+
+        viewModel.state.firstWithin { it.saved() }
+        val template = tiers.templates.single()
+        assertTrue(template.tiers.all { it.items.isEmpty() })
+        assertEquals(2, template.items.size)
     }
 
     @Test

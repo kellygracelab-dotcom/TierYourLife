@@ -626,7 +626,7 @@ private fun ReaderStrip(
                         .testTag(CommunityListTestTags.SAVE),
                 ) {
                     Text(
-                        text = stringResource(R.string.community_save_to_my_lists),
+                        text = stringResource(state.saveLabel),
                         textAlign = TextAlign.Center,
                         maxLines = 2,
                     )

@@ -126,3 +126,7 @@ sealed interface CommunityListUiState {
 }
 
 data class CoverCredit(val imageUrl: String, val attribution: PictureAttribution)
+
+/** Save author's list on Author, Save my list on Mine and where there is only the reader's half. */
+internal val CommunityListUiState.Success.savesTheAuthors: Boolean
+    get() = twoHalves && showing == Showing.Theirs
