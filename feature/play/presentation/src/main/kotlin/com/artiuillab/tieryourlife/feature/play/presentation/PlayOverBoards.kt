@@ -128,6 +128,7 @@ internal fun PlayLayer(
                     onStart = viewModel.picker::start,
                     onResume = viewModel.picker::resume,
                     onStartAgain = viewModel.picker::startAgain,
+                    onDiscard = viewModel.notices::discardStored,
                 ),
             )
         }

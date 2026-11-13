@@ -35,6 +35,7 @@
     </plurals>
     <string name="play_board_changed">Bu oyun başladığından beri kartlar değişti.</string>
     <string name="play_too_few_to_start_again">Kartlar değişti ve bu oyunu yeniden başlatmak için çok az kart kaldı.</string>
+    <string name="play_tier_gone">Bu oyundaki seviyelerden biri artık yok.</string>
     <string name="play_start_again">Yeniden başla</string>
     <string name="play_into_mine_note">Sonuç “Benimki”ne gider. “Onunki” değişmez.</string>
     <string name="play_cancel">İptal</string>

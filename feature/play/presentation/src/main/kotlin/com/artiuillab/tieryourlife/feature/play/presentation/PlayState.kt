@@ -54,6 +54,8 @@ data class ResumeOffer(
     val changed: Boolean = false,
     /** Whether enough of its cards are left to start it again. */
     val canStartAgain: Boolean = true,
+    /** A tier it was played in is no longer on the board: the cards may all be there, the game's area is not. */
+    val tierGone: Boolean = false,
     /** Cards that joined a Swiss game since it was put down. */
     val joined: Int = 0,
 )

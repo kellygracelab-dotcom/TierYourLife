@@ -205,6 +205,7 @@
     <string name="cover_picker_gallery_note">Зображення з галереї стає всією обкладинкою і їде разом зі списком, коли ви його публікуєте.</string>
     <string name="tier_detail_ranking_of">Ваш рейтинг списку від %1$s</string>
     <string name="tier_detail_ranking_of_unnamed">Ваш рейтинг списку автора</string>
+    <string name="tier_detail_ranking_of_editorial">Ваш рейтинг списку</string>
     <string name="tier_detail_open_original">Відкрити</string>
     <string name="search_names_only">лише назви</string>
     <string name="cover_saved">збережено</string>

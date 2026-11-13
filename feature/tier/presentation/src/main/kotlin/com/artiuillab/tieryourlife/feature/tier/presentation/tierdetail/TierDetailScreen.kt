@@ -73,7 +73,13 @@ fun TierDetailScreen(
 
     val credit: (@Composable () -> Unit)? = when (val loaded = state) {
         is TierDetailUiState.Success -> (loaded.list.rankingOf ?: loaded.list.takenFrom)?.let { rankingOf ->
-            { RankingCredit(authorName = loaded.list.authorName.orEmpty(), onOpen = { onOpenPublishedList(rankingOf) }) }
+            {
+                RankingCredit(
+                    authorName = loaded.list.authorName.orEmpty(),
+                    editorial = screen.originalEditorial,
+                    onOpen = { onOpenPublishedList(rankingOf) },
+                )
+            }
         }
         else -> null
     }

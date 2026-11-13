@@ -45,6 +45,7 @@
     </plurals>
     <string name="play_board_changed">Karty zmieniły się od początku tej gry.</string>
     <string name="play_too_few_to_start_again">Karty się zmieniły i zostało ich za mało, żeby zacząć tę grę od nowa.</string>
+    <string name="play_tier_gone">Jednego z poziomów tej gry już nie ma.</string>
     <string name="play_start_again">Zacznij od nowa</string>
     <string name="play_into_mine_note">Wynik trafi do „Mój”. „Jego” się nie zmieni.</string>
     <string name="play_cancel">Anuluj</string>

@@ -319,6 +319,20 @@ class PlayViewModel @Inject constructor(
             viewModelScope.launch { forget(gone) }
         }
 
+        /** A game nothing can pick up again, let go here as on the website; "Undo" brings it back. */
+        fun discardStored() {
+            val request = request ?: return
+            val saved = stored ?: return
+            stored = null
+            updatePicker { it.copy(resume = null) }
+            val gone = Session(request.key, request.board, saved, own = !request.intoMine)
+            viewModelScope.launch {
+                forget(gone)
+                discarded = gone
+                say(PlayNotice.SavedGameDiscarded)
+            }
+        }
+
         /** The game that was discarded comes back; one started in its place gives way to it. */
         fun undoDiscard() {
             val back = discarded ?: return
@@ -334,7 +348,10 @@ class PlayViewModel @Inject constructor(
             }
             viewModelScope.launch {
                 persist(back)
-                if (request?.key == back.key) stored = back.game
+                if (request?.key == back.key) {
+                    stored = back.game
+                    updatePicker { it.copy(resume = offerFor(back.game, request.board)) }
+                }
             }
         }
 

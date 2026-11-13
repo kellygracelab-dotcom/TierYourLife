@@ -40,6 +40,7 @@
     </plurals>
     <string name="play_board_changed">Les cartes ont changé depuis le début de cette partie.</string>
     <string name="play_too_few_to_start_again">Les cartes ont changé et il en reste trop peu pour recommencer cette partie.</string>
+    <string name="play_tier_gone">Un niveau de cette partie n’existe plus.</string>
     <string name="play_start_again">Recommencer</string>
     <string name="play_into_mine_note">Le résultat va dans « Le mien ». « Le sien » ne change pas.</string>
     <string name="play_cancel">Annuler</string>

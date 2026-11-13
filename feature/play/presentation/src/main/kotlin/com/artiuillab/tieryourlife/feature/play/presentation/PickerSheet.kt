@@ -88,6 +88,7 @@ internal data class PickerActions(
     val onStart: () -> Unit = {},
     val onResume: () -> Unit = {},
     val onStartAgain: () -> Unit = {},
+    val onDiscard: () -> Unit = {},
 )
 
 /**
@@ -145,7 +146,7 @@ private fun ColumnScope.GamesPage(picker: Picker, actions: PickerActions) {
         CardsFromLine(picker, onShowCards = actions.onShowCards)
         Spacer(Modifier.height(16.dp))
         picker.resume?.let { offer ->
-            ResumeRow(offer, minHeight = 56.dp, onResume = actions.onResume, onStartAgain = actions.onStartAgain)
+            ResumeRow(offer, minHeight = 56.dp, actions)
             Text(
                 text = stringResource(R.string.play_new_game),
                 modifier = Modifier.padding(start = 2.dp, top = 16.dp, bottom = 8.dp),
@@ -235,7 +236,7 @@ private fun SheetActions(content: @Composable RowScope.() -> Unit) {
 
 /** The game put down for this board: what it is, how far it got, and the one button that picks it up. */
 @Composable
-private fun ResumeRow(offer: ResumeOffer, minHeight: Dp, onResume: () -> Unit, onStartAgain: () -> Unit) {
+private fun ResumeRow(offer: ResumeOffer, minHeight: Dp, actions: PickerActions) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainer,
         shape = RoundedCornerShape(16.dp),
@@ -259,6 +260,7 @@ private fun ResumeRow(offer: ResumeOffer, minHeight: Dp, onResume: () -> Unit, o
                 val started = startedText(offer.startedAt)
                 Text(
                     text = when {
+                        offer.tierGone -> stringResource(R.string.play_tier_gone)
                         offer.changed && !offer.canStartAgain -> stringResource(R.string.play_too_few_to_start_again)
                         offer.changed -> stringResource(R.string.play_board_changed)
                         offer.joined > 0 -> started + " · " + pluralStringResource(R.plurals.play_new_cards_join, offer.joined, offer.joined)
@@ -270,14 +272,25 @@ private fun ResumeRow(offer: ResumeOffer, minHeight: Dp, onResume: () -> Unit, o
                 )
             }
             Spacer(Modifier.width(8.dp))
-            FilledTonalButton(
-                onClick = if (offer.changed) onStartAgain else onResume,
-                enabled = !offer.changed || offer.canStartAgain,
-                modifier = Modifier
-                    .height(36.dp)
-                    .testTag(PlayTestTags.RESUME),
-            ) {
-                Text(stringResource(if (offer.changed) R.string.play_start_again else R.string.play_resume))
+            if (offer.changed && !offer.canStartAgain) {
+                // Nothing can pick it up again: letting it go is the one thing left to do.
+                FilledTonalButton(
+                    onClick = actions.onDiscard,
+                    modifier = Modifier
+                        .height(36.dp)
+                        .testTag(PlayTestTags.DISCARD_SAVED),
+                ) {
+                    Text(stringResource(R.string.play_snack_discard))
+                }
+            } else {
+                FilledTonalButton(
+                    onClick = if (offer.changed) actions.onStartAgain else actions.onResume,
+                    modifier = Modifier
+                        .height(36.dp)
+                        .testTag(PlayTestTags.RESUME),
+                ) {
+                    Text(stringResource(if (offer.changed) R.string.play_start_again else R.string.play_resume))
+                }
             }
         }
     }
@@ -560,7 +573,7 @@ private fun ColumnScope.WideGamesPage(picker: Picker, actions: PickerActions) {
         }
         Spacer(Modifier.height(6.dp))
         picker.resume?.let { offer ->
-            ResumeRow(offer, minHeight = 52.dp, onResume = actions.onResume, onStartAgain = actions.onStartAgain)
+            ResumeRow(offer, minHeight = 52.dp, actions)
             Spacer(Modifier.height(10.dp))
         }
         Row(

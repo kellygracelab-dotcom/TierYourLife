@@ -7,6 +7,7 @@ object PlayTestTags {
     const val CHOOSE_CARDS = "play_choose_cards"
     const val RESUME_ROW = "play_resume_row"
     const val RESUME = "play_resume"
+    const val DISCARD_SAVED = "play_discard_saved"
     const val START = "play_start"
     const val CARDS_PAGE = "play_cards_page"
     const val EVERYTHING = "play_everything"
