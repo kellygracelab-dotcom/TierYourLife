@@ -173,10 +173,10 @@ interface AppPreferences {
 
     fun setPoolColumnCollapsed(collapsed: Boolean?) = Unit
 
-    /** Boards, by uid, whose "your ranking of a Community list" line was put away; this device only, never synced. */
-    fun creditsPutAway(): Set<String> = emptySet()
+    /** Boards, by uid, whose link to the list they were copied from was hidden; this device only, never synced. */
+    fun originalLinksHidden(): Set<String> = emptySet()
 
-    fun putCreditAway(boardUid: String) = Unit
+    fun hideOriginalLink(boardUid: String) = Unit
 
     /** Lines of cards the pool docked under the rows shows on a tablet held upright. */
     fun poolDockRows(): Int = DEFAULT_POOL_DOCK_ROWS

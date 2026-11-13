@@ -150,12 +150,12 @@ class FakeAppPreferences(
 
     override fun markConflictSeen(listUid: String) = Unit
 
-    private val creditsAway = mutableSetOf<String>()
+    private val linksHidden = mutableSetOf<String>()
 
-    override fun creditsPutAway(): Set<String> = creditsAway.toSet()
+    override fun originalLinksHidden(): Set<String> = linksHidden.toSet()
 
-    override fun putCreditAway(boardUid: String) {
-        creditsAway += boardUid
+    override fun hideOriginalLink(boardUid: String) {
+        linksHidden += boardUid
     }
 
     private var owners = emptyMap<String, String>()

@@ -167,10 +167,8 @@
     <string name="cover_picker_no_cards">このリストのカードにはまだ画像がありません。</string>
     <string name="cover_picker_gallery">ギャラリーから選ぶ</string>
     <string name="cover_picker_gallery_note">ギャラリーの画像はカバー全体になり、公開時にリストと一緒に送られます。</string>
-    <string name="tier_detail_ranking_of">コミュニティにある%1$sのリストのあなたのランキング</string>
-    <string name="tier_detail_ranking_of_community">コミュニティのリストのあなたのランキング</string>
-    <string name="tier_detail_put_credit_away">この行を非表示</string>
-    <string name="tier_detail_open_original">開く</string>
+    <string name="tier_detail_original_list">元のリストとランキング</string>
+    <string name="tier_detail_hide_original_list">このリンクを非表示</string>
     <string name="search_names_only">名前のみ</string>
     <string name="cover_saved">保存済み</string>
     <string name="cover_empty_title">リストはまだありません</string>

@@ -114,7 +114,7 @@ fun TierListSettingsScreenContent(
     onShare: () -> Unit = {},
     /** The published list's own page, where readers' rankings and its link are; null while it is not out. */
     onSeeInCommunity: (() -> Unit)? = null,
-    /** The Community list a copy was made from; there whether or not the board's credit line was put away. */
+    /** The Community list a copy was made from; there whether or not the link under the title was hidden. */
     onOpenOriginal: (() -> Unit)? = null,
     onReturnAllToPool: (() -> Unit)? = null,
 ) {

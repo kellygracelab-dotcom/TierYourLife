@@ -72,7 +72,7 @@ fun TierDetailScreen(
     }
 
     val loadedList = (state as? TierDetailUiState.Success)?.list
-    val credit = creditOf(loadedList, onOpenPublishedList)
+    val originalLink = originalLinkOf(loadedList, onOpenPublishedList)
 
     TierDetailScreenContent(
         state = state,
@@ -81,7 +81,7 @@ fun TierDetailScreen(
         onBoardsBesideWanted = viewModel::wantBoardsBeside,
         addedItemIds = addedItemIds,
         userMessages = viewModel.userMessages,
-        belowTopBar = credit,
+        belowTopBar = originalLink,
         actions = TierDetailActions(
             onBack = onBack,
             signedIn = screen.signedIn,

@@ -15,7 +15,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** A copy's way to its original stays in the list settings, with the credit line under the title put away or not. */
+/** A copy's way to its original stays in the list settings, with the link under the title hidden or not. */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], qualifiers = "en-w411dp-h891dp")
 class OpenOriginalRowTest {

@@ -191,10 +191,8 @@
     <string name="cover_picker_no_cards">Aucune carte de cette liste n’a encore d’image.</string>
     <string name="cover_picker_gallery">Choisir dans la galerie</string>
     <string name="cover_picker_gallery_note">Une image de la galerie devient toute la couverture et voyage avec la liste quand vous la publiez.</string>
-    <string name="tier_detail_ranking_of">Votre classement d’une liste de la Communauté, par %1$s</string>
-    <string name="tier_detail_ranking_of_community">Votre classement d’une liste de la Communauté</string>
-    <string name="tier_detail_put_credit_away">Masquer cette ligne</string>
-    <string name="tier_detail_open_original">Ouvrir</string>
+    <string name="tier_detail_original_list">Liste d’origine et classements</string>
+    <string name="tier_detail_hide_original_list">Masquer ce lien</string>
     <string name="search_names_only">noms uniquement</string>
     <string name="cover_saved">enregistrée</string>
     <string name="cover_empty_title">Pas encore de listes</string>

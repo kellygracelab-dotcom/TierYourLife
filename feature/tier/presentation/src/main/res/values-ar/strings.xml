@@ -227,10 +227,8 @@
     <string name="cover_picker_no_cards">لا تحمل أي بطاقة في هذه القائمة صورة بعد.</string>
     <string name="cover_picker_gallery">الاختيار من المعرض</string>
     <string name="cover_picker_gallery_note">صورة من المعرض تكون الغلاف كله وتسافر مع القائمة عند نشرها.</string>
-    <string name="tier_detail_ranking_of">ترتيبك لقائمة من المجتمع بواسطة %1$s</string>
-    <string name="tier_detail_ranking_of_community">ترتيبك لقائمة من المجتمع</string>
-    <string name="tier_detail_put_credit_away">إخفاء هذا السطر</string>
-    <string name="tier_detail_open_original">فتح</string>
+    <string name="tier_detail_original_list">القائمة الأصلية والترتيبات</string>
+    <string name="tier_detail_hide_original_list">إخفاء هذا الرابط</string>
     <string name="search_names_only">الأسماء فقط</string>
     <string name="cover_saved">محفوظة</string>
     <string name="cover_empty_title">لا قوائم بعد</string>

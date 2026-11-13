@@ -179,10 +179,8 @@
     <string name="cover_picker_no_cards">None of this list’s cards have a picture yet.</string>
     <string name="cover_picker_gallery">Choose from gallery</string>
     <string name="cover_picker_gallery_note">A gallery picture is the whole cover and travels with the list when you publish it.</string>
-    <string name="tier_detail_ranking_of">Your ranking of a Community list by %1$s</string>
-    <string name="tier_detail_ranking_of_community">Your ranking of a Community list</string>
-    <string name="tier_detail_put_credit_away">Hide this line</string>
-    <string name="tier_detail_open_original">Open</string>
+    <string name="tier_detail_original_list">Original list and rankings</string>
+    <string name="tier_detail_hide_original_list">Hide this link</string>
     <string name="search_names_only">names only</string>
     <string name="cover_saved">saved</string>
     <string name="cover_empty_title">No lists yet</string>

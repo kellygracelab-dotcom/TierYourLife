@@ -203,10 +203,8 @@
     <string name="cover_picker_no_cards">Ни у одной карточки списка пока нет картинки.</string>
     <string name="cover_picker_gallery">Выбрать из галереи</string>
     <string name="cover_picker_gallery_note">Картинка из галереи становится всей обложкой и едет вместе со списком, когда вы его публикуете.</string>
-    <string name="tier_detail_ranking_of">Ваш рейтинг списка из Сообщества · автор: %1$s</string>
-    <string name="tier_detail_ranking_of_community">Ваш рейтинг списка из Сообщества</string>
-    <string name="tier_detail_put_credit_away">Скрыть эту строку</string>
-    <string name="tier_detail_open_original">Открыть</string>
+    <string name="tier_detail_original_list">Исходный список и рейтинги</string>
+    <string name="tier_detail_hide_original_list">Скрыть эту ссылку</string>
     <string name="search_names_only">только названия</string>
     <string name="cover_saved">сохранено</string>
     <string name="cover_empty_title">Списков пока нет</string>

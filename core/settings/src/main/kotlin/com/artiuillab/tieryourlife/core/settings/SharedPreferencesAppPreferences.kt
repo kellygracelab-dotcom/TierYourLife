@@ -20,7 +20,7 @@ private const val KEY_PICTURES_ON_WIFI_ONLY = "pictures_on_wifi_only"
 private const val KEY_COVER_IDS_LEARNED = "cover_ids_learned"
 private const val KEY_LAST_SYNCED_AT = "last_synced_at"
 private const val KEY_CONFLICTS_SEEN = "conflicts_seen"
-private const val KEY_CREDITS_PUT_AWAY = "credits_put_away"
+private const val KEY_ORIGINAL_LINKS_HIDDEN = "original_links_hidden"
 private const val KEY_BOARD_REFUSAL = "board_refusal"
 private const val KEY_ERASURE_UNDER_WAY = "erasure_under_way"
 private const val KEY_LAST_SIGNED_IN = "last_signed_in"
@@ -251,10 +251,10 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun conflictsSeen(): Set<String> = stored(KEY_CONFLICTS_SEEN)
 
-    override fun creditsPutAway(): Set<String> = stored(KEY_CREDITS_PUT_AWAY)
+    override fun originalLinksHidden(): Set<String> = stored(KEY_ORIGINAL_LINKS_HIDDEN)
 
-    override fun putCreditAway(boardUid: String) {
-        prefs.edit { putStringSet(KEY_CREDITS_PUT_AWAY, stored(KEY_CREDITS_PUT_AWAY) + boardUid) }
+    override fun hideOriginalLink(boardUid: String) {
+        prefs.edit { putStringSet(KEY_ORIGINAL_LINKS_HIDDEN, stored(KEY_ORIGINAL_LINKS_HIDDEN) + boardUid) }
     }
 
     override fun markConflictSeen(listUid: String) {
