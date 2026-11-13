@@ -144,8 +144,8 @@ fun SavedGame.shared(itemUid: (Long) -> String?, tierUid: (Long) -> String?, now
 
 /**
  * The account's game on this phone's board. A card the board does not have
- * takes an id no card has, so the resume rules see it as deleted; a tier it
- * does not have drops out of the scope.
+ * takes an id no card has, so the resume rules see it as deleted; so does a
+ * tier it does not have, so the area never quietly widens to the whole board.
  */
 fun SharedGame.local(itemId: (String) -> Long?, tierId: (String) -> Long?): SavedGame = SavedGame(
     spec = spec,
@@ -153,7 +153,7 @@ fun SharedGame.local(itemId: (String) -> Long?, tierId: (String) -> Long?): Save
     history = history,
     round = round,
     startedAt = startedAt,
-    scope = scope?.mapNotNull(tierId),
+    scope = scope?.mapIndexed { at, uid -> tierId(uid) ?: (MISSING_TIER - at) },
     keepTier = keepTier,
     onBoard = true,
 )

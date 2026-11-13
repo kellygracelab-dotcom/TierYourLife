@@ -51,7 +51,7 @@
         <item quantity="one">%1$d/%2$d seçildi</item>
         <item quantity="other">%1$d/%2$d seçildi</item>
     </plurals>
-    <string name="play_keep_in_tier">%1$s içinde tut, yalnızca sırala</string>
+    <string name="play_ranked">Sıralananlar</string>
     <string name="play_quit">Çık</string>
     <string name="play_duel_of">Düello %1$d/%2$d</string>
     <string name="play_round_of">Tur %1$d/%2$d</string>

@@ -179,6 +179,7 @@
     <string name="cover_picker_gallery">Choose from gallery</string>
     <string name="cover_picker_gallery_note">A gallery picture is the whole cover and travels with the list when you publish it.</string>
     <string name="tier_detail_ranking_of">Your ranking of a list by %1$s</string>
+    <string name="tier_detail_ranking_of_unnamed">Your ranking of a list by Author</string>
     <string name="tier_detail_open_original">Open</string>
     <string name="search_names_only">names only</string>
     <string name="cover_saved">saved</string>

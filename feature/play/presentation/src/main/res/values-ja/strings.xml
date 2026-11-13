@@ -44,7 +44,7 @@
     <plurals name="play_selected">
         <item quantity="other">%2$d 枚中 %1$d 枚を選択</item>
     </plurals>
-    <string name="play_keep_in_tier">%1$s のまま、順番だけ決める</string>
+    <string name="play_ranked">ランク付け済み</string>
     <string name="play_quit">終了</string>
     <string name="play_duel_of">対戦 %1$d / %2$d</string>
     <string name="play_round_of">ラウンド %1$d / %2$d</string>

@@ -63,8 +63,6 @@ data class Picker(
     val title: String,
     val groups: List<CardGroup>,
     val chosen: Set<Long>,
-    /** The switch's own value; it only counts while one tier is chosen. */
-    val keepTier: Boolean = true,
     val kind: GameKind = GameKind.Swiss,
     val page: PickerPage = PickerPage.Games,
     /** Opened on the cards because the board is too big to play whole: there is no game page behind it yet. */
@@ -86,11 +84,22 @@ data class Picker(
     val total: Int get() = if (cards.isEmpty()) groups.sumOf { it.count } else cards.map { it.item.id }.distinct().size
     val everything: Boolean get() = groups.isNotEmpty() && groups.all { it.tierId in chosen } && selectedIds == null
 
-    /** The one tier chosen, when it is one tier and not the pool: its cards may stay in it and only be ordered. */
+    /** Every ranked tier with cards and nothing else: the area the pool stays out of. An empty tier in a saved scope does not count. */
+    val rankedIds: Set<Long> get() = groups.filterNot { it.isPool }.map { it.tierId }.toSet()
+    val rankedCount: Int get() = groups.filterNot { it.isPool }.sumOf { it.count }
+    val ranked: Boolean get() = rankedIds.isNotEmpty() && chosen.filter { id -> groups.any { it.tierId == id } }.toSet() == rankedIds
+
+    /** Ranked differs from Everything only when the board has a pool. */
+    val offersRanked: Boolean get() = rankedIds.isNotEmpty() && groups.any { it.isPool }
+
+    /** The one tier chosen, when it is one tier and not the pool: a game over it only orders it. */
     val singleTier: CardGroup?
         get() = chosen.singleOrNull()?.let { id -> groups.firstOrNull { it.tierId == id } }?.takeUnless { it.isPool }
 
-    val keepsTier: Boolean get() = singleTier != null && keepTier
+    val keepsTier: Boolean get() = singleTier != null
+
+    /** The pool alone. */
+    val poolOnly: Boolean get() = chosen.singleOrNull()?.let { id -> groups.firstOrNull { it.tierId == id } }?.isPool == true
     val canPlay: Boolean get() = count >= MIN_PLAY_CARDS
 }
 

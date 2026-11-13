@@ -79,7 +79,7 @@
         <item quantity="many">تم اختيار %1$d من %2$d</item>
         <item quantity="other">تم اختيار %1$d من %2$d</item>
     </plurals>
-    <string name="play_keep_in_tier">إبقاؤها في %1$s وترتيبها فقط</string>
+    <string name="play_ranked">المصنَّفة</string>
     <string name="play_quit">خروج</string>
     <string name="play_duel_of">المواجهة %1$d من %2$d</string>
     <string name="play_round_of">الجولة %1$d من %2$d</string>
