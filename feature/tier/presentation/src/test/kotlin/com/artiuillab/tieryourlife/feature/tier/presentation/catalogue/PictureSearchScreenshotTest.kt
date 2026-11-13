@@ -124,12 +124,12 @@ class PictureSearchScreenshotTest {
 
     @Test
     fun aCheckedPicture_isReadyToAdd() = capture("picture_link_ready") {
-        linkCard(LinkPicture.Found("https://i.example.net/p/8812.jpg", PictureAttribution("web"), null))
+        LinkCard(LinkPicture.Found("https://i.example.net/p/8812.jpg", PictureAttribution("web"), null))
     }
 
     @Test
     fun aPageInsteadOfAPicture_saysWhatToDo_dark() = capture("picture_link_page_dark", dark = true) {
-        linkCard(LinkPicture.Refused(LinkRefusal.NotAPicture), url = "https://example.com/films/totoro")
+        LinkCard(LinkPicture.Refused(LinkRefusal.NotAPicture), url = "https://example.com/films/totoro")
     }
 
     @Test
@@ -138,11 +138,11 @@ class PictureSearchScreenshotTest {
             set(Calendar.HOUR_OF_DAY, 3)
             set(Calendar.MINUTE, 0)
         }
-        linkCard(LinkPicture.Limited(threeAtNight.timeInMillis))
+        LinkCard(LinkPicture.Limited(threeAtNight.timeInMillis))
     }
 
     @Composable
-    private fun linkCard(answer: LinkPicture, url: String = "https://i.example.net/p/8812.jpg") {
+    private fun LinkCard(answer: LinkPicture, url: String = "https://i.example.net/p/8812.jpg") {
         CatalogueSearchScreenContent(
             state = CatalogueSearchUiState.Initial,
             query = url,
