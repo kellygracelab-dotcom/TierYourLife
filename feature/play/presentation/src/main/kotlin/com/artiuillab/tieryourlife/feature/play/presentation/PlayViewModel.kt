@@ -17,7 +17,9 @@ import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.itemLayout
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,6 +41,7 @@ import kotlin.random.Random
 class PlayViewModel @Inject constructor(
     private val games: SavedGames,
     private val boards: TierRepository,
+    private val boardSync: BoardSync = BoardSync.None,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PlayState())
@@ -62,6 +65,9 @@ class PlayViewModel @Inject constructor(
     private var quitted: Session? = null
     private var discarded: Session? = null
     private var arranged: Arrangement? = null
+
+    /** A game being let go from the picker: "Undo" waits for it, and nothing re-reads it meanwhile. */
+    private var letting: Job? = null
 
     private val shelf = GameShelf(games, boards) { clock() }
 
@@ -98,7 +104,7 @@ class PlayViewModel @Inject constructor(
                     val remembered = games.lastKind()
                     if (lastKind == null) lastKind = remembered
                 }
-                stored = taken(request)
+                reread(request)
             }
         }
     }
@@ -127,7 +133,11 @@ class PlayViewModel @Inject constructor(
                 intoMine = request.intoMine,
             ),
         )
-        viewModelScope.launch { offerResume(request, shownKind) }
+        viewModelScope.launch {
+            offerResume(request, shownKind)
+            // A game saved on the website since the board was opened reaches the picker as it stands open.
+            if (!request.intoMine && runSuspendCatching { boardSync.sync() }.isSuccess) reread(request)
+        }
     }
 
     inner class PickerControls {
@@ -149,9 +159,11 @@ class PlayViewModel @Inject constructor(
 
         fun toggleRanked() = updatePicker { it.copy(chosen = if (it.ranked) emptySet() else it.rankedIds, selectedIds = null) }
 
+        /** A game discarded here and not brought back is offered once more on the board, beyond the sheet. */
         fun dismiss() {
-            if (stage !is PlayStage.Picking) return
+            val picker = (stage as? PlayStage.Picking)?.picker ?: return
             close()
+            if (picker.discarded && discarded != null) viewModelScope.launch { say(PlayNotice.SavedGameDiscarded) }
         }
 
         fun start() {
@@ -319,18 +331,19 @@ class PlayViewModel @Inject constructor(
             viewModelScope.launch { forget(gone) }
         }
 
-        /** A game nothing can pick up again, let go here as on the website; "Undo" brings it back. */
+        /**
+         * A game nothing can pick up again, let go here as on the website. The
+         * sheet stands over the board's notices, so its row says so and offers
+         * "Undo" itself.
+         */
         fun discardStored() {
             val request = request ?: return
             val saved = stored ?: return
             stored = null
-            updatePicker { it.copy(resume = null) }
+            updatePicker { it.copy(resume = null, discarded = true) }
             val gone = Session(request.key, request.board, saved, own = !request.intoMine)
-            viewModelScope.launch {
-                forget(gone)
-                discarded = gone
-                say(PlayNotice.SavedGameDiscarded)
-            }
+            discarded = gone
+            letting = viewModelScope.launch { forget(gone) }
         }
 
         /** The game that was discarded comes back; one started in its place gives way to it. */
@@ -347,10 +360,11 @@ class PlayViewModel @Inject constructor(
                 }
             }
             viewModelScope.launch {
+                letting?.join()
                 persist(back)
                 if (request?.key == back.key) {
                     stored = back.game
-                    updatePicker { it.copy(resume = offerFor(back.game, request.board)) }
+                    updatePicker { it.copy(resume = offerFor(back.game, request.board), discarded = false) }
                 }
             }
         }
@@ -477,6 +491,18 @@ class PlayViewModel @Inject constructor(
                 resume = saved?.let { offerFor(it, request.board) },
                 kind = if (remembered != null && picker.kind == shownKind) remembered else picker.kind,
             )
+        }
+    }
+
+    /** The game put down for [request]'s board read afresh, and offered so by a picker that stands open. */
+    private suspend fun reread(request: PlayRequest) {
+        if (letting?.isActive == true) return
+        val saved = taken(request)
+        val current = this.request
+        if (current?.key != request.key || session != null || letting?.isActive == true) return
+        stored = saved
+        updatePicker { picker ->
+            if (picker.discarded && saved == null) picker else picker.copy(resume = saved?.let { offerFor(it, current.board) }, discarded = false)
         }
     }
 

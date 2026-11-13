@@ -1,6 +1,13 @@
 package com.artiuillab.tieryourlife.e2e
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.artiuillab.tieryourlife.feature.play.domain.GameKind
+import com.artiuillab.tieryourlife.feature.play.domain.GameSpec
+import com.artiuillab.tieryourlife.feature.play.domain.Outcome
+import com.artiuillab.tieryourlife.feature.play.domain.SharedGame
+import com.artiuillab.tieryourlife.feature.play.domain.SharedGameJson
+import com.artiuillab.tieryourlife.feature.play.domain.nextPair
+import com.artiuillab.tieryourlife.feature.play.domain.progress
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -135,6 +142,35 @@ class SyncTest {
 
         first.sync.sync()
         assertEquals("Films, second phone", first.board(id).title)
+    }
+
+    // QA 490 N2b: the website discarded a game and started another; nothing on
+    // the board changed but its game, which still has to reach a phone that has
+    // already run once with the board open.
+    @Test
+    fun aNewGameAndNothingElse_comesDownWithTheNextRun() = runBlocking<Unit> {
+        val id = first.newBoard("Films", ranked = mapOf("S" to listOf("Alien", "Arrival"), "A" to listOf("Dune", "Heat")))
+        val uid = first.board(id).uid
+        first.sync.sync()
+        second.sync.sync()
+        val there = checkNotNull(second.boardByUid(uid))
+        val cards = there.tiers.flatMap { it.items }.map { it.uid }
+        val bracket = GameSpec(GameKind.Bracket, cards.size, seed = 5)
+        val history = mutableListOf<Outcome>()
+        repeat(2) {
+            val (one, other) = checkNotNull(nextPair(bracket, history))
+            history += Outcome(one, other, winner = one)
+        }
+        val game = SharedGame(bracket, ids = cards, history = history, round = progress(bracket, history).round, startedAt = System.currentTimeMillis())
+
+        second.boards.setPlay(there.id, SharedGameJson.encode(game))
+        second.sync.sync()
+        val report = first.sync.sync()
+
+        assertEquals(1, report.carried)
+        val arrived = checkNotNull(SharedGameJson.decode(checkNotNull(first.board(id).play)))
+        assertEquals(GameKind.Bracket, arrived.spec.kind)
+        assertEquals(2, arrived.history.size)
     }
 
     // The other phone writes between this one reading the index and sending its

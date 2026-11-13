@@ -70,6 +70,8 @@ data class Picker(
     /** Opened on the cards because the board is too big to play whole: there is no game page behind it yet. */
     val cardsFirst: Boolean = false,
     val resume: ResumeOffer? = null,
+    /** The game put down was just discarded here: its row offers "Undo" in its place. */
+    val discarded: Boolean = false,
     val intoMine: Boolean = false,
     val cards: List<CardOption> = emptyList(),
     /** Null means all current candidates; a list freezes a sample/manual cohort and its order. */
