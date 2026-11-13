@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublicationKind
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
@@ -13,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -126,11 +128,59 @@ class TierDetailViewModelTest {
         )
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
 
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
 
         assertEquals(1, community.published.size)
         assertEquals("published-1", repository.publishedIds.single().second)
+    }
+
+    @Test
+    fun newPublicationWaitsForExplicitServerPreviewConfirmation() = runBlocking {
+        val community = FakeCommunityRepositoryForDetail()
+        val viewModel = TierDetailViewModel(FakeTierRepository(listWithOneCard()), community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+
+        viewModel.setPublic(true)
+        val preview = viewModel.publicationState.firstWithin { it.preview != null && !it.busy }.preview!!
+        assertEquals(PublicationKind.NewList(), preview.kind)
+        assertTrue(community.published.isEmpty())
+        viewModel.confirmPublication()
+        community.sent.firstWithin { it.isNotEmpty() }
+        assertEquals(1, community.published.size)
+    }
+
+    @Test
+    fun crossingThirtyPercentOffersOnce_andPrivateChoicePreservesTheMovedCard() = runBlocking {
+        val cards = (1L..20L).map { TierItem(it, "Card $it", null, sourceIndex = (it - 1).toInt()) }
+        val sourceCopy = TierList(
+            1, "Original", takenFrom = "src-1",
+            tiers = listOf(
+            Tier(10, "A", "#000000", "#000000", cards.take(6)),
+            Tier(20, "Pool", "#000000", "#000000", cards.drop(6), isPool = true),
+        ),
+        )
+        val repository = FakeTierRepository(sourceCopy)
+        val community = FakeCommunityRepositoryForDetail(publicationKind = PublicationKind.Ranking("src-1", 10))
+        val accounts = FakeAccountRepository(FakeAccountRepository.signedIn)
+        val viewModel = TierDetailViewModel(repository, community, accounts, savedStateHandle())
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+        assertNull(viewModel.publicationState.value.offer)
+
+        repository.releaseMoves()
+        viewModel.moveItem(7, 10, 6)
+        viewModel.publicationState.firstWithin { it.offer != null }
+        assertEquals(RankingChoice.Offered, repository.getTierListById(1)!!.rankingChoice)
+        viewModel.keepRankingPrivate()
+        viewModel.publicationState.firstWithin { it.offer == null && !it.busy }
+        val saved = repository.getTierListById(1)!!
+        assertEquals(RankingChoice.Private, saved.rankingChoice)
+        assertEquals((1L..7L).toList(), saved.tiers.first().items.map(TierItem::id))
+        assertTrue(community.published.isEmpty())
+
+        val reopened = TierDetailViewModel(repository, community, accounts, savedStateHandle())
+        reopened.board.firstWithin { it is TierDetailUiState.Success }
+        assertNull(reopened.publicationState.value.offer)
     }
 
     // The author named a topic the server had not seen; publishing is when it becomes
@@ -161,7 +211,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(repository, community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
 
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.topicId == null }
 
         assertEquals(PublishError.TopicUnavailable, viewModel.screen.value.publish.error)
@@ -177,7 +227,7 @@ class TierDetailViewModelTest {
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
         val said = async { viewModel.userMessages.first() }
 
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
 
         assertEquals(listOf(1L to "src-1"), repository.rankingsSet)
@@ -196,7 +246,7 @@ class TierDetailViewModelTest {
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
         val said = async { viewModel.userMessages.first() }
 
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
 
         assertEquals("p-1", (viewModel.screen.value.board as TierDetailUiState.Success).list.publishedId)
@@ -211,7 +261,7 @@ class TierDetailViewModelTest {
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
         val said = async { viewModel.userMessages.first() }
 
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
 
         assertEquals(UserMessage.PicturesDropped(3), said.await())
@@ -224,7 +274,7 @@ class TierDetailViewModelTest {
         val viewModel = TierDetailViewModel(repository, community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
 
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
 
         assertNull(withTimeoutOrNull(300) { viewModel.userMessages.first() })
@@ -238,7 +288,7 @@ class TierDetailViewModelTest {
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
         val said = async { viewModel.userMessages.first() }
 
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
 
         assertEquals(UserMessage.PublishedUnderReview, said.await())
@@ -260,6 +310,16 @@ class TierDetailViewModelTest {
         assertNull((viewModel.screen.value.board as TierDetailUiState.Success).list.rankingOf)
     }
 
+    /** A new publication is sent only after the server's preview has been explicitly accepted. */
+    private suspend fun TierDetailViewModel.publishAfterPreview() {
+        setPublic(true)
+        publicationState.firstWithin { !it.busy }
+        if (publicationState.value.preview != null) {
+            confirmPublication()
+            publicationState.firstWithin { !it.busy }
+        }
+    }
+
     /** A board whose new topic name the server took, answering with an id and, when asked about it, with [status]. */
     private suspend fun publishedWithNewTopic(status: TopicStatus): Pair<FakeTierRepository, TierDetailViewModel> {
         val repository = FakeTierRepository(listWithOneCard().copy(newTopicName = "Oscars 2025"))
@@ -269,7 +329,7 @@ class TierDetailViewModelTest {
         )
         val viewModel = TierDetailViewModel(repository, community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
         return repository to viewModel
     }
@@ -289,9 +349,9 @@ class TierDetailViewModelTest {
             savedStateHandle(),
         )
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
-        repository.readsAreHeld = true
+        repository.holdReadsAfterPublish = true
 
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         // Waiting on the pending flag itself rather than on `publishing`: those
         // are two writes one after the other, and waking between them made this
         // fail on a slow emulator for a reason that had nothing to do with the
@@ -314,7 +374,7 @@ class TierDetailViewModelTest {
         val seen = mutableListOf<TierDetailUiState>()
         val watcher = launch(Dispatchers.Unconfined) { viewModel.board.collect { seen += it } }
 
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
         viewModel.setPublic(false)
         viewModel.screen.firstWithin { !it.publish.publishing }
@@ -337,7 +397,7 @@ class TierDetailViewModelTest {
         )
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
 
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
 
         assertTrue(viewModel.screen.value.publish.categoryWanted)
         assertNull(viewModel.screen.value.publish.error)
@@ -354,7 +414,7 @@ class TierDetailViewModelTest {
             savedStateHandle(),
         )
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
 
         viewModel.categoryNotChosen()
 
@@ -378,7 +438,7 @@ class TierDetailViewModelTest {
         viewModel.board.firstWithin {
             (it as? TierDetailUiState.Success)?.list?.category == ListCategory.Food.id
         }
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
 
         assertEquals(ListCategory.Food.id, community.published.single().category)
@@ -417,7 +477,7 @@ class TierDetailViewModelTest {
         viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.anonymous == true }
         assertTrue(community.published.isEmpty())
 
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         community.sent.firstWithin { it.isNotEmpty() }
         assertTrue(community.published.single().anonymous)
     }
@@ -436,16 +496,15 @@ class TierDetailViewModelTest {
 
         viewModel.setCategory("street-food")
         viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.category == "street-food" }
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
 
         assertEquals("street-food", community.published.single().category)
     }
 
-    // The whole point of asking: choosing finishes what the switch started, so
-    // the second tap is the last one.
+    // A category edit changes the snapshot: the new server preview still needs its own confirmation.
     @Test
-    fun choosingTheCategoryItAskedFor_finishesThePublish() = runBlocking {
+    fun choosingTheCategoryItAskedFor_requiresFreshPreviewConfirmation() = runBlocking {
         val community = FakeCommunityRepositoryForDetail()
         val viewModel = TierDetailViewModel(
             FakeTierRepository(listWithOneCard().copy(category = null)),
@@ -454,9 +513,12 @@ class TierDetailViewModelTest {
             savedStateHandle(),
         )
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
 
         viewModel.setCategory(ListCategory.Food.id)
+        viewModel.publicationState.firstWithin { it.preview != null }
+        assertTrue(community.published.isEmpty())
+        viewModel.confirmPublication()
         // Waiting for the published id rather than for the pending flag to
         // clear: the flag has not been raised yet when setCategory returns.
         viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.publishedId != null }
@@ -497,7 +559,7 @@ class TierDetailViewModelTest {
             savedStateHandle(),
         )
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
 
         viewModel.setCategory(ListCategory.Food.id)
@@ -520,7 +582,7 @@ class TierDetailViewModelTest {
         )
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
 
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
 
         assertEquals(PublishError.NothingToPublish, viewModel.screen.value.publish.error)
         assertEquals(0, community.published.size)
@@ -539,7 +601,7 @@ class TierDetailViewModelTest {
         )
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
 
-        viewModel.setPublic(true)
+        viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
 
         assertEquals(PublishError.TooManyLists, viewModel.screen.value.publish.error)
@@ -726,6 +788,7 @@ private class FakeTierRepository(
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) {
         publishedIds += id to publishedId
         list = list.copy(publishedId = publishedId)
+        if (publishedId != null && holdReadsAfterPublish) readsAreHeld = true
     }
 
     val rankingsSet = mutableListOf<Pair<Long, String?>>()
@@ -733,6 +796,14 @@ private class FakeTierRepository(
     override suspend fun setRankingOf(id: Long, listId: String?) {
         rankingsSet += id to listId
         list = list.copy(rankingOf = listId)
+    }
+
+    override suspend fun setRankingChoice(id: Long, choice: RankingChoice) {
+        list = list.copy(rankingChoice = choice)
+    }
+
+    override suspend fun setRankingOrigin(id: Long, sourceVersion: Long) {
+        list = list.copy(originVersion = sourceVersion)
     }
 
     override suspend fun publishedStanding(): PublishedStanding = PublishedStanding()
@@ -786,6 +857,7 @@ private class FakeTierRepository(
         reorderGate.complete(Unit)
     }
 
+    var holdReadsAfterPublish = false
     var readsAreHeld = false
     private val heldRead = CompletableDeferred<Unit>()
 

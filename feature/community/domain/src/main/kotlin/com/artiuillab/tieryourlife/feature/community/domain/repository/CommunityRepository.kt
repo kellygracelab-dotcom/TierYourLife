@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationRepo
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalError
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublicationKind
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
@@ -147,6 +148,20 @@ interface CommunityRepository {
     /** As the server has it, not as this phone remembers: a list survives the phone that published it. */
     suspend fun myPublished(): Result<List<PublishedListSummary>>
 
+    /** Version-bound positional write; old test/alternative implementations retain their original method. */
+    suspend fun showMyRankingVersioned(
+        listId: String,
+        arrangement: List<Int?>,
+        rows: List<List<Int>>,
+        tierLabels: List<String>,
+        version: Long?,
+        expectedOwnerUid: String? = null,
+    ): Result<ShownRanking> = showMyRanking(listId, arrangement, rows, tierLabels)
+
+    /** A read-only preflight, including guests, without uploading pictures or publishing. */
+    suspend fun classifyPublication(list: TierList): Result<PublicationKind> =
+        Result.failure(UnsupportedOperationException("Publication preflight is not available"))
+
     /** A list that is not there any more fails with [com.artiuillab.tieryourlife.feature.community.domain.model.ListGone]. */
     suspend fun open(id: String): Result<PublishedList>
 
@@ -155,6 +170,9 @@ interface CommunityRepository {
      * tell later whether it moved on. A board with a previous id replaces that snapshot.
      */
     suspend fun publish(list: TierList): Result<Published>
+
+    /** An explicit public action remains bound to the account that confirmed it. */
+    suspend fun publishOwned(list: TierList, expectedOwnerUid: String): Result<Published> = publish(list)
 
     suspend fun unpublish(publishedId: String): Result<Unit>
 

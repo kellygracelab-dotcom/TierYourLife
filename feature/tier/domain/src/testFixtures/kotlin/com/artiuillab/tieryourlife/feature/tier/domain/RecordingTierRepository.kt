@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.domain
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -29,6 +30,16 @@ class RecordingTierRepository(
 ) : TierRepository {
 
     val templates = mutableListOf<SavedTemplate>()
+    val rankingChoices = mutableListOf<Pair<Long, RankingChoice>>()
+    val rankingOrigins = mutableListOf<Pair<Long, Long>>()
+
+    override suspend fun setRankingChoice(id: Long, choice: RankingChoice) {
+        rankingChoices += id to choice
+    }
+    override suspend fun setRankingOrigin(id: Long, sourceVersion: Long) {
+        rankingOrigins += id to sourceVersion
+    }
+    override suspend fun getTierListByUid(uid: String): TierList? = boards.firstOrNull { it.uid == uid }
     var clearedPublishedId: Long? = null
 
     /** Every published id written, as (id, publishedId), cleared ones included. */

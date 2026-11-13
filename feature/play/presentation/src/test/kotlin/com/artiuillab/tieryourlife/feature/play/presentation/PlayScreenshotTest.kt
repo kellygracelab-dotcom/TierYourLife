@@ -71,20 +71,29 @@ class PlayScreenshotTest {
     }
 
     @Test
-    fun choosingCards_oneTier_offersToKeepThemInIt() = capture("play_choose_one_tier") {
+    fun choosingCards_oneTier_ordersOnlyThatTier() = capture("play_choose_one_tier") {
         Sheet(picker.copy(page = PickerPage.Cards, chosen = setOf(1L)))
     }
 
     @Test
-    fun choosingCards_tooMany_saysSo() = capture("play_choose_too_many") {
-        Sheet(
-            picker.copy(
-                page = PickerPage.Cards,
-                cardsFirst = true,
-                groups = picker.groups.map { if (it.isPool) it.copy(count = 80) else it },
-                chosen = setOf(POOL, 1L),
-            ),
-        )
+    fun choosingCards_allNinetyOneAndQuickSamples() = capture("play_choose_all_91") {
+        val board = board(1L to (1L..91L).toList(), POOL to emptyList())
+        Sheet(Picker(board.title, groupsOf(board), setOf(1L), cards = cardsOf(board), page = PickerPage.Cards))
+    }
+
+    @Test
+    fun individualCards_showTheActualSelectedComposition() = capture("play_individual_selection") {
+        val board = board(1L to (1L..91L).toList(), POOL to emptyList())
+        Surface(Modifier.fillMaxSize()) {
+            Column {
+                PickerContent(Picker(board.title, groupsOf(board), setOf(1L), cards = cardsOf(board), selectedIds = (1L..16L).toList(), page = PickerPage.Individual), PickerActions())
+            }
+        }
+    }
+
+    @Test
+    fun resultOffersDefaultKeepOrPoolForUnplayedCards() = capture("play_result_unplayed") {
+        ResultScreen(result.copy(unplayedCount = 75), ResultActions())
     }
 
     @Test

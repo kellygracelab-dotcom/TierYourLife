@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.data.repository
 
+import com.artiuillab.tieryourlife.core.network.ExpectedUserMismatch
 import com.artiuillab.tieryourlife.feature.community.data.remote.banNotice
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIdDto
@@ -14,6 +15,7 @@ import retrofit2.HttpException
 import java.io.IOException
 
 internal fun Throwable.asPublishError(): PublishError = when {
+    this is ExpectedUserMismatch -> PublishError.NotSignedIn
     isAppUnverified() -> PublishError.NotVerified
     this is HttpException -> when (code()) {
         HTTP_FORBIDDEN -> banNotice()?.let { PublishError.Banned(it.untilMillis) }
@@ -22,7 +24,9 @@ internal fun Throwable.asPublishError(): PublishError = when {
         HTTP_NOT_FOUND -> PublishError.ListGone
         HTTP_CONFLICT -> when (proxyCode()) {
             PUBLICATION_CHANGED -> PublishError.ChangedElsewhere
+            "LIST_CHANGED" -> PublishError.SourceChanged
             TOO_MANY_PENDING_TOPICS -> PublishError.TooManyPendingTopics
+            TOO_MANY_LISTS -> publicationQuotaRefusal()
             else -> PublishError.TooManyLists
         }
         HTTP_BAD_REQUEST -> when {
@@ -67,6 +71,7 @@ internal fun TierList.topicToLearn(answer: PublishedIdDto): String? =
     answer.topicId?.takeIf { !answer.ranking && it != topicId && newTopicName == null }
 
 private const val TOO_MANY_PENDING_TOPICS = "TOO_MANY_PENDING_TOPICS"
+private const val TOO_MANY_LISTS = "TOO_MANY_LISTS"
 private const val PUBLICATION_CHANGED = "PUBLICATION_CHANGED"
 private const val CURSOR_GONE = "CURSOR_GONE"
 private const val NOT_YOURS = "NOT_YOURS"

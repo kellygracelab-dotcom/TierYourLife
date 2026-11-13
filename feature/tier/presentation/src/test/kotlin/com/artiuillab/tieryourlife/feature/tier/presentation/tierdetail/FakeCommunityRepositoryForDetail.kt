@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublicationKind
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
@@ -13,6 +14,7 @@ internal class FakeCommunityRepositoryForDetail(
     private val publishResult: Result<Published> = Result.success(Published("published-1", "sent")),
     /** What the server says of any topic it is asked about. */
     private val topicStatus: TopicStatus = TopicStatus.Pending,
+    private val publicationKind: PublicationKind? = null,
 ) : FakeCommunityRepository() {
     val published = mutableListOf<TierList>()
 
@@ -20,6 +22,10 @@ internal class FakeCommunityRepositoryForDetail(
     val sent = MutableStateFlow<List<TierList>>(emptyList())
     val unpublished = mutableListOf<String>()
     val withdrawn = mutableListOf<String>()
+
+    override suspend fun classifyPublication(list: TierList): Result<PublicationKind> = Result.success(
+        publicationKind ?: publishResult.getOrNull()?.takeIf { it.ranking }?.let { PublicationKind.Ranking(it.id, 1) } ?: PublicationKind.NewList(),
+    )
 
     override suspend fun withdrawRanking(listId: String): Result<Unit> {
         withdrawn += listId

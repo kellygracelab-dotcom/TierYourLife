@@ -8,13 +8,14 @@ import com.artiuillab.tieryourlife.feature.play.domain.duels
 import com.artiuillab.tieryourlife.feature.play.domain.estimatedDuels
 import com.artiuillab.tieryourlife.feature.play.domain.isDashed
 import com.artiuillab.tieryourlife.feature.play.domain.isThin
+import com.artiuillab.tieryourlife.feature.play.domain.lostTier
 import com.artiuillab.tieryourlife.feature.play.domain.nextPair
 import com.artiuillab.tieryourlife.feature.play.domain.progress
 import com.artiuillab.tieryourlife.feature.play.domain.refineDuels
-import com.artiuillab.tieryourlife.feature.play.domain.result
 import com.artiuillab.tieryourlife.feature.play.domain.resumeOn
 import com.artiuillab.tieryourlife.feature.play.domain.standing
 import com.artiuillab.tieryourlife.feature.play.domain.swissRounds
+import com.artiuillab.tieryourlife.feature.play.domain.tiers
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -45,6 +46,12 @@ internal fun groupsOf(board: TierList): List<CardGroup> =
             )
         }
 
+internal fun cardsOf(board: TierList): List<CardOption> =
+    board.playOrder().flatMap { tier -> tier.items.map { CardOption(it, tier.id) } }.distinctBy { it.item.id }
+
+internal fun quickCounts(available: Int): List<Int> =
+    generateSequence(FIRST_QUICK_COUNT) { if (it <= Int.MAX_VALUE / 2) it * 2 else null }.takeWhile { it <= available }.toList()
+
 /** Duels a game will take: the estimate while it runs, what it took once the main game is over. */
 internal fun totalOf(game: SavedGame): Int {
     val progress = progress(game.spec, game.history)
@@ -52,8 +59,8 @@ internal fun totalOf(game: SavedGame): Int {
 }
 
 internal fun offerFor(saved: SavedGame, board: TierList): ResumeOffer {
-    val cards = board.cardsIn(saved.scope)
-    val resumption = saved.resumeOn(cards.map { it.id })
+    val cards = board.cardsIn(null)
+    val resumption = saved.resumeOn(cards.map { it.id }, board.tierRowIds())
     val game = (resumption as? Resumption.Ready)?.game ?: saved
     return ResumeOffer(
         kind = game.spec.kind,
@@ -62,7 +69,7 @@ internal fun offerFor(saved: SavedGame, board: TierList): ResumeOffer {
         startedAt = saved.startedAt,
         changed = resumption is Resumption.Changed,
         joined = (resumption as? Resumption.Ready)?.joined ?: 0,
-        canStartAgain = cards.size >= MIN_PLAY_CARDS,
+        canStartAgain = !saved.lostTier(board.tierRowIds()) && saved.ids.count { id -> cards.any { it.id == id } } >= MIN_PLAY_CARDS,
     )
 }
 
@@ -89,19 +96,23 @@ internal fun stageOf(session: Session, intoMine: Boolean): PlayStage {
 
 /**
  * Where the game leaves its cards. One tier being ordered keeps them all in
- * it, best first; otherwise the board's tiers take them as the engine cuts
+ * it, best first, and when that tier is gone they go nowhere rather than
+ * across the board; otherwise the board's tiers take them as the engine cuts
  * them, the pool never.
  */
 internal fun resultOf(session: Session, intoMine: Boolean): ResultState {
     val game = session.game
     val standing = standing(game.spec.count, game.history.duels())
     val ranked = session.board.tiers.filterNot { it.isPool }
-    val kept = game.scope?.singleOrNull()?.takeIf { game.keepTier }?.let { id -> ranked.firstOrNull { it.id == id } }
+    val keptId = game.scope?.singleOrNull()?.takeIf { game.keepTier }
+    val kept = keptId?.let { id -> ranked.firstOrNull { it.id == id } }
     val placed: List<Pair<Tier, List<Int>>> = when {
         kept != null -> listOf(kept to standing.order)
+        keptId != null -> emptyList()
         ranked.isEmpty() -> emptyList()
-        else -> ranked.zip(result(game.spec, game.history, ranked.size))
+        else -> ranked.zip(tiers(standing, ranked.size))
     }
+    val participants = game.ids.toSet()
     return ResultState(
         kind = game.spec.kind,
         duels = game.history.duels().size,
@@ -119,5 +130,8 @@ internal fun resultOf(session: Session, intoMine: Boolean): ResultState {
         thin = isThin(standing),
         refineDuels = if (game.spec.refine) 0 else refineDuels(game.spec.count, game.history),
         intoMine = intoMine,
+        unplayedCount = unplayedIn(session.board, game, participants),
     )
 }
+
+private const val FIRST_QUICK_COUNT = 16

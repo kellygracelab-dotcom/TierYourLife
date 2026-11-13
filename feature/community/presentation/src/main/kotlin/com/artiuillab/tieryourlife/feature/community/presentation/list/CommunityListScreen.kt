@@ -52,6 +52,8 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
+import com.artiuillab.tieryourlife.core.theme.ui.RankingChoiceDialog
+import com.artiuillab.tieryourlife.core.theme.ui.ReturnToPoolDialog
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.presentation.R
@@ -125,9 +127,10 @@ fun CommunityListScreen(
         onChooseRanking = viewModel.rankings::choose,
         onLoadMoreRankings = viewModel.rankings::loadMore,
         onWithdrawRanking = viewModel.rankings::withdrawMine,
+        onReturnAllToPool = viewModel.rankings::returnAllToPool,
         onPlay = { playOpen = true },
         playSaved = playRequest?.let { play.isSaved(it.key) } == true,
-        onShowMyRanking = viewModel::showMyRanking,
+        onShowMyRanking = { viewModel.showMyRanking(languageTag) },
         onSignIn = onSignIn,
         userMessages = viewModel.userMessages,
         rankingNotices = viewModel.rankingNotices,
@@ -140,6 +143,17 @@ fun CommunityListScreen(
         onUndoStartFromTheirs = viewModel::undoStartFromTheirs,
         listNotices = viewModel.listNotices,
     )
+    val loaded = state as? CommunityListUiState.Success
+    val offer = loaded?.rankingOffer
+    LaunchedEffect(offer) { if (offer != null) viewModel.choices.recordOffer(languageTag) }
+    if (offer != null) {
+        RankingChoiceDialog(
+            placed = offer.placed, total = offer.total, signedIn = loaded.signedIn, busy = loaded.saving,
+            onPrivate = { viewModel.choices.choose(public = false, languageTag) },
+            onPublic = { viewModel.choices.choose(public = true, languageTag) },
+            onDismiss = viewModel.choices::dismiss,
+        )
+    }
     if (playRequest != null) {
         play.Layer(request = playRequest, open = playOpen, onArranged = viewModel::putInMine, onClose = { playOpen = false })
     }
@@ -167,6 +181,7 @@ fun CommunityListScreenContent(
     onChooseRanking: (Ranking?) -> Unit = {},
     onLoadMoreRankings: () -> Unit = {},
     onWithdrawRanking: () -> Unit = {},
+    onReturnAllToPool: () -> Unit = {},
     /** Play from either half; its result fills Mine. */
     onPlay: (() -> Unit)? = null,
     playSaved: Boolean = false,
@@ -179,6 +194,7 @@ fun CommunityListScreenContent(
     listNotices: Flow<ListNotice> = emptyFlow(),
 ) {
     var actionsVisible by remember { mutableStateOf(false) }
+    var returnToPoolVisible by rememberSaveable { mutableStateOf(false) }
     // A card in the air on Theirs: the strip says what dropping it will do.
     var lifted by remember { mutableStateOf(false) }
     val snackbars = remember { SnackbarHostState() }
@@ -347,7 +363,18 @@ fun CommunityListScreenContent(
                     onReport = { reportVisible = true },
                     onShowMyRanking = { if (loaded.signedIn) onShowMyRanking() else onSignIn() },
                     onOpenRankings = openRankings,
+                    onReturnAllToPool = { returnToPoolVisible = true },
                     own = own,
+                )
+            }
+
+            if (returnToPoolVisible) {
+                ReturnToPoolDialog(
+                    onDismiss = { returnToPoolVisible = false },
+                    onConfirm = {
+                        returnToPoolVisible = false
+                        onReturnAllToPool()
+                    },
                 )
             }
 
@@ -415,6 +442,7 @@ private fun ListMenu(
     onReport: () -> Unit,
     onShowMyRanking: () -> Unit,
     onOpenRankings: () -> Unit,
+    onReturnAllToPool: () -> Unit,
     own: OwnListCallbacks,
 ) {
     fun closing(action: () -> Unit): () -> Unit = {
@@ -437,6 +465,8 @@ private fun ListMenu(
         onTakeDown = closing(own.onTakeDown).takeIf { mine && !loaded.fromBoard },
         onOpenRankings = closing(onOpenRankings),
         rankingCount = loaded.rankingCount,
+        onReturnAllToPool = closing(onReturnAllToPool).takeIf { !loaded.own && !loaded.arriving && loaded.showing == Showing.Mine },
+        canReturnAllToPool = loaded.mine.tiers.any { !it.isPool && it.items.isNotEmpty() },
     )
 }
 

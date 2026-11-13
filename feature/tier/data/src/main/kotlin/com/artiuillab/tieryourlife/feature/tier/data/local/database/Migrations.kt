@@ -5,6 +5,22 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 
+/** Additive private lineage and one-time decision memory; every existing board/card stays intact. */
+val MIGRATION_18_19 = object : Migration(18, 19) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN originVersion INTEGER")
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN rankingChoice TEXT")
+        db.execSQL("ALTER TABLE tier_items ADD COLUMN sourceIndex INTEGER")
+    }
+}
+
+/** Existing agreements do not prove that a retained large game has been read. */
+val MIGRATION_17_18 = object : Migration(17, 18) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE board_sync ADD COLUMN remoteFingerprint TEXT")
+    }
+}
+
 /**
  * A cover chosen from the gallery was once kept as the gallery's address, and
  * the permission to read it ended with the process that picked it. It is no

@@ -39,4 +39,26 @@
         <item quantity="one">Published. %1$d picture from another site couldn’t be added.</item>
         <item quantity="other">Published. %1$d pictures from other sites couldn’t be added.</item>
     </plurals>
+    <string name="community_return_all_to_pool">Return all cards to pool</string>
+    <string name="community_return_to_pool_title">Return all cards to the pool?</string>
+    <string name="community_return_to_pool_explanation">The tier arrangement will be reset.</string>
+    <string name="community_return_to_pool_confirm">Return to pool</string>
+    <string name="ranking_choice_title">Keep your progress</string>
+    <plurals name="ranking_choice_body">
+        <item quantity="one">You have placed %1$d of %2$d card. Share your ranking next to the original, or keep it private and continue.</item>
+        <item quantity="other">You have placed %1$d of %2$d cards. Share your ranking next to the original, or keep it private and continue.</item>
+    </plurals>
+    <string name="ranking_choice_public">Publish my ranking</string>
+    <string name="ranking_choice_sign_in">Sign in to publish</string>
+    <string name="ranking_choice_private">Save for myself</string>
+    <string name="publication_preview_title">How this will be published</string>
+    <string name="publication_preview_ranking">This will be your ranking next to the original list. Your private copy stays editable.</string>
+    <string name="publication_preview_list">This will be a separate list with credit to the original. Your private copy stays editable.</string>
+    <string name="publication_preview_confirm">Publish</string>
+    <string name="source_changed">The original list changed. Reopen it before publishing your ranking.</string>
+    <string name="ranking_choice_storage_account">Your private copy is saved in your library and synced with your account.</string>
+    <string name="ranking_choice_storage_guest">Your private copy is saved in the library on this device. Sign in to sync it.</string>
+    <string name="publication_preview_independent">This will be a separate public list. Your private copy stays editable.</string>
+    <string name="source_changed_recheck">Check against the current original</string>
+    <string name="publication_limit_until">You can publish another new list after %1$s. You can still keep private boards and publish Rankings.</string>
 </resources>

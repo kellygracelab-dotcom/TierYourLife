@@ -137,18 +137,26 @@ private fun swissPairs(spec: GameSpec, history: List<Outcome>): Progress {
  */
 internal fun swissRound(count: Int, history: List<Outcome>): List<Pair<Int, Int>> {
     val wins = IntArray(count)
-    val met = Array(count) { BooleanArray(count) }
+    val met = Array(count) { mutableSetOf<Int>() }
     for (outcome in history) {
         outcome.winner?.let { wins[it]++ }
-        met[outcome.first][outcome.second] = true
-        met[outcome.second][outcome.first] = true
+        met[outcome.first].add(outcome.second)
+        met[outcome.second].add(outcome.first)
     }
     val standings = (0 until count).sortedWith(compareByDescending<Int> { wins[it] }.thenBy { it })
     val paired = BooleanArray(count)
     val pairs = mutableListOf<Pair<Int, Int>>()
     for ((at, card) in standings.withIndex()) {
-        val partner = standings.drop(at + 1).firstOrNull { !paired[it] && !met[card][it] }
-        if (!paired[card] && partner != null) {
+        if (paired[card]) continue
+        var partner: Int? = null
+        for (position in at + 1 until standings.size) {
+            val other = standings[position]
+            if (!paired[other] && other !in met[card]) {
+                partner = other
+                break
+            }
+        }
+        if (partner != null) {
             paired[card] = true
             paired[partner] = true
             pairs += card to partner

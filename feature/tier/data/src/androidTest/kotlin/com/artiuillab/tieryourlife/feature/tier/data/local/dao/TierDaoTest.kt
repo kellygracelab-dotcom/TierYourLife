@@ -46,6 +46,25 @@ class TierDaoTest {
     // A reader's ranking has to reach the database as a ranking. It used to
     // arrive as a pool: every card went to Unranked whatever tier it was in.
     @Test
+    fun returnAllToPoolChecksTheOwner_andKeepsPoolBeforeRankedCardsInOneTransaction() = runBlocking {
+        val id = dao.createTierListWithDefaultTier("QA 91", CAPTIONS, owner = "ann")
+        val originalTiers = dao.getAllTiersByTierListId(id)
+        val s = originalTiers.single { it.label == "S" }
+        val a = originalTiers.single { it.label == "A" }
+        val pool = originalTiers.single { it.isPool }
+        val poolIds = (0 until 7).map { dao.insertTierItem(tierItem(pool.id, "Pool $it", it)) }
+        val sIds = (0 until 65).map { dao.insertTierItem(tierItem(s.id, "S $it", it)) }
+        val aIds = (0 until 26).map { dao.insertTierItem(tierItem(a.id, "A $it", it)) }
+        dao.returnAllToPool(id, owner = "bob")
+        assertEquals(sIds, dao.getAllTierItemsByTierId(s.id).map { it.id })
+        dao.returnAllToPool(id, owner = "ann")
+        assertEquals(originalTiers, dao.getAllTiersByTierListId(id))
+        assertEquals(poolIds + sIds + aIds, dao.getAllTierItemsByTierId(pool.id).map { it.id })
+        assertEquals((0 until 98).toList(), dao.getAllTierItemsByTierId(pool.id).map { it.position })
+        assertTrue(originalTiers.filterNot { it.isPool }.all { dao.getAllTierItemsByTierId(it.id).isEmpty() })
+    }
+
+    @Test
     fun a_board_built_from_a_template_keeps_each_card_in_its_tier() = runBlocking {
         val id = dao.createTierListFromTemplate(
             title = "Films I make people watch",

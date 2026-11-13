@@ -24,6 +24,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailRoute
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BoardPublicationController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Deferred
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -43,7 +45,7 @@ import javax.inject.Inject
 class TierDetailViewModel @Inject constructor(
     private val repository: TierRepository,
     private val community: CommunityRepository,
-    accountRepository: AccountRepository,
+    private val accountRepository: AccountRepository,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -82,11 +84,48 @@ class TierDetailViewModel @Inject constructor(
     val userMessages: Flow<UserMessage> = messages.flow
 
     private val removedItems = mutableMapOf<Long, Deferred<RemovedTierItem?>>()
+    private val publication = BoardPublicationController(
+        repository, community, accountRepository, viewModelScope,
+        current = { (board as? TierDetailUiState.Success)?.list },
+        busy = { value, pending ->
+            publishing = value
+            publicPending = pending
+        },
+        error = { reason ->
+            publishError = reason
+            if (reason == PublishError.TopicUnavailable) forgetTopic()
+            if (reason == PublishError.ListGone) forgetPublished()
+        },
+        wantsCategory = { categoryWanted = true },
+        takeDown = ::takeDown,
+        recorded = ::recordPublished,
+        reload = ::reloadTierList,
+    )
+    internal val publicationState = publication.state
+
+    fun confirmPublication() = publication.confirmPreview()
+    fun dismissPublication() = publication.dismissPreview()
+    fun dismissPublicationError() = publication.dismissError()
+    fun dismissRankingOffer() = publication.dismissOffer()
+    fun keepRankingPrivate() = publication.keepPrivate()
+    fun shareRankingOffer(onSignIn: () -> Unit) = publication.shareOffer(onSignIn)
+    fun recheckOriginal() = publication.recheckOriginal()
 
     init {
         viewModelScope.launch {
-            accountRepository.account.collect { account ->
+            var observed: Account? = null
+            accountRepository.account.collectLatest { account ->
+                val changedOwner = observed != null &&
+                    (
+                    (observed as? Account.SignedIn)?.recordKey != (account as? Account.SignedIn)?.recordKey || observed == Account.Unknown
+                    )
+                observed = account
                 _screen.update { it.copy(signedIn = account is Account.SignedIn) }
+                if (changedOwner) {
+                    publication.accountChanged()
+                    board = TierDetailUiState.Loading
+                    reloadTierList()
+                }
             }
         }
         loadTierList()
@@ -103,40 +142,7 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    fun setPublic(public: Boolean) {
-        val list = (board as? TierDetailUiState.Success)?.list ?: return
-        if (publishing) return
-        publishError = null
-
-        if (public && list.tiers.none { it.items.isNotEmpty() }) {
-            publishError = PublishError.NothingToPublish
-            return
-        }
-        if (public && list.category == null) {
-            categoryWanted = true
-            return
-        }
-
-        publishing = true
-        publicPending = public
-        viewModelScope.launch {
-            val result: Result<Published?> = if (public) {
-                community.publish(list)
-            } else {
-                takeDown(list)
-            }
-            result.fold(
-                onSuccess = { published -> recordPublished(list, published) },
-                onFailure = { failure ->
-                    publishError = publishErrorOf(failure, public)
-                    if (publishError == PublishError.TopicUnavailable) forgetTopic()
-                    if (publishError == PublishError.ListGone) forgetPublished()
-                },
-            )
-            publishing = false
-            publicPending = null
-        }
-    }
+    fun setPublic(public: Boolean) = publication.setPublic(public)
 
     /** A ranking comes down from the list it sits beside; a list of its own comes down by its id. */
     private suspend fun takeDown(list: TierList): Result<Published?> {
@@ -159,7 +165,7 @@ class TierDetailViewModel @Inject constructor(
             val topicId = published?.topicId
             if (topicId != null) {
                 waiting = waitingName(list, topicId)
-                repository.setTopic(tierListId, topicId, published?.topicName ?: list.topicName ?: list.newTopicName, waiting)
+                repository.setTopic(tierListId, topicId, published.topicName ?: list.topicName ?: list.newTopicName, waiting)
             } else if (published != null && list.topicTakenOff) {
                 // Said once and done: from now on no topic here leaves the list's as it is.
                 repository.setTopic(tierListId, null, null, null)
@@ -272,6 +278,12 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
+    fun returnAllToPool() {
+        val current = board as? TierDetailUiState.Success ?: return
+        if (current.list.tiers.none { !it.isPool && it.items.isNotEmpty() }) return
+        mutate("Returning all cards to the pool") { repository.returnAllToPool(tierListId) }
+    }
+
     fun reorderTiers(orderedTierIds: List<Long>) {
         val current = board
         if (current is TierDetailUiState.Success) {
@@ -380,7 +392,7 @@ class TierDetailViewModel @Inject constructor(
                 when {
                     topicId != null -> out.copy(
                         topicId = topicId,
-                        topicName = list.topicName ?: list.newTopicName ?: published?.topicName,
+                        topicName = list.topicName ?: list.newTopicName ?: published.topicName,
                         newTopicName = waiting,
                         topicTakenOff = false,
                     )
@@ -442,11 +454,15 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
+    private var loadRevision = 0
+
     private suspend fun reloadTierList() {
+        val revision = ++loadRevision
+        val owner = (accountRepository.current() as? Account.SignedIn)?.recordKey
         val hasVisibleList = board is TierDetailUiState.Success
         try {
             val list = repository.getTierListById(tierListId)
-            if (changesInFlight > 0) return
+            if (changesInFlight > 0 || revision != loadRevision || owner != (accountRepository.current() as? Account.SignedIn)?.recordKey) return
             board = if (list != null) {
                 dropSettledPublishError(list)
                 if (list.publishedId != null) refreshPublishedStanding(list)
@@ -454,9 +470,11 @@ class TierDetailViewModel @Inject constructor(
             } else {
                 TierDetailUiState.Error
             }
+            if (list != null) publication.loaded(list)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            if (revision != loadRevision || owner != (accountRepository.current() as? Account.SignedIn)?.recordKey) return
             Timber.w(e, "Loading the tier list failed")
             if (hasVisibleList) {
                 messages.send(UserMessage.ActionFailed)

@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.artiuillab.tieryourlife.core.network.ProxyRetrofit
 import com.artiuillab.tieryourlife.feature.community.data.cache.FeedCacheDao
 import com.artiuillab.tieryourlife.feature.community.data.cache.FeedCacheDatabase
+import com.artiuillab.tieryourlife.feature.community.data.cache.FileRankingDrafts
 import com.artiuillab.tieryourlife.feature.community.data.cache.RoomCommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.data.cache.RoomOpenedLists
 import com.artiuillab.tieryourlife.feature.community.data.cache.RoomSectionStore
@@ -18,6 +19,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.Community
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.KeptSectionCatalog
 import com.artiuillab.tieryourlife.feature.community.domain.repository.OpenedLists
+import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionPictures
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionStore
@@ -54,6 +56,10 @@ abstract class CommunityModule {
     @Binds
     @Singleton
     abstract fun bindOpenedLists(implementation: RoomOpenedLists): OpenedLists
+
+    @Binds
+    @Singleton
+    abstract fun bindRankingDrafts(implementation: FileRankingDrafts): RankingDrafts
 
     @Binds
     @Singleton

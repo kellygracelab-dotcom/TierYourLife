@@ -41,26 +41,17 @@
     <string name="play_start">Start</string>
     <string name="play_continue">Continue</string>
     <string name="play_back">Back</string>
-    <plurals name="play_cards_limit">
-        <item quantity="one">Up to %1$d card in one game</item>
-        <item quantity="other">Up to %1$d cards in one game</item>
-    </plurals>
     <string name="play_pool">The pool</string>
     <string name="play_everything">Everything</string>
     <plurals name="play_cards">
         <item quantity="one">%1$d card</item>
         <item quantity="other">%1$d cards</item>
     </plurals>
-    <string name="play_too_many_in_tier">Too many for one game.</string>
     <plurals name="play_selected">
         <item quantity="one">%1$d of %2$d selected</item>
         <item quantity="other">%1$d of %2$d selected</item>
     </plurals>
-    <plurals name="play_selected_too_many">
-        <item quantity="one">%1$d selected, pick up to 64</item>
-        <item quantity="other">%1$d selected, pick up to 64</item>
-    </plurals>
-    <string name="play_keep_in_tier">Keep them in %1$s, just order them</string>
+    <string name="play_ranked">Ranked</string>
     <string name="play_quit">Quit</string>
     <string name="play_duel_of">Duel %1$d of %2$d</string>
     <string name="play_round_of">Round %1$d of %2$d</string>
@@ -104,4 +95,12 @@
     <string name="play_snack_undo">Undo</string>
     <string name="play_snack_not_saved">Couldn’t save the game</string>
     <string name="play_snack_list_updated">This list was updated during the game, so the game was dropped</string>
+    <string name="play_random_sample">Random selection</string>
+    <string name="play_individual_cards">Individual cards</string>
+    <string name="play_select_candidates">Select all candidates</string>
+    <string name="play_clear_selection">Clear selection</string>
+    <string name="play_card_unnamed">Untitled card</string>
+    <string name="play_unplayed_options">Cards outside the game</string>
+    <string name="play_unplayed_keep">Keep in original tiers, after played cards</string>
+    <string name="play_unplayed_pool">Move to pool</string>
 </resources>

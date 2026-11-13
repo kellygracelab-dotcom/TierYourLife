@@ -2,7 +2,6 @@ package com.artiuillab.tieryourlife.feature.play.domain
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -45,7 +44,7 @@ class SavedGameTest {
         val found = saved.foundBy(rows::get, mapOf("t-s" to 50L)::get)
 
         assertEquals(listOf(110L, -2L, 130L), found.ids)
-        assertEquals(listOf(50L), found.scope)
+        assertEquals(listOf(50L, MISSING_TIER - 1), found.scope)
         assertEquals(saved.history, found.history)
     }
 
@@ -65,65 +64,29 @@ class SavedGameTest {
     }
 
     @Test
-    fun aHillOrBracket_whoseCardsChanged_startsAgain() {
-        listOf(GameKind.Hill, GameKind.Bracket).forEach { kind ->
-            val saved = game(kind, listOf(10, 20, 30))
-            assertEquals(Resumption.Changed, saved.resumeOn(listOf(10, 20)))
-            assertEquals(Resumption.Changed, saved.resumeOn(listOf(10, 20, 30, 40)))
+    fun everyMode_keepsItsExactCohortWhenNewCardsArrive_andRejectsMissingParticipants() {
+        GameKind.entries.forEach { kind ->
+            for (count in listOf(3, 16, 65, 91, 128, 257)) {
+                val ids = (1L..count.toLong()).toList()
+                val saved = game(kind, ids, listOf(Outcome(0, 1, 0)))
+                assertEquals(Resumption.Ready(saved), saved.resumeOn(ids.reversed() + 9999L))
+                assertEquals(Resumption.Changed, saved.resumeOn(ids.dropLast(1) + 9999L))
+            }
         }
     }
 
     @Test
-    fun swiss_dropsWhatADeletedCardPlayed_andRenumbersTheRest() {
-        val saved = game(
-            GameKind.Swiss,
-            listOf(10, 20, 30, 40),
-            listOf(Outcome(0, 1, winner = 0), Outcome(2, 3, winner = 3), Outcome(1, 3, winner = null)),
-        )
+    fun aGameWhoseAreaLostATier_cannotResume_butARenamedOneStillCan() {
+        val saved = game(GameKind.Swiss, listOf(1, 2, 3)).copy(scope = listOf(7L), keepTier = true)
 
-        val resumed = saved.resumeOn(listOf(10, 30, 40)) as Resumption.Ready
-
-        assertEquals(listOf(10L, 30L, 40L), resumed.game.ids)
-        assertEquals(3, resumed.game.spec.count)
-        assertEquals(listOf(Outcome(1, 2, winner = 2)), resumed.game.history)
-        assertEquals(0, resumed.joined)
+        assertEquals(Resumption.Ready(saved), saved.resumeOn(listOf(1, 2, 3), tiers = listOf(7L, 8L)))
+        assertEquals(Resumption.Changed, saved.resumeOn(listOf(1, 2, 3), tiers = listOf(8L)))
     }
 
     @Test
-    fun swiss_renumbered_dropsTheUidsOfTheOldOrder() {
-        val saved = game(GameKind.Swiss, listOf(10, 20, 30), listOf(Outcome(0, 1, winner = 1)))
-            .copy(uids = listOf("a", "b", "c"), scopeUids = emptyList())
-
-        val resumed = saved.resumeOn(listOf(10, 30, 40)) as Resumption.Ready
-
-        assertNull(resumed.game.uids)
-        assertNull(resumed.game.scopeUids)
-    }
-
-    @Test
-    fun swiss_letsNewCardsInBehindTheOnesItHad() {
-        val saved = game(GameKind.Swiss, listOf(10, 20, 30), listOf(Outcome(0, 1, winner = 1)))
-
-        val resumed = saved.resumeOn(listOf(5, 10, 20, 30, 40)) as Resumption.Ready
-
-        assertEquals(listOf(10L, 20L, 30L, 5L, 40L), resumed.game.ids)
-        assertEquals(listOf(Outcome(0, 1, winner = 1)), resumed.game.history)
-        assertEquals(2, resumed.joined)
-    }
-
-    @Test
-    fun swiss_neverGrowsPastSixtyFourCards() {
-        val ids = (1L..60L).toList()
-        val saved = game(GameKind.Swiss, ids)
-
-        val resumed = saved.resumeOn(ids + (100L..110L)) as Resumption.Ready
-
-        assertEquals(MAX_PLAY_CARDS, resumed.game.ids.size)
-        assertEquals(4, resumed.joined)
-    }
-
-    @Test
-    fun swiss_withFewerThanTwoCardsLeft_startsAgain() {
-        assertEquals(Resumption.Changed, game(GameKind.Swiss, listOf(1, 2, 3)).resumeOn(listOf(2)))
+    fun aCorruptCohortCannotResume() {
+        val saved = game(GameKind.Swiss, listOf(1, 2, 3))
+        assertEquals(Resumption.Changed, saved.copy(ids = listOf(1, 1, 3)).resumeOn(listOf(1, 2, 3)))
+        assertEquals(Resumption.Changed, saved.copy(spec = saved.spec.copy(count = 4)).resumeOn(listOf(1, 2, 3, 4)))
     }
 }

@@ -83,11 +83,17 @@ class SharedGameTest {
     // Every tier of the scope gone from this board leaves an empty one, which the proxy and the decoder below refuse.
     @Test
     fun anEmptyScope_isWrittenAsTheWholeBoard_andReadsBack() {
-        val local = exampleGame.local(mapOf("a" to 11L, "b" to 12L, "c" to 13L, "d" to 14L)::get, mapOf<String, Long>()::get)
-        val json = local.shared(itemUids::get, tierUids::get, now = Long.MAX_VALUE)?.let(SharedGameJson::encode)
+        val json = SharedGameJson.encode(exampleGame.copy(scope = emptyList(), keepTier = false))
 
         assertEquals(SharedGameJson.encode(exampleGame.copy(scope = null, keepTier = false)), json)
-        assertEquals(exampleGame.copy(scope = null, keepTier = false), json?.let(SharedGameJson::decode))
+        assertEquals(exampleGame.copy(scope = null, keepTier = false), SharedGameJson.decode(json))
+    }
+
+    @Test
+    fun aGameOverATierThisPhoneLacks_isNeverWrittenBackAsTheWholeBoard() {
+        val local = exampleGame.local(mapOf("a" to 11L, "b" to 12L, "c" to 13L, "d" to 14L)::get, mapOf<String, Long>()::get)
+
+        assertNull(local.shared(itemUids::get, tierUids::get, now = Long.MAX_VALUE))
     }
 
     @Test
@@ -116,9 +122,16 @@ class SharedGameTest {
         val local = exampleGame.local(mapOf("a" to 11L, "c" to 13L)::get, mapOf<String, Long>()::get)
 
         assertEquals(listOf(11L, -2L, 13L, -4L), local.ids)
-        assertEquals(emptyList<Long>(), local.scope)
-        val resumed = local.copy(scope = null).resumeOn(listOf(11L, 13L)) as Resumption.Ready
-        assertEquals(listOf(11L, 13L), resumed.game.ids)
+        assertEquals(listOf(MISSING_TIER), local.scope)
+        assertEquals(Resumption.Changed, local.copy(scope = null).resumeOn(listOf(11L, 13L)))
+    }
+
+    @Test
+    fun aGoneTierOfTheArea_neverWidensTheGameToTheWholeBoard() {
+        val local = exampleGame.local(mapOf("a" to 11L, "b" to 12L, "c" to 13L, "d" to 14L)::get, mapOf<String, Long>()::get)
+
+        assertEquals(Resumption.Changed, local.resumeOn(listOf(11L, 12L, 13L, 14L), tiers = listOf(5L, 6L)))
+        assertTrue(local.lostTier(listOf(5L, 6L)))
     }
 
     @Test

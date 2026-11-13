@@ -23,4 +23,5 @@ dependencies {
     implementation(libs.androidx.exifinterface)
     implementation(libs.androidx.core.ktx)
     testImplementation(testFixtures(projects.feature.community.domain))
+    testImplementation(libs.robolectric)
 }

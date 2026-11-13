@@ -36,22 +36,15 @@
     <string name="play_start">開始</string>
     <string name="play_continue">次へ</string>
     <string name="play_back">戻る</string>
-    <plurals name="play_cards_limit">
-        <item quantity="other">1 回のゲームで最大 %1$d 枚</item>
-    </plurals>
     <string name="play_pool">プール</string>
     <string name="play_everything">すべて</string>
     <plurals name="play_cards">
         <item quantity="other">%1$d 枚</item>
     </plurals>
-    <string name="play_too_many_in_tier">1 回のゲームには多すぎます。</string>
     <plurals name="play_selected">
         <item quantity="other">%2$d 枚中 %1$d 枚を選択</item>
     </plurals>
-    <plurals name="play_selected_too_many">
-        <item quantity="other">%1$d 枚を選択中。64 枚までにしてください</item>
-    </plurals>
-    <string name="play_keep_in_tier">%1$s のまま、順番だけ決める</string>
+    <string name="play_ranked">ランク付け済み</string>
     <string name="play_quit">終了</string>
     <string name="play_duel_of">対戦 %1$d / %2$d</string>
     <string name="play_round_of">ラウンド %1$d / %2$d</string>
@@ -90,4 +83,12 @@
     <string name="play_snack_undo">元に戻す</string>
     <string name="play_snack_not_saved">ゲームを保存できませんでした</string>
     <string name="play_snack_list_updated">プレイ中にリストが更新されたため、ゲームを破棄しました</string>
+    <string name="play_random_sample">ランダム選択</string>
+    <string name="play_individual_cards">カードを個別に選択</string>
+    <string name="play_select_candidates">候補をすべて選択</string>
+    <string name="play_clear_selection">選択を解除</string>
+    <string name="play_card_unnamed">無題のカード</string>
+    <string name="play_unplayed_options">ゲームに参加しないカード</string>
+    <string name="play_unplayed_keep">元のランクでプレイしたカードの後ろに残す</string>
+    <string name="play_unplayed_pool">プールに移動</string>
 </resources>

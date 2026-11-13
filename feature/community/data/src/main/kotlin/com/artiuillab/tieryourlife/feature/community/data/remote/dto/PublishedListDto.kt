@@ -96,6 +96,7 @@ data class PublishedItemDto(
     val tierIndex: Int? = null,
     /** Who the picture's license asks to be named; absent when it asks for nobody. */
     val credit: String? = null,
+    val sourceIndex: Int? = null,
 )
 
 @Serializable
@@ -145,12 +146,21 @@ data class PublishListRequestDto(
     val boardUid: String? = null,
     /** The published list the cards were taken from; the server decides whether this is a ranking of it. */
     val takenFrom: String? = null,
+    val sourceVersion: Long? = null,
     /**
      * Always sent, true or false, with no default: a republish without the
      * field keeps whatever the server has, which is how an older app cannot
      * turn an anonymous list back into a named one.
      */
     val anonymous: Boolean,
+)
+
+@Serializable
+data class PublicationKindDto(
+    val kind: String,
+    val listId: String? = null,
+    val version: Long? = null,
+    val basedOn: BasedOnDto? = null,
 )
 
 @Serializable
@@ -207,6 +217,7 @@ data class ShowRankingRequestDto(
     val arrangement: List<Int?>,
     val rows: List<List<Int>>,
     val tierLabels: List<String>,
+    val version: Long? = null,
 )
 
 @Serializable

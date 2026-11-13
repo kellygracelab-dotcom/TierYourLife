@@ -46,9 +46,9 @@ class KeptListTest {
             Tier(id = 1, label = "A", colorLight = "#C06A25", colorDark = "#E9A867", items = emptyList()),
         ),
         items = listOf(
-            TierItem(0, "Hereditary", "https://i/1.jpg"),
-            TierItem(1, "Moonlight", null),
-            TierItem(2, "Pearl", "https://i/3.jpg"),
+            TierItem(0, "Hereditary", "https://i/1.jpg", sourceIndex = 0),
+            TierItem(1, "Moonlight", null, sourceIndex = 1),
+            TierItem(2, "Pearl", "https://i/3.jpg", sourceIndex = 2),
         ),
         arrangement = listOf(1, null, 0),
     )

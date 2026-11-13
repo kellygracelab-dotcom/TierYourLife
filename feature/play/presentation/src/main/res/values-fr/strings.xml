@@ -46,11 +46,6 @@
     <string name="play_start">Commencer</string>
     <string name="play_continue">Continuer</string>
     <string name="play_back">Retour</string>
-    <plurals name="play_cards_limit">
-        <item quantity="one">Jusqu’à %1$d carte par partie</item>
-        <item quantity="many">Jusqu’à %1$d cartes par partie</item>
-        <item quantity="other">Jusqu’à %1$d cartes par partie</item>
-    </plurals>
     <string name="play_pool">La réserve</string>
     <string name="play_everything">Tout</string>
     <plurals name="play_cards">
@@ -58,18 +53,12 @@
         <item quantity="many">%1$d cartes</item>
         <item quantity="other">%1$d cartes</item>
     </plurals>
-    <string name="play_too_many_in_tier">Trop pour une seule partie.</string>
     <plurals name="play_selected">
         <item quantity="one">%1$d sur %2$d sélectionnée</item>
         <item quantity="many">%1$d sur %2$d sélectionnées</item>
         <item quantity="other">%1$d sur %2$d sélectionnées</item>
     </plurals>
-    <plurals name="play_selected_too_many">
-        <item quantity="one">%1$d sélectionnée, 64 au maximum</item>
-        <item quantity="many">%1$d sélectionnées, 64 au maximum</item>
-        <item quantity="other">%1$d sélectionnées, 64 au maximum</item>
-    </plurals>
-    <string name="play_keep_in_tier">Les garder dans %1$s, juste les ordonner</string>
+    <string name="play_ranked">Classées</string>
     <string name="play_quit">Quitter</string>
     <string name="play_duel_of">Duel %1$d sur %2$d</string>
     <string name="play_round_of">Manche %1$d sur %2$d</string>
@@ -118,4 +107,12 @@
     <string name="play_snack_undo">Annuler</string>
     <string name="play_snack_not_saved">Impossible d’enregistrer la partie</string>
     <string name="play_snack_list_updated">La liste a été mise à jour pendant la partie, la partie a donc été abandonnée</string>
+    <string name="play_random_sample">Sélection aléatoire</string>
+    <string name="play_individual_cards">Cartes individuelles</string>
+    <string name="play_select_candidates">Tout sélectionner parmi les candidates</string>
+    <string name="play_clear_selection">Effacer la sélection</string>
+    <string name="play_card_unnamed">Carte sans titre</string>
+    <string name="play_unplayed_options">Cartes hors de la partie</string>
+    <string name="play_unplayed_keep">Garder dans les niveaux actuels après les cartes jouées</string>
+    <string name="play_unplayed_pool">Déplacer dans la réserve</string>
 </resources>

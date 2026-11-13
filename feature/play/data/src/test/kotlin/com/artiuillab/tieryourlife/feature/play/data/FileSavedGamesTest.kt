@@ -44,6 +44,32 @@ class FileSavedGamesTest {
     }
 
     @Test
+    fun aLargeLocalCohortAndLongHistoryRemainWholeAcrossReopening() = runBlocking {
+        for (count in listOf(91, 2000, 5000)) {
+            val large = game.copy(
+                spec = game.spec.copy(count = count), ids = (1L..count.toLong()).toList(),
+                history = List(3001) { Outcome(0, 1, 0) }, uids = null, scopeUids = null, onBoard = false,
+            )
+            assertTrue(store().save("large-$count", large))
+            assertEquals(large, store().load("large-$count"))
+        }
+    }
+
+    @Test
+    fun damagedCohortsAndOutcomeIndicesNeverBecomeAPlayableSession() = runBlocking {
+        val valid = """{"kind":"Swiss","count":3,"seed":7,"refine":false,"ids":[1,2,3],"history":[[0,1,0]],"round":1,"startedAt":5}"""
+        val damaged = listOf(
+            valid.replace("[1,2,3]", "[1,1,3]"), valid.replace("\"count\":3", "\"count\":4"),
+            valid.replace("[0,1,0]", "[0,3,0]"), valid.replace("[0,1,0]", "[0,0,0]"),
+            valid.replace("[0,1,0]", "[0,1,2]"), valid.replace("[0,1,0]", "[0,1]"),
+        )
+        for ((index, record) in damaged.withIndex()) {
+            val file = File(folder.root, "damaged-$index.json").apply { writeText("""{"games":{"board":$record}}""") }
+            assertNull(store(file).load("board"))
+        }
+    }
+
+    @Test
     fun discarding_forgetsOneBoardsGame_andKeepsTheOthers() = runBlocking {
         val games = store()
         games.save("board:3", game)

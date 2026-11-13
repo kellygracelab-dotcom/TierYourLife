@@ -326,6 +326,10 @@ private class RecordingTierDao : TierDao {
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) = Unit
 
     override suspend fun setRankingOf(id: Long, listId: String?) = Unit
+    override suspend fun setRankingChoice(id: Long, owner: String?, choice: String) = Unit
+    override suspend fun updateRankingOrigin(id: Long, owner: String?, sourceVersion: Long) = Unit
+    override suspend fun clearSourceIndices(id: Long) = Unit
+    override suspend fun getTierListWithTiersByUid(uid: String, owner: String?): TierListWithTiers? = null
 
     val topicIds = mutableListOf<String?>()
 

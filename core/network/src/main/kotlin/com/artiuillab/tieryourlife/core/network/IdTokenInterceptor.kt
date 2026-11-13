@@ -17,6 +17,8 @@ class IdTokenInterceptor(private val token: () -> String?) : Interceptor {
             ?.takeIf { it.isNotEmpty() }
             ?.let { chain.request().newBuilder().header(AUTHORIZATION_HEADER, "Bearer $it").build() }
             ?: chain.request()
+        val expected = request.tag(ExpectedUser::class.java)
+        if (expected != null && uidOfBearer(request.header(AUTHORIZATION_HEADER)) != expected.uid) throw ExpectedUserMismatch()
         return chain.proceed(request)
     }
 }

@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
 import com.artiuillab.tieryourlife.feature.play.domain.GameSpec
-import com.artiuillab.tieryourlife.feature.play.domain.MAX_PLAY_CARDS
 import com.artiuillab.tieryourlife.feature.play.domain.MIN_PLAY_CARDS
 import com.artiuillab.tieryourlife.feature.play.domain.Outcome
 import com.artiuillab.tieryourlife.feature.play.domain.Resumption
@@ -15,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.play.domain.nextPair
 import com.artiuillab.tieryourlife.feature.play.domain.progress
 import com.artiuillab.tieryourlife.feature.play.domain.resumeOn
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.itemLayout
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -68,6 +68,7 @@ class PlayViewModel @Inject constructor(
     private data class Arrangement(val before: TierList, val own: Boolean)
 
     val picker = PickerControls()
+    val selection = SelectionControls()
     val duel = DuelControls()
     val result = ResultControls()
     val notices = NoticeControls()
@@ -83,6 +84,13 @@ class PlayViewModel @Inject constructor(
     fun offer(request: PlayRequest) {
         val before = this.request
         this.request = request
+        val finished = stage as? PlayStage.Finished
+        val current = session
+        if (finished != null && current != null && current.key == request.key) {
+            val participants = current.game.ids.toSet()
+            val count = unplayedIn(request.applyTo ?: request.board, current.game, participants)
+            stage = PlayStage.Finished(finished.result.copy(unplayedCount = count))
+        }
         val news = before?.key != request.key || before.board.play != request.board.play
         if (news && session == null) {
             viewModelScope.launch {
@@ -107,22 +115,14 @@ class PlayViewModel @Inject constructor(
         val request = request ?: return
         if (stage != PlayStage.Closed) return
         val groups = groupsOf(request.board)
-        val tooMany = groups.sumOf { it.count } > MAX_PLAY_CARDS
-        val chosen = if (tooMany) {
-            // Nothing is chosen for somebody unless the pool alone is a game.
-            groups.filter { it.isPool && it.count in MIN_PLAY_CARDS..MAX_PLAY_CARDS }
-        } else {
-            groups
-        }
         val shownKind = lastKind ?: GameKind.Swiss
         stage = PlayStage.Picking(
             Picker(
                 title = request.board.title,
                 groups = groups,
-                chosen = chosen.map { it.tierId }.toSet(),
+                chosen = groups.map { it.tierId }.toSet(),
+                cards = cardsOf(request.board),
                 kind = shownKind,
-                page = if (tooMany) PickerPage.Cards else PickerPage.Games,
-                cardsFirst = tooMany,
                 resume = stored?.let { offerFor(it, request.board) },
                 intoMine = request.intoMine,
             ),
@@ -137,15 +137,17 @@ class PlayViewModel @Inject constructor(
 
         fun showGames() = updatePicker { it.copy(page = PickerPage.Games, cardsFirst = false) }
 
+        fun showIndividual() = updatePicker { it.copy(page = PickerPage.Individual) }
+
         fun toggle(tierId: Long) = updatePicker {
-            it.copy(chosen = if (tierId in it.chosen) it.chosen - tierId else it.chosen + tierId)
+            it.copy(chosen = if (tierId in it.chosen) it.chosen - tierId else it.chosen + tierId, selectedIds = null)
         }
 
         fun toggleEverything() = updatePicker {
-            it.copy(chosen = if (it.everything) emptySet() else it.groups.map { group -> group.tierId }.toSet())
+            it.copy(chosen = if (it.everything) emptySet() else it.groups.map { group -> group.tierId }.toSet(), selectedIds = null)
         }
 
-        fun keepInTier(keep: Boolean) = updatePicker { it.copy(keepTier = keep) }
+        fun toggleRanked() = updatePicker { it.copy(chosen = if (it.ranked) emptySet() else it.rankedIds, selectedIds = null) }
 
         fun dismiss() {
             if (stage !is PlayStage.Picking) return
@@ -156,14 +158,15 @@ class PlayViewModel @Inject constructor(
             val picker = (stage as? PlayStage.Picking)?.picker ?: return
             val request = request ?: return
             if (!picker.canPlay) return
-            val scope = if (picker.everything) null else picker.groups.map { it.tierId }.filter { it in picker.chosen }
-            begin(request, picker.kind, scope, picker.keepsTier)
+            val allGroups = picker.groups.all { it.tierId in picker.chosen }
+            val scope = if (allGroups && !picker.keepsTier) null else picker.groups.map { it.tierId }.filter { it in picker.chosen }
+            begin(request, picker.kind, scope, picker.keepsTier, picker.selectedCards.map { it.item.id })
         }
 
         fun resume() {
             val request = request ?: return
             val saved = stored ?: return
-            val ready = saved.resumeOn(request.board.cardsIn(saved.scope).map { it.id }) as? Resumption.Ready ?: return
+            val ready = saved.resumeOn(request.board.cardsIn(null).map { it.id }, request.board.tierRowIds()) as? Resumption.Ready ?: return
             val next = Session(request.key, request.board, ready.game, own = !request.intoMine)
             // Nothing answered is left: what is put down stays as it is until something is.
             if (ready.game == saved || ready.game.history.isEmpty()) show(next) else record(next)
@@ -174,8 +177,23 @@ class PlayViewModel @Inject constructor(
             val request = request ?: return
             val saved = stored ?: return
             if (!offerFor(saved, request.board).canStartAgain) return
-            begin(request, saved.spec.kind, saved.scope, saved.keepTier)
+            begin(request, saved.spec.kind, saved.scope, saved.keepTier, saved.ids)
         }
+    }
+
+    inner class SelectionControls {
+        fun sample(count: Int) = updatePicker { picker ->
+            val ids = picker.candidates.map { it.item.id }
+            if (count !in quickCounts(ids.size)) picker else picker.copy(selectedIds = ids.shuffled().take(count))
+        }
+
+        fun toggleCard(id: Long) = updatePicker { picker ->
+            val ids = picker.selectedCards.map { it.item.id }
+            if (picker.candidates.none { it.item.id == id }) picker
+            else picker.copy(selectedIds = if (id in ids) ids - id else ids + id)
+        }
+
+        fun selectCandidates(all: Boolean) = updatePicker { it.copy(selectedIds = if (all) null else emptyList()) }
     }
 
     inner class DuelControls {
@@ -217,6 +235,11 @@ class PlayViewModel @Inject constructor(
     }
 
     inner class ResultControls {
+        fun unplayed(policy: UnplayedPolicy) {
+            val shown = (stage as? PlayStage.Finished)?.result ?: return
+            stage = PlayStage.Finished(shown.copy(unplayedPolicy = policy))
+        }
+
         fun apply() {
             val current = session ?: return
             val request = request ?: return
@@ -227,7 +250,8 @@ class PlayViewModel @Inject constructor(
             viewModelScope.launch {
                 if (outdated(current)) return@launch
                 val into = request.applyTo
-                val after = if (into != null) intoMine(into, placement) else ontoBoard(request.board, placement)
+                val area = current.game.scope
+                val after = if (into != null) intoMine(into, placement, shown.unplayedPolicy, area) else ontoBoard(request.board, placement, shown.unplayedPolicy, area)
                 if (after == null) {
                     // Still put down, finished: Resume brings the result back to apply again.
                     stored = current.game
@@ -266,10 +290,11 @@ class PlayViewModel @Inject constructor(
                     title = request.board.title,
                     groups = groups,
                     chosen = scope?.toSet() ?: groups.map { it.tierId }.toSet(),
-                    keepTier = current.game.keepTier || scope?.size != 1,
                     kind = current.game.spec.kind,
                     resume = stored?.let { offerFor(it, request.board) },
                     intoMine = request.intoMine,
+                    cards = cardsOf(request.board),
+                    selectedIds = current.game.ids,
                 ),
             )
         }
@@ -301,7 +326,7 @@ class PlayViewModel @Inject constructor(
             val current = session
             val request = request
             if (current != null && current.key == back.key && request != null) {
-                val ready = back.game.resumeOn(request.board.cardsIn(back.game.scope).map { it.id }) as? Resumption.Ready
+                val ready = back.game.resumeOn(request.board.cardsIn(null).map { it.id }, request.board.tierRowIds()) as? Resumption.Ready
                 if (ready != null) {
                     record(back.copy(board = request.board, game = ready.game))
                     return
@@ -328,8 +353,9 @@ class PlayViewModel @Inject constructor(
         }
     }
 
-    private fun begin(request: PlayRequest, kind: GameKind, scope: List<Long>?, keepTier: Boolean) {
-        val cards = request.board.cardsIn(scope).take(MAX_PLAY_CARDS)
+    private fun begin(request: PlayRequest, kind: GameKind, scope: List<Long>?, keepTier: Boolean, ids: List<Long>) {
+        val available = request.board.cardsIn(null).associateBy { it.id }
+        val cards = ids.distinct().mapNotNull { available[it] }
         if (cards.size < MIN_PLAY_CARDS) return
         val spec = GameSpec(kind, cards.size, seeds())
         val game = SavedGame(
@@ -356,22 +382,21 @@ class PlayViewModel @Inject constructor(
         }
     }
 
-    private fun intoMine(mine: TierList, placement: Map<Long, List<Long>>): TierList {
+    private fun intoMine(mine: TierList, placement: Map<Long, List<Long>>, unplayed: UnplayedPolicy, area: List<Long>?): TierList {
         arranged = Arrangement(mine, own = false)
-        return mine.arrangedBy(placement)
+        return mine.arrangedBy(placement, unplayed, area)
     }
 
     /**
-     * Through the board's own moves, one card at a time, on the board as it is
-     * now rather than as it was. Moves that landed before one failed are taken
-     * back, so the board is never left half arranged.
+     * One compare-and-apply transaction on the current board. A concurrent edit
+     * or a failed commit leaves that board intact and the result available to retry.
      */
-    private suspend fun ontoBoard(board: TierList, placement: Map<Long, List<Long>>): TierList? {
+    private suspend fun ontoBoard(board: TierList, placement: Map<Long, List<Long>>, unplayed: UnplayedPolicy, area: List<Long>?): TierList? {
         val before = runSuspendCatching { boards.getTierListById(board.id) }.getOrNull()
         val done = before?.let {
             runSuspendCatching {
-                val after = before.arrangedBy(placement)
-                movesBetween(before, after).forEach { boards.moveItem(it.itemId, it.tierId, it.position) }
+                val after = before.arrangedBy(placement, unplayed, area)
+                if (!boards.arrangeBoard(before.id, before.itemLayout(), after.itemLayout())) return@runSuspendCatching null
                 after
             }.onFailure { Timber.w(it, "Arranging a board from a game failed") }.getOrNull()
         }
@@ -379,7 +404,7 @@ class PlayViewModel @Inject constructor(
             arranged = Arrangement(before, own = true)
             return done
         }
-        val back = before?.let { restore(it) } ?: board
+        val back = runSuspendCatching { boards.getTierListById(board.id) }.getOrNull() ?: board
         say(PlayNotice.Failed)
         _events.send(PlayEvent.Arranged(back))
         return null
@@ -389,8 +414,7 @@ class PlayViewModel @Inject constructor(
     private suspend fun restore(before: TierList): TierList? = runSuspendCatching {
         val now = boards.getTierListById(before.id) ?: return null
         val target = now.restoredTo(before)
-        movesBetween(now, target).forEach { boards.moveItem(it.itemId, it.tierId, it.position) }
-        target
+        if (boards.arrangeBoard(now.id, now.itemLayout(), target.itemLayout())) target else null
     }.onFailure { Timber.w(it, "Putting the board back failed") }.getOrNull()
 
     private fun show(next: Session) {

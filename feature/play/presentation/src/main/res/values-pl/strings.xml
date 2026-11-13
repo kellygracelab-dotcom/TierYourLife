@@ -51,12 +51,6 @@
     <string name="play_start">Zacznij</string>
     <string name="play_continue">Dalej</string>
     <string name="play_back">Wstecz</string>
-    <plurals name="play_cards_limit">
-        <item quantity="one">Do %1$d karty w jednej grze</item>
-        <item quantity="few">Do %1$d kart w jednej grze</item>
-        <item quantity="many">Do %1$d kart w jednej grze</item>
-        <item quantity="other">Do %1$d karty w jednej grze</item>
-    </plurals>
     <string name="play_pool">Pula</string>
     <string name="play_everything">Wszystko</string>
     <plurals name="play_cards">
@@ -65,20 +59,13 @@
         <item quantity="many">%1$d kart</item>
         <item quantity="other">%1$d karty</item>
     </plurals>
-    <string name="play_too_many_in_tier">Za dużo na jedną grę.</string>
     <plurals name="play_selected">
         <item quantity="one">Wybrano %1$d z %2$d</item>
         <item quantity="few">Wybrano %1$d z %2$d</item>
         <item quantity="many">Wybrano %1$d z %2$d</item>
         <item quantity="other">Wybrano %1$d z %2$d</item>
     </plurals>
-    <plurals name="play_selected_too_many">
-        <item quantity="one">Wybrano %1$d, wybierz najwyżej 64</item>
-        <item quantity="few">Wybrano %1$d, wybierz najwyżej 64</item>
-        <item quantity="many">Wybrano %1$d, wybierz najwyżej 64</item>
-        <item quantity="other">Wybrano %1$d, wybierz najwyżej 64</item>
-    </plurals>
-    <string name="play_keep_in_tier">Zostaw je w %1$s, tylko uporządkuj</string>
+    <string name="play_ranked">Sklasyfikowane</string>
     <string name="play_quit">Zakończ</string>
     <string name="play_duel_of">Pojedynek %1$d z %2$d</string>
     <string name="play_round_of">Runda %1$d z %2$d</string>
@@ -132,4 +119,12 @@
     <string name="play_snack_undo">Cofnij</string>
     <string name="play_snack_not_saved">Nie udało się zapisać gry</string>
     <string name="play_snack_list_updated">Lista została zaktualizowana w trakcie gry, więc grę odrzucono</string>
+    <string name="play_random_sample">Losowy wybór</string>
+    <string name="play_individual_cards">Pojedyncze karty</string>
+    <string name="play_select_candidates">Wybierz wszystkie dostępne</string>
+    <string name="play_clear_selection">Wyczyść wybór</string>
+    <string name="play_card_unnamed">Karta bez tytułu</string>
+    <string name="play_unplayed_options">Karty poza grą</string>
+    <string name="play_unplayed_keep">Zostaw na swoich poziomach za rozegranymi kartami</string>
+    <string name="play_unplayed_pool">Przenieś do puli</string>
 </resources>

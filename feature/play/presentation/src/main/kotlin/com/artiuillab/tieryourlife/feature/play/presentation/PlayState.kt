@@ -2,7 +2,6 @@ package com.artiuillab.tieryourlife.feature.play.presentation
 
 import androidx.compose.runtime.Immutable
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
-import com.artiuillab.tieryourlife.feature.play.domain.MAX_PLAY_CARDS
 import com.artiuillab.tieryourlife.feature.play.domain.MIN_PLAY_CARDS
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -24,7 +23,10 @@ sealed interface PlayStage {
     data class Finished(val result: ResultState) : PlayStage
 }
 
-enum class PickerPage { Games, Cards }
+enum class PickerPage { Games, Cards, Individual }
+
+@Immutable
+data class CardOption(val item: TierItem, val tierId: Long)
 
 /** The games in the order the picker lists them: the default first. */
 val PlayGames = listOf(GameKind.Swiss, GameKind.Hill, GameKind.Bracket)
@@ -61,25 +63,44 @@ data class Picker(
     val title: String,
     val groups: List<CardGroup>,
     val chosen: Set<Long>,
-    /** The switch's own value; it only counts while one tier is chosen. */
-    val keepTier: Boolean = true,
     val kind: GameKind = GameKind.Swiss,
     val page: PickerPage = PickerPage.Games,
     /** Opened on the cards because the board is too big to play whole: there is no game page behind it yet. */
     val cardsFirst: Boolean = false,
     val resume: ResumeOffer? = null,
     val intoMine: Boolean = false,
+    val cards: List<CardOption> = emptyList(),
+    /** Null means all current candidates; a list freezes a sample/manual cohort and its order. */
+    val selectedIds: List<Long>? = null,
 ) {
-    val count: Int get() = groups.filter { it.tierId in chosen }.sumOf { it.count }
-    val total: Int get() = groups.sumOf { it.count }
-    val everything: Boolean get() = groups.isNotEmpty() && groups.all { it.tierId in chosen }
+    val candidates: List<CardOption> get() = cards.filter { it.tierId in chosen }.distinctBy { it.item.id }
+    val selectedCards: List<CardOption> get() {
+        val available = candidates
+        val explicit = selectedIds ?: return available
+        val byId = cards.associateBy { it.item.id }
+        return explicit.distinct().mapNotNull { byId[it] }
+    }
+    val count: Int get() = if (cards.isEmpty()) groups.filter { it.tierId in chosen }.sumOf { it.count } else selectedCards.size
+    val total: Int get() = if (cards.isEmpty()) groups.sumOf { it.count } else cards.map { it.item.id }.distinct().size
+    val everything: Boolean get() = groups.isNotEmpty() && groups.all { it.tierId in chosen } && selectedIds == null
 
-    /** The one tier chosen, when it is one tier and not the pool: its cards may stay in it and only be ordered. */
+    /** Every ranked tier with cards and nothing else: the area the pool stays out of. An empty tier in a saved scope does not count. */
+    val rankedIds: Set<Long> get() = groups.filterNot { it.isPool }.map { it.tierId }.toSet()
+    val rankedCount: Int get() = groups.filterNot { it.isPool }.sumOf { it.count }
+    val ranked: Boolean get() = rankedIds.isNotEmpty() && chosen.filter { id -> groups.any { it.tierId == id } }.toSet() == rankedIds
+
+    /** Ranked differs from Everything only when the board has a pool. */
+    val offersRanked: Boolean get() = rankedIds.isNotEmpty() && groups.any { it.isPool }
+
+    /** The one tier chosen, when it is one tier and not the pool: a game over it only orders it. */
     val singleTier: CardGroup?
         get() = chosen.singleOrNull()?.let { id -> groups.firstOrNull { it.tierId == id } }?.takeUnless { it.isPool }
 
-    val keepsTier: Boolean get() = singleTier != null && keepTier
-    val canPlay: Boolean get() = count in MIN_PLAY_CARDS..MAX_PLAY_CARDS
+    val keepsTier: Boolean get() = singleTier != null
+
+    /** The pool alone. */
+    val poolOnly: Boolean get() = chosen.singleOrNull()?.let { id -> groups.firstOrNull { it.tierId == id } }?.isPool == true
+    val canPlay: Boolean get() = count >= MIN_PLAY_CARDS
 }
 
 @Immutable
@@ -115,12 +136,16 @@ data class ResultState(
     /** Close calls Refine would add; 0 once it has been used or when there are none. */
     val refineDuels: Int,
     val intoMine: Boolean,
+    val unplayedCount: Int = 0,
+    val unplayedPolicy: UnplayedPolicy = UnplayedPolicy.Keep,
 ) {
     val canRefine: Boolean get() = refineDuels > 0
 
     /** Every duel skipped is no evidence at all: applying would only pile the cards into the first tier. */
     val canApply: Boolean get() = duels > 0
 }
+
+enum class UnplayedPolicy { Keep, Pool }
 
 @Immutable
 data class ResultTier(

@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.data.remote.api
 
+import com.artiuillab.tieryourlife.core.network.ExpectedUser
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.AppointModeratorRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.FaceDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.FollowStateDto
@@ -9,6 +10,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModeratorsD
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.MoveListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PendingTopicsDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ProposalAllowanceDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublicationKindDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedFeedDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIdDto
@@ -40,8 +42,12 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Tag
 
 interface CommunityApi {
+
+    @POST("lists/classify")
+    suspend fun classifyPublication(@Body request: PublishListRequestDto): PublicationKindDto
 
     @GET("lists")
     suspend fun feed(
@@ -154,6 +160,9 @@ interface CommunityApi {
     @PUT("lists/{id}/rankings/mine")
     suspend fun showMyRanking(@Path("id") id: String, @Body request: ShowRankingRequestDto): ShownRankingDto
 
+    @PUT("lists/{id}/rankings/mine")
+    suspend fun showMyRankingOwned(@Path("id") id: String, @Body request: ShowRankingRequestDto, @Tag expectedUser: ExpectedUser): ShownRankingDto
+
     @GET("lists/mine")
     suspend fun myPublished(): PublishedFeedDto
 
@@ -172,8 +181,14 @@ interface CommunityApi {
     @POST("lists")
     suspend fun publish(@Body request: PublishListRequestDto): PublishedIdDto
 
+    @POST("lists")
+    suspend fun publishOwned(@Body request: PublishListRequestDto, @Tag expectedUser: ExpectedUser): PublishedIdDto
+
     @POST("lists/{id}")
     suspend fun republish(@Path("id") id: String, @Body request: PublishListRequestDto): PublishedIdDto
+
+    @POST("lists/{id}")
+    suspend fun republishOwned(@Path("id") id: String, @Body request: PublishListRequestDto, @Tag expectedUser: ExpectedUser): PublishedIdDto
 
     @DELETE("lists/{id}")
     suspend fun unpublish(@Path("id") id: String)

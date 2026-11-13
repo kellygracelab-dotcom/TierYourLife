@@ -1,8 +1,5 @@
 package com.artiuillab.tieryourlife.feature.play.domain
 
-/** Play is offered for this many cards at most; a bigger board picks some first. */
-const val MAX_PLAY_CARDS = 64
-
 /** Below this there is nothing for duels to sort out. */
 const val MIN_PLAY_CARDS = 3
 

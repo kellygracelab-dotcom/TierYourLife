@@ -64,6 +64,7 @@ internal data class ResultActions(
     val onPlayAgain: () -> Unit = {},
     val onCancel: () -> Unit = {},
     val onQuit: () -> Unit = {},
+    val onUnplayed: (UnplayedPolicy) -> Unit = {},
 )
 
 /** Where the duels put the cards, read-only at the board's compact size, and what to do with it. */
@@ -139,6 +140,7 @@ private fun UprightResult(result: ResultState, actions: ResultActions, oneRow: B
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 ResultNotes(result)
+                UnplayedOptions(result, actions.onUnplayed)
                 PreviewRows(result, narrowBands = false)
             }
         }
@@ -185,7 +187,10 @@ private fun SideResult(result: ResultState, actions: ResultActions) {
                 Column(
                     Modifier.padding(start = 12.dp, top = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) { ResultNotes(result) }
+                ) {
+                    ResultNotes(result)
+                    UnplayedOptions(result, actions.onUnplayed)
+                }
             }
             Column(
                 Modifier.padding(horizontal = 16.dp, vertical = 12.dp),

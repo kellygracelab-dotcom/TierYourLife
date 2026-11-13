@@ -65,9 +65,11 @@ interface TierDao {
         items: List<NewPoolItem>,
         takenFrom: String?,
         owner: String?,
+        metadata: TierListEntity? = null,
     ): Long {
         val tierListId = insertTierList(
-            TierListEntity(title = title, authorName = authorName, takenFrom = takenFrom, ownerUid = owner),
+            metadata?.copy(id = 0, title = title, authorName = authorName, takenFrom = takenFrom, ownerUid = owner)
+                ?: TierListEntity(title = title, authorName = authorName, takenFrom = takenFrom, ownerUid = owner),
         )
 
         tiers.forEachIndexed { index, tier ->
@@ -107,6 +109,7 @@ interface TierDao {
         imageUrl = item.imageUrl,
         source = if (item.imageUrl?.startsWith("http") == true) "TMDB" else "MANUAL",
         credit = item.credit,
+        sourceIndex = item.sourceIndex,
     )
 
     // `IS`, not `=`: null is an owner too, the boards made without an account.
@@ -143,6 +146,26 @@ interface TierDao {
 
     @Query("UPDATE tier_lists SET rankingOf = :listId WHERE id = :id")
     suspend fun setRankingOf(id: Long, listId: String?)
+
+    @Query("UPDATE tier_lists SET rankingChoice = CASE WHEN :choice = 'offered' AND rankingChoice IN ('private', 'ranking') THEN rankingChoice ELSE :choice END WHERE id = :id AND ownerUid IS :owner AND deletedAt IS NULL")
+    suspend fun setRankingChoice(id: Long, owner: String?, choice: String)
+
+    @Query("UPDATE tier_lists SET originVersion = :sourceVersion WHERE id = :id AND ownerUid IS :owner AND deletedAt IS NULL")
+    suspend fun updateRankingOrigin(id: Long, owner: String?, sourceVersion: Long)
+
+    @Query("UPDATE tier_items SET sourceIndex = NULL WHERE tierId IN (SELECT id FROM tiers WHERE tierListId = :id)")
+    suspend fun clearSourceIndices(id: Long)
+
+    @Transaction
+    suspend fun setRankingOrigin(id: Long, owner: String?, sourceVersion: Long) {
+        val board = getTierListWithTiers(id, owner)?.tierList ?: return
+        if (board.originVersion != null && board.originVersion != sourceVersion) clearSourceIndices(id)
+        updateRankingOrigin(id, owner, sourceVersion)
+    }
+
+    @Transaction
+    @Query("SELECT * FROM active_tier_lists WHERE uid = :uid AND ownerUid IS :owner")
+    suspend fun getTierListWithTiersByUid(uid: String, owner: String?): TierListWithTiers?
 
     @Query("UPDATE tier_lists SET category = :category WHERE id = :id")
     suspend fun setCategory(id: Long, category: String?)
@@ -555,6 +578,35 @@ interface TierDao {
             shiftTierPositionsFrom(toTierId, clampedPosition)
 
             updateTierItemTierAndPosition(itemId, toTierId, clampedPosition)
+        }
+    }
+
+    /** Owner checked in the same transaction as the bulk move. Trashed cards are untouched. */
+    @Transaction
+    suspend fun arrangeBoard(id: Long, owner: String?, expected: Map<Long, List<Long>>, target: Map<Long, List<Long>>): Boolean {
+        if (!com.artiuillab.tieryourlife.feature.tier.domain.lists.sameLayoutCards(expected, target)) return false
+        if (getTierListWithTiers(id, owner) == null) return false
+        val current = getAllTiersByTierListId(id).associate { tier -> tier.id to getAllTierItemsByTierId(tier.id) }
+        if (current.mapValues { (_, items) -> items.map { it.id } } != expected) return false
+        val byId = current.values.flatten().associateBy { it.id }
+        target.forEach { (tier, cards) ->
+            cards.forEachIndexed { position, id ->
+                val item = byId.getValue(id)
+                if (item.tierId != tier || item.position != position) updateTierItemTierAndPosition(id, tier, position)
+            }
+        }
+        return true
+    }
+
+    /** Owner checked in the same transaction as the bulk move. Trashed cards are untouched. */
+    @Transaction
+    suspend fun returnAllToPool(id: Long, owner: String?) {
+        if (getTierListWithTiers(id, owner) == null) return
+        val tiers = getAllTiersByTierListId(id)
+        val pool = tiers.firstOrNull { it.isPool } ?: return
+        val cards = (tiers.filter { it.isPool } + tiers.filterNot { it.isPool }).flatMap { getAllTierItemsByTierId(it.id) }
+        cards.forEachIndexed { index, item ->
+            if (item.tierId != pool.id || item.position != index) updateTierItemTierAndPosition(item.id, pool.id, index)
         }
     }
 

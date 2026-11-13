@@ -69,6 +69,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.FormatListNumberedIcon
 import com.artiuillab.tieryourlife.core.theme.ui.GridViewIcon
 import com.artiuillab.tieryourlife.core.theme.ui.LeaderboardIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
+import com.artiuillab.tieryourlife.core.theme.ui.ReturnToPoolDialog
 import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
 import com.artiuillab.tieryourlife.core.theme.ui.ShareIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ViewCarouselIcon
@@ -113,8 +114,10 @@ fun TierListSettingsScreenContent(
     onShare: () -> Unit = {},
     /** The published list's own page, where readers' rankings and its link are; null while it is not out. */
     onSeeInCommunity: (() -> Unit)? = null,
+    onReturnAllToPool: (() -> Unit)? = null,
 ) {
     var tierEditorVisible by rememberSaveable { mutableStateOf(false) }
+    var returnToPoolVisible by rememberSaveable { mutableStateOf(false) }
     var categorySheetVisible by rememberSaveable { mutableStateOf(false) }
     val rankedTierCount = list.tiers.count { !it.isPool }
 
@@ -172,11 +175,28 @@ fun TierListSettingsScreenContent(
                     CoverRow(chosen = list.coverImageUrl != null || list.coverImageUrls.isNotEmpty(), onClick = onChooseCover)
                     // Beside the cover: sharing is not publishing and needs no account.
                     ShareRow(onClick = onShare)
+                    if (onReturnAllToPool != null) {
+                        TextButton(
+                            onClick = { returnToPoolVisible = true },
+                            enabled = list.tiers.any { !it.isPool && it.items.isNotEmpty() },
+                            modifier = Modifier.padding(horizontal = 16.dp).testTag("board_return_all_to_pool"),
+                        ) { Text(stringResource(ThemeR.string.community_return_all_to_pool)) }
+                    }
 
                     DisplayModeSection(selected = list.displayMode, onSelect = onSetDisplayMode)
                 }
             }
         }
+    }
+
+    if (returnToPoolVisible) {
+        ReturnToPoolDialog(
+            onDismiss = { returnToPoolVisible = false },
+            onConfirm = {
+                returnToPoolVisible = false
+                onReturnAllToPool?.invoke()
+            },
+        )
     }
 
     if (categorySheetVisible || categoryWanted) {
@@ -628,6 +648,10 @@ private fun PublishError.message(): String = publishErrorText(this, LocalResourc
 
 /** The sentence for a refused publish, wherever it is said: here, or beside the list among the person's public ones. */
 fun publishErrorText(error: PublishError, resources: Resources, locale: Locale): String = when (error) {
+    is PublishError.WeeklyLimit -> {
+        val date = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, locale).format(Date(error.retryAtMillis))
+        resources.getString(ThemeR.string.publication_limit_until, date)
+    }
     is PublishError.Banned -> {
         val until = error.untilMillis
         if (until == null) {
@@ -644,7 +668,9 @@ private fun PublishError.messageRes(): Int = when (this) {
     PublishError.NotSignedIn -> R.string.list_settings_public_needs_account
     PublishError.NothingToPublish -> R.string.list_settings_public_needs_items
     PublishError.TooManyLists -> R.string.list_settings_public_too_many
+    is PublishError.WeeklyLimit -> ThemeR.string.publication_limit_until
     PublishError.ChangedElsewhere -> R.string.list_settings_public_changed_elsewhere
+    PublishError.SourceChanged -> ThemeR.string.source_changed
     PublishError.TooManyPendingTopics -> R.string.list_settings_public_too_many_topics
     PublishError.TopicUnavailable -> R.string.list_settings_public_topic_unavailable
     PublishError.TooLarge -> R.string.list_settings_public_too_large

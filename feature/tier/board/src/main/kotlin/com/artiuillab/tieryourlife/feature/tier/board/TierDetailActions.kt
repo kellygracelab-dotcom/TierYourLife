@@ -28,6 +28,7 @@ data class TierDetailActions(
     val onAddClick: () -> Unit = {},
     val onManualAddClick: () -> Unit = {},
     val onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
+    val onReturnAllToPool: (() -> Unit)? = null,
     val onDeleteItem: (itemId: Long) -> Unit = {},
     val onRestoreItem: (itemId: Long) -> Unit = {},
     /** The Undo for a removed card has gone without being used. */

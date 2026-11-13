@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.ListTranslations
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
+import com.artiuillab.tieryourlife.feature.community.domain.model.RankingOffer
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 /** Whose arrangement is on screen. */
@@ -35,7 +36,7 @@ sealed interface CommunityListUiState {
         val editorial: Boolean = false,
         /** Somebody's list out without their name: the author line says "Anonymous" and leads nowhere. */
         val byNobody: Boolean = false,
-        /** True once the reader has moved something; nothing is stored either way. */
+        /** True once the reader has edited their private draft; showing it publicly is a separate action. */
         val arranged: Boolean = false,
         /** Null until the server answers whether this author is followed. */
         val follow: FollowState? = null,
@@ -87,6 +88,7 @@ sealed interface CommunityListUiState {
         val arriving: Boolean = false,
         /** A house list's texts in the readers' languages; the boards above stay as written. */
         val translations: ListTranslations = ListTranslations(),
+        val rankingOffer: RankingOffer? = null,
     ) : CommunityListUiState {
         /** What the board area is drawing right now. */
         val shown: TierList get() = if (showing == Showing.Theirs) theirs else mine

@@ -32,6 +32,7 @@ enum class RankingRefusal {
     Banned,
     OwnList,
     ListGone,
+    ListChanged,
     BadTierNames,
     CardsDontMatch,
     NotAccepted,

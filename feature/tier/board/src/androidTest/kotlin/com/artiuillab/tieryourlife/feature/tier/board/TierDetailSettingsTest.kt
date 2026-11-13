@@ -34,6 +34,28 @@ import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 class TierDetailSettingsTest : TierDetailScreenTestBase() {
 
     @Test
+    fun returningCardsToPool_requiresConfirmation_andCancelDoesNothing() {
+        var confirmations = 0
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierDetailScreenContent(
+                    state = TierDetailUiState.Success(defaultList()),
+                    actions = TierDetailActions(onReturnAllToPool = { confirmations++ }),
+                )
+            }
+        }
+        openListSettings()
+        composeRule.onNodeWithTag("board_return_all_to_pool").performScrollTo().performClick()
+        composeRule.onNodeWithTag("community_return_to_pool_dialog").assertIsDisplayed()
+        composeRule.runOnIdle { assertEquals(0, confirmations) }
+        composeRule.onNodeWithText("Cancel").performClick()
+        composeRule.runOnIdle { assertEquals(0, confirmations) }
+        composeRule.onNodeWithTag("board_return_all_to_pool").performScrollTo().performClick()
+        composeRule.onNodeWithTag("community_confirm_return_to_pool").performClick()
+        composeRule.runOnIdle { assertEquals(1, confirmations) }
+    }
+
+    @Test
     fun listSettings_opensFromMoreButton() {
         setScreen(TierDetailUiState.Success(defaultList()))
 

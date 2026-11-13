@@ -105,6 +105,7 @@ internal fun PlayLayer(
                         onPlayAgain = viewModel.result::playAgain,
                         onCancel = viewModel.result::cancel,
                         onQuit = viewModel.duel::quit,
+                        onUnplayed = viewModel.result::unplayed,
                     ),
                 )
             }
@@ -116,9 +117,13 @@ internal fun PlayLayer(
                     onChoose = viewModel.picker::choose,
                     onShowCards = viewModel.picker::showCards,
                     onShowGames = viewModel.picker::showGames,
+                    onShowIndividual = viewModel.picker::showIndividual,
+                    onSample = viewModel.selection::sample,
+                    onToggleCard = viewModel.selection::toggleCard,
+                    onSelectCandidates = viewModel.selection::selectCandidates,
                     onToggle = viewModel.picker::toggle,
                     onToggleEverything = viewModel.picker::toggleEverything,
-                    onKeepInTier = viewModel.picker::keepInTier,
+                    onToggleRanked = viewModel.picker::toggleRanked,
                     onDismiss = viewModel.picker::dismiss,
                     onStart = viewModel.picker::start,
                     onResume = viewModel.picker::resume,

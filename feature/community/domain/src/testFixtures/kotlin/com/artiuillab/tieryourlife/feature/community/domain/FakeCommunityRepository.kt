@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationRepo
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalError
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublicationKind
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
@@ -32,6 +33,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
  * fails until a test says what it should find; there is no sensible default.
  */
 open class FakeCommunityRepository : CommunityRepository {
+
+    override suspend fun classifyPublication(list: TierList): Result<PublicationKind> = Result.success(PublicationKind.NewList())
 
     override suspend fun feed(
         category: String?,

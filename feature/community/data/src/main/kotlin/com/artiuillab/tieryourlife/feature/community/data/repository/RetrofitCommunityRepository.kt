@@ -1,13 +1,13 @@
 package com.artiuillab.tieryourlife.feature.community.data.repository
 
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
+import com.artiuillab.tieryourlife.core.network.ExpectedUserMismatch
 import com.artiuillab.tieryourlife.feature.community.data.remote.api.CommunityApi
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.AppointModeratorRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.BasedOnDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModerationReportDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.MoveListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PendingTopicDto
-import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIdDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedItemDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListDto
@@ -46,6 +46,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
 import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalError
 import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalRefused
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublicationKind
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -276,8 +277,19 @@ class RetrofitCommunityRepository @Inject constructor(
         arrangement: List<Int?>,
         rows: List<List<Int>>,
         tierLabels: List<String>,
+    ): Result<ShownRanking> = showMyRankingVersioned(listId, arrangement, rows, tierLabels, null)
+
+    override suspend fun showMyRankingVersioned(
+        listId: String,
+        arrangement: List<Int?>,
+        rows: List<List<Int>>,
+        tierLabels: List<String>,
+        version: Long?,
+        expectedOwnerUid: String?,
     ): Result<ShownRanking> = try {
-        Result.success(api.showMyRanking(listId, ShowRankingRequestDto(arrangement, rows, tierLabels)).toShown())
+        val request = ShowRankingRequestDto(arrangement, rows, tierLabels, version)
+        val answer = rankingForOwner(listId, request, expectedOwnerUid, { me }, api)
+        Result.success(answer.toShown())
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
@@ -297,13 +309,24 @@ class RetrofitCommunityRepository @Inject constructor(
         }
     }
 
-    override suspend fun publish(list: TierList): Result<Published> = try {
+    override suspend fun classifyPublication(list: TierList): Result<PublicationKind> = try {
+        Result.success(publicationPreflight(list, api, pictures))
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Result.failure(PublishRefused(e.asPublishError()))
+    }
+
+    override suspend fun publish(list: TierList): Result<Published> = publishForOwner(list, me)
+
+    override suspend fun publishOwned(list: TierList, expectedOwnerUid: String): Result<Published> = publishForOwner(list, expectedOwnerUid)
+
+    private suspend fun publishForOwner(list: TierList, expectedOwnerUid: String?): Result<Published> = try {
         // The server copies pictures out of this account's folder, so they
         // must be there first. Sent now rather than by the background trickle:
         // publishing is a button somebody pressed.
-        val up = pictures.sendNow(list.ownPictureIds(pictures))
-        val request = list.toRequest(pictures, up)
-        val answer = sendOut(list.publishedId, request, api::publish, api::republish)
+        if (expectedOwnerUid == null) throw ExpectedUserMismatch()
+        val answer = ownedPublication(list, expectedOwnerUid, { me }, pictures, api)
         val learned = list.topicToLearn(answer)?.let { id -> nameOfTopic(id) }
         val recorded = if (learned == null) list else list.copy(topicName = learned)
         Result.success(answer.toPublished(PublishFingerprint.of(recorded, pictures::pictureIdOf)).copy(topicName = learned))
@@ -311,7 +334,7 @@ class RetrofitCommunityRepository @Inject constructor(
         throw e
     } catch (e: Exception) {
         Timber.w(e, "Publishing failed")
-        Result.failure(PublishRefused(e.asPublishError()))
+        Result.failure(if (e is PublishRefused) e else PublishRefused(e.asPublishError()))
     }
 
     /** Null when it cannot be read: the board then holds the id alone, as before. */
@@ -415,7 +438,6 @@ internal fun PublishedIdDto.toPublished(fingerprint: String) = Published(
     droppedPictures = droppedPictures.coerceAtLeast(0),
 )
 
-private const val MAX_BOARD_UID = 100
 private const val TOO_MANY_FOLLOWING = "TOO_MANY_FOLLOWING"
 private const val BAD_NAME = "BAD_NAME"
 private const val HTTP_NOT_FOUND = 404
@@ -518,7 +540,7 @@ internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
         )
     },
     items = items.mapIndexed { index, item ->
-        TierItem(id = index.toLong(), title = item.title, imageUrl = item.imageUrl, credit = item.credit)
+        TierItem(id = index.toLong(), title = item.title, imageUrl = item.imageUrl, credit = item.credit, sourceIndex = index)
     },
     // Null on snapshots published before this was remembered: "arrangement
     // unknown", not "ranked nothing".
@@ -526,54 +548,7 @@ internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
     translations = ListTranslations(translations),
 )
 
-/**
- * This person's own pictures, each once: a poster has its own address, a
- * gallery photo is a file whose name is the only part worth sending.
- */
-private fun TierList.ownPictureIds(images: OwnPictures): List<String> =
-    tiers.flatMap { tier -> tier.items.map { it.imageUrl } }
-        .mapNotNull { url -> images.pictureIdOf(url) ?: privatePictureIdOf(url) }
-        .plus(listOfNotNull(coverPictureIdOf(images)))
-        .distinct()
-
-internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = PublishListRequestDto(
-    title = title,
-    category = category ?: ListCategory.Other.id,
-    coverImageUrl = webPictureOf(coverImageUrl),
-    coverPictureId = coverPictureIdOf(images)?.takeIf { it in uploaded },
-    coverImageUrls = coverImageUrls.mapNotNull(::webPictureOf),
-    topicId = topicId,
-    // A name the server has not seen yet; once it has, the id above is what travels.
-    newTopic = newTopicName?.takeIf { topicId == null },
-    // Only when the author took it off: no topic on this board may be a moderator's on the list.
-    noTopic = topicTakenOff && topicId == null && newTopicName == null,
-    boardUid = uid.trim().takeIf { it.length in 1..MAX_BOARD_UID },
-    takenFrom = takenFrom,
-    anonymous = anonymous,
-    tiers = tiers.filterNot { it.isPool }.map {
-        PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark)
-    },
-    // A picture that would not upload is left unnamed rather than named and
-    // missing. Tier indexes count the published tiers (the board's minus the
-    // pool); a card in the pool says so with null.
-    items = run {
-        val ranked = tiers.filterNot { it.isPool }
-        tiers.flatMap { tier ->
-            val where = ranked.indexOfFirst { it.id == tier.id }.takeIf { it >= 0 }
-            tier.items.map { item ->
-                PublishedItemDto(
-                    title = item.title,
-                    imageUrl = webPictureOf(item.imageUrl),
-                    pictureId = (images.pictureIdOf(item.imageUrl) ?: privatePictureIdOf(item.imageUrl))?.takeIf { it in uploaded },
-                    tierIndex = where,
-                    credit = item.credit,
-                )
-            }
-        }
-    },
-)
-
-private fun BasedOnDto.toDomain() = BasedOn(id = id, title = title, authorName = authorName.orEmpty(), authorUid = authorUid)
+internal fun BasedOnDto.toDomain() = BasedOn(id = id, title = title, authorName = authorName.orEmpty(), authorUid = authorUid)
 
 internal fun ShownRankingDto.toShown() = ShownRanking(
     ranking = Ranking(

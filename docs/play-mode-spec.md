@@ -15,7 +15,9 @@ Agreed between the app and web sessions on 28.10.2026.
 - **History** is a list of outcomes `[first, second, winner|null]`. A `null` winner is a **skip**:
   - A skip is no evidence. The scorer never sees it.
   - When the game needs someone to go on, the card with the lower index goes on.
-- **Play is offered for 2–64 cards.** A bigger board asks for a subset first: the pool, or one tier.
+- **All means every unique card on the board**, including odd counts, with no game-specific cap or rounding. Android retains its existing start minimum of 3; historical shared games with 2 remain readable. A player may filter tiers/pool, choose individual cards, or randomly sample 16/32/64/128/… available candidates without replacement.
+- **The session cohort is fixed** across save, Resume and Play again. Newly added cards join only a fresh explicit selection. Moving a participant between tiers does not remove it; a missing participant requires an explicit restart.
+- **Partial results** default to played cards first, followed by unplayed cards in their original tiers/order. The alternative moves unplayed cards to the pool, preserving its existing cards first. Apply/undo compare the current layout and write the complete result atomically; opening/canceling a result changes no layout.
 
 ## Randomness: mulberry32
 
