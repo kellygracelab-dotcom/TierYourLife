@@ -11,8 +11,10 @@ import com.artiuillab.tieryourlife.feature.play.domain.SavedGames
 import com.artiuillab.tieryourlife.feature.play.domain.estimatedDuels
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -284,14 +286,16 @@ class PlayViewModelTest {
         assertTrue(offer.tierGone)
         assertFalse(offer.canStartAgain)
 
-        viewModel.notices.discardStored()
+        // Pressed on the main thread, as a phone presses it: from here it raced the picker's second
+        // read of the saved game, which put the offer back over the discard (red main CI on 76d52d82).
+        withContext(Dispatchers.Main) { viewModel.notices.discardStored() }
         // QA 490: the board's "Undo" was drawn under the sheet; the sheet offers it itself.
         assertTrue(picker(viewModel.state.value)!!.discarded)
         assertNull(picker(viewModel.state.value)?.resume)
         viewModel.state.firstWithin { KEY !in it.saved }
         assertNull(games.games[KEY])
 
-        viewModel.notices.undoDiscard()
+        withContext(Dispatchers.Main) { viewModel.notices.undoDiscard() }
         val back = viewModel.state.firstWithin { picker(it)?.resume != null }.let(::picker)!!
         assertFalse(back.discarded)
         assertEquals(saved.ids, games.games.getValue(KEY).ids)
