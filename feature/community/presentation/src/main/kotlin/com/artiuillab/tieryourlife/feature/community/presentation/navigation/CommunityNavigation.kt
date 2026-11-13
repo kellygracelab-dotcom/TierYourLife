@@ -7,7 +7,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.author.AuthorS
 import com.artiuillab.tieryourlife.feature.community.presentation.following.FollowingScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.ModerationScreen
-import com.artiuillab.tieryourlife.feature.community.presentation.published.MyPublishedScreen
 import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.NoPlay
 
@@ -21,8 +20,6 @@ fun NavGraphBuilder.communityListScreen(
     play: BoardPlay = NoPlay,
     /** A guest asked to show their ranking or to follow: the account screen, and back to the list after. */
     onSignIn: () -> Unit = {},
-    /** On their own list: all their public ones. */
-    onOpenMyPublished: () -> Unit = {},
 ) {
     composable<CommunityRoute.CommunityList> {
         CommunityListScreen(
@@ -32,7 +29,6 @@ fun NavGraphBuilder.communityListScreen(
             onOpenList = onOpenList,
             play = play,
             onSignIn = onSignIn,
-            onOpenMyPublished = onOpenMyPublished,
         )
     }
 }
@@ -60,16 +56,6 @@ fun NavGraphBuilder.authorScreen(
 
 fun NavController.navigateToAuthor(uid: String, name: String, photoUrl: String?) {
     navigate(CommunityRoute.Author(uid, name, photoUrl))
-}
-
-fun NavGraphBuilder.myPublishedScreen(onBack: () -> Unit, onOpen: (CommunityRoute.CommunityList) -> Unit) {
-    composable<CommunityRoute.MyPublished> {
-        MyPublishedScreen(onBack = onBack, onOpen = onOpen)
-    }
-}
-
-fun NavController.navigateToMyPublished() {
-    navigate(CommunityRoute.MyPublished)
 }
 
 fun NavGraphBuilder.followingScreen(

@@ -91,7 +91,6 @@ fun CommunityListScreen(
     onOpenList: (String) -> Unit = {},
     play: BoardPlay = NoPlay,
     onSignIn: () -> Unit = {},
-    onOpenMyPublished: () -> Unit = {},
     viewModel: CommunityListViewModel = hiltViewModel(),
 ) {
     val written by viewModel.state.collectAsStateWithLifecycle()
@@ -141,7 +140,6 @@ fun CommunityListScreen(
             onRestore = viewModel.ownList::restore,
             onGetBack = viewModel.ownList::getBack,
             onTakeDown = viewModel.ownList::takeDown,
-            onOpenMyPublished = onOpenMyPublished,
         ),
         onUndoStartFromTheirs = viewModel::undoStartFromTheirs,
         listNotices = viewModel.listNotices,
@@ -477,7 +475,6 @@ private fun ListMenu(
         onReport = closing(onReport).takeUnless { mine },
         onShowMyRanking = closing(onShowMyRanking).takeIf { loaded.canShowRanking },
         signInToShowRanking = !loaded.signedIn,
-        onOpenMyPublished = closing(own.onOpenMyPublished).takeIf { mine },
         // The board's own Public switch does it there, and keeps the board in step.
         onTakeDown = closing(own.onTakeDown).takeIf { mine && !loaded.fromBoard },
         onOpenRankings = closing(onOpenRankings),

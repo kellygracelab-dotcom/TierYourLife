@@ -90,12 +90,6 @@
     <string name="moderation_title">Şikayetler</string>
     <string name="moderation_unblur">Kapakları göster</string>
     <string name="moderation_undo">Geri al</string>
-    <string name="my_published_action_open">Aç</string>
-    <string name="my_published_empty_body">Herkese açık yaptığınız listeler burada görünür.</string>
-    <string name="my_published_empty_title">Yayımlanan yok</string>
-    <string name="my_published_failed">Herkese açık listeleriniz yüklenemedi</string>
-    <string name="my_published_subtitle">Toplulukta bulunan her şey, nereden yayımladığınızdan bağımsız.</string>
-    <string name="my_published_title">Herkese açık listeleriniz</string>
     <string name="report_action_send">Bildir</string>
     <string name="report_by_hand">Her şikayeti bir kişi okur. Yeterince birikirse liste o ana kadar gizlenir.</string>
     <string name="report_hide_author">%1$s kullanıcısından gelen her şeyi de gizle</string>
@@ -310,6 +304,4 @@
     <string name="moderation_not_kept">Liste bırakılamadı: şikayetler hâlâ açık. Yeniden deneyin.</string>
     <string name="moderation_not_moved">Taşınmadı: liste olduğu yerde. Yeniden deneyin.</string>
     <string name="moderation_moved_not_dismissed">Taşındı, ancak şikayetleri hâlâ açık. Kapatmak için “Bırak” düğmesine dokunun.</string>
-    <string name="my_published_action_view">Herkese açık listeyi gör</string>
-    <string name="my_published_action_edit">Düzenle</string>
 </resources>

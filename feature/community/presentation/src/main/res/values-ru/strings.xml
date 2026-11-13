@@ -94,12 +94,6 @@
     <string name="moderation_title">Жалобы</string>
     <string name="moderation_unblur">Показать обложки</string>
     <string name="moderation_undo">Отменить</string>
-    <string name="my_published_action_open">Открыть</string>
-    <string name="my_published_empty_body">Списки, которые вы сделаете публичными, появятся здесь.</string>
-    <string name="my_published_empty_title">Ничего не опубликовано</string>
-    <string name="my_published_failed">Не удалось загрузить ваши публичные списки</string>
-    <string name="my_published_subtitle">Всё, что у вас есть в сообществе, откуда бы вы это ни опубликовали.</string>
-    <string name="my_published_title">Ваши публичные списки</string>
     <string name="report_action_send">Пожаловаться</string>
     <string name="report_by_hand">Жалобы читает человек. Если их наберётся, список скроется до решения.</string>
     <string name="report_hide_author">Скрыть вообще всё от %1$s</string>
@@ -322,6 +316,4 @@
     <string name="moderation_not_kept">Не удалось оставить список: жалобы всё ещё открыты. Попробуйте ещё раз.</string>
     <string name="moderation_not_moved">Не перемещено: список остался на месте. Попробуйте ещё раз.</string>
     <string name="moderation_moved_not_dismissed">Перемещено, но жалобы остались открытыми. Нажмите «Оставить», чтобы закрыть их.</string>
-    <string name="my_published_action_view">Смотреть публикацию</string>
-    <string name="my_published_action_edit">Редактировать</string>
 </resources>

@@ -98,9 +98,6 @@ sealed interface CommunityRoute {
     @Serializable
     data object Moderation : CommunityRoute
 
-    @Serializable
-    data object MyPublished : CommunityRoute
-
     /**
      * One section's page (§3): its topics, then its lists.
      * [sectionId] is any section's id; one the phone does not know yet is asked about.

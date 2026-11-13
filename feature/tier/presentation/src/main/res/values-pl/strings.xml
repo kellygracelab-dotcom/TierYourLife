@@ -235,7 +235,6 @@
         <item quantity="many">%1$d list usunięto, a ich publiczne kopie wycofano</item>
         <item quantity="other">%1$d listy usunięto, a ich publiczne kopie wycofano</item>
     </plurals>
-    <string name="lists_public_lists">Twoje publiczne listy</string>
     <string name="item_search_link_paste">Wklej link do obrazka</string>
     <string name="item_search_link_from">Obrazek z linku · z %1$s</string>
     <string name="item_search_link_checking">Sprawdzamy obrazek…</string>

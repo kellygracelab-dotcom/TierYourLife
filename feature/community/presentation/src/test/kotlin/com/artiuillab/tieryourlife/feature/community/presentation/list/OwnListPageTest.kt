@@ -90,7 +90,7 @@ class OwnListPageTest {
     }
 
     @Test
-    fun myOwnList_sMenu_offersMyPublicLists_andTakingItDown_butNeitherHideNorReport() {
+    fun myOwnList_sMenu_offersTakingItDown_butNeitherHideNorReport() {
         val takenDown = mutableListOf<Unit>()
         show(mineNamed.copy(ownBoardId = null, ownBoardLookedUp = true), own = OwnListCallbacks(onTakeDown = { takenDown += Unit }))
 
@@ -99,7 +99,6 @@ class OwnListPageTest {
         composeRule.onNodeWithTag(CommunityTestTags.LIST_ACTIONS_SHEET).assertExists()
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_HIDE).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_REPORT).assertDoesNotExist()
-        composeRule.onNodeWithTag(CommunityTestTags.ACTION_YOUR_PUBLIC_LISTS).assertExists()
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_TAKE_DOWN).performClick()
 
         composeRule.runOnIdle { assertEquals(1, takenDown.size) }
@@ -113,7 +112,6 @@ class OwnListPageTest {
         composeRule.onNodeWithTag(CommunityListTestTags.MORE).performClick()
 
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_RANKINGS).assertExists()
-        composeRule.onNodeWithTag(CommunityTestTags.ACTION_YOUR_PUBLIC_LISTS).assertExists()
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_TAKE_DOWN).assertDoesNotExist()
     }
 
@@ -138,7 +136,6 @@ class OwnListPageTest {
         composeRule.onNodeWithTag(CommunityListTestTags.MORE).performClick()
 
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_TAKE_DOWN).assertExists()
-        composeRule.onNodeWithTag(CommunityTestTags.ACTION_YOUR_PUBLIC_LISTS).assertExists()
     }
 
     @Test

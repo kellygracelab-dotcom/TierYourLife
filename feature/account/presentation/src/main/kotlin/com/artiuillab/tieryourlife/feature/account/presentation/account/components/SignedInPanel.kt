@@ -48,7 +48,6 @@ internal fun SignedInPanel(
     credits: Int?,
     onEditName: () -> Unit,
     onEditFace: () -> Unit,
-    onOpenPublished: () -> Unit,
     onDone: () -> Unit,
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
@@ -104,7 +103,6 @@ internal fun SignedInPanel(
             name = name,
             photoUrl = photoUrl,
             publicListCount = publicListCount,
-            onOpenPublished = onOpenPublished,
         )
 
         if (credits != null) {
@@ -224,7 +222,6 @@ private fun CommunitySection(
     name: String,
     photoUrl: String?,
     publicListCount: Int,
-    onOpenPublished: () -> Unit,
 ) {
     Column(Modifier.fillMaxWidth()) {
         Text(
@@ -238,7 +235,6 @@ private fun CommunitySection(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
-                .clickable(onClick = onOpenPublished)
                 .padding(16.dp)
                 .testTag(AccountTestTags.COMMUNITY_ROW),
             verticalAlignment = Alignment.CenterVertically,

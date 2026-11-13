@@ -94,12 +94,6 @@
     <string name="moderation_title">Скарги</string>
     <string name="moderation_unblur">Показати обкладинки</string>
     <string name="moderation_undo">Скасувати</string>
-    <string name="my_published_action_open">Відкрити</string>
-    <string name="my_published_empty_body">Списки, які ви зробите публічними, зʼявляться тут.</string>
-    <string name="my_published_empty_title">Нічого не опубліковано</string>
-    <string name="my_published_failed">Не вдалося завантажити ваші публічні списки</string>
-    <string name="my_published_subtitle">Усе, що є у вас у спільноті, звідки б ви це не опублікували.</string>
-    <string name="my_published_title">Ваші публічні списки</string>
     <string name="report_action_send">Поскаржитися</string>
     <string name="report_by_hand">Скарги читає людина. Якщо їх набереться, список сховається до рішення.</string>
     <string name="report_hide_author">Сховати взагалі все від %1$s</string>
@@ -322,6 +316,4 @@
     <string name="moderation_not_kept">Не вдалося залишити список: скарги досі відкриті. Спробуйте ще раз.</string>
     <string name="moderation_not_moved">Не переміщено: список залишився на місці. Спробуйте ще раз.</string>
     <string name="moderation_moved_not_dismissed">Переміщено, але скарги лишилися відкритими. Натисніть «Залишити», щоб закрити їх.</string>
-    <string name="my_published_action_view">Переглянути публікацію</string>
-    <string name="my_published_action_edit">Редагувати</string>
 </resources>

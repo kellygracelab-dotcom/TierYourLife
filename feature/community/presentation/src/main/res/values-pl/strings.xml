@@ -94,12 +94,6 @@
     <string name="moderation_title">Zgłoszenia</string>
     <string name="moderation_unblur">Pokaż okładki</string>
     <string name="moderation_undo">Cofnij</string>
-    <string name="my_published_action_open">Otwórz</string>
-    <string name="my_published_empty_body">Listy, które upublicznisz, pojawią się tutaj.</string>
-    <string name="my_published_empty_title">Nic nie opublikowano</string>
-    <string name="my_published_failed">Nie udało się wczytać twoich publicznych list</string>
-    <string name="my_published_subtitle">Wszystko, co masz w społeczności, niezależnie skąd to opublikowano.</string>
-    <string name="my_published_title">Twoje publiczne listy</string>
     <string name="report_action_send">Zgłoś</string>
     <string name="report_by_hand">Zgłoszenia czyta człowiek. Gdy jest ich dość, lista znika do czasu decyzji.</string>
     <string name="report_hide_author">Ukryj też wszystko od %1$s</string>
@@ -322,6 +316,4 @@
     <string name="moderation_not_kept">Nie udało się zostawić listy: zgłoszenia są nadal otwarte. Spróbuj ponownie.</string>
     <string name="moderation_not_moved">Nie przeniesiono: lista jest tam, gdzie była. Spróbuj ponownie.</string>
     <string name="moderation_moved_not_dismissed">Przeniesiono, ale zgłoszenia nadal są otwarte. Dotknij „Zostaw”, aby je zamknąć.</string>
-    <string name="my_published_action_view">Zobacz publiczną listę</string>
-    <string name="my_published_action_edit">Edytuj</string>
 </resources>

@@ -46,13 +46,11 @@ import com.artiuillab.tieryourlife.feature.community.presentation.navigation.aut
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.followingScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.moderationScreen
-import com.artiuillab.tieryourlife.feature.community.presentation.navigation.myPublishedScreen
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToAllSections
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToAuthor
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToCommunityList
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToFollowing
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToModeration
-import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToMyPublished
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToProposeSection
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToSection
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.navigateToTopic
@@ -187,7 +185,6 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController, openLis
                     makeBoard = route.makeBoard,
                     onTierListClick = { id -> navController.navigateToTierDetail(id) },
                     onSettingsClick = { navController.navigateToSettings() },
-                    onOpenPublished = { navController.navigateToMyPublished() },
                     onSignInClick = { navController.navigateToAccount() },
                     onNewListCreated = { id -> navController.navigateToTierDetail(id) },
                     tabs = tabs,
@@ -341,14 +338,7 @@ private fun NavContent(
             // Only reachable on a window too narrow for the pane beside the queue.
             onOpenList = { id -> navController.navigateToCommunityList(id) },
         )
-        accountScreen(
-            onClose = { navController.popBackStack() },
-            onOpenPublished = { navController.navigateToMyPublished() },
-        )
-        myPublishedScreen(
-            onBack = { navController.popBackStack() },
-            onOpen = openList,
-        )
+        accountScreen(onClose = { navController.popBackStack() })
         authorScreen(
             onBack = { navController.popBackStack() },
             onOpenList = openList,
@@ -404,7 +394,6 @@ private fun NavContent(
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
             play = PlayOverBoards,
             onSignIn = { navController.navigateToAccount() },
-            onOpenMyPublished = { navController.navigateToMyPublished() },
         )
         aiStudioScreen(
             onBack = { ids ->

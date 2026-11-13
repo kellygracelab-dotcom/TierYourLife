@@ -92,12 +92,6 @@
     <string name="moderation_title">Denúncias</string>
     <string name="moderation_unblur">Mostrar capas</string>
     <string name="moderation_undo">Desfazer</string>
-    <string name="my_published_action_open">Abrir</string>
-    <string name="my_published_empty_body">As listas que você tornar públicas aparecem aqui.</string>
-    <string name="my_published_empty_title">Nada publicado</string>
-    <string name="my_published_failed">Não foi possível carregar suas listas públicas</string>
-    <string name="my_published_subtitle">Tudo o que você tem na comunidade, de onde quer que tenha publicado.</string>
-    <string name="my_published_title">Suas listas públicas</string>
     <string name="report_action_send">Denunciar</string>
     <string name="report_by_hand">Uma pessoa lê cada denúncia. Se forem várias, a lista some até a decisão.</string>
     <string name="report_hide_author">Ocultar também tudo de %1$s</string>
@@ -316,6 +310,4 @@
     <string name="moderation_not_kept">Não foi possível manter a lista: as denúncias continuam abertas. Tente de novo.</string>
     <string name="moderation_not_moved">Não movida: a lista continua onde estava. Tente de novo.</string>
     <string name="moderation_moved_not_dismissed">Movida, mas as denúncias continuam abertas. Toque em “Manter” para encerrá-las.</string>
-    <string name="my_published_action_view">Ver lista pública</string>
-    <string name="my_published_action_edit">Editar</string>
 </resources>

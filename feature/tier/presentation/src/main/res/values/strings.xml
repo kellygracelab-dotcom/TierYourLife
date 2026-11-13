@@ -208,7 +208,6 @@
         <item quantity="one">%1$d list deleted and its public copy taken down</item>
         <item quantity="other">%1$d lists deleted and their public copies taken down</item>
     </plurals>
-    <string name="lists_public_lists">Your public lists</string>
     <string name="item_search_link_paste">Paste picture link</string>
     <string name="item_search_link_from">Picture from a link · from %1$s</string>
     <string name="item_search_link_checking">Checking the picture…</string>

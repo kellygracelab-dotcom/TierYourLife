@@ -193,7 +193,6 @@
     <plurals name="snack_lists_deleted_and_taken_down">
         <item quantity="other">%1$d件のリストを削除し、公開中のコピーも取り下げました</item>
     </plurals>
-    <string name="lists_public_lists">自分の公開リスト</string>
     <string name="item_search_link_paste">画像のリンクを貼り付け</string>
     <string name="item_search_link_from">リンクの画像 · %1$s から</string>
     <string name="item_search_link_checking">画像を確認しています…</string>
