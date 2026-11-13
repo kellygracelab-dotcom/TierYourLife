@@ -6,4 +6,5 @@ data class PoolItemDraft(
     /** The picture is on a site that may not keep it: copy it onto the phone rather than keep the address. */
     val keepCopy: Boolean = false,
     val credit: String? = null,
+    val attribution: PictureAttribution? = null,
 )

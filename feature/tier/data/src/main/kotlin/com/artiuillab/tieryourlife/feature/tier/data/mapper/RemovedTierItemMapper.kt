@@ -13,6 +13,7 @@ internal fun TierItemEntity.toRemoved(tierListId: Long): RemovedTierItem = Remov
     imageUrl = imageUrl,
     source = source.toTierItemSource(),
     credit = credit,
+    attribution = attribution,
     sourceIndex = sourceIndex,
 )
 
@@ -27,4 +28,5 @@ internal fun RemovedTierItem.toEntity(): TierItemEntity = TierItemEntity(
     uid = uid,
     credit = credit,
     sourceIndex = sourceIndex,
+    attribution = attribution,
 )

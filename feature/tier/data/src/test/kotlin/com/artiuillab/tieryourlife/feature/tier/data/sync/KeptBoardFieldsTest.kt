@@ -84,6 +84,22 @@ class KeptBoardFieldsTest {
     }
 
     @Test
+    fun `a card's attribution comes down with it, and a card without one sends no key`() {
+        val board = networkJson.decodeFromString(
+            KeptBoardDto.serializer(),
+            """{"uid":"b-4","revision":1,"title":"Films","items":[""" +
+                """{"uid":"c-1","tierUid":"t-1","position":0,"title":"Alien","imageUrl":"https://image.tmdb.org/t/p/w500/a.jpg",""" +
+                """"attribution":{"source":"tmdb","link":"https://www.themoviedb.org/movie/348","later":1}},""" +
+                """{"uid":"c-2","tierUid":"t-1","position":1,"title":"Badger"}]}""",
+        )
+
+        assertEquals(listOf("tmdb", null), board.items.map { it.attribution?.source })
+        val sent = board.items.map { networkJson.parseToJsonElement(networkJson.encodeToString(KeptItemDto.serializer(), it)).jsonObject }
+        assertEquals(JsonPrimitive("https://www.themoviedb.org/movie/348"), sent[0]["attribution"]!!.jsonObject["link"])
+        assertFalse("attribution" in sent[1])
+    }
+
+    @Test
     fun `a kept game that no longer reads is left out rather than refused`() {
         assertNull(keptPlay("{not json", networkJson))
         assertNull(keptPlay(null, networkJson))

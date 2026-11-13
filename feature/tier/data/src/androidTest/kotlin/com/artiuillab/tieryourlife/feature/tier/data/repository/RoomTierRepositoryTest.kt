@@ -12,7 +12,9 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import kotlinx.coroutines.runBlocking
@@ -341,6 +343,37 @@ class RoomTierRepositoryTest {
         val copied = requireNotNull(repository.getTierListById(copyId)).tiers.single { it.isPool }
         assertEquals(listOf("© Jane Doe, CC BY", null), pool.items.map { it.credit })
         assertEquals(listOf("© Jane Doe, CC BY", null), copied.items.map { it.credit })
+    }
+
+    @Test
+    fun a_cards_attribution_stays_with_it_to_a_copy_decides_tmdb_and_goes_with_its_picture() = runBlocking {
+        val listId = repository.createTierList("Mixed", CAPTIONS)
+        val commons = PictureAttribution("wikimedia", "Jane Doe", "CC BY-SA 4.0", link = "https://commons.wikimedia.org/wiki/File:Fox.jpg")
+        val film = PictureAttribution("tmdb", link = "https://www.themoviedb.org/movie/348")
+
+        repository.addItemsToPool(
+            listId,
+            listOf(
+                PoolItemDraft(title = "Red fox", imageUrl = "https://upload.wikimedia.org/fox.jpg", credit = "© Jane Doe", attribution = commons),
+                PoolItemDraft(title = "Alien", imageUrl = "https://firebasestorage.googleapis.com/alien.jpg", attribution = film),
+                PoolItemDraft(title = "Old poster", imageUrl = "https://image.tmdb.org/t/p/w500/a.jpg"),
+                PoolItemDraft(title = "Old photo", imageUrl = "https://example.com/b.jpg"),
+            ),
+        )
+        val pool = requireNotNull(repository.getTierListById(listId)).tiers.single { it.isPool }
+        val copyId = repository.createFromTemplate(title = "Mixed", authorName = "", tiers = emptyList(), items = pool.items, takenFrom = null)
+        val copied = requireNotNull(repository.getTierListById(copyId)).tiers.single { it.isPool }
+
+        assertEquals(listOf(commons, film, null, null), pool.items.map { it.attribution })
+        assertEquals(listOf(commons, film, null, null), copied.items.map { it.attribution })
+        val sources = listOf(TierItemSource.MANUAL, TierItemSource.TMDB, TierItemSource.TMDB, TierItemSource.MANUAL)
+        assertEquals(sources, pool.items.map { it.source })
+        assertEquals(sources, copied.items.map { it.source })
+
+        repository.attachImageToItem(pool.items.first().id, "content://media/own.jpg")
+        val own = requireNotNull(repository.getTierListById(listId)).tiers.single { it.isPool }.items.first()
+        assertNull(own.attribution)
+        assertNull(own.credit)
     }
 
     @Test

@@ -67,6 +67,8 @@ data class KeptItemDto(
     /** Who the picture's license asks to be named. Not in the fingerprint: an older app rewriting the board drops it. */
     val credit: String? = null,
     val sourceIndex: Int? = null,
+    /** Not in the fingerprint either: it changes only with the picture, which is. */
+    val attribution: PictureAttributionDto? = null,
 )
 
 /** What a board looks like in the index: enough to decide whether to fetch it. */

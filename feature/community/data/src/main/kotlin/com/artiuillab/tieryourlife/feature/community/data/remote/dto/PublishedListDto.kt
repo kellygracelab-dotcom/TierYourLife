@@ -97,6 +97,8 @@ data class PublishedItemDto(
     /** Who the picture's license asks to be named; absent when it asks for nobody. */
     val credit: String? = null,
     val sourceIndex: Int? = null,
+    /** Of what is sent, the server reads only `link` and `originalUrl`; it works out the rest. */
+    val attribution: PublishedAttributionDto? = null,
 )
 
 @Serializable

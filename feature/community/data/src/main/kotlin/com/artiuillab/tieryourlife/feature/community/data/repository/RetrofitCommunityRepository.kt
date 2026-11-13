@@ -24,6 +24,8 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicMergeRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicNameRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicSectionRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toDomain
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.proposalError
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
 import com.artiuillab.tieryourlife.feature.community.data.remote.rankingRefusal
@@ -540,7 +542,10 @@ internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
         )
     },
     items = items.mapIndexed { index, item ->
-        TierItem(id = index.toLong(), title = item.title, imageUrl = item.imageUrl, credit = item.credit, sourceIndex = index)
+        TierItem(
+            id = index.toLong(), title = item.title, imageUrl = item.imageUrl, credit = item.credit,
+            attribution = item.attribution?.toDomain(), sourceIndex = index,
+        )
     },
     // Null on snapshots published before this was remembered: "arrangement
     // unknown", not "ranked nothing".
@@ -620,7 +625,10 @@ internal fun PublishedList.toDto() = PublishedListDto(
     updatedAt = summary.updatedAtMillis,
     tiers = tiers.map { PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark) },
     items = items.mapIndexed { index, item ->
-        PublishedItemDto(title = item.title, imageUrl = item.imageUrl, tierIndex = arrangement.getOrNull(index), credit = item.credit)
+        PublishedItemDto(
+            title = item.title, imageUrl = item.imageUrl, tierIndex = arrangement.getOrNull(index), credit = item.credit,
+            attribution = item.attribution?.toDto(),
+        )
     },
     anonymous = summary.anonymous,
     topicId = summary.topicId,

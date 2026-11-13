@@ -122,6 +122,7 @@ private fun TierItemEntity.toDomain(): TierItem = TierItem(
     source = source.toTierItemSource(),
     uid = uid,
     credit = credit,
+    attribution = attribution,
     sourceIndex = sourceIndex,
 )
 

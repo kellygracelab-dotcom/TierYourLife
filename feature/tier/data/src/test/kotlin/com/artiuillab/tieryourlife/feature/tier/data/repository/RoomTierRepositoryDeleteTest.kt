@@ -427,7 +427,8 @@ private class RecordingTierDao : TierDao {
         items.replaceAll { if (it.tierId == tierId && it.position >= fromPosition) it.copy(position = it.position + 1) else it }
     }
 
-    override suspend fun updateTierItemImage(id: Long, imageUrl: String?) = update(id) { it.copy(imageUrl = imageUrl) }
+    override suspend fun updateTierItemImage(id: Long, imageUrl: String?) =
+        update(id) { it.copy(imageUrl = imageUrl, credit = null, attribution = null) }
     override suspend fun getTierItemImageById(id: Long): String? = items.firstOrNull { it.id == id }?.imageUrl
     override suspend fun getAllImageRefs(): List<String> = items.mapNotNull { it.imageUrl }
     override suspend fun getAllCoverRefs(): List<String> = lists.values.mapNotNull { it.coverImageUrl }

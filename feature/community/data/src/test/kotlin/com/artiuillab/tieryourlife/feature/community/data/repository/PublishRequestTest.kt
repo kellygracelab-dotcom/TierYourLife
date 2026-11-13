@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.community.data.repository
 
 import com.artiuillab.tieryourlife.core.network.networkJson
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedAttributionDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIdDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedItemDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListDto
@@ -10,6 +11,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTi
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -165,6 +167,36 @@ class PublishRequestTest {
 
         assertEquals(listOf("© Jane Doe, CC BY", null), published.items.map { it.credit })
         assertEquals(listOf("© Jane Doe, CC BY", null), published.toDto().toDomain().items.map { it.credit })
+    }
+
+    // The server reads only link and originalUrl of what is sent; a copy of ours goes back with the address it was made from.
+    @Test
+    fun `a card's attribution goes out with it, and comes back on the list and its kept copy`() {
+        val copy = PictureAttribution(
+            source = "wikimedia",
+            author = "Jane Doe",
+            license = "CC BY-SA 4.0",
+            link = "https://commons.wikimedia.org/wiki/File:Fox.jpg",
+            originalUrl = "https://upload.wikimedia.org/fox.jpg",
+        )
+        val attributed = board.copy(tiers = listOf(tier(10, "S", TierItem(1, "Red fox", poster, attribution = copy), TierItem(2, "Badger", poster))))
+
+        val body = networkJson.parseToJsonElement(
+            networkJson.encodeToString(PublishListRequestDto.serializer(), attributed.toRequest(Pictures, uploaded = emptySet())),
+        ).jsonObject
+        val items = body.getValue("items").jsonArray.map { it.jsonObject }
+        assertEquals(JsonPrimitive("https://upload.wikimedia.org/fox.jpg"), items[0].getValue("attribution").jsonObject["originalUrl"])
+        assertFalse("attribution" in items[1])
+
+        val published = PublishedListDto(
+            id = "p1",
+            title = "Animals",
+            authorName = "Ann",
+            items = listOf(PublishedItemDto("Red fox", poster, attribution = PublishedAttributionDto("tmdb", link = "https://www.themoviedb.org/movie/1"))),
+        ).toDomain()
+        val expected = listOf(PictureAttribution("tmdb", link = "https://www.themoviedb.org/movie/1"))
+        assertEquals(expected, published.items.map { it.attribution })
+        assertEquals(expected, published.toDto().toDomain().items.map { it.attribution })
     }
 
     @Test
