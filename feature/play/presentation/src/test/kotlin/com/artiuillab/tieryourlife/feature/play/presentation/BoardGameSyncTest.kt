@@ -12,6 +12,8 @@ import com.artiuillab.tieryourlife.feature.play.domain.SharedGameJson
 import com.artiuillab.tieryourlife.feature.play.domain.nextPair
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncReport
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -124,6 +126,29 @@ class BoardGameSyncTest {
 
         assertEquals(3, offer.played)
         assertEquals(4, (viewModel.state.value.stage as PlayStage.Dueling).duel.number)
+    }
+
+    // QA 490 N2b: a game the website saved after the board was opened showed only once it was opened again.
+    @Test
+    fun aGameTheWebsiteSavedSinceTheBoardOpened_isWhatThePickerOffers() = runBlocking {
+        val repository = MovingTierRepository(unranked.copy(play = shared(answers = 1)))
+        val games = FakeSavedGames(mapOf(KEY to saved(answers = 1, onBoard = true)))
+        val bracket = GameSpec(GameKind.Bracket, 6, seed = 5)
+        val website = SharedGameJson.encode(
+            SharedGame(bracket, ids = (1..6).map { "c$it" }, history = historyOf(bracket, answers = 2), round = 1, startedAt = NOW),
+        )
+        val sync = object : BoardSync {
+            override suspend fun sync(): SyncReport {
+                repository.board = repository.board.copy(play = website)
+                return SyncReport(signedIn = true, carried = 1)
+            }
+        }
+        val viewModel = viewModel(games, repository, sync = sync)
+
+        viewModel.open()
+
+        val offer = viewModel.state.firstWithin { picker(it)?.resume?.kind == GameKind.Bracket }.let { picker(it)!!.resume!! }
+        assertEquals(2, offer.played)
     }
 
     @Test
@@ -325,6 +350,15 @@ class BoardGameSyncTest {
         return history
     }
 
+    private fun historyOf(spec: GameSpec, answers: Int): List<Outcome> {
+        val history = mutableListOf<Outcome>()
+        repeat(answers) {
+            val (first, second) = nextPair(spec, history)!!
+            history += Outcome(first, second, winner = first)
+        }
+        return history
+    }
+
     private fun saved(answers: Int, onBoard: Boolean) = SavedGame(
         spec = spec,
         ids = (1L..6L).toList(),
@@ -342,7 +376,8 @@ class BoardGameSyncTest {
         games: FakeSavedGames,
         boards: MovingTierRepository,
         request: PlayRequest = PlayRequest.ownBoard(boards.board),
-    ) = PlayViewModel(games, boards).apply {
+        sync: BoardSync = BoardSync.None,
+    ) = PlayViewModel(games, boards, sync).apply {
         clock = { NOW }
         seeds = { 7 }
         offer(request)

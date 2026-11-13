@@ -129,6 +129,7 @@ internal fun PlayLayer(
                     onResume = viewModel.picker::resume,
                     onStartAgain = viewModel.picker::startAgain,
                     onDiscard = viewModel.notices::discardStored,
+                    onUndoDiscard = viewModel.notices::undoDiscard,
                 ),
             )
         }

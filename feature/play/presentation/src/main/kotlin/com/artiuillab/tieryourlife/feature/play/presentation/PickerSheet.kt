@@ -89,6 +89,7 @@ internal data class PickerActions(
     val onResume: () -> Unit = {},
     val onStartAgain: () -> Unit = {},
     val onDiscard: () -> Unit = {},
+    val onUndoDiscard: () -> Unit = {},
 )
 
 /**
@@ -145,8 +146,8 @@ private fun ColumnScope.GamesPage(picker: Picker, actions: PickerActions) {
         )
         CardsFromLine(picker, onShowCards = actions.onShowCards)
         Spacer(Modifier.height(16.dp))
-        picker.resume?.let { offer ->
-            ResumeRow(offer, minHeight = 56.dp, actions)
+        if (picker.resume != null || picker.discarded) {
+            SavedGameRow(picker, minHeight = 56.dp, actions)
             Text(
                 text = stringResource(R.string.play_new_game),
                 modifier = Modifier.padding(start = 2.dp, top = 16.dp, bottom = 8.dp),
@@ -235,6 +236,44 @@ private fun SheetActions(content: @Composable RowScope.() -> Unit) {
 }
 
 /** The game put down for this board: what it is, how far it got, and the one button that picks it up. */
+@Composable
+private fun SavedGameRow(picker: Picker, minHeight: Dp, actions: PickerActions) {
+    val offer = picker.resume
+    if (offer != null) ResumeRow(offer, minHeight, actions) else DiscardedRow(minHeight, actions.onUndoDiscard)
+}
+
+@Composable
+private fun DiscardedRow(minHeight: Dp, onUndo: () -> Unit) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = minHeight)
+            .testTag(PlayTestTags.DISCARDED_ROW),
+    ) {
+        Row(Modifier.padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            HistoryIcon(20.dp, MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text = stringResource(R.string.play_snack_saved_discarded),
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(Modifier.width(8.dp))
+            TextButton(
+                onClick = onUndo,
+                modifier = Modifier
+                    .height(36.dp)
+                    .testTag(PlayTestTags.UNDO_DISCARD),
+            ) {
+                Text(stringResource(R.string.play_snack_undo))
+            }
+        }
+    }
+}
+
 @Composable
 private fun ResumeRow(offer: ResumeOffer, minHeight: Dp, actions: PickerActions) {
     Surface(
@@ -572,8 +611,8 @@ private fun ColumnScope.WideGamesPage(picker: Picker, actions: PickerActions) {
             }
         }
         Spacer(Modifier.height(6.dp))
-        picker.resume?.let { offer ->
-            ResumeRow(offer, minHeight = 52.dp, actions)
+        if (picker.resume != null || picker.discarded) {
+            SavedGameRow(picker, minHeight = 52.dp, actions)
             Spacer(Modifier.height(10.dp))
         }
         Row(

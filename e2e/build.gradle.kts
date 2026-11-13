@@ -34,6 +34,7 @@ dependencies {
     testImplementation(projects.core.network)
     testImplementation(projects.core.settings)
     testImplementation(projects.feature.tier.domain)
+    testImplementation(projects.feature.play.domain)
     testImplementation(projects.feature.tier.data)
     testImplementation(projects.feature.community.domain)
     testImplementation(projects.feature.community.data)

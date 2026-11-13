@@ -285,14 +285,34 @@ class PlayViewModelTest {
         assertFalse(offer.canStartAgain)
 
         viewModel.notices.discardStored()
-        val said = viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said
-        assertEquals(PlayNotice.SavedGameDiscarded, said.notice)
+        // QA 490: the board's "Undo" was drawn under the sheet; the sheet offers it itself.
+        assertTrue(picker(viewModel.state.value)!!.discarded)
         assertNull(picker(viewModel.state.value)?.resume)
         viewModel.state.firstWithin { KEY !in it.saved }
         assertNull(games.games[KEY])
 
         viewModel.notices.undoDiscard()
+        val back = viewModel.state.firstWithin { picker(it)?.resume != null }.let(::picker)!!
+        assertFalse(back.discarded)
+        assertEquals(saved.ids, games.games.getValue(KEY).ids)
+    }
+
+    @Test
+    fun aGameDiscardedInThePicker_isOfferedBackOnTheBoardOnceTheSheetCloses() = runBlocking {
+        val saved = savedGame(GameKind.Hill, (1L..4L).toList(), answered = 1).copy(scope = listOf(9L), keepTier = true)
+        val left = board(1L to listOf(1L, 2L), POOL to (3L..6L).toList())
+        val games = FakeSavedGames(mapOf(KEY to saved))
+        val viewModel = viewModel(games = games, boards = MovingTierRepository(left), request = PlayRequest.ownBoard(left))
+        viewModel.open()
         viewModel.state.firstWithin { picker(it)?.resume != null }
+        viewModel.notices.discardStored()
+
+        viewModel.picker.dismiss()
+
+        val said = viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said
+        assertEquals(PlayNotice.SavedGameDiscarded, said.notice)
+        viewModel.notices.undoDiscard()
+        viewModel.state.firstWithin { KEY in it.saved }
         assertEquals(saved.ids, games.games.getValue(KEY).ids)
     }
 
