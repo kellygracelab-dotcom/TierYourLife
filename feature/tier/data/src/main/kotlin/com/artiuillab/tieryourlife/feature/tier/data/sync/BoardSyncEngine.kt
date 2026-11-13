@@ -84,6 +84,19 @@ class BoardSyncEngine @Inject constructor(
 
     override val finished: Flow<SyncReport> = runsFinished.asSharedFlow()
 
+    override suspend fun unsent(): Set<String> {
+        val account = ownership.current()
+        if (account.isNullOrBlank() || ownership.holding || !preferences.backUpBoards(account)) return emptySet()
+        val agreed = dao.syncRecordsOf(account).associate { it.listUid to it.fingerprint }
+        val boards = dao.boardsOf(account)
+        val changed = boards.mapNotNull { board ->
+            val now = fingerprintOf(board)
+            "${board.uid}:$now".takeIf { agreed[board.uid] != now }
+        }
+        val here = boards.mapTo(mutableSetOf()) { it.uid }
+        return (changed + agreed.keys.filterNot { it in here }.map { "$it:gone" }).toSet()
+    }
+
     /**
      * Only the signed-in account's own boards: another account's, or the ones
      * made without one, are never sent, whoever is signed in. Nothing while a

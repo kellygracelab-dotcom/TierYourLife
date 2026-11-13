@@ -271,6 +271,31 @@ class PlayViewModelTest {
         assertEquals(saved, games.games[KEY])
     }
 
+    // QA 484 N1: a game whose tier was removed blamed its cards, and nothing on the phone let it go.
+    @Test
+    fun aGameWhoseTierIsGone_saysSo_andCanBeLetGoAndBroughtBack() = runBlocking {
+        val saved = savedGame(GameKind.Hill, (1L..4L).toList(), answered = 1).copy(scope = listOf(9L), keepTier = true)
+        val left = board(1L to listOf(1L, 2L), POOL to (3L..6L).toList())
+        val games = FakeSavedGames(mapOf(KEY to saved))
+        val viewModel = viewModel(games = games, boards = MovingTierRepository(left), request = PlayRequest.ownBoard(left))
+        viewModel.open()
+
+        val offer = viewModel.state.firstWithin { picker(it)?.resume != null }.let { picker(it)!!.resume!! }
+        assertTrue(offer.tierGone)
+        assertFalse(offer.canStartAgain)
+
+        viewModel.notices.discardStored()
+        val said = viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said
+        assertEquals(PlayNotice.SavedGameDiscarded, said.notice)
+        assertNull(picker(viewModel.state.value)?.resume)
+        viewModel.state.firstWithin { KEY !in it.saved }
+        assertNull(games.games[KEY])
+
+        viewModel.notices.undoDiscard()
+        viewModel.state.firstWithin { picker(it)?.resume != null }
+        assertEquals(saved.ids, games.games.getValue(KEY).ids)
+    }
+
     @Test
     fun aMonthOldGame_goesWithoutAWord() = runBlocking {
         val saved = savedGame(GameKind.Swiss, (1L..6L).toList(), answered = 2).copy(startedAt = NOW - 40 * DAY, touchedAt = NOW - 31 * DAY)

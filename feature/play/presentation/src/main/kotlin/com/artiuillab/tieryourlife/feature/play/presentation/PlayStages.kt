@@ -62,6 +62,7 @@ internal fun offerFor(saved: SavedGame, board: TierList): ResumeOffer {
     val cards = board.cardsIn(null)
     val resumption = saved.resumeOn(cards.map { it.id }, board.tierRowIds())
     val game = (resumption as? Resumption.Ready)?.game ?: saved
+    val tierGone = saved.lostTier(board.tierRowIds())
     return ResumeOffer(
         kind = game.spec.kind,
         played = progress(game.spec, game.history).played,
@@ -69,7 +70,8 @@ internal fun offerFor(saved: SavedGame, board: TierList): ResumeOffer {
         startedAt = saved.startedAt,
         changed = resumption is Resumption.Changed,
         joined = (resumption as? Resumption.Ready)?.joined ?: 0,
-        canStartAgain = !saved.lostTier(board.tierRowIds()) && saved.ids.count { id -> cards.any { it.id == id } } >= MIN_PLAY_CARDS,
+        canStartAgain = !tierGone && saved.ids.count { id -> cards.any { it.id == id } } >= MIN_PLAY_CARDS,
+        tierGone = tierGone,
     )
 }
 

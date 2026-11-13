@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublicationKind
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
@@ -15,6 +16,8 @@ internal class FakeCommunityRepositoryForDetail(
     /** What the server says of any topic it is asked about. */
     private val topicStatus: TopicStatus = TopicStatus.Pending,
     private val publicationKind: PublicationKind? = null,
+    /** What opening any published list finds; unset, opening fails. */
+    private val original: PublishedList? = null,
 ) : FakeCommunityRepository() {
     val published = mutableListOf<TierList>()
 
@@ -26,6 +29,13 @@ internal class FakeCommunityRepositoryForDetail(
     override suspend fun classifyPublication(list: TierList): Result<PublicationKind> = Result.success(
         publicationKind ?: publishResult.getOrNull()?.takeIf { it.ranking }?.let { PublicationKind.Ranking(it.id, 1) } ?: PublicationKind.NewList(),
     )
+
+    val opened = mutableListOf<String>()
+
+    override suspend fun open(id: String): Result<PublishedList> {
+        opened += id
+        return original?.let { Result.success(it) } ?: super.open(id)
+    }
 
     override suspend fun withdrawRanking(listId: String): Result<Unit> {
         withdrawn += listId

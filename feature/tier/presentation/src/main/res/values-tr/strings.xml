@@ -180,6 +180,7 @@
     <string name="cover_picker_gallery_note">Galeriden bir görsel kapağın tamamı olur ve listeyi yayımladığınızda onunla birlikte gider.</string>
     <string name="tier_detail_ranking_of">%1$s adlı kişinin listesinin sizin sıralamanız</string>
     <string name="tier_detail_ranking_of_unnamed">Yazarın listesinin sizin sıralamanız</string>
+    <string name="tier_detail_ranking_of_editorial">Bir listenin sizin sıralamanız</string>
     <string name="tier_detail_open_original">Aç</string>
     <string name="search_names_only">yalnızca adlar</string>
     <string name="cover_saved">kaydedildi</string>

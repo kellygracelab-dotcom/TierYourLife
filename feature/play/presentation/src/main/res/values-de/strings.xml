@@ -35,6 +35,7 @@
     </plurals>
     <string name="play_board_changed">Die Karten haben sich seit Beginn dieses Spiels geändert.</string>
     <string name="play_too_few_to_start_again">Die Karten haben sich geändert, und es sind zu wenige übrig, um dieses Spiel neu zu starten.</string>
+    <string name="play_tier_gone">Eine Stufe aus diesem Spiel gibt es nicht mehr.</string>
     <string name="play_start_again">Neu beginnen</string>
     <string name="play_into_mine_note">Das Ergebnis landet in „Meine“. „Ihre“ bleibt, wie sie ist.</string>
     <string name="play_cancel">Abbrechen</string>
