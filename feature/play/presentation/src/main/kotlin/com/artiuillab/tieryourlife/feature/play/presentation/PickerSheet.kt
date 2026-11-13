@@ -33,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -84,7 +83,7 @@ internal data class PickerActions(
     val onSelectCandidates: (Boolean) -> Unit = {},
     val onToggle: (Long) -> Unit = {},
     val onToggleEverything: () -> Unit = {},
-    val onKeepInTier: (Boolean) -> Unit = {},
+    val onToggleRanked: () -> Unit = {},
     val onDismiss: () -> Unit = {},
     val onStart: () -> Unit = {},
     val onResume: () -> Unit = {},
@@ -170,7 +169,7 @@ private fun ColumnScope.GamesPage(picker: Picker, actions: PickerActions) {
 /** "34 cards from Sci-fi films · Choose cards", the link in the sentence it belongs to. */
 @Composable
 private fun CardsFromLine(picker: Picker, onShowCards: () -> Unit) {
-    val from = pluralStringResource(R.plurals.play_cards_from, picker.count, picker.count, picker.title)
+    val from = pluralStringResource(R.plurals.play_cards_from, picker.count, picker.count, picker.areaName())
     val choose = stringResource(R.string.play_choose_cards)
     val link = TextLinkStyles(SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Medium))
     val text = buildAnnotatedString {
@@ -189,6 +188,15 @@ private fun CardsFromLine(picker: Picker, onShowCards: () -> Unit) {
 }
 
 private const val CHOOSE_LINK = "choose_cards"
+
+/** What the game is played over, as the first page says it: the pool, the ranked tiers, one tier, or the board. */
+@Composable
+private fun Picker.areaName(): String = when {
+    everything -> title
+    poolOnly -> stringResource(R.string.play_pool)
+    ranked -> stringResource(R.string.play_ranked)
+    else -> singleTier?.title() ?: title
+}
 
 @Composable
 private fun IntoMineNote() {
@@ -388,36 +396,22 @@ private fun ColumnScope.CardsPage(picker: Picker, actions: PickerActions) {
             enabled = true,
             onToggle = actions.onToggleEverything,
         )
-        KeepInTierRow(picker, actions.onKeepInTier)
+        if (picker.offersRanked) {
+            CheckRow(
+                title = stringResource(R.string.play_ranked),
+                count = picker.rankedCount,
+                checked = picker.ranked,
+                enabled = true,
+                onToggle = actions.onToggleRanked,
+                tag = PlayTestTags.RANKED,
+            )
+        }
         CardSelectionOptions(picker, actions)
     }
     SelectedCounter(picker, Modifier.padding(start = 24.dp, end = 24.dp, top = 12.dp))
     SheetActions {
         TextButton(onClick = actions.onDismiss) { Text(stringResource(R.string.play_cancel)) }
         ContinueButton(picker, actions.onShowGames)
-    }
-}
-
-/** Only while one tier is chosen: its cards may stay in it and only be ordered. */
-@Composable
-private fun KeepInTierRow(picker: Picker, onKeepInTier: (Boolean) -> Unit) {
-    val tier = picker.singleTier ?: return
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .heightIn(min = 56.dp)
-            .toggleable(value = picker.keepTier, role = Role.Switch, onValueChange = onKeepInTier)
-            .testTag(PlayTestTags.KEEP_IN_TIER)
-            .padding(horizontal = 24.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = stringResource(R.string.play_keep_in_tier, tier.label),
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Switch(checked = picker.keepTier, onCheckedChange = null)
     }
 }
 
@@ -653,8 +647,8 @@ private fun ColumnScope.WideCardsPage(picker: Picker, actions: PickerActions) {
         )
     }
     Spacer(Modifier.height(6.dp))
-    // The groups, and Everything last, standing for itself as null.
-    val cells: List<CardGroup?> = picker.groups + null
+    // The groups, then Everything and Ranked, which stand for themselves.
+    val cells: List<Any> = picker.groups + listOfNotNull(EVERYTHING_CELL, RANKED_CELL.takeIf { picker.offersRanked })
     Column(
         Modifier
             .weight(1f, fill = false)
@@ -665,17 +659,17 @@ private fun ColumnScope.WideCardsPage(picker: Picker, actions: PickerActions) {
     ) {
         cells.chunked(2).forEach { pair ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                pair.forEach { group ->
-                    if (group == null) {
-                        EverythingCell(picker, actions.onToggleEverything, Modifier.weight(1f))
-                    } else {
-                        GroupCell(group, group.tierId in picker.chosen, { actions.onToggle(group.tierId) }, Modifier.weight(1f))
+                pair.forEach { cell ->
+                    when (cell) {
+                        EVERYTHING_CELL -> EverythingCell(picker, actions.onToggleEverything, Modifier.weight(1f))
+                        RANKED_CELL -> RankedCell(picker, actions.onToggleRanked, Modifier.weight(1f))
+                        is CardGroup -> GroupCell(cell, cell.tierId in picker.chosen, { actions.onToggle(cell.tierId) }, Modifier.weight(1f))
+                        else -> Unit
                     }
                 }
                 if (pair.size == 1) Spacer(Modifier.weight(1f))
             }
         }
-        KeepInTierRow(picker, actions.onKeepInTier)
         CardSelectionOptions(picker, actions)
     }
     Spacer(Modifier.height(8.dp))
@@ -718,6 +712,16 @@ private fun GroupCell(group: CardGroup, checked: Boolean, onToggle: () -> Unit, 
         CellText(group.title(), group.count, enabled = true)
     }
 }
+
+@Composable
+private fun RankedCell(picker: Picker, onToggle: () -> Unit, modifier: Modifier) {
+    CellRow(checked = picker.ranked, enabled = true, onToggle = onToggle, tag = PlayTestTags.RANKED, modifier = modifier) {
+        CellText(stringResource(R.string.play_ranked), picker.rankedCount, true)
+    }
+}
+
+private const val EVERYTHING_CELL = "everything"
+private const val RANKED_CELL = "ranked"
 
 @Composable
 private fun EverythingCell(picker: Picker, onToggle: () -> Unit, modifier: Modifier) {

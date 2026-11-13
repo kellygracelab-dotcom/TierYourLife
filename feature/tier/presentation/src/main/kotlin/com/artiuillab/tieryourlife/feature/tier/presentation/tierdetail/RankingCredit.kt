@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 
-/** Under the title of a copy that is out as a ranking: whose list it answers, and the way there. */
+/** Under the title of a copy that is out as a ranking: whose list it answers, and the way there; an author with no public name is "Author". */
 @Composable
 internal fun RankingCredit(authorName: String, onOpen: () -> Unit, modifier: Modifier = Modifier) {
     Row(
@@ -29,7 +29,11 @@ internal fun RankingCredit(authorName: String, onOpen: () -> Unit, modifier: Mod
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = stringResource(R.string.tier_detail_ranking_of, authorName),
+            text = if (authorName.isBlank()) {
+                stringResource(R.string.tier_detail_ranking_of_unnamed)
+            } else {
+                stringResource(R.string.tier_detail_ranking_of, authorName.trim())
+            },
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

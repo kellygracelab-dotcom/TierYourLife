@@ -55,10 +55,11 @@ class LargeGameJourneyTest {
         compose.onNodeWithTag(PlayTestTags.START).performClick()
         repeat(15) { compose.onNodeWithTag(PlayTestTags.FIRST_CARD).performClick() }
         compose.onNodeWithTag(PlayTestTags.RESULT).assertIsDisplayed()
-        compose.onNodeWithTag("play_unplayed_Keep").assertIsDisplayed()
+        // One tier is only ordered: its unplayed cards stay behind the played ones, so there is nothing to choose.
+        compose.onNodeWithTag("play_unplayed_Keep").assertDoesNotExist()
         compose.runOnIdle {
             val result = (vm.state.value.stage as PlayStage.Finished).result
-            assertEquals(75, result.unplayedCount)
+            assertEquals(0, result.unplayedCount)
             assertEquals(listOf(1L), result.tiers.map { it.tierId })
             assertEquals(91, board.tiers.first().items.size)
         }

@@ -10,7 +10,7 @@ object PlayTestTags {
     const val START = "play_start"
     const val CARDS_PAGE = "play_cards_page"
     const val EVERYTHING = "play_everything"
-    const val KEEP_IN_TIER = "play_keep_in_tier"
+    const val RANKED = "play_ranked"
     const val COUNTER = "play_counter"
     const val CONTINUE = "play_continue"
     const val DUEL = "play_duel"

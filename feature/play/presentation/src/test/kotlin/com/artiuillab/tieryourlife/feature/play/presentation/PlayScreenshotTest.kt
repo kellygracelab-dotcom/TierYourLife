@@ -71,7 +71,7 @@ class PlayScreenshotTest {
     }
 
     @Test
-    fun choosingCards_oneTier_offersToKeepThemInIt() = capture("play_choose_one_tier") {
+    fun choosingCards_oneTier_ordersOnlyThatTier() = capture("play_choose_one_tier") {
         Sheet(picker.copy(page = PickerPage.Cards, chosen = setOf(1L)))
     }
 

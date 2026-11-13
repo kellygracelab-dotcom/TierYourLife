@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.play.domain.duels
 import com.artiuillab.tieryourlife.feature.play.domain.estimatedDuels
 import com.artiuillab.tieryourlife.feature.play.domain.isDashed
 import com.artiuillab.tieryourlife.feature.play.domain.isThin
+import com.artiuillab.tieryourlife.feature.play.domain.lostTier
 import com.artiuillab.tieryourlife.feature.play.domain.nextPair
 import com.artiuillab.tieryourlife.feature.play.domain.progress
 import com.artiuillab.tieryourlife.feature.play.domain.refineDuels
@@ -59,7 +60,7 @@ internal fun totalOf(game: SavedGame): Int {
 
 internal fun offerFor(saved: SavedGame, board: TierList): ResumeOffer {
     val cards = board.cardsIn(null)
-    val resumption = saved.resumeOn(cards.map { it.id })
+    val resumption = saved.resumeOn(cards.map { it.id }, board.tierRowIds())
     val game = (resumption as? Resumption.Ready)?.game ?: saved
     return ResumeOffer(
         kind = game.spec.kind,
@@ -68,7 +69,7 @@ internal fun offerFor(saved: SavedGame, board: TierList): ResumeOffer {
         startedAt = saved.startedAt,
         changed = resumption is Resumption.Changed,
         joined = (resumption as? Resumption.Ready)?.joined ?: 0,
-        canStartAgain = saved.ids.count { id -> cards.any { it.id == id } } >= MIN_PLAY_CARDS,
+        canStartAgain = !saved.lostTier(board.tierRowIds()) && saved.ids.count { id -> cards.any { it.id == id } } >= MIN_PLAY_CARDS,
     )
 }
 
@@ -95,16 +96,19 @@ internal fun stageOf(session: Session, intoMine: Boolean): PlayStage {
 
 /**
  * Where the game leaves its cards. One tier being ordered keeps them all in
- * it, best first; otherwise the board's tiers take them as the engine cuts
+ * it, best first, and when that tier is gone they go nowhere rather than
+ * across the board; otherwise the board's tiers take them as the engine cuts
  * them, the pool never.
  */
 internal fun resultOf(session: Session, intoMine: Boolean): ResultState {
     val game = session.game
     val standing = standing(game.spec.count, game.history.duels())
     val ranked = session.board.tiers.filterNot { it.isPool }
-    val kept = game.scope?.singleOrNull()?.takeIf { game.keepTier }?.let { id -> ranked.firstOrNull { it.id == id } }
+    val keptId = game.scope?.singleOrNull()?.takeIf { game.keepTier }
+    val kept = keptId?.let { id -> ranked.firstOrNull { it.id == id } }
     val placed: List<Pair<Tier, List<Int>>> = when {
         kept != null -> listOf(kept to standing.order)
+        keptId != null -> emptyList()
         ranked.isEmpty() -> emptyList()
         else -> ranked.zip(tiers(standing, ranked.size))
     }
@@ -126,7 +130,7 @@ internal fun resultOf(session: Session, intoMine: Boolean): ResultState {
         thin = isThin(standing),
         refineDuels = if (game.spec.refine) 0 else refineDuels(game.spec.count, game.history),
         intoMine = intoMine,
-        unplayedCount = session.board.cardsIn(null).count { it.id !in participants },
+        unplayedCount = unplayedIn(session.board, game, participants),
     )
 }
 
