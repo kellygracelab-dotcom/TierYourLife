@@ -22,7 +22,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -101,10 +103,12 @@ class RankingChoiceJourneyTest {
         placeSeven(vm)
         vm.choices.choose(public = true, languageTag = "")
         vm.state.firstWithin { (it as? CommunityListUiState.Success)?.rankings?.any { row -> row.mine } == true }
+        until { fixture.boards.saved?.rankingOf != null }
         assertEquals(1, fixture.shown)
         assertEquals("abc", fixture.boards.saved?.rankingOf)
         vm.rankings.withdrawMine()
         vm.state.firstWithin { (it as? CommunityListUiState.Success)?.rankingCount == 0 }
+        until { fixture.boards.saved?.rankingOf == null }
         assertNull(fixture.boards.saved?.rankingOf)
         val reopened = open(fixture, RankingDrafts.None)
         assertNull(reopened.loaded().rankingOffer)
@@ -160,6 +164,10 @@ class RankingChoiceJourneyTest {
         it.state.firstWithin { state -> state is CommunityListUiState.Success }
     }
 
+    private suspend fun until(condition: () -> Boolean) = withTimeout(5_000) {
+        while (!condition()) delay(10)
+    }
+
     private fun placeSeven(vm: CommunityListViewModel) {
         vm.show(Showing.Mine)
         repeat(7) { vm.moveItem(it.toLong(), 0, it) }
@@ -184,7 +192,9 @@ private class ChoiceFixture(signedIn: Boolean = false, translations: ListTransla
         arrangement = List(20) { 0 },
         translations = translations,
     )
-    var shown = 0
+
+    @Volatile var shown = 0
+
     override suspend fun open(publishedId: String) = Result.success(source)
     override suspend fun showMyRanking(listId: String, arrangement: List<Int?>, rows: List<List<Int>>, tierLabels: List<String>): Result<ShownRanking> {
         shown++
@@ -193,7 +203,7 @@ private class ChoiceFixture(signedIn: Boolean = false, translations: ListTransla
 }
 
 private class ChoiceBoards : TierRepository by RecordingTierRepository() {
-    var saved: TierList? = null
+    @Volatile var saved: TierList? = null
     override suspend fun createRankingCopy(board: TierList, sourceId: String, sourceVersion: Long, choice: RankingChoice?): Long {
         saved = board.copy(
             id = 100, uid = "local-copy", takenFrom = sourceId, originVersion = sourceVersion, rankingChoice = choice,
