@@ -30,7 +30,7 @@ internal fun MovieDto.toDomain(): CatalogueItem? {
         subtitle = subtitle(),
         imageUrl = imageUrl,
         // The page the server keeps a link to, in its one shape.
-        attribution = imageUrl?.let { PictureAttribution(PictureAttribution.TMDB, link = "$TMDB_PAGE_BASE_URL/$mediaType/$id") },
+        attribution = imageUrl?.let { PictureAttribution(PictureAttribution.TMDB, link = "$TMDB_PAGE_BASE_URL/$mediaType/$id", id = "tmdb:$mediaType:$id") },
     )
 }
 

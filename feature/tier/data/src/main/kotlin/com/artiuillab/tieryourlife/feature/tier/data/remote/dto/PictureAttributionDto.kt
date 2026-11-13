@@ -12,8 +12,10 @@ data class PictureAttributionDto(
     val licenseUrl: String? = null,
     val link: String? = null,
     val originalUrl: String? = null,
+    val id: String? = null,
+    val formerUrls: List<String> = emptyList(),
 )
 
-fun PictureAttributionDto.toDomain() = PictureAttribution(source, author, license, licenseUrl, link, originalUrl)
+fun PictureAttributionDto.toDomain() = PictureAttribution(source, author, license, licenseUrl, link, originalUrl, id, formerUrls)
 
-fun PictureAttribution.toDto() = PictureAttributionDto(source, author, license, licenseUrl, link, originalUrl)
+fun PictureAttribution.toDto() = PictureAttributionDto(source, author, license, licenseUrl, link, originalUrl, id, formerUrls)

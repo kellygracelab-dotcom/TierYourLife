@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.mapper
 
 import com.artiuillab.tieryourlife.core.network.networkJson
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.MovieSearchResponseDto
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -45,6 +46,7 @@ class MovieDtoMapperTest {
         assertEquals("Interstellar", item.title)
         assertEquals("https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", item.imageUrl)
         assertEquals("2014", item.subtitle)
+        assertEquals(PictureAttribution("tmdb", link = "https://www.themoviedb.org/movie/157336", id = "tmdb:movie:157336"), item.attribution)
     }
 
     @Test
@@ -53,6 +55,7 @@ class MovieDtoMapperTest {
 
         assertEquals("Undecorated", item.title)
         assertNull(item.imageUrl)
+        assertNull(item.attribution)
     }
 
     // An old film, or one just announced, often has a still and no poster.

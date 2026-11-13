@@ -12,8 +12,11 @@ class AttributionConverterTest {
     @Test
     fun anAttribution_readsBackAsItWasStored() {
         val fox = PictureAttribution("inaturalist", "Jane Doe", "CC BY 4.0", "https://l", "https://p", "https://o")
+        val film = PictureAttribution("tmdb", id = "tmdb:movie:348", formerUrls = listOf("https://image.tmdb.org/t/p/w500/old.jpg"))
 
         assertEquals(fox, converter.fromStored(converter.toStored(fox)))
+        assertEquals(film, converter.fromStored(converter.toStored(film)))
+        assertEquals(PictureAttribution("wikimedia"), converter.fromStored("""{"source":"wikimedia"}"""))
         assertNull(converter.toStored(null))
     }
 
