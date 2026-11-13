@@ -241,4 +241,13 @@
     <string name="item_search_link_upload">Importer des images</string>
     <string name="item_search_link_sign_in_text">Les images depuis des liens sont gardées dans votre compte. Connectez-vous : votre saisie reste ici.</string>
     <string name="item_search_link_sign_in">Se connecter</string>
+    <string name="add_to_list_title">Ajouter à une liste</string>
+    <string name="add_to_list_from">de %1$s</string>
+    <string name="add_to_list_where">Où</string>
+    <string name="add_to_list_new">Nouvelle liste…</string>
+    <string name="add_to_list_new_name">Nom de la liste</string>
+    <string name="add_to_list_cancel">Annuler</string>
+    <string name="add_to_list_to_pool">Dans le pool</string>
+    <string name="add_to_list_added">Ajouté à « %1$s »</string>
+    <string name="add_to_list_sign_in">Les images depuis des liens sont gardées dans votre compte. Connectez-vous dans TierYourLife pour les ajouter, ou ajoutez la carte sans image.</string>
 </resources>

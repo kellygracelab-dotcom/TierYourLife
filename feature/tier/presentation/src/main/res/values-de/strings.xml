@@ -227,4 +227,13 @@
     <string name="item_search_link_upload">Bilder hochladen</string>
     <string name="item_search_link_sign_in_text">Bilder über Links werden in deinem Konto gespeichert. Melde dich an – deine Eingabe bleibt erhalten.</string>
     <string name="item_search_link_sign_in">Anmelden</string>
+    <string name="add_to_list_title">Zur Liste hinzufügen</string>
+    <string name="add_to_list_from">von %1$s</string>
+    <string name="add_to_list_where">Wohin</string>
+    <string name="add_to_list_new">Neue Liste…</string>
+    <string name="add_to_list_new_name">Name der Liste</string>
+    <string name="add_to_list_cancel">Abbrechen</string>
+    <string name="add_to_list_to_pool">In den Pool</string>
+    <string name="add_to_list_added">Zu „%1$s“ hinzugefügt</string>
+    <string name="add_to_list_sign_in">Bilder über Links werden in deinem Konto gespeichert. Melde dich in TierYourLife an, um sie hinzuzufügen, oder füge die Karte ohne Bild hinzu.</string>
 </resources>

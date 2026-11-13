@@ -213,4 +213,13 @@
     <string name="item_search_link_upload">画像をアップロード</string>
     <string name="item_search_link_sign_in_text">リンクの画像はアカウントに保存されます。ログインしても入力内容はそのまま残ります。</string>
     <string name="item_search_link_sign_in">ログイン</string>
+    <string name="add_to_list_title">リストに追加</string>
+    <string name="add_to_list_from">%1$s から</string>
+    <string name="add_to_list_where">追加先</string>
+    <string name="add_to_list_new">新しいリスト…</string>
+    <string name="add_to_list_new_name">リスト名</string>
+    <string name="add_to_list_cancel">キャンセル</string>
+    <string name="add_to_list_to_pool">プールへ</string>
+    <string name="add_to_list_added">「%1$s」に追加しました</string>
+    <string name="add_to_list_sign_in">リンクの画像はアカウントに保存されます。追加するには TierYourLife でログインするか、画像なしでカードを追加してください。</string>
 </resources>
