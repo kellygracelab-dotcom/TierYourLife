@@ -61,4 +61,5 @@
     <string name="publication_preview_independent">This will be a separate public list. Your private copy stays editable.</string>
     <string name="source_changed_recheck">Check against the current original</string>
     <string name="publication_limit_until">You can publish another new list after %1$s. You can still keep private boards and publish Rankings.</string>
+    <string name="tmdb_attribution" translatable="false">This product uses the TMDB API but is not endorsed or certified by TMDB.</string>
 </resources>

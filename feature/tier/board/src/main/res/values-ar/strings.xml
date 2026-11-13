@@ -200,7 +200,10 @@
     <string name="list_settings_public_gone">لم تعد هذه القائمة في المجتمع: أُزيلت أو حُذفت أو نُشرت من حساب آخر. فعّل «عامة» لنشرها من جديد.</string>
     <string name="list_settings_public_section_unavailable">قسم هذه القائمة لم يعد يقبل القوائم. اختر قسمًا آخر ثم انشر من جديد.</string>
     <string name="list_settings_unpublish_failed">تعذّر إلغاء نشر هذه القائمة؛ ما زالت عامة. أعد المحاولة.</string>
-    <string name="tier_detail_image_credits">حقوق الصورة</string>
+    <string name="tier_detail_about_picture">عن الصورة</string>
+    <string name="tier_detail_picture_author">المؤلف</string>
+    <string name="tier_detail_picture_license">الترخيص</string>
+    <string name="tier_detail_picture_source">المصدر</string>
     <string name="tier_detail_card_details">تفاصيل البطاقة</string>
     <string name="tier_detail_credits_close">إغلاق</string>
     <string name="list_settings_public_changed_elsewhere">تغيّرت القائمة على جهاز آخر. حاول نشرها مجددًا.</string>
