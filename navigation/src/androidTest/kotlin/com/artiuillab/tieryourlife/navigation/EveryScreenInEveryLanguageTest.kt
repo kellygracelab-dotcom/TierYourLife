@@ -37,8 +37,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.list.Community
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.ModerationScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.ModerationUiState
-import com.artiuillab.tieryourlife.feature.community.presentation.published.MyPublishedScreenContent
-import com.artiuillab.tieryourlife.feature.community.presentation.published.MyPublishedUiState
 import com.artiuillab.tieryourlife.feature.settings.presentation.hidden.HiddenScreenContent
 import com.artiuillab.tieryourlife.feature.settings.presentation.hidden.HiddenUiState
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
@@ -169,11 +167,7 @@ class EveryScreenInEveryLanguageTest {
             onBack = {},
         )
 
-        "moderation-empty" -> ModerationScreenContent(state = ModerationUiState.Ready(emptyList()), onBack = {})
-        else -> MyPublishedScreenContent(
-            state = MyPublishedUiState.Ready(listOf(summary("1"), summary("2"))),
-            onBack = {},
-        )
+        else -> ModerationScreenContent(state = ModerationUiState.Ready(emptyList()), onBack = {})
     }
 
     @Composable
@@ -241,7 +235,7 @@ class EveryScreenInEveryLanguageTest {
         val SCREENS = listOf(
             "home-empty", "home-lists", "home-community", "detail", "community-list",
             "author", "author-empty", "hidden", "hidden-empty", "moderation",
-            "moderation-empty", "my-published",
+            "moderation-empty",
         )
     }
 }

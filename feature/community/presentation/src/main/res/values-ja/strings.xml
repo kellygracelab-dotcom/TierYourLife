@@ -88,12 +88,6 @@
     <string name="moderation_title">通報</string>
     <string name="moderation_unblur">表紙を表示</string>
     <string name="moderation_undo">元に戻す</string>
-    <string name="my_published_action_open">開く</string>
-    <string name="my_published_empty_body">公開にしたリストがここに並びます。</string>
-    <string name="my_published_empty_title">公開中のものはありません</string>
-    <string name="my_published_failed">公開中のリストを読み込めませんでした</string>
-    <string name="my_published_subtitle">どの端末から公開したかによらず、コミュニティにあるものすべて。</string>
-    <string name="my_published_title">公開中のリスト</string>
     <string name="report_action_send">通報する</string>
     <string name="report_by_hand">通報は人が読みます。数が揃うと、判断までリストは非表示になります。</string>
     <string name="report_hide_author">%1$s の投稿をすべて非表示にする</string>
@@ -304,6 +298,4 @@
     <string name="moderation_not_kept">リストを残せませんでした。通報はまだ未処理です。もう一度お試しください。</string>
     <string name="moderation_not_moved">移動できませんでした。リストは元の場所のままです。もう一度お試しください。</string>
     <string name="moderation_moved_not_dismissed">移動しましたが、通報はまだ残っています。「残す」をタップすると解消できます。</string>
-    <string name="my_published_action_view">公開リストを見る</string>
-    <string name="my_published_action_edit">編集</string>
 </resources>

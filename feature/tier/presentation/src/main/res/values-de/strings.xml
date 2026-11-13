@@ -207,7 +207,6 @@
         <item quantity="one">%1$d Liste gelöscht, die öffentliche Kopie entfernt</item>
         <item quantity="other">%1$d Listen gelöscht, die öffentlichen Kopien entfernt</item>
     </plurals>
-    <string name="lists_public_lists">Deine öffentlichen Listen</string>
     <string name="item_search_link_paste">Bildlink einfügen</string>
     <string name="item_search_link_from">Bild über Link · von %1$s</string>
     <string name="item_search_link_checking">Bild wird geprüft…</string>

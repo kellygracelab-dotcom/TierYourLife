@@ -62,7 +62,6 @@ import com.artiuillab.tieryourlife.feature.account.presentation.signin.rememberG
 @Composable
 fun AccountScreen(
     onClose: () -> Unit,
-    onOpenPublished: () -> Unit,
     viewModel: AccountViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -75,7 +74,6 @@ fun AccountScreen(
 
     AccountScreenContent(
         state = state,
-        onOpenPublished = onOpenPublished,
         onClose = onClose,
         onSignIn = { viewModel.signIn { googleCredential.request(context) } },
         onSignOut = viewModel::signOut,
@@ -105,7 +103,6 @@ internal fun AccountScreenContent(
     onCancelPositioning: () -> Unit = {},
     onConfirmPosition: (FaceCrop?) -> Unit = {},
     onNoticeShown: () -> Unit = {},
-    onOpenPublished: () -> Unit = {},
     onMoveGuestBoardsIn: () -> Unit = {},
     onKeepGuestBoardsHere: () -> Unit = {},
 ) {
@@ -174,7 +171,6 @@ internal fun AccountScreenContent(
                                 credits = state.credits,
                                 onEditName = { nicknameDialogVisible = true },
                                 onEditFace = { faceSheetVisible = true },
-                                onOpenPublished = onOpenPublished,
                                 onDone = onClose,
                                 onSignOut = onSignOut,
                                 onDeleteAccount = onDeleteAccount,

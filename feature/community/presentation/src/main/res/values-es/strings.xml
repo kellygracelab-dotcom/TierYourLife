@@ -92,12 +92,6 @@
     <string name="moderation_title">Denuncias</string>
     <string name="moderation_unblur">Mostrar portadas</string>
     <string name="moderation_undo">Deshacer</string>
-    <string name="my_published_action_open">Abrir</string>
-    <string name="my_published_empty_body">Las listas que hagas públicas aparecen aquí.</string>
-    <string name="my_published_empty_title">Nada publicado</string>
-    <string name="my_published_failed">No se pudieron cargar tus listas públicas</string>
-    <string name="my_published_subtitle">Todo lo que tienes en la comunidad, desde donde sea que lo publicaste.</string>
-    <string name="my_published_title">Tus listas públicas</string>
     <string name="report_action_send">Denunciar</string>
     <string name="report_by_hand">Una persona lee cada denuncia. Si se acumulan, la lista se oculta hasta entonces.</string>
     <string name="report_hide_author">Ocultar también todo de %1$s</string>
@@ -316,6 +310,4 @@
     <string name="moderation_not_kept">No se pudo dejar la lista: las denuncias siguen abiertas. Inténtalo de nuevo.</string>
     <string name="moderation_not_moved">No se movió: la lista sigue donde estaba. Inténtalo de nuevo.</string>
     <string name="moderation_moved_not_dismissed">Movida, pero sus denuncias siguen abiertas. Toca «Dejar» para cerrarlas.</string>
-    <string name="my_published_action_view">Ver lista pública</string>
-    <string name="my_published_action_edit">Editar</string>
 </resources>

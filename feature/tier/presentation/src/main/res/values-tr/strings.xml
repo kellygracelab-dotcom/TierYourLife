@@ -207,7 +207,6 @@
         <item quantity="one">%1$d liste silindi ve herkese açık kopyası kaldırıldı</item>
         <item quantity="other">%1$d liste silindi ve herkese açık kopyaları kaldırıldı</item>
     </plurals>
-    <string name="lists_public_lists">Herkese açık listelerin</string>
     <string name="item_search_link_paste">Görsel bağlantısını yapıştır</string>
     <string name="item_search_link_from">Bağlantıdan görsel · %1$s</string>
     <string name="item_search_link_checking">Görsel kontrol ediliyor…</string>

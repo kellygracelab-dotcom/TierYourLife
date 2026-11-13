@@ -41,7 +41,6 @@ data class OwnListCallbacks(
     val onRestore: () -> Unit = {},
     val onGetBack: () -> Unit = {},
     val onTakeDown: () -> Unit = {},
-    val onOpenMyPublished: () -> Unit = {},
 )
 
 private val OWN_LINE_HEIGHT = 56.dp

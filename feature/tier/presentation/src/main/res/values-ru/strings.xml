@@ -235,7 +235,6 @@
         <item quantity="many">%1$d списков удалено, их публичные копии сняты</item>
         <item quantity="other">%1$d списка удалено, их публичные копии сняты</item>
     </plurals>
-    <string name="lists_public_lists">Мои публикации</string>
     <string name="item_search_link_paste">Вставить ссылку на картинку</string>
     <string name="item_search_link_from">Картинка по ссылке · с %1$s</string>
     <string name="item_search_link_checking">Проверяем картинку…</string>

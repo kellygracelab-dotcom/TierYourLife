@@ -92,12 +92,6 @@
     <string name="moderation_title">Signalements</string>
     <string name="moderation_unblur">Afficher les couvertures</string>
     <string name="moderation_undo">Annuler</string>
-    <string name="my_published_action_open">Ouvrir</string>
-    <string name="my_published_empty_body">Les listes que vous rendez publiques apparaissent ici.</string>
-    <string name="my_published_empty_title">Rien de publié</string>
-    <string name="my_published_failed">Impossible de charger vos listes publiques</string>
-    <string name="my_published_subtitle">Tout ce que vous avez dans la communauté, quel que soit l’appareil.</string>
-    <string name="my_published_title">Vos listes publiques</string>
     <string name="report_action_send">Signaler</string>
     <string name="report_by_hand">Une personne lit chaque signalement. S’il y en a assez, la liste disparaît jusque-là.</string>
     <string name="report_hide_author">Masquer aussi tout de %1$s</string>
@@ -316,6 +310,4 @@
     <string name="moderation_not_kept">Impossible de laisser la liste : les signalements sont toujours ouverts. Réessayez.</string>
     <string name="moderation_not_moved">Non déplacée : la liste est restée où elle était. Réessayez.</string>
     <string name="moderation_moved_not_dismissed">Déplacée, mais ses signalements sont toujours ouverts. Touchez « Laisser » pour les clore.</string>
-    <string name="my_published_action_view">Voir la liste publique</string>
-    <string name="my_published_action_edit">Modifier</string>
 </resources>

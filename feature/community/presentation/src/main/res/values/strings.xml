@@ -90,12 +90,6 @@
     <string name="moderation_title">Reports</string>
     <string name="moderation_unblur">Show covers</string>
     <string name="moderation_undo">Undo</string>
-    <string name="my_published_action_open">Open</string>
-    <string name="my_published_empty_body">Lists you make public show up here.</string>
-    <string name="my_published_empty_title">Nothing published</string>
-    <string name="my_published_failed">Could not load your public lists</string>
-    <string name="my_published_subtitle">Everything you have in the community, wherever you published it from.</string>
-    <string name="my_published_title">Your public lists</string>
     <string name="report_action_send">Report</string>
     <string name="report_by_hand">A person reads every report. Enough of them hide a list until they do.</string>
     <string name="report_hide_author">Also hide everything from %1$s</string>
@@ -310,6 +304,4 @@
     <string name="moderation_not_kept">Could not leave it up: the reports are still open. Try again.</string>
     <string name="moderation_not_moved">Not moved: the list is where it was. Try again.</string>
     <string name="moderation_moved_not_dismissed">Moved, but its reports are still open. Tap “Leave it up” to clear them.</string>
-    <string name="my_published_action_view">View public list</string>
-    <string name="my_published_action_edit">Edit</string>
 </resources>

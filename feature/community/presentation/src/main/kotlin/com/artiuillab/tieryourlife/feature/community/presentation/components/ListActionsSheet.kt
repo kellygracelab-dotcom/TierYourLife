@@ -58,8 +58,6 @@ fun ListActionsSheet(
     /** On somebody else's list the reader has arranged: show their ranking to others, or, for a guest, sign in to. */
     onShowMyRanking: (() -> Unit)? = null,
     signInToShowRanking: Boolean = false,
-    /** On this person's own list: the list of all their public ones. */
-    onOpenMyPublished: (() -> Unit)? = null,
     /** On their own list: down for everyone. */
     onTakeDown: (() -> Unit)? = null,
     /** On a list's page, first: the readers' placings of it, and how many there are. */
@@ -134,14 +132,6 @@ fun ListActionsSheet(
                     onClick = onReturnAllToPool,
                     icon = { size, tint -> GridViewIcon(size, tint) },
                     enabled = canReturnAllToPool,
-                )
-            }
-            if (onOpenMyPublished != null) {
-                ActionRow(
-                    text = stringResource(R.string.my_published_title),
-                    testTag = CommunityTestTags.ACTION_YOUR_PUBLIC_LISTS,
-                    onClick = onOpenMyPublished,
-                    icon = { size, tint -> GridViewIcon(size, tint) },
                 )
             }
             if (onTakeDown != null) {

@@ -90,12 +90,6 @@
     <string name="moderation_title">Meldungen</string>
     <string name="moderation_unblur">Titelbilder zeigen</string>
     <string name="moderation_undo">Rückgängig</string>
-    <string name="my_published_action_open">Öffnen</string>
-    <string name="my_published_empty_body">Listen, die du öffentlich machst, erscheinen hier.</string>
-    <string name="my_published_empty_title">Nichts veröffentlicht</string>
-    <string name="my_published_failed">Deine öffentlichen Listen konnten nicht geladen werden</string>
-    <string name="my_published_subtitle">Alles, was du in der Community hast, egal von welchem Gerät.</string>
-    <string name="my_published_title">Deine öffentlichen Listen</string>
     <string name="report_action_send">Melden</string>
     <string name="report_by_hand">Ein Mensch liest jede Meldung. Genug davon blenden die Liste bis dahin aus.</string>
     <string name="report_hide_author">Auch alles von %1$s ausblenden</string>
@@ -310,6 +304,4 @@
     <string name="moderation_not_kept">Behalten hat nicht geklappt: Die Meldungen sind noch offen. Versuche es erneut.</string>
     <string name="moderation_not_moved">Nicht verschoben: Die Liste ist, wo sie war. Versuche es erneut.</string>
     <string name="moderation_moved_not_dismissed">Verschoben, aber die Meldungen sind noch offen. Tippe auf „Behalten“, um sie zu schließen.</string>
-    <string name="my_published_action_view">Öffentliche Liste ansehen</string>
-    <string name="my_published_action_edit">Bearbeiten</string>
 </resources>

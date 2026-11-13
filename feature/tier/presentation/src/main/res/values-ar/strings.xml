@@ -263,7 +263,6 @@
         <item quantity="many">تم حذف %1$d قائمة وإزالة نسخها العامة</item>
         <item quantity="other">تم حذف %1$d قائمة وإزالة نسخها العامة</item>
     </plurals>
-    <string name="lists_public_lists">قوائمك العامة</string>
     <string name="item_search_link_paste">لصق رابط صورة</string>
     <string name="item_search_link_from">صورة من رابط · من %1$s</string>
     <string name="item_search_link_checking">جارٍ فحص الصورة…</string>

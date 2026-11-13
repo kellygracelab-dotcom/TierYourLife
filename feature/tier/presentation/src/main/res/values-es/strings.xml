@@ -221,7 +221,6 @@
         <item quantity="many">%1$d listas eliminadas y retiradas sus copias públicas</item>
         <item quantity="other">%1$d listas eliminadas y retiradas sus copias públicas</item>
     </plurals>
-    <string name="lists_public_lists">Tus listas públicas</string>
     <string name="item_search_link_paste">Pegar enlace de imagen</string>
     <string name="item_search_link_from">Imagen de un enlace · de %1$s</string>
     <string name="item_search_link_checking">Comprobando la imagen…</string>

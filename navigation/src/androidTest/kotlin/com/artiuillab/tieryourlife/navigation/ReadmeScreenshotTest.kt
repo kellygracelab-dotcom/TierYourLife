@@ -41,8 +41,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.list.Community
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.ModerationScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.moderation.ModerationUiState
-import com.artiuillab.tieryourlife.feature.community.presentation.published.MyPublishedScreenContent
-import com.artiuillab.tieryourlife.feature.community.presentation.published.MyPublishedUiState
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsScreenContent
 import com.artiuillab.tieryourlife.feature.settings.presentation.hidden.HiddenScreenContent
 import com.artiuillab.tieryourlife.feature.settings.presentation.hidden.HiddenUiState
@@ -204,19 +202,6 @@ class ReadmeScreenshotTest {
             onRetry = {},
         )
 
-        "my-published" -> MyPublishedScreenContent(
-            state = MyPublishedUiState.Ready(
-                listOf(
-                    summary(
-                        "1", "Films I make people watch", "Olena M.", ListCategory.FilmTv.id, 34,
-                        cover = Poster.GODFATHER,
-                    ),
-                    summary("4", "Albums I put on to work", "Olena M.", ListCategory.Music.id, 41),
-                ),
-            ),
-            onBack = {},
-        )
-
         "hidden" -> HiddenScreenContent(
             state = HiddenUiState(
                 lists = listOf(HiddenEntry("1", "Films I make people watch")),
@@ -375,7 +360,7 @@ class ReadmeScreenshotTest {
         // and captured through isDialog() it comes out as a grey field.
         val SCREENS = listOf(
             "home", "home-empty", "board", "settings", "community", "list-actions",
-            "report", "community-list", "author", "my-published", "hidden", "moderation",
+            "report", "community-list", "author", "hidden", "moderation",
         )
     }
 }
