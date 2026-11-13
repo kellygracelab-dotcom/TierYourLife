@@ -88,7 +88,7 @@ class RankingChoiceJourneyTest {
         val vm = open(fixture)
         vm.show(Showing.Mine)
         repeat(3) { vm.moveItem(it.toLong(), 0, it) }
-        vm.saveToMyLists(Showing.Mine)
+        vm.saveToMyLists()
         vm.state.firstWithin { (it as? CommunityListUiState.Success)?.savedId != null && !it.saving }
         assertNull(fixture.boards.saved?.rankingChoice)
         repeat(4) { vm.moveItem((it + 3).toLong(), 0, it + 3) }
@@ -116,17 +116,59 @@ class RankingChoiceJourneyTest {
         assertEquals(RankingChoice.Ranking, fixture.boards.saved?.rankingChoice)
     }
 
-    @Test fun savingTheAuthorsOrderingDoesNotReplaceTheReadersOwnPrivateProgress() = runBlocking {
+    // What is saved is what the reader sees as theirs, and once saved, the list is "Saved" and opens that one copy.
+    @Test fun savingAfterArrangingKeepsTheReadersOwnArrangement_andTheListIsSavedFromThenOn() = runBlocking {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         placeSeven(vm)
-        vm.saveToMyLists(Showing.Theirs)
+        vm.saveToMyLists()
         vm.state.firstWithin { (it as? CommunityListUiState.Success)?.savedId != null && !it.saving }
-        val reopened = open(fixture)
-        assertEquals(7, reopened.loaded().mine.tiers.first().items.size)
-        assertEquals(20, fixture.boards.saved?.tiers?.first()?.items?.size)
-        assertNull(fixture.boards.saved?.rankingChoice)
+        assertEquals(7, fixture.boards.saved?.tiers?.first()?.items?.size)
+        assertEquals(1, fixture.boards.created)
+        val reopened = open(fixture, RankingDrafts.None)
+        assertEquals(100L, reopened.loaded().savedId)
+        reopened.saveToMyLists()
+        assertEquals(1, fixture.boards.created)
         assertEquals(0, fixture.shown)
+    }
+
+    // Danylo's Eurovision twice in My lists: a copy saved as the author ranked it carried no choice and was not found again.
+    @Test fun aCopySavedWithoutAChoice_isFoundAgain_soTheListOpensItInsteadOfSavingAnother() = runBlocking {
+        val fixture = ChoiceFixture()
+        val vm = open(fixture)
+        vm.saveToMyLists()
+        vm.state.firstWithin { (it as? CommunityListUiState.Success)?.savedId != null && !it.saving }
+        assertNull(fixture.boards.saved?.rankingChoice)
+        assertEquals(20, fixture.boards.saved?.tiers?.first()?.items?.size)
+        val reopened = open(fixture, RankingDrafts.None)
+        assertEquals(100L, reopened.loaded().savedId)
+        assertEquals(20, reopened.loaded().mine.tiers.first().items.size)
+        reopened.saveToMyLists()
+        assertEquals(1, fixture.boards.created)
+    }
+
+    // The author published again since: the copy of the older version is still this reader's one copy, left as it was.
+    @Test fun aCopyOfAnOlderVersion_isStillTheSavedOne() = runBlocking {
+        val fixture = ChoiceFixture()
+        val vm = open(fixture)
+        vm.saveToMyLists()
+        vm.state.firstWithin { (it as? CommunityListUiState.Success)?.savedId != null && !it.saving }
+        fixture.boards.saved = requireNotNull(fixture.boards.saved).copy(originVersion = 1)
+        val reopened = open(fixture, RankingDrafts.None)
+        assertEquals(100L, reopened.loaded().savedId)
+        reopened.moveItem(0, 0, 0)
+        reopened.saveToMyLists()
+        assertEquals(1, fixture.boards.created)
+        assertEquals(1L, fixture.boards.saved?.originVersion)
+    }
+
+    @Test fun theCopyTakesTheListsCoverFromTheCommunity_notACollage() = runBlocking {
+        val fixture = ChoiceFixture(cover = "https://tieryourlife.web.app/img/original/published/abc/cover")
+        val vm = open(fixture)
+        vm.saveToMyLists()
+        vm.state.firstWithin { (it as? CommunityListUiState.Success)?.savedId != null && !it.saving }
+        assertEquals("https://tieryourlife.web.app/img/original/published/abc/cover", fixture.boards.saved?.coverImageUrl)
+        assertEquals(emptyList<String>(), fixture.boards.saved?.coverImageUrls)
     }
 
     @Test fun editedLibraryCopyIsNeverOverwrittenOrMistakenForTheUnchangedOriginal() = runBlocking {
@@ -176,7 +218,7 @@ class RankingChoiceJourneyTest {
 
 private fun CommunityListViewModel.loaded() = state.value as CommunityListUiState.Success
 
-private class ChoiceFixture(signedIn: Boolean = false, translations: ListTranslations = ListTranslations()) : FakeCommunityRepository() {
+private class ChoiceFixture(signedIn: Boolean = false, translations: ListTranslations = ListTranslations(), cover: String? = null) : FakeCommunityRepository() {
     val boards = ChoiceBoards()
     val accounts = FakeAccountRepository().apply { if (signedIn) accounts.value = Account.SignedIn("me@example.com", null, uid = "me") }
     private val records = mutableMapOf<Pair<String?, String>, RankingDraft>()
@@ -187,7 +229,7 @@ private class ChoiceFixture(signedIn: Boolean = false, translations: ListTransla
         }
     }
     private val source = published.copy(
-        summary = published.summary.copy(itemCount = 20, updatedAtMillis = 123),
+        summary = published.summary.copy(itemCount = 20, updatedAtMillis = 123, coverImageUrl = cover),
         items = List(20) { TierItem(it.toLong(), "Card ${it / 2}", null, sourceIndex = it) },
         arrangement = List(20) { 0 },
         translations = translations,
@@ -204,7 +246,10 @@ private class ChoiceFixture(signedIn: Boolean = false, translations: ListTransla
 
 private class ChoiceBoards : TierRepository by RecordingTierRepository() {
     @Volatile var saved: TierList? = null
+
+    @Volatile var created = 0
     override suspend fun createRankingCopy(board: TierList, sourceId: String, sourceVersion: Long, choice: RankingChoice?): Long {
+        created++
         saved = board.copy(
             id = 100, uid = "local-copy", takenFrom = sourceId, originVersion = sourceVersion, rankingChoice = choice,
             tiers = board.tiers.mapIndexed { row, tier -> tier.copy(id = 900L + row, items = tier.items.map { it.copy(id = 1000 + it.id) }) },

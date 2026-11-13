@@ -117,7 +117,7 @@ private fun SaveInBar(state: CommunityListUiState.Success, mode: BoardBar, onSav
                 .testTag(tag),
         ) {
             Text(
-                text = stringResource(if (savedId != null) R.string.community_action_open else R.string.community_save_to_my_lists),
+                text = stringResource(if (savedId != null) R.string.community_saved else R.string.community_save_to_my_lists),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

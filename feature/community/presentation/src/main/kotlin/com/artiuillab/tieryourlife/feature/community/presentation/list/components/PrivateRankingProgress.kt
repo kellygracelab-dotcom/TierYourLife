@@ -58,15 +58,16 @@ internal class PrivateRankingProgress(
         val account = currentOwner()
         source = answer
         val record = if (continuing == null && !fresh.own) drafts.read(listId, account) else null
-        val copy = if (continuing == null && !fresh.own) savedFor(record?.savedBoardUid, answer, fresh.mine) else null
-        val kept = copy?.sourceDraft(answer)?.on(answer, fresh.mine) ?: record?.on(answer, fresh.mine)
+        val copy = if (continuing == null && !fresh.own) savedFor(record?.savedBoardUid, answer) else null
+        val kept = copy?.draftOn(answer, fresh.mine)?.on(answer, fresh.mine) ?: record?.on(answer, fresh.mine)
         if (account != currentOwner()) return previous ?: fresh
         owner = account
         if (continuing == null) {
             savedCopy = copy
             choice = copy?.rankingChoice ?: record?.choice
         }
-        return continuing ?: kept?.let { fresh.copy(mine = it, showing = Showing.Mine, arranged = true, savedId = copy?.id) } ?: fresh
+        val shown = kept?.let { fresh.copy(mine = it, showing = Showing.Mine, arranged = true) } ?: fresh
+        return continuing ?: shown.copy(savedId = copy?.id)
     }
 
     suspend fun ownerChanged(account: String?) {
@@ -80,8 +81,8 @@ internal class PrivateRankingProgress(
         val guestProgress = current?.mine?.takeIf { signingIn && current.arranged && !current.own }
         if (current != null) state.value = current.copy(arriving = true)
         val record = drafts.read(listId, account)
-        val copy = original?.let { savedFor(record?.savedBoardUid, it, empty(it)) }
-        val kept = copy?.sourceDraft(requireNotNull(original)) ?: record
+        val copy = original?.let { savedFor(record?.savedBoardUid, it) }
+        val kept = original?.let { copy?.draftOn(it, empty(it)) } ?: record
         if (currentOwner() != account) return
         owner = account
         ready = true
@@ -144,42 +145,62 @@ internal class PrivateRankingProgress(
         savedCopy?.takeIf { isCurrentOwner }?.let { tiers.setRankingOf(it.id, listId.takeIf { shown }) }
     }
 
-    /** A private library copy is never published by saving or dismissing the offer. */
+    /**
+     * One list, one copy: what the reader sees becomes theirs, [which] half of
+     * it, and saving again changes that copy rather than adding another. A
+     * copy of an older version of the list is left as it is. It takes the
+     * list's cover from the community; a list without one leaves the cards to
+     * make the collage. Never published by saving or dismissing the offer.
+     */
     suspend fun saveCopy(which: Showing, languageTag: String, value: RankingChoice? = choice): Long = writes.withLock {
         val account = owner
         val current = state.value as CommunityListUiState.Success
         val original = requireNotNull(source)
         check(ready && isCurrentOwner && !current.arriving)
         val mine = if (which == Showing.Theirs) current.theirs else current.mine
+        val known = savedCopy ?: savedFor(null, original)
+        if (known != null && !known.isCopyOf(original, empty(original))) {
+            savedCopy = known
+            return@withLock known.id
+        }
+        val id = if (known != null) {
+            val now = tiers.getTierListById(known.id) ?: known
+            tiers.arrangeBoard(now.id, now.itemLayout(), now.layoutOf(original, mine))
+            known.id
+        } else {
+            tiers.createRankingCopy(keeping(mine, original, current, languageTag), listId, original.summary.updatedAtMillis, value)
+        }
+        check(account == currentOwner())
+        if (value != null) tiers.setRankingChoice(id, value)
+        savedCopy = tiers.getTierListById(id)
+        choice = value
+        state.value = (state.value as CommunityListUiState.Success).copy(mine = mine, showing = Showing.Mine, arranged = true)
+        drafts.keep(listId, draftOf(original, mine).copy(choice = choice, savedBoardUid = savedCopy?.uid), account)
+        id
+    }
+
+    private fun keeping(board: TierList, original: PublishedList, current: CommunityListUiState.Success, languageTag: String): TierList {
         val indices = original.items.withIndex().associate { it.value.id to it.index }
-        val translated = mine.readIn(current.translations.wordsIn(languageTag))
-        val keeping = translated.copy(
+        val translated = board.readIn(current.translations.wordsIn(languageTag))
+        return translated.copy(
             category = current.section,
+            coverImageUrl = original.summary.coverImageUrl,
+            coverImageUrls = emptyList(),
             tiers = translated.tiers.map { tier -> tier.copy(items = tier.items.map { it.copy(sourceIndex = indices[it.id]) }) },
         )
-        val known = savedCopy?.takeIf { which == Showing.Mine && it.isCopyOf(original, empty(original)) }
-        val copyChoice = value.takeIf { which == Showing.Mine }
-        val id = known?.id ?: tiers.createRankingCopy(keeping, listId, original.summary.updatedAtMillis, copyChoice)
-        check(account == currentOwner())
-        if (which == Showing.Mine) {
-            if (value != null) tiers.setRankingChoice(id, value)
-            savedCopy = tiers.getTierListById(id)
-            choice = value
-            drafts.keep(listId, draftOf(original, current.mine).copy(choice = choice, savedBoardUid = savedCopy?.uid), account)
-        }
-        id
     }
 
     private suspend fun updateCopy(original: PublishedList, mine: TierList, account: String?, remembered: RankingChoice?) {
         val known = savedCopy ?: return
         if (account != currentOwner()) return
         val actual = tiers.getTierListByUid(known.uid)
-        if (actual == null || !actual.isCopyOf(original, empty(original))) {
+        if (actual == null) {
             savedCopy = null
             val current = state.value as? CommunityListUiState.Success
             if (current?.savedId == known.id) state.value = current.copy(savedId = null)
             return
         }
+        if (!actual.isCopyOf(original, empty(original))) return
         val target = actual.layoutOf(original, mine)
         if (remembered != null) tiers.setRankingChoice(actual.id, remembered)
         if (tiers.arrangeBoard(actual.id, known.itemLayout(), target)) {
@@ -189,10 +210,19 @@ internal class PrivateRankingProgress(
         }
     }
 
-    private suspend fun savedFor(uid: String?, source: PublishedList, empty: TierList): TierList? {
-        val exact = uid?.let { tiers.getTierListByUid(it) }?.takeIf { it.isCopyOf(source, empty) }
-        return exact ?: tiers.getAllTierLists().filter { it.rankingChoice != null && it.isCopyOf(source, empty) }.maxByOrNull { it.editedAt ?: 0 }
+    /**
+     * This reader's copy of [source], whichever version of it and however it
+     * was saved, here or on another device: the one the draft names, else the
+     * last edited. A copy saved without a choice went unrecognised before, and
+     * the next Save made a second one (Danylo's Eurovision twice in My lists).
+     */
+    private suspend fun savedFor(uid: String?, source: PublishedList): TierList? {
+        val copies = tiers.getAllTierLists().filter { it.takenFrom == source.summary.id }
+        return copies.firstOrNull { it.uid == uid } ?: copies.maxByOrNull { it.editedAt ?: 0 }
     }
+
+    /** Where the copy's cards stand, as a draft of this version; null for a copy of another version, which is not mapped over. */
+    private fun TierList.draftOn(source: PublishedList, empty: TierList): RankingDraft? = takeIf { it.isCopyOf(source, empty) }?.sourceDraft(source)
 
     private fun currentOwner() = (accounts.current() as? Account.SignedIn)?.recordKey
 }

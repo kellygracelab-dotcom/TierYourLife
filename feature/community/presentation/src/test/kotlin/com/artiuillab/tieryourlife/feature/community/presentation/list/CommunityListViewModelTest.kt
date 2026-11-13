@@ -269,14 +269,14 @@ class CommunityListViewModelTest {
     // Keeping a list the way its author ranked it is a reason to save it, not
     // a mistake to correct.
     @Test
-    fun savingTheirs_keepsTheAuthorsArrangement() = runBlocking {
+    fun savingBeforeArrangingAnything_keepsTheAuthorsArrangement() = runBlocking {
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
         viewModel.state.firstWithin { it is CommunityListUiState.Success }
-        // The switch shows the reader's own half; the choice at saving is what counts.
+        // Nothing of the reader's yet: the author's is where they start, whichever half is on screen.
         viewModel.show(Showing.Mine)
 
-        viewModel.saveToMyLists(Showing.Theirs)
+        viewModel.saveToMyLists()
 
         val theirs = viewModel.state.firstWithin { it.saved() } as CommunityListUiState.Success
         val template = tiers.templates.single()
@@ -295,16 +295,17 @@ class CommunityListViewModelTest {
         val viewModel = viewModel(tiers = tiers)
         viewModel.state.firstWithin { it is CommunityListUiState.Success }
 
-        viewModel.saveToMyLists(Showing.Mine)
+        viewModel.saveToMyLists()
         val saved = viewModel.state.firstWithin { it.saved() } as CommunityListUiState.Success
 
         assertEquals(7L, saved.savedId)
         val template = tiers.templates.single()
         assertEquals("Every A24 film", template.title)
         assertEquals("Olena M.", template.authorName)
-        assertEquals(2, template.items.size)
+        val cards = template.tiers.flatMap { it.items } + template.items
+        assertEquals(2, cards.size)
         assertEquals(2, template.tiers.size)
-        assertEquals(listOf(null, "© Jane Doe, CC BY"), template.items.map { it.credit })
+        assertEquals(setOf(null, "© Jane Doe, CC BY"), cards.map { it.credit }.toSet())
     }
 
     @Test
@@ -358,7 +359,7 @@ class CommunityListViewModelTest {
         assertEquals(listOf("Moonlight"), shown.tiers[0].items.map { it.title })
         assertEquals(listOf("Hereditary"), shown.tiers[1].items.map { it.title })
 
-        viewModel.saveToMyLists(Showing.Theirs)
+        viewModel.saveToMyLists()
         viewModel.state.firstWithin { it.saved() }
         val kept = tiers.templates.single()
         assertEquals("abc", kept.takenFrom)
@@ -457,7 +458,7 @@ class CommunityListViewModelTest {
         val viewModel = viewModel(community = community, tiers = tiers, preferences = preferences)
         val state = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
 
-        viewModel.saveToMyLists(Showing.Theirs)
+        viewModel.saveToMyLists()
         viewModel.report(ReportReason.Spam, null)
 
         assertTrue(state.own)

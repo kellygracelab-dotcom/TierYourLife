@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
@@ -108,7 +107,7 @@ fun CommunityListScreen(
         state = state,
         onBack = onBack,
         onMoveItem = viewModel::moveItem,
-        onSave = { which -> viewModel.saveToMyLists(which, languageTag) },
+        onSave = { viewModel.saveToMyLists(languageTag) },
         onRetry = viewModel::load,
         preview = viewModel.preview,
         onOpenSaved = onOpenSaved,
@@ -165,7 +164,7 @@ fun CommunityListScreenContent(
     state: CommunityListUiState,
     onBack: () -> Unit,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
-    onSave: (Showing) -> Unit,
+    onSave: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     /** What the card that opened this list showed; null when it was opened by id alone. */
@@ -211,13 +210,12 @@ fun CommunityListScreenContent(
     var reportVisible by remember { mutableStateOf(false) }
     var coverVisible by remember { mutableStateOf(false) }
     var reportedFrom by remember { mutableStateOf(false) }
-    var saveChoiceVisible by remember { mutableStateOf(false) }
     var rankingsVisible by remember { mutableStateOf(false) }
     val openRankings = {
         onOpenRankings()
         rankingsVisible = true
     }
-    val onSaveClick: () -> Unit = { saveTapped(loadedNow, askWhich = { saveChoiceVisible = true }, save = onSave) }
+    val onSaveClick: () -> Unit = { if (loadedNow?.arriving == false) onSave() }
 
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         // The placeholder, the board and the failure trade places with a short
@@ -344,18 +342,6 @@ fun CommunityListScreenContent(
                 )
             }
 
-            if (saveChoiceVisible) {
-                SaveChoiceDialog(
-                    arranged = loaded.arranged,
-                    chosenName = loaded.chosenRanking?.authorName,
-                    onDismiss = { saveChoiceVisible = false },
-                    onChoose = { which ->
-                        saveChoiceVisible = false
-                        onSave(which)
-                    },
-                )
-            }
-
             if (actionsVisible) {
                 ListMenu(
                     loaded = loaded,
@@ -428,15 +414,6 @@ private fun CoverSheet(title: String, cover: CoverCredit?, onDismiss: () -> Unit
     cover ?: return
     AdaptiveSheet(onDismiss = onDismiss, width = SheetWidth.Choosing) {
         AboutTheCover(title, cover.imageUrl, cover.attribution, onDismiss = onDismiss)
-    }
-}
-
-/** Two arrangements to choose from only once the author's is known; nothing to save while the cards are blank. */
-private fun saveTapped(state: CommunityListUiState.Success?, askWhich: () -> Unit, save: (Showing) -> Unit) {
-    when {
-        state == null || state.arriving -> Unit
-        state.twoHalves -> askWhich()
-        else -> save(Showing.Mine)
     }
 }
 
@@ -638,7 +615,7 @@ private fun ReaderStrip(
                         .widthIn(max = SAVE_BUTTON_MAX_WIDTH)
                         .testTag(CommunityListTestTags.OPEN_SAVED),
                 ) {
-                    Text(text = stringResource(R.string.community_action_open), textAlign = TextAlign.Center)
+                    Text(text = stringResource(R.string.community_saved), textAlign = TextAlign.Center)
                 }
             } else {
                 Button(
@@ -683,36 +660,6 @@ internal val CommunityListUiState.Success.foldsToRankIt: Boolean
         !arranged &&
         savedId == null &&
         shown.tiers.firstOrNull { it.isPool }?.items.isNullOrEmpty()
-
-/**
- * Asked at the moment of saving rather than read off the switch: a reader
- * who glanced at the author's half and tapped Save did not mean to throw
- * their own away, nor the other way round.
- */
-@Composable
-private fun SaveChoiceDialog(arranged: Boolean, chosenName: String?, onDismiss: () -> Unit, onChoose: (Showing) -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        modifier = Modifier.testTag(CommunityListTestTags.SAVE_CHOICE),
-        title = { Text(stringResource(R.string.community_save_which_title)) },
-        text = { Text(stringResource(R.string.community_save_which_body)) },
-        confirmButton = {
-            TextButton(
-                onClick = { onChoose(Showing.Theirs) },
-                modifier = Modifier.testTag(CommunityListTestTags.SAVE_THEIRS),
-            ) { Text(chosenName ?: stringResource(R.string.community_save_theirs)) }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = { onChoose(Showing.Mine) },
-                modifier = Modifier.testTag(CommunityListTestTags.SAVE_MINE),
-            ) {
-                // Nothing arranged yet: what "mine" would keep is every card unranked, and that is said plainly.
-                Text(stringResource(if (arranged) R.string.community_save_mine else R.string.community_save_mine_empty))
-            }
-        },
-    )
-}
 
 /** Two boards, not one: a reader who glances at the author's finds their own work where they left it. */
 @Composable

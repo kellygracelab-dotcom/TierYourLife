@@ -91,7 +91,7 @@ class FollowingAnAuthorTest {
         val viewModel = viewModel(community)
         ready(viewModel)
 
-        viewModel.saveToMyLists(Showing.Mine)
+        viewModel.saveToMyLists()
 
         assertEquals("abc", eventually("the take to be counted") { community.taken.firstOrNull() })
     }
@@ -105,7 +105,7 @@ class FollowingAnAuthorTest {
         val viewModel = viewModel(community, tiers)
         ready(viewModel)
 
-        viewModel.saveToMyLists(Showing.Mine)
+        viewModel.saveToMyLists()
 
         val savedId = eventually("the board to be saved") { (viewModel.state.value as? CommunityListUiState.Success)?.savedId }
         assertTrue(savedId > 0)

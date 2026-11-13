@@ -157,7 +157,7 @@ class ListFirstFrameTest {
         val first = viewModel.state.value as CommunityListUiState.Success
 
         viewModel.moveItem(first.list.tiers.first().items.first().id, toTierId = 1, toPosition = 0)
-        viewModel.saveToMyLists(Showing.Theirs)
+        viewModel.saveToMyLists()
 
         assertEquals(first, viewModel.state.value)
         assertTrue(tiers.templates.isEmpty())
