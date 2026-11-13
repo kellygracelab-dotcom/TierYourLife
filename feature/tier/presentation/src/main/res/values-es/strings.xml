@@ -241,4 +241,13 @@
     <string name="item_search_link_upload">Subir imágenes</string>
     <string name="item_search_link_sign_in_text">Las imágenes de enlaces se guardan en tu cuenta. Inicia sesión y lo que escribiste seguirá aquí.</string>
     <string name="item_search_link_sign_in">Iniciar sesión</string>
+    <string name="add_to_list_title">Añadir a una lista</string>
+    <string name="add_to_list_from">de %1$s</string>
+    <string name="add_to_list_where">Dónde</string>
+    <string name="add_to_list_new">Lista nueva…</string>
+    <string name="add_to_list_new_name">Nombre de la lista</string>
+    <string name="add_to_list_cancel">Cancelar</string>
+    <string name="add_to_list_to_pool">Al pool</string>
+    <string name="add_to_list_added">Añadido a «%1$s»</string>
+    <string name="add_to_list_sign_in">Las imágenes de enlaces se guardan en tu cuenta. Inicia sesión en TierYourLife para añadirlas, o añade la carta sin imagen.</string>
 </resources>

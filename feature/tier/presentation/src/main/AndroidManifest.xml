@@ -1,4 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!--
+            In the Share list for pictures and for links. Its own task, gone
+            from Recents once done: the person goes back to the browser.
+        -->
+        <activity
+            android:name=".share.AddToListActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:label="@string/add_to_list_title"
+            android:taskAffinity=""
+            android:theme="@style/Theme.TierYourLife.AddToList"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+    </application>
 
 </manifest>

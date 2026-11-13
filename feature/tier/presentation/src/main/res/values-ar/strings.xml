@@ -283,4 +283,13 @@
     <string name="item_search_link_upload">رفع صور</string>
     <string name="item_search_link_sign_in_text">تُحفظ صور الروابط في حسابك. سجّل الدخول وسيبقى ما كتبته هنا.</string>
     <string name="item_search_link_sign_in">تسجيل الدخول</string>
+    <string name="add_to_list_title">إضافة إلى قائمة</string>
+    <string name="add_to_list_from">من %1$s</string>
+    <string name="add_to_list_where">إلى أين</string>
+    <string name="add_to_list_new">قائمة جديدة…</string>
+    <string name="add_to_list_new_name">اسم القائمة</string>
+    <string name="add_to_list_cancel">إلغاء</string>
+    <string name="add_to_list_to_pool">إلى المجموعة</string>
+    <string name="add_to_list_added">أُضيفت إلى «%1$s»</string>
+    <string name="add_to_list_sign_in">تُحفظ صور الروابط في حسابك. سجّل الدخول في TierYourLife لإضافتها، أو أضف البطاقة بدون صورة.</string>
 </resources>

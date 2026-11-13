@@ -255,4 +255,13 @@
     <string name="item_search_link_upload">Wgraj obrazki</string>
     <string name="item_search_link_sign_in_text">Obrazki z linków są przechowywane na koncie. Zaloguj się — to, co wpisano, zostanie tutaj.</string>
     <string name="item_search_link_sign_in">Zaloguj się</string>
+    <string name="add_to_list_title">Dodaj do listy</string>
+    <string name="add_to_list_from">z %1$s</string>
+    <string name="add_to_list_where">Dokąd</string>
+    <string name="add_to_list_new">Nowa lista…</string>
+    <string name="add_to_list_new_name">Nazwa listy</string>
+    <string name="add_to_list_cancel">Anuluj</string>
+    <string name="add_to_list_to_pool">Do puli</string>
+    <string name="add_to_list_added">Dodano do „%1$s”</string>
+    <string name="add_to_list_sign_in">Obrazki z linków są przechowywane na koncie. Zaloguj się w TierYourLife, aby je dodawać, albo dodaj kartę bez obrazka.</string>
 </resources>

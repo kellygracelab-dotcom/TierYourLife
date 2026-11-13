@@ -255,4 +255,13 @@
     <string name="item_search_link_upload">Завантажити картинки</string>
     <string name="item_search_link_sign_in_text">Картинки за посиланнями зберігаються в акаунті. Увійдіть — набране залишиться тут.</string>
     <string name="item_search_link_sign_in">Увійти</string>
+    <string name="add_to_list_title">Додати до списку</string>
+    <string name="add_to_list_from">з %1$s</string>
+    <string name="add_to_list_where">Куди</string>
+    <string name="add_to_list_new">Новий список…</string>
+    <string name="add_to_list_new_name">Назва списку</string>
+    <string name="add_to_list_cancel">Скасувати</string>
+    <string name="add_to_list_to_pool">У пул</string>
+    <string name="add_to_list_added">Додано до «%1$s»</string>
+    <string name="add_to_list_sign_in">Картинки за посиланнями зберігаються в акаунті. Увійдіть у TierYourLife, щоб їх додавати, або додайте картку без картинки.</string>
 </resources>
