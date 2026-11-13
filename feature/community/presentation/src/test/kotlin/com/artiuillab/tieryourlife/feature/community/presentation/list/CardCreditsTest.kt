@@ -23,7 +23,7 @@ class CardCreditsTest {
     @get:Rule val compose = createComposeRule()
 
     private fun show(credit: String?, author: String = "Olena", editorial: Boolean = false, byNobody: Boolean = false) {
-        val tier = Tier(1, "S", "B03A32", "F1948C", items = listOf(TierItem(10, "Red fox", null, credit = credit)))
+        val tier = Tier(1, "S", "B03A32", "F1948C", items = listOf(TierItem(10, "Red fox", "https://example.org/fox.jpg", credit = credit)))
         val pool = Tier(2, "Pool", "DAD7E0", "46464F", items = emptyList(), isPool = true)
         compose.setContent {
             TierYourLifeTheme {
@@ -44,7 +44,7 @@ class CardCreditsTest {
         show(credit)
         compose.onNodeWithTag(CommunityListTestTags.PICTURE_CREDITS).assertDoesNotExist()
         compose.onNodeWithTag(TierDetailTestTags.tile(10)).performSemanticsAction(SemanticsActions.OnClick) { it() }
-        compose.onNodeWithTag(TierDetailTestTags.MOVE_SHEET_CREDIT).performClick()
+        compose.onNodeWithTag(TierDetailTestTags.MOVE_SHEET_ABOUT_PICTURE).performClick()
         compose.onNodeWithText(credit).assertExists()
         compose.onNodeWithText("Close").performClick()
         compose.onNodeWithTag(TierDetailTestTags.IMAGE_CREDITS_TEXT).assertDoesNotExist()
@@ -55,14 +55,14 @@ class CardCreditsTest {
     fun aCardWithoutCredits_hasNoCreditsAction() {
         show(null)
         compose.onNodeWithTag(TierDetailTestTags.tile(10)).performSemanticsAction(SemanticsActions.OnClick) { it() }
-        compose.onNodeWithTag(TierDetailTestTags.MOVE_SHEET_CREDIT).assertDoesNotExist()
+        compose.onNodeWithTag(TierDetailTestTags.MOVE_SHEET_ABOUT_PICTURE).assertDoesNotExist()
     }
 
     @Test
     fun aBlankCredit_hasNoCreditsAction() {
         show("  ")
         compose.onNodeWithTag(TierDetailTestTags.tile(10)).performSemanticsAction(SemanticsActions.OnClick) { it() }
-        compose.onNodeWithTag(TierDetailTestTags.MOVE_SHEET_CREDIT).assertDoesNotExist()
+        compose.onNodeWithTag(TierDetailTestTags.MOVE_SHEET_ABOUT_PICTURE).assertDoesNotExist()
     }
 
     @Test
