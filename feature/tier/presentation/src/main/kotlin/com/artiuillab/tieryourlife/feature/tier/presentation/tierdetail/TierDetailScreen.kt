@@ -47,6 +47,7 @@ fun TierDetailScreen(
     onProposeSection: ((String?) -> Unit)? = null,
     onSignIn: () -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
+    originalLinks: OriginalLinkViewModel = hiltViewModel(),
 ) {
     val screen by viewModel.screen.collectAsStateWithLifecycle()
     val publication by viewModel.publicationState.collectAsStateWithLifecycle()
@@ -72,7 +73,7 @@ fun TierDetailScreen(
     }
 
     val loadedList = (state as? TierDetailUiState.Success)?.list
-    val originalLink = originalLinkOf(loadedList, onOpenPublishedList)
+    val originalLink = originalLinkOf(loadedList, originalLinks, onOpenPublishedList)
 
     TierDetailScreenContent(
         state = state,

@@ -9,6 +9,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
@@ -89,7 +90,8 @@ class PublicationPreviewUiTest {
             }
         }
         compose.runOnUiThread { vm = TierDetailViewModel(boards, service, accounts, SavedStateHandle(mapOf("tierListId" to 1L))) }
-        compose.setContent { TierYourLifeTheme { TierDetailScreen(onBack = {}, viewModel = vm) } }
+        val links = OriginalLinkViewModel(FakeAppPreferences())
+        compose.setContent { TierYourLifeTheme { TierDetailScreen(onBack = {}, viewModel = vm, originalLinks = links) } }
         compose.waitUntil(5_000) { vm.screen.value.board is TierDetailUiState.Success }
         return boards
     }

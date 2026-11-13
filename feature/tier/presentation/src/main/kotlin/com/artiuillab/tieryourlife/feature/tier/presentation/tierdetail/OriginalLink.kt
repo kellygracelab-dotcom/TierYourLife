@@ -17,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.ui.ClearIcon
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -28,8 +27,7 @@ internal fun TierList.original(): String? = rankingOf ?: takenFrom
 
 /** [list]'s link to its original when it is somebody's copy and the link was not hidden on this device. */
 @Composable
-internal fun originalLinkOf(list: TierList?, onOpenOriginal: (String) -> Unit): (@Composable () -> Unit)? {
-    val links: OriginalLinkViewModel = hiltViewModel()
+internal fun originalLinkOf(list: TierList?, links: OriginalLinkViewModel, onOpenOriginal: (String) -> Unit): (@Composable () -> Unit)? {
     val hidden by links.hidden.collectAsStateWithLifecycle()
     val original = list?.original() ?: return null
     if (list.uid in hidden) return null
