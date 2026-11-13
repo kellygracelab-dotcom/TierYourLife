@@ -93,6 +93,16 @@ class PhotoCreditTest {
     }
 
     @Test
+    fun anIgdbCover_namesIgdbDotCom_asItsTermsAsk() {
+        val hades = PictureAttribution("igdb", link = "https://www.igdb.com/games/hades")
+        open(TierItem(id = 1, title = "Hades", imageUrl = "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg", attribution = hades))
+
+        about().performClick()
+
+        composeRule.onNodeWithText("IGDB.com").assertExists()
+    }
+
+    @Test
     fun someonesOwnPhoto_andACardWithoutAPicture_sayNothing() {
         open(TierItem(id = 1, title = "Arrival", imageUrl = "/data/pictures/own.jpg"))
 
@@ -103,6 +113,7 @@ class PhotoCreditTest {
     fun aSiteIsNamedByItsPage_andACatalogueByItsName() {
         assertEquals("ghibli.jp", sourceNameOf(PictureAttribution("web", link = "https://www.ghibli.jp/works/totoro/")))
         assertEquals("Wikimedia Commons", sourceNameOf(PictureAttribution("wikimedia")))
+        assertEquals("IGDB.com", sourceNameOf(PictureAttribution("igdb", link = "https://www.igdb.com/games/hades")))
         assertNull(sourceNameOf(PictureAttribution("web")))
     }
 }
