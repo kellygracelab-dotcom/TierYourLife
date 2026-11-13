@@ -21,10 +21,13 @@ enum class PictureScope(val id: String) {
 }
 
 /** Why a search found less than it could have: shown as one line, never as an error. */
-enum class SearchNotice {
+sealed interface SearchNotice {
     /** This person's web searches for today are used up. */
-    WebDailyLimit,
+    data object WebDailyLimit : SearchNotice
 
     /** The web search is out for everybody for now. */
-    WebOff,
+    data object WebOff : SearchNotice
+
+    /** This person searched too often: until [untilMillis] only the catalogues the phone asks itself answer. */
+    data class SearchLimit(val untilMillis: Long) : SearchNotice
 }

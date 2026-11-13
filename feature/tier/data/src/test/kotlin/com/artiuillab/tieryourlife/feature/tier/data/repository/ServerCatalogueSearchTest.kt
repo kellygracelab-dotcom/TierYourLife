@@ -13,11 +13,17 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.WikidataSparqlRe
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchNotice
 import kotlinx.coroutines.runBlocking
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.Protocol
+import okhttp3.Request
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import retrofit2.HttpException
+import retrofit2.Response
 import java.io.IOException
 
 class ServerCatalogueSearchTest {
@@ -102,8 +108,62 @@ class ServerCatalogueSearchTest {
         assertFalse(page.hasMore)
     }
 
-    private fun search(api: PicturesApi, tmdb: TmdbApi = OneFilmTmdb()) =
-        ServerCatalogueSearch(api, CatalogueSearchRepositoryImpl(tmdb, NoWikidata(), NoSparql()))
+    // Proxy 429 SEARCH_LIMIT: 1000 an hour, 3000 a UTC day.
+    @Test
+    fun overTheSearchLimit_thePhoneAsksItsOwnCataloguesUntilTheServerSaysAndSaysUntilWhen() = runBlocking {
+        var clock = 1_000L
+        val api = FakePicturesApi(PicturesDto())
+        api.refuse = { tooMany("""{"error":"Too many picture searches","code":"SEARCH_LIMIT","retryAt":3600000}""", retryAfter = "3599") }
+        val tmdb = OneFilmTmdb()
+        val search = search(api, tmdb, now = { clock })
+
+        val limited = search.search("dune", "en", 1, PictureScope.Books).getOrThrow()
+        api.refuse = null
+        clock = 3_599_999L
+        val stillLimited = search.search("dune", "en", 2, PictureScope.Books).getOrThrow()
+
+        assertEquals(listOf("tmdb:7"), limited.items.map { it.id })
+        assertEquals(SearchNotice.SearchLimit(3_600_000L), limited.notice)
+        assertEquals(SearchNotice.SearchLimit(3_600_000L), stillLimited.notice)
+        assertEquals(1, api.asked.size)
+        assertEquals(2, tmdb.searches)
+
+        clock = 3_600_000L
+        val again = search.search("dune", "en", 1, PictureScope.Books).getOrThrow()
+        assertNull(again.notice)
+        assertEquals(2, api.asked.size)
+    }
+
+    @Test
+    fun aLimitWithoutItsHour_waitsAsLongAsRetryAfterSays_andAnyOther429IsJustAFailure() = runBlocking {
+        val api = FakePicturesApi(PicturesDto())
+        api.refuse = { tooMany("""{"code":"SEARCH_LIMIT"}""", retryAfter = "120") }
+
+        val limited = search(api, now = { 5_000L }).search("dune", "en", 1).getOrThrow()
+
+        assertEquals(SearchNotice.SearchLimit(125_000L), limited.notice)
+
+        val other = FakePicturesApi(PicturesDto())
+        other.refuse = { tooMany("""{"error":"Too many requests"}""", retryAfter = "60") }
+        val search = search(other, now = { 5_000L })
+        assertNull(search.search("dune", "en", 1).getOrThrow().notice)
+        search.search("dune", "en", 1)
+        assertEquals(2, other.asked.size)
+    }
+
+    private fun search(api: PicturesApi, tmdb: TmdbApi = OneFilmTmdb(), now: () -> Long = { 0L }) =
+        ServerCatalogueSearch(api, CatalogueSearchRepositoryImpl(tmdb, NoWikidata(), NoSparql()), now)
+}
+
+private fun tooMany(body: String, retryAfter: String): HttpException {
+    val raw = okhttp3.Response.Builder()
+        .code(429)
+        .message("Too Many Requests")
+        .protocol(Protocol.HTTP_1_1)
+        .request(Request.Builder().url("https://proxy.invalid/pictures").build())
+        .header("Retry-After", retryAfter)
+        .build()
+    return HttpException(Response.error<PicturesDto>(body.toResponseBody("application/json".toMediaType()), raw))
 }
 
 private data class Asked(val query: String, val scope: String, val language: String, val page: Int, val web: String?)
@@ -111,11 +171,13 @@ private data class Asked(val query: String, val scope: String, val language: Str
 private class FakePicturesApi(private val answer: PicturesDto = PicturesDto(), private val failure: IOException? = null) : PicturesApi {
     val asked = mutableListOf<Asked>()
     val parts = mutableListOf<String?>()
+    var refuse: (() -> Exception)? = null
 
     override suspend fun search(query: String, scope: String, language: String, page: Int, web: String?, part: String?): PicturesDto {
         asked += Asked(query, scope, language, page, web)
         parts += part
         failure?.let { throw it }
+        refuse?.let { throw it() }
         return answer
     }
 }

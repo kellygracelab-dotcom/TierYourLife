@@ -65,6 +65,7 @@
     <string name="item_search_empty_everywhere_body">هل تبحث في كل الفهارس وعلى الويب؟</string>
     <string name="item_search_notice_web_daily">انتهى البحث على الويب لهذا اليوم. نبحث في الفهارس، وغدًا في كل مكان من جديد.</string>
     <string name="item_search_notice_web_off">البحث على الويب متوقف مؤقتًا. نبحث في الفهارس.</string>
+    <string name="item_search_notice_limit">عمليات بحث كثيرة جدًا — يعود البحث الكامل في %1$s. حتى ذلك الحين نبحث في الفهارس.</string>
     <string name="item_search_selected_none">لم يتم تحديد شيء</string>
     <plurals name="item_search_selected_count">
         <item quantity="zero">لم يتم تحديد شيء</item>

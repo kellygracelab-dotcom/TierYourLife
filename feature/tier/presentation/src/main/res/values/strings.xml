@@ -53,6 +53,7 @@
     <string name="item_search_empty_everywhere_body">Search every catalogue and the web?</string>
     <string name="item_search_notice_web_daily">Web search is done for today. Searching the catalogues — tomorrow everywhere again.</string>
     <string name="item_search_notice_web_off">Web search is resting for now. Searching the catalogues.</string>
+    <string name="item_search_notice_limit">Too many searches — back to full search at %1$s. Searching the catalogues meanwhile.</string>
     <string name="item_search_selected_none">Nothing selected</string>
     <plurals name="item_search_selected_count">
         <item quantity="one">%1$d selected</item>
