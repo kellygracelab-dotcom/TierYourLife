@@ -71,18 +71,8 @@ fun TierDetailScreen(
         }
     }
 
-    val credit: (@Composable () -> Unit)? = when (val loaded = state) {
-        is TierDetailUiState.Success -> (loaded.list.rankingOf ?: loaded.list.takenFrom)?.let { rankingOf ->
-            {
-                RankingCredit(
-                    authorName = loaded.list.authorName.orEmpty(),
-                    editorial = screen.originalEditorial,
-                    onOpen = { onOpenPublishedList(rankingOf) },
-                )
-            }
-        }
-        else -> null
-    }
+    val loadedList = (state as? TierDetailUiState.Success)?.list
+    val credit = creditOf(loadedList, onOpenPublishedList)
 
     TierDetailScreenContent(
         state = state,
@@ -104,6 +94,7 @@ fun TierDetailScreen(
             publishedIsBehind = publish.publishedIsBehind,
             onUpdatePublished = viewModel::updatePublished,
             onSeeInCommunity = onSeeInCommunity,
+            onOpenOriginal = loadedList?.original()?.let { id -> { onOpenPublishedList(id) } },
             onSetCategory = viewModel::setCategory,
             onCategoryNotChosen = viewModel::categoryNotChosen,
             onProposeSection = onProposeSection,

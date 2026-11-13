@@ -4,14 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
-import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
-import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
-import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncReport
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +16,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -46,29 +42,6 @@ class TierDetailAccountTest {
 
         val shown = viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.title == "Sci-fi films, from the website" }
         assertTrue(shown is TierDetailUiState.Success)
-    }
-
-    // QA 484 N3: a copy of an editorial list said "by Author"; the website names nobody there.
-    @Test
-    fun aCopyThatNamesNobody_learnsWhetherItsOriginalStandsWithoutAnAuthor() = runBlocking {
-        val summary = PublishedListSummary("source", "Animals", "someone", "", category = "animals", itemCount = 1, updatedAtMillis = 1)
-        for ((original, editorial) in listOf(summary.copy(anonymous = true) to true, summary to false)) {
-            val community = FakeCommunityRepositoryForDetail(original = PublishedList(original, tiers = emptyList(), items = emptyList()))
-            val copy = listWithOneCard().copy(takenFrom = "source", authorName = "")
-            val viewModel = TierDetailViewModel(FakeTierRepository(copy), community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
-
-            assertEquals(editorial, viewModel.screen.firstWithin { it.originalEditorial != null }.originalEditorial)
-            assertEquals(listOf("source"), community.opened)
-        }
-        val named = FakeCommunityRepositoryForDetail(original = PublishedList(summary, tiers = emptyList(), items = emptyList()))
-        val viewModel = TierDetailViewModel(
-            FakeTierRepository(listWithOneCard().copy(takenFrom = "source", authorName = "Olena")),
-            named,
-            FakeAccountRepository(FakeAccountRepository.signedIn),
-            savedStateHandle(),
-        )
-        viewModel.board.firstWithin { it is TierDetailUiState.Success }
-        assertEquals(emptyList<String>(), named.opened)
     }
 
     private fun savedStateHandle(): SavedStateHandle = SavedStateHandle(mapOf("tierListId" to 1L, "startInTitleEdit" to false))

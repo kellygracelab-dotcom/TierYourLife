@@ -227,9 +227,9 @@
     <string name="cover_picker_no_cards">لا تحمل أي بطاقة في هذه القائمة صورة بعد.</string>
     <string name="cover_picker_gallery">الاختيار من المعرض</string>
     <string name="cover_picker_gallery_note">صورة من المعرض تكون الغلاف كله وتسافر مع القائمة عند نشرها.</string>
-    <string name="tier_detail_ranking_of">ترتيبك لقائمة من %1$s</string>
-    <string name="tier_detail_ranking_of_unnamed">ترتيبك لقائمة من المؤلف</string>
-    <string name="tier_detail_ranking_of_editorial">ترتيبك لقائمة</string>
+    <string name="tier_detail_ranking_of">ترتيبك لقائمة من المجتمع بواسطة %1$s</string>
+    <string name="tier_detail_ranking_of_community">ترتيبك لقائمة من المجتمع</string>
+    <string name="tier_detail_put_credit_away">إخفاء هذا السطر</string>
     <string name="tier_detail_open_original">فتح</string>
     <string name="search_names_only">الأسماء فقط</string>
     <string name="cover_saved">محفوظة</string>

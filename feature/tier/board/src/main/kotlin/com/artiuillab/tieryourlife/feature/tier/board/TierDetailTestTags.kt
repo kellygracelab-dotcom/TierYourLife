@@ -37,6 +37,7 @@ object TierDetailTestTags {
     const val TOPIC_ROW = "tier_detail_topic_row"
     const val SHARE_ROW = "tier_detail_share_row"
     const val SEE_IN_COMMUNITY_ROW = "tier_detail_see_in_community_row"
+    const val OPEN_ORIGINAL_ROW = "tier_detail_open_original_row"
     const val LIST_SETTINGS_SCREEN = "tier_detail_list_settings_screen"
     const val LIST_SETTINGS_MODE_WRAP = "tier_detail_list_settings_mode_wrap"
     const val LIST_SETTINGS_MODE_STRIP = "tier_detail_list_settings_mode_strip"

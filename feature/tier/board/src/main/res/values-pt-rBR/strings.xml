@@ -37,6 +37,8 @@
     <string name="list_settings_share_sub">Uma imagem deste quadro, com link para o app</string>
     <string name="list_settings_see_in_community">Ver na Comunidade</string>
     <string name="list_settings_see_in_community_sub">Como os outros a veem, com os rankings deles e o link</string>
+    <string name="list_settings_original">Abrir o original</string>
+    <string name="list_settings_original_sub">A lista da Comunidade que você classificou</string>
     <string name="list_settings_update_published">Versão publicada</string>
     <string name="list_settings_update_published_body">Enviar este quadro de novo, no mesmo link.</string>
     <string name="manual_dialog_add">Adicionar</string>

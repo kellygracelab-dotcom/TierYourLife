@@ -114,6 +114,8 @@ fun TierListSettingsScreenContent(
     onShare: () -> Unit = {},
     /** The published list's own page, where readers' rankings and its link are; null while it is not out. */
     onSeeInCommunity: (() -> Unit)? = null,
+    /** The Community list a copy was made from; there whether or not the board's credit line was put away. */
+    onOpenOriginal: (() -> Unit)? = null,
     onReturnAllToPool: (() -> Unit)? = null,
 ) {
     var tierEditorVisible by rememberSaveable { mutableStateOf(false) }
@@ -167,6 +169,7 @@ fun TierListSettingsScreenContent(
                     if (onSeeInCommunity != null && publicPending != false) {
                         SeeInCommunityRow(onClick = onSeeInCommunity)
                     }
+                    if (onOpenOriginal != null) OpenOriginalRow(onClick = onOpenOriginal)
 
                     // A category exists only for the feed; a cover is also the card's
                     // own art, so it stays available to a guest.
@@ -455,6 +458,17 @@ private fun ShareRow(onClick: () -> Unit) {
         subtitle = stringResource(R.string.list_settings_share_sub),
         onClick = onClick,
         testTag = TierDetailTestTags.SHARE_ROW,
+    )
+}
+
+@Composable
+private fun OpenOriginalRow(onClick: () -> Unit) {
+    SettingsActionRow(
+        icon = { LeaderboardIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = stringResource(R.string.list_settings_original),
+        subtitle = stringResource(R.string.list_settings_original_sub),
+        onClick = onClick,
+        testTag = TierDetailTestTags.OPEN_ORIGINAL_ROW,
     )
 }
 

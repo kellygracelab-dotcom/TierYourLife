@@ -37,6 +37,8 @@
     <string name="list_settings_share_sub">صورة لهذه اللوحة مع رابط للتطبيق</string>
     <string name="list_settings_see_in_community">اعرضها في المجتمع</string>
     <string name="list_settings_see_in_community_sub">كما يراها الآخرون، مع تصنيفاتهم والرابط</string>
+    <string name="list_settings_original">فتح الأصل</string>
+    <string name="list_settings_original_sub">قائمة المجتمع التي رتّبتها</string>
     <string name="list_settings_update_published">النسخة المنشورة</string>
     <string name="list_settings_update_published_body">أرسل هذه اللوحة مرة أخرى بنفس الرابط.</string>
     <string name="manual_dialog_add">إضافة</string>

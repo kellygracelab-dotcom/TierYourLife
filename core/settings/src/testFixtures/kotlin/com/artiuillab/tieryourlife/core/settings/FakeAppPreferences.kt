@@ -150,6 +150,14 @@ class FakeAppPreferences(
 
     override fun markConflictSeen(listUid: String) = Unit
 
+    private val creditsAway = mutableSetOf<String>()
+
+    override fun creditsPutAway(): Set<String> = creditsAway.toSet()
+
+    override fun putCreditAway(boardUid: String) {
+        creditsAway += boardUid
+    }
+
     private var owners = emptyMap<String, String>()
     private var publishingAccount: String? = null
 

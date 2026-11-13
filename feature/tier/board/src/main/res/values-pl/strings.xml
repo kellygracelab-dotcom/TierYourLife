@@ -37,6 +37,8 @@
     <string name="list_settings_share_sub">Obraz tej tablicy z linkiem do aplikacji</string>
     <string name="list_settings_see_in_community">Zobacz w Społeczności</string>
     <string name="list_settings_see_in_community_sub">Tak, jak widzą ją inni, z ich rankingami i linkiem</string>
+    <string name="list_settings_original">Otwórz oryginał</string>
+    <string name="list_settings_original_sub">Lista ze Społeczności, którą oceniasz</string>
     <string name="list_settings_update_published">Opublikowana wersja</string>
     <string name="list_settings_update_published_body">Wyślij tę listę ponownie, pod tym samym linkiem.</string>
     <string name="manual_dialog_add">Dodaj</string>

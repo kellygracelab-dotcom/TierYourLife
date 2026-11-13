@@ -18,6 +18,8 @@ data class TierDetailActions(
     val onUpdatePublished: () -> Unit = {},
     /** The board's published list as others see it, by its id; null where there is no going there. */
     val onSeeInCommunity: ((publishedId: String) -> Unit)? = null,
+    /** The Community list a copy was made from; null on a board that is nobody's copy. */
+    val onOpenOriginal: (() -> Unit)? = null,
     /** A section id. */
     val onSetCategory: (String) -> Unit = {},
     val onCategoryNotChosen: () -> Unit = {},

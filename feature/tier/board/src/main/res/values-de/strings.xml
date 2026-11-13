@@ -37,6 +37,8 @@
     <string name="list_settings_share_sub">Ein Bild dieses Boards, mit Link zur App</string>
     <string name="list_settings_see_in_community">In der Community ansehen</string>
     <string name="list_settings_see_in_community_sub">So, wie andere sie sehen, mit ihren Rankings und dem Link</string>
+    <string name="list_settings_original">Original öffnen</string>
+    <string name="list_settings_original_sub">Die Community-Liste, die du eingestuft hast</string>
     <string name="list_settings_update_published">Veröffentlichte Fassung</string>
     <string name="list_settings_update_published_body">Dieses Board erneut senden, unter demselben Link.</string>
     <string name="manual_dialog_add">Hinzufügen</string>
