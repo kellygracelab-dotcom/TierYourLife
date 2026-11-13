@@ -28,6 +28,7 @@
     <string name="category_all">الكل</string>
     <string name="cd_feed_sort">الترتيب</string>
     <string name="community_action_hide">إخفاء هذه القائمة</string>
+    <string name="community_action_about_cover">عن صورة الغلاف</string>
     <string name="community_action_hide_author">إخفاء كل شيء من %1$s</string>
     <string name="community_action_report">الإبلاغ عن هذه القائمة</string>
     <string name="community_action_view_author">عرض %1$s</string>

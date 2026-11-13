@@ -28,6 +28,7 @@
     <string name="category_all">Tout</string>
     <string name="cd_feed_sort">Tri</string>
     <string name="community_action_hide">Masquer cette liste</string>
+    <string name="community_action_about_cover">À propos de la couverture</string>
     <string name="community_action_hide_author">Masquer tout de %1$s</string>
     <string name="community_action_report">Signaler cette liste</string>
     <string name="community_action_view_author">Voir %1$s</string>

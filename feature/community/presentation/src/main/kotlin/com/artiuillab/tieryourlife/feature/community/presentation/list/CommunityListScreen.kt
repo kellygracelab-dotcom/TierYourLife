@@ -49,7 +49,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.ui.RankingChoiceDialog
@@ -66,6 +68,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
+import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.AboutTheCover
 import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.NoPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
@@ -208,6 +211,7 @@ fun CommunityListScreenContent(
         }
     }
     var reportVisible by remember { mutableStateOf(false) }
+    var coverVisible by remember { mutableStateOf(false) }
     var reportedFrom by remember { mutableStateOf(false) }
     var saveChoiceVisible by remember { mutableStateOf(false) }
     var rankingsVisible by remember { mutableStateOf(false) }
@@ -364,9 +368,12 @@ fun CommunityListScreenContent(
                     onShowMyRanking = { if (loaded.signedIn) onShowMyRanking() else onSignIn() },
                     onOpenRankings = openRankings,
                     onReturnAllToPool = { returnToPoolVisible = true },
+                    onAboutCover = { coverVisible = true },
                     own = own,
                 )
             }
+
+            CoverSheet(loaded.list.title, loaded.cover.takeIf { coverVisible }, onDismiss = { coverVisible = false })
 
             if (returnToPoolVisible) {
                 ReturnToPoolDialog(
@@ -417,6 +424,15 @@ fun CommunityListScreenContent(
     }
 }
 
+/** Who made a house list's cover, while the menu's line for it is open. */
+@Composable
+private fun CoverSheet(title: String, cover: CoverCredit?, onDismiss: () -> Unit) {
+    cover ?: return
+    AdaptiveSheet(onDismiss = onDismiss, width = SheetWidth.Choosing) {
+        AboutTheCover(title, cover.imageUrl, cover.attribution, onDismiss = onDismiss)
+    }
+}
+
 /** Two arrangements to choose from only once the author's is known; nothing to save while the cards are blank. */
 private fun saveTapped(state: CommunityListUiState.Success?, askWhich: () -> Unit, save: (Showing) -> Unit) {
     when {
@@ -443,6 +459,7 @@ private fun ListMenu(
     onShowMyRanking: () -> Unit,
     onOpenRankings: () -> Unit,
     onReturnAllToPool: () -> Unit,
+    onAboutCover: () -> Unit,
     own: OwnListCallbacks,
 ) {
     fun closing(action: () -> Unit): () -> Unit = {
@@ -467,6 +484,7 @@ private fun ListMenu(
         rankingCount = loaded.rankingCount,
         onReturnAllToPool = closing(onReturnAllToPool).takeIf { !loaded.own && !loaded.arriving && loaded.showing == Showing.Mine },
         canReturnAllToPool = loaded.mine.tiers.any { !it.isPool && it.items.isNotEmpty() },
+        onAboutCover = closing(onAboutCover).takeIf { loaded.cover != null },
     )
 }
 

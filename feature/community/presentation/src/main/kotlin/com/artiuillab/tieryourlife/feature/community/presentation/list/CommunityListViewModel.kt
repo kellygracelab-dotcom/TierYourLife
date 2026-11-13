@@ -298,6 +298,7 @@ class CommunityListViewModel @Inject constructor(
             trashedBoardId = before?.trashedBoardId,
             ownBoardLookedUp = before?.ownBoardLookedUp == true,
             translations = answer.translations,
+            cover = answer.summary.coverImageUrl?.let { url -> answer.coverAttribution?.let { CoverCredit(url, it) } },
         )
     }
 

@@ -83,6 +83,11 @@ internal fun AboutThePicture(item: TierItem, onDismiss: () -> Unit) {
     }
 }
 
+/** A list's cover, said about the way a card's picture is. */
+@Composable
+fun AboutTheCover(title: String, imageUrl: String, attribution: PictureAttribution, onDismiss: () -> Unit) =
+    AboutThePicture(TierItem(id = 0, title = title, imageUrl = imageUrl, attribution = attribution), onDismiss)
+
 @Composable
 private fun PictureFact(label: String, value: AnnotatedString) {
     Column {
