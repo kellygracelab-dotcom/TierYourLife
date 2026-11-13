@@ -18,6 +18,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.BoardConflictDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardRevisionDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptOriginDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
@@ -393,8 +394,9 @@ class BoardSyncEngine @Inject constructor(
         val answer = api.keep(uid, request(board, tiers, items, fingerprint, basedOn).coverAsLearned(learned))
 
         if (answer.isSuccessful) {
-            val revision = answer.body()?.revision ?: error("The account kept $uid but named no revision")
-            return remember(account, uid, revision, fingerprint)
+            val kept = answer.body() ?: error("The account kept $uid but named no revision")
+            remember(account, uid, kept.revision, fingerprint)
+            return sendCopies(account, kept, fingerprint, learned)
         }
         // Thrown rather than logged and returned: the run counts it as refused,
         // so the last-synced time stays put and the stuck banner can show.
@@ -413,7 +415,51 @@ class BoardSyncEngine @Inject constructor(
         keepBeside(account, theirs)
         val second = api.keep(uid, request(board, tiers, items, fingerprint, basedOn = theirs.revision).coverAsLearned(learned))
         if (!second.isSuccessful) throw refused(second, refusalOf(second), board.title, tiers.size)
-        second.body()?.let { remember(account, uid, it.revision, fingerprint) }
+        second.body()?.let { kept ->
+            remember(account, uid, kept.revision, fingerprint)
+            sendCopies(account, kept, fingerprint, learned)
+        }
+    }
+
+    /**
+     * The account now shows some of the board's catalogue pictures from its
+     * own copies, without moving its revision or fingerprint. The board here
+     * takes the same addresses and goes up again as an ordinary edit, so this
+     * phone shows the copy and agrees with the account on what it holds. Not
+     * if it was edited since it went up: that edit goes next run, and the
+     * account names the copies again then.
+     */
+    private suspend fun sendCopies(account: String, first: KeptBoardRevisionDto, firstFingerprint: String, learned: Boolean) {
+        var round: Pair<KeptBoardRevisionDto, String>? = first to firstFingerprint
+        repeat(COPY_ROUNDS) {
+            round = round?.let { (kept, sent) -> sendCopiesOnce(account, kept, sent, learned) }
+        }
+    }
+
+    /** One round of [sendCopies]: what the account answered, and the fingerprint of what went up; null when nothing did. */
+    private suspend fun sendCopiesOnce(account: String, kept: KeptBoardRevisionDto, sent: String, learned: Boolean): Pair<KeptBoardRevisionDto, String>? {
+        val board = kept.takeIf { it.copies.isNotEmpty() && !lock.stopAsked }?.let { takeCopies(it.uid, it.copies, sent) } ?: return null
+        val tiers = dao.tiersOf(board.id)
+        val items = dao.itemsOf(board.id)
+        val fingerprint = BoardFingerprint.of(board, tiers, items, images::pictureIdOf)
+        val answer = api.keep(kept.uid, request(board, tiers, items, fingerprint, basedOn = kept.revision).coverAsLearned(learned))
+        if (!answer.isSuccessful) throw refused(answer, refusalOf(answer), board.title, tiers.size)
+        val next = answer.body() ?: error("The account kept ${kept.uid} but named no revision")
+        remember(account, next.uid, next.revision, fingerprint)
+        return next to fingerprint
+    }
+
+    /** The board with the copies in place, or null when it changed since [sent] or nothing on it moved. */
+    private suspend fun takeCopies(uid: String, copies: Map<String, String>, sent: String): TierListEntity? {
+        var taken: TierListEntity? = null
+        dao.together {
+            val board = dao.boardByUid(uid)?.takeIf { fingerprintOf(it) == sent } ?: return@together
+            val moved = withCopies(board, dao.itemsOf(board.id), copies) ?: return@together
+            if (moved.board != board) dao.updateBoard(moved.board)
+            moved.items.forEach { dao.updateItem(it) }
+            taken = dao.boardByUid(uid)
+        }
+        return taken
     }
 
     private fun refusalOf(answer: Response<*>): BoardConflictDto? {
@@ -618,6 +664,9 @@ class BoardSyncEngine @Inject constructor(
         const val HTTP_TOO_LARGE = 413
         const val TOO_MANY_BOARDS = "TOO_MANY_BOARDS"
         const val COVER_READS_AT_ONCE = 4
+
+        /** The account copies up to 40 new pictures a write; the rest come with later writes or its daily upkeep. */
+        const val COPY_ROUNDS = 3
 
         /** What `/boards` names as the limit in a 413 for a board over its tiers. */
         const val TOO_MANY_TIERS = "Too many tiers"

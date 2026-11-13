@@ -91,9 +91,13 @@ data class KeptBoardIndexDto(
     val next: String? = null,
 )
 
-/** What the account writes back once it has taken a board. */
+/**
+ * What the account writes back once it has taken a board. [copies]: the
+ * catalogue pictures it now shows from its own shared copies, catalogue
+ * address to ours; the stored revision and fingerprint are still this phone's.
+ */
 @Serializable
-data class KeptBoardRevisionDto(val uid: String, val revision: Int)
+data class KeptBoardRevisionDto(val uid: String, val revision: Int, val copies: Map<String, String> = emptyMap())
 
 /** A refused write: the board already there comes back with it, so the phone can keep both without a second request. */
 @Serializable
