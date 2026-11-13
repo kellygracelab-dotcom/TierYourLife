@@ -505,7 +505,8 @@ class TierDetailViewModelTest {
         viewModel.publishAfterPreview()
 
         viewModel.setCategory(ListCategory.Food.id)
-        viewModel.publicationState.firstWithin { it.preview != null }
+        // The preview of the board with its category: the one asked for before it is stale, and confirming it publishes nothing.
+        viewModel.publicationState.firstWithin { it.preview?.list?.category == ListCategory.Food.id }
         assertTrue(community.published.isEmpty())
         viewModel.confirmPublication()
         // Waiting for the published id rather than for the pending flag to
