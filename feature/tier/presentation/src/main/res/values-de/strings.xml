@@ -179,10 +179,8 @@
     <string name="cover_picker_no_cards">Noch keine Karte dieser Liste hat ein Bild.</string>
     <string name="cover_picker_gallery">Aus der Galerie wählen</string>
     <string name="cover_picker_gallery_note">Ein Galeriebild ist das ganze Cover und reist mit der Liste, wenn du sie veröffentlichst.</string>
-    <string name="tier_detail_ranking_of">Deine Rangliste einer Liste von %1$s</string>
-    <string name="tier_detail_ranking_of_unnamed">Deine Rangliste einer Liste vom Autor</string>
-    <string name="tier_detail_ranking_of_editorial">Deine Rangliste einer Liste</string>
-    <string name="tier_detail_open_original">Öffnen</string>
+    <string name="tier_detail_original_list">Originalliste und Ranglisten</string>
+    <string name="tier_detail_hide_original_list">Diesen Link ausblenden</string>
     <string name="search_names_only">nur Namen</string>
     <string name="cover_saved">gespeichert</string>
     <string name="cover_empty_title">Noch keine Listen</string>

@@ -37,6 +37,8 @@
     <string name="list_settings_share_sub">このボードの画像とアプリへのリンク</string>
     <string name="list_settings_see_in_community">コミュニティで見る</string>
     <string name="list_settings_see_in_community_sub">ほかの人に見えるとおりに。みんなのランキングとリンクも</string>
+    <string name="list_settings_original">元のリストを開く</string>
+    <string name="list_settings_original_sub">ランキングしたコミュニティのリスト</string>
     <string name="list_settings_update_published">公開中の内容</string>
     <string name="list_settings_update_published_body">このボードを同じリンクで再送信します。</string>
     <string name="manual_dialog_add">追加</string>

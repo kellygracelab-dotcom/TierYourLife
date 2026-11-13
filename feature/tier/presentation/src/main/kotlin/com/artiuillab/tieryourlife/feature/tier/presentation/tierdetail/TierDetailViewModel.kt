@@ -61,7 +61,6 @@ class TierDetailViewModel @Inject constructor(
         get() = _screen.value.board
         set(value) {
             _screen.update { it.copy(board = value) }
-            (value as? TierDetailUiState.Success)?.let { askWhoseOriginal(it.list) }
         }
     private var allLists: List<TierListSummary>
         get() = _screen.value.allLists
@@ -81,19 +80,6 @@ class TierDetailViewModel @Inject constructor(
     private var categoryWanted: Boolean
         get() = _screen.value.publish.categoryWanted
         set(value) = updatePublish { it.copy(categoryWanted = value) }
-
-    private var originalAsked: String? = null
-
-    /** Only a copy that names nobody: "by Author" or no "by" at all depends on the original. */
-    private fun askWhoseOriginal(list: TierList) {
-        val original = list.rankingOf ?: list.takenFrom ?: return
-        if (!list.authorName.isNullOrBlank() || originalAsked == original) return
-        originalAsked = original
-        viewModelScope.launch {
-            val editorial = community.open(original).getOrNull()?.summary?.editorial ?: return@launch
-            _screen.update { it.copy(originalEditorial = editorial) }
-        }
-    }
 
     private fun updatePublish(change: (PublishState) -> PublishState) =
         _screen.update { it.copy(publish = change(it.publish)) }

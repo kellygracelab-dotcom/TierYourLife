@@ -150,6 +150,14 @@ class FakeAppPreferences(
 
     override fun markConflictSeen(listUid: String) = Unit
 
+    private val linksHidden = mutableSetOf<String>()
+
+    override fun originalLinksHidden(): Set<String> = linksHidden.toSet()
+
+    override fun hideOriginalLink(boardUid: String) {
+        linksHidden += boardUid
+    }
+
     private var owners = emptyMap<String, String>()
     private var publishingAccount: String? = null
 

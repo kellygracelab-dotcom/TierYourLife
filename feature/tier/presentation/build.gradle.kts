@@ -33,6 +33,7 @@ dependencies {
     testImplementation(testFixtures(projects.feature.community.domain))
     testImplementation(testFixtures(projects.feature.account.domain))
     testImplementation(testFixtures(projects.feature.tier.domain))
+    androidTestImplementation(testFixtures(projects.core.settings))
     androidTestImplementation(testFixtures(projects.feature.tier.domain))
     androidTestImplementation(testFixtures(projects.feature.community.domain))
     androidTestImplementation(testFixtures(projects.feature.account.domain))

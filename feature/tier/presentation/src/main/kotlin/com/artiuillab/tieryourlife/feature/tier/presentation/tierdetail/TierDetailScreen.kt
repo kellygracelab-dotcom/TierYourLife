@@ -47,6 +47,7 @@ fun TierDetailScreen(
     onProposeSection: ((String?) -> Unit)? = null,
     onSignIn: () -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
+    originalLinks: OriginalLinkViewModel = hiltViewModel(),
 ) {
     val screen by viewModel.screen.collectAsStateWithLifecycle()
     val publication by viewModel.publicationState.collectAsStateWithLifecycle()
@@ -71,18 +72,8 @@ fun TierDetailScreen(
         }
     }
 
-    val credit: (@Composable () -> Unit)? = when (val loaded = state) {
-        is TierDetailUiState.Success -> (loaded.list.rankingOf ?: loaded.list.takenFrom)?.let { rankingOf ->
-            {
-                RankingCredit(
-                    authorName = loaded.list.authorName.orEmpty(),
-                    editorial = screen.originalEditorial,
-                    onOpen = { onOpenPublishedList(rankingOf) },
-                )
-            }
-        }
-        else -> null
-    }
+    val loadedList = (state as? TierDetailUiState.Success)?.list
+    val originalLink = originalLinkOf(loadedList, originalLinks, onOpenPublishedList)
 
     TierDetailScreenContent(
         state = state,
@@ -91,7 +82,7 @@ fun TierDetailScreen(
         onBoardsBesideWanted = viewModel::wantBoardsBeside,
         addedItemIds = addedItemIds,
         userMessages = viewModel.userMessages,
-        belowTopBar = credit,
+        belowTopBar = originalLink,
         actions = TierDetailActions(
             onBack = onBack,
             signedIn = screen.signedIn,
@@ -104,6 +95,7 @@ fun TierDetailScreen(
             publishedIsBehind = publish.publishedIsBehind,
             onUpdatePublished = viewModel::updatePublished,
             onSeeInCommunity = onSeeInCommunity,
+            onOpenOriginal = loadedList?.original()?.let { id -> { onOpenPublishedList(id) } },
             onSetCategory = viewModel::setCategory,
             onCategoryNotChosen = viewModel::categoryNotChosen,
             onProposeSection = onProposeSection,

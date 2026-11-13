@@ -15,12 +15,6 @@ data class TierDetailScreenState(
     val allLists: List<TierListSummary> = emptyList(),
     val signedIn: Boolean = false,
     val publish: PublishState = PublishState(),
-    /**
-     * Whether the list this copy came from stands without an author, as the
-     * website tells it: an editorial or anonymous list. Asked only when the
-     * copy names nobody; null until the answer comes.
-     */
-    val originalEditorial: Boolean? = null,
 )
 
 data class PublishState(

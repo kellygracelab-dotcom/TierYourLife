@@ -351,6 +351,7 @@ private fun TierScreenBody(
             },
             onReturnAllToPool = actions.onReturnAllToPool,
             onSeeInCommunity = actions.onSeeInCommunity?.let { open -> list.publishedId?.let { id -> { open(id) } } },
+            onOpenOriginal = actions.onOpenOriginal,
         )
         return
     }
