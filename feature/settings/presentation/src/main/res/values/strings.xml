@@ -81,7 +81,6 @@
     <string name="theme_dark">Dark</string>
     <string name="theme_light">Light</string>
     <string name="theme_system">System</string>
-    <string name="tmdb_attribution" translatable="false">This product uses the TMDB API but is not endorsed or certified by TMDB.</string>
     <plurals name="unranked_count">
         <item quantity="one">%1$d unranked</item>
         <item quantity="other">%1$d unranked</item>

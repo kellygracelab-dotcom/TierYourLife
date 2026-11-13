@@ -160,7 +160,10 @@
     <string name="list_settings_public_gone">Bu liste artık toplulukta değil: yayından kaldırıldı, silindi ya da başka bir hesaptan yayımlandı. Yeniden yayımlamak için Herkese açık’ı açın.</string>
     <string name="list_settings_public_section_unavailable">Bu listenin bölümü artık liste kabul etmiyor. Başka bir bölüm seçin ve yeniden yayımlayın.</string>
     <string name="list_settings_unpublish_failed">Bu liste yayından kaldırılamadı; hâlâ herkese açık. Yeniden deneyin.</string>
-    <string name="tier_detail_image_credits">Görsel kaynakları</string>
+    <string name="tier_detail_about_picture">Görsel hakkında</string>
+    <string name="tier_detail_picture_author">Eser sahibi</string>
+    <string name="tier_detail_picture_license">Lisans</string>
+    <string name="tier_detail_picture_source">Kaynak</string>
     <string name="tier_detail_card_details">Kart ayrıntıları</string>
     <string name="tier_detail_credits_close">Kapat</string>
     <string name="list_settings_public_changed_elsewhere">Bu liste başka bir cihazda değişti. Yeniden yayınlamayı deneyin.</string>

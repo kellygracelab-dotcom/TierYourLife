@@ -6,7 +6,6 @@ import android.net.Uri
 import android.text.format.DateUtils
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -70,6 +68,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.FileDownloadIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FlagIcon
 import com.artiuillab.tieryourlife.core.theme.ui.HideIcon
 import com.artiuillab.tieryourlife.core.theme.ui.OnResumeEffect
+import com.artiuillab.tieryourlife.core.theme.ui.TmdbNotice
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.AccountRow
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.BackupSection
@@ -414,29 +413,8 @@ private fun VersionLine(versionName: String) {
                 style = MaterialTheme.typography.bodySmall,
             )
         }
-        // Their mark above their wording, both required by the licence the
-        // film search runs on. Not tinted and not themed: the terms forbid
-        // recolouring it, so it stays their blue in either theme.
         Spacer(Modifier.height(12.dp))
-        Image(
-            painter = painterResource(R.drawable.tmdb_logo),
-            contentDescription = "The Movie Database",
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .height(16.dp),
-        )
-        // Required by the people whose catalogue the search reads, in their
-        // own words. Left in English on purpose: a translated legal notice is
-        // a different legal notice.
-        Text(
-            text = stringResource(R.string.tmdb_attribution),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp, start = 32.dp, end = 32.dp),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.outline,
-            textAlign = TextAlign.Center,
-        )
+        TmdbNotice(Modifier.fillMaxWidth().padding(horizontal = 32.dp))
     }
 }
 

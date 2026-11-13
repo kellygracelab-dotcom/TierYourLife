@@ -4,6 +4,8 @@ import com.artiuillab.tieryourlife.core.network.networkJson
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.toDomain
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.toDto
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
@@ -89,7 +91,8 @@ class KeptBoardFieldsTest {
             KeptBoardDto.serializer(),
             """{"uid":"b-4","revision":1,"title":"Films","items":[""" +
                 """{"uid":"c-1","tierUid":"t-1","position":0,"title":"Alien","imageUrl":"https://image.tmdb.org/t/p/w500/a.jpg",""" +
-                """"attribution":{"source":"tmdb","link":"https://www.themoviedb.org/movie/348","later":1}},""" +
+                """"attribution":{"source":"tmdb","link":"https://www.themoviedb.org/movie/348","later":1,""" +
+                """"id":"tmdb:movie:348","formerUrls":["https://image.tmdb.org/t/p/w500/old.jpg"]}},""" +
                 """{"uid":"c-2","tierUid":"t-1","position":1,"title":"Badger"}]}""",
         )
 
@@ -97,6 +100,10 @@ class KeptBoardFieldsTest {
         val sent = board.items.map { networkJson.parseToJsonElement(networkJson.encodeToString(KeptItemDto.serializer(), it)).jsonObject }
         assertEquals(JsonPrimitive("https://www.themoviedb.org/movie/348"), sent[0]["attribution"]!!.jsonObject["link"])
         assertFalse("attribution" in sent[1])
+        val attribution = sent[0]["attribution"]!!.jsonObject
+        assertEquals(JsonPrimitive("tmdb:movie:348"), attribution["id"])
+        assertEquals("""["https://image.tmdb.org/t/p/w500/old.jpg"]""", attribution["formerUrls"].toString())
+        assertEquals(board.items[0].attribution, board.items[0].attribution!!.toDomain().toDto())
     }
 
     @Test
