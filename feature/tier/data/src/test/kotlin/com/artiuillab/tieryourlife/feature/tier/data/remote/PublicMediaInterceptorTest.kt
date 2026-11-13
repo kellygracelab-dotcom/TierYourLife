@@ -28,6 +28,16 @@ class PublicMediaInterceptorTest {
     }
 
     @Test
+    fun theAccountsSharedCatalogueCopies_areReadThroughTheWebHandlerToo() {
+        val url = "${STORAGE}published%2Fcatalogue%2Fw-0123456789abcdef0123456789abcdef?alt=media"
+
+        assertEquals(
+            "https://tieryourlife.web.app/img/original/published/catalogue/w-0123456789abcdef0123456789abcdef",
+            send(Request.Builder().url(url).build()).url.toString(),
+        )
+    }
+
+    @Test
     fun publicReads_dropCredentialsButKeepTheOriginalRequestAndOtherHeaders() {
         val url = "${STORAGE}published%2Flist-1%2Fpicture-1?alt=media&token=old-download-token"
         val original = Request.Builder().url(url)

@@ -154,6 +154,9 @@ abstract class SyncEngineBench {
         var refuseUids: Set<String> = emptySet()
         var refusalBody = ""
         var onKeep: () -> Unit = {}
+
+        /** As the proxy's shared copies: catalogue address to ours, named back for the ones a write shows. */
+        var copies: Map<String, String> = emptyMap()
         var onIndex: suspend () -> Unit = {}
         var onBoard: suspend (String) -> Unit = {}
 
@@ -187,7 +190,8 @@ abstract class SyncEngineBench {
             onKeep()
             val revision = (server[uid]?.revision ?: 0) + 1
             server[uid] = KeptBoardDto(uid = uid, revision = revision, fingerprint = request.fingerprint, title = request.title)
-            return Response.success(KeptBoardRevisionDto(uid, revision))
+            val shown = request.items.mapNotNull { it.imageUrl } + listOfNotNull(request.coverImageUrl) + request.coverImageUrls
+            return Response.success(KeptBoardRevisionDto(uid, revision, copies.filterKeys { it in shown }))
         }
 
         // As the proxy: a marker, not nothing, so the other phone hears of it.
