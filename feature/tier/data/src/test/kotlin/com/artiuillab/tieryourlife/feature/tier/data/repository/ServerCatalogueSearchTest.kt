@@ -6,10 +6,12 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataSparqlApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.MovieDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.MovieSearchResponseDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PictureAttributionDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PictureHitDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PicturesDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.WikidataSearchResponseDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.WikidataSparqlResponseDto
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchNotice
 import kotlinx.coroutines.runBlocking
@@ -66,6 +68,32 @@ class ServerCatalogueSearchTest {
         val page = search(api).search("fox", "en", 1, PictureScope.Animals).getOrThrow()
 
         assertEquals(listOf("© Jane Doe, CC BY", null, null), page.items.map { it.credit })
+    }
+
+    @Test
+    fun aHitsAttribution_comesWithIt_whateverItsSource() = runBlocking {
+        val commons = PictureAttributionDto(
+            source = "wikimedia",
+            author = "Jane Doe",
+            license = "CC BY-SA 4.0",
+            link = "https://commons.wikimedia.org/wiki/File:Fox.jpg",
+        )
+        val api = FakePicturesApi(
+            PicturesDto(
+                items = listOf(
+                    PictureHitDto(id = "wikidata:1", title = "Red fox", imageUrl = "https://i/1.jpg", attribution = commons),
+                    PictureHitDto(id = "x:2", title = "Badger", imageUrl = "https://i/2.jpg", attribution = PictureAttributionDto("later")),
+                    PictureHitDto(id = "tmdb:3", title = "Fantastic Mr. Fox", imageUrl = "https://t/3.jpg"),
+                ),
+            ),
+        )
+
+        val page = search(api).search("fox", "en", 1, PictureScope.Animals).getOrThrow()
+
+        assertEquals(
+            listOf(PictureAttribution("wikimedia", "Jane Doe", "CC BY-SA 4.0", link = "https://commons.wikimedia.org/wiki/File:Fox.jpg"), PictureAttribution("later"), null),
+            page.items.map { it.attribution },
+        )
     }
 
     @Test

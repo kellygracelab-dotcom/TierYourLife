@@ -48,6 +48,33 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    // Nothing said where a picture came from before: every card comes through as it was, without an attribution.
+    @Test
+    fun migration19To20_keepsEveryCard_withoutAnAttribution() {
+        helper.createDatabase(TEST_DB, 19).apply {
+            execSQL("INSERT INTO tier_lists (id, title, uid, ownerUid) VALUES (1, 'Animals', 'board-1', 'alice')")
+            execSQL("INSERT INTO tiers (id, tierListId, position, label, colorLight, colorDark, isPool, uid) VALUES (1, 1, 0, 'S', '#111111', '#EEEEEE', 0, 'tier-1')")
+            execSQL(
+                "INSERT INTO tier_items (id, tierId, position, title, imageUrl, source, uid, credit, sourceIndex) " +
+                    "VALUES (1, 1, 0, 'Red fox', 'https://upload.wikimedia.org/fox.jpg', 'TMDB', 'card-1', '© Jane Doe', 3)",
+            )
+            close()
+        }
+
+        val migrated = helper.runMigrationsAndValidate(TEST_DB, 20, true, MIGRATION_19_20)
+
+        migrated.query("SELECT title, imageUrl, source, uid, credit, sourceIndex, attribution FROM tier_items").use {
+            check(it.moveToFirst())
+            assertEquals("Red fox", it.getString(0))
+            assertEquals("https://upload.wikimedia.org/fox.jpg", it.getString(1))
+            assertEquals("TMDB", it.getString(2))
+            assertEquals("card-1", it.getString(3))
+            assertEquals("© Jane Doe", it.getString(4))
+            assertEquals(3, it.getInt(5))
+            assertTrue("no attribution", it.isNull(6))
+        }
+    }
+
     @get:Rule
     val helper: MigrationTestHelper = MigrationTestHelper(
         InstrumentationRegistry.getInstrumentation(),

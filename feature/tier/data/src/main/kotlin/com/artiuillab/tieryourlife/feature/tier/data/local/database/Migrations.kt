@@ -5,6 +5,16 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 
+/**
+ * Where each card's picture came from and whom it names, beside the old credit
+ * text. Every card made before has none until its picture is found again.
+ */
+val MIGRATION_19_20 = object : Migration(19, 20) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_items ADD COLUMN attribution TEXT")
+    }
+}
+
 /** Additive private lineage and one-time decision memory; every existing board/card stays intact. */
 val MIGRATION_18_19 = object : Migration(18, 19) {
     override fun migrate(db: SupportSQLiteDatabase) {

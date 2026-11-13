@@ -78,10 +78,10 @@ class RoomTierRepository internal constructor(
             tiers = board.tiers.filterNot { it.isPool }.map { tier ->
                 NewTemplateTier(
                     tier.label, tier.caption, tier.colorLight, tier.colorDark,
-                    tier.items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex) },
+                    tier.items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex, it.attribution) },
                 )
             },
-            items = board.tiers.filter { it.isPool }.flatMap { it.items }.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex) },
+            items = board.tiers.filter { it.isPool }.flatMap { it.items }.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex, it.attribution) },
         )
     }
 
@@ -116,10 +116,10 @@ class RoomTierRepository internal constructor(
                 caption = tier.caption,
                 colorLight = tier.colorLight,
                 colorDark = tier.colorDark,
-                items = tier.items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex) },
+                items = tier.items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex, it.attribution) },
             )
         },
-        items = items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex) },
+        items = items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex, it.attribution) },
     )
 
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) {
@@ -209,7 +209,7 @@ class RoomTierRepository internal constructor(
             val url = draft.imageUrl
             // A copy that could not be made leaves the address: a picture that may go is better than none.
             val imageUrl = if (draft.keepCopy && url != null) imageStore.downloadToInternalStorage(url) ?: url else url
-            NewPoolItem(title = draft.title, imageUrl = imageUrl, credit = draft.credit)
+            NewPoolItem(title = draft.title, imageUrl = imageUrl, credit = draft.credit, attribution = draft.attribution)
         }
         dao.addItemsToPool(tierListId, kept)
     }

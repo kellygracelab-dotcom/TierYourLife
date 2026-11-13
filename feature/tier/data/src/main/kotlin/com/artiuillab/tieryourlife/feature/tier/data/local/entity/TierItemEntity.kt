@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import java.util.UUID
 
 @Entity(
@@ -41,5 +42,7 @@ data class TierItemEntity(
     val uid: String = UUID.randomUUID().toString(),
     /** Who the picture's license asks to be named; written once, when the card is made from a search hit. */
     val credit: String? = null,
+    /** Stored as JSON, see [com.artiuillab.tieryourlife.feature.tier.data.local.database.AttributionConverter]. */
+    val attribution: PictureAttribution? = null,
     val sourceIndex: Int? = null,
 )

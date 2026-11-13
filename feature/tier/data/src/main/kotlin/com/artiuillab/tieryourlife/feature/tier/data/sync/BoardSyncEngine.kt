@@ -21,6 +21,8 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptOriginDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.toDomain
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.toDto
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -601,6 +603,7 @@ class BoardSyncEngine @Inject constructor(
                     deletedAt = item.deletedAt,
                     credit = item.credit,
                     sourceIndex = item.sourceIndex?.takeIf { it in 0 until MAX_SOURCE_CARDS },
+                    attribution = item.attribution?.toDto(),
                 )
             },
         )
@@ -720,6 +723,7 @@ private fun KeptBoardDto.tiers(
                     uid = renamed?.items?.get(item.uid) ?: item.uid,
                     credit = item.credit,
                     sourceIndex = item.sourceIndex?.takeIf { it in 0 until MAX_SOURCE_CARDS },
+                    attribution = item.attribution?.toDomain(),
                 )
             },
         )

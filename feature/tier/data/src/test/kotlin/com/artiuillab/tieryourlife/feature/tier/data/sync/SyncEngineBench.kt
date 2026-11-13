@@ -26,6 +26,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardSummary
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptItemDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import kotlinx.coroutines.flow.emptyFlow
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -103,6 +104,7 @@ abstract class SyncEngineBench {
         publishedId: String? = null,
         credit: String? = null,
         owner: String? = someone,
+        attribution: PictureAttribution? = null,
         itemTitle: String = "Alien",
     ): String {
         val board = TierListEntity(title = title, publishedId = publishedId, ownerUid = owner)
@@ -111,7 +113,7 @@ abstract class SyncEngineBench {
             listOf(
                 IncomingTier(
                     tier = TierEntity(tierListId = 0, position = 0, label = "S", colorLight = "#111111", colorDark = "#EEEEEE"),
-                    items = listOf(TierItemEntity(tierId = 0, position = 0, title = itemTitle, imageUrl = null, credit = credit)),
+                    items = listOf(TierItemEntity(tierId = 0, position = 0, title = itemTitle, imageUrl = null, credit = credit, attribution = attribution)),
                 ),
             ),
         )

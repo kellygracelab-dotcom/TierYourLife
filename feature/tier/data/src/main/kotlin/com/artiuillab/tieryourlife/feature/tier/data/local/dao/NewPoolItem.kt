@@ -1,10 +1,13 @@
 package com.artiuillab.tieryourlife.feature.tier.data.local.dao
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
+
 data class NewPoolItem(
     val title: String,
     val imageUrl: String?,
     val credit: String? = null,
     val sourceIndex: Int? = null,
+    val attribution: PictureAttribution? = null,
 )
 
 data class NewTemplateTier(

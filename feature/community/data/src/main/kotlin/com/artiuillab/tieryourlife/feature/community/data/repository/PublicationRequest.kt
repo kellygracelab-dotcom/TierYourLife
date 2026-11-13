@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.community.data.repository
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedItemDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTierDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toDto
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -66,6 +67,7 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
                     pictureId = (images.pictureIdOf(item.imageUrl) ?: privatePictureIdOf(item.imageUrl))?.takeIf { it in uploaded },
                     tierIndex = where,
                     credit = item.credit,
+                    attribution = item.attribution?.toDto(),
                     sourceIndex = item.sourceIndex?.takeIf { it in 0 until MAX_SOURCE_CARDS },
                 )
             }

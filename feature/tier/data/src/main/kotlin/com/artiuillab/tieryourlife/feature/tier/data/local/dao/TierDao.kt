@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWithTiers
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 @Dao
@@ -50,8 +51,9 @@ interface TierDao {
                     position = nextPosition++,
                     title = item.title,
                     imageUrl = item.imageUrl,
-                    source = "TMDB",
+                    source = sourceOf(item),
                     credit = item.credit,
+                    attribution = item.attribution,
                 ),
             )
         }
@@ -107,10 +109,14 @@ interface TierDao {
         position = position,
         title = item.title,
         imageUrl = item.imageUrl,
-        source = if (item.imageUrl?.startsWith("http") == true) "TMDB" else "MANUAL",
+        source = sourceOf(item),
         credit = item.credit,
         sourceIndex = item.sourceIndex,
+        attribution = item.attribution,
     )
+
+    private fun sourceOf(item: NewPoolItem) =
+        if (PictureAttribution.isTmdb(item.imageUrl, item.attribution)) "TMDB" else "MANUAL"
 
     // `IS`, not `=`: null is an owner too, the boards made without an account.
     @Query("SELECT COUNT(*) FROM tier_lists WHERE publishedId IS NOT NULL AND deletedAt IS NULL AND ownerUid IS :owner")
@@ -528,7 +534,8 @@ interface TierDao {
         insertTierItem(placed.copy(deletedAt = null))
     }
 
-    @Query("UPDATE tier_items SET imageUrl = :imageUrl WHERE id = :id")
+    /** Someone's own picture in place of the one a search found: what named the old one says nothing of this. */
+    @Query("UPDATE tier_items SET imageUrl = :imageUrl, credit = NULL, attribution = NULL WHERE id = :id")
     suspend fun updateTierItemImage(id: Long, imageUrl: String?)
 
     @Query("SELECT imageUrl FROM tier_items WHERE id = :id")

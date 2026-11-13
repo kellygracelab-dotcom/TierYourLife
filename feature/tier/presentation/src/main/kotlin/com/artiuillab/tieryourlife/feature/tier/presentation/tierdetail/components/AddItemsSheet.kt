@@ -63,7 +63,7 @@ internal fun AddItemsSheet(
             onConfirmSelection = {
                 onItemsConfirmed(
                     selectedItems.values.map {
-                        PoolItemDraft(title = it.title, imageUrl = it.imageUrl, keepCopy = it.fromWeb, credit = it.credit)
+                        PoolItemDraft(title = it.title, imageUrl = it.imageUrl, keepCopy = it.fromWeb, credit = it.credit, attribution = it.attribution)
                     },
                 )
             },

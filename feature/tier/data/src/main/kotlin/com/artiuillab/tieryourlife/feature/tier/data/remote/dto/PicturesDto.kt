@@ -24,6 +24,7 @@ data class PictureHitDto(
     val kind: String = "",
     /** Who the picture's license asks to be named; absent when it asks for nobody. */
     val credit: String? = null,
+    val attribution: PictureAttributionDto? = null,
 )
 
 /** The server's 429 for a person who searched too often; [retryAt] is when it answers again, epoch ms. */
@@ -45,6 +46,7 @@ fun PicturesDto.toDomain(): CatalogueSearchPage = CatalogueSearchPage(
             thumbUrl = hit.thumbUrl,
             fromWeb = hit.source == WEB_SOURCE,
             credit = hit.credit?.trim()?.takeIf { it.isNotEmpty() },
+            attribution = hit.attribution?.toDomain(),
         )
     },
     hasMore = hasMore,

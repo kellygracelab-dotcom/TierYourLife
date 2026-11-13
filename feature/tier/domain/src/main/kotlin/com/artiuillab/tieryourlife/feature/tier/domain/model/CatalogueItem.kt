@@ -11,4 +11,5 @@ data class CatalogueItem(
     val fromWeb: Boolean = false,
     /** Who the picture's license asks to be named, such as "© Jane Doe, CC BY". */
     val credit: String? = null,
+    val attribution: PictureAttribution? = null,
 )
