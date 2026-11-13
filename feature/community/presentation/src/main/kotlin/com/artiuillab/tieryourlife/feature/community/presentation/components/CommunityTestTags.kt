@@ -13,6 +13,7 @@ object CommunityTestTags {
     const val LIST_ACTIONS_SHEET = "community_list_actions"
     const val ACTION_VIEW_AUTHOR = "community_action_view_author"
     const val ACTION_HIDE = "community_action_hide"
+    const val ACTION_ABOUT_COVER = "community_action_about_cover"
     const val ACTION_REPORT = "community_action_report"
     const val ACTION_SHOW_RANKING = "community_action_show_ranking"
     const val ACTION_RANKINGS = "community_action_rankings"

@@ -28,6 +28,7 @@
     <string name="category_all">Tümü</string>
     <string name="cd_feed_sort">Sıralama</string>
     <string name="community_action_hide">Bu listeyi gizle</string>
+    <string name="community_action_about_cover">Kapak hakkında</string>
     <string name="community_action_hide_author">%1$s kullanıcısından gelen her şeyi gizle</string>
     <string name="community_action_report">Bu listeyi bildir</string>
     <string name="community_action_view_author">%1$s profilini aç</string>

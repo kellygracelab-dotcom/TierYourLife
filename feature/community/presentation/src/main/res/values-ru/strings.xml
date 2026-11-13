@@ -28,6 +28,7 @@
     <string name="category_all">Все</string>
     <string name="cd_feed_sort">Сортировка</string>
     <string name="community_action_hide">Скрыть этот список</string>
+    <string name="community_action_about_cover">Об обложке</string>
     <string name="community_action_hide_author">Скрыть всё от %1$s</string>
     <string name="community_action_report">Пожаловаться на список</string>
     <string name="community_action_view_author">Профиль %1$s</string>

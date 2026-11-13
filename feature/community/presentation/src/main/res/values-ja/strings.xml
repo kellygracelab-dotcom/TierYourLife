@@ -28,6 +28,7 @@
     <string name="category_all">すべて</string>
     <string name="cd_feed_sort">並び替え</string>
     <string name="community_action_hide">このリストを非表示</string>
+    <string name="community_action_about_cover">カバー画像について</string>
     <string name="community_action_hide_author">%1$s の投稿をすべて非表示</string>
     <string name="community_action_report">このリストを通報</string>
     <string name="community_action_view_author">%1$s のプロフィール</string>

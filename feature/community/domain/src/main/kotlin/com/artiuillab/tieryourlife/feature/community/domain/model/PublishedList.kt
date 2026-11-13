@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.domain.model
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 
@@ -69,6 +70,8 @@ data class PublishedList(
     val arrangement: List<Int?> = emptyList(),
     /** A house list's title, tiers and cards in the readers' languages. */
     val translations: ListTranslations = ListTranslations(),
+    /** Who made [PublishedListSummary.coverImageUrl], when the house editor said so. */
+    val coverAttribution: PictureAttribution? = null,
 )
 
 /** A list a copy was changed from: named on the copy's page, and a tap away. Its author is empty when the original is anonymous. */

@@ -127,6 +127,8 @@ data class PublishedListDto(
     val names: Map<String, String> = emptyMap(),
     /** Per locale, each text of the list as written mapped to how it reads there. */
     val translations: Map<String, Map<String, String>> = emptyMap(),
+    /** A house list's cover credit; only the list's own page carries it. */
+    val coverAttribution: CoverAttributionDto? = null,
 )
 
 @Serializable

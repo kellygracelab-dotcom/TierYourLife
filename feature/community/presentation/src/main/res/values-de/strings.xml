@@ -28,6 +28,7 @@
     <string name="category_all">Alle</string>
     <string name="cd_feed_sort">Sortierung</string>
     <string name="community_action_hide">Diese Liste ausblenden</string>
+    <string name="community_action_about_cover">Über das Titelbild</string>
     <string name="community_action_hide_author">Alles von %1$s ausblenden</string>
     <string name="community_action_report">Diese Liste melden</string>
     <string name="community_action_view_author">%1$s ansehen</string>

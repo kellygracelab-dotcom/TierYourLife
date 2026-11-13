@@ -551,6 +551,7 @@ internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
     // unknown", not "ranked nothing".
     arrangement = items.map { it.tierIndex },
     translations = ListTranslations(translations),
+    coverAttribution = coverAttribution?.takeIf { coverImageUrl.webPictureOrNull() != null }?.toDomain(),
 )
 
 internal fun BasedOnDto.toDomain() = BasedOn(id = id, title = title, authorName = authorName.orEmpty(), authorUid = authorUid)

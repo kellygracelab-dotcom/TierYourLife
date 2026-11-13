@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.core.theme.ui.CategoryIcon
+import com.artiuillab.tieryourlife.core.theme.ui.CoverIcon
 import com.artiuillab.tieryourlife.core.theme.ui.DeleteOutlineIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FlagIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FormatListNumberedIcon
@@ -66,6 +67,8 @@ fun ListActionsSheet(
     rankingCount: Int = 0,
     onReturnAllToPool: (() -> Unit)? = null,
     canReturnAllToPool: Boolean = false,
+    /** A house list whose cover the editor credited: who made it. */
+    onAboutCover: (() -> Unit)? = null,
 ) {
     AdaptiveSheet(
         onDismiss = onDismiss,
@@ -98,6 +101,14 @@ fun ListActionsSheet(
                     testTag = CommunityTestTags.ACTION_VIEW_AUTHOR,
                     onClick = onOpenAuthor,
                     icon = { size, tint -> PersonIcon(size, tint) },
+                )
+            }
+            if (onAboutCover != null) {
+                ActionRow(
+                    text = stringResource(R.string.community_action_about_cover),
+                    testTag = CommunityTestTags.ACTION_ABOUT_COVER,
+                    onClick = onAboutCover,
+                    icon = { size, tint -> CoverIcon(size, tint) },
                 )
             }
             if (onWrongTopic != null) {

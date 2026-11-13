@@ -28,6 +28,7 @@
     <string name="category_all">All</string>
     <string name="cd_feed_sort">Sort lists</string>
     <string name="community_action_hide">Hide this list</string>
+    <string name="community_action_about_cover">About the cover</string>
     <string name="community_action_hide_author">Hide everything from %1$s</string>
     <string name="community_action_report">Report this list</string>
     <string name="community_action_view_author">View %1$s</string>
