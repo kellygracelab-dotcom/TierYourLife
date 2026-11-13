@@ -67,6 +67,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.core.theme.ui.FileDownloadIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FlagIcon
 import com.artiuillab.tieryourlife.core.theme.ui.HideIcon
+import com.artiuillab.tieryourlife.core.theme.ui.IgdbNotice
 import com.artiuillab.tieryourlife.core.theme.ui.OnResumeEffect
 import com.artiuillab.tieryourlife.core.theme.ui.TmdbNotice
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
@@ -415,6 +416,7 @@ private fun VersionLine(versionName: String) {
         }
         Spacer(Modifier.height(12.dp))
         TmdbNotice(Modifier.fillMaxWidth().padding(horizontal = 32.dp))
+        IgdbNotice(Modifier.fillMaxWidth().padding(start = 32.dp, end = 32.dp, top = 8.dp))
     }
 }
 

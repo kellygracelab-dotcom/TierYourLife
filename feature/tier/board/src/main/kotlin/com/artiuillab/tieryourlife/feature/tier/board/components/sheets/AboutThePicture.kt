@@ -103,7 +103,8 @@ internal fun linked(text: String, url: String?, color: Color) = buildAnnotatedSt
 private val SOURCE_NAMES = mapOf(
     "tmdb" to "TMDB",
     "anilist" to "AniList",
-    "igdb" to "IGDB",
+    // IGDB's terms name it by its address.
+    "igdb" to "IGDB.com",
     "steam" to "Steam",
     "deezer" to "Deezer",
     "openlibrary" to "Open Library",
