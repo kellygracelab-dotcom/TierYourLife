@@ -38,7 +38,7 @@
 
 
 
-    <string name="item_search_field_label">Suchen</string>
+    <string name="item_search_field_label">Suchen oder Link einfügen</string>
     <string name="item_search_close_content_description">Suche schließen</string>
     <string name="item_search_clear_content_description">Suche leeren</string>
     <string name="item_search_source_caption">Wird zum Pool von %1$s hinzugefügt</string>
@@ -208,4 +208,23 @@
         <item quantity="other">%1$d Listen gelöscht, die öffentlichen Kopien entfernt</item>
     </plurals>
     <string name="lists_public_lists">Deine öffentlichen Listen</string>
+    <string name="item_search_link_paste">Bildlink einfügen</string>
+    <string name="item_search_link_from">Bild über Link · von %1$s</string>
+    <string name="item_search_link_checking">Bild wird geprüft…</string>
+    <string name="item_search_link_ready">Geprüft – kann hinzugefügt werden.</string>
+    <string name="item_search_link_name">Name</string>
+    <string name="item_search_link_page_open">+ Seite, von der es stammt</string>
+    <string name="item_search_link_page">Seite, von der es stammt (optional)</string>
+    <string name="item_search_link_page_bad">Das sieht nicht nach einer Seitenadresse aus. Lass das Feld leer, wenn du sie nicht kennst.</string>
+    <string name="item_search_link_add">Hinzufügen</string>
+    <string name="item_search_link_add_without_picture">Ohne Bild hinzufügen</string>
+    <string name="item_search_link_not_a_picture">Dieser Link führt zu einer Seite, nicht zu einem Bild. Öffne das Bild selbst und kopiere seine Adresse.</string>
+    <string name="item_search_link_unreachable">Dieser Link öffnet sich nicht. Prüfe ihn oder nimm ein anderes Bild.</string>
+    <string name="item_search_link_too_big">Das Bild ist zu groß. Versuch eine kleinere Version.</string>
+    <string name="item_search_link_refused">Dieses Bild kann hier nicht verwendet werden. Wähle ein anderes.</string>
+    <string name="item_search_link_failed">Das Bild konnte nicht geprüft werden. Versuch es noch einmal.</string>
+    <string name="item_search_link_limit">Für heute sind die Bilder über Links aufgebraucht. Weitere ab %1$s. Vom Gerät hochladen geht weiterhin.</string>
+    <string name="item_search_link_upload">Bilder hochladen</string>
+    <string name="item_search_link_sign_in_text">Bilder über Links werden in deinem Konto gespeichert. Melde dich an – deine Eingabe bleibt erhalten.</string>
+    <string name="item_search_link_sign_in">Anmelden</string>
 </resources>
