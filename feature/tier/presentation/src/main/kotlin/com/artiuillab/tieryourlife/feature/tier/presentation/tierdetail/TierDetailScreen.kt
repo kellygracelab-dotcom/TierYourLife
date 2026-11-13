@@ -165,6 +165,11 @@ fun TierDetailScreen(
                 viewModel.addItemsToPool(items)
                 addSheetVisible = false
             },
+            onUploadInstead = {
+                addSheetVisible = false
+                manualEntryVisible = true
+            },
+            onSignIn = onSignIn,
         )
     }
 

@@ -11,6 +11,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.EndSideSheet
@@ -21,6 +22,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.CatalogueSearchScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.CatalogueSearchViewModel
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.ScopeChoice
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.LinkChoice
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.attributionWith
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,12 +35,22 @@ internal fun AddItemsSheet(
     onItemsConfirmed: (List<PoolItemDraft>) -> Unit,
     /** From the end edge, the board left in view: for a board laid out in columns. */
     side: Boolean = false,
+    /** A picture from the device instead, when pictures from links are used up for the day. */
+    onUploadInstead: () -> Unit = {},
+    onSignIn: () -> Unit = {},
     searchViewModel: CatalogueSearchViewModel = hiltViewModel(),
 ) {
     val searchState by searchViewModel.state.collectAsStateWithLifecycle()
     val scope by searchViewModel.scope.collectAsStateWithLifecycle()
     LaunchedEffect(category) { searchViewModel.start(category) }
     var query by rememberSaveable { mutableStateOf("") }
+    val link by searchViewModel.link.collectAsStateWithLifecycle()
+    val clipboard = rememberClipboardLinks()
+    LifecycleResumeEffect(Unit) {
+        clipboard.look()
+        searchViewModel.retryLink()
+        onPauseOrDispose {}
+    }
 
     var selectedItems by remember { mutableStateOf<Map<String, CatalogueItem>>(emptyMap()) }
 
@@ -60,16 +73,32 @@ internal fun AddItemsSheet(
                     selectedItems + (item.id to item)
                 }
             },
-            onConfirmSelection = {
-                onItemsConfirmed(
-                    selectedItems.values.map {
-                        PoolItemDraft(title = it.title, imageUrl = it.imageUrl, keepCopy = it.fromWeb, credit = it.credit, attribution = it.attribution)
-                    },
-                )
-            },
+            onConfirmSelection = { onItemsConfirmed(selectedItems.values.map { it.draft() }) },
             onLoadMore = searchViewModel::loadMore,
             scopes = ScopeChoice(first = PictureScope.forCategory(category), selected = scope, onSelect = searchViewModel::setScope),
             onSearchEverywhere = searchViewModel::searchEverywhere,
+            links = LinkChoice(
+                state = link,
+                pasteOffered = clipboard.offered,
+                onPaste = {
+                    clipboard.paste()?.let {
+                        query = it
+                        searchViewModel.search(it)
+                    }
+                },
+                onAdd = { title, found, page ->
+                    onItemsConfirmed(
+                        selectedItems.values.map { it.draft() } +
+                            PoolItemDraft(title = title, imageUrl = found.imageUrl, credit = found.credit, attribution = found.attributionWith(page)),
+                    )
+                },
+                onAddWithoutPicture = { title ->
+                    onItemsConfirmed(selectedItems.values.map { it.draft() } + PoolItemDraft(title = title, imageUrl = null))
+                },
+                onUpload = onUploadInstead,
+                onSignIn = onSignIn,
+                onRetry = searchViewModel::retryLink,
+            ),
         )
     }
     if (side) {
@@ -83,3 +112,5 @@ internal fun AddItemsSheet(
         )
     }
 }
+
+private fun CatalogueItem.draft() = PoolItemDraft(title = title, imageUrl = imageUrl, keepCopy = fromWeb, credit = credit, attribution = attribution)

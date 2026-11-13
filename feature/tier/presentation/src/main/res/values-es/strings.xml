@@ -41,7 +41,7 @@
 
 
 
-    <string name="item_search_field_label">Buscar</string>
+    <string name="item_search_field_label">Busca o pega un enlace</string>
     <string name="item_search_close_content_description">Cerrar búsqueda</string>
     <string name="item_search_clear_content_description">Borrar búsqueda</string>
     <string name="item_search_source_caption">Se añaden a la reserva de %1$s</string>
@@ -222,4 +222,23 @@
         <item quantity="other">%1$d listas eliminadas y retiradas sus copias públicas</item>
     </plurals>
     <string name="lists_public_lists">Tus listas públicas</string>
+    <string name="item_search_link_paste">Pegar enlace de imagen</string>
+    <string name="item_search_link_from">Imagen de un enlace · de %1$s</string>
+    <string name="item_search_link_checking">Comprobando la imagen…</string>
+    <string name="item_search_link_ready">Comprobada: lista para añadir.</string>
+    <string name="item_search_link_name">Nombre</string>
+    <string name="item_search_link_page_open">+ Página de origen</string>
+    <string name="item_search_link_page">Página de origen (opcional)</string>
+    <string name="item_search_link_page_bad">Eso no parece la dirección de una página. Déjalo vacío si no la sabes.</string>
+    <string name="item_search_link_add">Añadir</string>
+    <string name="item_search_link_add_without_picture">Añadir sin imagen</string>
+    <string name="item_search_link_not_a_picture">Ese enlace es una página, no una imagen. Abre la imagen y copia su dirección.</string>
+    <string name="item_search_link_unreachable">Ese enlace no se abre. Revísalo o prueba con otra imagen.</string>
+    <string name="item_search_link_too_big">La imagen es demasiado grande. Prueba con una copia más pequeña.</string>
+    <string name="item_search_link_refused">Esta imagen no se puede usar aquí. Elige otra.</string>
+    <string name="item_search_link_failed">No se pudo comprobar la imagen. Inténtalo de nuevo.</string>
+    <string name="item_search_link_limit">Ya no quedan imágenes de enlaces por hoy. Habrá más a las %1$s. Desde el dispositivo puedes subir una ahora.</string>
+    <string name="item_search_link_upload">Subir imágenes</string>
+    <string name="item_search_link_sign_in_text">Las imágenes de enlaces se guardan en tu cuenta. Inicia sesión y lo que escribiste seguirá aquí.</string>
+    <string name="item_search_link_sign_in">Iniciar sesión</string>
 </resources>

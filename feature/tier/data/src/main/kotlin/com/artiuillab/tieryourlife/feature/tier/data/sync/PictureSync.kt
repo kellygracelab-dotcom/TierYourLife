@@ -86,6 +86,15 @@ class PictureSync @Inject constructor(
         return pictureIds.filterTo(mutableSetOf()) { it in sent }
     }
 
+    /** A picture the server put in the account's folder, onto this phone; already up there, so never sent back. */
+    suspend fun bringHome(account: String, pictureId: String): String? {
+        if (images.holds(pictureId)) return images.pathFor(pictureId)
+        val bytes = vault.get(pictureId) ?: return null
+        val path = images.write(pictureId, bytes)
+        dao.rememberPicture(PictureSyncEntity(account, pictureId, System.currentTimeMillis()))
+        return path
+    }
+
     /**
      * What a new phone looks like: boards arrive in one request, pictures take
      * as long as they take, and until then a tile shows its title.

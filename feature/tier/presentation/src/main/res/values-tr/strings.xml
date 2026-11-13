@@ -38,7 +38,7 @@
 
 
 
-    <string name="item_search_field_label">Ara</string>
+    <string name="item_search_field_label">Ara veya bağlantı yapıştır</string>
     <string name="item_search_close_content_description">Aramayı kapat</string>
     <string name="item_search_clear_content_description">Aramayı temizle</string>
     <string name="item_search_source_caption">%1$s havuzuna ekleniyor</string>
@@ -208,4 +208,23 @@
         <item quantity="other">%1$d liste silindi ve herkese açık kopyaları kaldırıldı</item>
     </plurals>
     <string name="lists_public_lists">Herkese açık listelerin</string>
+    <string name="item_search_link_paste">Görsel bağlantısını yapıştır</string>
+    <string name="item_search_link_from">Bağlantıdan görsel · %1$s</string>
+    <string name="item_search_link_checking">Görsel kontrol ediliyor…</string>
+    <string name="item_search_link_ready">Kontrol edildi — eklenebilir.</string>
+    <string name="item_search_link_name">Ad</string>
+    <string name="item_search_link_page_open">+ Alındığı sayfa</string>
+    <string name="item_search_link_page">Alındığı sayfa (isteğe bağlı)</string>
+    <string name="item_search_link_page_bad">Bu bir sayfa adresine benzemiyor. Bilmiyorsan boş bırak.</string>
+    <string name="item_search_link_add">Ekle</string>
+    <string name="item_search_link_add_without_picture">Görselsiz ekle</string>
+    <string name="item_search_link_not_a_picture">Bu bağlantı bir sayfa, görsel değil. Görselin kendisini açıp adresini kopyala.</string>
+    <string name="item_search_link_unreachable">Bu bağlantı açılmıyor. Kontrol et veya başka bir görsel dene.</string>
+    <string name="item_search_link_too_big">Görsel çok büyük. Daha küçük bir kopyasını dene.</string>
+    <string name="item_search_link_refused">Bu görsel burada kullanılamaz. Başka birini seç.</string>
+    <string name="item_search_link_failed">Görsel kontrol edilemedi. Tekrar dene.</string>
+    <string name="item_search_link_limit">Bugünlük bağlantıdan görsel hakkı bitti. Yenileri %1$s itibarıyla. Cihazından yine de yükleyebilirsin.</string>
+    <string name="item_search_link_upload">Görsel yükle</string>
+    <string name="item_search_link_sign_in_text">Bağlantıdan gelen görseller hesabında saklanır. Giriş yap, yazdıkların burada kalır.</string>
+    <string name="item_search_link_sign_in">Giriş yap</string>
 </resources>

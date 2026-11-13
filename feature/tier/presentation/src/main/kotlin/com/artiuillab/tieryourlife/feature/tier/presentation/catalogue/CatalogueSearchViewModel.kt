@@ -6,6 +6,9 @@ import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueSearchPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.LinkPicture
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.PictureLinks
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.linkIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -16,6 +19,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val SEARCH_DEBOUNCE_MILLIS = 300L
+private const val LINK_DEBOUNCE_MILLIS = 600L
 private const val MIN_QUERY_LENGTH = 2
 private const val FIRST_PAGE = 1
 
@@ -23,6 +27,7 @@ private const val FIRST_PAGE = 1
 class CatalogueSearchViewModel @Inject constructor(
     private val repository: CatalogueSearchRepository,
     private val appPreferences: AppPreferences,
+    private val links: PictureLinks,
 ) : ViewModel() {
 
     private val _state =
@@ -35,6 +40,12 @@ class CatalogueSearchViewModel @Inject constructor(
     /** Which catalogues are asked; the board's own section until the person picks another. */
     val scope: StateFlow<PictureScope> = _scope.asStateFlow()
 
+    private val _link = MutableStateFlow<LinkUiState?>(null)
+
+    /** Set while the field holds a picture's address rather than words to search for. */
+    val link: StateFlow<LinkUiState?> = _link.asStateFlow()
+
+    private var linkJob: Job? = null
     private var searchJob: Job? = null
     private var moreJob: Job? = null
     private var typedQuery = ""
@@ -72,6 +83,7 @@ class CatalogueSearchViewModel @Inject constructor(
         cancelInFlight()
         typedQuery = query
         everywhere = false
+        if (followLink(query, LINK_DEBOUNCE_MILLIS)) return
         val trimmed = query.trim()
         if (trimmed.length < MIN_QUERY_LENGTH) {
             _state.value = CatalogueSearchUiState.Initial
@@ -86,12 +98,43 @@ class CatalogueSearchViewModel @Inject constructor(
     fun search(query: String) {
         cancelInFlight()
         typedQuery = query
+        if (followLink(query, waitMillis = 0)) return
         val trimmed = query.trim()
         if (trimmed.length < MIN_QUERY_LENGTH) {
             _state.value = CatalogueSearchUiState.Initial
             return
         }
         searchJob = viewModelScope.launch { performSearch(trimmed) }
+    }
+
+    /** Asks again for an address that did not come, or that needed an account somebody has now signed in to. */
+    fun retryLink() {
+        val shown = _link.value ?: return
+        if (shown.answer is LinkPicture.Found || shown.answer == null) return
+        fetchLink(shown.url, waitMillis = 0)
+    }
+
+    /** The whole field is one address: the picture behind it, not a search for its words. */
+    private fun followLink(query: String, waitMillis: Long): Boolean {
+        val trimmed = query.trim()
+        if (linkIn(trimmed) != trimmed) {
+            linkJob?.cancel()
+            _link.value = null
+            return false
+        }
+        _state.value = CatalogueSearchUiState.Initial
+        if (_link.value?.url != trimmed || _link.value?.answer == null) fetchLink(trimmed, waitMillis)
+        return true
+    }
+
+    private fun fetchLink(url: String, waitMillis: Long) {
+        linkJob?.cancel()
+        _link.value = LinkUiState(url)
+        linkJob = viewModelScope.launch {
+            delay(waitMillis)
+            val answer = links.fetch(url)
+            if (_link.value?.url == url) _link.value = LinkUiState(url, answer)
+        }
     }
 
     fun loadMore() {

@@ -44,7 +44,7 @@
 
 
 
-    <string name="item_search_field_label">Поиск</string>
+    <string name="item_search_field_label">Найти или вставить ссылку</string>
     <string name="item_search_close_content_description">Закрыть поиск</string>
     <string name="item_search_clear_content_description">Очистить поиск</string>
     <string name="item_search_source_caption">Добавление в пул %1$s</string>
@@ -236,4 +236,23 @@
         <item quantity="other">%1$d списка удалено, их публичные копии сняты</item>
     </plurals>
     <string name="lists_public_lists">Мои публикации</string>
+    <string name="item_search_link_paste">Вставить ссылку на картинку</string>
+    <string name="item_search_link_from">Картинка по ссылке · с %1$s</string>
+    <string name="item_search_link_checking">Проверяем картинку…</string>
+    <string name="item_search_link_ready">Проверили — можно ставить.</string>
+    <string name="item_search_link_name">Название</string>
+    <string name="item_search_link_page_open">+ Страница-источник</string>
+    <string name="item_search_link_page">Страница-источник (необязательно)</string>
+    <string name="item_search_link_page_bad">Это не похоже на адрес страницы. Если не знаете его, оставьте поле пустым.</string>
+    <string name="item_search_link_add">Поставить</string>
+    <string name="item_search_link_add_without_picture">Добавить без картинки</string>
+    <string name="item_search_link_not_a_picture">Это ссылка на страницу, а не на картинку. Откройте саму картинку и скопируйте её адрес.</string>
+    <string name="item_search_link_unreachable">Ссылка не открывается. Проверьте её или возьмите другую картинку.</string>
+    <string name="item_search_link_too_big">Картинка слишком большая. Попробуйте копию поменьше.</string>
+    <string name="item_search_link_refused">Эту картинку здесь использовать нельзя. Выберите другую.</string>
+    <string name="item_search_link_failed">Не получилось проверить картинку. Попробуйте ещё раз.</string>
+    <string name="item_search_link_limit">На сегодня картинки по ссылкам закончились. Ещё будут в %1$s. С устройства загрузить можно и сейчас.</string>
+    <string name="item_search_link_upload">Загрузить картинки</string>
+    <string name="item_search_link_sign_in_text">Картинки по ссылкам хранятся в аккаунте. Войдите — набранное останется здесь.</string>
+    <string name="item_search_link_sign_in">Войти</string>
 </resources>

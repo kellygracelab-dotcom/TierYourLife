@@ -41,7 +41,7 @@
 
 
 
-    <string name="item_search_field_label">Rechercher</string>
+    <string name="item_search_field_label">Rechercher ou coller un lien</string>
     <string name="item_search_close_content_description">Fermer la recherche</string>
     <string name="item_search_clear_content_description">Effacer la recherche</string>
     <string name="item_search_source_caption">Ajout à la réserve de %1$s</string>
@@ -222,4 +222,23 @@
         <item quantity="other">%1$d listes supprimées et leurs copies publiques retirées</item>
     </plurals>
     <string name="lists_public_lists">Vos listes publiques</string>
+    <string name="item_search_link_paste">Coller le lien d’une image</string>
+    <string name="item_search_link_from">Image depuis un lien · de %1$s</string>
+    <string name="item_search_link_checking">Vérification de l’image…</string>
+    <string name="item_search_link_ready">Vérifiée : prête à ajouter.</string>
+    <string name="item_search_link_name">Nom</string>
+    <string name="item_search_link_page_open">+ Page d’origine</string>
+    <string name="item_search_link_page">Page d’origine (facultatif)</string>
+    <string name="item_search_link_page_bad">Ça ne ressemble pas à l’adresse d’une page. Laissez vide si vous ne la connaissez pas.</string>
+    <string name="item_search_link_add">Ajouter</string>
+    <string name="item_search_link_add_without_picture">Ajouter sans image</string>
+    <string name="item_search_link_not_a_picture">Ce lien mène à une page, pas à une image. Ouvrez l’image elle-même et copiez son adresse.</string>
+    <string name="item_search_link_unreachable">Ce lien ne s’ouvre pas. Vérifiez-le ou essayez une autre image.</string>
+    <string name="item_search_link_too_big">L’image est trop grande. Essayez une copie plus petite.</string>
+    <string name="item_search_link_refused">Cette image ne peut pas être utilisée ici. Choisissez-en une autre.</string>
+    <string name="item_search_link_failed">Impossible de vérifier l’image. Réessayez.</string>
+    <string name="item_search_link_limit">Plus d’images depuis des liens pour aujourd’hui. Prochaines à %1$s. Vous pouvez toujours en importer depuis l’appareil.</string>
+    <string name="item_search_link_upload">Importer des images</string>
+    <string name="item_search_link_sign_in_text">Les images depuis des liens sont gardées dans votre compte. Connectez-vous : votre saisie reste ici.</string>
+    <string name="item_search_link_sign_in">Se connecter</string>
 </resources>

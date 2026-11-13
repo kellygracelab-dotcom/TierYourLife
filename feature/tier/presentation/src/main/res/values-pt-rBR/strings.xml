@@ -41,7 +41,7 @@
 
 
 
-    <string name="item_search_field_label">Pesquisar</string>
+    <string name="item_search_field_label">Pesquise ou cole um link</string>
     <string name="item_search_close_content_description">Fechar pesquisa</string>
     <string name="item_search_clear_content_description">Limpar pesquisa</string>
     <string name="item_search_source_caption">Adicionando à reserva de %1$s</string>
@@ -222,4 +222,23 @@
         <item quantity="other">%1$d listas excluídas e as cópias públicas retiradas</item>
     </plurals>
     <string name="lists_public_lists">Suas listas públicas</string>
+    <string name="item_search_link_paste">Colar link de imagem</string>
+    <string name="item_search_link_from">Imagem de um link · de %1$s</string>
+    <string name="item_search_link_checking">Verificando a imagem…</string>
+    <string name="item_search_link_ready">Verificada: pronta para adicionar.</string>
+    <string name="item_search_link_name">Nome</string>
+    <string name="item_search_link_page_open">+ Página de origem</string>
+    <string name="item_search_link_page">Página de origem (opcional)</string>
+    <string name="item_search_link_page_bad">Isso não parece o endereço de uma página. Deixe vazio se não souber.</string>
+    <string name="item_search_link_add">Adicionar</string>
+    <string name="item_search_link_add_without_picture">Adicionar sem imagem</string>
+    <string name="item_search_link_not_a_picture">Esse link é uma página, não uma imagem. Abra a própria imagem e copie o endereço dela.</string>
+    <string name="item_search_link_unreachable">Esse link não abre. Verifique ou tente outra imagem.</string>
+    <string name="item_search_link_too_big">A imagem é grande demais. Tente uma cópia menor.</string>
+    <string name="item_search_link_refused">Esta imagem não pode ser usada aqui. Escolha outra.</string>
+    <string name="item_search_link_failed">Não foi possível verificar a imagem. Tente de novo.</string>
+    <string name="item_search_link_limit">Acabaram as imagens de links por hoje. Mais às %1$s. Do aparelho você ainda pode enviar uma.</string>
+    <string name="item_search_link_upload">Enviar imagens</string>
+    <string name="item_search_link_sign_in_text">Imagens de links ficam na sua conta. Entre, e o que você digitou continua aqui.</string>
+    <string name="item_search_link_sign_in">Entrar</string>
 </resources>

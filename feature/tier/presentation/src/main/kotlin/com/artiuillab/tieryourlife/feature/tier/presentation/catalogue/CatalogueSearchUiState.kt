@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.catalogue
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchNotice
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.LinkPicture
 
 sealed interface CatalogueSearchUiState {
 
@@ -24,4 +25,9 @@ sealed interface CatalogueSearchUiState {
     ) : CatalogueSearchUiState
 
     data object Error : CatalogueSearchUiState
+}
+
+/** The field holds an address: no search, the picture behind it instead. [answer] is null while the server looks. */
+data class LinkUiState(val url: String, val answer: LinkPicture? = null) {
+    val host: String get() = url.substringAfter("://").substringBefore('/').substringBefore('?').removePrefix("www.")
 }

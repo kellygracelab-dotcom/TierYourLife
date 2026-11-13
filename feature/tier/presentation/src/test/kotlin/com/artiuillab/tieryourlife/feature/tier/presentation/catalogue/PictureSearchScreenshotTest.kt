@@ -10,8 +10,12 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchNotice
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.LinkPicture
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.LinkRefusal
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.LinkChoice
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
@@ -20,6 +24,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import java.util.Calendar
 
 /** The canvas row "Поиск картинок": a scope chosen by the board, an empty scope's way out, the web's day used up. */
 @RunWith(RobolectricTestRunner::class)
@@ -101,6 +106,51 @@ class PictureSearchScreenshotTest {
             onSearchClick = {},
             listTitle = "Animals I Could Beat in a Fight",
             scopes = ScopeChoice(first = PictureScope.Animals, selected = PictureScope.Animals, onSelect = {}),
+        )
+    }
+
+    @Test
+    fun anAddressOnTheClipboard_isOfferedAboveTheScopes() = capture("picture_link_paste") {
+        CatalogueSearchScreenContent(
+            state = CatalogueSearchUiState.Initial,
+            query = "",
+            onQueryChange = {},
+            onSearchClick = {},
+            listTitle = "Studio Ghibli, ranked",
+            scopes = ScopeChoice(first = PictureScope.All, selected = PictureScope.All, onSelect = {}),
+            links = LinkChoice(state = null, pasteOffered = true),
+        )
+    }
+
+    @Test
+    fun aCheckedPicture_isReadyToAdd() = capture("picture_link_ready") {
+        LinkCard(LinkPicture.Found("https://i.example.net/p/8812.jpg", PictureAttribution("web"), null))
+    }
+
+    @Test
+    fun aPageInsteadOfAPicture_saysWhatToDo_dark() = capture("picture_link_page_dark", dark = true) {
+        LinkCard(LinkPicture.Refused(LinkRefusal.NotAPicture), url = "https://example.com/films/totoro")
+    }
+
+    @Test
+    fun theDaysLinks_areUsedUp_andUploadingStillWorks() = capture("picture_link_limit") {
+        val threeAtNight = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 3)
+            set(Calendar.MINUTE, 0)
+        }
+        LinkCard(LinkPicture.Limited(threeAtNight.timeInMillis))
+    }
+
+    @Composable
+    private fun LinkCard(answer: LinkPicture, url: String = "https://i.example.net/p/8812.jpg") {
+        CatalogueSearchScreenContent(
+            state = CatalogueSearchUiState.Initial,
+            query = url,
+            onQueryChange = {},
+            onSearchClick = {},
+            listTitle = "Studio Ghibli, ranked",
+            scopes = ScopeChoice(first = PictureScope.All, selected = PictureScope.All, onSelect = {}),
+            links = LinkChoice(state = LinkUiState(url, answer)),
         )
     }
 
