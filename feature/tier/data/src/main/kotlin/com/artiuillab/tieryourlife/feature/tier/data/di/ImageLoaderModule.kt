@@ -18,7 +18,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ImageLoaderModule {
 
-    // Reuses the client that adds Wikimedia's required User-Agent.
+    // Reuses the client that adds Wikimedia's required User-Agent, which upload.wikimedia.org needs too.
     @Provides
     @Singleton
     fun provideImageLoader(
