@@ -58,7 +58,7 @@
         <item quantity="many">%1$d de %2$d selecionados</item>
         <item quantity="other">%1$d de %2$d selecionados</item>
     </plurals>
-    <string name="play_keep_in_tier">Manter em %1$s, só ordenar</string>
+    <string name="play_ranked">Classificadas</string>
     <string name="play_quit">Sair</string>
     <string name="play_duel_of">Duelo %1$d de %2$d</string>
     <string name="play_round_of">Rodada %1$d de %2$d</string>
