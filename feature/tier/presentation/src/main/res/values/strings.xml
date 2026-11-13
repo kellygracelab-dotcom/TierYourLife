@@ -228,4 +228,13 @@
     <string name="item_search_link_upload">Upload images</string>
     <string name="item_search_link_sign_in_text">Pictures from links are kept in your account. Sign in, and what you typed stays here.</string>
     <string name="item_search_link_sign_in">Sign in</string>
+    <string name="add_to_list_title">Add to list</string>
+    <string name="add_to_list_from">from %1$s</string>
+    <string name="add_to_list_where">Where</string>
+    <string name="add_to_list_new">New list…</string>
+    <string name="add_to_list_new_name">List name</string>
+    <string name="add_to_list_cancel">Cancel</string>
+    <string name="add_to_list_to_pool">To pool</string>
+    <string name="add_to_list_added">Added to %1$s</string>
+    <string name="add_to_list_sign_in">Pictures from links are kept in your account. Sign in in TierYourLife to add them, or add the card without its picture.</string>
 </resources>

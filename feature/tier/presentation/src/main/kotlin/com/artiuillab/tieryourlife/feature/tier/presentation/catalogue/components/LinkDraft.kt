@@ -178,7 +178,7 @@ private fun LinkPreview(answer: LinkPicture?) {
 }
 
 @Composable
-private fun LinkStatus(answer: LinkPicture?) {
+internal fun LinkStatus(answer: LinkPicture?) {
     val warning = answer is LinkPicture.Refused
     val text = when (answer) {
         null -> stringResource(R.string.item_search_link_checking)

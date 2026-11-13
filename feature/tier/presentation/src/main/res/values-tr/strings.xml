@@ -227,4 +227,13 @@
     <string name="item_search_link_upload">Görsel yükle</string>
     <string name="item_search_link_sign_in_text">Bağlantıdan gelen görseller hesabında saklanır. Giriş yap, yazdıkların burada kalır.</string>
     <string name="item_search_link_sign_in">Giriş yap</string>
+    <string name="add_to_list_title">Listeye ekle</string>
+    <string name="add_to_list_from">%1$s</string>
+    <string name="add_to_list_where">Nereye</string>
+    <string name="add_to_list_new">Yeni liste…</string>
+    <string name="add_to_list_new_name">Liste adı</string>
+    <string name="add_to_list_cancel">İptal</string>
+    <string name="add_to_list_to_pool">Havuza</string>
+    <string name="add_to_list_added">“%1$s” listesine eklendi</string>
+    <string name="add_to_list_sign_in">Bağlantıdan gelen görseller hesabında saklanır. Eklemek için TierYourLife’ta giriş yap ya da kartı görselsiz ekle.</string>
 </resources>
