@@ -14,9 +14,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -61,14 +58,13 @@ import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowR
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.SignInToFollow
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenceFor
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.community.presentation.section.SortRow
 import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
-
-private val SORT_HEIGHT = 36.dp
 
 /**
  * One topic: what it is called, where it sits, how many stand behind it, and
@@ -144,7 +140,7 @@ fun TopicScreenContent(
                 bar = {
                     TopBar(onBack = onBack, section = state.section)
                     Header(state = state, onToggleFollow = onToggleFollow)
-                    SortRow(sort = state.sort, onSelectSort = onSelectSort)
+                    SortRow(sort = state.sort, onSort = onSelectSort, modifier = Modifier.padding(start = 20.dp, end = 8.dp))
                 },
             ) {
                 Column(Modifier.fillMaxSize()) {
@@ -266,27 +262,6 @@ private fun Header(state: TopicUiState, onToggleFollow: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-        }
-    }
-}
-
-@Composable
-private fun SortRow(sort: FeedSort, onSelectSort: (FeedSort) -> Unit) {
-    SingleChoiceSegmentedButtonRow(
-        modifier = Modifier
-            .padding(horizontal = 20.dp, vertical = 8.dp)
-            .height(SORT_HEIGHT),
-    ) {
-        val options = listOf(FeedSort.Popular, FeedSort.Recent)
-        options.forEachIndexed { index, option ->
-            SegmentedButton(
-                selected = sort == option,
-                onClick = { onSelectSort(option) },
-                shape = SegmentedButtonDefaults.itemShape(index, options.size),
-                modifier = Modifier.testTag(TopicTestTags.sort(option.id)),
-            ) {
-                Text(stringResource(if (option == FeedSort.Popular) R.string.feed_sort_popular else R.string.feed_sort_recent))
-            }
         }
     }
 }

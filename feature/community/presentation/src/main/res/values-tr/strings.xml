@@ -178,6 +178,12 @@
     <string name="search_sections">Bölümler</string>
     <string name="search_lists">Listeler</string>
     <string name="section_topics">Konular</string>
+    <string name="section_tier_lists">Seviye listeleri</string>
+    <string name="section_show_fewer">Daha az göster</string>
+    <plurals name="section_show_all_topics">
+        <item quantity="one">%1$d konunun tümünü göster</item>
+        <item quantity="other">%1$d konunun tümünü göster</item>
+    </plurals>
     <string name="section_sort_popular">Popüler</string>
     <string name="section_sort_newest">En yeni</string>
     <string name="section_share">Bölümü paylaş</string>

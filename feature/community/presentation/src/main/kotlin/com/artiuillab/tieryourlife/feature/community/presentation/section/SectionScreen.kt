@@ -273,8 +273,8 @@ private fun SectionFeed(
 private fun sideOf(layout: HomeLayout) = if (layout == HomeLayout.Wide) 24.dp else 16.dp
 
 /**
- * The sort first, where it never moves; then one wait for the topics and the
- * first page together, and everything at once when both are in.
+ * One wait for the topics and the first page together, then everything at
+ * once: the topics, a line, and the lists under their heading and sort.
  */
 private fun LazyGridScope.sectionBody(
     state: SectionUiState,
@@ -285,17 +285,15 @@ private fun LazyGridScope.sectionBody(
     cards: CardActions,
     onOpenWaiting: (Topic) -> Unit,
 ) {
-    item(key = "sort", span = { GridItemSpan(maxLineSpan) }) {
-        SortRow(sort = state.sort, onSort = calls.onSelectSort)
-    }
     if (!state.topicsKnown || state.feed.phase == FeedPhase.Loading) {
         item(key = "loading", span = { GridItemSpan(maxLineSpan) }) { SectionLoading() }
         return
     }
-    if (state.topics.isNotEmpty() || state.waiting.isNotEmpty()) {
-        item(key = "topics", span = { GridItemSpan(maxLineSpan) }) {
-            TopicTiles(state.section, state.topics, state.waiting, calls.onOpenTopic, onOpenWaiting)
-        }
+    item(key = "topics", span = { GridItemSpan(maxLineSpan) }) {
+        TopicTiles(state.section, state.topics, state.waiting, calls.onOpenTopic, onOpenWaiting)
+    }
+    item(key = "sort", span = { GridItemSpan(maxLineSpan) }) {
+        SortRow(sort = state.sort, onSort = calls.onSelectSort, count = state.stats?.listCount?.takeIf { it > 0 })
     }
     if (state.feed.phase == FeedPhase.Ready && state.feed.lists.isEmpty()) {
         item(key = "empty", span = { GridItemSpan(maxLineSpan) }) { SectionEmpty() }
