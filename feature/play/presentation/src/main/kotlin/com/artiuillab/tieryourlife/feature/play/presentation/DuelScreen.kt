@@ -435,9 +435,11 @@ private fun DuelCard(card: TierItem, metrics: DuelMetrics, chosen: Boolean?, sti
     val description = stringResource(R.string.play_pick, card.title)
     val scale by animateFloatAsState(if (chosen == true && !still) CHOSEN_SCALE else 1f, tween(CHOSEN_MILLIS), label = "chosen scale")
     val fade by animateFloatAsState(if (chosen == false) PASSED_ALPHA else 1f, tween(CHOSEN_MILLIS), label = "passed fade")
+    var broken by remember(card.imageUrl) { mutableStateOf(false) }
+    val picture = card.imageUrl.takeUnless { broken }
     val ring = when {
         chosen == true -> Modifier.border(3.dp, MaterialTheme.colorScheme.primary, shape)
-        card.imageUrl == null -> Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)
+        picture == null -> Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)
         else -> Modifier
     }
     Column(
@@ -468,10 +470,9 @@ private fun DuelCard(card: TierItem, metrics: DuelMetrics, chosen: Boolean?, sti
                 .then(ring),
             contentAlignment = Alignment.Center,
         ) {
-            var broken by remember(card.imageUrl) { mutableStateOf(false) }
-            if (card.imageUrl != null && !broken) {
+            if (picture != null) {
                 AsyncImage(
-                    model = card.imageUrl,
+                    model = picture,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
@@ -496,7 +497,7 @@ private fun DuelCard(card: TierItem, metrics: DuelMetrics, chosen: Boolean?, sti
             }
         }
         // A card without a picture already wears its name.
-        if (card.imageUrl != null) {
+        if (picture != null) {
             Text(
                 text = card.title,
                 modifier = Modifier.padding(top = metrics.nameGap),
