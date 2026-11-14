@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,10 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
+import com.artiuillab.tieryourlife.core.theme.ui.ThumbUpIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorFace
@@ -40,8 +44,9 @@ private const val LOAD_MORE_ROWS_AHEAD = 3
 
 /**
  * The people who placed this list's cards their own way: the author first,
- * this reader next, the rest newest first. Choosing one fills the left half
- * of the switch with their placing.
+ * then the most liked, newer first among equals, this reader in their place.
+ * A thumb up on anyone else's; how many liked it is never shown. Choosing one
+ * fills the left half of the switch with their placing.
  */
 @Composable
 internal fun RankingsSheet(
@@ -50,6 +55,7 @@ internal fun RankingsSheet(
     onChoose: (Ranking?) -> Unit,
     onLoadMore: () -> Unit,
     onWithdraw: () -> Unit,
+    onLike: (Ranking) -> Unit = {},
 ) {
     AdaptiveSheet(onDismiss = onDismiss, modifier = Modifier.testTag(CommunityListTestTags.RANKINGS_SHEET)) {
         Text(
@@ -97,7 +103,7 @@ internal fun RankingsSheet(
                             }
                         }
                     } else {
-                        null
+                        { LikeButton(liked = ranking.likedByMe, onToggle = { onLike(ranking) }, tag = CommunityListTestTags.like(ranking.uid)) }
                     },
                 )
             }
@@ -109,6 +115,22 @@ internal fun RankingsSheet(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun LikeButton(liked: Boolean, onToggle: () -> Unit, tag: String) {
+    val label = stringResource(R.string.community_ranking_like)
+    IconToggleButton(
+        checked = liked,
+        onCheckedChange = { onToggle() },
+        modifier = Modifier.testTag(tag).semantics { contentDescription = label },
+    ) {
+        ThumbUpIcon(
+            iconSize = 22.dp,
+            color = if (liked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+            filled = liked,
+        )
     }
 }
 

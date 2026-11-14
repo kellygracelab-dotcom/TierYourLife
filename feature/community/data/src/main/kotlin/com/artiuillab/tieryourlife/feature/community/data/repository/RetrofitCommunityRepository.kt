@@ -26,6 +26,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicNameRe
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicSectionRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toDomain
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.likeRefusal
 import com.artiuillab.tieryourlife.feature.community.data.remote.proposalError
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
 import com.artiuillab.tieryourlife.feature.community.data.remote.rankingRefusal
@@ -41,6 +42,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSection
 import com.artiuillab.tieryourlife.feature.community.domain.model.Following
+import com.artiuillab.tieryourlife.feature.community.domain.model.LikeRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.ListGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.ListTranslations
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
@@ -272,6 +274,16 @@ class RetrofitCommunityRepository @Inject constructor(
 
     override suspend fun withdrawRanking(listId: String): Result<Unit> = attempt("Taking a ranking down") {
         api.deleteMyRanking(listId)
+    }
+
+    override suspend fun likeRanking(listId: String, uid: String, like: Boolean): Result<Boolean> = try {
+        val answer = if (like) api.likeRanking(listId, uid) else api.unlikeRanking(listId, uid)
+        Result.success(answer.likedByMe)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Timber.w(e, "Liking a ranking failed")
+        Result.failure(LikeRefused(e.likeRefusal()))
     }
 
     override suspend fun showMyRanking(
@@ -566,6 +578,8 @@ internal fun ShownRankingDto.toShown() = ShownRanking(
         updatedAtMillis = updatedAtMs,
         mine = true,
         rows = rows,
+        addedCards = addedCards.toAddedCards(),
+        allRows = allRows,
     ),
     created = created,
 )
@@ -579,7 +593,15 @@ private fun RankingDto.toDomain() = Ranking(
     updatedAtMillis = updatedAtMs,
     mine = mine,
     rows = rows,
+    likedByMe = likedByMe,
+    addedCards = addedCards.toAddedCards(),
+    allRows = allRows,
 )
+
+/** A reader's own cards as the board draws them; the ids are placeholders the arrangement replaces. */
+private fun List<PublishedItemDto>.toAddedCards(): List<TierItem> = mapIndexed { index, item ->
+    TierItem(id = index.toLong(), title = item.title, imageUrl = item.imageUrl, credit = item.credit, attribution = item.attribution?.toDomain())
+}
 
 /** Any id the server sends is a section now; a list it filed nowhere is Other's. */
 private fun String?.sectionOrOther(): String = this?.takeIf { it.isNotBlank() } ?: ListCategory.Other.id
