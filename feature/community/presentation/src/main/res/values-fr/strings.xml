@@ -180,6 +180,13 @@
     <string name="search_sections">Rubriques</string>
     <string name="search_lists">Listes</string>
     <string name="section_topics">Thèmes</string>
+    <string name="section_tier_lists">Tier lists</string>
+    <string name="section_show_fewer">Afficher moins</string>
+    <plurals name="section_show_all_topics">
+        <item quantity="one">Afficher les %1$d thèmes</item>
+        <item quantity="many">Afficher les %1$d thèmes</item>
+        <item quantity="other">Afficher les %1$d thèmes</item>
+    </plurals>
     <string name="section_sort_popular">Populaires</string>
     <string name="section_sort_newest">Récentes</string>
     <string name="section_share">Partager la rubrique</string>

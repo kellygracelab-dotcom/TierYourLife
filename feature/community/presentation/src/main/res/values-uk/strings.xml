@@ -182,6 +182,14 @@
     <string name="search_sections">Розділи</string>
     <string name="search_lists">Списки</string>
     <string name="section_topics">Теми</string>
+    <string name="section_tier_lists">Тир-листи</string>
+    <string name="section_show_fewer">Згорнути</string>
+    <plurals name="section_show_all_topics">
+        <item quantity="one">Показати всі %1$d теми</item>
+        <item quantity="few">Показати всі %1$d теми</item>
+        <item quantity="many">Показати всі %1$d тем</item>
+        <item quantity="other">Показати всі %1$d теми</item>
+    </plurals>
     <string name="section_sort_popular">Популярні</string>
     <string name="section_sort_newest">Нові</string>
     <string name="section_share">Поділитися розділом</string>
